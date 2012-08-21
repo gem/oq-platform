@@ -40,13 +40,22 @@ mkreqdir () {
 #  MAIN
 export GEM_PROJ=oq-ui-api
 set | grep -q "^GEM_BASEDIR=" || export GEM_BASEDIR="/var/lib/openquake/"
-set | grep -q "^GEM_OQ_UI_API_GIT_VERS=" || export GEM_OQ_UI_API_GIT_VERS="HEAD"
+set | grep -q "^GEM_OQ_PLATF_GIT_VERS=" || export GEM_OQ_PLATF_GIT_VERS="HEAD"
 set | grep -q "^MKREQDIR_ARG=" || export MKREQDIR_ARG="-o"
 
 if [ "$1" = "deploy" ]; then
     mkreqdir ${MKREQDIR_ARG} "${GEM_BASEDIR}${GEM_PROJ}"
 
-    git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR${GEM_PROJ}"
+    cd ../..
+    if [ -d .git ]; then
+        # repo version
+        git archive $GEM_OQ_PLATF_GIT_VERS | tar -x --strip 1 -C "$GEM_BASEDIR${GEM_PROJ}" "${GEM_PROJ}"
+    else
+        # already archived version
+        cp -r oq-platform/oq-ui-api/* "$GEM_BASEDIR${GEM_PROJ}"
+    fi
+    cd -
+    # git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR${GEM_PROJ}"
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/geodetic     /var/lib/geonode/src/GeoNodePy/geonode/geodetic
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/isc_viewer   /var/lib/geonode/src/GeoNodePy/geonode/isc_viewer
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations

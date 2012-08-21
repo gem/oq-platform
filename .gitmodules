@@ -1,0 +1,9 @@
+[submodule "oq-ui-client/app/static/externals/geoext"]
+	path = oq-ui-client/app/static/externals/geoext
+	url = https://github.com/opengeo/GeoExt.git
+[submodule "oq-ui-client/app/static/externals/gxp"]
+	path = oq-ui-client/app/static/externals/gxp
+	url = https://github.com/opengeo/gxp.git
+[submodule "oq-ui-client/app/static/externals/openlayers"]
+	path = oq-ui-client/app/static/externals/openlayers
+	url = https://github.com/openlayers/openlayers.git
