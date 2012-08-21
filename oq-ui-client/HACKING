@@ -1,0 +1,36 @@
+HOWTO
+
+* Implement a new feature for the "so-called" FaultedEarth
+  application (only the CLIENT).
+
+  I assume you have installed the whole platform correctly.
+
+  Clone the oq-ui-client repository and do a branch (or a fork
+  according to your development model)
+
+  # one time command
+  in the root directory
+  git submodule init
+  git submodule update
+  ant init 
+  ant debug -Dapp.port=9080 -Dapp.proxy.geoserver=http://<YOUR_GEOSERVER_HOSTNAME>/geoserver  
+
+  # where 9080 is just a unbound port, and geonode-lp.gem.lan is the
+  #  public fqdn of your machine
+  
+  ### begin development cycle
+  # edit something
+  ant deploy
+  ### end development cycle
+
+  commit & push
+
+* PREFIX
+  fe: faultedearth
+  eg: exposure_grid
+  ec: exposure_country
+  gd: geodetic
+  is: isc_viewer
+
+* Implement a new feature for the "so-called" FaultedEarth
+  application (only the API).

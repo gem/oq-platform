@@ -1,0 +1,36 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl-745cb300:136abb5cf23:-7fe3</id>
+  <name>reu_pop</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl-745cb300:136abb5cf23:-7fe9</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl-745cb300:136abb5cf23:-7fe6</id>
+    </layer>
+  </layers>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc2</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc3</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>55.221</minx>
+    <maxx>55.804</maxx>
+    <miny>-21.371</miny>
+    <maxy>-20.879</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="GWC.metaTilingX">4</entry>
+    <entry key="GWC.autoCacheStyles">false</entry>
+    <entry key="GWC.metaTilingY">4</entry>
+    <entry key="GWC.gutter">0</entry>
+    <entry key="GWC.enabled">true</entry>
+    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
+    <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
+  </metadata>
+</layerGroup>

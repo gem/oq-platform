@@ -1,0 +1,16 @@
+# Fake sample of GEM Instrumental Catalogue
+#
+# The Catalogue contains:
+#
+# earthquake date and time;
+# hypocentre position (lat,lon);
+# error ellipse parameters (smajax, sminax, strike);
+# depth , depth uncert (unc);
+# Mw, Mw uncertainty (unc),Mw source (s: p stands for Mw proxy, d for direct Mw computation);
+# scalar moment (mo), factor (fac) , moment author (auth);
+# mpp, mpr, mrr, mrt, mtp, mtt (six moment tensor components).
+
+          date          ,    lat   ,    lon   , smajaz, sminax, strike,  depth ,   unc ,  mw  ,  unc , s ,   mo  , fac, auth ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt
+ 2010-01-01 06:00:00.00 ,    80.000 , 100.000 ,   5.0 ,   3.0 ,  15.0 ,   20.0 ,   3.0 , 6.80 , 0.45 , d ,  3.00 , 13 , GCMT ,  5.00 ,  0.64 ,  3.00 ,  0.03 ,  0.15 ,  0.12
+ 2010-06-15 12:00:00.00 ,   -60.000 , -100.000 ,   2.0,   1.1 ,  40.0 ,   12.0 ,   2.0 , 4.20 , 0.10 , d ,  5.00 , 14 , GCMT ,  6.74 ,  0.50 , -1.88 ,  0.65 ,  2.22 , -4.93
+ 2010-12-31 18:00:00.00 ,  -40.00 , -30.000 ,  7.4 ,   10.3 ,  12.8 ,     18.3 ,   1.0 , 6.00 , 0.20 , d ,  1.20 , 17 , GCMT , -2.00 ,  0.46 , -0.42 ,  0.00 ,  0.58 ,  2.04

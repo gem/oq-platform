@@ -1,0 +1,36 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--2fed99f:1368861d88a:-6f79</id>
+  <name>Lux_pop</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl--2fed99f:1368861d88a:-6f8b</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl--2fed99f:1368861d88a:-6f88</id>
+    </layer>
+  </layers>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc2</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc3</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>5.754</minx>
+    <maxx>6.521</maxx>
+    <miny>49.454</miny>
+    <maxy>50.179</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="GWC.metaTilingX">4</entry>
+    <entry key="GWC.autoCacheStyles">false</entry>
+    <entry key="GWC.metaTilingY">4</entry>
+    <entry key="GWC.gutter">0</entry>
+    <entry key="GWC.enabled">true</entry>
+    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
+    <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
+  </metadata>
+</layerGroup>

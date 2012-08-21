@@ -1,0 +1,26 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Welcome to gem!" %} - {{ block.super }} {% endblock %}
+{% block indexclass %} class="here" {% endblock %}
+
+{% block main %} 
+
+{% if user.is_authenticated %}
+<div style="width: 100%; height: 700px; margin-left: 0px; margin-right: 0px; border: 0px solid red;">
+<iframe width="100%" height="100%" style="border: 0px solid red;" name="gem_app_frame">
+<p>Your browser does not support iframes.</p>
+</iframe>
+</div>
+{% else %}
+<div class="twocol">
+<br/>
+<br/>
+<p>To request a login send an email to <a href="mailto:test@example.com">test@example.com</a> address.</p>
+<br/>
+<br/>
+</div>
+{% endif %}
+{% endblock %}
+{% block sidebar %}
+{% endblock %}

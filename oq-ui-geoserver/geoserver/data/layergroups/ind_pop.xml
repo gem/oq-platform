@@ -1,0 +1,36 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl-4fec76c0:136bb1ca120:-79d3</id>
+  <name>ind_pop</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl-745cb300:136abb5cf23:-7fef</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl-745cb300:136abb5cf23:-7fec</id>
+    </layer>
+  </layers>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc2</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc3</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>68.162</minx>
+    <maxx>97.412</maxx>
+    <miny>6.746</miny>
+    <maxy>35.496</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="GWC.metaTilingX">4</entry>
+    <entry key="GWC.autoCacheStyles">false</entry>
+    <entry key="GWC.metaTilingY">4</entry>
+    <entry key="GWC.gutter">0</entry>
+    <entry key="GWC.enabled">true</entry>
+    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
+    <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
+  </metadata>
+</layerGroup>

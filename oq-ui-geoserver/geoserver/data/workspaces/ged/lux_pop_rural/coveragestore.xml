@@ -1,0 +1,11 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--2fed99f:1368861d88a:-6f8d</id>
+  <name>lux_pop_rural</name>
+  <type>GeoTIFF</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-2e2377f3:136536dfbc1:-7fff</id>
+  </workspace>
+  <__default>false</__default>
+  <url>file:data/Geotiffs/pop_vals_rural_dev.tif</url>
+</coverageStore>

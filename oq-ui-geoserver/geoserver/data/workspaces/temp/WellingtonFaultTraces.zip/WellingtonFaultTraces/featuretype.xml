@@ -1,0 +1,52 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--d2e15f4:136401fab5d:-7fd9</id>
+  <name>WellingtonFaultTraces</name>
+  <nativeName>WellingtonFaultTraces</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--d2e15f4:136401fab5d:-7fe2</id>
+  </namespace>
+  <title>WellingtonFaultTraces</title>
+  <abstract>No abstract provided</abstract>
+  <keywords>
+    <string></string>
+  </keywords>
+  <metadataLinks>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>TC211</metadataType>
+      <content>http://178.79.187.26/geonetwork/srv/en/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=32ff77ae-4956-4ce2-9a23-45fa515198c3</content>
+    </metadataLink>
+  </metadataLinks>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;D_WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>174.69831051356604</minx>
+    <maxx>174.765834202693</maxx>
+    <miny>-41.344486282798655</miny>
+    <maxy>-41.27992264013957</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>174.69831051356604</minx>
+    <maxx>174.765834202693</maxx>
+    <miny>-41.344486282798655</miny>
+    <maxy>-41.27992264013957</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>NONE</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="advertised">true</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--d2e15f4:136401fab5d:-7fda</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

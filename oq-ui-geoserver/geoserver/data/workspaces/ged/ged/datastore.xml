@@ -1,0 +1,30 @@
+<dataStore>
+  <id>DataStoreInfoImpl-2e2377f3:136536dfbc1:-7ffd</id>
+  <name>ged</name>
+  <description>ged4gem</description>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-2e2377f3:136536dfbc1:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="Connection timeout">20</entry>
+    <entry key="port">5432</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="host">localhost</entry>
+    <entry key="validate connections">false</entry>
+    <entry key="max connections">10</entry>
+    <entry key="database">geonode_dev</entry>
+    <entry key="namespace">http://geonode.org/ged4gem</entry>
+    <entry key="schema">eqged</entry>
+    <entry key="Loose bbox">true</entry>
+    <entry key="Expose primary keys">false</entry>
+    <entry key="fetch size">1000</entry>
+    <entry key="Max open prepared statements">50</entry>
+    <entry key="preparedStatements">false</entry>
+    <entry key="Estimated extends">true</entry>
+    <entry key="user">geonode</entry>
+    <entry key="min connections">1</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

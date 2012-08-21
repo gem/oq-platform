@@ -1,0 +1,31 @@
+<dataStore>
+  <id>DataStoreInfoImpl-1a588cdb:137f1541f74:-7f79</id>
+  <name>isc_viewer</name>
+  <description>isc_viewer</description>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-1a588cdb:137f1541f74:-7f7b</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="Connection timeout">20</entry>
+    <entry key="port">5432</entry>
+    <entry key="passwd">cR13xLpb</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="host">localhost</entry>
+    <entry key="validate connections">false</entry>
+    <entry key="max connections">10</entry>
+    <entry key="database">geonode_dev</entry>
+    <entry key="namespace">http://geonode.org/isc_viewer</entry>
+    <entry key="schema">isc_viewer</entry>
+    <entry key="Loose bbox">true</entry>
+    <entry key="Expose primary keys">false</entry>
+    <entry key="fetch size">1000</entry>
+    <entry key="Max open prepared statements">50</entry>
+    <entry key="preparedStatements">false</entry>
+    <entry key="Estimated extends">true</entry>
+    <entry key="user">geonode</entry>
+    <entry key="min connections">1</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

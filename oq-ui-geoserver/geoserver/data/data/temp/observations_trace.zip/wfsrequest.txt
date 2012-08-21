@@ -1,0 +1,1 @@
+http://178.79.185.190/geoserver/wfs?typename=geonode%3Aobservations_trace&outputFormat=SHAPE-ZIP&request=GetFeature&service=WFS

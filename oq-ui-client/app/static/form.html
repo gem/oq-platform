@@ -1,0 +1,207 @@
+<html>
+    <head>
+        <title>Viewer Field</title>
+
+    </head>
+    <body style="margin: 10px;">
+        <h1>Form With Maps</h1>
+        <p>This example shows how to use gxp map viewers as form elements.</p>
+        <br>
+        <p id="form"></p>
+        
+        <!-- Ext resources -->
+        <link rel="stylesheet" type="text/css" href="externals/ext/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="externals/ext/resources/css/xtheme-gray.css" />
+        <script type="text/javascript" src="externals/ext/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="externals/ext/ext-all-debug.js"></script>
+
+        <!-- OpenLayers resources -->
+        <link rel="stylesheet" type="text/css" href="externals/openlayers/theme/default/style.css" />
+        <link rel="stylesheet" type="text/css" href="externals/openlayers/theme/default/google.css" />
+        <script type="text/javascript" src="script/OpenLayers.js"></script>
+
+        <!-- GeoExt resources -->
+        <link rel="stylesheet" type="text/css" href="externals/geoext/resources/css/popup.css" />
+        <link rel="stylesheet" type="text/css" href="externals/geoext/resources/css/layerlegend.css" />
+        <link rel="stylesheet" type="text/css" href="externals/geoext/resources/css/gxtheme-gray.css" />
+        <script type="text/javascript" src="script/GeoExt.js"></script> 
+
+        <!-- gxp resources -->
+        <script type="text/javascript" src="script/gxp.js"></script> 
+        <link rel="stylesheet" type="text/css" href="externals/gxp/src/theme/all.css" />
+
+        <!-- app resources -->
+        <link rel="shortcut icon" href="favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="theme/app/style.css" />
+        
+        <script type="text/javascript">
+
+        Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
+        OpenLayers.ImgPath = "externals/openlayers/img/";
+
+        var source, observation;
+        Ext.onReady(function() {
+            source = new gxp.form.ViewerField({
+                name: "source",
+                fieldLabel: "Select or create a fault source",
+                validator: function(v) {
+                    var feature = v && Ext.decode(v);
+                    // if the feature was saved, its id will not contain OpenLayers.Feature.Vector
+                    return !!feature && feature.id.indexOf("OpenLayers.Feature.Vector") != 0;
+                },
+                width: 400,
+                height: 274,
+                viewer: {
+                    mapItems: [{
+                        xtype: "gx_zoomslider",
+                        vertical: true,
+                        height: 100
+                    }],
+                    portalConfig: {border: false},
+                    // configuration of all tool plugins for this application
+                    tools: [{
+                        // shared FeatureManager for feature editing, grid and querying
+                        ptype: "gxp_featuremanager",
+                        id: "featuremanager",
+                        paging: false
+                    }, {
+                        ptype: "gxp_featureeditor",
+                        featureManager: "featuremanager",
+                        autoLoadFeatures: true,
+                        defaultAction: 1,
+                        outputConfig: {panIn: false}
+                    }, {
+                        ptype: "gxp_featuretofield",
+                        featureManager: "featuremanager"
+                    }],
+
+                    // layer sources
+                    defaultSourceType: "gxp_wmscsource",
+                    sources: {
+                        osm: {
+                            ptype: "gxp_osmsource"
+                        },
+                        local: {
+                            url: "/geoserver/wms"
+                        }
+                    },
+
+                    // map and layers
+                    map: {
+                        border: false,
+                        region: "center",
+                        projection: "EPSG:900913",
+                        units: "m",
+                        maxResolution: 156543.0339,
+                        maxExtent: [
+                            -20037508.34, -20037508.34,
+                            20037508.34, 20037508.34
+                        ],
+                        layers: [{
+                            source: "osm",
+                            name: "mapnik",
+                            group: "background"
+                        }, {
+                            source: "local",
+                            name: "gem:sources",
+                            selected: true
+                        }],
+                        center: [0, 0],
+                        zoom: 1
+                    }
+                }
+            });
+
+            observation = new gxp.form.ViewerField({
+                name: "observation",
+                fieldLabel: "Select a related observation",
+                allowBlank: false,
+                width: 400,
+                height: 248,
+                viewer: {
+                    mapItems: [{
+                        xtype: "gx_zoomslider",
+                        vertical: true,
+                        height: 100
+                    }],
+                    portalConfig: {border: false},
+                    // configuration of all tool plugins for this application
+                    tools: [{
+                        // shared FeatureManager for feature editing, grid and querying
+                        ptype: "gxp_featuremanager",
+                        id: "featuremanager",
+                        paging: false
+                    }, {
+                        ptype: "gxp_featureeditor",
+                        featureManager: "featuremanager",
+                        readOnly: true,
+                        autoLoadFeatures: true,
+                        actionTarget: false,
+                        defaultAction: 1,
+                        outputConfig: {panIn: false, height: 220}
+                    }, {
+                        ptype: "gxp_featuretofield",
+                        featureManager: "featuremanager"
+                    }],
+
+                    // layer sources
+                    defaultSourceType: "gxp_wmscsource",
+                    sources: {
+                        osm: {
+                            ptype: "gxp_osmsource"
+                        },
+                        local: {
+                            url: "/geoserver/wms"
+                        }
+                    },
+
+                    // map and layers
+                    map: {
+                        border: false,
+                        region: "center",
+                        projection: "EPSG:900913",
+                        units: "m",
+                        maxResolution: 156543.0339,
+                        maxExtent: [
+                            -20037508.34, -20037508.34,
+                            20037508.34, 20037508.34
+                        ],
+                        layers: [{
+                            source: "osm",
+                            name: "mapnik",
+                            group: "background"
+                        }, {
+                            source: "local",
+                            name: "gem:observed",
+                            selected: true
+                        }],
+                        center: [0, 0],
+                        zoom: 1
+                    }
+                }
+            });
+
+            new Ext.FormPanel({
+                border: false,
+                width: 530,
+                labelWidth: 120,
+                items: [source, observation],
+                buttons: [{
+                    text: "Submit",
+                    handler: function() {
+                        var fp = this.ownerCt.ownerCt,
+                            form = fp.getForm();
+                        if (form.isValid()) {
+                            var values = form.getFieldValues();
+                            alert("Source: "+Ext.decode(values.source).id+"\nObservation: "+Ext.decode(values.observation).id);
+                        } else {
+                            alert("Form does not validate");
+                        }
+                    }
+                }],
+                renderTo: "form"
+            });
+        });
+        </script>
+    </body>
+</html>

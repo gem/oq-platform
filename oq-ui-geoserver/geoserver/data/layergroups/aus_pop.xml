@@ -1,0 +1,36 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--11b47674:136ab56f964:-7fee</id>
+  <name>aus_pop</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl--11b47674:136ab56f964:-7ffd</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl--11b47674:136ab56f964:-7ff8</id>
+    </layer>
+  </layers>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc3</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc2</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>112.921</minx>
+    <maxx>153.637</maxx>
+    <miny>-37.879</miny>
+    <maxy>-9.229</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="GWC.metaTilingX">4</entry>
+    <entry key="GWC.autoCacheStyles">false</entry>
+    <entry key="GWC.metaTilingY">4</entry>
+    <entry key="GWC.gutter">0</entry>
+    <entry key="GWC.enabled">true</entry>
+    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
+    <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
+  </metadata>
+</layerGroup>

@@ -1,0 +1,145 @@
+<!--
+ Copyright (c) 2010-2012, GEM Foundation.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+
+<html>
+<head>
+    <title>Observation Form</title>
+ <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" media="screen" />
+</head>
+<body>
+
+    {% if success %}
+        <p style="color: green;">
+            {{ success }}
+        </p>
+    {% endif %}
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}	
+    {% if form.instance.id and form.instance.summary_id %}
+    <form action="/observations/obsform/edit/{{ form.instance.id }}/summary_id/{{ form.instance.summary_id }}" method="post">
+    {% else %}
+    <form action="/edit" method="post">
+    {% endif %}
+	{% csrf_token %}
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.observationType.errors }}
+            <label for="id_observationType">Observation Type:</label>
+            {{ form.observationType }}
+			</p>
+        </div>
+		<b style="font-family:tahoma; font-size:12px;">Slip Type:</b>
+		<div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.slipType.errors }}
+            <label for="id_slipType">Slip Type:</label>
+            {{ form.slipType }}
+        </p>
+        </div>
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.hv_ratio.errors }}
+            <label for="id_hv_ratio">H:V Ratio:</label>
+            {{ form.hv_ratio }}
+        </p>
+        </div>
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.rake.errors }}
+            <label for="id_rake">Rake (deg):</label>
+            {{ form.rake }}
+        </p>
+        <div>
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.net_slip_rate_min.errors }}
+			{{ form.net_slip_rate_max.errors }}
+			{{ form.net_slip_rate_pref.errors }}
+            <label for="id_net_slip_rate_min">Net Slip Rate (mm/yr):</label>
+            {{ form.net_slip_rate_min }}
+			{{ form.net_slip_rate_max }}
+			{{ form.net_slip_rate_pref }}
+        </p>
+        </div>
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.dip_slip_rate_min.errors }}
+			{{ form.dip_slip_rate_max.errors }}
+			{{ form.dip_slip_rate_pref.errors }}
+            <label for="id_dip_slip_rate_min">Dip Slip Rate (mm/yr):</label>
+            {{ form.dip_slip_rate_min }}
+			{{ form.dip_slip_rate_max }}
+			{{ form.dip_slip_rate_pref }}
+        </p>
+		<div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.strike_slip_rate_min.errors }}
+			{{ form.strike_slip_rate_max.errors }}
+			{{ form.strike_slip_rate_pref.errors }}
+            <label for="id_strike_slip_rate_min">Strike Slip Rate (mm/yr):</label>
+            {{ form.strike_slip_rate_min }}
+			{{ form.strike_slip_rate_max }}
+			{{ form.strike_slip_rate_pref }}
+        </p>
+		<div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.vertical_slip_rate_min.errors }}
+			{{ form.vertical_slip_rate_max.errors }}
+			{{ form.vertical_slip_rate_pref.errors }}
+            <label for="id_vertical_slip_rate_min">Vertical Slip Rate(mm/yr):</label>
+            {{ form.vertical_slip_rate_min }}
+			{{ form.vertical_slip_rate_max }}
+			{{ form.vertical_slip_rate_pref }}
+        </p>
+        </div>
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.slip_rate_category.errors }}
+            <label for="id_slip_rate_category">Slip Rate Category:</label>
+            {{ form.slip_rate_category }}
+        </p>
+        </div>
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.marker_age.errors }}
+            <label for="id_marker_age">Marker Age (yrs BP):</label>
+            {{ form.marker_age }}
+        </p>
+        </div>
+		<div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.site.errors }}
+            <label for="id_site">Site:</label>
+            {{ form.site }}
+        </p>
+        </div>
+        <div class="field">
+			<p style="font-family:tahoma; font-size:12px;">
+            {{ form.notes.errors }}
+            <label for="id_notes">Notes:</label>
+            {{ form.notes }}
+        </p>
+        </div>
+        {{ form.summary_id.as_hidden }}
+        {{ form.id.as_hidden }}
+ 		</p>
+        <input type="submit" value="Submit">
+        <input type="reset" value="Clear">
+    </form>
+</body>
+</html>

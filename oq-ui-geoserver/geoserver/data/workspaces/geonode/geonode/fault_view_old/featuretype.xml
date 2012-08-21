@@ -1,0 +1,45 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-360944e6:133f945598c:-7ffe</id>
+  <name>fault_view_old</name>
+  <nativeName>fault_view</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-5436e90e:124760c23c4:-7ffe</id>
+  </namespace>
+  <title>fault_view_old</title>
+  <abstract>No abstract provided</abstract>
+  <keywords>
+    <string></string>
+  </keywords>
+  <metadataLinks>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>TC211</metadataType>
+      <content>http://178.79.187.26/geonetwork/srv/en/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=12ec59ac-c6ab-4439-99ae-92b89a0bed2e</content>
+    </metadataLink>
+  </metadataLinks>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="advertised">true</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-18460fa7:133ebc1aee7:-7fff</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

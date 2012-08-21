@@ -1,0 +1,36 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl-745cb300:136abb5cf23:-7fe4</id>
+  <name>gbr_pop</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl-745cb300:136abb5cf23:-7ff5</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl-745cb300:136abb5cf23:-7ff2</id>
+    </layer>
+  </layers>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc2</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc3</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>-8.646</minx>
+    <maxx>1.771</maxx>
+    <miny>49.871</miny>
+    <maxy>60.846</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="GWC.metaTilingX">4</entry>
+    <entry key="GWC.autoCacheStyles">false</entry>
+    <entry key="GWC.metaTilingY">4</entry>
+    <entry key="GWC.gutter">0</entry>
+    <entry key="GWC.enabled">true</entry>
+    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
+    <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
+  </metadata>
+</layerGroup>

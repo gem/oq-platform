@@ -1,0 +1,14 @@
+<dataStore>
+  <id>DataStoreInfoImpl--d2e15f4:136401fab5d:-7fda</id>
+  <name>WellingtonFaultTraces.zip</name>
+  <type>Shapefile</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--d2e15f4:136401fab5d:-7fe3</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="url">file:/var/lib/tomcat6/webapps/geoserver/data/data/temp/WellingtonFaultTraces.zip/WellingtonFaultTraces.shp</entry>
+    <entry key="namespace">http://geonode.org/temporary</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

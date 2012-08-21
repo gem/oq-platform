@@ -1,0 +1,36 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--2fed99f:1368861d88a:-6f7a</id>
+  <name>mac_pop</name>
+  <layers>
+    <layer>
+      <id>LayerInfoImpl--2fed99f:1368861d88a:-6f85</id>
+    </layer>
+    <layer>
+      <id>LayerInfoImpl--2fed99f:1368861d88a:-6f82</id>
+    </layer>
+  </layers>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc2</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--23a7c88e:136540216c0:-7fc3</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>113.529</minx>
+    <maxx>113.587</maxx>
+    <miny>22.112</miny>
+    <maxy>22.212</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="GWC.metaTilingX">4</entry>
+    <entry key="GWC.autoCacheStyles">false</entry>
+    <entry key="GWC.metaTilingY">4</entry>
+    <entry key="GWC.gutter">0</entry>
+    <entry key="GWC.enabled">true</entry>
+    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
+    <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
+  </metadata>
+</layerGroup>

@@ -1,0 +1,11 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--11b47674:136ab56f964:-7ffa</id>
+  <name>aus_pop_rural</name>
+  <type>GeoTIFF</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-2e2377f3:136536dfbc1:-7fff</id>
+  </workspace>
+  <__default>false</__default>
+  <url>file:data/Geotiffs/pop_vals_rural_dev.tif</url>
+</coverageStore>
