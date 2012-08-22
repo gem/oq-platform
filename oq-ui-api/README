@@ -1,6 +1,6 @@
-==== Requirements ====
+ ====
 
-  * ubuntu 11.04 (codename oneiric ocelot)
+  * Operative System: GNU-Linux Ubuntu 12.04 (codename: Precise Pangolin)
   * a user account within 'admin' group
   * the 'git' package installed on the machine
   * an internet connection
@@ -50,12 +50,12 @@ We provide a simple script to perform this task (and return to http, if required
 
 === Requirements ===
 
-  * a folder named 'private-data'
-  * an ssl key named 'oq-platform.key' into the just created folder
-  * an ssl certificate named 'oq-platform.crt' into the just created folder
+  * a folder named 'private_data'
+  * an ssl Certification Authority certificate 'oq-platform_CA.pem' into the 'private_data' folder
+  * an ssl key named 'oq-platform.key' into the 'private_data' folder
+  * an ssl certificate named 'oq-platform.crt' signed with te CA cert into the 'private_data' folder
 
-To create .key and .crt files you can follow instructions here:
-http://docs.geonode.org/en/latest/deploy/ssl.html#generate-ssl-key-certificate
+  NOTE: into your common name (CN) or into an "alternative name" must appear your machine name.
 
 === Howto ===
 

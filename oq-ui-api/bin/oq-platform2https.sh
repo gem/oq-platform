@@ -3,6 +3,7 @@
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
 export GEM_CERT_KEY=oq-platform.key
 export GEM_CERT_CRT=oq-platform.crt
+export GEM_CA_CERT=oq-platform_CA.pem
 export GEM_APACHE_CONF=/etc/apache2/sites-available/geonode
 export GEM_TOMCAT_CONF="/var/lib/tomcat6/conf/server.xml"
 export GEM_GEOSERVER_CONFIG="/var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml"
@@ -56,6 +57,11 @@ if [ "$1" = "revert" ]; then
         fi
     done
 
+    echo "The keystore password for the keytool command below is 'changeit'."
+    # keytool -delete -noprompt -alias <alias_name> -keystore /etc/ssl/certs/java/cacerts
+    keytool -delete -noprompt -alias gem_ca -keystore /etc/ssl/certs/java/cacerts
+    keytool -delete -noprompt -alias geonodessl -trustcacerts -keystore /etc/ssl/certs/java/cacerts
+
     service tomcat6 start
     service apache2 start
 
@@ -66,7 +72,7 @@ fi
 
 #
 #  verify existence of required files
-for reqfile in "${norm_dir}private_data/$GEM_CERT_KEY" "${norm_dir}private_data/$GEM_CERT_CRT" "$GEM_GN_LOCSET" "$GEM_APACHE_CONF" "$GEM_TOMCAT_CONF" "$GEM_GEOSERVER_CONFIG" "$GEM_GEOSERVER_GLOBAL" ; do
+for reqfile in "${norm_dir}private_data/$GEM_CERT_KEY" "${norm_dir}private_data/$GEM_CERT_CRT" "${norm_dir}private_data/$GEM_CA_CERT" "$GEM_GN_LOCSET" "$GEM_APACHE_CONF" "$GEM_TOMCAT_CONF" "$GEM_GEOSERVER_CONFIG" "$GEM_GEOSERVER_GLOBAL" ; do
     if [ ! -f "$reqfile" ]; then
         echo "$reqfile not found"
         exit 1
@@ -103,18 +109,30 @@ chmod 640 "/etc/ssl/private/$GEM_CERT_KEY"
 cp "${norm_dir}private_data/$GEM_CERT_CRT" /etc/ssl/certs/
 chown root:root "/etc/ssl/certs/$GEM_CERT_CRT"
 chmod 644 "/etc/ssl/certs/$GEM_CERT_CRT"
+cp "${norm_dir}private_data/$GEM_CA_CERT" /etc/ssl/certs/
+chown root:root "/etc/ssl/certs/$GEM_CA_CERT"
+chmod 644 "/etc/ssl/certs/$GEM_CA_CERT"
 
-for cacerts in /var/lib/geonode/build/httplib2/python2/httplib2/cacerts.txt /var/lib/geonode/build/httplib2/python3/httplib2/cacerts.txt /usr/share/pyshared/httplib2/cacerts.txt /usr/lib/python2.6/dist-packages/httplib2/cacerts.txt /usr/lib/python2.7/dist-packages/httplib2/cacerts.txt; do
+for cacerts in /var/lib/geonode/build/httplib2/python2/httplib2/cacerts.txt /var/lib/geonode/build/httplib2/python3/httplib2/cacerts.txt /usr/share/pyshared/httplib2/cacerts.txt /usr/lib/python2.6/dist-packages/httplib2/cacerts.txt /usr/lib/python2.7/dist-packages/httplib2/cacerts.txt /var/lib/geonode/local/lib/python2.7/site-packages/httplib2/cacerts.txt; do
     if [ -f "$cacerts" ]; then
         grep -q "/etc/ssl/certs/$GEM_CERT_CRT" "$cacerts"
         if [ $? -ne 0 ]; then
+            echo "/etc/ssl/certs/$GEM_CERT_CRT"  >> $cacerts
             cat "/etc/ssl/certs/$GEM_CERT_CRT" >> $cacerts
+        fi
+        grep -q "/etc/ssl/certs/$GEM_CA_CERT" "$cacerts"
+        if [ $? -ne 0 ]; then
+            echo "/etc/ssl/certs/$GEM_CA_CERT"  >> $cacerts
+            cat "/etc/ssl/certs/$GEM_CA_CERT" >> $cacerts
         fi
     fi
 done
 
 echo "The keystore password for the keytool command below is 'changeit'."
-keytool -import -alias geonodessl -keystore /etc/ssl/certs/java/cacerts -file "/etc/ssl/certs/$GEM_CERT_CRT"
+# keytool -delete -noprompt -alias <alias_name> -keystore /etc/ssl/certs/java/cacerts
+keytool -import -noprompt -alias gem_ca -keystore /etc/ssl/certs/java/cacerts -file "${norm_dir}private_data/$GEM_CA_CERT"
+openssl x509 -in "${norm_dir}private_data/${GEM_CERT_CRT}" >"${norm_dir}private_data/${GEM_CERT_CRT}.notxt"
+keytool -import -noprompt -alias geonodessl -trustcacerts -keystore /etc/ssl/certs/java/cacerts -file "${norm_dir}private_data/${GEM_CERT_CRT}.notxt"
 
 #
 # update apache configuration
