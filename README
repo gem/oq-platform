@@ -16,30 +16,32 @@
     named 'private_data' into your 'geonode_stuff' directory and copy it as 'isc_data.csv' file ]
   [ if you have a previous installation and you want migrate users to the new installation
     you need to run on the previous installation as root:
-    $ sudo <oq-ui-api_repo>/bin/export-users.sh >users_data.json
+    $ sudo <oq-platform_repo>//oq-ui-api/bin/export-users.sh >users_data.json
     and copy the 'users_data.json' file to your new machine into your 'geonode_stuff/private_data' directory. ]
-  * clone the oq-ui-api repository and move into the new repository with commands:
-      $ git clone git://github.com/gem/oq-ui-api.git
-      $ cd oq-ui-api
+  * clone the oq-platform repository and move into the new repository with commands:
+      $ git clone git://github.com/gem/oq-platform.git
+      $ cd oq-platform
   * checkout the required version of the script with the command
-      $ git checkout <version_name>_inst
+      $ git checkout <version_name>
     where <version_name> is the version that you want to install
-  * copy the bin/geonode-installation.sh file into the previous created stuff dir:
-      $ cp bin/geonode-installation.sh ../geonode_stuff
-  * go into 'geonode_stuff' directory and run the installation script:
+  * copy the oq-ui-api/bin/oq-platform-install.sh file into the previous created 'stuff' dir:
+      $ cp oq-ui-api/bin/oq-platform-install.sh ../geonode_stuff
+  * go into 'stuff' directory and run the installation script:
       $ cd ../geonode_stuff
-      $ ./geonode-installation.sh
+      $ ./oq-platform-install.sh
     NOTE: to run some parts the script require root access so it will ask your
     password to 
-  * the script will ask you "Public site url or public IP address ..."; you must
-    answer with the public name of the machine (see above) <SITE_HOST>
-  * after a while the script will ask to you if you want create a superuser
-    account for administrative purposes, answer "yes" and create it.
+  * the script will ask you:
+    + "Public site url or public IP address ..."; you must
+      answer with the public name of the machine (see above) <SITE_HOST>
+    + username for django administrator
+    + password for django administrator
+    + email for django administrator
   * after the installation you can browse to "http://<SITE_HOST>" url to see 
     the local geonode homepage, to "http://<SITE_HOST>/geoserver" to see local geoserver
-    homepage and to "http://<SITE_HOST>/FaultedEarth" to access FE application.
+    homepage.
 
-  **NOTE** the script will takes few tens of minutes to finish, if you continuously see
+  **NOTE** the script will takes few minutes to finish, if you continuously see
   new lines of log on the display you can fill safe.
 
 ==== Enhance security with HTTPS protocol ====
@@ -60,10 +62,10 @@ We provide a simple script to perform this task (and return to http, if required
 === Howto ===
 
   * cd into the parent directory of 'private-data'
-  * run sudo <oq-ui-api directory>/bin/oq-platform2https.sh http2https
+  * run sudo <oq-platform directory>/oq-ui-api/bin/oq-platform2https.sh http2https
 
 === Revert ===
 
 To return to the previous http protocol:
 
-  * run sudo <oq-ui-api directory>/bin/oq-platform2https.sh revert
+  * run sudo <oq-platform directory>/oq-ui-api/bin/oq-platform2https.sh revert
