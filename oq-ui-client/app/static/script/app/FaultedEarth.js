@@ -14,13 +14,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-FaultedEarth = Ext.extend(gxp.Viewer, {
+FaultedEarth = Ext.extend (gxp.Viewer,{
 
     legendTabTitle: "Legend",
     summaryId: null,
-    
-    constructor: function(config) {
-        
+
+    constructor: function (config) {
+
         Ext.Window.prototype.shadow = false;
 
         // property names for FeatureEditor and FeatureGrid
@@ -44,7 +44,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
             "dip_pref": "Dip pref (...\u00B0)",
             "dip_com": "Dip data completeness factor (1, 2, 3, or 4)",
             "dip_dir": "Dip direction (...\u00B0)",
-	    "surface_dip": "Surface Dip",
+	        "surface_dip": "Surface Dip",
             "down_thro": "Downthrown side (N, S, W, E or NW etc.)",
             "slip_typ": "Slip type (Reverse etc.)",
             "slip_com": "Slip type completeness (1, 2, 3, or 4)",
@@ -59,22 +59,22 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
             "dis_min": "Displacement min (m)",
             "dis_max": "Displacement max (m)",
             "dis_pref": "Displacement pref (m)",
-	    "dis_total": "Total Displacement (m)",
-	    "dis_category": "Displacement category",
-	    "horizontal_displacement": "Horizontal Displacement",
-	    "vertical_displacement": "Horizontal Displacement",
+            "dis_total": "Total Displacement (m)",
+            "dis_category": "Displacement category",
+            "horizontal_displacement": "Horizontal Displacement",
+            "vertical_displacement": "Horizontal Displacement",
             "re_int_min": "Recurrence interval min (yr)",
             "re_int_max": "Recurrence interval max (yr)",
             "re_int_pre": "Recurrence interval pref (yr)",
             "re_int_pref": "Recurrence interval pref (yr)",
             "re_int_com": "Recurrence interval common (yr)",
-	    "re_int_category": "Recurrence interval category",
-	    "mov_category": "Age of last movement category",
+            "re_int_category": "Recurrence interval category",
+            "mov_category": "Age of last movement category",
             "mov_min": "Age of last movement min (yr BP)",
             "mov_max": "Age of last movement max (yr BP)",
             "mov_pref": "Age of last movement pref (yr BP)",
-	    "historical_earthquake": "Historical Eartquake",
-	    "pre_historical_earthquake": "Historical Eartquake",
+            "historical_earthquake": "Historical Eartquake",
+            "pre_historical_earthquake": "Historical Eartquake",
             "all_com": "Overall data completeness (1, 2, 3, or 4)",
             "created": "Date created (date)",
             "compiler": "Compiled by (name)",
@@ -85,7 +85,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
             "slip_type": "Slip Type",
             "hv_ratio": "H:V Ratio",
             "rake": "Rake (deg)",
-	    "net_displacement": "Net Displacement",
+            "net_displacement": "Net Displacement",
             "net_sliprate_min": "Net Slip Rate Min (mm/yr)",
             "net_sliprate_max": "Net Slip Rate Max (mm/yr)",
             "net_sliprate_pref": "Net Slip Rate Pref (mm/yr)",
@@ -132,116 +132,111 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
             "scale": "Scale",
             "accuracy": "Accuracy",
             "geomor_exp": "Geomorphic Expression",
-            "notes": "Notes",
             "fault_section_id": "Fault Section Id",
             "t_feature": "Trace Feature",
             "s_feature": "Site Feature",
             // custom field names for fault source form
-    	    "source_nm": "Fault Source Name",
-    	    "rake_min": "Rake Min",
-    	    "rake_max": "Rake Max",
-    	    "rake_pref": "Rake Pref",
-    	    "rake_com": "Rake Common",
-    	    "magnitude": "Magnitude",
-    	    "length_min": "Length Min",
-    	    "length_max": "Length Max",
-    	    "length_pre": "Length Pref",
-    	    "mag_min": "Magnitude Min",
-    	    "mag_max": "Magnitude Max",
-    	    "mag_pref": "Magnitude Pref",
-    	    "mom_min": "Seismic Movement Min",
-    	    "mom_max": "Seismic Movement Max",
-    	    "mom_pref": "Seismic Movement Pref",
-    	    "fault_id": "Fault ID",
-    	    "width_min": "Width Min",
-    	    "width_max": "Width Max",
+            "source_nm": "Fault Source Name",
+            "rake_min": "Rake Min",
+            "rake_max": "Rake Max",
+            "rake_pref": "Rake Pref",
+            "rake_com": "Rake Common",
+            "magnitude": "Magnitude",
+            "length_min": "Length Min",
+            "length_max": "Length Max",
+            "length_pre": "Length Pref",
+            "mag_min": "Magnitude Min",
+            "mag_max": "Magnitude Max",
+            "mag_pref": "Magnitude Pref",
+            "mom_min": "Seismic Movement Min",
+            "mom_max": "Seismic Movement Max",
+            "mom_pref": "Seismic Movement Pref",
+            "fault_id": "Fault ID",
+            "width_min": "Width Min",
+            "width_max": "Width Max",
             "width_pref": "Width Pref",
             "area_min": "Area Min",
             "area_max": "Area Max",
-            "area_pref": "Area Pref",
-	    /* for site observations */
-	    "fault_section_id": "Fault Section ID"
+            "area_pref": "Area Pref"
         };
 
 	/* add a visual clue for compulsory fields */
-	Ext.iterate(propertyNames, function(field) {
-	    if (faultedearth.isCompulsory(field)) {
-		propertyNames[field] += " <small>(*)</small>";
-	    }
-	});
+	    Ext.iterate(propertyNames, function (field) {
+	        if (faultedearth.isCompulsory(field)) {
+		        propertyNames[field] += " <small>(*)</small>";
+	        }
+	    });
 
         var tabs = new Ext.TabPanel({
-        	animCollapse: true,
-        	activeTab : 0,
-        	border: true,
-        	items: [ {
+                animCollapse: true,
+                activeTab : 0,
+                border: true,
+                items: [ {
                     title: 'Observations: Events',
-                items: [{
-                    id: "site_events_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                    autoScroll: true,
-                }]
-            }, {
-                title: 'Observations: Displacement',
-                items: [{
-                    id: "site_displacement_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                    autoScroll: true,
-                }]
-            }, {
-                title: 'Observations: Slip Rates',
-                items: [{
-                    id: "site_sliprates_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                    autoScroll: true,
-                }]
-            }, {
-                title: 'Observations: Fault Geometry',
-                items: [{
-                    id: "site_faultgeometry_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                    autoScroll: true,
-                }]
-            }, {
+                    items: [{
+                        id: "site_events_featuregrid",
+                        layout: "fit",
+                        height: 180,
+                        autoScroll: true
+                    }]
+                }, {
+                    title: 'Observations: Displacement',
+                    items: [{
+                        id: "site_displacement_featuregrid",
+                        layout: "fit",
+                        height: 180,
+                        autoScroll: true
+                    }]
+                }, {
+                    title: 'Observations: Slip Rates',
+                    items: [{
+                        id: "site_sliprates_featuregrid",
+                        layout: "fit",
+                        height: 180,
+                        autoScroll: true
+                    }]
+                }, {
+                    title: 'Observations: Fault Geometry',
+                    items: [{
+                        id: "site_faultgeometry_featuregrid",
+                        layout: "fit",
+                        height: 180,
+                        autoScroll: true
+                    }]
+                }, {
                     title: 'Traces',
-                    items: [
-			{
-			    id: "trace_featuregrid",
-			    layout: "fit",
-			    height: 180,
-			}],
-		}, {
+                    items: [{
+                        id: "trace_featuregrid",
+                        layout: "fit",
+                        height: 180
+                    }]
+                }, {
                     title: 'Fault Section Summary',
-                items: [{
-                    id: "summary_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                    autoScroll: true,
+                    items: [{
+                        id: "summary_featuregrid",
+                        layout: "fit",
+                        height: 180,
+                        autoScroll: true
+                    }]
+                }, {
+                    title: 'Faults',
+                    items: [{
+                        id: "fault_featuregrid",
+                        layout: "fit",
+                        height: 180
+                    }]
+                }, {
+                    title: 'Fault Sources',
+                    items: [{
+                        id: "source_featuregrid",
+                        layout: "fit",
+                        height: 180
+                    }]
                 }]
-            }, {
-                title: 'Faults',
-                items: [{
-                    id: "fault_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                }]
-            }, {
-                title: 'Fault Sources',
-                items: [{
-                    id: "source_featuregrid",
-                    layout: "fit",
-                    height: 180,
-                }]
-            }]
-    	});
-        
+            });
+
         Ext.applyIf(config, {
             proxy: "/proxy?url=",
-                
             mapItems: [{
                 xtype: "gx_zoomslider",
                 vertical: true,
@@ -267,9 +262,8 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     header: false,
                     border: false,
                     defaults: {
-                       hideBorders: true,
-                       autoScroll: true
-                
+                        hideBorders: true,
+                        autoScroll: true
                     },
                     items: [{
                         id: "tree",
@@ -279,9 +273,9 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                         title: "Trace Form",
                         padding: 10
                     }, {
-                		id: 'summary',
-                		title: "Neotectonic Section Summary",
-                		padding: 10
+                        id: 'summary',
+                        title: "Neotectonic Section Summary",
+                        padding: 10
                     }, {
                         id: 'site_events',
                         title: "Events (Site Observation) Form",
@@ -299,16 +293,16 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                         title: "Fault Geometry (Site Observation) Form",
                         padding: 10
                     }, {
-                		id: "fault",
-                		title: "Neotectonic Fault Form",
-                		padding: 10
+                        id: "fault",
+                        title: "Neotectonic Fault Form",
+                        padding: 10
                     }, {
-                    	id: "source",   
-                    	title: "Fault Source",
-                    	padding: 10
+                        id: "source",
+                        title: "Fault Source",
+                        padding: 10
                     }]
                 },
-		"map", {
+		                "map", {
                     id: "tabs",
                     autoHeight: true,
                     region: "south",
@@ -316,12 +310,12 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     height: 200,
                     split: true,
                     collapseMode: "mini",
-                    items:[
+                    items: [
                         tabs
                     ]
                 }]
             }],
-            
+
             tools: [{
                 actionTarget: {target: "paneltbar", index: 0},
                 outputAction: 0,
@@ -338,7 +332,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 },
                 actions: [{
                     iconCls: "icon-geoexplorer",
-                    text: "Help",
+                    text: "Help"
                 }]
             }, {
                 ptype: "gxp_layertree",
@@ -346,7 +340,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     id: "layertree",
                     tbar: []
                 },
-                outputTarget: "tree",
+                outputTarget: "tree"
             }, {
                 ptype: "gxp_featuremanager",
                 id: "featuremanager",
@@ -375,7 +369,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuremanager",
@@ -389,7 +383,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 alwaysDisplayOnMap: true,
                 selectOnMap: true,
                 displayMode: "selected",
-                autoHeight: true,   
+                autoHeight: true,
                 featureManager: "summary_featuremanager",
                 outputTarget: "summary_featuregrid",
                 outputConfig: {
@@ -398,7 +392,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuremanager",
@@ -408,7 +402,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 paging: false,
                 maxFeatures: 100
             }, {
-		        ptype: "gxp_featuremanager",
+                ptype: "gxp_featuremanager",
                 id: "site_displacement_featuremanager",
                 autoLoadFeatures: true,
                 autoSetLayer: false,
@@ -441,7 +435,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuregrid",
@@ -456,7 +450,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuregrid",
@@ -471,7 +465,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuregrid",
@@ -486,7 +480,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuremanager",
@@ -508,7 +502,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "gxp_featuremanager",
@@ -530,7 +524,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 },
                 controlOptions: {
-                    multiple: true,
+                    multiple: true
                 }
             }, {
                 ptype: "app_traceform",
@@ -540,13 +534,13 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 outputTarget: "trace"
             }, {
                 ptype: "gxp_featureeditor",
-		        autoLoadFeatures: true,
+                autoLoadFeatures: true,
                 id: "trace_featureeditor",
                 featureManager: "trace_featuremanager",
                 actionTarget: "traceform_tooltarget",
                 createFeatureActionText: "Draw",
                 editFeatureActionText: "Modify",
-		        snappingAgent: "snapping-agent",
+                snappingAgent: "snapping-agent",
                 outputConfig: {
                     propertyNames: propertyNames
                 }
@@ -558,36 +552,36 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 outputTarget: "summary"
             }, {
                 ptype: "gem_observation_featureeditor",
-		        actionTarget: "summaryform_tooltarget",
-		        featureManager: "summary_featuremanager",
-		        modifyOnly: true,
+                actionTarget: "summaryform_tooltarget",
+                featureManager: "summary_featuremanager",
+                modifyOnly: true,
                 outputConfig: {
                     propertyNames: propertyNames
                 }
             }, {
                 ptype: "app_siteform",
-		        layerRecordName: 'event',
+                layerRecordName: 'event',
                 id: "site_events_form",
                 featureManager: "site_events_featuremanager",
                 featureEditor: "site_events_featureeditor",
                 outputTarget: "site_events"
             }, {
                 ptype: "app_siteform",
-		        layerRecordName: 'displacement',
+                layerRecordName: 'displacement',
                 id: "site_displacement_form",
                 featureManager: "site_displacement_featuremanager",
                 featureEditor: "site_displacement_featureeditor",
                 outputTarget: "site_displacement"
             }, {
                 ptype: "app_siteform",
-		        layerRecordName: 'sliprate',
+                layerRecordName: 'sliprate',
                 id: "site_sliprates_form",
                 featureManager: "site_sliprates_featuremanager",
                 featureEditor: "site_sliprates_featureeditor",
                 outputTarget: "site_sliprates"
             }, {
                 ptype: "app_siteform",
-		        layerRecordName: 'faultgeometry',
+                layerRecordName: 'faultgeometry',
                 id: "site_faultgeometry_form",
                 featureManager: "site_faultgeometry_featuremanager",
                 featureEditor: "site_faultgeometry_featureeditor",
@@ -643,7 +637,7 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 id: "sourceform",
                 featureManager: "source_featuremanager",
                 featureEditor: "featureeditor",
-                outputTarget: "source",
+                outputTarget: "source"
             }, {
                 ptype: "gem_observation_featureeditor",
                 id: "faultsource_featureeditor",
@@ -654,37 +648,37 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     propertyNames: propertyNames
                 }
             }, {
-        		ptype: "gxp_legend",
-        		outputTarget: "west",
-        		outputConfig: {
-        		    title: this.legendTabTitle,
-        		    autoScroll: true
-        		}
-        	}, {
+                ptype: "gxp_legend",
+                outputTarget: "west",
+                outputConfig: {
+                    title: this.legendTabTitle,
+                    autoScroll: true
+                }
+            }, {
                 ptype: "gxp_googlegeocoder",
                 outputTarget: "paneltbar",
                 outputConfig: {
                     emptyText: "Search for a location ..."
                 }
             }, {
-		        ptype: "gxp_wmsgetfeatureinfo",
-		        actionTarget: "paneltbar",
-	            outputConfig: {
-	                width: 400
-	            }
-	         }, {
-            	ptype: "gxp_measure",
-            	actionTarget: {target: "paneltbar", index: 6},
-            	toggleGroup: "main"
+                ptype: "gxp_wmsgetfeatureinfo",
+                actionTarget: "paneltbar",
+                outputConfig: {
+                    width: 400
+                }
             }, {
-            	ptype: "gxp_zoomtoextent",
-            	actionTarget: "paneltbar"
+                ptype: "gxp_measure",
+                actionTarget: {target: "paneltbar", index: 6},
+                toggleGroup: "main"
             }, {
-            	ptype: "gxp_zoom",
-            	actionTarget: "paneltbar"
+                ptype: "gxp_zoomtoextent",
+                actionTarget: "paneltbar"
             }, {
-            	ptype: "gxp_navigationhistory",
-            	actionTarget: "paneltbar"
+                ptype: "gxp_zoom",
+                actionTarget: "paneltbar"
+            }, {
+                ptype: "gxp_navigationhistory",
+                actionTarget: "paneltbar"
             }, {
                 ptype: "gxp_zoomtoselectedfeatures",
                 featureManager: "trace_featuremanager",
@@ -726,13 +720,13 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 actionTarget: "sourceform_tooltarget",
                 tooltip: "Zoom to selected closure"
             }, {
-            	ptype: "gxp_snappingagent",
-            	id: "snapping-agent",
-            	targets: [{
-            		source: "local",
-            		name: "geonode:observations_trace"
-            	}]
-    	    }, {
+                ptype: "gxp_snappingagent",
+                id: "snapping-agent",
+                targets: [{
+                    source: "local",
+                    name: "geonode:observations_trace"
+                }]
+            }, {
                 ptype: "gxp_addlayers",
                 actionTarget: "layertree.tbar"
             }, {
