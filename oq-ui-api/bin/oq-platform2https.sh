@@ -178,6 +178,8 @@ xmlstarlet ed -P -S -L \
 # geoserver global configuration
 xmlstarlet ed -P -S -L -O -s '//global' -t elem -n "proxyBaseUrl" -v "https://${SITEHOST}/geoserver/" "$GEM_GEOSERVER_GLOBAL"
 
+c_rehash
+
 service apache2 start
 service tomcat6 start
 
