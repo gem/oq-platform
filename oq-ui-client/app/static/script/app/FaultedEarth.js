@@ -342,6 +342,10 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 }]
             }, {
                 ptype: "gxp_layertree",
+                outputConfig: {
+                    id: "layertree",
+                    tbar: []
+                },
                 outputTarget: "tree",
             }, {
                 ptype: "gxp_featuremanager",
@@ -404,13 +408,13 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 paging: false,
                 maxFeatures: 100
             }, {
-		ptype: "gxp_featuremanager",
+		        ptype: "gxp_featuremanager",
                 id: "site_displacement_featuremanager",
                 autoLoadFeatures: true,
                 autoSetLayer: false,
                 paging: false,
                 maxFeatures: 100
-	    }, {
+	        }, {
                 ptype: "gxp_featuremanager",
                 id: "site_sliprates_featuremanager",
                 autoLoadFeatures: true,
@@ -536,13 +540,13 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 outputTarget: "trace"
             }, {
                 ptype: "gxp_featureeditor",
-		autoLoadFeatures: true,
+		        autoLoadFeatures: true,
                 id: "trace_featureeditor",
                 featureManager: "trace_featuremanager",
                 actionTarget: "traceform_tooltarget",
                 createFeatureActionText: "Draw",
                 editFeatureActionText: "Modify",
-		snappingAgent: "snapping-agent",
+		        snappingAgent: "snapping-agent",
                 outputConfig: {
                     propertyNames: propertyNames
                 }
@@ -554,36 +558,36 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                 outputTarget: "summary"
             }, {
                 ptype: "gem_observation_featureeditor",
-		actionTarget: "summaryform_tooltarget",
-		featureManager: "summary_featuremanager",
-		modifyOnly: true,
+		        actionTarget: "summaryform_tooltarget",
+		        featureManager: "summary_featuremanager",
+		        modifyOnly: true,
                 outputConfig: {
                     propertyNames: propertyNames
                 }
             }, {
                 ptype: "app_siteform",
-		layerRecordName: 'event',
+		        layerRecordName: 'event',
                 id: "site_events_form",
                 featureManager: "site_events_featuremanager",
                 featureEditor: "site_events_featureeditor",
                 outputTarget: "site_events"
             }, {
                 ptype: "app_siteform",
-		layerRecordName: 'displacement',
+		        layerRecordName: 'displacement',
                 id: "site_displacement_form",
                 featureManager: "site_displacement_featuremanager",
                 featureEditor: "site_displacement_featureeditor",
                 outputTarget: "site_displacement"
             }, {
                 ptype: "app_siteform",
-		layerRecordName: 'sliprate',
+		        layerRecordName: 'sliprate',
                 id: "site_sliprates_form",
                 featureManager: "site_sliprates_featuremanager",
                 featureEditor: "site_sliprates_featureeditor",
                 outputTarget: "site_sliprates"
             }, {
                 ptype: "app_siteform",
-		layerRecordName: 'faultgeometry',
+		        layerRecordName: 'faultgeometry',
                 id: "site_faultgeometry_form",
                 featureManager: "site_faultgeometry_featuremanager",
                 featureEditor: "site_faultgeometry_featureeditor",
@@ -663,11 +667,11 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
                     emptyText: "Search for a location ..."
                 }
             }, {
-		         ptype: "gxp_wmsgetfeatureinfo",
-		         actionTarget: "paneltbar",
-	             outputConfig: {
-	                 width: 400
-	                 }
+		        ptype: "gxp_wmsgetfeatureinfo",
+		        actionTarget: "paneltbar",
+	            outputConfig: {
+	                width: 400
+	            }
 	         }, {
             	ptype: "gxp_measure",
             	actionTarget: {target: "paneltbar", index: 6},
@@ -728,7 +732,16 @@ FaultedEarth = Ext.extend(gxp.Viewer, {
             		source: "local",
             		name: "geonode:observations_trace"
             	}]
-    	     }]
+    	    }, {
+                ptype: "gxp_addlayers",
+                actionTarget: "layertree.tbar"
+            }, {
+                ptype: "gxp_removelayer",
+                actionTarget: "layertree.tbar"
+            }, {
+                ptype: "gxp_layerproperties",
+                actionTarget: "layertree.tbar"
+            }]
         });
 
         FaultedEarth.superclass.constructor.apply(this, arguments);
