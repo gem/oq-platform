@@ -732,9 +732,6 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             }, {
                 ptype: "gxp_removelayer",
                 actionTarget: "layertree.tbar"
-            }, {
-                ptype: "gxp_layerproperties",
-                actionTarget: "layertree.tbar"
             }]
         });
 
