@@ -3,6 +3,7 @@ from django.contrib.gis.db import models
 # date, lat, lon, smajaz, sminax, strike, depth, unc , mw, unc , s, mo, fac, auth ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt
 
 class Measure(models.Model):
+    src_id = models.IntegerField(null=False, blank=False, default=-1)
     date = models.DateTimeField(null=False, blank=False)
     lat = models.FloatField(null=False, blank=False)
     lon = models.FloatField(null=False, blank=False)
