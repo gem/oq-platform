@@ -88,7 +88,7 @@ class Command(BaseCommand):
                 m = Measure(src_id=data_id, date=item['date'], lat=item['lat'], lon=item['lon'],
                             the_geom="POINT(%s %s)" % (item['lon'], item['lat']),
                             smajaz=item['smajaz'], sminax=item['sminax'], strike=item['strike'],  epic_q=item['epic_q'],
-                            depth=item['depth'], depth_unc=item['depth_unc'],  depth_q=item['depth_q']m
+                            depth=item['depth'], depth_unc=item['depth_unc'],  depth_q=item['depth_q'],
                             mw=item['mw'], mw_unc=item['mw_unc'], mw_q=item['mw_q'], s=item['s'],
                             mo=item['mo'], fac=item['fac'], mo_auth=item['mo_auth'],
                             mpp=item['mpp'], mpr=item['mpr'], mrr=item['mrr'],
