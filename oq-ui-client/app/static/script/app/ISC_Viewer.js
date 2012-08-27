@@ -54,13 +54,13 @@ ISC_Viewer = Ext.extend(gxp.Viewer, {
                         padding: 10
                     }]
                 },
-		                "map", {
+		            "map", {
                     id: "featuregrid",
                     layout: "fit",
                     region: "south",
                     border: false,
-                    height: 0,
-                    split: true,
+                    height: 200,
+                    split: false,
                     collapseMode: "mini"
                 }]
             }],
