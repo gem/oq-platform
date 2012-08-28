@@ -1,5 +1,6 @@
 #!/bin/bash
 
+GRADIENT_FILE=./oq-ui-geoserver/data/cpt/fullsatur.cpt
 
 cpt2hexval () {
     local fname val tot
@@ -8,9 +9,9 @@ cpt2hexval () {
     val="$2"
     tot="$3"
 
-    grep -q '#[ 	]*COLOR_MODEL[ 	]=' fullsatur.cpt 
+    grep -q '#[ 	]*COLOR_MODEL[ 	]=' ${GRADIENT_FILE} 
     if [ $? -eq 0 ]; then
-        grep -q '#[ 	]*COLOR_MODEL[ 	]=[ 	]RGB' fullsatur.cpt 
+        grep -q '#[ 	]*COLOR_MODEL[ 	]=[ 	]RGB' ${GRADIENT_FILE} 
         if [ $? -ne 0 ]; then
             return 1
         fi
@@ -65,7 +66,7 @@ scale[3]='<MinScaleDenominator>69885320</MinScaleDenominator>'
 # TEST FOR cpt2hexval
 #
 # for i in $(seq 0 5); do
-#     cpt2hexval "fullsatur.cpt" $i 6
+#     cpt2hexval "${GRADIENT_FILE}" $i 6
 #     echo
 # done
 # exit 123
@@ -78,12 +79,12 @@ m_le[5]=7   ; m_ri[5]=8   ; m_desc[5]="    7 &lt; mw &lt;= 8" ; m_sz[5]=5
 m_le[6]=8   ; m_ri[6]=9   ; m_desc[6]="    8 &lt; mw &lt;= 9" ; m_sz[6]=6
 m_le[7]=9   ; m_ri[7]=inf ; m_desc[7]="    9 &lt; mw     "    ; m_sz[7]=7
 
-d_le[1]=inf ; d_ri[1]=15  ; d_desc[1]="        depth &lt;=  15 km" ; d_col[1]=$(cpt2hexval "fullsatur.cpt" 0 6)
-d_le[2]=15  ; d_ri[2]=35  ; d_desc[2]=" 15km &lt; depth &lt;=  35 km" ; d_col[2]=$(cpt2hexval "fullsatur.cpt" 1 6)
-d_le[3]=35  ; d_ri[3]=70  ; d_desc[3]=" 35km &lt; depth &lt;=  70 km" ; d_col[3]=$(cpt2hexval "fullsatur.cpt" 2 6)
-d_le[4]=70  ; d_ri[4]=150 ; d_desc[4]=" 70km &lt; depth &lt;= 150 km" ; d_col[4]=$(cpt2hexval "fullsatur.cpt" 3 6)
-d_le[5]=150 ; d_ri[5]=300 ; d_desc[5]="150km &lt; depth &lt;= 300 km" ; d_col[5]=$(cpt2hexval "fullsatur.cpt" 4 6)
-d_le[6]=300 ; d_ri[6]=inf ; d_desc[6]="300km &lt; depth          " ; d_col[6]=$(cpt2hexval "fullsatur.cpt" 5 6)
+d_le[1]=inf ; d_ri[1]=15  ; d_desc[1]="        depth &lt;=  15 km" ; d_col[1]=$(cpt2hexval "${GRADIENT_FILE}" 0 6)
+d_le[2]=15  ; d_ri[2]=35  ; d_desc[2]=" 15km &lt; depth &lt;=  35 km" ; d_col[2]=$(cpt2hexval "${GRADIENT_FILE}" 1 6)
+d_le[3]=35  ; d_ri[3]=70  ; d_desc[3]=" 35km &lt; depth &lt;=  70 km" ; d_col[3]=$(cpt2hexval "${GRADIENT_FILE}" 2 6)
+d_le[4]=70  ; d_ri[4]=150 ; d_desc[4]=" 70km &lt; depth &lt;= 150 km" ; d_col[4]=$(cpt2hexval "${GRADIENT_FILE}" 3 6)
+d_le[5]=150 ; d_ri[5]=300 ; d_desc[5]="150km &lt; depth &lt;= 300 km" ; d_col[5]=$(cpt2hexval "${GRADIENT_FILE}" 4 6)
+d_le[6]=300 ; d_ri[6]=inf ; d_desc[6]="300km &lt; depth          " ; d_col[6]=$(cpt2hexval "${GRADIENT_FILE}" 5 6)
 
 
 cat <<EOF
@@ -101,34 +102,47 @@ cat <<EOF
       <FeatureTypeStyle>
 EOF
 
-for z in 1 2 3; do
-for d in $(seq 1 6); do
+for src in 0 1; do
 
-    cd_le=""
-    cd_ri=""
-    sz_null=$((1 + 6*(5 - z)))
-    #
-    # depth
-    if [ "${d_le[$d]}" != "inf" ]; then
-        cd_le="<ogc:PropertyIsGreaterThan>
-               <ogc:PropertyName>depth</ogc:PropertyName>
-               <ogc:Literal>${d_le[$d]}</ogc:Literal>
-               </ogc:PropertyIsGreaterThan>"
+    srcid="<ogc:PropertyIsEqualTo>
+               <ogc:PropertyName>src_id</ogc:PropertyName>
+               <ogc:Literal>${src}</ogc:Literal>
+           </ogc:PropertyIsEqualTo>"
+
+    if [ $src -eq 0 ]; then
+        stroke_col="#000000"
+    else
+        stroke_col="#ffffff"
     fi
-    if [ "${d_ri[$d]}" != "inf" ]; then
-        cd_ri="<ogc:PropertyIsLessThanOrEqualTo>
+    for z in 1 2 3; do
+        for d in $(seq 1 6); do
+            
+            cd_le=""
+            cd_ri=""
+            sz_null=$((1 + 6*(5 - z)))
+            #
+            # depth
+            if [ "${d_le[$d]}" != "inf" ]; then
+                cd_le="<ogc:PropertyIsGreaterThan>
+                 <ogc:PropertyName>depth</ogc:PropertyName>
+                 <ogc:Literal>${d_le[$d]}</ogc:Literal>
+                 </ogc:PropertyIsGreaterThan>"
+            fi 
+            if [ "${d_ri[$d]}" != "inf" ]; then
+                cd_ri="<ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>depth</ogc:PropertyName>
                <ogc:Literal>${d_ri[$d]}</ogc:Literal>
                </ogc:PropertyIsLessThanOrEqualTo>"
-    fi
-    title="$(echo "unknown mag AND ${d_desc[$d]}" | sed 's/ \+/ /g')"
-
-    cat <<EOF
+            fi
+            title="$(echo "unknown mag AND ${d_desc[$d]}" | sed 's/ \+/ /g')"
+            
+            cat <<EOF
      <Rule>
        <Name>$title</Name>
        <Title>$title</Title>
        <ogc:Filter>
          <ogc:And>
+           $srcid
            <ogc:PropertyIsNull>
              <ogc:PropertyName>mw</ogc:PropertyName>
            </ogc:PropertyIsNull>
@@ -146,8 +160,8 @@ for d in $(seq 1 6); do
                <CssParameter name="fill-opacity">0.5</CssParameter>
              </Fill>
              <Stroke>
-               <CssParameter name="stroke">#000000</CssParameter>
-               <CssParameter name="stroke-width">2</CssParameter>
+               <CssParameter name="stroke">${stroke_col}</CssParameter>
+               <CssParameter name="stroke-width">1</CssParameter>
              </Stroke>
            </Mark>
            <Size>$sz_null</Size>
@@ -156,66 +170,68 @@ for d in $(seq 1 6); do
      </Rule>
 EOF
 
-for m in $(seq 1 7); do
-    title="$(echo "${m_desc[$m]} AND ${d_desc[$d]}" | sed 's/ \+/ /g')"
-    const_n=0
+            for m in $(seq 1 7); do
+                title="$(echo "${m_desc[$m]} AND ${d_desc[$d]}" | sed 's/ \+/ /g')"
+                const_n=1
+                
 
-    cm_le=""
-    cm_ri=""
-    cd_le=""
-    cd_ri=""
+                cm_le=""
+                cm_ri=""
+                cd_le=""
+                cd_ri=""
     #
     # magnitude
-    if [ "${m_le[$m]}" != "inf" ]; then
-        cm_le="<ogc:PropertyIsGreaterThan>
+                if [ "${m_le[$m]}" != "inf" ]; then
+                    cm_le="<ogc:PropertyIsGreaterThan>
                <ogc:PropertyName>mw</ogc:PropertyName>
                <ogc:Literal>${m_le[$m]}</ogc:Literal>
                </ogc:PropertyIsGreaterThan>"
-        const_n=$((const_n + 1))
-    fi
-    if [ "${m_ri[$m]}" != "inf" ]; then
-        cm_ri="<ogc:PropertyIsLessThanOrEqualTo>
+                    const_n=$((const_n + 1))
+                fi
+                if [ "${m_ri[$m]}" != "inf" ]; then
+                    cm_ri="<ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>mw</ogc:PropertyName>
                <ogc:Literal>${m_ri[$m]}</ogc:Literal>
                </ogc:PropertyIsLessThanOrEqualTo>"
-        const_n=$((const_n + 1))
-    fi
-
+                    const_n=$((const_n + 1))
+                fi
+                
     #
     # depth
-    if [ "${d_le[$d]}" != "inf" ]; then
-        cd_le="<ogc:PropertyIsGreaterThan>
+                if [ "${d_le[$d]}" != "inf" ]; then
+                    cd_le="<ogc:PropertyIsGreaterThan>
                <ogc:PropertyName>depth</ogc:PropertyName>
                <ogc:Literal>${d_le[$d]}</ogc:Literal>
                </ogc:PropertyIsGreaterThan>"
-        const_n=$((const_n + 1))
-    fi
-    if [ "${d_ri[$d]}" != "inf" ]; then
-        cd_ri="<ogc:PropertyIsLessThanOrEqualTo>
+                    const_n=$((const_n + 1))
+                fi
+                if [ "${d_ri[$d]}" != "inf" ]; then
+                    cd_ri="<ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>depth</ogc:PropertyName>
                <ogc:Literal>${d_ri[$d]}</ogc:Literal>
                </ogc:PropertyIsLessThanOrEqualTo>"
-        const_n=$((const_n + 1))
-    fi
-    if [ $const_n -gt 1 ]; then
-        and_open="<ogc:And>"
-        and_close="</ogc:And>"
-    else
-        and_open=""
-        and_close=""
-    fi
-
+                    const_n=$((const_n + 1))
+                fi
+                if [ $const_n -gt 1 ]; then
+                    and_open="<ogc:And>"
+                    and_close="</ogc:And>"
+                else
+                    and_open=""
+                    and_close=""
+                fi
+                
     # sz=$((1 + ii*(5-z)))
-    sz=$((1 + m_sz[$m] * (5 - z)))
-
+                sz=$((1 + m_sz[$m] * (5 - z)))
+                
 #        ${scale[$z]}
-
-    cat <<EOF
+                
+                cat <<EOF
      <Rule>
        <Name>$title</Name>
        <Title>$title</Title>
        <ogc:Filter>
          $and_open
+           $srcid
            $cm_le
            $cm_ri
            $cd_le
@@ -232,8 +248,8 @@ for m in $(seq 1 7); do
                <CssParameter name="fill-opacity">0.5</CssParameter>
              </Fill>
              <Stroke>
-               <CssParameter name="stroke">#000000</CssParameter>
-               <CssParameter name="stroke-width">2</CssParameter>
+               <CssParameter name="stroke">${stroke_col}</CssParameter>
+               <CssParameter name="stroke-width">1</CssParameter>
              </Stroke>
            </Mark>
            <Size>$sz</Size>
@@ -241,41 +257,42 @@ for m in $(seq 1 7); do
        </PointSymbolizer>
      </Rule>
 EOF
-done
-done
-
-for m in $(seq 1 7); do
-    const_n=0
-
-    cm_le=""
-    cm_ri=""
-    title="$(echo "${m_desc[$m]} AND unknown depth" | sed 's/ \+/ /g')"
+            done
+        done
+        
+        for m in $(seq 1 7); do
+            const_n=0
+            
+            cm_le=""
+            cm_ri=""
+            title="$(echo "${m_desc[$m]} AND unknown depth" | sed 's/ \+/ /g')"
     #
     # magnitude
-    if [ "${m_le[$m]}" != "inf" ]; then
-        cm_le="<ogc:PropertyIsGreaterThan>
+            if [ "${m_le[$m]}" != "inf" ]; then
+                cm_le="<ogc:PropertyIsGreaterThan>
                <ogc:PropertyName>mw</ogc:PropertyName>
                <ogc:Literal>${m_le[$m]}</ogc:Literal>
                </ogc:PropertyIsGreaterThan>"
-        const_n=$((const_n + 1))
-    fi
-    if [ "${m_ri[$m]}" != "inf" ]; then
-        cm_ri="<ogc:PropertyIsLessThanOrEqualTo>
+                const_n=$((const_n + 1))
+            fi
+            if [ "${m_ri[$m]}" != "inf" ]; then
+                cm_ri="<ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>mw</ogc:PropertyName>
                <ogc:Literal>${m_ri[$m]}</ogc:Literal>
                </ogc:PropertyIsLessThanOrEqualTo>"
-        const_n=$((const_n + 1))
-    fi
-
-
-    sz_null=$((1 + m_sz[$m] * (5 - z)))
-
-    cat <<EOF
+                const_n=$((const_n + 1))
+            fi
+            
+            
+            sz_null=$((1 + m_sz[$m] * (5 - z)))
+            
+            cat <<EOF
      <Rule>
        <Name>$title</Name>
        <Title>$title</Title>
        <ogc:Filter>
            <ogc:And>
+             $srcid
              <ogc:PropertyIsNull>
                <ogc:PropertyName>depth</ogc:PropertyName>
              </ogc:PropertyIsNull>
@@ -293,8 +310,8 @@ for m in $(seq 1 7); do
                <CssParameter name="fill-opacity">0.5</CssParameter>
              </Fill>
              <Stroke>
-               <CssParameter name="stroke">#000000</CssParameter>
-               <CssParameter name="stroke-width">2</CssParameter>
+               <CssParameter name="stroke">${stroke_col}</CssParameter>
+               <CssParameter name="stroke-width">1</CssParameter>
              </Stroke>
            </Mark>
            <Size>$sz_null</Size>
@@ -303,7 +320,8 @@ for m in $(seq 1 7); do
      </Rule>
 EOF
 
-done
+        done
+    done
 done
 
 cat <<EOF
