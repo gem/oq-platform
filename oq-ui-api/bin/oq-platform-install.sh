@@ -421,6 +421,7 @@ if [ ! -d oq-platform ]; then
     git checkout $GEM_OQ_PLATF_GIT_VERS
     git submodule init
     git submodule update
+    cd -
 elif [ ! -d oq-platform/.git ]; then
     echo \"oq-platform found and seems an archive\"
     # case with an extracted archive (we must check for submodules)
@@ -437,8 +438,10 @@ elif [ ! -d oq-platform/.git ]; then
     done
 else
     echo \"oq-platform repository found\"
+    cd oq-platform
     git submodule init
     git submodule update
+    cd -
 fi
 exit 0"
     ret="$?"
