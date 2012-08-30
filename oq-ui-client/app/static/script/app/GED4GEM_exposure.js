@@ -126,6 +126,13 @@ GED_exposure = Ext.extend(gxp.Viewer, {
                 actionTarget: "paneltbar",
                 tooltip: "Zoom to selected closure"
             }, {
+		        ptype: "gxp_wmsgetfeatureinfo",
+		        actionTarget: "paneltbar",
+		        format: "grid",
+	            outputConfig: {
+	                width: 500
+	            }
+	        }, {
                 ptype: "gxp_googlegeocoder",
                 outputTarget: "paneltbar",
                 outputConfig: {
