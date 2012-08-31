@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.3.3
+# Version: v1.4.0-client-new-sdk
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -144,6 +144,7 @@ installed_apps_add() {
         sed -i "s/^\(INSTALLED_APPS[ 	]*=[ 	]*.*\)/\1\n    '$new_app',/g"   "$GEM_GN_SETTINGS"
     fi
 }
+
 ##
 # verify host distro compatibility
 check_distro () {
@@ -329,6 +330,9 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
         sed -i "s/^\(MIDDLEWARE_CLASSES *= *.*\)/\1\n    'django_schemata.middleware.SchemataMiddleware',/g" "$GEM_GN_SETTINGS"
     fi
 
+    # add 'django.contrib.gis' fix migration problem with south
+    installed_apps_add 'django.contrib.gis'
+
     installed_apps_add 'south'
     installed_apps_add 'django_schemata'
 
@@ -489,11 +493,13 @@ exit 0"
     export DJANGO_SCHEMATA_DOMAIN=isc_viewer
     python ./manage.py migrate isc_viewer
     if [ -f "$norm_dir/private_data/isc_data.csv" ]; then
-        GEM_ISC_DATA="$norm_dir/private_data/isc_data.csv"
+        GEM_ISC_DATA_CAT="$norm_dir/private_data/isc_data.csv"
+        GEM_ISC_DATA_APP="$norm_dir/private_data/isc_data_app.csv"
     else
-        GEM_ISC_DATA="$norm_dir/oq-platform/oq-ui-api/data/isc_data.csv"
+        GEM_ISC_DATA_CAT="$norm_dir/oq-platform/oq-ui-api/data/isc_data.csv"
+        GEM_ISC_DATA_APP="$norm_dir/oq-platform/oq-ui-api/data/isc_data_app.csv"
     fi
-    python ./manage.py importcsv "$GEM_ISC_DATA"
+    python ./manage.py importcsv "$GEM_ISC_DATA_CAT" "$GEM_ISC_DATA_APP"
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
     export DJANGO_SCHEMATA_DOMAIN=ged4gem

@@ -30,5 +30,11 @@ populate:
 
 	curl -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -XPUT -H 'Content-type: text/xml' -d '<layer><defaultStyle><name>geodetic</name></defaultStyle><enabled>true</enabled></layer>' http://$(SITE_HOST):8080/geoserver/rest/layers/geodetic_geodetic
 
+	curl --header "Content-Type: text/xml" -v -d @data/styles/isc_viewer.xml -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -X POST http://$(SITE_HOST):8080/geoserver/rest/styles
+
+	curl --header "Content-Type: application/vnd.ogc.sld+xml" -v -d @data/styles/isc_viewer.sld -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -X PUT http://$(SITE_HOST):8080/geoserver/rest/styles/isc_viewer.sld
+
+	curl -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -XPUT -H 'Content-type: text/xml' -d '<layer><defaultStyle><name>isc_viewer</name></defaultStyle><enabled>true</enabled></layer>' http://$(SITE_HOST):8080/geoserver/rest/layers/isc_viewer_measure
+
 .PHONY: deploy install postinst template debugvars populate
 
