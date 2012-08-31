@@ -143,7 +143,7 @@ case $COMMAND in
 esac
 
 # parse options and assemble ant args
-ANT_ARGS=""
+ANT_ARGS="-v -Dapp.name=oq-platform "
 HELP=false
 LOCAL_PORT=9080 # default repeated in build.xml, but used here for success message
 until [ -z "$1" ]; do

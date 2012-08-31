@@ -526,6 +526,39 @@ ant init"
     ant deploy
     cd "$norm_dir"
 
+
+    ##
+    echo "Add new "isc_viewer" tool
+    sudo su - $norm_user -c "
+cd \"$norm_dir/oq-platform/oq-ui-client2\"
+rm -rf ./build
+../opengeosuite-sdk/bin/suite-sdk build -b ./build ."
+
+# ant debug -Dapp.port=8081 &
+# debug_pid=\$!
+# sleep 10
+# kill -0 \$debug_pid
+# if [ \$? -ne 0 ]; then
+#     echo \"oq-ui-client checkpoint\"
+#     echo \"ERROR: 'ant debug' failed\"
+#     exit 4
+# fi
+# kill -TERM \$debug_pid
+# exit 0
+# "
+    ret=$?
+    if [ $ret -ne 0 ]; then
+        exit $ret
+    fi
+
+    cd oq-platform/oq-ui-client2/build
+    if [ -d "${GEM_BASEDIR}/oq-ui-client2" ]; then
+        rm -rf "${GEM_BASEDIR}/oq-ui-client2"
+    fi
+    mkdir "${GEM_BASEDIR}/oq-ui-client2"
+    cp -r "${GEM_BASEDIR}/oq-ui-client2/oq-platform" "${GEM_BASEDIR}/oq-ui-client2"
+    cd "$norm_dir"
+
     service tomcat6 restart
     service apache2 restart
 
