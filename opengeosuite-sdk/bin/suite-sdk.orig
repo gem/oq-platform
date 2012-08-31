@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+
 ant -version &> /dev/null
 if [ $? -ne 0 ]; then
     echo 'Requires Apache Ant (see http://ant.apache.org/)'
@@ -15,7 +15,6 @@ Usage: $NAME <command> <args>
 List of commands:
     create      Create a new application.
     debug       Run an existing application in debug mode.
-    build       Build an application to the build-dir directory.
     deploy      Deploy an application to a remote OpenGeo Suite instance.
     
 See '$NAME <command> --help' for more detail on a specific command.
@@ -47,19 +46,6 @@ List of options:
                                 application.
 "
 
-## Usage for build command
-BUILD_USAGE="
-Usage: $NAME deploy <options> <app-path>
-
-Build an application to the build-dir directory.  The <app-path> argument must be the path to an
-existing application, the build-dir argument is required.
-
-List of options:
-
-    -b | --build-dir    dir     set the target directory for the build
-
-"
-
 ## Usage for deploy command
 DEPLOY_USAGE="
 Usage: $NAME deploy <options> <app-path>
@@ -89,9 +75,6 @@ List of options:
                                 'jetty6x', 'jboss7x', 'weblogic9x'.  See
                                 http://cargo.codehaus.org/ for details on
                                 supported containers.
-
-    -b | --build-dir    dir     set the target directory for the build
-
 "
 
 # find sdk home
@@ -133,7 +116,7 @@ if [ $# -gt 0 ]; then
 fi
 
 case $COMMAND in
-    create|debug|build|deploy|version)
+    create|debug|deploy|version)
         # PASS
         ;;
     *)
@@ -176,11 +159,6 @@ until [ -z "$1" ]; do
             shift; REMOTE_PORT=$1; shift
             ANT_ARGS="$ANT_ARGS -Dsuite.port=$REMOTE_PORT"
             ;;
-        # added for gem
-        -b|--build-dir)
-            shift; SDK_BUILD=$1; shift
-            ANT_ARGS="$ANT_ARGS -Dsdk.build=$SDK_BUILD"
-            ;;
         -h|--help)
             shift
             HELP=true
@@ -219,22 +197,6 @@ case $COMMAND in
         APP_PATH=$1
         if [ $# -ne 1 -o -z "$APP_PATH" ]; then
             echo "$DEBUG_USAGE"
-            exit 1
-        fi
-        if [ ! -d "$APP_PATH" ]; then
-            echo "Directory '$APP_PATH' doesn't exist.  Supply the path for an existing app directory."
-            exit 1
-        fi
-        ANT_ARGS="$ANT_ARGS -Dapp.path=\"$APP_PATH\""
-        ;;
-    build )
-        if $HELP ; then
-            echo "$BUILD_USAGE"
-            exit 0
-        fi
-        APP_PATH=$1
-        if [ $# -ne 1 -o -z "$APP_PATH" -o -z "$APP_PATH" ]; then
-            echo "$BUILD_USAGE"
             exit 1
         fi
         if [ ! -d "$APP_PATH" ]; then
@@ -302,15 +264,6 @@ Please ensure that there is not another service running on this port.  Run
 '$NAME debug --help' for help on the usage.
 "
 
-BUILD_START="Building application (this may take a few moments) ..."
-
-BUILD_FAILURE="The '$NAME build' command failed.
-
-Common causes GEM-TODO.
-Run '$NAME build --help' for help on the usage.
-"
-
-
 DEPLOY_START="
 Deploying application (this may take a few moments) ..."
 
@@ -326,7 +279,6 @@ improper credentials (-u and -p) for your remote Suite instance.  Run
 case $COMMAND in
     create) echo "$CREATE_START";;
     debug) echo "$DEBUG_START";;
-    build) echo "$BUILD_START";;
     deploy) echo "$DEPLOY_START";;
 esac
 
@@ -347,7 +299,6 @@ if [ $STATUS -ne 0 ]; then
                 echo "$DEBUG_FAILURE"
             fi
             ;;
-        build) echo "$BUILD_FAILURE";;
         deploy) echo "$DEPLOY_FAILURE";;
     esac
     echo "See the logfile '$LOG_FILE' for more detail on what went wrong."
