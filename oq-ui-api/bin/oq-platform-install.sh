@@ -530,7 +530,7 @@ ant init"
 
 
     ##
-    echo "Add new "isc_viewer" tool
+    echo "Add new 'isc_viewer' tool"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client2\"
 rm -rf ./build
