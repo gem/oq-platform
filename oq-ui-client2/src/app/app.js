@@ -63,7 +63,7 @@ Ext.onReady(function() {
             }
         }, {
             ptype: "gxp_layerproperties",
-            actionTarget: {target: "tree.tbar"},
+            actionTarget: {target: "tree.tbar"}
         }, {
             ptype: "gxp_legend",
             actionTarget: "map.tbar"
