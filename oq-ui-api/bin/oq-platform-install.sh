@@ -558,7 +558,7 @@ rm -rf ./build
         rm -rf "${GEM_BASEDIR}/oq-ui-client2"
     fi
     mkdir "${GEM_BASEDIR}/oq-ui-client2"
-    cp -r "${GEM_BASEDIR}/oq-ui-client2/oq-platform" "${GEM_BASEDIR}/oq-ui-client2"
+    cp -r oq-platform "${GEM_BASEDIR}/oq-ui-client2"
     cd "$norm_dir"
 
     service tomcat6 restart
