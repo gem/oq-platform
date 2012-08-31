@@ -282,7 +282,9 @@ oq_platform_install () {
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
     cat /tmp/geonode.$$ | grep -v '^[ 	]*Alias /oq-platform/ ' | \
-        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform/ /var/lib/openquake/oq-ui-client/oq-platform/@g' >/etc/apache2/sites-available/geonode
+        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform/ /var/lib/openquake/oq-ui-client/oq-platform/@g' | \
+        grep -v '^[ 	]*Alias /oq-platform2/ ' | \
+        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform2/ /var/lib/openquake/oq-ui-client2/oq-platform/@g' >/etc/apache2/sites-available/geonode
     rm /tmp/geonode.$$
 
     # this fix the bug 972202 to inform jpype module where is the java installation
