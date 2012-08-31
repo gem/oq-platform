@@ -17,6 +17,7 @@
  * @require plugins/WMSGetFeatureInfo.js
  * @require plugins/GoogleSource.js
  * @require plugins/GoogleGeocoder.js
+ * @require plugins/Legend.js
  */
 
 var app;
@@ -64,6 +65,9 @@ Ext.onReady(function() {
             ptype: "gxp_layerproperties",
             actionTarget: {target: "tree.tbar"},
         }, {
+            ptype: "gxp_legend",
+            actionTarget: "map.tbar"
+        }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "tree.tbar",
             format: "grid", 
@@ -105,7 +109,7 @@ Ext.onReady(function() {
         // map and layers
         map: {
             id: "mymap", // id needed to reference map in portalConfig above
-            title: "Map",
+            //title: "Map",
             projection: "EPSG:900913",
             center: [-10764594.758211, 4523072.3184791],
             zoom: 0,
