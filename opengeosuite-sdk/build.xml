@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="suite-sdk" default="usage">
+
+    <description>
+        Suite Client SDK
+    </description>
+
+    <target name="usage">
+        <echo message=""/>
+        <echo message="Suite Client SDK Commands"/>
+        <echo message=""/>
+        <echo message=" create     --&gt; create a new application"/>
+        <echo message=" debug      --&gt; run an application in debug mode"/>
+        <echo message=" deploy     --&gt; deploy an existing application"/>
+    </target>
+
+    <property name="sdk.home" location="."/>
+    <property name="app.proxy.geoserver" value=""/>
+    <property name="app.port" value="9080"/>
+    <property name="suite.domain" value="localhost"/>
+    <property name="suite.port" value="8080"/>
+    <property name="suite.container" value="tomcat6x"/>
+    <property name="suite.username" value="manager"/>
+    <property name="suite.password" value="geoserver"/>
+    <property name="sdk.build" location="${java.io.tmpdir}/suite-sdk/build"/>
+    <property name="sdk.logfile" location="${java.io.tmpdir}/suite-sdk/error.log"/>
+    
+    <target name="version">
+        <property file="${sdk.home}/version.ini"/>
+        <echo message="Suite Client SDK ${suite_version} (${build_revision})"/>
+    </target>
+
+    <target name="checkpath">
+        <echo file="${sdk.logfile}" append="true" message="Checking provided application path.${line.separator}"/>
+        <condition property="app.path.set">
+            <isset property="app.path"/>
+        </condition>
+        <fail message="Missing app path." unless="app.path.set"/>
+        <property name="app.fullpath" location="${app.path}"/>
+        <condition property="app.exists">
+            <available file="${app.fullpath}" type="dir"/>
+        </condition>
+        <basename property="temp.app.name" file="${app.fullpath}"/>
+        <tempfile property="temp.file" destDir="${java.io.tmpdir}" suffix=".properties"/>
+        <echo message="${temp.app.name}" file="${temp.file}"/>
+        <replace file="${temp.file}" token=" " value="-"/>
+        <loadfile property="app.name" srcFile="${temp.file}"/>
+        <!-- <delete file="${temp.file}" failonerror="false" verbose="false"/> -->
+    </target>
+
+    <target name="create" depends="checkpath">
+        <fail message="Directory '${app.fullpath}' already exists.  Specify the name for a new app directory." if="app.exists"/>
+        <echo file="${sdk.logfile}" append="true" message="Creating application in '${app.fullpath}'.${line.separator}"/>
+        <mkdir dir="${app.fullpath}"/>
+        <copy todir="${app.fullpath}">
+            <fileset dir="${sdk.home}/src/main/resources/client"/>
+        </copy>
+        <echo message="Created application: ${app.fullpath}"/>
+    </target>
+    
+    <target name="debug" depends="checkpath">
+        <fail message="Directory '${app.fullpath}' doesn't exist." unless="app.exists"/>
+        <echo file="${sdk.logfile}" append="true" message="Starting debug server for '${app.fullpath}.${line.separator}"/>
+        <java classname="org.ringojs.tools.launcher.Main" failonerror="true" fork="true" error="${sdk.logfile}" append="true">
+            <classpath>
+                <fileset dir="${sdk.home}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+            <sysproperty key="app.static" path="${app.fullpath}"/>
+            <sysproperty key="app.debug" value="1"/>
+            <sysproperty key="app.proxy.geoserver" value="${app.proxy.geoserver}"/>
+            <sysproperty key="ringo.home" path="${sdk.home}"/>
+            <sysproperty key="ringo.modulepath" path="${sdk.home}/lib"/>
+            <arg path="${sdk.home}/src/main/resources/server/main.js"/>
+            <arg line="-p ${app.port}"/>
+        </java>
+    </target>
+
+    <target name="build" depends="checkpath">
+        <fail message="Directory '${app.fullpath}' doesn't exist." unless="app.exists"/>
+        <echo file="${sdk.logfile}" append="true" message="Building application resources for '${app.fullpath}'.${line.separator}"/>
+        <property name="app.build" location="${sdk.build}/${app.name}"/>
+        <mkdir dir="${app.build}"/>
+        <copy todir="${app.build}">
+            <fileset dir="${sdk.home}/src/main/webapp"/>
+            <filterset>
+                <filter token="APP_NAME" value="${app.name}"/>
+            </filterset>
+        </copy>
+        <!-- copy Ext resources -->
+        <copy todir="${app.build}/src/ext">
+            <fileset dir="${app.fullpath}/src/ext"/>
+        </copy>
+        <!-- copy OpenLayers resources -->
+        <copy todir="${app.build}/src/openlayers/theme">
+            <fileset dir="${app.fullpath}/src/openlayers/theme"/>
+        </copy>
+        <!-- copy GeoExt resources -->
+        <copy todir="${app.build}/src/geoext/resources">
+            <fileset dir="${app.fullpath}/src/geoext/resources"/>
+        </copy>
+        <!-- copy gxp resources -->
+        <copy todir="${app.build}/src/gxp/theme">
+            <fileset dir="${app.fullpath}/src/gxp/theme"/>
+        </copy>
+        <!-- build app js -->
+        <mkdir dir="${app.build}/lib"/>
+        <java classname="org.ringojs.tools.launcher.Main" failonerror="true" fork="true" output="${sdk.logfile}" append="true">
+            <classpath>
+                <fileset dir="${sdk.home}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+            <sysproperty key="ringo.home" path="${sdk.home}/"/>
+            <arg path="${sdk.home}/lib/buildkit/lib/buildkit/build.js"/>
+            <arg value="-o"/>
+            <arg path="${app.build}/lib"/>
+            <arg path="${app.fullpath}/buildjs.cfg"/>
+        </java>
+        <!-- copy additional app resources -->
+        <copy todir="${app.build}/theme">
+            <fileset dir="${app.fullpath}/theme"/>
+        </copy>
+        <copy todir="${app.build}">
+            <fileset dir="${app.fullpath}">
+                <include name="*"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="package" depends="build">
+        <echo file="${sdk.logfile}" append="true" message="Building application archive for '${app.fullpath}'.${line.separator}"/>
+        <war destfile="${sdk.build}/${app.name}.war" webxml="${sdk.build}/${app.name}/WEB-INF/web.xml">
+            <fileset dir="${sdk.build}/${app.name}"/>
+        </war>
+    </target>
+    
+    <target name="deploy" depends="package">
+        <echo message="Deploying application (disregard message about undeployment failure if this is the first deployment)"/>
+        <echo file="${sdk.logfile}" append="true" message="Deploying application archive '${sdk.build}/${app.name}.war'.${line.separator}"/>
+        <taskdef resource="cargo.tasks">
+            <classpath>
+                <fileset dir="${sdk.home}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </taskdef>
+        <cargo containerId="${suite.container}" action="redeploy" type="remote">
+            <configuration type="runtime">
+                <property name="cargo.hostname" value="${suite.domain}"/>
+                <property name="cargo.servlet.port" value="${suite.port}"/>
+                <property name="cargo.remote.username" value="${suite.username}"/>
+                <property name="cargo.remote.password" value="${suite.password}"/>
+                <deployable type="war" file="${sdk.build}/${app.name}.war">
+                    <property name="context" value="${app.name}"/>
+                </deployable>
+            </configuration>
+        </cargo>
+        <echo message="Successfully deployed application: http://${suite.domain}:${suite.port}/${app.name}/"/>
+    </target>
+
+</project>
