@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.5.0
+# Version: v1.6.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
