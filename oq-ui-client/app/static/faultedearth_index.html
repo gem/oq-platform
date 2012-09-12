@@ -14,14 +14,25 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
 
+<!--{% extends "page_layout.html" %}-->
+<!--{% load i18n %}-->
+
+<!--{% block title %} {% trans "Welcome to FaultedHeart!" %} - {{ block.super }} {% endblock %}-->
+<!--{% block indexclass %} class="here" {% endblock %}-->
+
+
+
+<!--4ringo_begin-->
 <!DOCTYPE html>
 <html>
     <head>
         <title>FaultedEarth</title>
+<!--4ringo_end-->
         
+<!--{% block head_extra_meta %}-->
         <!-- IE 8 Compatibility -->
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
-        
+
         <!-- Ext resources -->
         <link rel="stylesheet" type="text/css" href="externals/ext/resources/css/ext-all.css">
         <script type="text/javascript" src="externals/ext/adapter/ext/ext-base.js"></script>
@@ -177,8 +188,16 @@
 	  })();
 
 	</script>
+<!--{% endblock %}-->
+
+<!--4ringo_begin-->
     </head>
     <body>
+<!--4ringo_end-->
+<!--{% block main %}-->
         <span id="showGrid"></span>
+<!--{% endblock %}-->
+<!--4ringo_begin-->
     </body>
 </html>
+<!--4ringo_end-->
