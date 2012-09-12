@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.5.0
+# Version: v1.6.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -18,7 +18,8 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=explore-tab
+export GEM_OQ_PLATF_GIT_VERS=v1.6.0
+
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
