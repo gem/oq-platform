@@ -60,7 +60,11 @@
     {% if user.is_authenticated %}
        <ul id="submenu">
             <li>
-                <a href="#">EXPLORE</a>
+               <a href="/maps/">HOME</a>
+           </li>
+               
+            <li>
+                <a href="#">VIEW</a>
                 <ul id="submenu">
                     <li>
 			<a href="#">Basic Datasets</a>
@@ -78,51 +82,16 @@
                         </ul>
                      </li>
                     <li>
-			<a href="#">Models</a>
+			<a href="#">Regional and global models and outputs</a>
                         <ul>
-                            <li><a href="#" class="notyet">Hazard</a></li>
-                            <li><a href="#" class="notyet">Physical Risk</a></li>
-                            <li><a href="#" class="notyet">Integrated Risk</a></li>
+                            <li><a href="#" class="notyet">Seismic source models</a></li>
+                            <li><a href="#" class="notyet">Ground motion models</a></li>
+                            <li><a href="#" class="notyet">Physical exposure models</a></li>
+                            <li><a href="#" class="notyet">Physical vulnerability models</a></li>
+                            <li><a href="#" class="notyet">Composite index models</a></li>
+                            <li><a href="#" class="notyet">Hazard, physical risk and integrated risk outputs</a></li>
                         </ul>
                      </li>
-                </ul>
-            </li>
-    
-            <li>
-                <a href="#">MODEL &nbsp;</a>
-                <ul>
-                    <li>
-                        <a href="#">Hazard</a>
-                        <ul>
-                            <li><a href="#" class="notyet">NRML parser</a></li>
-                            <li><a href="#" class="notyet">PSHA input model compiler </a></li>
-                        </ul>
-                    </li>
-    
-                    <li>
-                        <a href="#">Exposure</a>
-                        <ul>
-                            <li><a href="#" class="notyet">NRML parser</a></li>
-                            <li><a href="#" class="notyet">Exposure model compiler</a></li>
-                        </ul>
-                    </li>
-            
-                   <li>
-                        <a href="#">Physical Vulnerability</a>
-                        <ul>
-                            <li><a href="#" class="notyet">NRML parser</a></li>
-                            <li><a href="#" class="notyet">Empirical function compiler</a></li>
-                            <li><a href="#" class="notyet">(Analytical function compiler)</a></li>
-                        </ul>
-                    </li>
-            
-                   <li>
-                        <a href="#">Composite Indexes</a>
-                        <ul>
-                            <li><a href="#" class="notyet">NRML parser</a></li>
-                            <li><a href="#" class="notyet">Social vulnerability/indirect/<br>resilience index compiler</a></li>
-                        </ul>
-                    </li>
                 </ul>
             </li>
             
@@ -159,7 +128,6 @@
                         <ul>
                             <li><a href="#" class="notyet">Retrofitting cost-benefit</a></li>
                             <li><a href="#" class="notyet">Insurance cost-benefit</a></li>
-                            <li><a href="#" class="notyet">(Shelter provision)</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -173,14 +141,9 @@
                     <li><a href="#" class="notyet">Consequences</a></li>
                 </ul>
             </li>
+            
             <li>
-                <a href="#">DECIDE</a>
-                <ul>
-                    <li><a href="#" class="notyet">Retrofitting Prioritisation</a></li>
-                    <li><a href="#" class="notyet">Insurance cost-benefit</a></li>
-                    <li><a href="#" class="notyet">(Retrofitting cost-benefit)</a></li>
-                    <li><a href="#" class="notyet">(Shelter provision)</a></li>
-                </ul>
+                <a href="/maps/new">EXPLORE</a>
             </li>
             
         </ul>
