@@ -282,10 +282,10 @@ oq_platform_install () {
     fi
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
-    cat /tmp/geonode.$$ | grep -v '^[ 	]*Alias /oq-platform/ ' | \
-        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform/ /var/lib/openquake/oq-ui-client/oq-platform/@g' | \
+    cat /tmp/geonode.$$ | grep -v '^[ 	]*AliasMatch[ 	]*\^/oq-platform/(\.\*\\\.(css|gif|ico|js|png|txt))\$[ 	]/var/lib/openquake/oq-ui-client/oq-platform/' | \
+        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform/(.*\.(css|gif|ico|js|png|txt))$ /var/lib/openquake/oq-ui-client/oq-platform/$1@g' | \
         grep -v '^[ 	]*Alias /oq-platform2/ ' | \
-        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform2/ /var/lib/openquake/oq-ui-client2/oq-platform/@g' >/etc/apache2/sites-available/geonode
+        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2Alias /oq-platform2/ /var/lib/openquake/oq-ui-client2/oq-platform/@g' >/etc/apache2/sites-available/geonode
     rm /tmp/geonode.$$
 
     # this fix the bug 972202 to inform jpype module where is the java installation
@@ -511,7 +511,8 @@ exit 0"
     echo "Add 'faultedearth', 'geodetic', 'isc_viewer', 'exposure_country' and 'exposure_grid' client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client\"
-ant init"
+ant init
+ant deploy-deps"
 
 # ant debug -Dapp.port=8081 &
 # debug_pid=\$!
