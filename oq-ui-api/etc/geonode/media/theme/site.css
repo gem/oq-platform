@@ -184,14 +184,31 @@ text-indent: -9999em;
 
 #login-area {
 position: absolute;
-top: 80%;
+top: 0;
 right: 0;
-margin-top: -0.5em;
+/* margin-top: -0.5em; */
 text-align: right;
+vertical-align: text-bottom;
+/* background-color: red; */
+
+
+min-width: 562px;
+min-height: 65px;
+padding-right: 0;
+background-image: url('img/header-gem.png');
+background-repeat: no-repeat;
+background-position: right center;
 }
 
-.x-viewport #login-area {
-right: 10px;
+#login-area-content {
+/* background-color: green; */
+position: absolute;
+right: 100px;
+bottom: 0px;
+}
+
+.x-viewport #login-area-content {
+    margin: 0 0 1.5em;
 }
 
 #login-area a {

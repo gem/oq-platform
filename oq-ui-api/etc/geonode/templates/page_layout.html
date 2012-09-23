@@ -23,7 +23,8 @@
     <div class="wrap selfclear">
       <!-- <a id="logo" href="{% url home %}">OpenQuake Platform</a> -->
       <a id="logo" href="{% url home %}">OpenQuake Platform</a>
-      <div style="right: 10px;" id="login-area">
+      <div id="login-area">
+        <p id="login-area-content">
         {% if user.is_authenticated %}
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
         {% else %}
@@ -31,6 +32,7 @@
           {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
           {% trans "for extra features" %}
       {% endif %}
+        </p>
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->
