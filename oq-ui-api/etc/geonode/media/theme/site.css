@@ -194,7 +194,9 @@ vertical-align: text-bottom;
 
 min-width: 562px;
 min-height: 65px;
-padding-right: 0;
+width: 562px;
+height: 65px;
+padding-right: 0px;
 background-image: url('img/header-gem.png');
 background-repeat: no-repeat;
 background-position: right center;
@@ -202,14 +204,19 @@ background-position: right center;
 
 #login-area-content {
 /* background-color: green; */
-position: absolute;
-right: 100px;
-bottom: 0px;
+position: relative;
+margin-top: auto;
+margin-top: 24px;
+margin-right: 100px;
+/* right: 100px;
+bottom: 0px; 
+*/
 }
 
+/*
 .x-viewport #login-area-content {
     margin: 0 0 1.5em;
-}
+}*/
 
 #login-area a {
 color: #1b75a7;
