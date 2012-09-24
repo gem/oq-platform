@@ -60,13 +60,13 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-                if (featureManager.layerRecord.get("name") == "geonode:fault_section_view") {
+                if (featureManager.layerRecord.get("name") == "geonode:observations_faultsection") {
                     this.current_fault_section_url = "/observations/faultsection/join";
                     this.sessionFids.push(e.feature.fid.split('.')[1]);
                 }
             },
             "featureunselected": function(e) {
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:fault_section_view") {
+                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_faultsection") {
                     this.sessionFids = [];
                     this.target.summaryId = null;
                 }
@@ -172,7 +172,7 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
             featureManager.setLayer();
             if (!this.layerRecord) {
                 this.target.createLayerRecord({
-                    name: "geonode:fault_section_view",
+                    name: "geonode:observations_faultsection",
                     source: "local"
                 }, function(record) {
                     this.layerRecord = record;

@@ -1,22 +1,11 @@
 <featureType>
-  <id>FeatureTypeInfoImpl--11c14697:133f9d12f23:-7fff</id>
-  <name>fault_section_view</name>
-  <nativeName>fault_section_view</nativeName>
+  <id>FeatureTypeInfoImpl--4b710d17:139f8f9da33:-7fff</id>
+  <name>observations_faultsection</name>
+  <nativeName>observations_faultsection</nativeName>
   <namespace>
     <id>NamespaceInfoImpl-5436e90e:124760c23c4:-7ffe</id>
   </namespace>
-  <title>fault_section_view</title>
-  <abstract>No abstract provided</abstract>
-  <keywords>
-    <string></string>
-  </keywords>
-  <metadataLinks>
-    <metadataLink>
-      <type>text/xml</type>
-      <metadataType>TC211</metadataType>
-      <content>http://178.79.187.26/geonetwork/srv/en/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=74c9e7bc-632f-46fe-bc8a-7da988d7b66b</content>
-    </metadataLink>
-  </metadataLinks>
+  <title>observations_faultsection</title>
   <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
   DATUM[&quot;World Geodetic System 1984&quot;, 
     SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
@@ -38,14 +27,9 @@
     <maxx>180.0</maxx>
     <miny>-90.0</miny>
     <maxy>90.0</maxy>
-    <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
-  <metadata>
-    <entry key="cachingEnabled">false</entry>
-    <entry key="advertised">true</entry>
-  </metadata>
   <store class="dataStore">
     <id>DataStoreInfoImpl-18460fa7:133ebc1aee7:-7fff</id>
   </store>

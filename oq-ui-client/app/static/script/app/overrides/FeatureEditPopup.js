@@ -74,7 +74,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    var store = app.tools.summary_featuremanager.featureStore;
 		    if (store) {
 			var search = store.findBy(function(item) { 
-			    return item.get('fid') == 'fault_section_view.' + value});
+			    return item.get('fid') == 'fault_section.' + value});
 			if (search == -1) {
 			    errors.push("Invalid fault section id");
 			}
