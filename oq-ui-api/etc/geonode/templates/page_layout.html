@@ -23,7 +23,8 @@
     <div class="wrap selfclear">
       <!-- <a id="logo" href="{% url home %}">OpenQuake Platform</a> -->
       <a id="logo" href="{% url home %}">OpenQuake Platform</a>
-      <div style="right: 150px; background-color: grey;" id="login-area">
+      <div id="login-area">
+        <p id="login-area-content">
         {% if user.is_authenticated %}
           <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}">{{ user.username}}</a> (<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> | <a href="{% url auth_logout %}">{% trans "Log out" %}</a>)
         {% else %}
@@ -31,138 +32,11 @@
           {% if REGISTRATION_OPEN %} or <a href="{% url registration_register %}">{% trans "Register" %}</a>{% endif %}
           {% trans "for extra features" %}
       {% endif %}
+        </p>
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->
-  <div id="crossbar">
-   <!-- Only show the language form if the csrf_token is present -->
-   {% if csrf_token != "NOTPROVIDED" %}
-
-   {% get_current_language as LANGUAGE %}
-    <form class="langbar" id="target" action="/i18n/setlang/" method="post">
-      {% csrf_token %}
-       <div style="display: inline;">
-         <select id="langval" name="language" onchange="javascript:form.submit()">
-           {% for lang in LANGUAGES %}
-            <option value="{{ lang.0 }}"
-                {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-            </option>
-           {% endfor %}
-         </select>
-       </div>
-     </form>
-
-   {% endif %}
-    <div class="wrap selfclear">             
-    {% block nav %}
-<div style="display: block; float: left;">
-    {% if user.is_authenticated %}
-       <ul id="submenu">
-            <li>
-               <a href="/maps/">HOME</a>
-           </li>
-               
-            <li>
-                <a href="#">VIEW</a>
-                <ul id="submenu">
-                    <li>
-			<a href="#">Basic Datasets</a>
-                        <ul>
-                            <li><a href="#" class="notyet">Earthquake history</a></li>
-                            <li><a href="/oq-platform2/index.html" target="gem_app_frame">Instrumental catalogue</a></li>
-                            <li><a href="/oq-platform/geodetic_index.html" target="gem_app_frame">Geodetic strain rate</a></li>
-                            <li><a href="#" class="notyet">Active faults</a></li>
-                            <li><a href="#" class="notyet">Tectonic regionalisation</a></li>
-                            <li><a href="/oq-platform/exposure_country_index.html" target="gem_app_frame">Exposure Country Aggregate Data</a></li>
-			    <li><a href="/oq-platform/exposure_grid_index.html" target="gem_app_frame">Exposure Gridded Data</a></li>
-                            <li><a href="#" class="notyet">Earthquake consequences</a></li>
-                            <li><a href="#" class="notyet">Physical Vulnerability</a></li>
-                            <li><a href="#" class="notyet">Vulnerability and resilience indicators </a></li>
-                        </ul>
-                     </li>
-                    <li>
-			<a href="#">Regional and global models and outputs</a>
-                        <ul>
-                            <li><a href="#" class="notyet">Seismic source models</a></li>
-                            <li><a href="#" class="notyet">Ground motion models</a></li>
-                            <li><a href="#" class="notyet">Physical exposure models</a></li>
-                            <li><a href="#" class="notyet">Physical vulnerability models</a></li>
-                            <li><a href="#" class="notyet">Composite index models</a></li>
-                            <li><a href="#" class="notyet">Hazard, physical risk and integrated risk outputs</a></li>
-                        </ul>
-                     </li>
-                </ul>
-            </li>
-            
-            <li>
-                <a href="#">CALCULATE</a>
-                <ul>
-                    <li>
-                        <a href="#">Hazard</a>
-                        <ul>
-                            <li><a href="#" class="notyet">Classical probabilistic hazard</a></li>
-                            <li><a href="#" class="notyet">Event-based probabilistic hazard</a></li>
-                            <li><a href="#" class="notyet">Scenario hazard</a></li>
-                            <li><a href="#" class="notyet">Ground motion fields</a></li>
-                            <li><a href="#" class="notyet">Stochastic event sets</a></li>
-                            <li><a href="#" class="notyet">Seismic hazard disaggregation</a></li>
-                        </ul>
-                    </li>
-    
-                    <li>
-                        <a href="#">Risk</a>
-                        <ul>
-                            <li><a href="#" class="notyet">Classical probabilistic hazard-based risk</a></li>
-                            <li><a href="#" class="notyet">Event-based probabilistic risk (ground up and insured loss)</a></li>
-                            <li><a href="#" class="notyet">Scenario risk (ground up and insured loss)</a></li>
-                            <li><a href="#" class="notyet">Scenario damage</a></li>
-                            <li><a href="#" class="notyet">Integrated risk</a></li>
-                            <li><a href="#" class="notyet">Loss disaggregation</a></li>
-                        </ul>
-                    </li>
-        
-    
-                    <li>
-                        <a href="#">Decision-Support</a>
-                        <ul>
-                            <li><a href="#" class="notyet">Retrofitting cost-benefit</a></li>
-                            <li><a href="#" class="notyet">Insurance cost-benefit</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            
-            <li>
-                <a href="#">CAPTURE</a>
-                <ul>
-                    <li><a href="/oq-platform/faultedearth_index.html" target="gem_app_frame">Active faults</a></li>
-                    <li><a href="#" class="notyet">Exposure</a></li>
-                    <li><a href="#" class="notyet">Consequences</a></li>
-                </ul>
-            </li>
-            
-            <li>
-                <a href="/maps/new">EXPLORE</a>
-            </li>
-            
-        </ul>
-    {% endif %}
-</div>
-<div style="display: table-cell; floating: right;">
-    <ul id="sitenav" class="selfclear">
-    {% if user.is_authenticated %}
-    {% if user.is_staff %}
-        <li class=""><a class="" id="adminLink" href="/admin/">{% trans "Admin" %}</a></li>
-    {% endif %}
-
-    {% endif %}
-
-    </ul>
-</div>
-   {% endblock %}
-
-
+{% include "oq-platform/includes/menu.html" with without_iframe=1 %}
     </div><!-- /.wrap -->
   </div><!-- /#crossbar -->
   <div id="main">
