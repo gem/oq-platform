@@ -316,7 +316,9 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
                 }]
             }],
 
-            tools: [{
+            tools: [
+		/* help button */
+		{
                 actionTarget: {target: "paneltbar", index: 0},
                 outputAction: 0,
                 outputConfig: {
@@ -334,14 +336,17 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
                     iconCls: "icon-geoexplorer",
                     text: "Help"
                 }]
-            }, {
+            }, 
+		/* tree of layers */
+		{
                 ptype: "gxp_layertree",
                 outputConfig: {
                     id: "layertree",
                     tbar: []
                 },
                 outputTarget: "tree"
-            }, {
+            }, 
+		{
                 ptype: "gxp_featuremanager",
                 id: "featuremanager",
                 autoLoadFeatures: true,
