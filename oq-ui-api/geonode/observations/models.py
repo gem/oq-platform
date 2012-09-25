@@ -146,6 +146,7 @@ class Fault(models.Model):
 
 class FaultSection(models.Model):
     fault = models.ManyToManyField('Fault')
+    geom = models.MultiLineStringField(srid=4326, null=True, blank=True)
     sec_name = models.CharField(max_length=255, null=True, blank=True)
     length_min = models.FloatField(null=True, blank=True)
     length_max = models.FloatField(null=True, blank=True)
