@@ -26,7 +26,8 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
         var header = new Ext.Panel({
             region: "north",
             autoHeight: true,
-            contentEl: 'header-wrapper'
+            contentEl: 'header-wrapper',
+            id: 'header-ext'
         });
 
         var footer = new Ext.Panel({
