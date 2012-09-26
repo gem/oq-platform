@@ -23,6 +23,18 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
 
         Ext.Window.prototype.shadow = false;
 
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true,
+            contentEl: 'header-wrapper'
+        });
+
+        var footer = new Ext.Panel({
+            region: "south",
+            autoHeight: true,
+            contentEl: 'footer'
+        });
+
         // property names for FeatureEditor and FeatureGrid
         var propertyNames = {
             // custom fied names for the fault summary table
@@ -244,7 +256,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             }, {
                 xtype: "gxp_scaleoverlay"
             }],
-            portalItems: [{
+            portalItems: [header, {
                 region: "center",
                 layout: "border",
                 tbar: {
@@ -314,7 +326,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
                         tabs
                     ]
                 }]
-            }],
+            }, footer],
 
             tools: [{
                 actionTarget: {target: "paneltbar", index: 0},
