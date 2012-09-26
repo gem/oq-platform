@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.6.0
+# Version: v1.8.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -249,7 +249,7 @@ oq_platform_install () {
     apt-add-repository -y ppa:openquake/ppa
     apt-get update
 
-    apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java
+    apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
 
     ###
     echo "== Geonode installation ==" 

@@ -57,7 +57,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             "dip_pref": "Dip pref (...\u00B0)",
             "dip_com": "Dip data completeness factor (1, 2, 3, or 4)",
             "dip_dir": "Dip direction (...\u00B0)",
-	        "surface_dip": "Surface Dip",
+            "surface_dip": "Surface Dip",
             "down_thro": "Downthrown side (N, S, W, E or NW etc.)",
             "slip_typ": "Slip type (Reverse etc.)",
             "slip_com": "Slip type completeness (1, 2, 3, or 4)",
@@ -173,12 +173,12 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             "area_pref": "Area Pref"
         };
 
-	/* add a visual clue for compulsory fields */
-	    Ext.iterate(propertyNames, function (field) {
-	        if (faultedearth.isCompulsory(field)) {
-		        propertyNames[field] += " <small>(*)</small>";
-	        }
-	    });
+  /* add a visual clue for compulsory fields */
+        Ext.iterate(propertyNames, function (field) {
+            if (faultedearth.isCompulsory(field)) {
+                propertyNames[field] += " <small>(*)</small>";
+            }
+        });
 
         var tabs = new Ext.TabPanel({
                 animCollapse: true,
@@ -315,7 +315,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
                         padding: 10
                     }]
                 },
-		                "map", {
+                    "map", {
                     id: "tabs",
                     autoHeight: true,
                     region: "south",
