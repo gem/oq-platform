@@ -60,6 +60,8 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     return;
                 }
                 if (featureManager.layerRecord.get("name") == "geonode:observations_fault") {
+		    /* store the fault (for multiple purposes like use
+		     * it for fault source creation) */
                     this.target.summaryId = e.feature.fid;
                 }
             },
@@ -123,6 +125,10 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
+			if (!this.target.summaryId) {
+			    alert("To create a fault source, you need to select a fault");
+			    return;
+			}
                         Ext.Ajax.request({
                             method: "PUT",
                             url: this.target.localGeoNodeUrl + this.target.localHostname + '/observations/faultsource/create',

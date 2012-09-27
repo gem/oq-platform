@@ -106,7 +106,8 @@ class WithDip(models.Model):
         abstract = True
 
 class WithSlip(models.Model):
-    slip_type = models.CharField(max_length=30, default='', choices=SLIP_TYPE_CHOICES)
+    slip_type = models.CharField(max_length=30, default='',
+                                 choices=SLIP_TYPE_CHOICES, **DEFAULT_FIELD_ATTRIBUTES)
     slip_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     slip_r_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     slip_r_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -224,8 +225,7 @@ class Event(SiteObservation, WithRecurrence):
     marker_age = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     re_int_category = models.CharField(max_length=255,
                                        choices=RECURRENCE_INTERVAL_CATEGORY_CHOICES,
-                                       blank=True,
-                                       null=True)
+                                       **DEFAULT_FIELD_ATTRIBUTES)
 
     mov_category = models.CharField(max_length=255,
                                     verbose_name="Age of last movement category",
@@ -303,10 +303,8 @@ class SlipRate(SiteObservation):
 
     slip_rate_category = models.CharField(max_length=255,
                                           choices=SLIP_RATE_CATEGORY_CHOICES,
-                                          blank=True,
-                                          null=True)
+                                          **DEFAULT_FIELD_ATTRIBUTES)
 
     slip_type = models.CharField(max_length=255,
                                  choices=SLIP_TYPE_CHOICES,
-                                 blank=True,
-                                 null=True)
+                                 **DEFAULT_FIELD_ATTRIBUTES)
