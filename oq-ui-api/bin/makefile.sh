@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 
 # this function create a required directory. if fails the script exits with error level 2
 # with '-d' flag try to remove the dir before creation

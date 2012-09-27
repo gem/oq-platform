@@ -5,6 +5,7 @@
         Suite Client SDK
     </description>
 
+
     <target name="usage">
         <echo message=""/>
         <echo message="Suite Client SDK Commands"/>
@@ -24,6 +25,10 @@
     <property name="suite.password" value="geoserver"/>
     <property name="sdk.build" location="${java.io.tmpdir}/suite-sdk/build"/>
     <property name="sdk.logfile" location="${java.io.tmpdir}/suite-sdk/error.log"/>
+
+    <property name="app.deploy.templname" location="/etc/geonode/templates.apps/oq-platform2/"/>
+    <property name="app.deploy.statname" location="/etc/geonode/static.apps/oq-platform2/"/>
+    <property name="app.deploy.geoserver" value="/geoserver/"/>
     
     <target name="version">
         <property file="${sdk.home}/version.ini"/>
@@ -136,7 +141,7 @@
         </war>
     </target>
     
-    <target name="deploy" depends="package">
+    <target name="deploy-orig" depends="package">
         <echo message="Deploying application (disregard message about undeployment failure if this is the first deployment)"/>
         <echo file="${sdk.logfile}" append="true" message="Deploying application archive '${sdk.build}/${app.name}.war'.${line.separator}"/>
         <taskdef resource="cargo.tasks">
@@ -159,5 +164,51 @@
         </cargo>
         <echo message="Successfully deployed application: http://${suite.domain}:${suite.port}/${app.name}/"/>
     </target>
+    <target name="replace">
+      <!-- replace geoserver with its current value -->
+      <replaceregexp match='"/geoserver/' replace='"${app.deploy.geoserver}'>
+          <fileset file="${app.build}/*index.html"/>
+      </replaceregexp>
 
+      <!-- uncomment django template entries -->
+      <replaceregexp flags="g" match='&lt;!--\{%' replace='{%'>
+          <fileset file="${app.build}/*index.html"/>
+      </replaceregexp>
+      <replaceregexp flags="g" match='%\}--&gt;' replace='%}'>
+          <fileset file="${app.build}/*index.html"/>
+      </replaceregexp>
+      <replaceregexp flags="g" match='&lt;!--\{\{ *block.super *\}\}--&gt;' replace='{{ block.super }}'>
+          <fileset file="${app.build}/*index.html"/>
+      </replaceregexp>
+
+      <!-- remove ringo related stuff -->
+      <replaceregexp flags="gs" match='&lt;!--4ringo_begin--&gt;.*?&lt;!--4ringo_end--&gt;' replace=''>
+          <fileset file="${app.build}/*index.html"/>
+      </replaceregexp>
+      <!-- <replace file="${app.build}/oq-platform/theme/app/style.css" token='(/geoserver/' value='(${app.deploy.geoserver}'/> -->
+    </target>
+
+    <target name="deploy-deps" depends="build, replace">
+         <touch file="${app.build}/deploy-deps.stamp"/>
+    </target>
+
+    <target name="deploy" depends="checkpath">
+        <delete dir="${app.deploy.templname}"/>
+        <delete dir="${app.deploy.statname}"/>
+        <mkdir dir="${app.deploy.templname}"/>
+        <mkdir dir="${app.deploy.statname}"/>
+        <copy todir="${app.deploy.templname}">
+            <fileset dir="${app.build}/${ant.project.name}/WEB-INF/app/static">
+              <include name="**/*.html"/>
+            </fileset>
+        </copy>
+        <copy todir="${app.deploy.statname}">
+            <fileset dir="${app.build}/${ant.project.name}/WEB-INF/app/static">
+              <exclude name="**/*.psd"/>
+              <exclude name="**/*.html"/>
+            </fileset>
+        </copy>
+        <delete file="${app.build}/deploy-deps.stamp"/>
+    </target>
+    
 </project>
