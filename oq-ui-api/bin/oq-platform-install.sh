@@ -315,7 +315,7 @@ oq_platform_install () {
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
     cat /tmp/geonode.$$ | grep -v '^[ 	]*AliasMatch[ 	]*\^/oq-platform/(\.\*\\\.(css|gif|ico|js|png|txt))\$[ 	]/var/lib/openquake/oq-ui-client/oq-platform/' | \
-        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform/(.*\.(css|gif|ico|js|png|txt))$ /var/lib/openquake/oq-ui-client/oq-platform/$1@g' | \
+        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform/(.*[^(\.html)])$ /var/www/geonode/static/oq-platform/$1@g' | \
         grep -v '^[ 	]*Alias /oq-platform2/ ' | \
         sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2Alias /oq-platform2/ /var/lib/openquake/oq-ui-client2/oq-platform/@g' >/etc/apache2/sites-available/geonode
     rm /tmp/geonode.$$
