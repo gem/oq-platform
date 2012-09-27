@@ -14,11 +14,25 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
 
+<!--{% extends "page_layout.html" %}-->
+<!--{% load i18n %}-->
+
+<!--{% block title %} {% trans "Welcome to FaultedEarth!" %} - {{ block.super }} {% endblock %}-->
+<!--{% block indexclass %} class="here" {% endblock %}-->
+
+
+
+<!--4ringo_begin-->
 <!DOCTYPE html>
 <html>
     <head>
         <title>GED4GEM</title>
-        
+<!--4ringo_end-->
+
+<!--{% block head %}-->
+
+<!--{{ block.super }}-->
+
         <!-- IE 8 Compatibility -->
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
         
@@ -61,6 +75,7 @@
             
 
             
+            Ext.onReady(function(){
             var app = new GED_exposure({
                 
                 localGeoServerUrl: "/geoserver/",
@@ -159,6 +174,7 @@
                 }
                 
             });
+            });
 
        </script>
 	<!--Google Analytics-->
@@ -175,8 +191,16 @@
 	  })();
 
 	</script>
+<!--{% endblock %}-->
+
+<!--4ringo_begin-->
     </head>
     <body>
+<!--4ringo_end-->
+<!--{% block main %}-->
         <span id="showGrid"></span>
+<!--{% endblock %}-->
+<!--4ringo_begin-->
     </body>
 </html>
+<!--4ringo_end-->
