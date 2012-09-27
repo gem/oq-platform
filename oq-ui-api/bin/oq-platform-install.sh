@@ -116,8 +116,40 @@ mkreqdir () {
     return 0
 }
 
+staticfiles_add() {
+    local stat_files stat_file_new a
+
+    stat_file_new="$1"
+
+    stat_files="$(sed -n '/^STATICFILES_DIRS *= *\[ */,/^\]$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' )"
+    echo "$stat_files" | grep -q "^[ 	]*'$stat_file_new',"
+    if [ $? -ne 0 ]; then
+        sed -i "s@^\(^STATICFILES_DIRS *= *\[ *\)@\1\n    '$stat_file_new',@g" "$GEM_GN_LOCSET"
+    else
+        echo "WARNING: $stat_file_new already exists into STATICFILES_DIR entry of $GEM_GN_LOCSET"
+        echo "$stat_files"
+        read -p "If it isn't correct, edit it and continue" a
+    fi
+}
+
+template_add() {
+    local templ_files templ_file_new a
+
+    templ_file_new="$1"
+
+    templ_files="$(sed -n '/^TEMPLATE_DIRS *= *( */,/^)$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' )"
+    echo "$templ_files" | grep -q "^[ 	]*'$templ_file_new',"
+    if [ $? -ne 0 ]; then
+        sed -i "s@^\(^TEMPLATE_DIRS *= *( *\)@\1\n    '$templ_file_new',@g" "$GEM_GN_LOCSET"
+    else
+        echo "WARNING: $templ_file_new already exists into TEMPLATE_DIR entry of $GEM_GN_LOCSET"
+        echo "$templ_files"
+        read -p "If it isn't correct, edit it and continue" a
+    fi
+}
+
 schemata_config_add() {
-    local sche_dom sche_domn sche_name
+    local sche_dom sche_domn sche_name a
 
     sche_domn="$1"
     sche_name="$2"
@@ -127,9 +159,9 @@ schemata_config_add() {
     if [ $? -ne 0 ]; then
         sed -i "s/^\(SCHEMATA_DOMAINS *= *.*\)/\1\n  '$sche_domn': {\n    'schema_name': '$sche_name',\n    },\n/g" "$GEM_GN_LOCSET"
     else
-        echo "WARNING: $sche_domn just exists into SCHEMATA_DOMAINS entry of $GEM_GN_LOCSET"
+        echo "WARNING: $sche_domn already exists into SCHEMATA_DOMAINS entry of $GEM_GN_LOCSET"
         echo "$sche_dom"
-        read -p "If it isn't correct, edit it and continue" a            
+        read -p "If it isn't correct, edit it and continue" a
     fi
 }
 
@@ -352,7 +384,7 @@ SCHEMATA_DOMAINS = {
   '$SITE_HOST': {
     'schema_name': 'gem',
     }
-  }" >> "$GEM_GN_LOCSET"
+}" >> "$GEM_GN_LOCSET"
     else
         schemata_config_add "$SITE_HOST" "gem"
     fi
@@ -454,12 +486,20 @@ exit 0"
     if [ $ret -ne 0 ]; then
         return 1
     fi
+
+    ##
+    # /etc/geonode/local_settings.py (require manage.py collectstatic runned by make deploy below
+    staticfiles_add '/etc/geonode/static'
+    staticfiles_add '/etc/geonode/static.apps'
+
+    template_add '/etc/geonode/templates.apps'
+
     cd oq-platform/oq-ui-api
     make fix
     make MKREQDIR_ARG="-d" deploy
      
     ##
-    # /etc/geonode/local_settings.py    
+    # /etc/geonode/local_settings.py
     schemata_config_add 'geodetic'      'geodetic'
     schemata_config_add 'django'        'public'
     schemata_config_add 'ged4gem'       'eqged'

@@ -8,8 +8,8 @@
     <property environment="env"/>
 
     <property name="build" location="build"/>
-    <property name="app.deploy.templname" location="/etc/geonode/templates/oq-platform/"/>
-    <property name="app.deploy.statname" location="/var/lib/openquake/oq-ui-client/oq-platform/"/>
+    <property name="app.deploy.templname" location="/etc/geonode/templates.apps/oq-platform/"/>
+    <property name="app.deploy.statname" location="/etc/geonode/static.apps/oq-platform/"/>
     <property name="app.proxy.geoserver" value="http://localhost/geoserver/"/>
     <property name="app.proxy.observations" value="http://localhost/observations/"/>
     <property name="app.port" value="8080"/>
