@@ -515,6 +515,8 @@ exit 0"
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/faultedearth_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/faultedearth_index.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
 
