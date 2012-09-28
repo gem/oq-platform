@@ -9,8 +9,10 @@
 
 # TIPS
 #    to remove all:
-# apt-get remove --purge geonode ; rm -rf gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
-
+# # apt-get remove --purge geonode ; rm -rf gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
+#
+#    to reset a oq-platform git repo:
+# $ rm -rf oq-ui-client2/build/  oq-ui-client/build/ ; cd oq-ui-client/app/static/externals/openlayers ; git checkout lib/OpenLayers/Layer/Google/v3.js ; cd - 
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
@@ -121,6 +123,10 @@ staticfiles_add() {
 
     stat_file_new="$1"
 
+    if [ ! -d "$stat_file_new" ]; then
+        mkdir "$stat_file_new"
+    fi
+
     stat_files="$(sed -n '/^STATICFILES_DIRS *= *\[ */,/^\]$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' )"
     echo "$stat_files" | grep -q "^[ 	]*'$stat_file_new',"
     if [ $? -ne 0 ]; then
@@ -136,6 +142,10 @@ template_add() {
     local templ_files templ_file_new a
 
     templ_file_new="$1"
+
+    if [ ! -d "$templ_file_new" ]; then
+        mkdir "$templ_file_new"
+    fi
 
     templ_files="$(sed -n '/^TEMPLATE_DIRS *= *( */,/^)$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' )"
     echo "$templ_files" | grep -q "^[ 	]*'$templ_file_new',"
@@ -679,7 +689,7 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     # to eventually previous defined user with the same name
     cat "$norm_dir/$GEM_TMPDIR/auth.user.json" | sed "s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"password\": \)\"[^\"]*\"/\1\"$suser_hash_pass\"/g;s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"is_superuser\": \)[^,]*,/\1true,/g" > "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
     python ./manage.py loaddata "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
-
+    python ./manage.py collectstatic --noinput
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers
