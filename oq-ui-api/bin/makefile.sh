@@ -50,7 +50,6 @@ if [ "$1" = "deploy" ]; then
     cd ..
     if [ -d .git ]; then
         # repo version
-        echo "de che"
         git archive $GEM_OQ_PLATF_GIT_VERS | tar -x --strip 1 -C "$GEM_BASEDIR${GEM_PROJ}" "${GEM_PROJ}"
     else
         # already archived version

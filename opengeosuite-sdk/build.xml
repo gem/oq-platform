@@ -127,9 +127,12 @@
         <copy todir="${app.build}/theme">
             <fileset dir="${app.fullpath}/theme"/>
         </copy>
+   <!-- </target>
+    <target name="parking">-->
         <copy todir="${app.build}">
             <fileset dir="${app.fullpath}">
-                <include name="*"/>
+                <include name="*.html"/>
+                <include name="*.ico"/>
             </fileset>
         </copy>
     </target>
@@ -193,17 +196,18 @@
     </target>
 
     <target name="deploy" depends="checkpath">
+        <property name="app.build" location="${sdk.build}/${app.name}"/>
         <delete dir="${app.deploy.templname}"/>
         <delete dir="${app.deploy.statname}"/>
         <mkdir dir="${app.deploy.templname}"/>
         <mkdir dir="${app.deploy.statname}"/>
         <copy todir="${app.deploy.templname}">
-            <fileset dir="${app.build}/${ant.project.name}/WEB-INF/app/static">
+            <fileset dir="${app.build}/">
               <include name="**/*.html"/>
             </fileset>
         </copy>
         <copy todir="${app.deploy.statname}">
-            <fileset dir="${app.build}/${ant.project.name}/WEB-INF/app/static">
+            <fileset dir="${app.build}">
               <exclude name="**/*.psd"/>
               <exclude name="**/*.html"/>
             </fileset>

@@ -1,11 +1,4 @@
 {% load i18n %}
-{% if without_iframe != 1 %}
-{% with "target = \"gem_app_frame\"" as iframe_target %}
-{% endwith %}
-{% else %}
-{% with "" as iframe_target %}
-{% endwith %}
-{% endif %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/oq-platform.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/site.css" media="screen" />
 <div id="crossbar">
@@ -33,7 +26,7 @@
 <div style="display: block; float: left;">
     {% if user.is_authenticated %}
        <ul id="submenu">
-		<li><a href="{% if without_iframe != 1 %}{% url home %}{% else %}{% url home %}?page={% endif %}" {{iframe_target}}>HOME</a></li>
+		<li><a href="{% url home %}">HOME</a></li>
                
             <li>
                 <a href="#">VIEW</a>
@@ -42,7 +35,7 @@
 			<a href="#">Basic Datasets</a>
                         <ul>
                             <li><a href="#" class="notyet">Earthquake history</a></li>
-                            <li><a href="{% if without_iframe != 1 %}/oq-platform2/index.html{% else %}{% url home %}?page=/oq-platform2/index.html{% endif %}" {{iframe_target}}>Instrumental catalogue</a></li>
+                            <li><a href="/oq-platform2/isc_viewer_index.html">Instrumental catalogue</a></li>
 			    <li><a href="/oq-platform/geodetic_index.html">Geodetic strain rate</a></li>
                             <li><a href="#" class="notyet">Active faults</a></li>
                             <li><a href="#" class="notyet">Tectonic regionalisation</a></li>

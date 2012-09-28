@@ -211,13 +211,14 @@ apache_append_proxy () {
 }
 
 oq_platform_install () {
-    local norm_user norm_dir ret a distdesc
+    local norm_user norm_dir norm_home ret a distdesc
     local cur_step
 
     cur_step=0
 
     norm_user="$1"
     norm_dir="$2"
+    norm_home="$(grep "$norm_user" /etc/passwd | cut -d ":" -f 6)"
 
     ###
     # Verify if the distribution is compliant with the script.
@@ -314,10 +315,11 @@ oq_platform_install () {
     fi
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
-    cat /tmp/geonode.$$ | grep -v '^[ 	]*AliasMatch[ 	]*\^/oq-platform/(\.\*\\\.(css|gif|ico|js|png|txt))\$[ 	]/var/lib/openquake/oq-ui-client/oq-platform/' | \
+    cat /tmp/geonode.$$ | \
+        grep -v '^[ 	]*AliasMatch[ 	]*^/oq-platform/(.*[^(\.html)])$[	]*/var/www/geonode/static/oq-platform/$1' | \
         sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform/(.*[^(\.html)])$ /var/www/geonode/static/oq-platform/$1@g' | \
-        grep -v '^[ 	]*Alias /oq-platform2/ ' | \
-        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2Alias /oq-platform2/ /var/lib/openquake/oq-ui-client2/oq-platform/@g' >/etc/apache2/sites-available/geonode
+        grep -v '^[ 	]*AliasMatch[ 	]*^/oq-platform2/(.*[^(\.html)])$[	]*/var/www/geonode/static/oq-platform2/$1' | \
+        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform2/(.*[^(\.html)])$ /var/www/geonode/static/oq-platform2/$1@g' >/etc/apache2/sites-available/geonode
     rm /tmp/geonode.$$
 
     # this fix the bug 972202 to inform jpype module where is the java installation
@@ -518,6 +520,7 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer_index.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
 
@@ -582,10 +585,11 @@ ant deploy-deps"
 
     ##
     echo "Add new 'isc_viewer' tool"
+    rm -rf "${norm_home}/.opengeo/logs/suite-sdk.log"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client2\"
 rm -rf ./build
-../opengeosuite-sdk/bin/suite-sdk build -b ./build ."
+../opengeosuite-sdk/bin/suite-sdk deploy-deps -b ./build ."
 
 # ant debug -Dapp.port=8081 &
 # debug_pid=\$!
@@ -604,12 +608,15 @@ rm -rf ./build
         exit $ret
     fi
 
-    cd oq-platform/oq-ui-client2/build
-    if [ -d "${GEM_BASEDIR}/oq-ui-client2" ]; then
-        rm -rf "${GEM_BASEDIR}/oq-ui-client2"
-    fi
-    mkdir "${GEM_BASEDIR}/oq-ui-client2"
-    cp -r oq-platform "${GEM_BASEDIR}/oq-ui-client2"
+    # cd oq-platform/oq-ui-client2/build
+    # if [ -d "${GEM_BASEDIR}/oq-ui-client2" ]; then
+    #     rm -rf "${GEM_BASEDIR}/oq-ui-client2"
+    # fi
+    # mkdir "${GEM_BASEDIR}/oq-ui-client2"
+    # cp -r oq-platform "${GEM_BASEDIR}/oq-ui-client2"
+    # cd "$norm_dir"
+    cd oq-platform/oq-ui-client2
+    ../opengeosuite-sdk/bin/suite-sdk deploy -b ./build .
     cd "$norm_dir"
 
     service tomcat6 restart
@@ -763,7 +770,6 @@ if [ "$wai" = "root" ]; then
     if [ $# -eq 2 ]; then
         norm_user="$1"
         norm_dir="$2"
-        
         oq_platform_install "$norm_user" "$norm_dir"
         exit $?
     else
