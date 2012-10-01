@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.8.0
+# Version: v1.9.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -9,8 +9,10 @@
 
 # TIPS
 #    to remove all:
-# apt-get remove --purge geonode ; rm -rf gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
-
+# # apt-get remove --purge geonode ; rm -rf gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
+#
+#    to reset a oq-platform git repo:
+# $ rm -rf oq-ui-client2/build/  oq-ui-client/build/ ; cd oq-ui-client/app/static/externals/openlayers ; git checkout lib/OpenLayers/Layer/Google/v3.js ; cd - 
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
@@ -18,8 +20,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=v1.8.0
-
+export GEM_OQ_PLATF_GIT_VERS=v1.9.0
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -117,8 +118,48 @@ mkreqdir () {
     return 0
 }
 
+staticfiles_add() {
+    local stat_files stat_file_new a
+
+    stat_file_new="$1"
+
+    if [ ! -d "$stat_file_new" ]; then
+        mkdir "$stat_file_new"
+    fi
+
+    stat_files="$(sed -n '/^STATICFILES_DIRS *= *\[ */,/^\]$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' )"
+    echo "$stat_files" | grep -q "^[ 	]*'$stat_file_new',"
+    if [ $? -ne 0 ]; then
+        sed -i "s@^\(^STATICFILES_DIRS *= *\[ *\)@\1\n    '$stat_file_new',@g" "$GEM_GN_LOCSET"
+    else
+        echo "WARNING: $stat_file_new already exists into STATICFILES_DIR entry of $GEM_GN_LOCSET"
+        echo "$stat_files"
+        read -p "If it isn't correct, edit it and continue" a
+    fi
+}
+
+template_add() {
+    local templ_files templ_file_new a
+
+    templ_file_new="$1"
+
+    if [ ! -d "$templ_file_new" ]; then
+        mkdir "$templ_file_new"
+    fi
+
+    templ_files="$(sed -n '/^TEMPLATE_DIRS *= *( */,/^)$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' )"
+    echo "$templ_files" | grep -q "^[ 	]*'$templ_file_new',"
+    if [ $? -ne 0 ]; then
+        sed -i "s@^\(^TEMPLATE_DIRS *= *( *\)@\1\n    '$templ_file_new',@g" "$GEM_GN_LOCSET"
+    else
+        echo "WARNING: $templ_file_new already exists into TEMPLATE_DIR entry of $GEM_GN_LOCSET"
+        echo "$templ_files"
+        read -p "If it isn't correct, edit it and continue" a
+    fi
+}
+
 schemata_config_add() {
-    local sche_dom sche_domn sche_name
+    local sche_dom sche_domn sche_name a
 
     sche_domn="$1"
     sche_name="$2"
@@ -128,9 +169,9 @@ schemata_config_add() {
     if [ $? -ne 0 ]; then
         sed -i "s/^\(SCHEMATA_DOMAINS *= *.*\)/\1\n  '$sche_domn': {\n    'schema_name': '$sche_name',\n    },\n/g" "$GEM_GN_LOCSET"
     else
-        echo "WARNING: $sche_domn just exists into SCHEMATA_DOMAINS entry of $GEM_GN_LOCSET"
+        echo "WARNING: $sche_domn already exists into SCHEMATA_DOMAINS entry of $GEM_GN_LOCSET"
         echo "$sche_dom"
-        read -p "If it isn't correct, edit it and continue" a            
+        read -p "If it isn't correct, edit it and continue" a
     fi
 }
 
@@ -180,13 +221,14 @@ apache_append_proxy () {
 }
 
 oq_platform_install () {
-    local norm_user norm_dir ret a distdesc
+    local norm_user norm_dir norm_home ret a distdesc
     local cur_step
 
     cur_step=0
 
     norm_user="$1"
     norm_dir="$2"
+    norm_home="$(grep "$norm_user" /etc/passwd | cut -d ":" -f 6)"
 
     ###
     # Verify if the distribution is compliant with the script.
@@ -283,10 +325,11 @@ oq_platform_install () {
     fi
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
-    cat /tmp/geonode.$$ | grep -v '^[ 	]*Alias /oq-platform/ ' | \
-        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform/ /var/lib/openquake/oq-ui-client/oq-platform/@g' | \
-        grep -v '^[ 	]*Alias /oq-platform2/ ' | \
-        sed 's@\(\(^[ 	]*Alias \)/static/ /var/www/geonode/static/\)@\1\n\2/oq-platform2/ /var/lib/openquake/oq-ui-client2/oq-platform/@g' >/etc/apache2/sites-available/geonode
+    cat /tmp/geonode.$$ | \
+        grep -v '^[ 	]*AliasMatch[ 	]*^/oq-platform/(.*[^(\.html)])$[	]*/var/www/geonode/static/oq-platform/$1' | \
+        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform/(.*[^(\.html)])$ /var/www/geonode/static/oq-platform/$1@g' | \
+        grep -v '^[ 	]*AliasMatch[ 	]*^/oq-platform2/(.*[^(\.html)])$[	]*/var/www/geonode/static/oq-platform2/$1' | \
+        sed 's@\(\(^[ 	]*\)Alias /static/ /var/www/geonode/static/\)@\1\n\2AliasMatch ^/oq-platform2/(.*[^(\.html)])$ /var/www/geonode/static/oq-platform2/$1@g' >/etc/apache2/sites-available/geonode
     rm /tmp/geonode.$$
 
     # this fix the bug 972202 to inform jpype module where is the java installation
@@ -353,7 +396,7 @@ SCHEMATA_DOMAINS = {
   '$SITE_HOST': {
     'schema_name': 'gem',
     }
-  }" >> "$GEM_GN_LOCSET"
+}" >> "$GEM_GN_LOCSET"
     else
         schemata_config_add "$SITE_HOST" "gem"
     fi
@@ -455,12 +498,20 @@ exit 0"
     if [ $ret -ne 0 ]; then
         return 1
     fi
+
+    ##
+    # /etc/geonode/local_settings.py (require manage.py collectstatic runned by make deploy below
+    staticfiles_add '/etc/geonode/static'
+    staticfiles_add '/etc/geonode/static.apps'
+
+    template_add '/etc/geonode/templates.apps'
+
     cd oq-platform/oq-ui-api
     make fix
     make MKREQDIR_ARG="-d" deploy
      
     ##
-    # /etc/geonode/local_settings.py    
+    # /etc/geonode/local_settings.py
     schemata_config_add 'geodetic'      'geodetic'
     schemata_config_add 'django'        'public'
     schemata_config_add 'ged4gem'       'eqged'
@@ -475,6 +526,11 @@ exit 0"
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/faultedearth_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/faultedearth_index.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer_index.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
 
@@ -512,7 +568,8 @@ exit 0"
     echo "Add 'faultedearth', 'geodetic', 'isc_viewer', 'exposure_country' and 'exposure_grid' client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client\"
-ant init"
+ant init
+ant deploy-deps"
 
 # ant debug -Dapp.port=8081 &
 # debug_pid=\$!
@@ -538,10 +595,11 @@ ant init"
 
     ##
     echo "Add new 'isc_viewer' tool"
+    rm -rf "${norm_home}/.opengeo/logs/suite-sdk.log"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client2\"
 rm -rf ./build
-../opengeosuite-sdk/bin/suite-sdk build -b ./build ."
+../opengeosuite-sdk/bin/suite-sdk deploy-deps -b ./build ."
 
 # ant debug -Dapp.port=8081 &
 # debug_pid=\$!
@@ -560,12 +618,15 @@ rm -rf ./build
         exit $ret
     fi
 
-    cd oq-platform/oq-ui-client2/build
-    if [ -d "${GEM_BASEDIR}/oq-ui-client2" ]; then
-        rm -rf "${GEM_BASEDIR}/oq-ui-client2"
-    fi
-    mkdir "${GEM_BASEDIR}/oq-ui-client2"
-    cp -r oq-platform "${GEM_BASEDIR}/oq-ui-client2"
+    # cd oq-platform/oq-ui-client2/build
+    # if [ -d "${GEM_BASEDIR}/oq-ui-client2" ]; then
+    #     rm -rf "${GEM_BASEDIR}/oq-ui-client2"
+    # fi
+    # mkdir "${GEM_BASEDIR}/oq-ui-client2"
+    # cp -r oq-platform "${GEM_BASEDIR}/oq-ui-client2"
+    # cd "$norm_dir"
+    cd oq-platform/oq-ui-client2
+    ../opengeosuite-sdk/bin/suite-sdk deploy -b ./build .
     cd "$norm_dir"
 
     service tomcat6 restart
@@ -628,7 +689,7 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     # to eventually previous defined user with the same name
     cat "$norm_dir/$GEM_TMPDIR/auth.user.json" | sed "s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"password\": \)\"[^\"]*\"/\1\"$suser_hash_pass\"/g;s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"is_superuser\": \)[^,]*,/\1true,/g" > "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
     python ./manage.py loaddata "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
-
+    python ./manage.py collectstatic --noinput
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers
@@ -719,7 +780,6 @@ if [ "$wai" = "root" ]; then
     if [ $# -eq 2 ]; then
         norm_user="$1"
         norm_dir="$2"
-        
         oq_platform_install "$norm_user" "$norm_dir"
         exit $?
     else
