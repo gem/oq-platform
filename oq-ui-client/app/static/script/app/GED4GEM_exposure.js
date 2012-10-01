@@ -23,6 +23,19 @@ GED_exposure = Ext.extend(gxp.Viewer, {
 
         Ext.Window.prototype.shadow = false;
 
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true,
+            contentEl: 'header-wrapper',
+            id: 'header-ext'
+        });
+
+        var footer = new Ext.Panel({
+            region: "south",
+            autoHeight: true,
+            contentEl: 'footer'
+        });
+
         // property names for FeatureEditor and FeatureGrid
         var propertyNames = {
             // custom fied names for the fault summary table
@@ -40,7 +53,7 @@ GED_exposure = Ext.extend(gxp.Viewer, {
             }, {
                 xtype: "gxp_scaleoverlay"
             }],
-            portalItems: [{
+            portalItems: [header, {
                 region: "center",
                 layout: "border",
                 tbar: {
@@ -77,7 +90,7 @@ GED_exposure = Ext.extend(gxp.Viewer, {
                     collapseMode: "mini"
                 }],
                 bbar: {id: "mybbar"}
-            }],
+            }, footer],
 
             tools: [{
                 actionTarget: {target: "paneltbar", index: 0},

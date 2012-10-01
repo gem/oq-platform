@@ -1,4 +1,5 @@
 #!/bin/bash
+# set -x
 
 # this function create a required directory. if fails the script exits with error level 2
 # with '-d' flag try to remove the dir before creation
@@ -46,13 +47,13 @@ set | grep -q "^MKREQDIR_ARG=" || export MKREQDIR_ARG="-o"
 if [ "$1" = "deploy" ]; then
     mkreqdir ${MKREQDIR_ARG} "${GEM_BASEDIR}${GEM_PROJ}"
 
-    cd ../..
+    cd ..
     if [ -d .git ]; then
         # repo version
         git archive $GEM_OQ_PLATF_GIT_VERS | tar -x --strip 1 -C "$GEM_BASEDIR${GEM_PROJ}" "${GEM_PROJ}"
     else
         # already archived version
-        cp -r oq-platform/oq-ui-api/* "$GEM_BASEDIR${GEM_PROJ}"
+        cp -r oq-ui-api/* "$GEM_BASEDIR${GEM_PROJ}"
     fi
     cd -
     # git archive $GEM_OQ_UI_API_GIT_VERS | tar -x -C "$GEM_BASEDIR${GEM_PROJ}"
@@ -61,7 +62,7 @@ if [ "$1" = "deploy" ]; then
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
 
-    cp -r etc/geonode/ /etc/
+    cp -r "$GEM_BASEDIR${GEM_PROJ}"/etc/geonode/ /etc/
 
     source /var/lib/geonode/bin/activate
     cd /var/lib/geonode/src/GeoNodePy/geonode/

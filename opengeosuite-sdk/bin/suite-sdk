@@ -1,4 +1,5 @@
 #!/bin/bash
+export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 set -x
 ant -version &> /dev/null
 if [ $? -ne 0 ]; then
@@ -94,6 +95,8 @@ List of options:
 
 "
 
+DEPLOY_DEPS_USAGE="$DEPLOY_USAGE"
+
 # find sdk home
 if [ -z "$0" ]; then
     # as a last recourse, use the present working directory
@@ -133,7 +136,7 @@ if [ $# -gt 0 ]; then
 fi
 
 case $COMMAND in
-    create|debug|build|deploy|version)
+    create|debug|build|deploy-deps|deploy|version)
         # PASS
         ;;
     *)
@@ -143,7 +146,7 @@ case $COMMAND in
 esac
 
 # parse options and assemble ant args
-ANT_ARGS="-v -Dapp.name=oq-platform "
+ANT_ARGS="-v -Dapp.name=oq-platform2 "
 HELP=false
 LOCAL_PORT=9080 # default repeated in build.xml, but used here for success message
 until [ -z "$1" ]; do
@@ -243,7 +246,23 @@ case $COMMAND in
         fi
         ANT_ARGS="$ANT_ARGS -Dapp.path=\"$APP_PATH\""
         ;;
-    deploy )
+    'deploy-deps' )
+        if $HELP ; then
+            echo "$DEPLOY_DEPS_USAGE"
+            exit 0
+        fi
+        APP_PATH=$1
+        if [ $# -ne 1 -o -z "$APP_PATH" -o -z "$APP_PATH" ]; then
+            echo "$DEPLOY_DEPS_USAGE"
+            exit 1
+        fi
+        if [ ! -d "$APP_PATH" ]; then
+            echo "Directory '$APP_PATH' doesn't exist.  Supply the path for an existing app directory."
+            exit 1
+        fi
+        ANT_ARGS="$ANT_ARGS -Dapp.path=\"$APP_PATH\""
+        ;;
+   deploy )
         if $HELP ; then
             echo "$DEPLOY_USAGE"
             exit 0
@@ -322,11 +341,23 @@ improper credentials (-u and -p) for your remote Suite instance.  Run
 '$NAME deploy --help' for help on the usage.
 "
 
+DEPLOY_DEPS_START="
+Deploying dependencies application (this may take a few moments) ..."
+
+DEPLOY_DEPS_FAILURE="
+The '$NAME deploy-deps' command failed.
+
+Common causes for this are misconfiguration of the container type (-c) or
+improper credentials (-u and -p) for your remote Suite instance.  Run
+'$NAME deploy --help' for help on the usage.
+"
+
 # provide feedback that work is starting
 case $COMMAND in
     create) echo "$CREATE_START";;
     debug) echo "$DEBUG_START";;
     build) echo "$BUILD_START";;
+    'deploy-deps') echo "$DEPLOY_DEPS_START";;
     deploy) echo "$DEPLOY_START";;
 esac
 
@@ -349,6 +380,7 @@ if [ $STATUS -ne 0 ]; then
             ;;
         build) echo "$BUILD_FAILURE";;
         deploy) echo "$DEPLOY_FAILURE";;
+        'deploy-deps') echo "$DEPLOY_DEPS_FAILURE";;
     esac
     echo "See the logfile '$LOG_FILE' for more detail on what went wrong."
     echo

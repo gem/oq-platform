@@ -37,6 +37,19 @@ body {
 
 
 /* topmenu */
+div#header-ext {
+        overflow: visible!important;
+}
+
+#header-ext div.x-panel-bwrap {
+    background-color: red;
+    overflow: visible!important;
+}
+
+#header-ext div.x-panel-bwrap div.x-panel-body.x-panel-body-noheader {
+        overflow: visible!important;
+}
+
 
 #topmenu_tabs {
 	width: 800px;
@@ -234,7 +247,7 @@ ul.topmenu li.decide a.selected {
 }
 
 #submenu li ul li:hover ul{ /* Display the dropdown on hover */
-	left: 1px; /* Bring back on-screen when needed */
+	left: 30px; /* Bring back on-screen when needed */
 }
 
 #submenu li:hover a{ /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
