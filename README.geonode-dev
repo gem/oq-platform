@@ -1,0 +1,28 @@
+=== Install geonode ===
+
+If you want to install a development version of geonode 
+not system wide you can:
+
+ - copy the script oq-ui-api/bin/geonode-dev-install.sh into
+   a working directory
+
+ - run it as normal user
+
+At the end you will have a working version of the development
+version of geonode binded on all network interfaces.
+
+=== Run geonode ===
+
+To enable the server you must:
+ - run:  source venv/bin/activate
+ - run: paver start -b 0.0.0.0:8000
+
+
+=== Shutdown geonode ===
+
+To disable the server you must:
+ - run: source venv/bin/activate
+ - run: paver stop
+
+
+
