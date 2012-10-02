@@ -221,7 +221,7 @@ apache_append_proxy () {
 }
 
 oq_platform_install () {
-    local norm_user norm_dir norm_home ret a distdesc
+    local norm_user norm_dir norm_home ret a distdesc rv
     local cur_step
 
     cur_step=0
@@ -243,43 +243,55 @@ oq_platform_install () {
         exit 1
     fi
 
-    # Get public name info
-    SITE_HOST="$GEM_HOSTNAME"
-    read -p "Public site url or public IP address (start with '.' to add domain) [$SITE_HOST]: " newval
-    if [ "$(echo "$newval" | cut -c 1)" = "." ]; then
-        SITE_HOST="${SITE_HOST}${newval}"
-    elif [ "$newval" != "" ]; then
-        SITE_HOST="$newval"
-    fi
-    export SITE_HOST
-
-    # Get django superuser name
-    read -p "MANDATORY: django superuser name [$GEM_DJANGO_SUSER]: " newval
-    if [ "$newval" != "" ]; then
-        GEM_DJANGO_SUSER="$newval"
-    fi
-    export GEM_DJANGO_SUSER
-
-    # Get django superuser password
-    # TODO: password confirm.
-    while [ true ]; do
-        read -s -p "MANDATORY: django superuser password (not displayed): " newval
-        echo
+    declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
+    if [ -f "$norm_home/.oq-platform-install.conf" ]; then
+        source "$norm_home/.oq-platform-install.conf"
+    else
+        # Get public name info
+        SITE_HOST="$GEM_HOSTNAME"
+        read -p "Public site url or public IP address (start with '.' to add domain) [$SITE_HOST]: " newval
+        if [ "$(echo "$newval" | cut -c 1)" = "." ]; then
+            SITE_HOST="${SITE_HOST}${newval}"
+        elif [ "$newval" != "" ]; then
+            SITE_HOST="$newval"
+        fi
+        export SITE_HOST
+        
+        # Get django superuser name
+        read -p "MANDATORY: django superuser name [$GEM_DJANGO_SUSER]: " newval
         if [ "$newval" != "" ]; then
-            break
+            GEM_DJANGO_SUSER="$newval"
+        fi
+        export GEM_DJANGO_SUSER
+        
+        # Get django superuser password
+        # TODO: password confirm.
+        while [ true ]; do
+            read -s -p "MANDATORY: django superuser password (not displayed): " newval
+            echo
+            if [ "$newval" != "" ]; then
+                break
+            fi
+        done
+        GEM_DJANGO_SPASS="$newval"
+        export GEM_DJANGO_SPASS
+        
+        # Get django superuser email
+        export GEM_DJANGO_SMAIL="$1@${SITE_HOST}"
+        read -p "Django superuser email [$GEM_DJANGO_SMAIL]: " newval
+        if [ "$newval" != "" ]; then
+            GEM_DJANGO_SMAIL="$newval"
+        fi
+        export GEM_DJANGO_SMAIL
+    fi
+    for rv in ${GEM_REQ_VARS[*]}; do
+        export $rv
+        if [ -z "${!rv}" ]; then
+            echo "ERROR: $norm_home/.oq-platform-install.conf exists but the $rv variable is not set"
+            exit 1
         fi
     done
-    GEM_DJANGO_SPASS="$newval"
-    export GEM_DJANGO_SPASS
-
-    # Get django superuser email
-    export GEM_DJANGO_SMAIL="$1@${SITE_HOST}"
-    read -p "Django superuser email [$GEM_DJANGO_SMAIL]: " newval
-    if [ "$newval" != "" ]; then
-        GEM_DJANGO_SMAIL="$newval"
-    fi
-    export GEM_DJANGO_SMAIL
-
+        
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
 
