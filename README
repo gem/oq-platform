@@ -1,4 +1,4 @@
- ====
+ ==== Requirements ====
 
   * Operative System: GNU-Linux Ubuntu 12.04 (codename: Precise Pangolin)
   * a user account within 'admin' group
@@ -44,6 +44,16 @@
   **NOTE** the script will takes few minutes to finish, if you continuously see
   new lines of log on the display you can fill safe.
 
+==== Automatization ====
+
+For development reasons is possible put all required informations for
+the installation into a config file.
+
+It must be located into the home directory of the installer user, the name must be
+.oq-platform-install.conf and must be readable by the user only (use: chmod 600 <filename>).
+The file must include SITE_HOST, GEM_DJANGO_SUSER, GEM_DJANGO_SPASS, GEM_DJANGO_SMAIL
+variables assignments.
+
 ==== Enhance security with HTTPS protocol ====
 
 After the installation you can increase your security using https instead of http protocol.
@@ -69,3 +79,4 @@ We provide a simple script to perform this task (and return to http, if required
 To return to the previous http protocol:
 
   * run sudo <oq-platform directory>/oq-ui-api/bin/oq-platform2https.sh revert
+
