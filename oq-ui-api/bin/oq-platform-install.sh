@@ -245,6 +245,10 @@ oq_platform_install () {
 
     declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
     if [ -f "$norm_home/.oq-platform-install.conf" ]; then
+        if [ "$(stat -c %a "$norm_home/.oq-platform-install.conf" | cut -c 2-)" != "00" ]; then
+            echo "ERROR: the config file $norm_home/.oq-platform-install.conf exists but with too relaxed access permission (try chmod 600 $norm_home/.oq-platform-install.conf and run this script again)"
+            exit 1
+        fi
         source "$norm_home/.oq-platform-install.conf"
     else
         # Get public name info
