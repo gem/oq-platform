@@ -97,7 +97,7 @@ faultedearth.on_row_click = function(editor, popup, rowIndex) {
     var store = grid.propStore.store;
     var fieldName = store.getAt(rowIndex).id;
     
-    if (editor.helpPopup) {
+    if (editor.helpPopup && editor.helpPopup.isVisible()) {
 	editor.helpPopup.body.dom.innerHTML=gem.utils.description(fieldName);
 	editor.helpPopup.enable();
     } else {

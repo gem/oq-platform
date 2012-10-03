@@ -161,13 +161,12 @@ FaultedEarth.TraceForm = Ext.extend(gxp.plugins.Tool, {
 			    return;
 			}
                         Ext.Ajax.request({
-                            method: "PUT",
+                            method: "POST",
                             url: this.target.localGeoNodeUrl + this.target.localHostname + this.current_trace_url,
-                            params: { 'section_name': this.faultSection.name,
-				      'trace_ids': Ext.encode(this.sessionTids) },
+                            params: Ext.encode({ 'section_name': this.faultSection.name,
+						 'trace_ids':this.sessionTids }),
                             success: function(response, opts) {
                                 alert('Fault Section created');
-                                this.sessionTids = [];
                             },
                             failure: function(response, opts){
                                 alert('Failed to create the Fault Section');
@@ -175,7 +174,6 @@ FaultedEarth.TraceForm = Ext.extend(gxp.plugins.Tool, {
 
                             scope: this
                         });
-
                     },
                     scope: this
                     }]

@@ -26,24 +26,17 @@ from geonode.observations import models, utils
 
 
 @csrf_exempt
-def traces(request):
+def join_traces(request):
 
     response = HttpResponse()
-    if request.method == 'PUT':
+    if request.method == 'POST':
 
-        json_data = request.raw_post_data
+        json_data = simplejson.loads(request.raw_post_data)
+        fault_section = models.FaultSection.objects.create(sec_name=json_data['name'])
 
-        fault_section = models.FaultSection.objects.create()
-
-        for trace in simplejson.loads(json_data):
-            if isinstance(trace, dict):
-                fault_section.sec_name = trace['name']
-            else:
-                trace = models.Trace.objects.get(pk=trace.split('.')[1])
-                trace.fault_section.add(fault_section)
-
-        fault_section.save()
-
+        for trace in json_data['trace_ids']:
+            trace = models.Trace.objects.get(pk=trace.split('.')[1])
+            trace.fault_section.add(fault_section)
 
     return response
 

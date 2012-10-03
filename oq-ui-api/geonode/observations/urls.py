@@ -19,7 +19,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('geonode.observations.views',
-   (r'^traces/join$', 'traces'),
+   (r'^traces/join$', 'join_traces'),
    (r'^faultsection/join$', 'join_faultsections'),
    (r'^faultsource/create$', 'create_faultsource'),
    (r'^faultsource/export$', 'export'),
