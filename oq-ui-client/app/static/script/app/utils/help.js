@@ -287,13 +287,16 @@ in a GIS programme, this is the average scale at which the digitiser is working.
 Reported as a number – i.e., 1:200,000 is reported as 200,000<br/>\
 Conservative definition of the location accuracy of the trace on the ground surface, calculated from twice the scale at which the trace was mapped. For example, if a trace was mapped at 1:100,000 scale then the accuracy is calculated to be 1:200,000.",
 
-            "geomor_exp": "Compulsory<br/>\
+            "geomorphic_expression": "Compulsory<br/>\
 Chosen from a restricted list:<br/>\
 o Surface trace<br/>\
 o Eroded scarp<br/>\
 o Sharp feature<br/>\
-o Topographic feature o Bedrock extension o Concealed<br/>\
+o Topographic feature <br/>\
+o Bedrock extension <br/>\
+o Concealed<br/>\
 o No trace<br/>\
+\
 Expression of the fault on the ground or on digital imagery (e.g., Google Earth).<br/>\
 1. Surface Trace = Clearly defined trace of a recent or well preserved fault rupture trace mapped in the field or from high resolution imagery (e.g., LiDAR, aerial photographs).<br/>\
 2. Eroded scarp = Eroded or naturally degraded faultline scarp mapped in the field or from high resolution imagery (e.g., LiDAR, aerial photographs).<br/>\

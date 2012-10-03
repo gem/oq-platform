@@ -16,16 +16,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.utils import simplejson
-from django.db import connection, transaction
 
-from geonode.observations import models
-from geonode.observations.utils import create_faultsource
+from geonode.observations import models, utils
+
 
 @csrf_exempt
 def traces(request):
@@ -50,42 +48,31 @@ def traces(request):
     return response
 
 @csrf_exempt
-def faultsection(request):
-    response = HttpResponse()
-    if request.method == 'PUT':
-
-        json_data = request.raw_post_data
-
-        fault = models.Fault.objects.create()
-
-        for fault_section in simplejson.loads(json_data):
-            if isinstance(fault_section, dict):
-                fault.fault_name = fault_section['name']
-            else:
-                fault_section = models.FaultSection.objects.get(
-                        pk=fault_section)
-                fault_section.fault.add(fault)
-
-        fault.save()
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM set_fault_simplegeom(%s)", [fault.pk])
-    transaction.commit_unless_managed()
-
-    return response
+def join_faultsections(request):
+    """
+    Create a fault from fault sections
+    """
+    if request.method == 'POST':
+        json_data = simplejson.loads(request.raw_post_data)
+        fault_sections = [models.FaultSection.objects.get(pk=fault_section_id)
+                          for fault_section_id in json_data['fault_section_ids']]
+        fault_name = json_data['fault_name']
+        utils.join_fault_sections(fault_sections, fault_name)
+        return HttpResponse("Fault created")
+    else:
+        return HttpResponseBadRequest()
 
 
 @csrf_exempt
-def faultsource(request):
-    if request.method == 'PUT':
-
+def create_faultsource(request):
+    if request.method == 'POST':
         json_data = simplejson.loads(request.raw_post_data)
-        name = json_data['name']
         fault_id = json_data['fault_id'].split('.')[-1]
         fault = models.Fault.objects.get(pk=fault_id)
-        create_faultsource(fault, name)
-
-    return HttpResponse('ok')
+        utils.create_faultsource(fault)
+        return HttpResponse('ok')
+    else:
+        return HttpResponseBadRequest()
     
 @csrf_exempt
 def export(request):

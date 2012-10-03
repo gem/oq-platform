@@ -47,18 +47,15 @@ checkInterval = function(grid, field, value) {
     case 'max':
 	min_val = grid.getCurrentValue(prefix + '_min', parseFloat);
 	pref_val = grid.getCurrentValue(prefix + '_pref', parseFloat);
-	pref_val = pref_val || grid.getCurrentValue(prefix + '_pre', parseFloat);
 	max_val = value;
 	op = "less"
 	break;
     case 'min':
 	max_val = grid.getCurrentValue(prefix + '_max', parseFloat);
 	pref_val = grid.getCurrentValue(prefix + '_pref', parseFloat);
-	pref_val = pref_val || grid.getCurrentValue(prefix + '_pre', parseFloat);
 	min_val = value;
 	op = "greater"
 	break;
-    case 'pre':
     case 'pref':
 	min_val = grid.getCurrentValue(prefix + '_min', parseFloat);
 	max_val = grid.getCurrentValue(prefix + '_max', parseFloat);

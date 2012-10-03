@@ -128,11 +128,21 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-                        this.sessionFids.push(this.fault);
+
+			/* the fault object holds the name of the new fault */
+			if (!this.fault || !this.fault.name) {
+			    alert('Please, give a name to the fault you want to create');
+			    return;
+			}
+			if (this.sessionFids.length == 0) {
+			    alert('Please, select at least a fault section from the grid below');
+			    return;
+			}
                         Ext.Ajax.request({
-                            method: "PUT",
+                            method: "POST",
                             url: this.target.localGeoNodeUrl + this.target.localHostname + this.current_fault_section_url,
-                            params: Ext.encode(this.sessionFids),
+                            params: Ext.encode({ fault_name: this.fault.name,
+						 fault_section_ids: this.sessionFids }),
                             success: function(response, opts) {
                                 alert('Fault created');
                                 this.sessionFids = [];

@@ -62,12 +62,12 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                 if (featureManager.layerRecord.get("name") == "geonode:observations_fault") {
 		    /* store the fault (for multiple purposes like use
 		     * it for fault source creation) */
-                    this.target.summaryId = e.feature.fid;
+                    this.target.fault = e.feature;
                 }
             },
             "featureunselected": function(e) {
                 if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_fault") {
-                    this.target.summaryId = null;
+                    this.target.fault = null;
                 }
             },
             scope: this
@@ -125,19 +125,39 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-			if (!this.target.summaryId) {
+			if (!this.target.fault) {
 			    alert("To create a fault source, you need to select a fault");
 			    return;
 			}
+
+			var data = this.target.fault.data;
+
+			var required_attrs = [
+			    'dip_pref', 'u_sm_d_pref', 'low_d_pref',
+			    'fault_name', 'low_d_min', 'low_d_max',
+			    'u_sm_d_min', 'u_sm_d_max', 'dip_min',
+			    'dip_max', 'length_min', 'length_max',
+			    'length_pref', 'u_sm_d_com', 'low_d_com',
+			    'dip_com', 'dip_dir', 'slip_r_com'
+			];
+
+			for (var attr in required_attrs) {
+			    if (!data[attr]) {
+				alert("Please fill in all the required attributes before (missing " + attr + ")");
+				return;
+			    }
+			}
+
                         Ext.Ajax.request({
-                            method: "PUT",
+                            method: "POST",
                             url: this.target.localGeoNodeUrl + this.target.localHostname + '/observations/faultsource/create',
-                            params: Ext.encode({fault_id: this.target.summaryId, name: ''}),
+                            params: Ext.encode({fault_id: this.target.fault.fid}),
                             success: function(response, opts) {
                                 alert('Fault source generated');
                             },
                             failure: function(response, opts){
                                 alert('failed to generate fault source: ' + response);
+				console.log(response);
                             },
 
                             scope: this
@@ -191,8 +211,8 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                         }
                     },
                     "load": function() {
-                        this.target.summaryId && window.setTimeout((function() {
-                            var feature = mgr.featureLayer.getFeatureByFid(this.target.summaryId);
+                        this.target.fault && window.setTimeout((function() {
+                            var feature = mgr.featureLayer.getFeatureByFid(this.target.fault);
                             if (feature && feature.layer.selectedFeatures.indexOf(feature) == -1) {
                                 feature.layer.selectedFeatures.push(feature);
                                 feature.layer.events.triggerEvent("featureselected", {feature: feature});

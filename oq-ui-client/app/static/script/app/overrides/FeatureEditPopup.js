@@ -114,7 +114,7 @@ Ext.override(gxp.FeatureEditPopup, {
 
 		case 'u_sm_d_min':
 		case 'u_sm_d_max':
-		case 'u_sm_d_pre':
+		case 'u_sm_d_pref':
 		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
@@ -179,7 +179,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    break;
 		case 'length_min':
 		case 'length_max':
-		case 'length_pre':
+		case 'length_pref':
 		case 'mov_min':
 		case 'mov_max':
 		case 'mov_pref':
@@ -194,7 +194,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'area_pref':
 		case 'slip_r_min':
 		case 'slip_r_max':
-		case 'slip_r_pre':
+		case 'slip_r_pref':
 		case 'dip_slip_rate_min':
 		case 'dip_slip_rate_max':
 		case 'dip_slip_rate_pref':
