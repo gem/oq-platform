@@ -311,6 +311,13 @@ class FaultSection(Observation, WithLength, WithDip, WithSlip, WithDisplacement,
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     down_thro = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
 
+    def update_autocomputed_fields(self):
+        if self.trace_set.count():
+            self.geom = self.trace_set.all()[0].geom
+            for trace in self.trace_set.all()[1:]:
+                self.geom = self.geom.union(trace.geom)
+            self.save()
+
 
 class LocatedObservation(models.Model):
     scale = models.BigIntegerField()

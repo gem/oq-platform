@@ -37,6 +37,7 @@ def join_traces(request):
         for trace in json_data['trace_ids']:
             trace = models.Trace.objects.get(pk=trace.split('.')[1])
             trace.fault_section.add(fault_section)
+        fault_section.update_autocomputed_fields()
 
     return response
 

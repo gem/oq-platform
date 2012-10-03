@@ -23,6 +23,19 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
 
         Ext.Window.prototype.shadow = false;
 
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true,
+            contentEl: 'header-wrapper',
+            id: 'header-ext'
+        });
+
+        var footer = new Ext.Panel({
+            region: "south",
+            autoHeight: true,
+            contentEl: 'footer'
+        });
+
         // property names for FeatureEditor and FeatureGrid
         var propertyNames = {
             // custom fied names for the fault summary table
@@ -44,7 +57,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             "dip_pref": "Dip pref (...\u00B0)",
             "dip_com": "Dip data completeness factor (1, 2, 3, or 4)",
             "dip_dir": "Dip direction (...\u00B0)",
-	        "surface_dip": "Surface Dip",
+            "surface_dip": "Surface Dip",
             "down_thro": "Downthrown side (N, S, W, E or NW etc.)",
             "slip_typ": "Slip type (Reverse etc.)",
             "slip_com": "Slip type completeness (1, 2, 3, or 4)",
@@ -159,12 +172,12 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             "area_pref": "Area Pref"
         };
 
-	/* add a visual clue for compulsory fields */
-	    Ext.iterate(propertyNames, function (field) {
-	        if (faultedearth.isCompulsory(field)) {
-		        propertyNames[field] += " <small>(*)</small>";
-	        }
-	    });
+  /* add a visual clue for compulsory fields */
+        Ext.iterate(propertyNames, function (field) {
+            if (faultedearth.isCompulsory(field)) {
+                propertyNames[field] += " <small>(*)</small>";
+            }
+        });
 
         var tabs = new Ext.TabPanel({
                 animCollapse: true,
@@ -243,7 +256,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             }, {
                 xtype: "gxp_scaleoverlay"
             }],
-            portalItems: [{
+            portalItems: [header, {
                 region: "center",
                 layout: "border",
                 tbar: {
@@ -301,7 +314,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
                         padding: 10
                     }]
                 },
-		                "map", {
+                    "map", {
                     id: "tabs",
                     autoHeight: true,
                     region: "south",
@@ -313,7 +326,7 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
                         tabs
                     ]
                 }]
-            }],
+            }, footer],
 
             tools: [
 		/* help button */

@@ -10,11 +10,11 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         for fs in orm.FaultSection.objects.all():
-            if fs.fault.count():
-                fs.geom = fs.fault.all()[0].simple_geom
-                for f in fs.fault.all()[1:]:
-                    fs.geom = fs.geom.union(f.simple_geom)
-            fs.save()
+            if fs.trace_set.count():
+                fs.geom = fs.trace_set.all()[0].geom
+                for trace in fs.trace_set.all()[1:]:
+                    fs.geom = fs.geom.union(trace.geom)
+                fs.save()
 
     def backwards(self, orm):
         for f in orm.FaultSection.objects.all():

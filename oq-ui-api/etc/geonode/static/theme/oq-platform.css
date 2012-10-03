@@ -19,9 +19,9 @@ body {
 	min-width: 1024px;
 	width: 100%;
 	height: 65px;
-	background-image: url(img/header_bg.png);
+	background-image: url(img/OQ_header_elements-06.png);
 	background-position: right;
-	background-repeat: no-repeat;
+	background-repeat: repeat;
 	background-color: #000;
 	position: relative;
 }
@@ -37,6 +37,19 @@ body {
 
 
 /* topmenu */
+div#header-ext {
+        overflow: visible!important;
+}
+
+#header-ext div.x-panel-bwrap {
+    background-color: red;
+    overflow: visible!important;
+}
+
+#header-ext div.x-panel-bwrap div.x-panel-body.x-panel-body-noheader {
+        overflow: visible!important;
+}
+
 
 #topmenu_tabs {
 	width: 800px;
@@ -68,7 +81,7 @@ ul.topmenu li a {
 	display: block;
 	width: 122px;
 	height: 31px;
-	background: url(img/topmenu_bg.png);
+/*	background: url(img/topmenu_bg.png);*/
 	}
 
 /*
@@ -170,7 +183,7 @@ ul.topmenu li.decide a.selected {
 #submenu {
 	width: 140%;
 	height: 26px;
-	background: url(img/submenu_bg.png);
+/*	background: url(img/submenu_bg.png);*/
 	background-repeat: repeat-x;
 	float: left;
 	clear: left;
@@ -212,7 +225,7 @@ ul.topmenu li.decide a.selected {
 	list-style:none;
 	position:absolute;
 	left:-9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
-        z-index: 80;
+        z-index: 80000;
 }
 
 #submenu ul li{
@@ -234,12 +247,11 @@ ul.topmenu li.decide a.selected {
 }
 
 #submenu li ul li:hover ul{ /* Display the dropdown on hover */
-	left: 1px; /* Bring back on-screen when needed */
+	left: 30px; /* Bring back on-screen when needed */
 }
 
 #submenu li:hover a{ /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
-	background: #2E4A81;
-	background-image: url(img/drop_menu_bg.png);
+	background: #1b75a7;
 	background-repeat: repeat-y;
 	text-decoration: none;
 }
@@ -275,7 +287,7 @@ ul.topmenu li.decide a.selected {
 
 /* second level */
 #submenu ul li ul li {
-	z-index: 100;
+	z-index: 80100;
 }
 
 

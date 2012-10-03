@@ -22,6 +22,20 @@
 
 var app;
 Ext.onReady(function() {
+        var header = new Ext.Panel({
+            region: "north",
+            autoHeight: true,
+            contentEl: 'header-wrapper',
+            id: 'header-ext'
+        });
+
+        var footer = new Ext.Panel({
+            region: "south",
+            autoHeight: true,
+            contentEl: 'footer'
+        });
+
+
     app = new gxp.Viewer({
         portalConfig: {
             layout: "border",
@@ -29,7 +43,7 @@ Ext.onReady(function() {
             
             // by configuring items here, we don't need to configure portalItems
             // and save a wrapping container
-            items: [{
+            items: [header, {
                 id: "centerpanel",
                 xtype: "panel",
                 layout: "fit",
@@ -42,7 +56,7 @@ Ext.onReady(function() {
                 layout: "fit",
                 region: "west",
                 width: 200
-            }],
+            }, footer],
             bbar: {id: "mybbar"}
         },
         
