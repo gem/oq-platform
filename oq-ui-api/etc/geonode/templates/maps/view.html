@@ -15,6 +15,24 @@
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 <style type="text/css">
     #templates { display: none; }
+
+/* topmenu */
+/*
+div#header-ext {
+        overflow: visible!important;
+}
+
+#header-ext div.x-panel-bwrap {
+    background-color: red;
+    overflow: visible!important;
+}
+
+#header-ext div.x-panel-bwrap div.x-panel-body.x-panel-body-noheader {
+        overflow: visible!important;
+}
+*/
+
+
 </style>
 
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
@@ -82,6 +100,7 @@ Ext.onReady(function() {
 {% block body %}
 <div id="header-wrapper">
   {{ block.super }}
+{% include "oq-platform/includes/menu.html" %}
   <div id="topPanel">
     <div id="more-info"></div>
     <span id="map-title-header"></span>
@@ -89,6 +108,6 @@ Ext.onReady(function() {
 </div>
 <div id="templates">
   <div id="more-info-tpl"><a class='link' href='{permalink}'>{% trans "View info" %}</a></div>
-  <div id="title-tpl"><a class='maplist' href='/'>{% trans "Home" %}</a> / <strong>{title}</strong></div>
+  <div id="title-tpl"><a class='maplist' href='/maps'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
 </div>
 {% endblock %}
