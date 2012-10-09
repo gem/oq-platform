@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.9.0 - geonode-dev-utils
+# Version: v1.10.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -20,7 +20,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=geonode-dev-utils
+export GEM_OQ_PLATF_GIT_VERS=v1.10.0
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -221,7 +221,7 @@ apache_append_proxy () {
 }
 
 oq_platform_install () {
-    local norm_user norm_dir norm_home ret a distdesc
+    local norm_user norm_dir norm_home ret a distdesc rv
     local cur_step
 
     cur_step=0
@@ -243,43 +243,59 @@ oq_platform_install () {
         exit 1
     fi
 
-    # Get public name info
-    SITE_HOST="$GEM_HOSTNAME"
-    read -p "Public site url or public IP address (start with '.' to add domain) [$SITE_HOST]: " newval
-    if [ "$(echo "$newval" | cut -c 1)" = "." ]; then
-        SITE_HOST="${SITE_HOST}${newval}"
-    elif [ "$newval" != "" ]; then
-        SITE_HOST="$newval"
-    fi
-    export SITE_HOST
-
-    # Get django superuser name
-    read -p "MANDATORY: django superuser name [$GEM_DJANGO_SUSER]: " newval
-    if [ "$newval" != "" ]; then
-        GEM_DJANGO_SUSER="$newval"
-    fi
-    export GEM_DJANGO_SUSER
-
-    # Get django superuser password
-    # TODO: password confirm.
-    while [ true ]; do
-        read -s -p "MANDATORY: django superuser password (not displayed): " newval
-        echo
+    declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
+    if [ -f "$norm_home/.oq-platform-install.conf" ]; then
+        if [ "$(stat -c %a "$norm_home/.oq-platform-install.conf" | cut -c 2-)" != "00" ]; then
+            echo "ERROR: the config file $norm_home/.oq-platform-install.conf exists but with too much relaxed access permissions (try chmod 600 $norm_home/.oq-platform-install.conf and run this script again)"
+            exit 1
+        fi
+        source "$norm_home/.oq-platform-install.conf"
+    else
+        # Get public name info
+        SITE_HOST="$GEM_HOSTNAME"
+        read -p "Public site url or public IP address (start with '.' to add domain) [$SITE_HOST]: " newval
+        if [ "$(echo "$newval" | cut -c 1)" = "." ]; then
+            SITE_HOST="${SITE_HOST}${newval}"
+        elif [ "$newval" != "" ]; then
+            SITE_HOST="$newval"
+        fi
+        export SITE_HOST
+        
+        # Get django superuser name
+        read -p "MANDATORY: django superuser name [$GEM_DJANGO_SUSER]: " newval
         if [ "$newval" != "" ]; then
-            break
+            GEM_DJANGO_SUSER="$newval"
+        fi
+        export GEM_DJANGO_SUSER
+        
+        # Get django superuser password
+        # TODO: password confirm.
+        while [ true ]; do
+            read -s -p "MANDATORY: django superuser password (not displayed): " newval
+            echo
+            if [ "$newval" != "" ]; then
+                break
+            fi
+        done
+        GEM_DJANGO_SPASS="$newval"
+        export GEM_DJANGO_SPASS
+        
+        # Get django superuser email
+        export GEM_DJANGO_SMAIL="$1@${SITE_HOST}"
+        read -p "Django superuser email [$GEM_DJANGO_SMAIL]: " newval
+        if [ "$newval" != "" ]; then
+            GEM_DJANGO_SMAIL="$newval"
+        fi
+        export GEM_DJANGO_SMAIL
+    fi
+    for rv in ${GEM_REQ_VARS[*]}; do
+        export $rv
+        if [ -z "${!rv}" ]; then
+            echo "ERROR: $norm_home/.oq-platform-install.conf exists but the $rv variable is not set"
+            exit 1
         fi
     done
-    GEM_DJANGO_SPASS="$newval"
-    export GEM_DJANGO_SPASS
-
-    # Get django superuser email
-    export GEM_DJANGO_SMAIL="$1@${SITE_HOST}"
-    read -p "Django superuser email [$GEM_DJANGO_SMAIL]: " newval
-    if [ "$newval" != "" ]; then
-        GEM_DJANGO_SMAIL="$newval"
-    fi
-    export GEM_DJANGO_SMAIL
-
+        
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
 
