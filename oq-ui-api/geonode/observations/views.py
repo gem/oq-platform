@@ -30,7 +30,6 @@ def join_traces(request):
 
     response = HttpResponse()
     if request.method == 'POST':
-
         json_data = simplejson.loads(request.raw_post_data)
         fault_section = models.FaultSection.objects.create(sec_name=json_data['name'])
 

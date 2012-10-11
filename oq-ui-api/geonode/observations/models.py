@@ -153,13 +153,19 @@ class WithSlip(models.Model):
     vertical_slip_rate_pref = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
 
     hv_ratio = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    hv_ratio_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    hv_ratio_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    hv_ratio_pref = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
 
     net_slip_rate_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     net_slip_rate_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     net_slip_rate_pref = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
 
-    slip_rate_com = models.PositiveIntegerField(**DEFAULT_FIELD_ATTRIBUTES)
-    rake = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    net_slip_rate_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
+
+    rake_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    rake_pref = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    rake_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
 
     slip_rate_category = models.CharField(max_length=255,
                                           choices=SLIP_RATE_CATEGORY_CHOICES,
@@ -168,7 +174,7 @@ class WithSlip(models.Model):
     slip_type = models.CharField(max_length=255,
                                  choices=SLIP_TYPE_CHOICES,
                                  **DEFAULT_FIELD_ATTRIBUTES)
-    slip_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
+    slip_type_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
 
     aseis_slip = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     aseis_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -308,6 +314,7 @@ class FaultSection(Observation, WithLength, WithDip, WithSlip, WithDisplacement,
     geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
     sec_name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
+    surface_dip = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     down_thro = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
 
