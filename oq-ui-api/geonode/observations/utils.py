@@ -99,11 +99,6 @@ def fault_poly_from_mls(fault_source_geom, dip,
 
 
 def create_faultsource(fault):
-    polygon = fault_poly_from_mls(
-        fault.simple_geom, fault.dip_pref,
-        fault.u_sm_d_pref, fault.low_d_pref
-    )
-
     # these attributes are copied from the corresponding fault
     verbatim_attributes = """
     length_min length_max length_pref
@@ -129,6 +124,11 @@ def create_faultsource(fault):
         else:
             if not attrib_name in ["aseis_com", "slip_type_com"]:
                 return attrib_name
+
+    polygon = fault_poly_from_mls(
+        fault.simple_geom, fault.dip_pref,
+        fault.u_sm_d_pref, fault.low_d_pref
+    )
     
     faultsource = models.FaultSource.objects.create(
         fault=fault, source_nm="Fault created by from %s" % fault.fault_name, geom=polygon, **a)
