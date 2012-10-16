@@ -104,7 +104,7 @@ Reported as one of:<br/>\
 oN oS oW oE o NW o SW o NE o SE<br/>\
 Should be accompanied by comments or a description of the data source (free text up to 254 characters long) Geographic quadrant of the overall side of the fault which has been displaced vertically downwards.",
 
-            "slip_typ": "Compulsory<br/>\
+            "slip_type": "Compulsory<br/>\
 Choose from a list:<br/>\
 o Reverse<br/>\
 o Thrust (dip <45o) o Normal<br/>\
@@ -114,7 +114,7 @@ o Normal dextral o Normal sinistral o Reverse dextral o Reverse sinistral o Dext
 Accompanied by a data completeness factor (see Slip type data completeness factor)<br/>\
 Should be accompanied by comments or a description of the data source (free text up to 254 characters long) Dominant and, if applicable, secondary type (sense) of relative slip (displacement or movement) on the fault plane.",
 
-    "slip_com": "Compulsory<br/>\
+    "slip_type_com": "Compulsory<br/>\
 Reported as 1, 2, 3, or 4<br/>\
 Should be accompanied by comments or a description of the basis for the choice of factor (free text up to 254 characters long)<br/>\
 Relative ranking of the completeness of the data constraining the slip type.<br/>\
@@ -329,8 +329,6 @@ Expressed as preferred, minimum, maximum<br/>\
 Should be accompanied by comments or a description of the data source (free text up to 254 characters long)<br/>\
 The direction of hanging wall slip, measured relative to the horizontal (strike). May be defined from field or seismological data. May be calculated from H:V ratios or inferred from slip type. Is defined using the Aki and Richards (1980) convention (or the right-hand rule; Figure 2.1).",
 
-    	    "magnitude": "Magnitude",
-
     	    "length": "Optional<br/>\
 Reported in kilometres, rounded to the nearest kilometre<br/>\
 Should be accompanied by comments or a description of how the length was measured<br/>\
@@ -343,7 +341,7 @@ Length of the fault or fault section, measured along its strike. Generally measu
 
     	    "fault_id": "Fault ID",
 
-            "width": "Width",
+            "width": "Width.",
 
             "area": "Area",
 	    /* for site observations */
@@ -367,13 +365,16 @@ Relative ranking of the completeness of the data constraining the fault dip dire
 };
 
 gem.utils.description = function(fieldName) {
+    /*
+      remove the suffix (e.g. _min, _pref) from fieldName and return
+      the field description
+     */
     fieldNamePrefix = gem.utils.fieldPrefix(fieldName);
     fieldNameSuffix = gem.utils.fieldSuffix(fieldName);
-    fieldShortDescription = gem.utils.fromFieldToDescription(fieldNamePrefix);
     
-    if (['min', 'max', 'pref', 'pre'].indexOf(fieldNameSuffix) != -1) {
+    if (['min', 'max', 'pref'].indexOf(fieldNameSuffix) != -1) {
 	fieldName = fieldNamePrefix;
     }
     
-    return gem.utils.fieldDescriptions[fieldName] || ("No description available for " + fieldShortDescription);
+    return gem.utils.fieldDescriptions[fieldName] || ("No description available for field " + fieldName);
 }
