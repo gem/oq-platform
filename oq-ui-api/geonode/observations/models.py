@@ -286,15 +286,23 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
             self.area_max = self.length_max * self.width_max
         
     def _update_net_slip_rate(self):
-        if self.strike_slip_rate_min and self.vertical_slip_rate_min:
+        if self.strike_slip_rate_min and self.dip_slip_rate_min:
             self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
-                                                        self.vertical_slip_rate_min])
-        if self.strike_slip_rate_max and self.vertical_slip_rate_max:
+                                                        self.dip_slip_rate_min])
+        if self.strike_slip_rate_max and self.dip_slip_rate_max:
             self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
-                                                        self.vertical_slip_rate_max])
-        if self.strike_slip_rate_pref and self.vertical_slip_rate_pref:
+                                                        self.dip_slip_rate_max])
+        if self.strike_slip_rate_pref and self.dip_slip_rate_pref:
             self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
-                                                         self.vertical_slip_rate_pref])
+                                                         self.dip_slip_rate_pref])
+        if self.dip_max and self.dip_slip_rate_min:
+            self.vertical_slip_rate_min = self.dip_slip_rate_min * math.sin(self.dip_max / 180. * math.pi)
+
+        if self.dip_pref and self.dip_slip_rate_pref:
+            self.vertical_slip_rate_pref = self.dip_slip_rate_pref * math.sin(self.dip_pref / 180. * math.pi)
+
+        if self.dip_min and self.dip_slip_rate_max:
+            self.vertical_slip_rate_max = self.dip_slip_rate_max * math.sin(self.dip_min / 180. * math.pi)
 
     def _update_magnitude(self):
         if self.length_min and self.width_min:

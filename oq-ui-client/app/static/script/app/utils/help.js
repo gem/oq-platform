@@ -92,7 +92,8 @@ Downward inclination of the fault plane from the horizontal, averaged across the
 
             "dip_dir": "Compulsory<br/>\
 Reported in decimal degrees from 0o to 360o, rounded to the nearest degree, whereby:<br/>\
-o 0o (or 360) = north o 90o =east<br/>\
+o 0 (or 360) <br/>\
+o 90o =east<br/>\
 o 180o = south<br/>\
 o 270o = west<br/>\
 Accompanied by a data completeness factor (see Dip direction data completeness factor)<br/>\
