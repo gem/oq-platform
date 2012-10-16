@@ -110,7 +110,11 @@ def create_faultsource(fault):
     u_sm_d_min u_sm_d_max u_sm_d_pref u_sm_d_com
     low_d_min low_d_max low_d_pref low_d_com
     dip_min dip_max dip_pref dip_com dip_dir
-    slip_type slip_com slip_r_min slip_r_max slip_r_pref slip_r_com
+    slip_type net_slip_rate_com
+    dip_slip_rate_min dip_slip_rate_max dip_slip_rate_pref
+    strike_slip_rate_min strike_slip_rate_max strike_slip_rate_pref
+    vertical_slip_rate_min vertical_slip_rate_max vertical_slip_rate_pref
+    net_slip_rate_min net_slip_rate_max net_slip_rate_pref
     aseis_slip aseis_com mov_min mov_max mov_pref
     fault_name contrib compiler created
     """.strip().split()
@@ -118,14 +122,19 @@ def create_faultsource(fault):
     # the variable a holds the attributes needed to create the fault
     # source. First we copy the verbatim attributes (attributes that
     # will be copied from the fault). Then, the autocomputed fields
-    a = dict((attrib_name, getattr(fault, attrib_name))
-             for attrib_name in verbatim_attributes if getattr(fault, attrib_name) != None)
-
+    a = dict()
+    for attrib_name in verbatim_attributes:
+        if getattr(fault, attrib_name) != None:
+            a[attrib_name] = getattr(fault, attrib_name)
+        else:
+            if not attrib_name in ["aseis_com", "slip_type_com"]:
+                return attrib_name
+    
     faultsource = models.FaultSource.objects.create(
         fault=fault, source_nm="Fault created by from %s" % fault.fault_name, geom=polygon, **a)
     faultsource.update_autocomputed_fields()
     
-    return faultsource
+    return None
 
 
 def join_traces(traces, fault_section):

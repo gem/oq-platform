@@ -130,25 +130,6 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
 			    return;
 			}
 
-			var data = this.target.fault.data;
-
-			var required_attrs = [
-			    'dip_pref', 'u_sm_d_pref', 'low_d_pref',
-			    'fault_name', 'low_d_min', 'low_d_max',
-			    'u_sm_d_min', 'u_sm_d_max', 'dip_min',
-			    'dip_max', 'length_min', 'length_max',
-			    'length_pref', 'u_sm_d_com', 'low_d_com',
-			    'dip_com', 'dip_dir', 'net_slip_rate_com'
-			];
-
-			for (var attr in required_attrs) {
-			    var attr_name = required_attrs[attr];
-			    if (!data[attr_name]) {
-				alert("Please fill in all the required attributes before (missing " + gem.utils.fromFieldToDescription(attr) + ")");
-				return;
-			    }
-			}
-
                         Ext.Ajax.request({
                             method: "POST",
                             url: app.localHostname + '/observations/faultsource/create',
