@@ -270,42 +270,62 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
         self.save()
         
     def _update_width(self):
-        self.width_min = (self.low_d_min - self.u_sm_d_max) / sin(self.dip_max)
-        self.width_max = (self.low_d_max - self.u_sm_d_min) / sin(self.dip_min)
-        self.width_pref = (self.low_d_pref - self.u_sm_d_pref) / sin(self.dip_pref)
+        if self.low_d_min and self.u_sm_d_max and self.dip_max:
+            self.width_min = (self.low_d_min - self.u_sm_d_max) / sin(self.dip_max)
+        if self.width_max and self.low_d_max and self.u_sm_d_min and self.dip_min:
+            self.width_max = (self.low_d_max - self.u_sm_d_min) / sin(self.dip_min)
+        if self.low_d_pref and self.u_sm_d_pref and self.dip_pref:
+            self.width_pref = (self.low_d_pref - self.u_sm_d_pref) / sin(self.dip_pref)
 
     def _update_area(self):
-        self.area_pref = self.length_pref * self.width_pref
-        self.area_min = self.length_min * self.width_min
-        self.area_max = self.length_max * self.width_max
+        if self.length_pref and self.width_pref:
+            self.area_pref = self.length_pref * self.width_pref
+        if self.length_min and self.width_min:
+            self.area_min = self.length_min * self.width_min
+        if self.length_max and self.width_max:
+            self.area_max = self.length_max * self.width_max
         
     def _update_net_slip_rate(self):
-        self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
-                                                    self.vertical_slip_rate_min])
-        self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
-                                                    self.vertical_slip_rate_max])
-        self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
-                                                     self.vertical_slip_rate_pref])
+        if self.strike_slip_rate_min and self.vertical_slip_rate_min:
+            self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
+                                                        self.vertical_slip_rate_min])
+        if self.strike_slip_rate_max and self.vertical_slip_rate_max:
+            self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
+                                                        self.vertical_slip_rate_max])
+        if self.strike_slip_rate_pref and self.vertical_slip_rate_pref:
+            self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
+                                                         self.vertical_slip_rate_pref])
 
     def _update_magnitude(self):
-        self.mag_min = magnitude_law(self.length_min, self.width_min)
-        self.mag_max = magnitude_law(self.length_max, self.width_max)
-        self.mag_pref = magnitude_law(self.length_pref, self.width_pref)
+        if self.length_min and self.width_min:
+            self.mag_min = magnitude_law(self.length_min, self.width_min)
+        if self.length_max and self.width_max:
+            self.mag_max = magnitude_law(self.length_max, self.width_max)
+        if self.length_pref and self.width_pref:
+            self.mag_pref = magnitude_law(self.length_pref, self.width_pref)
 
     def _update_moment(self):
-        self.mom_min = moment_law(self.mag_min)
-        self.mom_max = moment_law(self.mag_max)
-        self.mom_pref = moment_law(self.mag_pref)
+        if self.mag_min:
+            self.mom_min = moment_law(self.mag_min)
+        if self.mag_max:
+            self.mom_max = moment_law(self.mag_max)
+        if self.mag_pref:
+            self.mom_pref = moment_law(self.mag_pref)
 
     def _update_displacement(self):
-        self.dis_min = displacement_law(self.mom_min, self.area_min)
-        self.dis_max = displacement_law(self.mom_max, self.area_max)
-        self.dis_pref = displacement_law(self.mom_pref, self.area_pref)
+        if self.mom_min and self.area_min:
+            self.dis_min = displacement_law(self.mom_min, self.area_min)
+        if self.mom_max and self.area_max:
+            self.dis_max = displacement_law(self.mom_max, self.area_max)
+        if self.mom_pref and self.area_pref:
+            self.dis_pref = displacement_law(self.mom_pref, self.area_pref)
 
     def _update_overall_completeness(self):
-        self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir + 
-                        (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
-                        (self.aseis_slip or ASEIS_SLIP_DEFAULT)) / 11
+        if (self.u_sm_d_com and self.low_d_com and self.dip_com and self.dip_dir and
+            self.net_slip_rate_com and self.aseis_slip):
+            self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir + 
+                            (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
+                            (self.aseis_slip or ASEIS_SLIP_DEFAULT)) / 11
         
 
 class Fault(Observation, WithLength, WithDip, WithSlip, WithDisplacement, WithRecurrence):

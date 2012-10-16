@@ -221,8 +221,6 @@ Relative ranking of the completeness of the data constraining the slip rate. 1 =
 2 = moderately constrained from field data<br/>\
 3 = poorly constrained from field or geological data 4 = inferred",
 
-    
-
             "dip_slip_rate": "Optional<br/>\
 Reported in millimetres per year, up to 3 decimal places<br/>\
 Expressed as preferred, minimum, maximum<br/>\
