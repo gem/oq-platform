@@ -18,6 +18,7 @@
 
 from django.contrib.gis.db import models
 import math
+import numpy
 
 
 SLIP_TYPE_COM_DEFAULT=0
@@ -261,6 +262,7 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
     def update_autocomputed_fields(self):
         self._update_width()
         self._update_area()
+        self._update_net_slip_rate()
         self._update_magnitude()
         self._update_moment()
         self._update_displacement()
@@ -277,6 +279,14 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
         self.area_min = self.length_min * self.width_min
         self.area_max = self.length_max * self.width_max
         
+    def _update_net_slip_rate(self):
+        self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
+                                                    self.vertical_slip_rate_min])
+        self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
+                                                    self.vertical_slip_rate_max])
+        self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
+                                                     self.vertical_slip_rate_pref])
+
     def _update_magnitude(self):
         self.mag_min = magnitude_law(self.length_min, self.width_min)
         self.mag_max = magnitude_law(self.length_max, self.width_max)
@@ -382,3 +392,10 @@ class Displacement(SiteObservation, WithDisplacement):
 
 class SlipRate(SiteObservation, WithSlip):
     pass
+
+def updatecomputedfields():
+    for fs in FaultSource.objects.all():
+        fs.update_autocomputed_fields()
+
+    for fs in FaultSection.objects.all():
+        fs.update_autocomputed_fields()
