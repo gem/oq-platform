@@ -63,7 +63,7 @@ def create_faultsource(request):
         fault_id = json_data['fault_id'].split('.')[-1]
         fault = models.Fault.objects.get(pk=fault_id)
         error = utils.create_faultsource(fault)
-        if not errors:
+        if not error:
             return OK_RESPONSE
         else:
             return HttpResponseBadRequest(error)
