@@ -20,7 +20,7 @@ from django.contrib.gis.db import models
 import math
 
 
-SLIP_COM_DEFAULT=0
+SLIP_TYPE_COM_DEFAULT=0
 ASEIS_SLIP_DEFAULT=0
 
 # we do not store degress in radians
@@ -294,7 +294,7 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
 
     def _update_overall_completeness(self):
         self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir + 
-                        (self.slip_com or SLIP_COM_DEFAULT) + 5 * self.slip_r_com +
+                        (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
                         (self.aseis_slip or ASEIS_SLIP_DEFAULT)) / 11
         
 
