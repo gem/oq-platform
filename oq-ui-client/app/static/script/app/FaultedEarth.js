@@ -103,9 +103,12 @@ FaultedEarth = Ext.extend (gxp.Viewer,{
             "contrib": "Contributed by (name)",
             // custom fied names for the observations table
             "observationType": "Observation Type",
-            "slipType": "Slip Type",
+            "slip_type_com": "Slip Type. Completess factor",
             "slip_type": "Slip Type",
             "hv_ratio": "H:V Ratio",
+            "hv_ratio_min": "H:V Ratio",
+            "hv_ratio_max": "H:V Ratio",
+            "hv_ratio_pref": "H:V Ratio",
             "rake": "Rake (deg)",
             "net_displacement": "Net Displacement",
             "net_sliprate_min": "Net Slip Rate Min (mm/yr)",

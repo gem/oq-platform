@@ -22,7 +22,7 @@ import numpy
 
 
 SLIP_TYPE_COM_DEFAULT=0
-ASEIS_SLIP_DEFAULT=0
+ASEIS_SLIP_COM_DEFAULT=0
 
 # we do not store degress in radians
 sin = lambda degrees: math.sin(math.radians(degrees))
@@ -322,10 +322,10 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
 
     def _update_overall_completeness(self):
         if (self.u_sm_d_com and self.low_d_com and self.dip_com and self.dip_dir and
-            self.net_slip_rate_com and self.aseis_slip):
+            self.net_slip_rate_com and self.aseis_com):
             self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir + 
                             (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
-                            (self.aseis_slip or ASEIS_SLIP_DEFAULT)) / 11
+                            (self.aseis_com or ASEIS_SLIP_COM_DEFAULT)) / 11
         
 
 class Fault(Observation, WithLength, WithDip, WithSlip, WithDisplacement, WithRecurrence):

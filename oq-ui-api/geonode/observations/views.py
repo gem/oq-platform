@@ -34,10 +34,9 @@ def join_traces(request):
         json_data = simplejson.loads(request.raw_post_data)
         fault_section = models.FaultSection.objects.create(sec_name=json_data['name'])
 
-        for trace in json_data['trace_ids']:
-            trace = models.Trace.objects.get(pk=trace.split('.')[1])
-            trace.fault_section.add(fault_section)
-        fault_section.update_autocomputed_fields()
+        traces = [models.Trace.objects.get(pk=trace_fid.split('.')[1])
+                  for trace_fid in json_data['trace_ids']]
+        utils.join_traces(traces, fault_section)
 
     return OK_RESPONSE
 

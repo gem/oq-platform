@@ -104,7 +104,8 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 			    function() {
 				Ext.Ajax.request({
 				    method: "POST",
-				    url: this.target.localGeoNodeUrl + this.target.localHostName + '/observations/updatecomputedfields'});
+				    url: app.localHostname + '/observations/updatecomputedfields'
+				});
 			    });
 
 	  return popup;

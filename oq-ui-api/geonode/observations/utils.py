@@ -128,9 +128,15 @@ def create_faultsource(fault):
     return faultsource
 
 
+def join_traces(traces, fault_section):
+    for trace in traces:
+        trace.fault_section.add(fault_section)
+    fault_section.update_autocomputed_fields()
+
 def join_fault_sections(fault_sections, fault_name):
     fault = models.Fault.objects.create(fault_name=fault_name)
 
     for fault_section in fault_sections:
         fault_section.fault.add(fault)
     fault.save()
+
