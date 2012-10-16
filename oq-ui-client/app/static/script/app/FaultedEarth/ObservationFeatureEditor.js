@@ -34,6 +34,17 @@ faultedearth.isCompulsory = function(fieldName) {
     return compulsoryFields.indexOf(fieldName) != -1;
 };
 
+faultedearth.isAutoComputed = function(fieldName) {
+    autoComputedFields = [
+	'width_min', 'width_max', 'width_pref',
+	'area_min', 'area_max', 'area_pref',
+	'net_slip_rate_min', 'net_slip_rate_max', 'net_slip_rate_pref',
+	'mag_min', 'mag_max', 'mag_pref',
+	'mom_min', 'mom_max', 'mom_pref',
+	'all_com'
+    ];
+    return autoComputedFields.indexOf(fieldName) != -1;
+}
 
 /**
  * @class ObservationFeatureEditor
@@ -68,6 +79,10 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
       addOutput: function(config) {
 	  var editor = this;
 	  config.width = 400;
+
+	  if (config.fields) {
+	      console.log(config.fields);
+	  }
 	  var output = faultedearth.ObservationFeatureEditor.superclass.addOutput.apply(this, arguments);
 	  
 	  // super.addOutput could return a component that it is not a

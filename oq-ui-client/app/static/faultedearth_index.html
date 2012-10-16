@@ -73,20 +73,22 @@
             Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
             
-            var oq_proto = window.location.href.split("/")[0];
+            var oq_proto = document.location.protocol;
 
             /* proto can be "https:" or "http:" only */
             if (oq_proto != "https:") {
                 oq_proto = "http:";
             }
             
+	    var app;
+
             Ext.onReady(function(){
 
-                var app = new FaultedEarth({
+                app = new FaultedEarth({
                 
                     localGeoServerUrl: "/geoserver/",
-                    localGeoNodeUrl: oq_proto + '//' + window.location.hostname + "/proxy/?url=",
-                    localHostname:   oq_proto + '//' + window.location.hostname,
+                    localGeoNodeUrl: '//' + window.location.hostname + "/proxy/?url=",
+                    localHostname:   '//' + window.location.hostname,
 
                     defaultSourceType: "gxp_wmscsource",
 

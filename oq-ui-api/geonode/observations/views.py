@@ -25,10 +25,11 @@ from django.utils import simplejson
 from geonode.observations import models, utils
 
 
+OK_RESPONSE = HttpResponse('Ok')
+
+
 @csrf_exempt
 def join_traces(request):
-
-    response = HttpResponse()
     if request.method == 'POST':
         json_data = simplejson.loads(request.raw_post_data)
         fault_section = models.FaultSection.objects.create(sec_name=json_data['name'])
@@ -38,7 +39,7 @@ def join_traces(request):
             trace.fault_section.add(fault_section)
         fault_section.update_autocomputed_fields()
 
-    return response
+    return OK_RESPONSE
 
 @csrf_exempt
 def join_faultsections(request):
@@ -51,7 +52,7 @@ def join_faultsections(request):
                           for fault_section_id in json_data['fault_section_ids']]
         fault_name = json_data['fault_name']
         utils.join_fault_sections(fault_sections, fault_name)
-        return HttpResponse("Fault created")
+        return OK_RESPONSE
     else:
         return HttpResponseBadRequest()
 
@@ -63,16 +64,11 @@ def create_faultsource(request):
         fault_id = json_data['fault_id'].split('.')[-1]
         fault = models.Fault.objects.get(pk=fault_id)
         utils.create_faultsource(fault)
-        return HttpResponse('ok')
+        return OK_RESPONSE
     else:
         return HttpResponseBadRequest()
     
-@csrf_exempt
-def export(request):
-    if request.method == 'PUT':
-        
-        json_data = simplejson.loads(request.raw_post_data)
-        
-    return HttpResponse('ok')
 
-
+def updatecomputedfields(request):
+    models.updatecomputedfields()
+    return OK_RESPONSE

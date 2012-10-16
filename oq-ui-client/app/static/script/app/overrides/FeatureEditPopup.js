@@ -127,7 +127,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    break;
 		case 'rake_com':
 		case 'aseis_com':
-		case 'slip_r_com':
+		case 'net_slip_rate_com':
 		case 'slip_com':
 		case 'dip_com':
 		case 're_int_com':
@@ -192,9 +192,6 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'area_min':
 		case 'area_max':
 		case 'area_pref':
-		case 'slip_r_min':
-		case 'slip_r_max':
-		case 'slip_r_pref':
 		case 'dip_slip_rate_min':
 		case 'dip_slip_rate_max':
 		case 'dip_slip_rate_pref':
@@ -228,3 +225,91 @@ Ext.override(gxp.FeatureEditPopup, {
 	});
     }
 });
+
+
+/* Overrides GeoExt.form.recordToField to allow custom form input
+ * widgets */
+
+var origRecordToField = GeoExt.form.recordToField;
+GeoExt.form.recordToField = function(record) {
+    var name = record.get("name");
+    var field = origRecordToField(record);
+
+    if (faultedearth.isAutoComputed(name)) {
+	field.xtype = "displayfield";
+    }
+
+    var choices = null;
+
+    if (gem.utils.fieldSuffix(name) == 'com') {
+	choices = [1, 2, 3, 4];
+    }
+
+    if (name == 'slip_type') {
+	choices = ['Reverse', 'Thrust (dip <45 deg)',
+		   'Normal', 'Dextral', 'Sinistral', 'Normal Dextral',
+		   'Dextral Normal', 'Sinistral Normal', 'Normal Sinistral',
+		   'Dextral Reverse', 'Sinistral Reverse'];
+    }
+
+    if (name == 'slip_rate_category') {
+	choices = ['0.001 - <0.01', '0.01 - <0.1', '0.1 - <1',
+		   '0.1 - <1', '1 - <5', '5 - <10', '10 - <50',
+		   '50 - <100', '100 - <200' ];
+    }
+
+    if (name == 're_int_category') {
+	choices = ['10 - <100', '100 - <1,000',
+		   '1,000 - <2,000', '2,000 - <5,000',
+		   '5,000 - <10,000', '10,000 - <100,000',
+		   '100,000 - <500,000', '500,000 - <1,000,000',
+		   '1,000,000 - <10,000,000' ];
+    }
+
+    if (name == "mov_category") {
+	choices = ['0 - <1,000', '1,000 - <11,700 (Holocene)',
+		   '11,700 - <50,000', '100,000 - <1,000,000',
+		   '1,000,000 - <10,000,000' ];
+    }
+
+    if (name == "geomorphic_expression") {
+	choices = [
+	    'Surface trace', 'Eroded scarp', 'Sharp feature',
+	    'Topographic feature', 'Bedrock extension',
+	    'Concealed', 'No trace'
+	];
+    }
+
+    if (name == "dis_category") {
+	choices = [
+	    '0.1 - <0.5', '0.5 - <1', '1 - <5',
+	    '5 - <10', '10 - <30' ];
+    }
+
+    if (faultedearth.isCompulsory(name)) {
+	field.allowBlank = false;
+    }
+    
+    if (choices) {
+	choice_data = [];
+	for (var i = 0; i < choices.length; i++) {
+	    choice_data.push([choices[i], choices[i]]);
+	}
+	field.autoSelect = false;
+	field.forceSelection = true;
+	field.xtype = "combo";
+	field.mode = "local";
+	field.store = new Ext.data.ArrayStore({
+            id: 0,
+            fields: [ 'value', 'text' ],
+            data: choice_data
+	});
+	field.triggerAction = 'all';
+	field.disableKeyFilter = true;
+	field.valueField = 'value';
+	field.displayField = 'text';
+    }
+
+    return field;
+}
+GeoExt.form.recordToField.REGEXES = origRecordToField.REGEXES;
