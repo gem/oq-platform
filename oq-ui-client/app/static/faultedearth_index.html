@@ -73,13 +73,6 @@
             Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
             
-            var oq_proto = document.location.protocol;
-
-            /* proto can be "https:" or "http:" only */
-            if (oq_proto != "https:") {
-                oq_proto = "http:";
-            }
-            
 	    var app;
 
             Ext.onReady(function(){

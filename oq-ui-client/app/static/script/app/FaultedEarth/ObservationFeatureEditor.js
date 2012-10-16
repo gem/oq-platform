@@ -100,6 +100,12 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 				 function(grid, rowIndex, event) {
 				     faultedearth.on_row_click(editor, popup, rowIndex);
 				 });
+	  popup.addListener('featuremodified',
+			    function() {
+				Ext.Ajax.request({
+				    method: "POST",
+				    url: this.target.localGeoNodeUrl + this.target.localHostName + '/observations/updatecomputedfields'});
+			    });
 
 	  return popup;
       }

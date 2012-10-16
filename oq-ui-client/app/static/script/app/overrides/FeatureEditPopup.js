@@ -78,6 +78,8 @@ Ext.override(gxp.FeatureEditPopup, {
 			if (search == -1) {
 			    errors.push("Invalid fault section id");
 			}
+		    } else {
+			alert("before editing the fault_section_id please activate the fault section tab to load the data");
 		    }
 		    break;
 

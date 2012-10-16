@@ -68,7 +68,7 @@ def create_faultsource(request):
     else:
         return HttpResponseBadRequest()
     
-
+@csrf_exempt
 def updatecomputedfields(request):
     models.updatecomputedfields()
     return OK_RESPONSE
