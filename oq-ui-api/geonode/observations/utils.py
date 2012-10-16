@@ -119,7 +119,7 @@ def create_faultsource(fault):
     # will be copied from the fault). Then, the autocomputed fields
     a = dict()
     for attrib_name in verbatim_attributes:
-        if getattr(fault, attrib_name):
+        if getattr(fault, attrib_name) is not None:
             a[attrib_name] = getattr(fault, attrib_name)
         else:
             if not attrib_name in ["aseis_com", "slip_type_com"]:
