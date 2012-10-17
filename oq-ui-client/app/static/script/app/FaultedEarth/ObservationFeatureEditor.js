@@ -80,9 +80,6 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 	  var editor = this;
 	  config.width = 400;
 
-	  if (config.fields) {
-	      console.log(config.fields);
-	  }
 	  var output = faultedearth.ObservationFeatureEditor.superclass.addOutput.apply(this, arguments);
 	  
 	  // super.addOutput could return a component that it is not a

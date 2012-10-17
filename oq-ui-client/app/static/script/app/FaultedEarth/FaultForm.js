@@ -139,7 +139,6 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                             },
                             failure: function(response, opts){
                                 alert('failed to generate fault source: missing field ' + faultedearth.properties[response.responseText]);
-				console.log(response);
                             },
 
                             scope: this
