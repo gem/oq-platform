@@ -1,12 +1,12 @@
 <layer>
-  <name>fault_section_view</name>
-  <id>LayerInfoImpl--11c14697:133f9d12f23:-7ffe</id>
+  <name>observations_faultsection</name>
+  <id>LayerInfoImpl--4b710d17:139f8f9da33:-7ffe</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl--35ab71e8:1339423b7c4:-7fff</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl--11c14697:133f9d12f23:-7fff</id>
+    <id>FeatureTypeInfoImpl--4b710d17:139f8f9da33:-7fff</id>
   </resource>
   <enabled>true</enabled>
   <queryable>true</queryable>
@@ -21,7 +21,7 @@
     <entry key="GWC.cacheFormats">image/jpeg,image/png</entry>
   </metadata>
   <attribution>
-    <title>ben</title>
+    <title>geonode</title>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>
   </attribution>

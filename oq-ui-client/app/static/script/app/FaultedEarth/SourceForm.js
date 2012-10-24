@@ -59,7 +59,8 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-                if (featureManager.layerRecord.get("name") == "geonode:observations_faultsource") {
+		var current_feature = featureManager.layerRecord;
+                if (current_feature.get("name") == "geonode:observations_faultsource") {
                     this.current_fault_source_url = "/observations/faultsource/export";
                     this.sessionFids.push(e.feature.fid.split('.')[1]);
                 }

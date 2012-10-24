@@ -60,12 +60,14 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     return;
                 }
                 if (featureManager.layerRecord.get("name") == "geonode:observations_fault") {
-                    this.target.summaryId = e.feature.fid;
+		    /* store the fault (for multiple purposes like use
+		     * it for fault source creation) */
+                    this.target.fault = e.feature;
                 }
             },
             "featureunselected": function(e) {
                 if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_fault") {
-                    this.target.summaryId = null;
+                    this.target.fault = null;
                 }
             },
             scope: this
@@ -123,15 +125,20 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
+			if (!this.target.fault) {
+			    alert("To create a fault source, you need to select a fault");
+			    return;
+			}
+
                         Ext.Ajax.request({
-                            method: "PUT",
-                            url: this.target.localGeoNodeUrl + this.target.localHostname + '/observations/faultsource/create',
-                            params: Ext.encode({fault_id: this.target.summaryId, name: ''}),
+                            method: "POST",
+                            url: app.localHostname + '/observations/faultsource/create',
+                            params: Ext.encode({fault_id: this.target.fault.fid}),
                             success: function(response, opts) {
                                 alert('Fault source generated');
                             },
                             failure: function(response, opts){
-                                alert('failed to generate fault source: ' + response);
+                                alert('failed to generate fault source: missing field ' + faultedearth.properties[response.responseText]);
                             },
 
                             scope: this
@@ -185,8 +192,8 @@ FaultedEarth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                         }
                     },
                     "load": function() {
-                        this.target.summaryId && window.setTimeout((function() {
-                            var feature = mgr.featureLayer.getFeatureByFid(this.target.summaryId);
+                        this.target.fault && window.setTimeout((function() {
+                            var feature = mgr.featureLayer.getFeatureByFid(this.target.fault);
                             if (feature && feature.layer.selectedFeatures.indexOf(feature) == -1) {
                                 feature.layer.selectedFeatures.push(feature);
                                 feature.layer.events.triggerEvent("featureselected", {feature: feature});

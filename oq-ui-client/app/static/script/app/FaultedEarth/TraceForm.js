@@ -150,14 +150,23 @@ FaultedEarth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-                        this.sessionTids.push(this.faultSection);
+
+			if (!this.faultSection || !this.faultSection.name) {
+			    alert('Please, give a name to the fault section to be generated');
+			    return;
+			}
+
+			if (this.sessionTids.length == 0) {
+			    alert('Please, select at least a trace to create a fault section');
+			    return;
+			}
                         Ext.Ajax.request({
-                            method: "PUT",
+                            method: "POST",
                             url: this.target.localGeoNodeUrl + this.target.localHostname + this.current_trace_url,
-                            params: Ext.encode(this.sessionTids),
+                            params: Ext.encode({ 'section_name': this.faultSection.name,
+						 'trace_ids':this.sessionTids }),
                             success: function(response, opts) {
                                 alert('Fault Section created');
-                                this.sessionTids = [];
                             },
                             failure: function(response, opts){
                                 alert('Failed to create the Fault Section');
@@ -165,7 +174,6 @@ FaultedEarth.TraceForm = Ext.extend(gxp.plugins.Tool, {
 
                             scope: this
                         });
-
                     },
                     scope: this
                     }]

@@ -48,9 +48,6 @@
             <arg line="clone -nq git://github.com/gem/buildkit.git ."/>
         </exec>
         <exec executable="git" dir="${build}/buildkit" failonerror="true">
-            <arg line="pull origin master"/>
-        </exec>
-        <exec executable="git" dir="${build}/buildkit" failonerror="true">
             <arg line="checkout 86eacbd7b3bf62b8e99f46911dd5a633464b8570"/>
         </exec>
 

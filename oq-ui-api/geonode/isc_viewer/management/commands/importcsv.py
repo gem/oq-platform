@@ -2,10 +2,10 @@ import csv
 from django.core.management.base import BaseCommand, CommandError
 from isc_viewer.models import Measure
 
+
 class Command(BaseCommand):
     args = '<csv catalogue filename> <csv appendix filename>'
     help = 'Import csv of GEM Global Instrumental Catalogue (catalogue and appendix)'
-
 
     def handle(self, filename_cat, filename_app, *args, **options):
         # 'unc' and 'unc' are renamed to 'depth_unc' and 'mw_unc'
@@ -52,11 +52,6 @@ class Command(BaseCommand):
                     return False
                 q_cur += 1
 
-        #print "fin qui [%s]\n" % fields
-        #print "fin qui [%s]\n" % wk_list
-        #return False
-
-
         if fields != wk_list:
             return False
 
@@ -69,11 +64,9 @@ class Command(BaseCommand):
                 items = zip(fields, row)
                 item = {}
 
-                # print "ITEMS: [%s]\n" % items
-
                 for (name, value) in items:
                     if name != 'date' and name != 's' and name != 'mo_auth' and name != 'epic_q' and name != 'depth_q' and name != 'mw_q':
-                        # print "NAME: [%s]\n" % name
+
                         if value.strip() == '':
                             item[name] = None
                         else:
@@ -81,10 +74,6 @@ class Command(BaseCommand):
                     else:
                         item[name] = value.strip()
 
-                # print "ITEMS2:[%s]\n" % items
-
-
-                # wk_list = ['date', 'lat', 'lon', 'smajaz', 'sminax', 'strike', 'epic_q', 'depth', 'depth_unc', 'depth_q', 'mw', 'mw_unc', 'mw_q', 's', 'mo', 'fac', 'mo_auth', 'mpp', 'mpr', 'mrr', 'mrt', 'mtp', 'mtt', 'eventid' ]
                 m = Measure(src_id=data_id, date=item['date'], lat=item['lat'], lon=item['lon'],
                             the_geom="POINT(%s %s)" % (item['lon'], item['lat']),
                             smajaz=item['smajaz'], sminax=item['sminax'], strike=item['strike'],  epic_q=item['epic_q'],
@@ -97,5 +86,3 @@ class Command(BaseCommand):
                 print m
                 m.save()
             data_id = data_id + 1
-
-        
