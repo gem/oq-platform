@@ -1,5 +1,4 @@
 /**
- * Add all your dependencies here.
  *
  * @require widgets/Viewer.js
  * @require plugins/LayerTree.js
@@ -18,6 +17,8 @@
  * @require plugins/GoogleSource.js
  * @require plugins/GoogleGeocoder.js
  * @require plugins/Legend.js
+ *
+ * @require faulted_earth/models.js
  */
 
 var app;
@@ -28,11 +29,15 @@ Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
 OpenLayers.ImgPath = "externals/openlayers/img/";
 
 
+Ext.namespace('faulted_earth');
+
+
 Ext.onReady(function() {
     app = new gxp.Viewer({
 
-	/* TODO: is this used ? */
+	/* TODO: are the following two properties still used/useful ? */
 	legendTabTitle: "Legend",
+        proxy: "/proxy?url=",
 
         portalConfig: {
             layout: "border",
@@ -40,8 +45,7 @@ Ext.onReady(function() {
             
             // by configuring items here, we don't need to configure portalItems
             // and save a wrapping container
-            items: [
-	    {
+            items: [{
 		region: "north",
 		autoHeight: true,
 		contentEl: 'header-wrapper',
@@ -53,12 +57,6 @@ Ext.onReady(function() {
                 region: "center",
                 border: false,
                 items: ["mymap"]
-            }, {
-                id: "westpanel",
-                xtype: "container",
-                layout: "fit",
-                region: "west",
-                width: 350
             },{
 		xtype: 'panel',
 		region: "south",
@@ -77,17 +75,99 @@ Ext.onReady(function() {
 		    animCollapse: true,
                     activeTab : 0,
                     border: true,
-                    items: [ {
-			title: 'Observations: Events',
-			items: [{
-                            id: "site_events_featuregrid",
+		    initComponent: function() {
+			Ext.TabPanel.prototype.initComponent.call(this);
+			var tabContainer = this;
+
+			var defaultTabConfig = {
                             layout: "fit",
                             height: 180,
                             autoScroll: true
-			}]
-                    }]
+			};
+			
+			Ext.each(faulted_earth.models, function(model) {
+			    var tabConfig = {
+				title: model.title,
+				items: Ext.apply(defaultTabConfig, { id: model.grid_id() })
+			    };
+			    tabContainer.add(tabConfig);
+			});
+                    }
 		}
-            }],
+            }, {
+                id: "west",
+                region: "west",
+                layout: "accordion",
+                width: 295,
+                split: true,
+                collapsible: true,
+                collapseMode: "mini",
+                header: false,
+                border: false,
+                defaults: {
+                    hideBorders: true,
+                    autoScroll: true
+                },
+                items: {
+                    title: "Layers",
+		    id: "westpanel"
+                },
+		initComponent: function() {
+		    Ext.Panel.prototype.initComponent.call(this);
+		    var west_panel = this;
+
+		    var defaultFormConfig = { padding: 10 };
+		    Ext.each(faulted_earth.models, function(model) {
+			var formConfig = Ext.apply(defaultFormConfig, {
+			    id: model.form_id(),
+			    title: model.form_title()
+			});
+			west_panel.add(formConfig);
+		    });
+		},
+		initTools: function() {
+		    var defaultManagerConfig = {
+			ptype: "gxp_featuremanager",
+			autoLoadFeatures: true,
+			autoSetLayer: false,
+			paging: false,
+			maxFeatures: 1000
+		    };
+
+		    var defaultGridConfig = {
+			ptype: "gxp_featuregrid",
+			alwaysDisplayOnMap: true,
+			selectOnMap: true,
+			displayMode: "selected",
+			controlOptions: {
+			    multiple: true
+			}
+		    };
+		    Ext.each(faulted_earth.models, function(model) {
+			var managerConfig = Ext.apply(defaultManagerConfig, {
+			    id: model.manager_id()
+			});
+			this.initialConfig.tools.push(managerConfig);
+
+			var gridConfig = Ext.apply(defaultGridConfig, {
+			    id: model.grid_id(),
+			    featureManager: model.manager_id(),
+
+			    /* it should be the same of the id. it has
+			     * to match the grid panel defined
+			     * above */
+			    outputTarget: model.grid_id(),
+			    outputConfig: {
+				id: model.grid_id(),
+				loadMask: true,
+				propertyNames: model.properties
+			    }
+			});
+			this.initialConfig.tools.push(gridConfig);
+		    });
+		    gxp.Viewer.prototype.initTools.call(this);
+		}
+	    }],
             bbar: {id: "mybbar"}
         },
         
@@ -214,3 +294,19 @@ Ext.onReady(function() {
 
     });
 });
+
+/*
+  Copyright (c) 2010-2012, GEM Foundation.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
