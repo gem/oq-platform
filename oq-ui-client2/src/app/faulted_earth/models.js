@@ -1,5 +1,6 @@
 Ext.namespace('faulted_earth');
 
+
 faulted_earth.Model = function(prefix_id, title) {
     this.prefix_id = prefix_id;
     this.title = title;
