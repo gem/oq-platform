@@ -19,15 +19,12 @@ Ext.namespace("faultedearth");
 /* an utility function to check if a field is compulsory */
 faultedearth.isCompulsory = function(fieldName) {
     compulsoryFields = [ 
-	'fault_name', 'section_name',
-	'sec_name', 'compiled_by',
+	'fault_name', 'sec_name', 'compiled_by',
 	'low_d_min', 'low_d_max', 'low_pref', 'low_d_com',
 	'u_sm_d_min', 'u_sm_d_max', 'u_sm_d_pref', 'u_sm_d_com',
 	'dip_min', 'dip_max', 'dip_pref', 'dip_com',
-	'dip_dir', 'slip_type', 
-	'vertical_slip_rate_min', 'vertical_slip_rate_max', 
-	'vertical_slip_rate_pref', 'vertical_slip_rate_com',
-	'dip_slip_rate_min', 'dip_slip_rate_max', 'dip_slip_rate_pref',
+	'dip_dir', 'dip_dir_com',
+	'slip_type', 'slip_type_com',
 	'aseis_slip', 'aseis_com',
 	'scale', 'accuracy', 's_feature'
     ];

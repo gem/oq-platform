@@ -109,21 +109,29 @@ def create_faultsource(fault):
     dip_slip_rate_min dip_slip_rate_max dip_slip_rate_pref
     strike_slip_rate_min strike_slip_rate_max strike_slip_rate_pref
     vertical_slip_rate_min vertical_slip_rate_max vertical_slip_rate_pref
-    net_slip_rate_min net_slip_rate_max net_slip_rate_pref
     aseis_slip aseis_com mov_min mov_max mov_pref
     fault_name contrib compiler created
     """.strip().split()
+
+    optional_fields = ["contrib", "compiler", "created",
+                       "length_min", "length_pref", "length_max",
+                       "dip_slip_rate_min" "dip_slip_rate_max" "dip_slip_rate_pref",
+                       "strike_slip_rate_min", "strike_slip_rate_pref", "strike_slip_rate_max",
+                       "vertical_slip_rate_min", "vertical_slip_rate_pref", "vertical_slip_rate_max",
+                       "net_slip_rate_com", "slip_type_com",
+                       "dis_min", "dis_pref", "dis_max",
+                       "mov_min", "mov_pref", "mov_max"]
 
     # the variable a holds the attributes needed to create the fault
     # source. First we copy the verbatim attributes (attributes that
     # will be copied from the fault). Then, the autocomputed fields
     a = dict()
     for attrib_name in verbatim_attributes:
-        if getattr(fault, attrib_name) is not None:
+        if (getattr(fault, attrib_name) is not None or
+            attrib_name in optional_fields):
             a[attrib_name] = getattr(fault, attrib_name)
-        else:
-            if not attrib_name in ["aseis_com", "slip_type_com"]:
-                return attrib_name
+        elif not attrib_name in ["aseis_com", "slip_type_com"]:
+            return attrib_name
 
     polygon = fault_poly_from_mls(
         fault.simple_geom, fault.dip_pref,

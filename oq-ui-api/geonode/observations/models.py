@@ -137,6 +137,7 @@ class WithDip(models.Model):
     dip_pref = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     dip_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     dip_dir = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
+    dip_dir_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
 
     class Meta:
         abstract = True
@@ -182,6 +183,32 @@ class WithSlip(models.Model):
 
     class Meta:
         abstract = True
+
+
+class WithSlipAndDip(WithSlip, WithDip):
+    class Meta:
+        abstract = True
+
+    def _update_net_slip_rate(self):
+        if self.strike_slip_rate_min and self.dip_slip_rate_min:
+            self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
+                                                        self.dip_slip_rate_min])
+        if self.strike_slip_rate_max and self.dip_slip_rate_max:
+            self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
+                                                        self.dip_slip_rate_max])
+        if self.strike_slip_rate_pref and self.dip_slip_rate_pref:
+            self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
+                                                         self.dip_slip_rate_pref])
+        if self.dip_max and self.dip_slip_rate_min:
+            self.vertical_slip_rate_min = self.dip_slip_rate_min * math.sin(self.dip_max / 180. * math.pi)
+
+        if self.dip_pref and self.dip_slip_rate_pref:
+            self.vertical_slip_rate_pref = self.dip_slip_rate_pref * math.sin(self.dip_pref / 180. * math.pi)
+
+        if self.dip_min and self.dip_slip_rate_max:
+            self.vertical_slip_rate_max = self.dip_slip_rate_max * math.sin(self.dip_min / 180. * math.pi)
+
+
 
 class WithMagnitude(models.Model):
     mag_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -250,8 +277,17 @@ class Observation(models.Model):
     class Meta:
         abstract = True
 
+    def _update_overall_completeness(self):
+        needed_attrs = ['u_sm_d_com', 'low_d_com', 'dip_com', 'dip_dir_com', 'net_slip_rate_com',
+                        'aseis_com']
+        
+        if all([getattr(self, attr, None) for attr in needed_attrs]):
+            self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir_com + 
+                            (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
+                            (self.aseis_com or ASEIS_SLIP_COM_DEFAULT)) / 11
 
-class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
+
+class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
                   WithMagnitude, WithDisplacement, WithRecurrence):
     fault = models.ForeignKey('Fault')
     source_nm  = models.CharField(max_length=255)
@@ -271,10 +307,13 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
         
     def _update_width(self):
         if self.low_d_min and self.u_sm_d_max and self.dip_max:
+            assert (self.low_d_min > self.u_sm_d_max), "low_d_min %s < u_sm_d_max %s" %  (self.low_d_min, self.u_sm_d_max)
             self.width_min = (self.low_d_min - self.u_sm_d_max) / sin(self.dip_max)
-        if self.width_max and self.low_d_max and self.u_sm_d_min and self.dip_min:
+        if self.low_d_max and self.u_sm_d_min and self.dip_min:
+            assert (self.low_d_max > self.u_sm_d_min), "low_d_max %s < u_sm_d_min %s" %  (self.low_d_max, self.u_sm_d_min)
             self.width_max = (self.low_d_max - self.u_sm_d_min) / sin(self.dip_min)
         if self.low_d_pref and self.u_sm_d_pref and self.dip_pref:
+            assert (self.low_d_pref > self.u_sm_d_pref), "low_d_pref %s < u_sm_d_pref %s" %  (self.low_d_pref, self.u_sm_d_pref)
             self.width_pref = (self.low_d_pref - self.u_sm_d_pref) / sin(self.dip_pref)
 
     def _update_area(self):
@@ -283,26 +322,7 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
         if self.length_min and self.width_min:
             self.area_min = self.length_min * self.width_min
         if self.length_max and self.width_max:
-            self.area_max = self.length_max * self.width_max
-        
-    def _update_net_slip_rate(self):
-        if self.strike_slip_rate_min and self.dip_slip_rate_min:
-            self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
-                                                        self.dip_slip_rate_min])
-        if self.strike_slip_rate_max and self.dip_slip_rate_max:
-            self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
-                                                        self.dip_slip_rate_max])
-        if self.strike_slip_rate_pref and self.dip_slip_rate_pref:
-            self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
-                                                         self.dip_slip_rate_pref])
-        if self.dip_max and self.dip_slip_rate_min:
-            self.vertical_slip_rate_min = self.dip_slip_rate_min * math.sin(self.dip_max / 180. * math.pi)
-
-        if self.dip_pref and self.dip_slip_rate_pref:
-            self.vertical_slip_rate_pref = self.dip_slip_rate_pref * math.sin(self.dip_pref / 180. * math.pi)
-
-        if self.dip_min and self.dip_slip_rate_max:
-            self.vertical_slip_rate_max = self.dip_slip_rate_max * math.sin(self.dip_min / 180. * math.pi)
+            self.area_max = self.length_max * self.width_max        
 
     def _update_magnitude(self):
         if self.length_min and self.width_min:
@@ -327,16 +347,9 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
             self.dis_max = displacement_law(self.mom_max, self.area_max)
         if self.mom_pref and self.area_pref:
             self.dis_pref = displacement_law(self.mom_pref, self.area_pref)
-
-    def _update_overall_completeness(self):
-        if (self.u_sm_d_com and self.low_d_com and self.dip_com and self.dip_dir and
-            self.net_slip_rate_com and self.aseis_com):
-            self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir + 
-                            (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
-                            (self.aseis_com or ASEIS_SLIP_COM_DEFAULT)) / 11
         
 
-class Fault(Observation, WithLength, WithDip, WithSlip, WithDisplacement, WithRecurrence):
+class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
     fault_name = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
@@ -346,8 +359,13 @@ class Fault(Observation, WithLength, WithDip, WithSlip, WithDisplacement, WithRe
     def __unicode__(self):
         return "Fault %s %s" % (self.pk, self.fault_name)
 
+    def update_autocomputed_fields(self):
+        self._update_net_slip_rate()
+        self._update_overall_completeness()
+        self.save()
 
-class FaultSection(Observation, WithLength, WithDip, WithSlip, WithDisplacement, WithRecurrence):
+
+class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
     fault = models.ManyToManyField('Fault')
     geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
     sec_name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
@@ -362,6 +380,9 @@ class FaultSection(Observation, WithLength, WithDip, WithSlip, WithDisplacement,
             for trace in self.trace_set.all()[1:]:
                 self.geom = self.geom.union(trace.geom)
             self.save()
+        self._update_net_slip_rate()
+        self._update_overall_completeness()
+        self.save()
 
 
 class LocatedObservation(models.Model):
@@ -421,9 +442,13 @@ class Displacement(SiteObservation, WithDisplacement):
 class SlipRate(SiteObservation, WithSlip):
     pass
 
+
 def updatecomputedfields():
-    for fs in FaultSource.objects.all():
+    for fs in FaultSection.objects.all():
         fs.update_autocomputed_fields()
 
-    for fs in FaultSection.objects.all():
+    for fs in Fault.objects.all():
+        fs.update_autocomputed_fields()
+
+    for fs in FaultSource.objects.all():
         fs.update_autocomputed_fields()
