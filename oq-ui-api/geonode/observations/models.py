@@ -272,7 +272,7 @@ class FaultSource(Observation, WithLength, WithArea, WithDip, WithSlip,
     def _update_width(self):
         if self.low_d_min and self.u_sm_d_max and self.dip_max:
             self.width_min = (self.low_d_min - self.u_sm_d_max) / sin(self.dip_max)
-        if self.width_max and self.low_d_max and self.u_sm_d_min and self.dip_min:
+        if self.low_d_max and self.u_sm_d_min and self.dip_min:
             self.width_max = (self.low_d_max - self.u_sm_d_min) / sin(self.dip_min)
         if self.low_d_pref and self.u_sm_d_pref and self.dip_pref:
             self.width_pref = (self.low_d_pref - self.u_sm_d_pref) / sin(self.dip_pref)

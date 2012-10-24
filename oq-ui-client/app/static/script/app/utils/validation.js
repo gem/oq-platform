@@ -113,6 +113,35 @@ gem.utils.checkValueIn = function(field, value, possibilities) {
     }
 }
 
+gem.utils._checkWidthRule = function(a, b, c) {
+    if (a && b && c) {
+	return (a - b) / Math.sin(Math.PI / 2 * c) <= 0;
+    }
+    return false;
+}
+
+gem.utils.checkWidthRule = function(fieldname, grid) {
+    var description = gem.utils.fromFieldToDescription(fieldName);
+
+    var low_d_min = grid.getCurrentValue('low_d_min', parseFloat);
+    var low_d_pref = grid.getCurrentValue('low_d_pref', parseFloat);
+    var low_d_max = grid.getCurrentValue('low_d_max', parseFloat);
+
+    var u_sm_d_min = grid.getCurrentValue('u_sm_d_min', parseFloat);
+    var u_sm_d_pref = grid.getCurrentValue('u_sm_d_pref', parseFloat);
+    var u_sm_d_max = grid.getCurrentValue('u_sm_d_max', parseFloat);
+
+    var dip_min = grid.getCurrentValue('dip_min', parseFloat);
+    var dip_pref = grid.getCurrentValue('dip_pref', parseFloat);
+    var dip_max = grid.getCurrentValue('dip_max', parseFloat);
+
+    if (gem.utils._checkWidthRule(low_d_min, u_sm_d_max, dip_max) ||
+	gem.utils._checkWidthRule(low_d_max, u_sm_d_min, dip_min) ||
+	gem.utils._checkWidthRule(low_d_pref, u_sm_d_pref, dip_pref)) {
+	return "The current value of " + description + " implies a negative width";
+    }
+}
+
 gem.utils.checkInteger = function(fieldName, value) {
     var description = gem.utils.fromFieldToDescription(fieldName);
     var intValue = parseInt(value);

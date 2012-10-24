@@ -99,6 +99,8 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'low_d_max':
 		case 'low_d_pref':
 		    pushError(errors,
+			      checkWidthRule(fieldName, grid));
+		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
 			      gem.utils.checkPositive(fieldName, value));
@@ -117,6 +119,8 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'u_sm_d_min':
 		case 'u_sm_d_max':
 		case 'u_sm_d_pref':
+		    pushError(errors,
+			      checkWidthRule(fieldName, grid));
 		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
@@ -150,6 +154,8 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'dip_min':
 		case 'dip_max':
 		case 'dip_pref':
+		    pushError(errors,
+			      checkWidthRule(fieldName, grid));
 		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
