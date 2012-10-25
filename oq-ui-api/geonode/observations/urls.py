@@ -18,9 +18,10 @@
 
 from django.conf.urls.defaults import *
 
+
 urlpatterns = patterns('geonode.observations.views',
-   (r'^traces/join$', 'traces'),
-   (r'^faultsection/join$', 'faultsection'),
-   (r'^faultsource/create$', 'faultsource'),
-   (r'^faultsource/export$', 'export'),
+                       (r'^traces/join$', 'join_traces'),
+                       (r'^faultsection/join$', 'join_faultsections'),
+                       (r'^faultsource/create$', 'create_faultsource'),
+                       (r'^updatecomputedfields$', 'updatecomputedfields')
 )

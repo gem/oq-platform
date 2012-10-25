@@ -27,9 +27,6 @@ import logging
 from geonode.observations import models
 log = logging.getLogger("django.feeds.utils")
 
-SLIP_COM_DEFAULT=0
-ASEIS_SLIP_DEFAULT=0
-
 
 def fault_poly_from_mls(fault_source_geom, dip,
                         upp_seis_depth, low_seis_depth):
@@ -101,81 +98,62 @@ def fault_poly_from_mls(fault_source_geom, dip,
     return Polygon(poly_coords)
 
 
-def create_faultsource(fault, name):
-    polygon = fault_poly_from_mls(
-        fault.simple_geom, fault.dip_pref,
-        fault.u_sm_d_pre, fault.low_d_pref
-    )
-
-    sin = lambda degrees: math.sin(math.radians(degrees))
-
-    log.info("Something happened")
-
+def create_faultsource(fault):
     # these attributes are copied from the corresponding fault
     verbatim_attributes = """
-    length_min length_max length_pre
-    u_sm_d_min u_sm_d_max u_sm_d_pre u_sm_d_com
+    length_min length_max length_pref
+    u_sm_d_min u_sm_d_max u_sm_d_pref u_sm_d_com
     low_d_min low_d_max low_d_pref low_d_com
     dip_min dip_max dip_pref dip_com dip_dir
-    slip_typ slip_com slip_r_min slip_r_max slip_r_pre slip_r_com
-    aseis_slip aseis_com
-    mov_min mov_max mov_pref
-    fault_name
-    contrib
-    compiler
-    created
+    slip_type net_slip_rate_com
+    dip_slip_rate_min dip_slip_rate_max dip_slip_rate_pref
+    strike_slip_rate_min strike_slip_rate_max strike_slip_rate_pref
+    vertical_slip_rate_min vertical_slip_rate_max vertical_slip_rate_pref
+    aseis_slip aseis_com mov_min mov_max mov_pref
+    fault_name contrib compiler created
     """.strip().split()
 
-    a = dict((attrib_name, getattr(fault, attrib_name))
-             for attrib_name in verbatim_attributes if getattr(fault, attrib_name) != None)
-    a.update(dict(
-        width_min=(a['low_d_min'] - a['u_sm_d_max']) / sin(a['dip_max']),
-        width_max=(a['low_d_max'] - a['u_sm_d_min']) / sin(a['dip_min']),
-        width_pref=(a['low_d_pref'] - a['u_sm_d_pre']) / sin(a['dip_pref']),
-    ))
-    a.update(dict(
-        area_pref=a['length_pre'] * a['width_pref'],
-        area_min=a['length_min'] * a['width_min'],
-        area_max=a['length_max'] * a['width_max'],
-    ))
-    a.update(dict(
-        # Magnitude scaling law is "New Zealand -- oblique slip"
-        mag_min=(4.18
-                 + 4.0 / 3.0 * math.log10(a['length_min'])
-                 + 2.0 / 3.0 * math.log10(a['width_min'])),
-        mag_max=(4.18
-                 + 4.0 / 3.0 * math.log10(a['length_max'])
-                 + 2.0 / 3.0 * math.log10(a['width_max'])),
-        mag_pref=(4.18
-                  + 4.0 / 3.0 * math.log10(a['length_pre'])
-                  + 2.0 / 3.0 * math.log10(a['width_pref'])),
-    ))
-    a.update(dict(
-        mom_min=10 ** (16.05 + (1.5 * a['mag_min'])),
-        mom_max=10 ** (16.05 + (1.5 * a['mag_max'])),
-        mom_pref=10 ** (16.05 + (1.5 * a['mag_pref'])),
-    ))
-    a.update(dict(
-        dis_min=a['mom_min'] / (3.0e11 * a['area_min'] * 1.0e10) * 0.01,
-        dis_max=a['mom_max'] / (3.0e11 * a['area_max'] * 1.0e10) * 0.01,
-        dis_pref=a['mom_pref'] / (3.0e11 * a['area_pref'] * 1.0e10) * 0.01,
-    ))
-    a.update(dict(
-        re_int_min=a['dis_min'] * 1e3 / a['slip_r_max'],
-        re_int_max=a['dis_max'] * 1e3 / a['slip_r_min'],
-        re_int_pre=a['dis_pref'] * 1e3 / a['slip_r_pre'],
-    ))
-    a.update(dict(
-        all_com=(a['u_sm_d_com'] + a['low_d_com'] + a['dip_com'] + a['dip_dir']
-                 + a.get('slip_com', SLIP_COM_DEFAULT) + 5 * a['slip_r_com'] + a.get('aseis_slip', ASEIS_SLIP_DEFAULT)) / 11
-    ))
+    optional_fields = ["contrib", "compiler", "created",
+                       "length_min", "length_pref", "length_max",
+                       "dip_slip_rate_min" "dip_slip_rate_max" "dip_slip_rate_pref",
+                       "strike_slip_rate_min", "strike_slip_rate_pref", "strike_slip_rate_max",
+                       "vertical_slip_rate_min", "vertical_slip_rate_pref", "vertical_slip_rate_max",
+                       "net_slip_rate_com", "slip_type_com",
+                       "dis_min", "dis_pref", "dis_max",
+                       "mov_min", "mov_pref", "mov_max"]
 
-    log.info("Trying to create FaultSource with params %s for fault %s" % (a, fault))
-    faultsource = models.FaultSource.objects.create(
-        fault=fault, source_nm=name, geom=polygon, **a
+    # the variable a holds the attributes needed to create the fault
+    # source. First we copy the verbatim attributes (attributes that
+    # will be copied from the fault). Then, the autocomputed fields
+    a = dict()
+    for attrib_name in verbatim_attributes:
+        if (getattr(fault, attrib_name) is not None or
+            attrib_name in optional_fields):
+            a[attrib_name] = getattr(fault, attrib_name)
+        elif not attrib_name in ["aseis_com", "slip_type_com"]:
+            return attrib_name
+
+    polygon = fault_poly_from_mls(
+        fault.simple_geom, fault.dip_pref,
+        fault.u_sm_d_pref, fault.low_d_pref
     )
-
-    log.debug("d'a fault source name %s" % faultsource.fault) 
     
-    return faultsource
+    faultsource = models.FaultSource.objects.create(
+        fault=fault, source_nm="Fault created by from %s" % fault.fault_name, geom=polygon, **a)
+    faultsource.update_autocomputed_fields()
+    
+    return None
+
+
+def join_traces(traces, fault_section):
+    for trace in traces:
+        trace.fault_section.add(fault_section)
+    fault_section.update_autocomputed_fields()
+
+def join_fault_sections(fault_sections, fault_name):
+    fault = models.Fault.objects.create(fault_name=fault_name)
+
+    for fault_section in fault_sections:
+        fault_section.fault.add(fault)
+    fault.save()
 

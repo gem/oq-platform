@@ -92,7 +92,8 @@ Downward inclination of the fault plane from the horizontal, averaged across the
 
             "dip_dir": "Compulsory<br/>\
 Reported in decimal degrees from 0o to 360o, rounded to the nearest degree, whereby:<br/>\
-o 0o (or 360) = north o 90o =east<br/>\
+o 0 (or 360) <br/>\
+o 90o =east<br/>\
 o 180o = south<br/>\
 o 270o = west<br/>\
 Accompanied by a data completeness factor (see Dip direction data completeness factor)<br/>\
@@ -104,7 +105,7 @@ Reported as one of:<br/>\
 oN oS oW oE o NW o SW o NE o SE<br/>\
 Should be accompanied by comments or a description of the data source (free text up to 254 characters long) Geographic quadrant of the overall side of the fault which has been displaced vertically downwards.",
 
-            "slip_typ": "Compulsory<br/>\
+            "slip_type": "Compulsory<br/>\
 Choose from a list:<br/>\
 o Reverse<br/>\
 o Thrust (dip <45o) o Normal<br/>\
@@ -114,7 +115,7 @@ o Normal dextral o Normal sinistral o Reverse dextral o Reverse sinistral o Dext
 Accompanied by a data completeness factor (see Slip type data completeness factor)<br/>\
 Should be accompanied by comments or a description of the data source (free text up to 254 characters long) Dominant and, if applicable, secondary type (sense) of relative slip (displacement or movement) on the fault plane.",
 
-    "slip_com": "Compulsory<br/>\
+    "slip_type_com": "Compulsory<br/>\
 Reported as 1, 2, 3, or 4<br/>\
 Should be accompanied by comments or a description of the basis for the choice of factor (free text up to 254 characters long)<br/>\
 Relative ranking of the completeness of the data constraining the slip type.<br/>\
@@ -221,8 +222,6 @@ Relative ranking of the completeness of the data constraining the slip rate. 1 =
 2 = moderately constrained from field data<br/>\
 3 = poorly constrained from field or geological data 4 = inferred",
 
-    
-
             "dip_slip_rate": "Optional<br/>\
 Reported in millimetres per year, up to 3 decimal places<br/>\
 Expressed as preferred, minimum, maximum<br/>\
@@ -287,13 +286,16 @@ in a GIS programme, this is the average scale at which the digitiser is working.
 Reported as a number – i.e., 1:200,000 is reported as 200,000<br/>\
 Conservative definition of the location accuracy of the trace on the ground surface, calculated from twice the scale at which the trace was mapped. For example, if a trace was mapped at 1:100,000 scale then the accuracy is calculated to be 1:200,000.",
 
-            "geomor_exp": "Compulsory<br/>\
+            "geomorphic_expression": "Compulsory<br/>\
 Chosen from a restricted list:<br/>\
 o Surface trace<br/>\
 o Eroded scarp<br/>\
 o Sharp feature<br/>\
-o Topographic feature o Bedrock extension o Concealed<br/>\
+o Topographic feature <br/>\
+o Bedrock extension <br/>\
+o Concealed<br/>\
 o No trace<br/>\
+\
 Expression of the fault on the ground or on digital imagery (e.g., Google Earth).<br/>\
 1. Surface Trace = Clearly defined trace of a recent or well preserved fault rupture trace mapped in the field or from high resolution imagery (e.g., LiDAR, aerial photographs).<br/>\
 2. Eroded scarp = Eroded or naturally degraded faultline scarp mapped in the field or from high resolution imagery (e.g., LiDAR, aerial photographs).<br/>\
@@ -326,8 +328,6 @@ Expressed as preferred, minimum, maximum<br/>\
 Should be accompanied by comments or a description of the data source (free text up to 254 characters long)<br/>\
 The direction of hanging wall slip, measured relative to the horizontal (strike). May be defined from field or seismological data. May be calculated from H:V ratios or inferred from slip type. Is defined using the Aki and Richards (1980) convention (or the right-hand rule; Figure 2.1).",
 
-    	    "magnitude": "Magnitude",
-
     	    "length": "Optional<br/>\
 Reported in kilometres, rounded to the nearest kilometre<br/>\
 Should be accompanied by comments or a description of how the length was measured<br/>\
@@ -340,7 +340,7 @@ Length of the fault or fault section, measured along its strike. Generally measu
 
     	    "fault_id": "Fault ID",
 
-            "width": "Width",
+            "width": "Width.",
 
             "area": "Area",
 	    /* for site observations */
@@ -364,13 +364,16 @@ Relative ranking of the completeness of the data constraining the fault dip dire
 };
 
 gem.utils.description = function(fieldName) {
+    /*
+      remove the suffix (e.g. _min, _pref) from fieldName and return
+      the field description
+     */
     fieldNamePrefix = gem.utils.fieldPrefix(fieldName);
     fieldNameSuffix = gem.utils.fieldSuffix(fieldName);
-    fieldShortDescription = gem.utils.fromFieldToDescription(fieldNamePrefix);
     
-    if (['min', 'max', 'pref', 'pre'].indexOf(fieldNameSuffix) != -1) {
+    if (['min', 'max', 'pref'].indexOf(fieldNameSuffix) != -1) {
 	fieldName = fieldNamePrefix;
     }
     
-    return gem.utils.fieldDescriptions[fieldName] || ("No description available for " + fieldShortDescription);
+    return gem.utils.fieldDescriptions[fieldName] || ("No description available for field " + fieldName);
 }

@@ -73,16 +73,18 @@
             Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
             
-            var oq_proto = window.location.href.split("/")[0];
+            var oq_proto = document.location.protocol;
 
             /* proto can be "https:" or "http:" only */
             if (oq_proto != "https:") {
                 oq_proto = "http:";
             }
             
+	    var app;
+
             Ext.onReady(function(){
 
-                var app = new FaultedEarth({
+                app = new FaultedEarth({
                 
                     localGeoServerUrl: "/geoserver/",
                     localGeoNodeUrl: oq_proto + '//' + window.location.hostname + "/proxy/?url=",
@@ -107,76 +109,76 @@
                         }
                     },
                     
-                    map: {
-                        id: "map",
-                        region: "center",
-                        projection: "EPSG:900913",
-                        units: "m",
-                        maxResolution: 156543.0339,
-                        maxExtent: [
-                            -20037508.34, -20037508.34,
-                            20037508.34, 20037508.34
-                        ],
-                        layers: [{
-                            source: "google",
-                            title: "Google Terrain",
-                            name: "TERRAIN",
-                            group: "background"
-                        },{
-                            source: "google",
-                            title: "Google Hybrid",
-                            name: "HYBRID",
-                            group: "background"
-                        },{
-                            source: "osm",
-                            name: "mapnik",
-                            group: "background",
-                            visibility: false
-                        }, {
-                            source: "ol",
-                            group: "background",
-                            fixed: true,
-                            type: "OpenLayers.Layer",
-                            args: [
-                                "None", {visibility: false}
-                            ]
-                        },{
-                            source: "local",
-                            name: "geonode:observations_faultsource",
-                            title: "Fault Source"
-                        },{
-                            source: "local",
-                            name: "geonode:observations_fault",
-                            title: "Neotectonic Fault"
-                        },{
-                            source: "local",
-                            name: "geonode:fault_section_view",
-                            title : "Neotectonic Sections"
-                        }, {
-                            source: "local",
-                            name: "geonode:observations_trace",
-                            title: "Traces",
-                        }, {
-                            source: "local",
-                            name: "geonode:observations_event",
-                            title : "Site Observations - Events"
-                        } , {
-                            source: "local",
-                            name: "geonode:observations_displacement",
-                            title : "Site Observations - Displacement"
-                        }, {
-                            source: "local",
-                            name: "geonode:observations_slip_rate",
-                            title : "Site Observations - Slip Rate"
-                        }, {
-                            source: "local",
-                            name: "geonode:observations_fault_geometry",
-                            title : "Site Observations - Fault Geometry"
-                        }],
-                        center: [0, 0],
-                        zoom: 2
-                    }
-                    
+                map: {
+                    id: "map",
+                    region: "center",
+                    projection: "EPSG:900913",
+                    units: "m",
+                    maxResolution: 156543.0339,
+                    maxExtent: [
+                        -20037508.34, -20037508.34,
+                        20037508.34, 20037508.34
+                    ],
+                    layers: [{
+                        source: "google",
+                        title: "Google Terrain",
+                        name: "TERRAIN",
+                        group: "background"
+                    },{
+                        source: "google",
+                        title: "Google Hybrid",
+                        name: "HYBRID",
+                        group: "background"
+                    },{
+                        source: "osm",
+                        name: "mapnik",
+                        group: "background",
+                        visibility: false
+                    }, {
+                        source: "ol",
+                        group: "background",
+                        fixed: true,
+                        type: "OpenLayers.Layer",
+                        args: [
+                            "None", {visibility: false}
+                        ]
+                    },{
+                        source: "local",
+                        name: "geonode:observations_faultsource",
+                        title: "Fault Source"
+                    },{
+                        source: "local",
+                        name: "geonode:observations_fault",
+                        title: "Neotectonic Fault"
+                    },{
+                        source: "local",
+                        name: "geonode:observations_faultsection",
+                        title : "Neotectonic Sections"
+                    }, {
+                        source: "local",
+                        name: "geonode:observations_trace",
+                        title: "Traces",
+                    }, {
+                        source: "local",
+                        name: "geonode:observations_event",
+                        title : "Site Observations - Events"
+                    } , {
+                        source: "local",
+                        name: "geonode:observations_displacement",
+                        title : "Site Observations - Displacement"
+                    }, {
+                        source: "local",
+                        name: "geonode:observations_slip_rate",
+                        title : "Site Observations - Slip Rate"
+                    }, {
+                        source: "local",
+                        name: "geonode:observations_fault_geometry",
+                        title : "Site Observations - Fault Geometry"
+                    }],
+                    center: [0, 0],
+                    zoom: 2
+                }
+                
                 });
             });
 

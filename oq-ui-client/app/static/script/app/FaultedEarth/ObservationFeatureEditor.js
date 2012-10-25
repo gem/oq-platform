@@ -19,21 +19,29 @@ Ext.namespace("faultedearth");
 /* an utility function to check if a field is compulsory */
 faultedearth.isCompulsory = function(fieldName) {
     compulsoryFields = [ 
-	'fault_name', 'section_name',
-	'sec_name', 'compiled_by',
+	'fault_name', 'sec_name', 'compiled_by',
 	'low_d_min', 'low_d_max', 'low_pref', 'low_d_com',
-	'u_sm_d_min', 'u_sm_d_max', 'u_sm_d_pre', 'u_sm_d_com',
+	'u_sm_d_min', 'u_sm_d_max', 'u_sm_d_pref', 'u_sm_d_com',
 	'dip_min', 'dip_max', 'dip_pref', 'dip_com',
-	'dip_dir', 'slip_typ', 
-	'vertical_slip_rate_min', 'vertical_slip_rate_max', 
-	'vertical_slip_rate_pref', 'vertical_slip_rate_com',
-	'dip_slip_rate_min', 'dip_slip_rate_max', 'dip_slip_rate_pref',
+	'dip_dir', 'dip_dir_com',
+	'slip_type', 'slip_type_com',
 	'aseis_slip', 'aseis_com',
 	'scale', 'accuracy', 's_feature'
     ];
     return compulsoryFields.indexOf(fieldName) != -1;
 };
 
+faultedearth.isAutoComputed = function(fieldName) {
+    autoComputedFields = [
+	'width_min', 'width_max', 'width_pref',
+	'area_min', 'area_max', 'area_pref',
+	'net_slip_rate_min', 'net_slip_rate_max', 'net_slip_rate_pref',
+	'mag_min', 'mag_max', 'mag_pref',
+	'mom_min', 'mom_max', 'mom_pref',
+	'all_com'
+    ];
+    return autoComputedFields.indexOf(fieldName) != -1;
+}
 
 /**
  * @class ObservationFeatureEditor
@@ -68,6 +76,7 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
       addOutput: function(config) {
 	  var editor = this;
 	  config.width = 400;
+
 	  var output = faultedearth.ObservationFeatureEditor.superclass.addOutput.apply(this, arguments);
 	  
 	  // super.addOutput could return a component that it is not a
@@ -85,6 +94,13 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 				 function(grid, rowIndex, event) {
 				     faultedearth.on_row_click(editor, popup, rowIndex);
 				 });
+	  popup.addListener('featuremodified',
+			    function() {
+				Ext.Ajax.request({
+				    method: "POST",
+				    url: app.localHostname + '/observations/updatecomputedfields'
+				});
+			    });
 
 	  return popup;
       }
@@ -97,7 +113,7 @@ faultedearth.on_row_click = function(editor, popup, rowIndex) {
     var store = grid.propStore.store;
     var fieldName = store.getAt(rowIndex).id;
     
-    if (editor.helpPopup) {
+    if (editor.helpPopup && editor.helpPopup.isVisible()) {
 	editor.helpPopup.body.dom.innerHTML=gem.utils.description(fieldName);
 	editor.helpPopup.enable();
     } else {

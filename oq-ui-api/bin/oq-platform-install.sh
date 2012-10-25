@@ -20,7 +20,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=v1.10.1
+export GEM_OQ_PLATF_GIT_VERS=auto-computed-fields
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -575,6 +575,7 @@ exit 0"
     python ./manage.py importcsv "$GEM_ISC_DATA_CAT" "$GEM_ISC_DATA_APP"
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
+    python ./manage.py updatecomputedfields
     export DJANGO_SCHEMATA_DOMAIN=ged4gem
     python ./manage.py migrate ged4gem
 
