@@ -1,8 +1,8 @@
 from django import http
 
 XS_SHARING_ALLOWED_ORIGINS = '*'
-XS_SHARING_ALLOWED_METHODS = ['POST','GET','OPTIONS', 'PUT', 'DELETE']
-XS_SHARING_ALLOWED_HEADERS = []
+XS_SHARING_ALLOWED_METHODS = 'POST,GET,OPTIONS,PUT,DELETE'
+XS_SHARING_ALLOWED_HEADERS = 'ORIGIN, X-REQUESTED-WITH, CONTENT-TYPE'
 
 
 class XsSharing(object):
@@ -19,9 +19,9 @@ class XsSharing(object):
     def process_request(self, request):
         if 'HTTP_ACCESS_CONTROL_REQUEST_METHOD' in request.META:
             response = http.HttpResponse()
-            response['Access-Control-Allow-Origin']  = XS_SHARING_ALLOWED_ORIGINS
-            response['Access-Control-Allow-Methods'] = ",".join( XS_SHARING_ALLOWED_METHODS )
-            response['Access-Control-Allow-Headers']  = ",".join( XS_SHARING_ALLOWED_HEADERS )
+            response['Access-Control-Allow-Origin'] = XS_SHARING_ALLOWED_ORIGINS
+            response['Access-Control-Allow-Methods'] = XS_SHARING_ALLOWED_METHODS
+            response['Access-Control-Allow-Headers'] = XS_SHARING_ALLOWED_HEADERS
             return response
 
         return None
@@ -31,7 +31,8 @@ class XsSharing(object):
         if response.has_header('Access-Control-Allow-Origin'):
             return response
 
-        response['Access-Control-Allow-Origin']  = XS_SHARING_ALLOWED_ORIGINS
-        response['Access-Control-Allow-Methods'] = ",".join( XS_SHARING_ALLOWED_METHODS )
+        response['Access-Control-Allow-Origin'] = XS_SHARING_ALLOWED_ORIGINS
+        response['Access-Control-Allow-Methods'] = XS_SHARING_ALLOWED_METHODS
+        response['Access-Control-Allow-Headers'] = XS_SHARING_ALLOWED_HEADERS
 
         return response
