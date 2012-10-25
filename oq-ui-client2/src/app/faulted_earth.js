@@ -31,6 +31,10 @@ OpenLayers.ImgPath = "externals/openlayers/img/";
 
 Ext.namespace('faulted_earth');
 
+/* expecting the app on port 80/443 if in debug mode, i.e. if a port
+ * has been specified in the location */
+faulted_earth.app_url = document.location.protocol + '//' + document.location.hostname;
+
 
 Ext.onReady(function() {
     app = new gxp.Viewer({
@@ -88,7 +92,7 @@ Ext.onReady(function() {
 			Ext.each(faulted_earth.models, function(model) {
 			    var tabConfig = {
 				title: model.title,
-				items: Ext.apply(defaultTabConfig, { id: model.grid_id() })
+				items: Ext.apply({}, { id: model.gridId() }, defaultTabConfig)
 			    };
 			    tabContainer.add(tabConfig);
 			});
@@ -118,54 +122,12 @@ Ext.onReady(function() {
 
 		    var defaultFormConfig = { padding: 10 };
 		    Ext.each(faulted_earth.models, function(model) {
-			var formConfig = Ext.apply(defaultFormConfig, {
-			    id: model.form_id(),
-			    title: model.form_title()
-			});
+			var formConfig = Ext.apply({}, {
+			    id: model.formId(),
+			    title: model.formTitle()
+			}, defaultFormConfig);
 			west_panel.add(formConfig);
 		    });
-		},
-		initTools: function() {
-		    var defaultManagerConfig = {
-			ptype: "gxp_featuremanager",
-			autoLoadFeatures: true,
-			autoSetLayer: false,
-			paging: false,
-			maxFeatures: 1000
-		    };
-
-		    var defaultGridConfig = {
-			ptype: "gxp_featuregrid",
-			alwaysDisplayOnMap: true,
-			selectOnMap: true,
-			displayMode: "selected",
-			controlOptions: {
-			    multiple: true
-			}
-		    };
-		    Ext.each(faulted_earth.models, function(model) {
-			var managerConfig = Ext.apply(defaultManagerConfig, {
-			    id: model.manager_id()
-			});
-			this.initialConfig.tools.push(managerConfig);
-
-			var gridConfig = Ext.apply(defaultGridConfig, {
-			    id: model.grid_id(),
-			    featureManager: model.manager_id(),
-
-			    /* it should be the same of the id. it has
-			     * to match the grid panel defined
-			     * above */
-			    outputTarget: model.grid_id(),
-			    outputConfig: {
-				id: model.grid_id(),
-				loadMask: true,
-				propertyNames: model.properties
-			    }
-			});
-			this.initialConfig.tools.push(gridConfig);
-		    });
-		    gxp.Viewer.prototype.initTools.call(this);
 		}
 	    }],
             bbar: {id: "mybbar"}
@@ -216,6 +178,102 @@ Ext.onReady(function() {
             actionTarget: "map.tbar"
         }],
         
+	initTools: function() {
+	    var viewer = this;
+
+	    var defaultManagerConfig = {
+		autoLoadFeatures: true,
+		autoSetLayer: false,
+		paging: false,
+		maxFeatures: 1000
+	    };
+
+	    var defaultGridConfig = {
+		alwaysDisplayOnMap: true,
+		selectOnMap: true,
+		displayMode: "selected",
+		controlOptions: {
+		    multiple: true
+		}
+	    };
+
+	    var defaultEditorConfig = {
+		autoLoadFeature: true,
+		createFeatureActionText: "Draw",
+		editFeatureActionText: "Modify"
+	    }
+
+	    var defaultFormConfig = {};
+
+	    Ext.each(faulted_earth.models, function(model) {
+		var gridConfig = Ext.apply({}, {
+		    ptype: model.gridPtype(),
+		    id: model.gridId(),
+		    featureManager: model.managerId(),
+		    outputTarget: model.gridId(),
+		    outputConfig: {
+			id: model.gridId(),
+			loadMask: true,
+			propertyNames: model.properties
+		    }
+		}, defaultGridConfig);
+		viewer.initialConfig.tools.push(gridConfig);
+
+		if (model.hasForm()) {
+		    var formConfig = Ext.apply({}, {
+			ptype: model.formPtype(),
+			id: model.formId(),
+			featureManager: model.managerId(),
+			featureEditor: model.editorId(),
+			outputTarget: model.formId()
+		    }, defaultFormConfig);
+		    viewer.initialConfig.tools.push(formConfig);
+
+		    var editorConfig = Ext.apply({},
+			{
+			    ptype: model.editorPtype(),
+			    id: model.editorId(),
+			    featureManager: model.managerId(),
+			    actionTarget: model.formTarget(),
+			    outputConfig: {
+				propertyNames: model.properties()
+			    }
+			}, defaultEditorConfig);
+
+		    if (model.supportSnapping) {
+			Ext.apply(editorConfig, { snappingAgent: model.snappingId() });
+			viewer.initialConfig.tools.push({
+			    ptype: "gxp_snappingagent",
+			    id: model.snappingId(),
+			    targets: [{
+				source: "local",
+				name: model.sourceName()
+			    }]
+			})
+		    }
+		    viewer.initialConfig.tools.push(editorConfig);
+		}
+
+		var managerConfig = Ext.apply({}, {
+		    id: model.managerId(),
+		    layer: {
+			source: "local",
+			name: model.sourceName()
+		    },
+		    layerRecordName: model.prefixId,
+		    ptype: model.managerPtype()
+		}, defaultManagerConfig);
+		viewer.initialConfig.tools.push(managerConfig);
+	    });
+	    gxp.Viewer.prototype.initTools.call(this);
+
+	    /* call registerEvents for each tools for fine-grained
+	     * customization */
+	    Ext.iterate(viewer.tools, function(tool) {
+		if (viewer.tools[tool].registerEvents)
+		    viewer.tools[tool].registerEvents(viewer);
+	    });
+	},
         // layer sources
         sources: {
             local: {
@@ -252,7 +310,10 @@ Ext.onReady(function() {
                 source: "osm",
                 name: "mapnik",
                 group: "background"
-            }, {
+            }, 
+            /* FIXME: the following sources should be got
+	     * from faulted_earth.models */
+            {
                 source: "local",
                 name: "geonode:observations_faultsource",
                 title: "Fault Source"
