@@ -1,92 +1,58 @@
+/*
+  Copyright (c) 2010-2012, GEM Foundation.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
+
+
 Ext.namespace('faulted_earth');
 
 
 faulted_earth.Model = function(prefixId, title, properties, conf) {
     this.prefixId = prefixId;
     this.title = title;
-    this._properties = properties
+    this.properties = properties
 
-    /* conf is an object. its keys are converted into private keys of
+    /* conf is an object. its keys are converted into keys of
      * `this` */
-    if (conf) {
-	Ext.iterate(conf, function(field) {
-	    this['_' + field] = conf[field]
-	});
-    }
-    return this;
-}
+    Ext.apply(this, conf, {
+	gridPtype: "gxp_featuregrid",
+	editorPtype: "fe_featureeditor",
+	formPtype: 'fe_' + this.prefixId + '_form',
+	managerPtype: 'gxp_featuremanager'
+    });
 
-faulted_earth.Model.prototype.sourceName = function() {
-    return "geonode:observations_" + this.prefixId;
-}
-
-faulted_earth.Model.prototype.gridId = function() {
-    return this.prefixId + '_grid';
-}
-
-faulted_earth.Model.prototype.formId = function() {
-    return this.prefixId + '_form';
-}
-
-faulted_earth.Model.prototype.snappingId = function() {
-    return this.prefixId + '_snapping';
-}
-
-
-faulted_earth.Model.prototype.formToolId = function() {
-    return this.prefixId + '_form_tool';
-}
-
-faulted_earth.Model.prototype.managerId = function() {
-    return this.prefixId + '_manager';
-}
-
-faulted_earth.Model.prototype.editorId = function() {
-    return this.prefixId + '_editor';
-}
-
-faulted_earth.Model.prototype.formTitle = function() {
-    return this.title + " Form";
-}
-
-faulted_earth.Model.prototype.formPtype = function() {
-    return 'fe_' + this.prefixId + '_form';
-}
-
-faulted_earth.Model.prototype.gridPtype = function() {
-    return this._gridPtype || "gxp_featuregrid"
-}
-
-
-faulted_earth.Model.prototype.formTarget = function() {
-    return 'fe_' + this.prefixId + '_tooltarget';
-}
-
-faulted_earth.Model.prototype.editorPtype = function() {
-    return this._editorPtype || "fe_featureeditor";
-}
-
-faulted_earth.Model.prototype.managerPtype = function() {
-    return this._managerPtype || "gxp_featuremanager";
-}
-
-
-faulted_earth.Model.prototype.hasForm = function() {
-    return this.prefixId == 'trace';
-}
-
-faulted_earth.Model.prototype.properties = function() {
-    var propertyNames = {}
+    this.sourceName = "geonode:observations_" + this.prefixId;
+    this.gridId = this.prefixId + '_grid';
+    this.formId = this.prefixId + '_form';
+    this.snappingId = this.prefixId + '_snapping';
+    this.formToolId = this.prefixId + '_form_tool';
+    this.managerId = this.prefixId + '_manager';
+    this.editorId = this.prefixId + '_editor';
+    this.formTitle = this.title + " Form";
+    this.formTarget = 'fe_' + this.prefixId + '_tooltarget';
+    var propertyNames = {};
 
     /* add a visual clue for compulsory fields */
-    Ext.each(this._properties, function (field) {
+    Ext.each(this.properties, function (field) {
 	propertyNames[field.id] = field.label;
 
         if (field.isCompulsory) {
             propertyNames[field.id] += " <small>(*)</small>";
         }
     });
-    return propertyNames;
+    this.propertyNames = propertyNames;
+    return this;
 }
 
 faulted_earth.locatedObservationProperties = [
@@ -100,12 +66,36 @@ faulted_earth.traceProperties = faulted_earth.locatedObservationProperties.conca
     { id: "geomorphic_expression", label: "Geomorphic Expression" }
 ]);
 
+faulted_earth.siteProperties = faulted_earth.locatedObservationProperties.concat([
+    { id: "fault_section_id", label: "Fault Section ID", isCompulsory: true },
+    { id: "s_feature", label: "Site Feature", isCompulsory: true }]);
+
+function withInterval(field) {
+    return [
+	Ext.apply({}, { id: field.id + "_min", label: "Minimum " + field.label }, field),
+	Ext.apply({}, { id: field.id + "_pref", label: "Preferred " + field.label }, field),
+	Ext.apply({}, { id: field.id + "_max", label: "Maximum " + field.label }, field),
+    ];
+}
+
+faulted_earth.recurrenceProperties = withInterval(
+    { id: "re_int", label: "Recurrence Interval (yr)", isCompulsory: true }).concat(
+	withInterval({ id: "mov", label: "Age of last movement (yr BP)" }).concat(
+	    [ { id: "historical_earthquake", label: "Historical Eartquake" },
+	      { id: "pre_historical_earthquake", label: "Pre Historical Eartquake" },
+	      { id: "marker_age", label: "Marker Age (yrs BP)" },
+	      { id: "re_int_category", label: "Recurrence interval category" },
+	      { id: "mov_category", label: "Age of last movement category" }]));
+
+faulted_earth.eventProperties = faulted_earth.siteProperties.concat(faulted_earth.recurrenceProperties);
+
+
 faulted_earth.models = [
-    new faulted_earth.Model("event", 'Observations: Events'),
+    new faulted_earth.Model("event", 'Observations: Events', faulted_earth.eventProperties, { hasForm: true, formPtype: 'fe_site_form' }),
     new faulted_earth.Model("displacement", 'Observations: Displacement'),
     new faulted_earth.Model("sliprate", 'Observations: Slip Rates'),
     new faulted_earth.Model("faultgeometry", 'Observations: Fault Geometry'),
-    new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties),
+    new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties, { hasForm: true }),
     new faulted_earth.Model("faultsection", 'Fault Section Summary'),
     new faulted_earth.Model("fault", 'Faults'),
     new faulted_earth.Model("faultsource", 'Fault Sources')
@@ -152,20 +142,3 @@ faulted_earth.isCalculated = function(fieldName) {
     }
     return false
 }
-
-
-/*
-  Copyright (c) 2010-2012, GEM Foundation.
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */

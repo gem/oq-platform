@@ -6,6 +6,7 @@
  * @require plugins/OSMSource.js
  * @require plugins/WMSCSource.js
  * @require plugins/ZoomToExtent.js
+ * @require plugins/ZoomToSelectedFeatures.js
  * @require plugins/NavigationHistory.js
  * @require plugins/Zoom.js
  * @require plugins/AddLayers.js
@@ -17,6 +18,7 @@
  * @require plugins/GoogleSource.js
  * @require plugins/GoogleGeocoder.js
  * @require plugins/Legend.js
+ * @require plugins/Measure.js
  * @require plugins/FeatureManager.js
  * @require plugins/FeatureGrid.js
  * @require plugins/FeatureEditor.js
@@ -27,6 +29,7 @@
  * @require faulted_earth/FeatureGrid.js
  * @require faulted_earth/FeatureEditPopup.js
  * @require faulted_earth/ObservationFeatureEditor.js
+ * @require faulted_earth/SiteForm.js
  * @require faulted_earth/TraceForm.js
  */
 
@@ -101,7 +104,7 @@ Ext.onReady(function() {
 			Ext.each(faulted_earth.models, function(model) {
 			    var tabConfig = {
 				title: model.title,
-				items: Ext.apply({}, { id: model.gridId() }, defaultTabConfig)
+				items: Ext.apply({}, { id: model.gridId }, defaultTabConfig)
 			    };
 			    tabContainer.add(tabConfig);
 			});
@@ -132,8 +135,8 @@ Ext.onReady(function() {
 		    var defaultFormConfig = { padding: 10 };
 		    Ext.each(faulted_earth.models, function(model) {
 			var formConfig = Ext.apply({}, {
-			    id: model.formId(),
-			    title: model.formTitle()
+			    id: model.formId,
+			    title: model.formTitle
 			}, defaultFormConfig);
 			west_panel.add(formConfig);
 		    });
@@ -162,7 +165,12 @@ Ext.onReady(function() {
             actionTarget: {target: "tree.tbar"}
         }, {
             ptype: "gxp_legend",
-            actionTarget: "map.tbar"
+            actionTarget: "map.tbar",
+	    outputTarget: "west",
+	    outputConfig: {
+		title: "Legend",
+		autoScroll: true
+	    }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "tree.tbar",
@@ -185,6 +193,10 @@ Ext.onReady(function() {
         }, {
             ptype: "gxp_navigationhistory",
             actionTarget: "map.tbar"
+        }, {
+            ptype: "gxp_measure",
+            actionTarget: ["tree.tbar"],
+            toggleGroup: "main"
         }],
         
 	initTools: function() {
@@ -216,61 +228,70 @@ Ext.onReady(function() {
 
 	    Ext.each(faulted_earth.models, function(model) {
 		var gridConfig = Ext.apply({}, {
-		    ptype: model.gridPtype(),
-		    id: model.gridId(),
-		    featureManager: model.managerId(),
-		    outputTarget: model.gridId(),
+		    ptype: model.gridPtype,
+		    id: model.gridId,
+		    featureManager: model.managerId,
+		    outputTarget: model.gridId,
 		    outputConfig: {
-			id: model.gridId(),
+			id: model.gridId,
 			loadMask: true,
-			propertyNames: model.properties()
+			propertyNames: model.propertyNames
 		    }
 		}, defaultGridConfig);
 		viewer.initialConfig.tools.push(gridConfig);
 
-		if (model.hasForm()) {
+		if (model.hasForm) {
 		    var formConfig = Ext.apply({}, {
-			ptype: model.formPtype(),
-			id: model.formId(),
-			featureManager: model.managerId(),
-			featureEditor: model.editorId(),
-			outputTarget: model.formId()
+			ptype: model.formPtype,
+			id: model.formId,
+			layerRecordName: model.prefixId,
+			featureManager: model.managerId,
+			featureEditor: model.editorId,
+			outputTarget: model.formId
 		    }, defaultFormConfig);
 		    viewer.initialConfig.tools.push(formConfig);
 
 		    var editorConfig = Ext.apply({},
 			{
-			    ptype: model.editorPtype(),
-			    id: model.editorId(),
-			    featureManager: model.managerId(),
-			    actionTarget: model.formTarget(),
+			    ptype: model.editorPtype,
+			    id: model.editorId,
+			    featureManager: model.managerId,
+			    actionTarget: model.formTarget,
 			    outputConfig: {
-				propertyNames: model.properties()
+				propertyNames: model.propertyNames
 			    }
 			}, defaultEditorConfig);
 
 		    if (model.supportSnapping) {
-			Ext.apply(editorConfig, { snappingAgent: model.snappingId() });
+			Ext.apply(editorConfig, { snappingAgent: model.snappingId });
 			viewer.initialConfig.tools.push({
 			    ptype: "gxp_snappingagent",
-			    id: model.snappingId(),
+			    id: model.snappingId,
 			    targets: [{
 				source: "local",
-				name: model.sourceName()
+				name: model.sourceName
 			    }]
 			})
 		    }
 		    viewer.initialConfig.tools.push(editorConfig);
+
+		    var zoomToFeatureConfig = Ext.apply({}, {
+			ptype: "gxp_zoomtoselectedfeatures",
+			featureManager: model.managerId,
+			actionTarget: model.formTarget,
+			tooltip: "Zoom to selected " + model.title
+		    });
+		    viewer.initialConfig.tools.push(zoomToFeatureConfig);
 		}
 
 		var managerConfig = Ext.apply({}, {
-		    id: model.managerId(),
+		    id: model.managerId,
 		    layer: {
 			source: "local",
-			name: model.sourceName()
+			name: model.sourceName
 		    },
 		    layerRecordName: model.prefixId,
-		    ptype: model.managerPtype()
+		    ptype: model.managerPtype
 		}, defaultManagerConfig);
 		viewer.initialConfig.tools.push(managerConfig);
 	    });

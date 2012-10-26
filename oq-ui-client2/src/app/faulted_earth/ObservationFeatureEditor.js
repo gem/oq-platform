@@ -93,7 +93,7 @@ faulted_earth.on_row_click = function(editor, popup, grid, rowIndex) {
     var fieldName = store.getAt(rowIndex).id;
     
     if (editor.helpPopup && editor.helpPopup.isVisible()) {
-	editor.helpPopup.body.dom.innerHTML=faulted_earth.utils.description(fieldName);
+	editor.helpPopup.body.dom.innerHTML = faulted_earth.utils.description(fieldName);
 	editor.helpPopup.enable();
     } else {
 	editor.helpPopup = editor.addOutput({

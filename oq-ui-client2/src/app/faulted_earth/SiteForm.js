@@ -15,12 +15,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
 /*
- * @requires FaultedEarth.js
+ * @requires FileUploadField.js
  */
 
-FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
+Ext.namespace('faulted_earth');
+
+
+faulted_earth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     
-    ptype: "app_siteform",
+    ptype: "fe_site_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -53,9 +56,7 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     
     autoActivate: false,
     
-    init: function(target) {
-        FaultedEarth.SiteForm.superclass.init.apply(this, arguments);
-        
+    registerEvents: function(target) {
         this.sessionFids = [];
         var featureManager = target.tools[this.featureManager];
         featureManager.featureLayer.events.on({
@@ -78,7 +79,7 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     
     addOutput: function(config) {
 	var layerRecordName = this.layerRecordName;
-        return FaultedEarth.SiteForm.superclass.addOutput.call(this, {
+        return faulted_earth.SiteForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -99,7 +100,7 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
                 cls: "composite-wrap",
                 fieldLabel: "Create or modify a site observation",
                 items: [{
-                    id: "site_" + layerRecordName + "_form_tooltarget",
+                    id: "fe_" + layerRecordName + "_tooltarget",
                     xtype: "container",
                     cls: "toolbar-spaced",
                     layout: "toolbar"
@@ -146,20 +147,8 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     activate: function() {
-        if (FaultedEarth.SiteForm.superclass.activate.apply(this, arguments)) {
+        if (faulted_earth.SiteForm.superclass.activate.apply(this, arguments)) {
             var featureManager = this.target.tools[this.featureManager];
-            featureManager.setLayer();
-            if (!this.layerRecord) {
-                this.target.createLayerRecord({
-                    name: "geonode:observations_" + this.layerRecordName,
-                    source: "local"
-                }, function(record) {
-                    this.layerRecord = record;
-                    featureManager.setLayer(record);
-                }, this);
-            } else {
-                featureManager.setLayer(this.layerRecord);
-            }
             this.output[0].nameContains.setValue("");
             featureManager.on("layerchange", function(mgr, rec) {
                 mgr.featureStore.on({
@@ -320,4 +309,4 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(FaultedEarth.SiteForm.prototype.ptype, FaultedEarth.SiteForm);
+Ext.preg(faulted_earth.SiteForm.prototype.ptype, faulted_earth.SiteForm);
