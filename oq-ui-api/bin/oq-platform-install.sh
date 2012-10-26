@@ -543,11 +543,11 @@ exit 0"
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/faultedearth_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/faultedearth_index.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/faulted_earth.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/faulted_earth.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer_index.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
 
@@ -612,7 +612,7 @@ ant deploy-deps"
 
 
     ##
-    echo "Add new 'isc_viewer' tool"
+    echo "Add tool based on the new sdk"
     rm -rf "${norm_home}/.opengeo/logs/suite-sdk.log"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client2\"
