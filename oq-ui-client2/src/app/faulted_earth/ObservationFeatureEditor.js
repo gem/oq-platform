@@ -14,34 +14,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-Ext.namespace("faultedearth");
+/**
+ *
+ * @require plugins/FeatureEditor.js
+ */
 
-/* an utility function to check if a field is compulsory */
-faultedearth.isCompulsory = function(fieldName) {
-    compulsoryFields = [ 
-	'fault_name', 'sec_name', 'compiled_by',
-	'low_d_min', 'low_d_max', 'low_pref', 'low_d_com',
-	'u_sm_d_min', 'u_sm_d_max', 'u_sm_d_pref', 'u_sm_d_com',
-	'dip_min', 'dip_max', 'dip_pref', 'dip_com',
-	'dip_dir', 'dip_dir_com',
-	'slip_type', 'slip_type_com',
-	'aseis_slip', 'aseis_com',
-	'scale', 'accuracy', 's_feature'
-    ];
-    return compulsoryFields.indexOf(fieldName) != -1;
-};
+Ext.namespace("faulted_earth");
 
-faultedearth.isAutoComputed = function(fieldName) {
-    autoComputedFields = [
-	'width_min', 'width_max', 'width_pref',
-	'area_min', 'area_max', 'area_pref',
-	'net_slip_rate_min', 'net_slip_rate_max', 'net_slip_rate_pref',
-	'mag_min', 'mag_max', 'mag_pref',
-	'mom_min', 'mom_max', 'mom_pref',
-	'all_com'
-    ];
-    return autoComputedFields.indexOf(fieldName) != -1;
-}
 
 /**
  * @class ObservationFeatureEditor
@@ -50,12 +29,11 @@ faultedearth.isAutoComputed = function(fieldName) {
  * validation for the common fields of Fault Sections / Fault / Fault
  * Source
  */
-faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
+faulted_earth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
   {
-      ptype: "gem_observation_featureeditor",
+      ptype: "fe_featureeditor",
       editFeatureActionText: "Modify",
       autoLoadFeatures: true,
-      snappingAgent: "snapping-agent",
       createFeatureActionText: "Draw",
 
       /*
@@ -77,23 +55,24 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 	  var editor = this;
 	  config.width = 400;
 
-	  var output = faultedearth.ObservationFeatureEditor.superclass.addOutput.apply(this, arguments);
+	  var output = faulted_earth.ObservationFeatureEditor.superclass.addOutput.apply(this, arguments);
 	  
 	  // super.addOutput could return a component that it is not a
 	  // popup with an editor.
 
-	  if (!output.grid) {
+	  if (output.items.getCount() == 0) {
 	      return output;
 	  }
 
 	  // we are adding a popup with an editor, so let's bind the
 	  // rowclick event to show our context sensitive help
 	  var popup = output;
+	  var grid = popup.items.first();
 
-	  popup.grid.addListener('rowclick',
-				 function(grid, rowIndex, event) {
-				     faultedearth.on_row_click(editor, popup, rowIndex);
-				 });
+	  grid.addListener('rowclick',
+			   function(container, rowIndex, event) {
+			       faulted_earth.on_row_click(editor, popup, grid, rowIndex);
+			   });
 	  popup.addListener('featuremodified',
 			    function() {
 				Ext.Ajax.request({
@@ -106,15 +85,15 @@ faultedearth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
       }
   });
 
-Ext.preg(faultedearth.ObservationFeatureEditor.prototype.ptype, faultedearth.ObservationFeatureEditor); 
+Ext.preg(faulted_earth.ObservationFeatureEditor.prototype.ptype, faulted_earth.ObservationFeatureEditor); 
 
-faultedearth.on_row_click = function(editor, popup, rowIndex) {
-    var grid = popup.grid;
+
+faulted_earth.on_row_click = function(editor, popup, grid, rowIndex) {
     var store = grid.propStore.store;
     var fieldName = store.getAt(rowIndex).id;
     
     if (editor.helpPopup && editor.helpPopup.isVisible()) {
-	editor.helpPopup.body.dom.innerHTML=gem.utils.description(fieldName);
+	editor.helpPopup.body.dom.innerHTML=faulted_earth.utils.description(fieldName);
 	editor.helpPopup.enable();
     } else {
 	editor.helpPopup = editor.addOutput({
@@ -127,9 +106,11 @@ faultedearth.on_row_click = function(editor, popup, rowIndex) {
 	    map: popup.map,
 	    draggable: true,
 	    width: 200,
-	    html: gem.utils.description(fieldName),
+	    html: faulted_earth.utils.description(fieldName),
 	    collapsible: true
 	});
     }
+    editor.helpPopup.toBack();
+    popup.toFront();
 }
 					   

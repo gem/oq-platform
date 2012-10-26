@@ -1,11 +1,3 @@
-/**
- *
- * @require faulted_earth/TraceForm.js
- * @require plugins/FeatureManager.js
- * @require plugins/FeatureGrid.js
- * @require plugins/FeatureEditor.js
- */
-
 Ext.namespace('faulted_earth');
 
 
@@ -71,7 +63,7 @@ faulted_earth.Model.prototype.formTarget = function() {
 }
 
 faulted_earth.Model.prototype.editorPtype = function() {
-    return this._editorPtype || "gxp_featureeditor";
+    return this._editorPtype || "fe_featureeditor";
 }
 
 faulted_earth.Model.prototype.managerPtype = function() {
@@ -118,6 +110,49 @@ faulted_earth.models = [
     new faulted_earth.Model("fault", 'Faults'),
     new faulted_earth.Model("faultsource", 'Fault Sources')
 ];
+
+faulted_earth.properties = faulted_earth.traceProperties;
+
+/* an utility function to check if a field is compulsory */
+faulted_earth.isCompulsory = function(fieldName) {
+    compulsoryFields = [ 
+	'fault_name', 'sec_name', 'compiled_by',
+	'low_d_min', 'low_d_max', 'low_pref', 'low_d_com',
+	'u_sm_d_min', 'u_sm_d_max', 'u_sm_d_pref', 'u_sm_d_com',
+	'dip_min', 'dip_max', 'dip_pref', 'dip_com',
+	'dip_dir', 'dip_dir_com',
+	'slip_type', 'slip_type_com',
+	'aseis_slip', 'aseis_com',
+	'scale', 'accuracy', 's_feature'
+    ];
+    
+    for (var i = 0; i < faulted_earth.properties.length; i++) {
+	var field = faulted_earth.properties[i];
+	if (field.id == fieldName && field.isCompulsory) {
+	    return true
+	}
+    }
+    return false
+};
+
+faulted_earth.isCalculated = function(fieldName) {
+    autoComputedFields = [
+	'width_min', 'width_max', 'width_pref',
+	'area_min', 'area_max', 'area_pref',
+	'net_slip_rate_min', 'net_slip_rate_max', 'net_slip_rate_pref',
+	'mag_min', 'mag_max', 'mag_pref',
+	'mom_min', 'mom_max', 'mom_pref',
+	'all_com'
+    ];
+    for (var i = 0; i < faulted_earth.properties.length; i++) {
+	var field = faulted_earth.properties[i];
+	if (field.id == fieldName && field.isCalculated) {
+	    return true
+	}
+    }
+    return false
+}
+
 
 /*
   Copyright (c) 2010-2012, GEM Foundation.

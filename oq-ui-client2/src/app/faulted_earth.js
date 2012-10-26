@@ -17,8 +17,17 @@
  * @require plugins/GoogleSource.js
  * @require plugins/GoogleGeocoder.js
  * @require plugins/Legend.js
+ * @require plugins/FeatureManager.js
+ * @require plugins/FeatureGrid.js
+ * @require plugins/FeatureEditor.js
  *
  * @require faulted_earth/models.js
+ * @require faulted_earth/validation.js
+ * @require faulted_earth/help.js
+ * @require faulted_earth/FeatureGrid.js
+ * @require faulted_earth/FeatureEditPopup.js
+ * @require faulted_earth/ObservationFeatureEditor.js
+ * @require faulted_earth/TraceForm.js
  */
 
 var app;
@@ -214,7 +223,7 @@ Ext.onReady(function() {
 		    outputConfig: {
 			id: model.gridId(),
 			loadMask: true,
-			propertyNames: model.properties
+			propertyNames: model.properties()
 		    }
 		}, defaultGridConfig);
 		viewer.initialConfig.tools.push(gridConfig);
