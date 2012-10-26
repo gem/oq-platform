@@ -14,13 +14,12 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-/*
- * @requires FaultedEarth.js
- */
+Ext.namespace('faulted_earth');
 
-FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
+
+faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     
-    ptype: "app_sourceform",
+    ptype: "fe_faultsource_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -49,9 +48,7 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     
     autoActivate: false,
     
-    init: function(target) {
-        FaultedEarth.SourceForm.superclass.init.apply(this, arguments);
-        
+    registerEvents: function(target) {
         this.sessionFids = [];
         var featureManager = target.tools[this.featureManager];
         featureManager.featureLayer.events.on({
@@ -76,7 +73,7 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     addOutput: function(config) {
-        return FaultedEarth.SourceForm.superclass.addOutput.call(this, {
+        return faulted_earth.SourceForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -88,7 +85,7 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                 cls: "composite-wrap",
                 fieldLabel: "zoom",
                 items: [{
-                    id: this.id + "_tooltarget",
+                    id: "fe_faultsource_tooltarget",
                     xtype: "container",
                     cls: "toolbar-spaced",
                     layout: "toolbar"
@@ -120,7 +117,7 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                         var featureManager = this.target.tools[this.featureManager];
                         Ext.Ajax.request({
                             method: "PUT",
-                            url: this.target.localGeoNodeUrl + this.target.localHostname + this.current_fault_source_url,
+                            url: faulted_earth.app_url + this.current_fault_source_url,
                             params: Ext.encode(this.sessionFids),
                             success: function(response, opts) {
                                 alert('Fault Source record recorded');
@@ -151,20 +148,8 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     activate: function() {
-        if (FaultedEarth.SourceForm.superclass.activate.apply(this, arguments)) {
+        if (faulted_earth.SourceForm.superclass.activate.apply(this, arguments)) {
             var featureManager = this.target.tools[this.featureManager];
-            featureManager.setLayer();
-            if (!this.layerRecord) {
-                this.target.createLayerRecord({
-                    name: "geonode:observations_faultsource",
-                    source: "local"
-                }, function(record) {
-                    this.layerRecord = record;
-                    featureManager.setLayer(record);
-                }, this);
-            } else {
-                featureManager.setLayer(this.layerRecord);
-            }
             this.output[0].nameContains.setValue("");
             featureManager.on("layerchange", function(mgr, layer, attr) {
                 mgr.featureStore.on({
@@ -325,4 +310,4 @@ FaultedEarth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(FaultedEarth.SourceForm.prototype.ptype, FaultedEarth.SourceForm);
+Ext.preg(faulted_earth.SourceForm.prototype.ptype, faulted_earth.SourceForm);

@@ -18,7 +18,7 @@ Ext.namespace('faulted_earth');
 
 faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
     
-    ptype: "app_faultform",
+    ptype: "fe_fault_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -47,9 +47,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
     
     autoActivate: false,
     
-    init: function(target) {
-        FaultedEarth.FaultForm.superclass.init.apply(this, arguments);
-        
+    registerEvents: function(target) {
         this.sessionFids = [];
         var featureManager = target.tools[this.featureManager];
         featureManager.featureLayer.events.on({
@@ -57,6 +55,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
+		/* fixme: is this check really needed ? */
                 if (featureManager.layerRecord.get("name") == "geonode:observations_fault") {
 		    /* store the fault (for multiple purposes like use
 		     * it for fault source creation) */
@@ -64,6 +63,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                 }
             },
             "featureunselected": function(e) {
+		/* fixme: is this check really needed ? */
                 if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_fault") {
                     this.target.fault = null;
                 }
@@ -73,7 +73,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     addOutput: function(config) {
-        return FaultedEarth.FaultForm.superclass.addOutput.call(this, {
+        return faulted_earth.FaultForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -101,7 +101,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                 cls: "composite-wrap",
                 fieldLabel: "Edit a simplified fault geometry",
                 items: [{
-                    id: this.id + "_tooltarget",
+                    id: "fe_fault_tooltarget",
                     xtype: "container",
                     cls: "toolbar-spaced",
                     layout: "toolbar"
@@ -130,13 +130,13 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
 
                         Ext.Ajax.request({
                             method: "POST",
-                            url: app.localHostname + '/observations/faultsource/create',
+                            url: faulted_earth.app_url + '/observations/faultsource/create',
                             params: Ext.encode({fault_id: this.target.fault.fid}),
                             success: function(response, opts) {
                                 alert('Fault source generated');
                             },
                             failure: function(response, opts){
-                                alert('failed to generate fault source: missing field ' + faultedearth.properties[response.responseText]);
+                                alert('failed to generate fault source: missing field ' + faulted_earth.properties[response.responseText]);
                             },
 
                             scope: this
@@ -160,20 +160,8 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     activate: function() {
-        if (FaultedEarth.FaultForm.superclass.activate.apply(this, arguments)) {
-            var featureManager = this.target.tools[this.featureManager];
-            featureManager.setLayer();
-            if (!this.layerRecord) {
-                this.target.createLayerRecord({
-                    name: "geonode:observations_fault",
-                    source: "local"
-                }, function(record) {
-                    this.layerRecord = record;
-                    featureManager.setLayer(record);
-                }, this);
-            } else {
-                featureManager.setLayer(this.layerRecord);
-            }
+        if (faulted_earth.FaultForm.superclass.activate.apply(this, arguments)) {
+	    var featureManager = this.target.tools[this.featureManager];
             this.output[0].nameContains.setValue("");
             featureManager.on("layerchange", function(mgr, rec) {
                 mgr.featureStore.on({

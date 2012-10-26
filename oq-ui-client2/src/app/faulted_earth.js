@@ -31,6 +31,9 @@
  * @require faulted_earth/ObservationFeatureEditor.js
  * @require faulted_earth/SiteForm.js
  * @require faulted_earth/TraceForm.js
+ * @require faulted_earth/SummaryForm.js
+ * @require faulted_earth/FaultForm.js
+ * @require faulted_earth/SourceForm.js
  */
 
 var app;
@@ -52,7 +55,6 @@ Ext.onReady(function() {
     app = new gxp.Viewer({
 
 	/* TODO: are the following two properties still used/useful ? */
-	legendTabTitle: "Legend",
         proxy: "/proxy?url=",
 
         portalConfig: {
@@ -304,6 +306,9 @@ Ext.onReady(function() {
 		    viewer.tools[tool].registerEvents(viewer);
 	    });
 	},
+
+	localGeoServerUrl: '/geoserver/',
+
         // layer sources
         sources: {
             local: {

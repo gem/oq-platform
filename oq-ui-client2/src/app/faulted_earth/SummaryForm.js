@@ -14,13 +14,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-/*
- * @requires FaultedEarth.js
- */
+Ext.namespace('faulted_earth');
 
-FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
+faulted_earth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
     
-    ptype: "app_summaryform",
+    ptype: "fe_faultsection_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -49,9 +47,7 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
     
     autoActivate: false,
     
-    init: function(target) {
-        FaultedEarth.SummaryForm.superclass.init.apply(this, arguments);
-        
+    registerEvents: function(target) {
         this.sessionFids = [];
         this.fault= {};
         var featureManager = target.tools[this.featureManager];
@@ -76,7 +72,7 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     addOutput: function(config) {
-        return FaultedEarth.SummaryForm.superclass.addOutput.call(this, {
+        return faulted_earth.SummaryForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -97,7 +93,7 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
                 cls: "composite-wrap",
                 fieldLabel: "Modify a Neotectonic fault section",
                 items: [{
-                    id: this.id + "_tooltarget",
+                    id: "fe_faultsection_tooltarget",
                     xtype: "container",
                     cls: "toolbar-spaced",
                     layout: "toolbar"
@@ -140,7 +136,7 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
 			}
                         Ext.Ajax.request({
                             method: "POST",
-                            url: this.target.localGeoNodeUrl + this.target.localHostname + this.current_fault_section_url,
+                            url: faulted_earth.app_url + this.current_fault_section_url,
                             params: Ext.encode({ fault_name: this.fault.name,
 						 fault_section_ids: this.sessionFids }),
                             success: function(response, opts) {
@@ -177,20 +173,8 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
         }
     },
     activate: function() {
-        if (FaultedEarth.SummaryForm.superclass.activate.apply(this, arguments)) {
+        if (faulted_earth.SummaryForm.superclass.activate.apply(this, arguments)) {
             var featureManager = this.target.tools[this.featureManager];
-            featureManager.setLayer();
-            if (!this.layerRecord) {
-                this.target.createLayerRecord({
-                    name: "geonode:observations_faultsection",
-                    source: "local"
-                }, function(record) {
-                    this.layerRecord = record;
-                    featureManager.setLayer(record);
-                }, this);
-            } else {
-                featureManager.setLayer(this.layerRecord);
-            }
             this.output[0].nameContains.setValue("");
             featureManager.on("layerchange", function(mgr, rec) {
                 mgr.featureStore.on({
@@ -350,4 +334,4 @@ FaultedEarth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(FaultedEarth.SummaryForm.prototype.ptype, FaultedEarth.SummaryForm);
+Ext.preg(faulted_earth.SummaryForm.prototype.ptype, faulted_earth.SummaryForm);
