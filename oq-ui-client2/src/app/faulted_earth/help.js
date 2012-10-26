@@ -14,9 +14,9 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-Ext.namespace('gem.utils');
+Ext.namespace('faulted_earth.utils');
 
-gem.utils.fieldDescriptions = {
+faulted_earth.utils.fieldDescriptions = {
             // custom fied names for the fault summary table
             "fault_name": "Compulsory<br/>\
 Free text up to 96 characters long<br/>\
@@ -363,17 +363,17 @@ Relative ranking of the completeness of the data constraining the fault dip dire
 4 = inferred"
 };
 
-gem.utils.description = function(fieldName) {
+faulted_earth.utils.description = function(fieldName) {
     /*
       remove the suffix (e.g. _min, _pref) from fieldName and return
       the field description
      */
-    fieldNamePrefix = gem.utils.fieldPrefix(fieldName);
-    fieldNameSuffix = gem.utils.fieldSuffix(fieldName);
+    fieldNamePrefix = faulted_earth.utils.fieldPrefix(fieldName);
+    fieldNameSuffix = faulted_earth.utils.fieldSuffix(fieldName);
     
     if (['min', 'max', 'pref'].indexOf(fieldNameSuffix) != -1) {
 	fieldName = fieldNamePrefix;
     }
     
-    return gem.utils.fieldDescriptions[fieldName] || ("No description available for field " + fieldName);
+    return faulted_earth.utils.fieldDescriptions[fieldName] || ("No description available for field " + fieldName);
 }

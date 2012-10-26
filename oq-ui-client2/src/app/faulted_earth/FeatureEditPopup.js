@@ -14,7 +14,14 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-Ext.namespace('gem.utils');
+/**
+ *
+ * @require faulted_earth/models.js
+ *
+ */
+
+
+Ext.namespace('faulted_earth.utils');
 
 /**
  * Overrides the startEditing method of FeatureEditPopup to provide
@@ -34,7 +41,7 @@ Ext.override(gxp.FeatureEditPopup, {
 	} else {
 	    this.hasValidator = true;
 	}
-	var grid = this.grid;
+	var grid = this.items.first();
 
 	/* for each field in the grid we hijack the
 	 * standard validation mechanism */
@@ -45,7 +52,7 @@ Ext.override(gxp.FeatureEditPopup, {
 	    /* for compulsory field management. Do not
 	     * allow an user to leave a compulsory field
 	     * blank */
-	    if (faultedearth.isCompulsory(fieldName)) {
+	    if (faulted_earth.isCompulsory(fieldName)) {
 		field.allowBlank = false;
 	    }
 	    
@@ -55,15 +62,16 @@ Ext.override(gxp.FeatureEditPopup, {
 		var errors = old_getErrors.apply(field, [value]) || [];
 		
 		// CUSTOM VALIDATION
+		// FIXME validator code should go into models
 		switch(fieldName) {
 		case 'fault_section_id':
 		    if (! value) {
 			break;
 		    }
 		    pushError(errors,
-			      gem.utils.checkPositive(fieldName, value));
+			      faulted_earth.utils.checkPositive(fieldName, value));
 		    pushError(errors,
-			      gem.utils.checkInteger(fieldName, value));
+			      faulted_earth.utils.checkInteger(fieldName, value));
 		    
 		    value = parseInt(value);
 
@@ -93,7 +101,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    break;
 		case 'marker_age':
 		    pushError(errors,
-			      gem.utils.checkPositive(fieldName, value));
+			      faulted_earth.utils.checkPositive(fieldName, value));
 		    break;
 		case 'low_d_min':
 		case 'low_d_max':
@@ -103,7 +111,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
-			      gem.utils.checkPositive(fieldName, value));
+			      faulted_earth.utils.checkPositive(fieldName, value));
 		    var upper_seismogenic_min_value = grid.getCurrentValue('u_sm_d_min', parseFloat);
 		    value = parseFloat(value);
 		    if (upper_seismogenic_min_value && value < upper_seismogenic_min_value) {
@@ -113,7 +121,7 @@ Ext.override(gxp.FeatureEditPopup, {
 
 		case 'episodic_behaviour':
 		    pushError(errors,
-			      gem.utils.checkValueIn(fieldName, value, ["Yes Active", "Yes Inactive", "No"]));
+			      faulted_earth.utils.checkValueIn(fieldName, value, ["Yes Active", "Yes Inactive", "No"]));
 		    break;
 
 		case 'u_sm_d_min':
@@ -124,7 +132,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
-			      gem.utils.checkPositive(fieldName, value));
+			      faulted_earth.utils.checkPositive(fieldName, value));
 		    var lower_seismogenic_min_value = grid.getCurrentValue('low_d_min', parseFloat);
 		    value = parseFloat(value);
 		    if (lower_seismogenic_min_value && value > lower_seismogenic_min_value) {
@@ -142,7 +150,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    break;
 		case 'length':
 		    pushError(errors,
-			      gem.utils.checkPositive(fieldName, value));
+			      faulted_earth.utils.checkPositive(fieldName, value));
 		    break;
 		case 'mag_min':
 		case 'mag_max':
@@ -221,7 +229,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		    pushError(errors,
 			      checkInterval(grid, fieldName, value));
 		    pushError(errors,
-			      gem.utils.checkPositive(fieldName, value));
+			      faulted_earth.utils.checkPositive(fieldName, value));
 		    break;
 		case 'aseis_slip':
 		    pushError(errors,
@@ -243,13 +251,13 @@ GeoExt.form.recordToField = function(record) {
     var name = record.get("name");
     var field = origRecordToField(record);
 
-    if (faultedearth.isAutoComputed(name)) {
+    if (faulted_earth.isCalculated(name)) {
 	field.xtype = "displayfield";
     }
 
     var choices = null;
 
-    if (gem.utils.fieldSuffix(name) == 'com') {
+    if (faulted_earth.utils.fieldSuffix(name) == 'com') {
 	choices = [1, 2, 3, 4];
     }
 
@@ -294,7 +302,7 @@ GeoExt.form.recordToField = function(record) {
 	    '5 - <10', '10 - <30' ];
     }
 
-    if (faultedearth.isCompulsory(name)) {
+    if (faulted_earth.isCompulsory(name)) {
 	field.allowBlank = false;
     }
     

@@ -1,3 +1,5 @@
 oq-ui-client/app/static/externals/openlayers
 *~
 oq-ui-client2/build
+\#*
+.\#*

@@ -17,7 +17,7 @@
 <!--{% extends "page_layout.html" %}-->
 <!--{% load i18n %}-->
 
-<!--{% block title %} {% trans "Welcome to FaultedEarth!" %} - {{ block.super }} {% endblock %}-->
+<!--{% block title %} {% trans "Welcome to ISC Viewer!" %} - {{ block.super }} {% endblock %}-->
 <!--{% block indexclass %} class="here" {% endblock %}-->
 
 
@@ -56,7 +56,7 @@
 
         <!-- app resources -->
         <link rel="stylesheet" type="text/css" href="theme/app/style.css">
-        <script type="text/javascript" src="lib/app.js"></script>
+        <script type="text/javascript" src="lib/isc_viewer.js"></script>
         <script>
             Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
@@ -68,6 +68,10 @@
 <!--4ringo_begin-->
     </head>
     <body>
+
+      <div id="header-wrapper"></div>
+      <div id="footer"></div>
+
 <!--4ringo_end-->
 <!--{% block main %}-->
         <span id="showGrid"></span>

@@ -14,13 +14,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-/*
- * @requires FaultedEarth.js
- */
+Ext.namespace('faulted_earth');
 
-FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
+faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
     
-    ptype: "app_siteform",
+    ptype: "fe_fault_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -36,10 +34,6 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
      */
     temporaryWorkspace: "temp",
 
-    /** api: config[layerRecordName]
-     *  ``String`` in [event, displacement, slip_rate, fault_geometry]
-     */
-
     /** api: config[temporaryWorkspaceNamespaceUri]
      *  ``String`` namespace uri of the temporary GeoServer workspace for
      *  shapefile uploads. Default is "http://geonode.org/temporary".
@@ -53,9 +47,7 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     
     autoActivate: false,
     
-    init: function(target) {
-        FaultedEarth.SiteForm.superclass.init.apply(this, arguments);
-        
+    registerEvents: function(target) {
         this.sessionFids = [];
         var featureManager = target.tools[this.featureManager];
         featureManager.featureLayer.events.on({
@@ -63,13 +55,17 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-                if (featureManager.layerRecord.get("name") == "geonode:observations_" + this.layerRecordName) {
-                    this.target.summaryId = e.feature.fid;
+		/* fixme: is this check really needed ? */
+                if (featureManager.layerRecord.get("name") == "geonode:observations_fault") {
+		    /* store the fault (for multiple purposes like use
+		     * it for fault source creation) */
+                    this.target.fault = e.feature;
                 }
             },
             "featureunselected": function(e) {
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_" + this.layerRecordName) {
-                    this.target.summaryId = null;
+		/* fixme: is this check really needed ? */
+                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_fault") {
+                    this.target.fault = null;
                 }
             },
             scope: this
@@ -77,8 +73,7 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     addOutput: function(config) {
-	var layerRecordName = this.layerRecordName;
-        return FaultedEarth.SiteForm.superclass.addOutput.call(this, {
+        return faulted_earth.FaultForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -87,42 +82,29 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
             items: [{
                 xtype: "textfield",
                 ref: "nameContains",
-                fieldLabel: "Search for key word in notes",
+                fieldLabel: "Search",
                 validationDelay: 500,
                 listeners: {
                     "valid": this.updateFilter,
                     scope: this
                 }
-             }, {
-                xtype: "container",
-                layout: "hbox",
-                cls: "composite-wrap",
-                fieldLabel: "Create or modify a site observation",
-                items: [{
-                    id: "site_" + layerRecordName + "_form_tooltarget",
-                    xtype: "container",
-                    cls: "toolbar-spaced",
-                    layout: "toolbar"
-                }]
+            }, {
+                xtype: "box",
+                autoEl: {
+                    tag: "p",
+                    cls: "x-form-item"
+                },
+                html: "Select a fault from the grid below, then use the modify button to create a simple geometry that will be used to create a fault source polygon" 
             }, {
                 xtype: "container",
                 layout: "hbox",
                 cls: "composite-wrap",
-                fieldLabel: "Upload a Site Observation",
+                fieldLabel: "Edit a simplified fault geometry",
                 items: [{
-                    xtype: "button",
-                    text: "Upload",
-                    iconCls: "icon-import",
-                    handler: function() {
-                        var featureManager = this.target.tools[this.featureManager];
-                        if (this.output[0].newFeaturesOnly.getValue()) {
-                            featureManager.on("clearfeatures", this.showUploadWindow, this, {single: true});
-                            featureManager.clearFeatures();
-                        } else {
-                            this.showUploadWindow();
-                        }
-                    },
-                    scope: this
+                    id: "fe_fault_tooltarget",
+                    xtype: "container",
+                    cls: "toolbar-spaced",
+                    layout: "toolbar"
                 }]
             }, {
                 xtype: "box",
@@ -130,8 +112,40 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
                     tag: "p",
                     cls: "x-form-item"
                 },
-                html: "To associate site observations to a Fault Section,<b> open a feature editor of a fault section</b>, get a fault section id from the titlebar, then edit the site observation and fill in the fault section id field with this value."
-            }],
+                html: "Once a fault has the required attributes, and simplified geometry, select a fault from the grid and use the 'generate' button to calculate a fault source."
+            }, {
+                xtype: "container",
+                layout: "hbox",
+                fieldLabel: "Generate Fault Source",
+                items: [{
+                    xtype: "button",
+                    text: "Generate",
+                    iconCls: "icon-layer-switcher",
+                    handler: function() {
+                        var featureManager = this.target.tools[this.featureManager];
+			if (!this.target.fault) {
+			    alert("To create a fault source, you need to select a fault");
+			    return;
+			}
+
+                        Ext.Ajax.request({
+                            method: "POST",
+                            url: faulted_earth.app_url + '/observations/faultsource/create',
+                            params: Ext.encode({fault_id: this.target.fault.fid}),
+                            success: function(response, opts) {
+                                alert('Fault source generated');
+                            },
+                            failure: function(response, opts){
+                                alert('failed to generate fault source: missing field ' + faulted_earth.properties[response.responseText]);
+                            },
+
+                            scope: this
+                        });
+
+                    },
+                    scope: this
+                    }]
+             }],
             listeners: {
                 "added": function(cmp, ct) {
                     ct.on({
@@ -146,20 +160,8 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     activate: function() {
-        if (FaultedEarth.SiteForm.superclass.activate.apply(this, arguments)) {
-            var featureManager = this.target.tools[this.featureManager];
-            featureManager.setLayer();
-            if (!this.layerRecord) {
-                this.target.createLayerRecord({
-                    name: "geonode:observations_" + this.layerRecordName,
-                    source: "local"
-                }, function(record) {
-                    this.layerRecord = record;
-                    featureManager.setLayer(record);
-                }, this);
-            } else {
-                featureManager.setLayer(this.layerRecord);
-            }
+        if (faulted_earth.FaultForm.superclass.activate.apply(this, arguments)) {
+	    var featureManager = this.target.tools[this.featureManager];
             this.output[0].nameContains.setValue("");
             featureManager.on("layerchange", function(mgr, rec) {
                 mgr.featureStore.on({
@@ -176,8 +178,8 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
                         }
                     },
                     "load": function() {
-                        this.target.summaryId && window.setTimeout((function() {
-                            var feature = mgr.featureLayer.getFeatureByFid(this.target.summaryId);
+                        this.target.fault && window.setTimeout((function() {
+                            var feature = mgr.featureLayer.getFeatureByFid(this.target.fault);
                             if (feature && feature.layer.selectedFeatures.indexOf(feature) == -1) {
                                 feature.layer.selectedFeatures.push(feature);
                                 feature.layer.events.triggerEvent("featureselected", {feature: feature});
@@ -190,28 +192,28 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
         }
     },
     
+   
     updateFilter: function() {
         var form = this.output[0];
         var filters = [];
         form.nameContains.getValue() && filters.push(
-          new OpenLayers.Filter.Comparison({
-              type: OpenLayers.Filter.Comparison.LIKE,
-              property: "notes",
-              value: "*" + form.nameContains.getValue() + "*",
-              matchCase: false
-          })
+            new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.LIKE,
+                property: "fault_name",
+                value: "*" + form.nameContains.getValue() + "*",
+                matchCase: false
+            })
         );
         var filter;
         if (filters.length > 0) {
-          filter = filters.length == 1 ? filters[0] :
-              new OpenLayers.Filter.Logical({
-                  type: OpenLayers.Filter.Logical.AND,
-                  filters: filters
-              });
+            filter = filters.length == 1 ? filters[0] :
+                new OpenLayers.Filter.Logical({
+                    type: OpenLayers.Filter.Logical.AND,
+                    filters: filters
+                });
         }
         this.target.tools[this.featureManager].loadFeatures(filter);
-        },
-    
+    },
 
     showUploadWindow: function() {
         var uploadWindow = new Ext.Window({
@@ -320,4 +322,4 @@ FaultedEarth.SiteForm = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(FaultedEarth.SiteForm.prototype.ptype, FaultedEarth.SiteForm);
+Ext.preg(faulted_earth.FaultForm.prototype.ptype, faulted_earth.FaultForm);

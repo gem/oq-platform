@@ -144,8 +144,8 @@ class WithDip(models.Model):
 
 class WithSlip(models.Model):
     dip_slip_rate_min = models.FloatField(verbose_name="Dip Slip Rate Min", **DEFAULT_FIELD_ATTRIBUTES)
-    dip_slip_rate_pref = models.FloatField(verbose_name="Dip Slip Rate Max", **DEFAULT_FIELD_ATTRIBUTES)
-    dip_slip_rate_max = models.FloatField(verbose_name="Dip Slip Rate Pref", **DEFAULT_FIELD_ATTRIBUTES)
+    dip_slip_rate_max = models.FloatField(verbose_name="Dip Slip Rate Max", **DEFAULT_FIELD_ATTRIBUTES)
+    dip_slip_rate_pref = models.FloatField(verbose_name="Dip Slip Rate Pref", **DEFAULT_FIELD_ATTRIBUTES)
 
     strike_slip_rate_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     strike_slip_rate_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -166,8 +166,8 @@ class WithSlip(models.Model):
     net_slip_rate_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
 
     rake_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
-    rake_pref = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     rake_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
+    rake_pref = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
 
     slip_rate_category = models.CharField(max_length=255,
                                           choices=SLIP_RATE_CATEGORY_CHOICES,
@@ -394,6 +394,7 @@ class LocatedObservation(models.Model):
         abstract = True
 
 class Trace(LocatedObservation):
+    # TODO. change this to plural. Do we really need a m2m field?
     fault_section = models.ManyToManyField('FaultSection')
     loc_meth = models.CharField(max_length=30)
     geomorphic_expression = models.CharField(max_length=255,
