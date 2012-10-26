@@ -72,13 +72,40 @@ faulted_earth.siteProperties = faulted_earth.locatedObservationProperties.concat
     { id: "fault_section_id", label: "Fault Section ID", isCompulsory: true },
     { id: "s_feature", label: "Site Feature", isCompulsory: true }]);
 
-function withInterval(field) {
-    return [
-	Ext.apply({}, { id: field.id + "_min", label: "Minimum " + field.label }, field),
-	Ext.apply({}, { id: field.id + "_pref", label: "Preferred " + field.label }, field),
-	Ext.apply({}, { id: field.id + "_max", label: "Maximum " + field.label }, field),
-    ];
+function withInterval(fields) {
+    function withIntervalHelper(field) {
+	return [
+	    Ext.apply({}, { id: field.id + "_min", label: "Minimum " + field.label }, field),
+	    Ext.apply({}, { id: field.id + "_pref", label: "Preferred " + field.label }, field),
+	    Ext.apply({}, { id: field.id + "_max", label: "Maximum " + field.label }, field),
+	];
+    }
+    if (!fields.length) {
+	return withIntervalHelper(fields)
+    } else {
+	var ret = [];
+	Ext.each(fields, function(field) {
+	    ret.push(withIntervalHelper(field))
+	});
+	return ret;
+    }
 }
+
+
+faulted_earth.slipRateProperties = withInterval([
+    { id: "dip_slip_rate", label: "Slip rate (mm/yr)" },
+    { id: "strike_slip_rate", label: "Strike slip rate (mm/yr)" },
+    { id: "net_slip_rate", label: "Net slip rate (mm/yr)" },
+    { id: "vertical_slip_rate", label: "Vertical slip rate (mm/yr)" },
+    { id: "hv_ratio", label: "H:V Ratio"},
+    { id: "rake", label: "Rake" }]).concat([
+	{ id: "hv_ratio", label: "H:V Ratio"},
+	{ id: "net_slip_rate_com", label: "Net slip rate completeness" },
+	{ id: "slip_rate_category", label: "Slip rate category" },
+	{ id: "slip_type", label: "Slip type" },
+	{ id: "slip_type_com", label: "Slip type completeness" },
+	{ id: "aseis_slip", label: "Aseismic-slip factor (0-1)" },
+	{ id: "aseis_com", label: "Aseismic-slip completeness" }]);
 
 faulted_earth.displacementProperties = [
     { id: "dis_total", label: "Total displacement (m)" },
@@ -90,21 +117,23 @@ faulted_earth.displacementProperties = [
 
 
 faulted_earth.recurrenceProperties = withInterval(
-    { id: "re_int", label: "Recurrence Interval (yr)", isCompulsory: true }).concat(
-	withInterval({ id: "mov", label: "Age of last movement (yr BP)" }).concat(
-	    [ { id: "historical_earthquake", label: "Historical Eartquake" },
-	      { id: "pre_historical_earthquake", label: "Pre Historical Eartquake" },
-	      { id: "marker_age", label: "Marker Age (yrs BP)" },
-	      { id: "re_int_category", label: "Recurrence interval category" },
-	      { id: "mov_category", label: "Age of last movement category" }]));
+    [{ id: "re_int", label: "Recurrence Interval (yr)", isCompulsory: true },
+     { id: "mov", label: "Age of last movement (yr BP)" } ]).concat(
+	 [ { id: "historical_earthquake", label: "Historical Eartquake" },
+	   { id: "pre_historical_earthquake", label: "Pre Historical Eartquake" },
+	   { id: "marker_age", label: "Marker Age (yrs BP)" },
+	   { id: "re_int_category", label: "Recurrence interval category" },
+	   { id: "mov_category", label: "Age of last movement category" }]);
 
 faulted_earth.eventProperties = faulted_earth.siteProperties.concat(faulted_earth.recurrenceProperties);
 faulted_earth.siteDisplacementProperties = faulted_earth.siteProperties.concat(faulted_earth.displacementProperties);
+faulted_earth.siteSlipRateProperties = faulted_earth.siteProperties.concat(faulted_earth.slipRateProperties);
+
 
 faulted_earth.models = [
     new faulted_earth.Model("event", 'Observations: Events', faulted_earth.eventProperties, { formPtype: 'fe_site_form' }),
     new faulted_earth.Model("displacement", 'Observations: Displacement', faulted_earth.siteDisplacementProperties, { formPtype: 'fe_site_form' }),
-    new faulted_earth.Model("sliprate", 'Observations: Slip Rates'),
+    new faulted_earth.Model("sliprate", 'Observations: Slip Rates', faulted_earth.siteSlipRateProperties, { formPtype: 'fe_site_form' }),
     new faulted_earth.Model("faultgeometry", 'Observations: Fault Geometry'),
     new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties),
     new faulted_earth.Model("faultsection", 'Fault Section Summary'),
