@@ -162,7 +162,7 @@ ISC_Viewer = Ext.extend(gxp.Viewer, {
             }]
         });
         
-        FaultedEarth.superclass.constructor.apply(this, arguments);
+        ISC_Viewer.superclass.constructor.apply(this, arguments);
     }
     
 });

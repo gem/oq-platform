@@ -14,11 +14,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-/*
- * @requires FaultedEarth.js
+/**
+ * @requires GED4GEM_country.js
  */
 
-FaultedEarth.CountryInfo = Ext.extend(gxp.plugins.Tool, {
+GED_country.CountryInfo = Ext.extend(gxp.plugins.Tool, {
     
     ptype: "app_countryinfo",
     
@@ -50,7 +50,7 @@ FaultedEarth.CountryInfo = Ext.extend(gxp.plugins.Tool, {
     autoActivate: false,
     
     init: function(target) {
-        FaultedEarth.CountryInfo.superclass.init.apply(this, arguments);
+        GED_country.CountryInfo.superclass.init.apply(this, arguments);
         
         this.sessionTids = [];
         this.faultSection = {};
@@ -82,7 +82,7 @@ FaultedEarth.CountryInfo = Ext.extend(gxp.plugins.Tool, {
     },
     
     addOutput: function(config) {
-        return FaultedEarth.CountryInfo.superclass.addOutput.call(this, {
+        return GED_country.CountryInfo.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -142,7 +142,7 @@ FaultedEarth.CountryInfo = Ext.extend(gxp.plugins.Tool, {
 
 
     activate: function() {
-        if (FaultedEarth.CountryInfo.superclass.activate.apply(this, arguments)) {
+        if (GED_country.CountryInfo.superclass.activate.apply(this, arguments)) {
             var featureManager = this.target.tools[this.featureManager];
             featureManager.setLayer();
             if (!this.layerRecord) {
@@ -187,7 +187,7 @@ FaultedEarth.CountryInfo = Ext.extend(gxp.plugins.Tool, {
     },
     
     deactivate: function() {
-        if (FaultedEarth.CountryInfo.superclass.deactivate.apply(this, arguments)) {
+        if (GED_country.CountryInfo.superclass.deactivate.apply(this, arguments)) {
             this.target.tools[this.featureManager].featureStore.un("save", this.monitorSave, this);
         }
     },
@@ -224,4 +224,4 @@ FaultedEarth.CountryInfo = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(FaultedEarth.CountryInfo.prototype.ptype, FaultedEarth.CountryInfo);
+Ext.preg(GED_country.CountryInfo.prototype.ptype, GED_country.CountryInfo);
