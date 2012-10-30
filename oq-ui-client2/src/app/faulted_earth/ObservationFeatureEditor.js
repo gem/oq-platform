@@ -32,9 +32,8 @@ Ext.namespace("faulted_earth");
 faulted_earth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
   {
       ptype: "fe_featureeditor",
-      editFeatureActionText: "Modify",
+
       autoLoadFeatures: true,
-      createFeatureActionText: "Draw",
 
       /*
 	popup that shows an help to fill in data

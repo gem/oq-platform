@@ -543,7 +543,7 @@ exit 0"
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/faulted_earth.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/faulted_earth.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/faulted_earth.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/faulted_earth.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"

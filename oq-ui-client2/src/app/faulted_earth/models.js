@@ -33,7 +33,9 @@ faulted_earth.Model = function(prefixId, title, properties, conf) {
 	gridPtype: "gxp_featuregrid",
 	editorPtype: "fe_featureeditor",
 	formPtype: 'fe_' + this.prefixId + '_form',
-	managerPtype: 'gxp_featuremanager'
+	managerPtype: 'gxp_featuremanager',
+	modifyOnly: true,
+	readOnly: false
     });
 
     this.sourceName = "geonode:observations_" + this.prefixId;
@@ -210,14 +212,14 @@ faulted_earth.faultSourceProperties = registerProperties(
 
 
 faulted_earth.models = [
-    new faulted_earth.Model("event", 'Observations: Events', faulted_earth.eventProperties, { formPtype: 'fe_site_form' }),
-    new faulted_earth.Model("displacement", 'Observations: Displacement', faulted_earth.siteDisplacementProperties, { formPtype: 'fe_site_form' }),
-    new faulted_earth.Model("sliprate", 'Observations: Slip Rates', faulted_earth.siteSlipRateProperties, { formPtype: 'fe_site_form' }),
-    new faulted_earth.Model("faultgeometry", 'Observations: Fault Geometry', faulted_earth.faultgeometryProperties, { formPtype: 'fe_site_form' }),
-    new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties),
+    new faulted_earth.Model("event", 'Observations: Events', faulted_earth.eventProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+    new faulted_earth.Model("displacement", 'Observations: Displacement', faulted_earth.siteDisplacementProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+    new faulted_earth.Model("sliprate", 'Observations: Slip Rates', faulted_earth.siteSlipRateProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+    new faulted_earth.Model("faultgeometry", 'Observations: Fault Geometry', faulted_earth.faultgeometryProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+    new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties, { modifyOnly: false }),
     new faulted_earth.Model("faultsection", 'Fault Section Summary', faulted_earth.faultsectionProperties),
     new faulted_earth.Model("fault", 'Faults', faulted_earth.faultProperties),
-    new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties)
+    new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties, { readOnly: true, modifyOnly: null })
 ];
 
 /* an utility function to check if a field is compulsory */

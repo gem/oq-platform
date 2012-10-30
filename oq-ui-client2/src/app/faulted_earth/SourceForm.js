@@ -18,7 +18,7 @@ Ext.namespace('faulted_earth');
 
 
 faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
-    
+
     ptype: "fe_faultsource_form",
     
     /** api: config[featureManager]

@@ -257,6 +257,8 @@ Ext.onReady(function() {
 			{
 			    ptype: model.editorPtype,
 			    id: model.editorId,
+			    readOnly: model.readOnly,
+			    modifyOnly: model.modifyOnly,
 			    featureManager: model.managerId,
 			    actionTarget: model.formTarget,
 			    outputConfig: {

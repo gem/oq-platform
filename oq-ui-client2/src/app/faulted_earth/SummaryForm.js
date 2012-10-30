@@ -17,7 +17,7 @@
 Ext.namespace('faulted_earth');
 
 faulted_earth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
-    
+
     ptype: "fe_faultsection_form",
     
     /** api: config[featureManager]
