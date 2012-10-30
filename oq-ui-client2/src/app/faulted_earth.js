@@ -52,6 +52,7 @@ faulted_earth.app_url = document.location.protocol + '//' + document.location.ho
 
 
 Ext.onReady(function() {
+
     app = new gxp.Viewer({
 
 	/* TODO: are the following two properties still used/useful ? */
@@ -75,11 +76,6 @@ Ext.onReady(function() {
                 region: "center",
                 border: false,
                 items: ["mymap"]
-            },{
-		xtype: 'panel',
-		region: "south",
-		autoHeight: true,
-		contentEl: 'footer'
             }, {
                 id: "tabs",
                 autoHeight: true,
@@ -143,6 +139,10 @@ Ext.onReady(function() {
 			west_panel.add(formConfig);
 		    });
 		}
+	    }, {
+		region: "south",
+		autoHeight: true,
+		contentEl: 'footer'
 	    }],
             bbar: {id: "mybbar"}
         },
