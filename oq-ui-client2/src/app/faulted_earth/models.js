@@ -85,7 +85,7 @@ function withInterval(fields) {
 	return [
 	    Ext.apply({}, { id: field.id + "_min", label: "Minimum " + field.label }, field),
 	    Ext.apply({}, { id: field.id + "_pref", label: "Preferred " + field.label }, field),
-	    Ext.apply({}, { id: field.id + "_max", label: "Maximum " + field.label }, field),
+	    Ext.apply({}, { id: field.id + "_max", label: "Maximum " + field.label }, field)
 	];
     }
     if (!fields.length) {

@@ -363,7 +363,7 @@ Ext.onReady(function() {
             }, {
                 source: "local",
                 name: "geonode:observations_trace",
-                title: "Traces",
+                title: "Traces"
             }, {
                 source: "local",
                 name: "geonode:observations_event",
