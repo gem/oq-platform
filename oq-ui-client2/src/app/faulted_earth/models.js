@@ -103,7 +103,7 @@ function withInterval(fields) {
 
 
 faulted_earth.slipRateProperties = registerProperties(withInterval([
-    { id: "dip_slip_rate", label: "Slip rate (mm/yr)" },
+    { id: "dip_slip_rate", label: "Dip Slip rate (mm/yr)" },
     { id: "strike_slip_rate", label: "Strike slip rate (mm/yr)" },
     { id: "net_slip_rate", label: "Net slip rate (mm/yr)", isCalculated: true },
     { id: "vertical_slip_rate", label: "Vertical slip rate (mm/yr)" },
@@ -221,6 +221,12 @@ faulted_earth.models = [
     new faulted_earth.Model("fault", 'Faults', faulted_earth.faultProperties),
     new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties, { readOnly: true, modifyOnly: null })
 ];
+
+faulted_earth.modelsHash = {};
+
+Ext.each(faulted_earth.models, function(model) {
+    faulted_earth.modelsHash[model.prefixId] = model;
+});
 
 /* an utility function to check if a field is compulsory */
 faulted_earth.isCompulsory = function(fieldName) {
