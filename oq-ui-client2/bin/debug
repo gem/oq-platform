@@ -1,9 +1,10 @@
 #!/bin/bash
 
+# TODO. Fix permission problems, then remove the next line
 sudo chown -R $USER ~/.opengeo
 
-PROJECT_DIR=`dirname $0`/../..
+PROJECT_DIR="$(dirname $0)/../.."
 APP_DIR="$PROJECT_DIR/oq-ui-client2"
 OPENGEO_DIR="$PROJECT_DIR"/opengeosuite-sdk
 
-exec "$OPENGEO_DIR"/bin/suite-sdk debug -l 8090 -g http://`hostname --fqdn`/geoserver "$APP_DIR"
+exec "$OPENGEO_DIR"/bin/suite-sdk debug -l 8090 -g http://$(hostname --fqdn)/geoserver "$APP_DIR"

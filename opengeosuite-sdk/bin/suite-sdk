@@ -363,10 +363,10 @@ esac
 
 # run the command via ant
 ant -e -f "$SDK_HOME/build.xml" -Dsdk.logfile="$LOG_FILE" -Dsdk.home="$SDK_HOME" -Dbasedir=. $COMMAND $ANT_ARGS 2>> "$LOG_FILE"
-STATUS="$?"
+STATUS=$?
 
 # handle results
-if [ "$STATUS" -ne 0 ]; then
+if [ $STATUS -ne 0 ]; then
     case $COMMAND in 
         create) 
             echo "$CREATE_FAILURE";;
