@@ -175,7 +175,7 @@ Geodetic = Ext.extend(gxp.Viewer, {
     	     }]
         });
 
-        FaultedEarth.superclass.constructor.apply(this, arguments);
+        Geodetic.superclass.constructor.apply(this, arguments);
     }
 
 });

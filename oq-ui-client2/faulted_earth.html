@@ -1,0 +1,80 @@
+<!--
+ Copyright (c) 2010-2012, GEM Foundation.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+
+<!--{% extends "page_layout.html" %}-->
+<!--{% load i18n %}-->
+
+<!--{% block title %} {% trans "Welcome to FaultedEarth!" %} - {{ block.super }} {% endblock %}-->
+<!--{% block indexclass %} class="here" {% endblock %}-->
+
+
+
+<!--4ringo_begin-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Faulted Earth</title>
+<!--4ringo_end-->
+        
+<!--{% block head %}-->
+
+<!--{{ block.super }}-->
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="./favicon.ico">
+        
+        <!-- Ext resources -->
+        <link rel="stylesheet" type="text/css" href="src/ext/resources/css/ext-all.css">
+        <link rel="stylesheet" type="text/css" href="src/ext/resources/css/xtheme-gray.css">
+        <link rel="stylesheet" type="text/css" href="theme/ux/fileuploadfield.css">
+        <script type="text/javascript" src="src/ext/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="src/ext/ext-all.js"></script>
+
+        <!-- OpenLayers resources -->
+        <link rel="stylesheet" type="text/css" href="src/openlayers/theme/default/style.css">
+
+        <!-- GeoExt resources -->
+        <link rel="stylesheet" type="text/css" href="src/geoext/resources/css/popup.css">
+        <link rel="stylesheet" type="text/css" href="src/geoext/resources/css/layerlegend.css">
+        <link rel="stylesheet" type="text/css" href="src/geoext/resources/css/gxtheme-gray.css">
+
+        <!-- gxp resources -->
+        <link rel="stylesheet" type="text/css" href="src/gxp/theme/all.css">
+        
+
+        <!-- app resources -->
+        <link rel="stylesheet" type="text/css" href="theme/app/style.css">
+        <!-- google stuff -->
+        <script src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+        <script type="text/javascript" src="lib/faulted_earth.js"></script>
+<!--{% endblock %}-->
+
+<!--4ringo_begin-->
+    </head>
+    <body>
+
+      <div id="header-wrapper">HEADER (populated by django)</div>
+      <div id="footer">FOOTER (populated by django)</div>
+
+<!--4ringo_end-->
+<!--{% block main %}-->
+        <span id="showGrid"></span>
+<!--{% endblock %}-->
+<!--4ringo_begin-->
+</body>
+</html>
+<!--4ringo_end-->

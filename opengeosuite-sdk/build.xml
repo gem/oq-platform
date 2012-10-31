@@ -170,23 +170,23 @@
     <target name="replace">
       <!-- replace geoserver with its current value -->
       <replaceregexp match='"/geoserver/' replace='"${app.deploy.geoserver}'>
-          <fileset file="${app.build}/*index.html"/>
+          <fileset file="${app.build}/*.html"/>
       </replaceregexp>
 
       <!-- uncomment django template entries -->
       <replaceregexp flags="g" match='&lt;!--\{%' replace='{%'>
-          <fileset file="${app.build}/*index.html"/>
+          <fileset file="${app.build}/*.html"/>
       </replaceregexp>
       <replaceregexp flags="g" match='%\}--&gt;' replace='%}'>
-          <fileset file="${app.build}/*index.html"/>
+          <fileset file="${app.build}/*.html"/>
       </replaceregexp>
       <replaceregexp flags="g" match='&lt;!--\{\{ *block.super *\}\}--&gt;' replace='{{ block.super }}'>
-          <fileset file="${app.build}/*index.html"/>
+          <fileset file="${app.build}/*.html"/>
       </replaceregexp>
 
       <!-- remove ringo related stuff -->
       <replaceregexp flags="gs" match='&lt;!--4ringo_begin--&gt;.*?&lt;!--4ringo_end--&gt;' replace=''>
-          <fileset file="${app.build}/*index.html"/>
+          <fileset file="${app.build}/*.html"/>
       </replaceregexp>
       <!-- <replace file="${app.build}/oq-platform/theme/app/style.css" token='(/geoserver/' value='(${app.deploy.geoserver}'/> -->
     </target>

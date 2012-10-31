@@ -14,9 +14,9 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-Ext.namespace('gem.utils');
+Ext.namespace('faulted_earth.utils');
 
-gem.utils.fromFieldToDescription = function(field){
+faulted_earth.utils.fromFieldToDescription = function(field){
     /* e.g. upper_seismogenic_min =>   Upper Seismogenic Min */
     var ret = field.replace(/(\_[a-z])/g, 
 			    function($1){
@@ -26,11 +26,11 @@ gem.utils.fromFieldToDescription = function(field){
     return ret;
 };
 
-gem.utils.fieldSuffix = function(field) {
+faulted_earth.utils.fieldSuffix = function(field) {
     return field.split('_').reverse()[0];
 }
 
-gem.utils.fieldPrefix = function(field) {
+faulted_earth.utils.fieldPrefix = function(field) {
     return field.split('_').slice(0, -1).join('_');
 }
 
@@ -38,9 +38,9 @@ gem.utils.fieldPrefix = function(field) {
 /* makes some assumption about the field naming convention */
 checkInterval = function(grid, field, value) {
     var max_val, min_val, pref_val, op;
-    var suffix = gem.utils.fieldSuffix(field);
-    var prefix = gem.utils.fieldPrefix(field);
-    var description = gem.utils.fromFieldToDescription(prefix);
+    var suffix = faulted_earth.utils.fieldSuffix(field);
+    var prefix = faulted_earth.utils.fieldPrefix(field);
+    var description = faulted_earth.utils.fromFieldToDescription(prefix);
     if (!value) 
 	return;
     switch(suffix) {
@@ -72,7 +72,7 @@ checkInterval = function(grid, field, value) {
 
 function checkBetween(field, value, min, max) {
     value = parseFloat(value);
-    var description = gem.utils.fromFieldToDescription(field);
+    var description = faulted_earth.utils.fromFieldToDescription(field);
     if (!value)
 	return;
     if (value <= min || value >= max) {
@@ -82,7 +82,7 @@ function checkBetween(field, value, min, max) {
 
 function checkCompleteness(field, value) {
     value = parseFloat(value);
-    checkBetween(field, value, 1, 4) || gem.utils.checkInteger(field, value);
+    checkBetween(field, value, 1, 4) || faulted_earth.utils.checkInteger(field, value);
 }
 
 function checkAngle(field, value) {
@@ -95,8 +95,8 @@ function checkQuadrant(field, value) {
     checkBetween(field, value, 0, 90);
 }
 
-gem.utils.checkPositive = function(field, value) {
-    var description = gem.utils.fromFieldToDescription(field);
+faulted_earth.utils.checkPositive = function(field, value) {
+    var description = faulted_earth.utils.fromFieldToDescription(field);
     value = parseFloat(value);
     if (!value)
 	return;
@@ -105,23 +105,23 @@ gem.utils.checkPositive = function(field, value) {
     }
 }
 
-gem.utils.checkValueIn = function(field, value, possibilities) {
-    var description = gem.utils.fromFieldToDescription(field);
+faulted_earth.utils.checkValueIn = function(field, value, possibilities) {
+    var description = faulted_earth.utils.fromFieldToDescription(field);
     var possibilities_string = possibilities.join(', ');
     if (possibilities.indexOf(value) == -1) {
 	return description + " can be only one of the following values " + possibilities_string;
     }
 }
 
-gem.utils._checkWidthRule = function(a, b, c) {
+faulted_earth.utils._checkWidthRule = function(a, b, c) {
     if (a && b && c) {
 	return (a - b) / Math.sin(Math.PI / 2 * c) <= 0;
     }
     return false;
 }
 
-gem.utils.checkWidthRule = function(fieldname, grid) {
-    var description = gem.utils.fromFieldToDescription(fieldName);
+faulted_earth.utils.checkWidthRule = function(fieldname, grid) {
+    var description = faulted_earth.utils.fromFieldToDescription(fieldName);
 
     var low_d_min = grid.getCurrentValue('low_d_min', parseFloat);
     var low_d_pref = grid.getCurrentValue('low_d_pref', parseFloat);
@@ -135,15 +135,15 @@ gem.utils.checkWidthRule = function(fieldname, grid) {
     var dip_pref = grid.getCurrentValue('dip_pref', parseFloat);
     var dip_max = grid.getCurrentValue('dip_max', parseFloat);
 
-    if (gem.utils._checkWidthRule(low_d_min, u_sm_d_max, dip_max) ||
-	gem.utils._checkWidthRule(low_d_max, u_sm_d_min, dip_min) ||
-	gem.utils._checkWidthRule(low_d_pref, u_sm_d_pref, dip_pref)) {
+    if (faulted_earth.utils._checkWidthRule(low_d_min, u_sm_d_max, dip_max) ||
+	faulted_earth.utils._checkWidthRule(low_d_max, u_sm_d_min, dip_min) ||
+	faulted_earth.utils._checkWidthRule(low_d_pref, u_sm_d_pref, dip_pref)) {
 	return "The current value of " + description + " implies a negative width";
     }
 }
 
-gem.utils.checkInteger = function(fieldName, value) {
-    var description = gem.utils.fromFieldToDescription(fieldName);
+faulted_earth.utils.checkInteger = function(fieldName, value) {
+    var description = faulted_earth.utils.fromFieldToDescription(fieldName);
     var intValue = parseInt(value);
     var floatValue = parseFloat(value);
     if (intValue != floatValue) {
