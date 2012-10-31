@@ -77,38 +77,6 @@ Ext.onReady(function() {
                 border: false,
                 items: ["mymap"]
             }, {
-                id: "tabs",
-                autoHeight: true,
-                region: "south",
-                border: false,
-                height: 200,
-                split: true,
-                collapseMode: "mini",
-                items: {
-		    xtype: "tabpanel",
-		    animCollapse: true,
-                    activeTab : 0,
-                    border: true,
-		    initComponent: function() {
-			Ext.TabPanel.prototype.initComponent.call(this);
-			var tabContainer = this;
-
-			var defaultTabConfig = {
-                            layout: "fit",
-                            height: 180,
-                            autoScroll: true
-			};
-			
-			Ext.each(faulted_earth.models, function(model) {
-			    var tabConfig = {
-				title: model.title,
-				items: Ext.apply({}, { id: model.gridId }, defaultTabConfig)
-			    };
-			    tabContainer.add(tabConfig);
-			});
-                    }
-		}
-            }, {
                 id: "west",
                 region: "west",
                 layout: "accordion",
@@ -140,10 +108,41 @@ Ext.onReady(function() {
 		    });
 		}
 	    }, {
-		region: "south",
+                id: "tabs",
+                region: "south",
+                border: false,
+                split: true,
 		autoHeight: true,
-		contentEl: 'footer'
-	    }],
+                collapseMode: "mini",
+                items: [{
+		    xtype: "tabpanel",
+		    animCollapse: true,
+                    height: 200,
+		    activeTab : 0,
+		    border: true,
+		    initComponent: function() {
+			Ext.TabPanel.prototype.initComponent.call(this);
+			var tabContainer = this;
+
+			var defaultTabConfig = {
+			    layout: "fit",
+			    height: 180,
+			    autoScroll: true
+			};
+			
+			Ext.each(faulted_earth.models, function(model) {
+			    var tabConfig = {
+				title: model.title,
+				items: Ext.apply({}, { id: model.gridId }, defaultTabConfig)
+			    };
+			    tabContainer.add(tabConfig);
+			});
+		    }
+		}, {
+		    region: "south",
+		    autoHeight: true,
+		    contentEl: 'footer'
+		}]}],
             bbar: {id: "mybbar"}
         },
         
