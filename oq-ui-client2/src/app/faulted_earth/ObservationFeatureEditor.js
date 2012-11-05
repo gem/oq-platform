@@ -76,7 +76,7 @@ faulted_earth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 			    function() {
 				Ext.Ajax.request({
 				    method: "POST",
-				    url: app.localHostname + '/observations/updatecomputedfields'
+				    url: faulted_earth.app_url + '/observations/updatecomputedfields'
 				});
 			    });
 
