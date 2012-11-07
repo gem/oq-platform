@@ -79,7 +79,7 @@ Ext.override(gxp.FeatureEditPopup, {
 		     * grid has not been yet activated. Please fix me
 		     * once you know how to create a featuresttore
 		     * bypassing the featuremanager complexity */
-		    var store = app.tools.summary_featuremanager.featureStore;
+		    var store = app.tools.faultsection_manager.featureStore;
 		    if (store) {
 			var search = store.findBy(function(item) { 
 			    return item.get('fid') == 'fault_section.' + value});

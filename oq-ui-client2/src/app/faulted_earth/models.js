@@ -174,18 +174,19 @@ faulted_earth.magnitudeProperties = registerProperties(withInterval([
     { id: "mag", label: "Magnitude", isCalculated: true },
     { id: "mom", label: "Seismic movement", isCalculated: true }]));
 
-faulted_earth.faultsectionProperties = registerProperties(faulted_earth.observationProperties.concat(
-    faulted_earth.lengthProperties).concat(
-	faulted_earth.displacementProperties).concat(
-	    faulted_earth.areaProperties).concat(
-		faulted_earth.slipRateProperties).concat(
-		    faulted_earth.dipProperties).concat(
-			faulted_earth.recurrenceProperties).concat([
-			    { id: "sec_name", label: "Fault Section name", isCompulsory: true },
-			    { id: "down_thro", label: "Downthrown Side" },
-			    { id: "strike", label: "Strike" },
-			    { id: "surface_dip", label: "Surface Dip" },
-			    { id: "episodic_behaviour", label: "Episodic Behaviour" }]));
+faulted_earth.faultsectionProperties = registerProperties(
+    faulted_earth.observationProperties.concat(
+	faulted_earth.lengthProperties).concat(
+	    faulted_earth.displacementProperties).concat(
+		faulted_earth.areaProperties).concat(
+		    faulted_earth.slipRateProperties).concat(
+			faulted_earth.dipProperties).concat(
+			    faulted_earth.recurrenceProperties).concat([
+				{ id: "sec_name", label: "Fault Section name", isCompulsory: true },
+				{ id: "down_thro", label: "Downthrown Side" },
+				{ id: "strike", label: "Strike" },
+				{ id: "surface_dip", label: "Surface Dip" },
+				{ id: "episodic_behaviour", label: "Episodic Behaviour" }]));
 
 faulted_earth.faultProperties = registerProperties(
     faulted_earth.observationProperties.concat(

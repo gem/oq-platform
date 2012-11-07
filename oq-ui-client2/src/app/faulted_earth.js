@@ -76,7 +76,7 @@ Ext.onReady(function() {
 	    }
 	},
 
-	/* TODO: are the following two properties still used/useful ? */
+	/* TODO: is the following property still used/useful ? */
         proxy: "/proxy?url=",
 
         portalConfig: {
@@ -187,7 +187,7 @@ Ext.onReady(function() {
             actionTarget: {target: "tree.tbar"}
         }, {
             ptype: "gxp_legend",
-            actionTarget: "map.tbar",
+            actionTarget: "tree.tbar",
 	    outputTarget: "west",
 	    outputConfig: {
 		title: "Legend",
@@ -195,7 +195,7 @@ Ext.onReady(function() {
 	    }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
-            actionTarget: "tree.tbar",
+            actionTarget: "map.tbar",
             format: "grid", 
             outputConfig: {
                 width: 400
@@ -217,7 +217,7 @@ Ext.onReady(function() {
             actionTarget: "map.tbar"
         }, {
             ptype: "gxp_measure",
-            actionTarget: ["tree.tbar"],
+            actionTarget: ["map.tbar"],
             toggleGroup: "main"
         }],
         
