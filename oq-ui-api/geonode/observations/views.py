@@ -21,7 +21,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.utils import simplejson
-
+from django.contrib.contenttypes.models import ContentType
 from geonode.observations import models, utils
 
 
@@ -72,5 +72,19 @@ def create_faultsource(request):
     
 @csrf_exempt
 def updatecomputedfields(request):
-    models.updatecomputedfields()
-    return OK_RESPONSE
+    if request.method == 'POST':
+        json_data = simplejson.loads(request.raw_post_data);
+        fid = json_data['fid']
+        layer_name, object_id = fid.split('.')
+
+        # remove "observations_" from layer name
+        model_name = layer_name[len("observations_"):]
+
+        model_type = ContentType.objects.get(app_label="observations", model=model_name)
+        
+        observation = model_type.get_object_for_this_type(pk=object_id)
+        if getattr(observation, 'update_autocomputed_fields'):
+            observation.update_autocomputed_fields()
+        return OK_RESPONSE
+    else:
+        return HttpResponseBadRequest()

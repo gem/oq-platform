@@ -9,6 +9,7 @@
  * @require plugins/ZoomToSelectedFeatures.js
  * @require plugins/NavigationHistory.js
  * @require plugins/Zoom.js
+ * @require widgets/ScaleOverlay.js
  * @require plugins/AddLayers.js
  * @require plugins/RemoveLayer.js
  * @require RowExpander.js
@@ -54,6 +55,22 @@ faulted_earth.app_url = document.location.protocol + '//' + document.location.ho
 Ext.onReady(function() {
 
     app = new gxp.Viewer({
+
+	/* add a listener for computed fields */
+	listeners: {
+	    featureedit: function(manager) {
+		var fid = manager.featureLayer.selectedFeatures[0];
+		Ext.Ajax.request({
+		    method: "POST",
+		    url: faulted_earth.app_url + '/observations/updatecomputedfields',
+		    params: Ext.encode({ fid: fid }),
+		    success: function(response, opts) {
+			/* reload the features to get the autocomputed fields */
+			manager.featureStore.load();
+		    }
+		});
+	    }
+	},
 
 	/* TODO: are the following two properties still used/useful ? */
         proxy: "/proxy?url=",
@@ -305,6 +322,10 @@ Ext.onReady(function() {
 	    Ext.iterate(viewer.tools, function(tool) {
 		if (viewer.tools[tool].registerEvents)
 		    viewer.tools[tool].registerEvents(viewer);
+
+		if (viewer.tools[tool].ptype.slice(-7) == 'manager') {
+		    viewer.tools[tool].addListener('exception', faulted_earth.on_exception);
+		}
 	    });
 	},
 
@@ -386,7 +407,9 @@ Ext.onReady(function() {
                 xtype: "gx_zoomslider",
                 vertical: true,
                 height: 100
-            }]
+            }, {
+		xtype: "gxp_scaleoverlay"
+	    }]
         }
 
     });
