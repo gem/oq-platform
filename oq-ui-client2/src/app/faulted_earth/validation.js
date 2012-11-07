@@ -17,13 +17,13 @@
 Ext.namespace('faulted_earth.utils');
 
 faulted_earth.utils.fromFieldToDescription = function(field){
-    /* e.g. upper_seismogenic_min =>   Upper Seismogenic Min */
-    var ret = field.replace(/(\_[a-z])/g, 
-			    function($1){
-				return $1.toUpperCase().replace('_',' ');
-			    });
-    ret = ret.replace(/^[a-z]/g, function($1) { return $1.toUpperCase() });
-    return ret;
+    for (var i = 0; i < faulted_earth.properties.length; i++) {
+	var field = faulted_earth.properties[i];
+	if (field.id == field) {
+	    return field.label
+	}
+    }
+    return field;
 };
 
 faulted_earth.utils.fieldSuffix = function(field) {
@@ -36,7 +36,7 @@ faulted_earth.utils.fieldPrefix = function(field) {
 
 /* Validation utility */
 /* makes some assumption about the field naming convention */
-checkInterval = function(grid, field, value) {
+faulted_earth.utils.checkInterval = function(grid, field, value) {
     var max_val, min_val, pref_val, op;
     var suffix = faulted_earth.utils.fieldSuffix(field);
     var prefix = faulted_earth.utils.fieldPrefix(field);
@@ -70,7 +70,7 @@ checkInterval = function(grid, field, value) {
     }
 }
 
-function checkBetween(field, value, min, max) {
+faulted_earth.utils.checkBetween = function(field, value, min, max) {
     value = parseFloat(value);
     var description = faulted_earth.utils.fromFieldToDescription(field);
     if (!value)
@@ -80,19 +80,19 @@ function checkBetween(field, value, min, max) {
     }
 }
 
-function checkCompleteness(field, value) {
+faulted_earth.utils.checkCompleteness = function(field, value) {
     value = parseFloat(value);
-    checkBetween(field, value, 1, 4) || faulted_earth.utils.checkInteger(field, value);
+    faulted_earth.utils.checkBetween(field, value, 1, 4) || faulted_earth.utils.checkInteger(field, value);
 }
 
-function checkAngle(field, value) {
+faulted_earth.utils.checkAngle = function(field, value) {
     value = parseFloat(value);
-    checkBetween(field, value, 0, 360);
+    faulted_earth.utils.checkBetween(field, value, 0, 360);
 }
 
-function checkQuadrant(field, value) {
+faulted_earth.utils.checkQuadrant = function(field, value) {
     value = parseFloat(value);
-    checkBetween(field, value, 0, 90);
+    faulted_earth.utils.checkBetween(field, value, 0, 90);
 }
 
 faulted_earth.utils.checkPositive = function(field, value) {
@@ -115,12 +115,12 @@ faulted_earth.utils.checkValueIn = function(field, value, possibilities) {
 
 faulted_earth.utils._checkWidthRule = function(a, b, c) {
     if (a && b && c) {
-	return (a - b) / Math.sin(Math.PI / 2 * c) <= 0;
+	return (a - b) / Math.sin(Math.PI * c / 180) <= 0;
     }
     return false;
 }
 
-faulted_earth.utils.checkWidthRule = function(fieldname, grid) {
+faulted_earth.utils.checkWidthRule = function(fieldName, grid) {
     var description = faulted_earth.utils.fromFieldToDescription(fieldName);
 
     var low_d_min = grid.getCurrentValue('low_d_min', parseFloat);
@@ -151,7 +151,7 @@ faulted_earth.utils.checkInteger = function(fieldName, value) {
     }
 }
 
-function pushError(errors, error) {
+faulted_earth.utils.pushError = function(errors, error) {
     if (error) {
 	errors.push(error);
     }

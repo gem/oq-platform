@@ -68,9 +68,9 @@ Ext.override(gxp.FeatureEditPopup, {
 		    if (! value) {
 			break;
 		    }
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkPositive(fieldName, value));
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkInteger(fieldName, value));
 		    
 		    value = parseInt(value);
@@ -94,23 +94,23 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'rake_min':
 		case 'rake_max':
 		case 'rake_pref':
-		    pushError(errors,
-			      checkInterval(grid, fieldName, value));
-		    pushError(errors,
-			      checkBetween(fieldName, value, -180, 180));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkInterval(grid, fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkBetween(fieldName, value, -180, 180));
 		    break;
 		case 'marker_age':
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkPositive(fieldName, value));
 		    break;
 		case 'low_d_min':
 		case 'low_d_max':
 		case 'low_d_pref':
-		    pushError(errors,
-			      checkWidthRule(fieldName, grid));
-		    pushError(errors,
-			      checkInterval(grid, fieldName, value));
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkWidthRule(fieldName, grid));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkInterval(grid, fieldName, value));
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkPositive(fieldName, value));
 		    var upper_seismogenic_min_value = grid.getCurrentValue('u_sm_d_min', parseFloat);
 		    value = parseFloat(value);
@@ -120,18 +120,18 @@ Ext.override(gxp.FeatureEditPopup, {
 		    break;
 
 		case 'episodic_behaviour':
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkValueIn(fieldName, value, ["Yes Active", "Yes Inactive", "No"]));
 		    break;
 
 		case 'u_sm_d_min':
 		case 'u_sm_d_max':
 		case 'u_sm_d_pref':
-		    pushError(errors,
-			      checkWidthRule(fieldName, grid));
-		    pushError(errors,
-			      checkInterval(grid, fieldName, value));
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkWidthRule(fieldName, grid));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkInterval(grid, fieldName, value));
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkPositive(fieldName, value));
 		    var lower_seismogenic_min_value = grid.getCurrentValue('low_d_min', parseFloat);
 		    value = parseFloat(value);
@@ -145,29 +145,29 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 'slip_com':
 		case 'dip_com':
 		case 're_int_com':
-		    pushError(errors,
-			      checkCompleteness(fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkCompleteness(fieldName, value));
 		    break;
 		case 'length':
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkPositive(fieldName, value));
 		    break;
 		case 'mag_min':
 		case 'mag_max':
 		case 'mag_pref':
-		    pushError(errors,
-			      checkInterval(grid, fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkInterval(grid, fieldName, value));
 		    break;
 		    
 		case 'dip_min':
 		case 'dip_max':
 		case 'dip_pref':
-		    pushError(errors,
-			      checkWidthRule(fieldName, grid));
-		    pushError(errors,
-			      checkInterval(grid, fieldName, value));
-		    pushError(errors,
-			      checkQuadrant(fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkWidthRule(fieldName, grid));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkInterval(grid, fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkQuadrant(fieldName, value));
 		    break;
 		case 'dip_dir':
 		    var strike_value = grid.getCurrentValue('strike', parseFloat);
@@ -175,8 +175,8 @@ Ext.override(gxp.FeatureEditPopup, {
 		    if (strike_value && value != ((strike_value + 90) % 360) ) {
 			errors.push("Dip direction has to be equal to the strike plus 90 degrees");
 		    }
-		    pushError(errors,
-			      checkAngle(fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkAngle(fieldName, value));
 		    break;
 		case 'strike':
 		    var dip_dir = grid.getCurrentValue('dip_dir', parseFloat);
@@ -184,8 +184,8 @@ Ext.override(gxp.FeatureEditPopup, {
 		    if (dip_dir && dip_dir != ((value + 90) % 360) ) {
 			errors.push("Strike has to be equal to the dip direction minus 90 degrees");
 		    }
-		    pushError(errors,
-			      checkAngle(fieldName, value));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkAngle(fieldName, value));
 		    break;
 		case 'down_thro':
 		    var choices = ['N', 'S', 'W', 'E', 'NW', 'NE', 'SW', 'SE'];
@@ -226,14 +226,14 @@ Ext.override(gxp.FeatureEditPopup, {
 		case 're_int_min':
 		case 're_int_max':
 		case 're_int_pref':
-		    pushError(errors,
-			      checkInterval(grid, fieldName, value));
-		    pushError(errors,
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkInterval(grid, fieldName, value));
+		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkPositive(fieldName, value));
 		    break;
 		case 'aseis_slip':
-		    pushError(errors,
-			      checkBetween(fieldName, value, 0, 1));
+		    faulted_earth.utils.pushError(errors,
+			      faulted_earth.utils.checkBetween(fieldName, value, 0, 1));
 		    break;
 		}
 		return errors;
@@ -257,8 +257,14 @@ GeoExt.form.recordToField = function(record) {
 
     var choices = null;
 
+    /* FIXME: choices should be in models.js */
+
     if (faulted_earth.utils.fieldSuffix(name) == 'com') {
 	choices = [1, 2, 3, 4];
+    }
+
+    if (name == 'down_thro') {
+	choices = ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'];
     }
 
     if (name == 'slip_type') {

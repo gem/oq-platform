@@ -36,6 +36,15 @@ displacement_law = lambda moment, area: moment / (3.0e11 * area * 1.0e10) * 0.01
 
 DEFAULT_FIELD_ATTRIBUTES = {'null': True, 'blank': True}
 
+DOWNTHROWN_SIDE_CHOICES = (('N', 'N'),
+                           ('S', 'S'),
+                           ('W', 'W'),
+                           ('E', 'E'),
+                           ('NE', 'NE'),
+                           ('NW', 'NW'),
+                           ('SE', 'SE'),
+                           ('SW', 'SW'))
+
 SLIP_TYPE_CHOICES = ( 
     ('Reverse', 'Reverse'),
     ('Thrust (dip <45 deg)', 'Thrust (dip <45 deg)'),
@@ -289,7 +298,7 @@ class Observation(models.Model):
 
 class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
                   WithMagnitude, WithDisplacement, WithRecurrence):
-    fault = models.ForeignKey('Fault')
+    fault = models.ForeignKey('Fault', on_delete=models.CASCADE)
     source_nm  = models.CharField(max_length=255)
     fault_name = models.CharField(max_length=255)
 
@@ -353,7 +362,10 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
     fault_name = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
-    down_thro = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
+    down_thro = models.CharField(max_length=255,
+                                 verbose_name="Downthrown side",
+                                 choices=DOWNTHROWN_SIDE_CHOICES,
+                                 **DEFAULT_FIELD_ATTRIBUTES)
     simple_geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
 
     def __unicode__(self):
@@ -372,7 +384,10 @@ class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, Wi
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     surface_dip = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
-    down_thro = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
+    down_thro = models.CharField(max_length=255,
+                                 verbose_name="Downthrown side",
+                                 choices=DOWNTHROWN_SIDE_CHOICES,
+                                 **DEFAULT_FIELD_ATTRIBUTES)
 
     def update_autocomputed_fields(self):
         if self.trace_set.count():
@@ -404,7 +419,9 @@ class Trace(LocatedObservation):
 
 class SiteObservation(LocatedObservation):
     geom = models.PointField(srid=4326)
-    fault_section = models.ForeignKey('FaultSection', **DEFAULT_FIELD_ATTRIBUTES)
+    fault_section = models.ForeignKey('FaultSection',
+                                      on_delete=models.CASCADE,
+                                      **DEFAULT_FIELD_ATTRIBUTES)
     s_feature = models.CharField(max_length=30)
 
     class Meta:
@@ -416,15 +433,6 @@ class Event(SiteObservation, WithRecurrence):
 
 
 class FaultGeometry(SiteObservation):
-    DOWNTHROWN_SIDE_CHOICES = (('N', 'N'),
-                               ('S', 'S'),
-                               ('W', 'W'),
-                               ('E', 'E'),
-                               ('NE', 'NE'),
-                               ('NW', 'NW'),
-                               ('SE', 'SE'),
-                               ('SW', 'SW'))
-
     dip_dir = models.IntegerField(verbose_name="Dip Direction", **DEFAULT_FIELD_ATTRIBUTES)
 
     down_thro = models.CharField(max_length=255,
