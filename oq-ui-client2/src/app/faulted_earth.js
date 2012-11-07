@@ -59,16 +59,20 @@ Ext.onReady(function() {
 	/* add a listener for computed fields */
 	listeners: {
 	    featureedit: function(manager) {
-		var fid = manager.featureLayer.selectedFeatures[0];
-		Ext.Ajax.request({
-		    method: "POST",
-		    url: faulted_earth.app_url + '/observations/updatecomputedfields',
-		    params: Ext.encode({ fid: fid }),
-		    success: function(response, opts) {
-			/* reload the features to get the autocomputed fields */
-			manager.featureStore.load();
+		if (manager.featureLayer.selectedFeatures.length > 0) {
+		    var fid = manager.featureLayer.selectedFeatures[0].fid;
+		    if (fid) {
+			Ext.Ajax.request({
+			    method: "POST",
+			    url: faulted_earth.app_url + '/observations/updatecomputedfields',
+			    params: Ext.encode({ fid: fid }),
+			    success: function(response, opts) {
+				/* reload the features to get the autocomputed fields */
+				manager.featureStore.load();
+			    }
+			});
 		    }
-		});
+		}
 	    }
 	},
 

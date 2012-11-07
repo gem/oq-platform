@@ -83,7 +83,7 @@ def updatecomputedfields(request):
         model_type = ContentType.objects.get(app_label="observations", model=model_name)
         
         observation = model_type.get_object_for_this_type(pk=object_id)
-        if getattr(observation, 'update_autocomputed_fields'):
+        if hasattr(observation, 'update_autocomputed_fields'):
             observation.update_autocomputed_fields()
         return OK_RESPONSE
     else:

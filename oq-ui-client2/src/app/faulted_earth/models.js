@@ -251,7 +251,7 @@ faulted_earth.isCalculated = function(fieldName) {
 }
 
 faulted_earth.on_exception = function(tool, exception, msg, objects) {
-    if (objects[0].data.state == 'Delete') {
+    if (objects && objects.length > 0 && objects[0].data.state == 'Delete') {
 	alert('Delete failed! Please remove the objects that depend on');
     }
 }
