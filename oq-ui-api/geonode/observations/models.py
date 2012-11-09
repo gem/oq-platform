@@ -378,6 +378,8 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
 
 
 class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
+    # TODO. change this to plural. Do we really nead a m2m relation
+    # instead of a fk?
     fault = models.ManyToManyField('Fault')
     geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
     sec_name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
