@@ -372,6 +372,12 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
         return "Fault %s %s" % (self.pk, self.fault_name)
 
     def update_autocomputed_fields(self):
+        if self.faultsection_set.count():
+            self.simple_geom = self.faultsection_set.all()[0].geom
+            for fault_section in self.faultsection_set.all()[1:]:
+                self.geom = self.simple_geom.union(fault_section.geom)
+            self.save()
+
         self._update_net_slip_rate()
         self._update_overall_completeness()
         self.save()
