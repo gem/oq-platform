@@ -52,7 +52,7 @@ faulted_earth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
        */
       addOutput: function(config) {
 	  var editor = this;
-	  config.width = 400;
+	  config.width = 600;
 
 	  var output = faulted_earth.ObservationFeatureEditor.superclass.addOutput.apply(this, arguments);
 	  
@@ -72,14 +72,6 @@ faulted_earth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 			   function(container, rowIndex, event) {
 			       faulted_earth.on_row_click(editor, popup, grid, rowIndex);
 			   });
-	  popup.addListener('featuremodified',
-			    function() {
-				Ext.Ajax.request({
-				    method: "POST",
-				    url: faulted_earth.app_url + '/observations/updatecomputedfields'
-				});
-			    });
-
 	  return popup;
       }
   });

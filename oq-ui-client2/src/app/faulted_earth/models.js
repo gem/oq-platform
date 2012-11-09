@@ -74,7 +74,7 @@ faulted_earth.locatedObservationProperties = registerProperties([
 
 faulted_earth.traceProperties = registerProperties(faulted_earth.locatedObservationProperties.concat([
     { id: "loc_meth", label: "Location Method" },
-    { id: "geomorphic_expression", label: "Geomorphic Expression" }
+    { id: "geomorphic_expression", label: "Geomorphic Expression", isCompulsory: true }
 ]));
 
 faulted_earth.siteProperties = registerProperties(faulted_earth.locatedObservationProperties.concat([
@@ -104,9 +104,9 @@ function withInterval(fields) {
 
 faulted_earth.slipRateProperties = registerProperties(withInterval([
     { id: "dip_slip_rate", label: "Dip Slip rate (mm/yr)" },
-    { id: "strike_slip_rate", label: "Strike slip rate (mm/yr)" },
+    { id: "strike_slip_rate", label: "Strike slip rate (mm/yr)", isCompulsory: true },
     { id: "net_slip_rate", label: "Net slip rate (mm/yr)", isCalculated: true },
-    { id: "vertical_slip_rate", label: "Vertical slip rate (mm/yr)" },
+    { id: "vertical_slip_rate", label: "Vertical slip rate (mm/yr)", isCompulsory: true },
     { id: "hv_ratio", label: "H:V Ratio"},
     { id: "rake", label: "Rake" }]).concat([
 	{ id: "hv_ratio", label: "H:V Ratio"},
@@ -127,10 +127,10 @@ faulted_earth.displacementProperties = registerProperties([
 
 
 faulted_earth.recurrenceProperties = registerProperties(withInterval(
-    [{ id: "re_int", label: "Recurrence Interval (yr)", isCompulsory: true },
+    [{ id: "re_int", label: "Recurrence Interval (yr)" },
      { id: "mov", label: "Age of last movement (yr BP)" } ]).concat(
 	 [ { id: "historical_earthquake", label: "Historical Eartquake" },
-	   { id: "pre_historical_earthquake", label: "Pre Historical Eartquake" },
+	   { id: "pre_historical_earthquake", label: "Pre Historical Earthquake" },
 	   { id: "marker_age", label: "Marker Age (yrs BP)" },
 	   { id: "re_int_category", label: "Recurrence interval category" },
 	   { id: "mov_category", label: "Age of last movement category" }]));
@@ -174,17 +174,19 @@ faulted_earth.magnitudeProperties = registerProperties(withInterval([
     { id: "mag", label: "Magnitude", isCalculated: true },
     { id: "mom", label: "Seismic movement", isCalculated: true }]));
 
-faulted_earth.faultsectionProperties = registerProperties(faulted_earth.observationProperties.concat(
-    faulted_earth.lengthProperties).concat(
-	faulted_earth.areaProperties).concat(
-	    faulted_earth.slipRateProperties).concat(
-		faulted_earth.dipProperties).concat(
-		    faulted_earth.recurrenceProperties).concat([
-			{ id: "sec_name", label: "Fault Section name", isCompulsory: true },
-			{ id: "down_thro", label: "Downthrown Side" },
-			{ id: "strike", label: "Strike" },
-			{ id: "surface_dip", label: "Surface Dip" },
-			{ id: "episodic_behaviour", label: "Episodic Behaviour" }]));
+faulted_earth.faultsectionProperties = registerProperties(
+    faulted_earth.observationProperties.concat(
+	faulted_earth.lengthProperties).concat(
+	    faulted_earth.displacementProperties).concat(
+		faulted_earth.areaProperties).concat(
+		    faulted_earth.slipRateProperties).concat(
+			faulted_earth.dipProperties).concat(
+			    faulted_earth.recurrenceProperties).concat([
+				{ id: "sec_name", label: "Fault Section name", isCompulsory: true },
+				{ id: "down_thro", label: "Downthrown Side" },
+				{ id: "strike", label: "Strike" },
+				{ id: "surface_dip", label: "Surface Dip" },
+				{ id: "episodic_behaviour", label: "Episodic Behaviour" }]));
 
 faulted_earth.faultProperties = registerProperties(
     faulted_earth.observationProperties.concat(
@@ -247,4 +249,10 @@ faulted_earth.isCalculated = function(fieldName) {
 	}
     }
     return false
+}
+
+faulted_earth.on_exception = function(tool, exception, msg, objects) {
+    if (objects && objects.length > 0 && objects[0].data.state == 'Delete') {
+	alert('Delete failed! Please remove the objects that depend on');
+    }
 }

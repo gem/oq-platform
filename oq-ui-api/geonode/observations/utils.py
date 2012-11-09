@@ -156,4 +156,5 @@ def join_fault_sections(fault_sections, fault_name):
     for fault_section in fault_sections:
         fault_section.fault.add(fault)
     fault.save()
+    fault.update_autocomputed_fields()
 

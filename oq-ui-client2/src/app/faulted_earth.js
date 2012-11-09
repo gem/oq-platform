@@ -9,6 +9,7 @@
  * @require plugins/ZoomToSelectedFeatures.js
  * @require plugins/NavigationHistory.js
  * @require plugins/Zoom.js
+ * @require widgets/ScaleOverlay.js
  * @require plugins/AddLayers.js
  * @require plugins/RemoveLayer.js
  * @require RowExpander.js
@@ -55,7 +56,27 @@ Ext.onReady(function() {
 
     app = new gxp.Viewer({
 
-	/* TODO: are the following two properties still used/useful ? */
+	/* add a listener for computed fields */
+	listeners: {
+	    featureedit: function(manager) {
+		if (manager.featureLayer.selectedFeatures.length > 0) {
+		    var fid = manager.featureLayer.selectedFeatures[0].fid;
+		    if (fid) {
+			Ext.Ajax.request({
+			    method: "POST",
+			    url: faulted_earth.app_url + '/observations/updatecomputedfields',
+			    params: Ext.encode({ fid: fid }),
+			    success: function(response, opts) {
+				/* reload the features to get the autocomputed fields */
+				manager.featureStore.load();
+			    }
+			});
+		    }
+		}
+	    }
+	},
+
+	/* TODO: is the following property still used/useful ? */
         proxy: "/proxy?url=",
 
         portalConfig: {
@@ -166,7 +187,7 @@ Ext.onReady(function() {
             actionTarget: {target: "tree.tbar"}
         }, {
             ptype: "gxp_legend",
-            actionTarget: "map.tbar",
+            actionTarget: "tree.tbar",
 	    outputTarget: "west",
 	    outputConfig: {
 		title: "Legend",
@@ -174,7 +195,7 @@ Ext.onReady(function() {
 	    }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
-            actionTarget: "tree.tbar",
+            actionTarget: "map.tbar",
             format: "grid", 
             outputConfig: {
                 width: 400
@@ -196,7 +217,7 @@ Ext.onReady(function() {
             actionTarget: "map.tbar"
         }, {
             ptype: "gxp_measure",
-            actionTarget: ["tree.tbar"],
+            actionTarget: ["map.tbar"],
             toggleGroup: "main"
         }],
         
@@ -305,6 +326,10 @@ Ext.onReady(function() {
 	    Ext.iterate(viewer.tools, function(tool) {
 		if (viewer.tools[tool].registerEvents)
 		    viewer.tools[tool].registerEvents(viewer);
+
+		if (viewer.tools[tool].ptype.slice(-7) == 'manager') {
+		    viewer.tools[tool].addListener('exception', faulted_earth.on_exception);
+		}
 	    });
 	},
 
@@ -386,7 +411,9 @@ Ext.onReady(function() {
                 xtype: "gx_zoomslider",
                 vertical: true,
                 height: 100
-            }]
+            }, {
+		xtype: "gxp_scaleoverlay"
+	    }]
         }
 
     });
