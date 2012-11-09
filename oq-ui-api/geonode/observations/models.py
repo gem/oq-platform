@@ -298,7 +298,7 @@ class Observation(models.Model):
 
 class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
                   WithMagnitude, WithDisplacement, WithRecurrence):
-    fault = models.ForeignKey('Fault', on_delete=models.CASCADE)
+    fault = models.ForeignKey('Fault')
     source_nm  = models.CharField(max_length=255)
     fault_name = models.CharField(max_length=255)
 
@@ -420,7 +420,6 @@ class Trace(LocatedObservation):
 class SiteObservation(LocatedObservation):
     geom = models.PointField(srid=4326)
     fault_section = models.ForeignKey('FaultSection',
-                                      on_delete=models.CASCADE,
                                       **DEFAULT_FIELD_ATTRIBUTES)
     s_feature = models.CharField(max_length=30)
 
