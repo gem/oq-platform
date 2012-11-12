@@ -19,6 +19,9 @@
 from django.contrib.gis.db import models
 import math
 import numpy
+import jpype
+import shapely
+from django.contrib.gis.geos import collections
 
 
 SLIP_TYPE_COM_DEFAULT=0
@@ -199,22 +202,21 @@ class WithSlipAndDip(WithSlip, WithDip):
         abstract = True
 
     def _update_net_slip_rate(self):
-        if self.strike_slip_rate_min and self.dip_slip_rate_min:
+        if self.strike_slip_rate_min is not None and self.dip_slip_rate_min is not None:
             self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
                                                         self.dip_slip_rate_min])
-        if self.strike_slip_rate_max and self.dip_slip_rate_max:
+        if self.strike_slip_rate_max is not None and self.dip_slip_rate_max is not None:
             self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
                                                         self.dip_slip_rate_max])
-        if self.strike_slip_rate_pref and self.dip_slip_rate_pref:
+        if self.strike_slip_rate_pref is not None and self.dip_slip_rate_pref is not None:
             self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
                                                          self.dip_slip_rate_pref])
-        if self.dip_max and self.dip_slip_rate_min:
+        if self.dip_max is not None and self.dip_slip_rate_min is not None:
             self.vertical_slip_rate_min = self.dip_slip_rate_min * math.sin(self.dip_max / 180. * math.pi)
 
-        if self.dip_pref and self.dip_slip_rate_pref:
+        if self.dip_pref is not None and self.dip_slip_rate_pref is not None:
             self.vertical_slip_rate_pref = self.dip_slip_rate_pref * math.sin(self.dip_pref / 180. * math.pi)
-
-        if self.dip_min and self.dip_slip_rate_max:
+        if self.dip_min is not None and self.dip_slip_rate_max is not None:
             self.vertical_slip_rate_max = self.dip_slip_rate_max * math.sin(self.dip_min / 180. * math.pi)
 
 
@@ -287,10 +289,9 @@ class Observation(models.Model):
         abstract = True
 
     def _update_overall_completeness(self):
-        needed_attrs = ['u_sm_d_com', 'low_d_com', 'dip_com', 'dip_dir_com', 'net_slip_rate_com',
-                        'aseis_com']
+        needed_attrs = ['u_sm_d_com', 'low_d_com', 'dip_com', 'dip_dir_com', 'net_slip_rate_com']
         
-        if all([getattr(self, attr, None) for attr in needed_attrs]):
+        if all([getattr(self, attr, None) is not None for attr in needed_attrs]):
             self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir_com + 
                             (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
                             (self.aseis_com or ASEIS_SLIP_COM_DEFAULT)) / 11
@@ -302,9 +303,10 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
     source_nm  = models.CharField(max_length=255)
     fault_name = models.CharField(max_length=255)
 
-    geom = models.PolygonField(srid=4326, dim=3)
+    geom = models.PolygonField(srid=4326, dim=3, **DEFAULT_FIELD_ATTRIBUTES)
 
     def update_autocomputed_fields(self):
+        self._update_geometry()
         self._update_width()
         self._update_area()
         self._update_net_slip_rate()
@@ -314,47 +316,54 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
         self._update_overall_completeness()
         self.save()
         
+    def _update_geometry(self):
+        self.geom = self.fault.fault_poly_from_mls()
+
     def _update_width(self):
-        if self.low_d_min and self.u_sm_d_max and self.dip_max:
+        if self.low_d_min is not None and self.u_sm_d_max is not None and self.dip_max > 0:
             assert (self.low_d_min > self.u_sm_d_max), "low_d_min %s < u_sm_d_max %s" %  (self.low_d_min, self.u_sm_d_max)
             self.width_min = (self.low_d_min - self.u_sm_d_max) / sin(self.dip_max)
-        if self.low_d_max and self.u_sm_d_min and self.dip_min:
+
+        if self.low_d_max is not None and self.u_sm_d_min is not None and self.dip_min > 0:
             assert (self.low_d_max > self.u_sm_d_min), "low_d_max %s < u_sm_d_min %s" %  (self.low_d_max, self.u_sm_d_min)
             self.width_max = (self.low_d_max - self.u_sm_d_min) / sin(self.dip_min)
-        if self.low_d_pref and self.u_sm_d_pref and self.dip_pref:
+
+        if self.low_d_pref is not None and self.u_sm_d_pref is not None and self.dip_pref > 0:
             assert (self.low_d_pref > self.u_sm_d_pref), "low_d_pref %s < u_sm_d_pref %s" %  (self.low_d_pref, self.u_sm_d_pref)
             self.width_pref = (self.low_d_pref - self.u_sm_d_pref) / sin(self.dip_pref)
 
     def _update_area(self):
-        if self.length_pref and self.width_pref:
+        if self.length_pref is not None and self.width_pref is not None:
             self.area_pref = self.length_pref * self.width_pref
-        if self.length_min and self.width_min:
+        if self.length_min is not None and self.width_min is not None:
             self.area_min = self.length_min * self.width_min
-        if self.length_max and self.width_max:
+        if self.length_max is not None and self.width_max is not None:
             self.area_max = self.length_max * self.width_max        
 
     def _update_magnitude(self):
-        if self.length_min and self.width_min:
+        if self.length_min > 0 and self.width_min > 0:
             self.mag_min = magnitude_law(self.length_min, self.width_min)
-        if self.length_max and self.width_max:
+
+        if self.length_max > 0 and self.width_max > 0:
             self.mag_max = magnitude_law(self.length_max, self.width_max)
-        if self.length_pref and self.width_pref:
+
+        if self.length_pref > 0 and self.width_pref > 0:
             self.mag_pref = magnitude_law(self.length_pref, self.width_pref)
 
     def _update_moment(self):
-        if self.mag_min:
+        if self.mag_min is not None:
             self.mom_min = moment_law(self.mag_min)
-        if self.mag_max:
+        if self.mag_max is not None:
             self.mom_max = moment_law(self.mag_max)
-        if self.mag_pref:
+        if self.mag_pref is not None:
             self.mom_pref = moment_law(self.mag_pref)
 
     def _update_displacement(self):
-        if self.mom_min and self.area_min:
+        if self.mom_min is not None and self.area_min > 0:
             self.dis_min = displacement_law(self.mom_min, self.area_min)
-        if self.mom_max and self.area_max:
+        if self.mom_max is not None and self.area_max > 0:
             self.dis_max = displacement_law(self.mom_max, self.area_max)
-        if self.mom_pref and self.area_pref:
+        if self.mom_pref is not None and self.area_pref > 0:
             self.dis_pref = displacement_law(self.mom_pref, self.area_pref)
         
 
@@ -372,15 +381,89 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
         return "Fault %s %s" % (self.pk, self.fault_name)
 
     def update_autocomputed_fields(self):
+        self._update_geometry()
+        self._update_net_slip_rate()
+        self._update_overall_completeness()
+        self.save()
+        self._update_depending_objects()
+
+    def _update_depending_objects(self):
+        for fault_source in self.faultsource_set.all():
+            fault_source.update_autocomputed_fields()
+
+    def _update_geometry(self):
         if self.faultsection_set.count():
             self.simple_geom = self.faultsection_set.all()[0].geom
             for fault_section in self.faultsection_set.all()[1:]:
                 self.geom = self.simple_geom.union(fault_section.geom)
-            self.save()
 
-        self._update_net_slip_rate()
-        self._update_overall_completeness()
-        self.save()
+    def fault_poly_from_mls(self):
+        """Given a fault source geometry (as a MultiLineString), dip, upper
+        seismogenic depth, lower seismogenic depth, and grid spacing (in km),
+        create a 3D polygon to represent the fault.
+
+        :param fault_source_geom:
+        :class:`django.contrib.gis.geos.collections.MultiLineString`
+        :param float dip:
+        Angle of dip, from 0.0 to 90.0 degrees (inclusive)
+        :param float upp_seis_depth:
+        Upper seismogenic depth
+        :param float low_seis_depth:
+        Lower seismogenic depth
+
+        :returns:
+        3D polygon representing the complete fault geometry
+        :rtype:
+        :class:`django.contrib.gis.geos.collections.Polygon`
+        """
+
+        fault_source_geom = self.simple_geom
+        dip = self.dip_pref
+        upp_seis_depth = self.u_sm_d_pref
+        low_seis_depth = self.low_d_pref
+
+        #: Value is in kilometers
+        GRID_SPACING = 1.0
+
+        # FIXME: do not use openpsha to compute the geometry
+        if not jpype.isJVMStarted():
+            # start jvm once
+            jpype.startJVM(jpype.getDefaultJVMPath(),
+                           "-Djava.ext.dirs=%s" % settings.GEOCLUDGE_JAR_PATH)
+
+        if not jpype.isThreadAttachedToJVM():
+            jpype.attachThreadToJVM()
+
+        FT = jpype.JClass('org.opensha.sha.faultSurface.FaultTrace')
+        LOC = jpype.JClass('org.opensha.commons.geo.Location')
+        LOC_LIST = jpype.JClass('org.opensha.commons.geo.LocationList')
+        SGS = jpype.JClass('org.opensha.sha.faultSurface.StirlingGriddedSurface')
+
+        coords = fault_source_geom.coords
+
+        fault_trace = FT('')
+
+        for line_str in coords:
+            for lon, lat in line_str:
+                # warning: the ordering of lat/lon is switched here
+                # be careful
+                loc = LOC(lat, lon)
+                fault_trace.add(loc)
+
+        surface = SGS(fault_trace, float(dip),
+                      float(upp_seis_depth), float(low_seis_depth),
+                      GRID_SPACING)
+
+        # now we make a polygon with the perimeter coords:
+        poly_coords = []
+        for per_loc in surface.getSurfacePerimeterLocsList():
+            lon = per_loc.getLongitude()
+            lat = per_loc.getLatitude()
+            depth = per_loc.getDepth()
+
+            poly_coords.append((lon, lat, depth))
+
+        return collections.Polygon(poly_coords)
 
 
 class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
@@ -398,14 +481,21 @@ class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, Wi
                                  **DEFAULT_FIELD_ATTRIBUTES)
 
     def update_autocomputed_fields(self):
+        self._update_geometry()
+        self._update_net_slip_rate()
+        self._update_overall_completeness()
+        self.save()
+        self._update_depending_objects()
+
+    def _update_depending_objects(self):
+        for fault in self.fault.all():
+            fault.update_autocomputed_fields()
+
+    def _update_geometry(self):
         if self.trace_set.count():
             self.geom = self.trace_set.all()[0].geom
             for trace in self.trace_set.all()[1:]:
                 self.geom = self.geom.union(trace.geom)
-            self.save()
-        self._update_net_slip_rate()
-        self._update_overall_completeness()
-        self.save()
 
 
 class LocatedObservation(models.Model):
@@ -416,6 +506,7 @@ class LocatedObservation(models.Model):
     class Meta:
         abstract = True
 
+
 class Trace(LocatedObservation):
     # TODO. change this to plural. Do we really need a m2m field?
     fault_section = models.ManyToManyField('FaultSection')
@@ -423,6 +514,13 @@ class Trace(LocatedObservation):
     geomorphic_expression = models.CharField(max_length=255,
                                              choices=GEOMORPHIC_EXPRESSION_CHOICES)
     geom = models.MultiLineStringField(srid=4326)
+
+    def update_autocomputed_fields(self):
+        self._update_depending_objects()
+
+    def _update_depending_objects(self):
+        for fault_section in self.fault_section.all():
+            fault_section.update_autocomputed_fields()
 
 
 class SiteObservation(LocatedObservation):

@@ -23,9 +23,7 @@ import jpype
 import shapely
 from django.contrib.gis.geos.collections import Polygon
 from django.conf import settings
-import logging 
 from geonode.observations import models
-log = logging.getLogger("django.feeds.utils")
 
 
 def fault_poly_from_mls(fault_source_geom, dip,
@@ -48,17 +46,13 @@ def fault_poly_from_mls(fault_source_geom, dip,
     :rtype:
         :class:`django.contrib.gis.geos.collections.Polygon`
     """
-    # I take no responsibility for writing this
 
     #: Value is in kilometers
     GRID_SPACING = 1.0
 
-    import logging
-    log = logging.getLogger("django.feeds.utils")
-
+    # FIXME: do not use openpsha to compute the geometry
     if not jpype.isJVMStarted():
         # start jvm once
-        log.debug('starting jvm')
         jpype.startJVM(jpype.getDefaultJVMPath(),
                        "-Djava.ext.dirs=%s" % settings.GEOCLUDGE_JAR_PATH)
 
@@ -133,13 +127,8 @@ def create_faultsource(fault):
         elif not attrib_name in ["aseis_com", "slip_type_com"]:
             return attrib_name
 
-    polygon = fault_poly_from_mls(
-        fault.simple_geom, fault.dip_pref,
-        fault.u_sm_d_pref, fault.low_d_pref
-    )
-    
     faultsource = models.FaultSource.objects.create(
-        fault=fault, source_nm="Fault created by from %s" % fault.fault_name, geom=polygon, **a)
+        fault=fault, source_nm="Fault created by from %s" % fault.fault_name, **a)
     faultsource.update_autocomputed_fields()
     
     return None
