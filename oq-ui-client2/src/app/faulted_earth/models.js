@@ -19,6 +19,7 @@ Ext.namespace('faulted_earth');
 
 /* catalog of properties. We will collect them, later */
 faulted_earth.properties = [];
+faulted_earth.propertyNames = {};
 
 faulted_earth.Model = function(prefixId, title, properties, conf) {
     this.prefixId = prefixId;
@@ -63,22 +64,39 @@ faulted_earth.Model = function(prefixId, title, properties, conf) {
 
 function registerProperties(props) {
     faulted_earth.properties = faulted_earth.properties.concat(props);
+    Ext.each(props, function(field) {
+	faulted_earth.propertyNames[field.id] = field;
+    });
     return props;
 }
 
 faulted_earth.locatedObservationProperties = registerProperties([
-    { id: "scale", label: "Scale", isCompulsory: true },
-    { id: "accuracy", label: "Accuracy", isCompulsory: true },
+    { id: "scale", label: "Scale", isCompulsory: true, init: function() { return Math.round(app.mapPanel.map.getScale()) } },
+    { id: "accuracy", label: "Accuracy", isCompulsory: true, init: function() { return Math.round(app.mapPanel.map.getScale() * 2) }  },
     { id: "notes", label: "Notes" }
 ]);
 
 faulted_earth.traceProperties = registerProperties(faulted_earth.locatedObservationProperties.concat([
-    { id: "loc_meth", label: "Location Method" },
-    { id: "geomorphic_expression", label: "Geomorphic Expression", isCompulsory: true }
+    { id: "loc_meth", label: "Location Method", choices: ['GPS Survey', 'LiDAR', 'Aerial photographs',
+							  'Topographic map', 'Google Earth', 'Composite'] },
+    { id: "geomorphic_expression", label: "Geomorphic Expression", isCompulsory: true,
+      choices: [
+	  'Surface trace', 'Eroded scarp', 'Sharp feature',
+	  'Topographic feature', 'Bedrock extension',
+	  'Concealed', 'No trace'
+      ]}
 ]));
 
 faulted_earth.siteProperties = registerProperties(faulted_earth.locatedObservationProperties.concat([
-    { id: "fault_section_id", label: "Fault Section ID", isCompulsory: true },
+    { id: "fault_section_id", label: "Fault Section ID", isCompulsory: true,
+      choices: function() {
+	  var choices = [];
+	  app.tools.faultsection_manager.featureStore.each(function(record) {
+	      var oid = record.data.fid.split('.').slice(-1)[0];
+	      choices.push([oid, record.data.sec_name]);
+	  });
+	  return choices;						   
+      } },
     { id: "s_feature", label: "Site Feature", isCompulsory: true }]));
 
 
@@ -110,16 +128,25 @@ faulted_earth.slipRateProperties = registerProperties(withInterval([
     { id: "hv_ratio", label: "H:V Ratio"},
     { id: "rake", label: "Rake" }]).concat([
 	{ id: "hv_ratio", label: "H:V Ratio"},
-	{ id: "net_slip_rate_com", label: "Net slip rate completeness" },
-	{ id: "slip_rate_category", label: "Slip rate category" },
-	{ id: "slip_type", label: "Slip type", isCompulsory: true },
-	{ id: "slip_type_com", label: "Slip type completeness", isCompulsory: true },
+	{ id: "net_slip_rate_com", label: "Net slip rate completeness", choices: [1,2,3,4] },
+	{ id: "slip_rate_category", label: "Slip rate category",
+	  choices: ['0.001 - <0.01', '0.01 - <0.1', '0.1 - <1',
+		    '0.1 - <1', '1 - <5', '5 - <10', '10 - <50',
+		    '50 - <100', '100 - <200' ]},
+	{ id: "slip_type", label: "Slip type", isCompulsory: true,
+	  choices: ['Reverse', 'Thrust (dip <45 deg)',
+		    'Normal', 'Dextral', 'Sinistral', 'Normal Dextral',
+		    'Dextral Normal', 'Sinistral Normal', 'Normal Sinistral',
+		    'Dextral Reverse', 'Sinistral Reverse'] },
+	{ id: "slip_type_com", label: "Slip type completeness", isCompulsory: true, choices: [1,2,3,4] },
 	{ id: "aseis_slip", label: "Aseismic-slip factor (0-1)", isCompulsory: true },
-	{ id: "aseis_com", label: "Aseismic-slip completeness", isCompulsory: true }]));
+	{ id: "aseis_com", label: "Aseismic-slip completeness", isCompulsory: true, choices: [1,2,3,4] }]));
 
 faulted_earth.displacementProperties = registerProperties([
     { id: "dis_total", label: "Total displacement (m)" },
-    { id: "dis_category", label: "Displacement category" },
+    { id: "dis_category", label: "Displacement category", choices: [
+	'0.1 - <0.5', '0.5 - <1', '1 - <5',
+	'5 - <10', '10 - <30' ] },
     { id: "horizontal_displacement", label: "Horizontal displacement" },
     { id: "vertical_displacement", label: "Vertical displacement" },
     { id: "net_displacement", label: "Net displacement" } ].concat(
@@ -132,8 +159,16 @@ faulted_earth.recurrenceProperties = registerProperties(withInterval(
 	 [ { id: "historical_earthquake", label: "Historical Eartquake" },
 	   { id: "pre_historical_earthquake", label: "Pre Historical Earthquake" },
 	   { id: "marker_age", label: "Marker Age (yrs BP)" },
-	   { id: "re_int_category", label: "Recurrence interval category" },
-	   { id: "mov_category", label: "Age of last movement category" }]));
+	   { id: "re_int_category", label: "Recurrence interval category",
+	     choices: ['10 - <100', '100 - <1,000',
+		       '1,000 - <2,000', '2,000 - <5,000',
+		       '5,000 - <10,000', '10,000 - <100,000',
+		       '100,000 - <500,000', '500,000 - <1,000,000',
+		       '1,000,000 - <10,000,000' ]},
+	   { id: "mov_category", label: "Age of last movement category",
+	     choices: ['0 - <1,000', '1,000 - <11,700 (Holocene)',
+		       '11,700 - <50,000', '100,000 - <1,000,000',
+		       '1,000,000 - <10,000,000' ]}]));
 
 faulted_earth.eventProperties = registerProperties(faulted_earth.siteProperties.concat(faulted_earth.recurrenceProperties));
 faulted_earth.siteDisplacementProperties = registerProperties(faulted_earth.siteProperties.concat(faulted_earth.displacementProperties));
@@ -142,7 +177,7 @@ faulted_earth.siteSlipRateProperties = registerProperties(faulted_earth.siteProp
 /* fixme: refactor this with fault section (also in the app) */
 faulted_earth.faultgeometryProperties = registerProperties(faulted_earth.siteProperties.concat([
     { id: "dip_dir", label: "Dip direction", isCompulsory: true },
-    { id: "down_thro", label: "Downthrown Side" },
+    { id: "down_thro", label: "Downthrown Side", choices: ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'] },
     { id: "strike", label: "Strike" },
     { id: "surface_dip", label: "Surface Dip" } ]));
 
@@ -156,8 +191,8 @@ faulted_earth.lengthProperties = registerProperties(withInterval([
     { id: "length", label: "Length" },
     { id: "u_sm_d", label: "Upper seismogenic depth", isCompulsory: true },
     { id: "low_d", label: "Lower seismogenic depth", isCompulsory: true }]).concat(
-	[ { id: "u_sm_d_com", label: "Upper seismogenic depth completeness", isCompulsory: true },
-	  { id: "low_d_com", label: "Lower seismogenic depth completeness", isCompulsory: true }]));
+	[ { id: "u_sm_d_com", label: "Upper seismogenic depth completeness", isCompulsory: true, choices: [1,2,3,4] },
+	  { id: "low_d_com", label: "Lower seismogenic depth completeness", isCompulsory: true, choices: [1,2,3,4] }]));
 
 faulted_earth.areaProperties = registerProperties(withInterval([
     { id: "width", label: "Width", isCalculated: true },
@@ -165,9 +200,9 @@ faulted_earth.areaProperties = registerProperties(withInterval([
     
 faulted_earth.dipProperties = registerProperties(
     withInterval({ id: "dip", label: "Dip", isCompulsory: true }).concat([
-	{ id: "dip_com", label: "Dip completeness", isCompulsory: true },
+	{ id: "dip_com", label: "Dip completeness", isCompulsory: true, choices: [1,2,3,4] },
 	{ id: "dip_dir", label: "Dip direction", isCompulsory: true },
-	{ id: "dip_dir_com", label: "Dip direction completeness", isCompulsory: true }]));
+	{ id: "dip_dir_com", label: "Dip direction completeness", isCompulsory: true, choices: [1,2,3,4] }]));
 
 
 faulted_earth.magnitudeProperties = registerProperties(withInterval([
@@ -183,10 +218,11 @@ faulted_earth.faultsectionProperties = registerProperties(
 			faulted_earth.dipProperties).concat(
 			    faulted_earth.recurrenceProperties).concat([
 				{ id: "sec_name", label: "Fault Section name", isCompulsory: true },
-				{ id: "down_thro", label: "Downthrown Side" },
+				{ id: "down_thro", label: "Downthrown Side", choices: ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'] },
 				{ id: "strike", label: "Strike" },
 				{ id: "surface_dip", label: "Surface Dip" },
-				{ id: "episodic_behaviour", label: "Episodic Behaviour" }]));
+				{ id: "episodic_behaviour", label: "Episodic Behaviour",
+				  choices: ["Yes Active", "Yes Inactive", "No"]}]));
 
 faulted_earth.faultProperties = registerProperties(
     faulted_earth.observationProperties.concat(
@@ -196,7 +232,7 @@ faulted_earth.faultProperties = registerProperties(
 		    faulted_earth.displacementProperties).concat(
 			faulted_earth.recurrenceProperties).concat([
 			    { id: "fault_name", label: "Fault name", isCompulsory: true },
-			    { id: "down_thro", label: "Downthrown Side" },
+			    { id: "down_thro", label: "Downthrown Side", choices: ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'] },
 			    { id: "strike", label: "Strike" },
 			    { id: "episodic_behaviour", label: "Episodic Behaviour" }]));
 
@@ -232,23 +268,11 @@ Ext.each(faulted_earth.models, function(model) {
 
 /* an utility function to check if a field is compulsory */
 faulted_earth.isCompulsory = function(fieldName) {
-    for (var i = 0; i < faulted_earth.properties.length; i++) {
-	var field = faulted_earth.properties[i];
-	if (field.id == fieldName && field.isCompulsory) {
-	    return true
-	}
-    }
-    return false
+    return faulted_earth.propertyNames[fieldName].isCompulsory;
 };
 
 faulted_earth.isCalculated = function(fieldName) {
-    for (var i = 0; i < faulted_earth.properties.length; i++) {
-	var field = faulted_earth.properties[i];
-	if (field.id == fieldName && field.isCalculated) {
-	    return true
-	}
-    }
-    return false
+    return faulted_earth.propertyNames[fieldName].isCalculated;
 }
 
 faulted_earth.on_exception = function(tool, exception, msg, objects) {

@@ -39,6 +39,13 @@ displacement_law = lambda moment, area: moment / (3.0e11 * area * 1.0e10) * 0.01
 
 DEFAULT_FIELD_ATTRIBUTES = {'null': True, 'blank': True}
 
+LOCATION_METHOD_CHOICES = (('GPS Survey', 'GPS Survey'),
+                           ('LiDAR', 'LiDAR'),
+                           ('Aerial photographs', 'Aerial photographs'),
+                           ('Topographic map', 'Topographic map'),
+                           ('Google Earth', 'Google Earth'),
+                           ('Composite', 'Composite'))
+
 DOWNTHROWN_SIDE_CHOICES = (('N', 'N'),
                            ('S', 'S'),
                            ('W', 'W'),
@@ -510,7 +517,7 @@ class LocatedObservation(models.Model):
 class Trace(LocatedObservation):
     # TODO. change this to plural. Do we really need a m2m field?
     fault_section = models.ManyToManyField('FaultSection')
-    loc_meth = models.CharField(max_length=30)
+    loc_meth = models.CharField(max_length=30, choices=LOCATION_METHOD_CHOICES)
     geomorphic_expression = models.CharField(max_length=255,
                                              choices=GEOMORPHIC_EXPRESSION_CHOICES)
     geom = models.MultiLineStringField(srid=4326)

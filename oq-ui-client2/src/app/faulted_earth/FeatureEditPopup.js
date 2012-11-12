@@ -60,35 +60,16 @@ Ext.override(gxp.FeatureEditPopup, {
 	    var old_getErrors = field.getErrors;
 	    field.getErrors = function(value) {
 		var errors = old_getErrors.apply(field, [value]) || [];
-		
+
+		if ( ! value && faulted_earth.propertyNames[fieldName].init) {
+		    value = faulted_earth.propertyNames[fieldName].init();
+		    field.setValue(value);
+		}
+
 		// CUSTOM VALIDATION
 		// FIXME validator code should go into models
 		switch(fieldName) {
 		case 'fault_section_id':
-		    if (! value) {
-			break;
-		    }
-		    faulted_earth.utils.pushError(errors,
-			      faulted_earth.utils.checkPositive(fieldName, value));
-		    faulted_earth.utils.pushError(errors,
-			      faulted_earth.utils.checkInteger(fieldName, value));
-		    
-		    value = parseInt(value);
-
-		    /* this store can be null if the fault section
-		     * grid has not been yet activated. Please fix me
-		     * once you know how to create a featuresttore
-		     * bypassing the featuremanager complexity */
-		    var store = app.tools.faultsection_manager.featureStore;
-		    if (store) {
-			var search = store.findBy(function(item) { 
-			    return item.get('fid') == 'fault_section.' + value});
-			if (search == -1) {
-			    errors.push("Invalid fault section id");
-			}
-		    } else {
-			alert("before editing the fault_section_id please activate the fault section tab to load the data");
-		    }
 		    break;
 
 		case 'rake_min':
@@ -187,12 +168,6 @@ Ext.override(gxp.FeatureEditPopup, {
 		    faulted_earth.utils.pushError(errors,
 			      faulted_earth.utils.checkAngle(fieldName, value));
 		    break;
-		case 'down_thro':
-		    var choices = ['N', 'S', 'W', 'E', 'NW', 'NE', 'SW', 'SE'];
-		    if (choices.indexOf(value) == -1) {
-			errors.push("Downthrown side invalid. Valid choices: " + choices.join(','));
-		    }
-		    break;
 		case 'length_min':
 		case 'length_max':
 		case 'length_pref':
@@ -255,57 +230,10 @@ GeoExt.form.recordToField = function(record) {
 	field.xtype = "displayfield";
     }
 
-    var choices = null;
-
-    /* FIXME: choices should be in models.js */
-
-    if (faulted_earth.utils.fieldSuffix(name) == 'com') {
-	choices = [1, 2, 3, 4];
-    }
-
-    if (name == 'down_thro') {
-	choices = ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'];
-    }
-
-    if (name == 'slip_type') {
-	choices = ['Reverse', 'Thrust (dip <45 deg)',
-		   'Normal', 'Dextral', 'Sinistral', 'Normal Dextral',
-		   'Dextral Normal', 'Sinistral Normal', 'Normal Sinistral',
-		   'Dextral Reverse', 'Sinistral Reverse'];
-    }
-
-    if (name == 'slip_rate_category') {
-	choices = ['0.001 - <0.01', '0.01 - <0.1', '0.1 - <1',
-		   '0.1 - <1', '1 - <5', '5 - <10', '10 - <50',
-		   '50 - <100', '100 - <200' ];
-    }
-
-    if (name == 're_int_category') {
-	choices = ['10 - <100', '100 - <1,000',
-		   '1,000 - <2,000', '2,000 - <5,000',
-		   '5,000 - <10,000', '10,000 - <100,000',
-		   '100,000 - <500,000', '500,000 - <1,000,000',
-		   '1,000,000 - <10,000,000' ];
-    }
-
-    if (name == "mov_category") {
-	choices = ['0 - <1,000', '1,000 - <11,700 (Holocene)',
-		   '11,700 - <50,000', '100,000 - <1,000,000',
-		   '1,000,000 - <10,000,000' ];
-    }
-
-    if (name == "geomorphic_expression") {
-	choices = [
-	    'Surface trace', 'Eroded scarp', 'Sharp feature',
-	    'Topographic feature', 'Bedrock extension',
-	    'Concealed', 'No trace'
-	];
-    }
-
-    if (name == "dis_category") {
-	choices = [
-	    '0.1 - <0.5', '0.5 - <1', '1 - <5',
-	    '5 - <10', '10 - <30' ];
+    var choices = faulted_earth.propertyNames[name].choices;
+    
+    if (choices instanceof Function) {
+	choices = choices();
     }
 
     if (faulted_earth.isCompulsory(name)) {
@@ -315,7 +243,12 @@ GeoExt.form.recordToField = function(record) {
     if (choices) {
 	choice_data = [];
 	for (var i = 0; i < choices.length; i++) {
-	    choice_data.push([choices[i], choices[i]]);
+	    var value = choices[i];
+	    if (value instanceof Array) {
+		choice_data.push(value);
+	    } else {
+		choice_data.push([value, value]);
+	    }
 	}
 	field.autoSelect = false;
 	field.forceSelection = true;
