@@ -221,7 +221,7 @@ faulted_earth.models = [
     new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties, { modifyOnly: false }),
     new faulted_earth.Model("faultsection", 'Fault Section Summary', faulted_earth.faultsectionProperties),
     new faulted_earth.Model("fault", 'Faults', faulted_earth.faultProperties),
-    new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties, { readOnly: true, modifyOnly: null })
+    new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties, { readOnly: false })
 ];
 
 faulted_earth.modelsHash = {};
