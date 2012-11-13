@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.12.4
+# Version: v1.12.5
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -20,7 +20,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=v1.12.4
+export GEM_OQ_PLATF_GIT_VERS=v1.12.5
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -30,6 +30,7 @@ export GEM_DB_NAME="geonode"
 
 #
 # PRIVATE GLOBAL VARS
+export GEM_JAVA_HOME="/usr/lib/jvm/java-6-openjdk"
 export GEM_DB_USER="geonode"
 export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
@@ -349,7 +350,7 @@ oq_platform_install () {
     rm /tmp/geonode.$$
 
     # this fix the bug 972202 to inform jpype module where is the java installation
-    sed -i "s@os.environ\['DJANGO_SETTINGS_MODULE'\] *= *'geonode.settings'@os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'\nos.environ['JAVA_HOME'] = '/usr/lib/jvm/java-6-openjdk'@g" "$GEM_WSGI_CONFIG"
+    sed -i "s@os.environ\['DJANGO_SETTINGS_MODULE'\] *= *'geonode.settings'@os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'\nos.environ['JAVA_HOME'] = '$GEM_JAVA_HOME'@g" "$GEM_WSGI_CONFIG"
 
     service tomcat6 restart
     service apache2 restart
@@ -575,7 +576,9 @@ exit 0"
     python ./manage.py importcsv "$GEM_ISC_DATA_CAT" "$GEM_ISC_DATA_APP"
     export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
+    export JAVA_HOME="$GEM_JAVA_HOME"
     python ./manage.py updatecomputedfields
+    unset JAVA_HOME
     export DJANGO_SCHEMATA_DOMAIN=ged4gem
     python ./manage.py migrate ged4gem
 
