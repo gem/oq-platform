@@ -268,11 +268,11 @@ Ext.each(faulted_earth.models, function(model) {
 
 /* an utility function to check if a field is compulsory */
 faulted_earth.isCompulsory = function(fieldName) {
-    return faulted_earth.propertyNames[fieldName].isCompulsory;
+    return faulted_earth.propertyNames[fieldName] && faulted_earth.propertyNames[fieldName].isCompulsory;
 };
 
 faulted_earth.isCalculated = function(fieldName) {
-    return faulted_earth.propertyNames[fieldName].isCalculated;
+    return faulted_earth.propertyNames[fieldName] && faulted_earth.propertyNames[fieldName].isCalculated;
 }
 
 faulted_earth.on_exception = function(tool, exception, msg, objects) {

@@ -61,7 +61,7 @@ Ext.override(gxp.FeatureEditPopup, {
 	    field.getErrors = function(value) {
 		var errors = old_getErrors.apply(field, [value]) || [];
 
-		if ( ! value && faulted_earth.propertyNames[fieldName].init) {
+		if ( ! value && faulted_earth.propertyNames[fieldName] && faulted_earth.propertyNames[fieldName].init) {
 		    value = faulted_earth.propertyNames[fieldName].init();
 		    field.setValue(value);
 		}
@@ -225,6 +225,10 @@ var origRecordToField = GeoExt.form.recordToField;
 GeoExt.form.recordToField = function(record) {
     var name = record.get("name");
     var field = origRecordToField(record);
+
+    if (!faulted_earth.propertyNames[name]) {
+	return field;
+    }
 
     if (faulted_earth.isCalculated(name)) {
 	field.xtype = "displayfield";
