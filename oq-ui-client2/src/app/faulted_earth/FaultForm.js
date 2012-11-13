@@ -133,6 +133,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                             url: faulted_earth.app_url + '/observations/faultsource/create',
                             params: Ext.encode({fault_id: this.target.fault.fid}),
                             success: function(response, opts) {
+				app.tools.faultsource_manager.featureStore.reload();
                                 alert('Fault source generated');
                             },
                             failure: function(response, opts){

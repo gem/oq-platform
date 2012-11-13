@@ -6,6 +6,7 @@
  * @require plugins/OSMSource.js
  * @require plugins/WMSCSource.js
  * @require plugins/ZoomToExtent.js
+ * @require plugins/LoadingIndicator.js
  * @require plugins/ZoomToSelectedFeatures.js
  * @require plugins/NavigationHistory.js
  * @require plugins/Zoom.js
@@ -23,6 +24,7 @@
  * @require plugins/FeatureManager.js
  * @require plugins/FeatureGrid.js
  * @require plugins/FeatureEditor.js
+ * @require plugins/DeleteSelectedFeatures.js
  *
  * @require faulted_earth/models.js
  * @require faulted_earth/validation.js
@@ -306,6 +308,18 @@ Ext.onReady(function() {
 			tooltip: "Zoom to selected " + model.title
 		    });
 		    viewer.initialConfig.tools.push(zoomToFeatureConfig);
+		    
+		    var deleteSelectedFeatureConfig = Ext.apply({}, {
+			ptype: "gxp_deleteselectedfeatures",
+			actionTarget: model.formTarget,
+			featureManager: model.managerId,
+			tooltip: "Delete selected " + model.title
+		    });
+		    /* 
+		       at this point, we do not want this feature
+		       viewer.initialConfig.tools.push(deleteSelectedFeatureConfig);
+		    */
+
 		}
 
 		var managerConfig = Ext.apply({}, {
@@ -319,6 +333,10 @@ Ext.onReady(function() {
 		}, defaultManagerConfig);
 		viewer.initialConfig.tools.push(managerConfig);
 	    });
+
+	    viewer.map = viewer.mapPanel.map;
+	    viewer.initialConfig.tools.push({ ptype: "gxp_loadingindicator" });
+
 	    gxp.Viewer.prototype.initTools.call(this);
 
 	    /* call registerEvents for each tools for fine-grained

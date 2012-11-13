@@ -141,6 +141,7 @@ faulted_earth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
 						 fault_section_ids: this.sessionFids }),
                             success: function(response, opts) {
                                 alert('Fault created');
+				app.tools.fault_manager.featureStore.reload();
                                 this.sessionFids = [];
                             },
                             failure: function(response, opts){

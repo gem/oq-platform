@@ -276,7 +276,22 @@ faulted_earth.isCalculated = function(fieldName) {
 }
 
 faulted_earth.on_exception = function(tool, exception, msg, objects) {
-    if (objects && objects.length > 0 && objects[0].data.state == 'Delete') {
-	alert('Delete failed! Please remove the objects that depend on');
+    var deleteFailedFlag = false;
+
+    if (objects && objects.length > 0) {
+	for (var i = 0; i < objects.length; i++) {
+	    if (objects[0].data.state == 'Delete') {
+		deleteFailedFlag = true;
+	    }
+	}
+
+	if (deleteFailedFlag) {
+	    alert('Delete failed! Please remove the objects that depend on');
+
+	    /* reset the state of the featureLayer as it could be
+	     * inconsistent */
+	    tool.featureLayer.features = [];
+	    tool.featureStore.load();
+	}
     }
 }
