@@ -39,7 +39,7 @@ def create_faultsource(fault):
 
     optional_fields = ["contrib", "compiler", "created",
                        "length_min", "length_pref", "length_max",
-                       "dip_slip_rate_min" "dip_slip_rate_max" "dip_slip_rate_pref",
+                       "dip_slip_rate_min", "dip_slip_rate_max", "dip_slip_rate_pref",
                        "strike_slip_rate_min", "strike_slip_rate_pref", "strike_slip_rate_max",
                        "vertical_slip_rate_min", "vertical_slip_rate_pref", "vertical_slip_rate_max",
                        "net_slip_rate_com", "slip_type_com",
