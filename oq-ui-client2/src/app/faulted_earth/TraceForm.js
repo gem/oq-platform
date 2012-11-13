@@ -162,6 +162,7 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                             params: Ext.encode({ 'section_name': this.faultSection.name,
 						 'trace_ids':this.sessionTids }),
                             success: function(response, opts) {
+				app.tools.faultsection_manager.featureStore.reload();
                                 alert('Fault Section created');
                             },
                             failure: function(response, opts){

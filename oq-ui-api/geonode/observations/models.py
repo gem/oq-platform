@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 from django.contrib.gis.db import models
+from django.conf import settings
 import math
 import numpy
 import jpype
