@@ -355,7 +355,8 @@ oq_platform_install () {
         echo "Required 'ENGINE' entry into $GEM_GN_LOCSET not found"
         exit 3
     fi
-    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django.db.backends.postgresql_psycopg2',/g" "$GEM_GN_LOCSET"
+    # FIXME(lp) is it needed?
+    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django.contrib.gis.db.backends.postgis',/g" "$GEM_GN_LOCSET"
 
     grep -q '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
     if [ $? -ne 0 ]; then
@@ -397,13 +398,6 @@ SOUTH_DATABASE_ADAPTERS = {
         sed -i "s/^\(POSTGIS_VERSION[ 	]*=[ 	]*['\"]\)[0-9\.]\+\(.*\)/\1$postgis_vers\2/g" "$GEM_GN_LOCSET"
     else
         echo "POSTGIS_VERSION = '$postgis_vers'" >> "$GEM_GN_LOCSET"
-    fi
-
-    grep -q '^ORIGINAL_BACKEND[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
-    if [ $? -eq 0 ]; then
-        sed -i "s/^\(ORIGINAL_BACKEND[ 	]*=[ 	]*\)\(['\"]\).*/\1\2django.contrib.gis.db.backends.postgis\2/g" "$GEM_GN_LOCSET"
-    else
-        echo "ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'" >> "$GEM_GN_LOCSET"
     fi
 
     grep -q '^GEOCLUDGE_JAR_PATH[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
