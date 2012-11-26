@@ -18,9 +18,6 @@
 
 from django.contrib.gis.db import models
 
-#geodetic schema
-#geodetic table
-
 
 class Geodetic(models.Model):
     gid = models.IntegerField()
@@ -40,3 +37,6 @@ class Geodetic(models.Model):
     principal_eyy = models.FloatField(null=True, blank=True)
     second_inv = models.FloatField(null=True, blank=True)
     the_geom = models.PointField(srid=4326, dim=2)
+
+    class Meta:
+        db_table = 'gem\".\"geodetic_geodetic'

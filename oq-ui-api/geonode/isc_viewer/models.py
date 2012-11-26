@@ -29,6 +29,10 @@ class Measure(models.Model):
     mtp = models.FloatField(null=True, blank=True) 
     mtt = models.FloatField(null=True, blank=True)
     eventid = models.IntegerField(null=False, default=-1)
+
+    class Meta:
+        db_table = 'gem\".\"isc_viewer_measure'
+
     def __unicode__(self):
         return "%s %s %s" % (self.date, self.lat, self.lon)
 

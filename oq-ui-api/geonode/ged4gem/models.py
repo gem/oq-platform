@@ -18,8 +18,6 @@
 
 from django.contrib.gis.db import models
 
-#ged4gem schema
-#ged4gem table
 
 class gadm_country_facts_00(models.Model):
     gadm_country_id = models.IntegerField()
@@ -45,6 +43,9 @@ class gadm_country_facts_00(models.Model):
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(null=True,max_length=150)
     moresimplegeom = models.MultiPolygonField(srid=4326)
+
+    class Meta:
+        db_table = 'gem\".\"ged4gem_gadm_country_facts_00'
 
 
 class gadm_country_facts_05(models.Model):
@@ -72,6 +73,9 @@ class gadm_country_facts_05(models.Model):
     mapping_schemes = models.CharField(null=True, max_length=150)
     moresimplegeom = models.MultiPolygonField(srid=4326)
 
+    class Meta:
+        db_table = 'gem\".\"ged4gem_gadm_country_facts_05'
+
 
 class gadm_country_facts_10(models.Model):
     gadm_country_id = models.IntegerField()
@@ -97,6 +101,9 @@ class gadm_country_facts_10(models.Model):
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(null=True, max_length=150)
     moresimplegeom = models.MultiPolygonField(srid=4326)
+
+    class Meta:
+        db_table = 'gem\".\"ged4gem_gadm_country_facts_10'
 
 
 class gadm_country_facts_90(models.Model):
@@ -124,6 +131,9 @@ class gadm_country_facts_90(models.Model):
     mapping_schemes = models.CharField(null=True, max_length=150)
     moresimplegeom = models.MultiPolygonField(srid=4326)
 
+    class Meta:
+        db_table = 'gem\".\"ged4gem_gadm_country_facts_90'
+
 
 class gadm_country_facts_95(models.Model):
     gadm_country_id = models.IntegerField()
@@ -149,3 +159,6 @@ class gadm_country_facts_95(models.Model):
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(null=True, max_length=150)
     moresimplegeom = models.MultiPolygonField(srid=4326)
+
+    class Meta:
+        db_table = 'gem\".\"ged4gem_gadm_country_facts_95'

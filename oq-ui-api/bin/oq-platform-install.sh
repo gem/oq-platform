@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.12.6
+# Version: v1.12.7
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -9,18 +9,16 @@
 
 # TIPS
 #    to remove all:
-# # apt-get remove --purge geonode ; rm -rf gem_tmp/ django-schemata/ /var/lib/openquake/* /etc/geonode
+# # apt-get remove --purge geonode ; rm -rf gem_tmp/ /var/lib/openquake/* /etc/geonode
 #
 #    to reset a oq-platform git repo:
 # $ rm -rf oq-ui-client2/build/  oq-ui-client/build/ ; cd oq-ui-client/app/static/externals/openlayers ; git checkout lib/OpenLayers/Layer/Google/v3.js ; cd - 
 #
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
-export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
-export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=fix_updatecomputedfields_onload
+export GEM_OQ_PLATF_GIT_VERS=remove_django_schemata
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -155,23 +153,6 @@ template_add() {
     else
         echo "WARNING: $templ_file_new already exists into TEMPLATE_DIR entry of $GEM_GN_LOCSET"
         echo "$templ_files"
-        read -p "If it isn't correct, edit it and continue" a
-    fi
-}
-
-schemata_config_add() {
-    local sche_dom sche_domn sche_name a
-
-    sche_domn="$1"
-    sche_name="$2"
-
-    sche_dom="$(sed -n '/^SCHEMATA_DOMAINS *=/,/^}$/p' "$GEM_GN_LOCSET" | tail -n +2 | tr -d '\n' | sed 's/},/},\n/g')"
-    echo "$sche_dom" | grep -q "^[ 	]*'$sche_domn':[ 	]*{[ 	]*'schema_name':[ 	]*'$sche_name',[ 	]*}"
-    if [ $? -ne 0 ]; then
-        sed -i "s/^\(SCHEMATA_DOMAINS *= *.*\)/\1\n  '$sche_domn': {\n    'schema_name': '$sche_name',\n    },\n/g" "$GEM_GN_LOCSET"
-    else
-        echo "WARNING: $sche_domn already exists into SCHEMATA_DOMAINS entry of $GEM_GN_LOCSET"
-        echo "$sche_dom"
         read -p "If it isn't correct, edit it and continue" a
     fi
 }
@@ -313,13 +294,6 @@ oq_platform_install () {
 
     ###
     echo "== Geonode installation ==" 
-    # moved at the top of the function 
-    # defa="$GEM_HOSTNAME"
-    # read -p "Public site url or public IP address [$defa]: " SITE_HOST
-    # if [ "$SITE_HOST" = "" ]; then
-    #     SITE_HOST="$defa"
-    # fi
-    # export SITE_HOST
 
 #
 # NOTE: this part was used to change the apt geonode repository
@@ -367,35 +341,12 @@ oq_platform_install () {
     fi
 
     ###
-    echo "== Django-South and Django-Schemata installation =="
-        
-    sudo su - $norm_user -c "
-cd $norm_dir
-git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
-"
-    mkreqdir -d "$GEM_BASEDIR"django-schemata
-    cd django-schemata
-    git archive $GEM_DJANGO_SCHEMATA_GIT_VERS | tar -x -C "$GEM_BASEDIR"django-schemata
-    ln -s "$GEM_BASEDIR"django-schemata/django_schemata /var/lib/geonode/src/GeoNodePy/geonode
-    cd -
-
-    ###
     echo "== Django-South configuration =="
-
-    ##
-    #    /var/lib/geonode/src/GeoNodePy/geonode/settings.py
-    midd_class="$(sed -n '/^MIDDLEWARE_CLASSES[ 	]*=[ 	]*/,/)/p' "$GEM_GN_SETTINGS")"
-
-    echo "$midd_class=" | grep -q "'django_schemata\.middleware\.SchemataMiddleware'" 
-    if [ $? -ne 0 ]; then
-        sed -i "s/^\(MIDDLEWARE_CLASSES *= *.*\)/\1\n    'django_schemata.middleware.SchemataMiddleware',/g" "$GEM_GN_SETTINGS"
-    fi
 
     # add 'django.contrib.gis' fix migration problem with south
     installed_apps_add 'django.contrib.gis'
 
     installed_apps_add 'south'
-    installed_apps_add 'django_schemata'
 
     ##
     # /etc/geonode/local_settings.py
@@ -404,19 +355,7 @@ git clone $GEM_DJANGO_SCHEMATA_GIT_REPO
         echo "Required 'ENGINE' entry into $GEM_GN_LOCSET not found"
         exit 3
     fi
-    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django_schemata.postgresql_backend',/g" "$GEM_GN_LOCSET"
-
-    grep -q 'SCHEMATA_DOMAINS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
-    if [ $? -ne 0 ]; then
-        echo "\
-SCHEMATA_DOMAINS = { 
-  '$SITE_HOST': {
-    'schema_name': 'gem',
-    }
-}" >> "$GEM_GN_LOCSET"
-    else
-        schemata_config_add "$SITE_HOST" "gem"
-    fi
+    sed -i "s/^\([ 	]*'ENGINE':\)\(.*\)/# \1\2\n\1 'django.db.backends.postgresql_psycopg2',/g" "$GEM_GN_LOCSET"
 
     grep -q '^SOUTH_DATABASE_ADAPTERS[ 	]*=[ 	]*' "$GEM_GN_LOCSET"
     if [ $? -ne 0 ]; then
@@ -528,13 +467,6 @@ exit 0"
     make MKREQDIR_ARG="-d" deploy
      
     ##
-    # /etc/geonode/local_settings.py
-    schemata_config_add 'geodetic'      'geodetic'
-    schemata_config_add 'django'        'public'
-    schemata_config_add 'ged4gem'       'eqged'
-    schemata_config_add 'isc_viewer'    'isc_viewer'
-
-    ##
     # /var/lib/geonode/src/GeoNodePy/geonode/settings.py    
     installed_apps_add 'geonode.ged4gem'
     installed_apps_add 'geonode.observations'
@@ -558,13 +490,8 @@ exit 0"
     cd src/GeoNodePy/geonode/
     echo "Upgrading httplib2 to 0.7.4 version to fix an https bug"
     pip install --upgrade "$norm_dir/oq-platform/oq-ui-api/data/httplib2.pybundle"
-    python ./manage.py manage_schemata
-    export DJANGO_SCHEMATA_DOMAIN=django
-    # TODO: only to test it
     python ./manage.py syncdb --noinput
-    export DJANGO_SCHEMATA_DOMAIN=geodetic
     python ./manage.py migrate geodetic
-    export DJANGO_SCHEMATA_DOMAIN=isc_viewer
     python ./manage.py migrate isc_viewer
     if [ -f "$norm_dir/private_data/isc_data.csv" ]; then
         GEM_ISC_DATA_CAT="$norm_dir/private_data/isc_data.csv"
@@ -574,12 +501,10 @@ exit 0"
         GEM_ISC_DATA_APP="$norm_dir/oq-platform/oq-ui-api/data/isc_data_app.csv"
     fi
     python ./manage.py importcsv "$GEM_ISC_DATA_CAT" "$GEM_ISC_DATA_APP"
-    export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     python ./manage.py migrate observations
     export JAVA_HOME="$GEM_JAVA_HOME"
     python ./manage.py updatecomputedfields
     unset JAVA_HOME
-    export DJANGO_SCHEMATA_DOMAIN=ged4gem
     python ./manage.py migrate ged4gem
 
     cd $norm_dir
@@ -694,7 +619,6 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
-    export DJANGO_SCHEMATA_DOMAIN=django
     if [ -f "$norm_dir/private_data/users_data.json" ]; then
         # this json data below are generated in the previous installation with
         # "python ./manage.py dumpdata --format=json auth >users_data.json"
@@ -710,7 +634,6 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     cat "$norm_dir/$GEM_TMPDIR/auth.user.json" | sed "s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"password\": \)\"[^\"]*\"/\1\"$suser_hash_pass\"/g;s/\({\"username\": \"$GEM_DJANGO_SUSER\"[^}]*\"is_superuser\": \)[^,]*,/\1true,/g" > "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
     python ./manage.py loaddata "$norm_dir/$GEM_TMPDIR/auth.user.new.json"
     python ./manage.py collectstatic --noinput
-    export DJANGO_SCHEMATA_DOMAIN="$SITE_HOST"
     for i in $(seq 1 5); do
 	python ./manage.py updatelayers
 	if [ $? -eq 0 ]; then
