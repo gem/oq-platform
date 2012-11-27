@@ -313,9 +313,6 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
 
     geom = models.PolygonField(srid=4326, dim=3, **DEFAULT_FIELD_ATTRIBUTES)
 
-    class Meta:
-        db_table = '"gem"."observations_faultsource"'
-
     def update_autocomputed_fields(self):
         self._update_geometry()
         self._update_width()
@@ -387,9 +384,6 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
                                  choices=DOWNTHROWN_SIDE_CHOICES,
                                  **DEFAULT_FIELD_ATTRIBUTES)
     simple_geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
-
-    class Meta:
-        db_table = '"gem"."observations_fault"'
 
     def __unicode__(self):
         return "Fault %s %s" % (self.pk, self.fault_name)
@@ -484,7 +478,7 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
 class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
     # TODO. change this to plural. Do we really nead a m2m relation
     # instead of a fk?
-    fault = models.ManyToManyField('Fault', db_table='"gem"."observations_faultsection_fault"')
+    fault = models.ManyToManyField('Fault')
     geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
     sec_name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -494,9 +488,6 @@ class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, Wi
                                  verbose_name="Downthrown side",
                                  choices=DOWNTHROWN_SIDE_CHOICES,
                                  **DEFAULT_FIELD_ATTRIBUTES)
-
-    class Meta:
-        db_table = '"gem"."observations_faultsection"'
 
     def update_autocomputed_fields(self, update_depending=True):
         self._update_geometry()
@@ -528,14 +519,11 @@ class LocatedObservation(models.Model):
 
 class Trace(LocatedObservation):
     # TODO. change this to plural. Do we really need a m2m field?
-    fault_section = models.ManyToManyField('FaultSection', db_table='"gem"."observations_trace_fault_section"')
+    fault_section = models.ManyToManyField('FaultSection')
     loc_meth = models.CharField(max_length=30, choices=LOCATION_METHOD_CHOICES)
     geomorphic_expression = models.CharField(max_length=255,
                                              choices=GEOMORPHIC_EXPRESSION_CHOICES)
     geom = models.MultiLineStringField(srid=4326)
-
-    class Meta:
-        db_table = '"gem"."observations_trace"'
 
     def update_autocomputed_fields(self, update_depending=True):
         if update_depending:
@@ -557,8 +545,7 @@ class SiteObservation(LocatedObservation):
 
 
 class Event(SiteObservation, WithRecurrence):
-    class Meta:
-        db_table = '"gem"."observations_event"'
+    pass
 
 
 class FaultGeometry(SiteObservation):
@@ -572,18 +559,13 @@ class FaultGeometry(SiteObservation):
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     surface_dip = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
 
-    class Meta:
-        db_table = '"gem"."observations_faultgeometry"'
-
 
 class Displacement(SiteObservation, WithDisplacement):
-    class Meta:
-        db_table = '"gem"."observations_displacement"'
+    pass
 
 
 class SlipRate(SiteObservation, WithSlip):
-    class Meta:
-        db_table = '"gem"."observations_sliprate"'
+    pass
 
 
 def updatecomputedfields():
