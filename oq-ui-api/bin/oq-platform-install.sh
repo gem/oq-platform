@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.12.6
+# Version: v1.12.7
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -20,7 +20,7 @@ export GEM_DJANGO_SCHEMATA_GIT_REPO=git://github.com/tuttle/django-schemata.git
 export GEM_DJANGO_SCHEMATA_GIT_VERS=8f9487b70c9b1508ae70b502b950066147956993
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=v1.12.6
+export GEM_OQ_PLATF_GIT_VERS=v1.12.7
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -306,7 +306,7 @@ oq_platform_install () {
     echo "== General requirements ==" 
     apt-get install -y python-software-properties
     add-apt-repository -y ppa:geonode/testing
-    apt-add-repository -y ppa:openquake/ppa
+    add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
     apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
@@ -725,6 +725,10 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     cd "$norm_dir/oq-platform/oq-ui-geoserver"
     make populate
     cd -
+
+    #
+    #  remove the geonode repo to avoid breaking upgrade of geonode package
+    add-apt-repository -r -y ppa:geonode/testing
 
 #
 #  THE END
