@@ -388,12 +388,13 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
     def __unicode__(self):
         return "Fault %s %s" % (self.pk, self.fault_name)
 
-    def update_autocomputed_fields(self):
+    def update_autocomputed_fields(self, update_depending=True):
         self._update_geometry()
         self._update_net_slip_rate()
         self._update_overall_completeness()
         self.save()
-        self._update_depending_objects()
+        if update_depending:
+            self._update_depending_objects()
 
     def _update_depending_objects(self):
         for fault_source in self.faultsource_set.all():
@@ -488,12 +489,13 @@ class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, Wi
                                  choices=DOWNTHROWN_SIDE_CHOICES,
                                  **DEFAULT_FIELD_ATTRIBUTES)
 
-    def update_autocomputed_fields(self):
+    def update_autocomputed_fields(self, update_depending=True):
         self._update_geometry()
         self._update_net_slip_rate()
         self._update_overall_completeness()
         self.save()
-        self._update_depending_objects()
+        if update_depending:
+            self._update_depending_objects()
 
     def _update_depending_objects(self):
         for fault in self.fault.all():
@@ -523,8 +525,9 @@ class Trace(LocatedObservation):
                                              choices=GEOMORPHIC_EXPRESSION_CHOICES)
     geom = models.MultiLineStringField(srid=4326)
 
-    def update_autocomputed_fields(self):
-        self._update_depending_objects()
+    def update_autocomputed_fields(self, update_depending=True):
+        if update_depending:
+            self._update_depending_objects()
 
     def _update_depending_objects(self):
         for fault_section in self.fault_section.all():
@@ -567,10 +570,10 @@ class SlipRate(SiteObservation, WithSlip):
 
 def updatecomputedfields():
     for fs in FaultSection.objects.all():
-        fs.update_autocomputed_fields()
+        fs.update_autocomputed_fields(update_depending=False)
 
     for fs in Fault.objects.all():
-        fs.update_autocomputed_fields()
+        fs.update_autocomputed_fields(update_depending=False)
 
     for fs in FaultSource.objects.all():
         fs.update_autocomputed_fields()
