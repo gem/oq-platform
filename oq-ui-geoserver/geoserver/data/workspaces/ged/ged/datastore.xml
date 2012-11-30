@@ -16,7 +16,7 @@
     <entry key="max connections">10</entry>
     <entry key="database">geonode_dev</entry>
     <entry key="namespace">http://geonode.org/ged4gem</entry>
-    <entry key="schema">eqged</entry>
+    <entry key="schema">public</entry>
     <entry key="Loose bbox">true</entry>
     <entry key="Expose primary keys">false</entry>
     <entry key="fetch size">1000</entry>

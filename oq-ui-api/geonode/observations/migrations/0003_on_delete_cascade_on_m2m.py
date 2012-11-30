@@ -14,15 +14,15 @@ class Migration(SchemaMigration):
         # objects. Depending objects will not be deleted, only the
         # relationship.
 
-        db.execute("alter table gem.observations_faultsection_fault drop constraint if exists fault_id_refs_id_27ad45a8e855eaf6;")
-        db.execute("alter table gem.observations_faultsection_fault drop constraint if exists faultsection_id_refs_id_24909e10145ff3d4")
-        db.execute("alter table gem.observations_faultsection_fault add constraint fk_faultsection foreign key(faultsection_id) references gem.observations_faultsection(id) on delete cascade;")
-        db.execute("alter table gem.observations_faultsection_fault add constraint fk_fault foreign key(fault_id) references gem.observations_fault(id) on delete cascade;")
+        db.execute("alter table observations_faultsection_fault drop constraint if exists fault_id_refs_id_27ad45a8e855eaf6;")
+        db.execute("alter table observations_faultsection_fault drop constraint if exists faultsection_id_refs_id_24909e10145ff3d4")
+        db.execute("alter table observations_faultsection_fault add constraint fk_faultsection foreign key(faultsection_id) references observations_faultsection(id) on delete cascade;")
+        db.execute("alter table observations_faultsection_fault add constraint fk_fault foreign key(fault_id) references observations_fault(id) on delete cascade;")
 
-        db.execute("alter table gem.observations_trace_fault_section drop constraint if exists trace_id_refs_id_33d54aa826acc32;")
-        db.execute("alter table gem.observations_trace_fault_section drop constraint if exists faultsection_id_refs_id_1737d828c21760bf")
-        db.execute("alter table gem.observations_trace_fault_section add constraint fk_faultsection foreign key(faultsection_id) references gem.observations_faultsection(id) on delete cascade;")
-        db.execute("alter table gem.observations_trace_fault_section add constraint fk_trace foreign key(trace_id) references gem.observations_trace(id) on delete cascade;")
+        db.execute("alter table observations_trace_fault_section drop constraint if exists trace_id_refs_id_33d54aa826acc32;")
+        db.execute("alter table observations_trace_fault_section drop constraint if exists faultsection_id_refs_id_1737d828c21760bf")
+        db.execute("alter table observations_trace_fault_section add constraint fk_faultsection foreign key(faultsection_id) references observations_faultsection(id) on delete cascade;")
+        db.execute("alter table observations_trace_fault_section add constraint fk_trace foreign key(trace_id) references observations_trace(id) on delete cascade;")
 
 
         def backwards(self, orm):
