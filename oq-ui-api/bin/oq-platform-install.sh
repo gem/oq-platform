@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.12.7
+# Version: v1.12.8
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -287,7 +287,7 @@ oq_platform_install () {
     echo "== General requirements ==" 
     apt-get install -y python-software-properties
     add-apt-repository -y ppa:geonode/testing
-    apt-add-repository -y ppa:openquake/ppa
+    add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
     apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
@@ -642,6 +642,10 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     cd "$norm_dir/oq-platform/oq-ui-geoserver"
     make populate
     cd -
+
+    #
+    #  remove the geonode repo to avoid breaking upgrade of geonode package
+    add-apt-repository -r -y ppa:geonode/testing
 
 #
 #  THE END
