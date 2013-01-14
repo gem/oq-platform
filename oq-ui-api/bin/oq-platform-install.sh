@@ -305,7 +305,7 @@ oq_platform_install () {
     ###
     echo "== General requirements ==" 
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:geonode/testing
+    add-apt-repository -y ppa:geonode/release
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
