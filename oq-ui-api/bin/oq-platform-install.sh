@@ -290,7 +290,7 @@ oq_platform_install () {
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
-    apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
+    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
 
     ###
     echo "== Geonode installation ==" 
