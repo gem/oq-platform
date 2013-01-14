@@ -18,8 +18,6 @@
 
 from django.contrib.gis.db import models
 
-#ged4gem schema
-#ged4gem table
 
 class gadm_country_facts_00(models.Model):
     gadm_country_id = models.IntegerField()
@@ -149,3 +147,4 @@ class gadm_country_facts_95(models.Model):
     built_ratio = models.FloatField(null=True, blank=True)
     mapping_schemes = models.CharField(null=True, max_length=150)
     moresimplegeom = models.MultiPolygonField(srid=4326)
+

@@ -29,6 +29,7 @@ class Measure(models.Model):
     mtp = models.FloatField(null=True, blank=True) 
     mtt = models.FloatField(null=True, blank=True)
     eventid = models.IntegerField(null=False, default=-1)
+
     def __unicode__(self):
         return "%s %s %s" % (self.date, self.lat, self.lon)
 
