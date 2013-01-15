@@ -645,7 +645,7 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
 
     #
     #  remove the geonode repo to avoid breaking upgrade of geonode package
-    add-apt-repository -r -y ppa:geonode/testing
+    add-apt-repository -r -y ppa:geonode/release
 
 #
 #  THE END
