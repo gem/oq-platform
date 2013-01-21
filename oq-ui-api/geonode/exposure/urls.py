@@ -21,4 +21,5 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('geonode.exposure.views',
                        (r'^population.json', 'read_pop'),
+        #               (r'^population.json', 'xhr_test'),
 )
