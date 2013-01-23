@@ -65,3 +65,13 @@ class mapping_scheme(models.Model):
     mapping_scheme_src_id = models.IntegerField()
     ms_name = models.CharField()
     ms_value = models.FloatField(null=False, blank=False)
+
+class pop_allocation(models.Model):
+    gadm_country_id = models.IntegerField()
+    is_urban = models.BooleanField()
+    day_pop_ratio = models.FloatField(null=False, blank=False)
+    night_pop_ratio = models.FloatField(null=False, blank=False)
+    transit_pop_ratio = models.FloatField(null=False, blank=False)
+    occupancy_id = models.IntegerField()
+    occupancy = models.CharField()
+     

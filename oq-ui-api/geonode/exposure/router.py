@@ -16,10 +16,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
-from django.conf.urls.defaults import *
+#    A router to control all database operations on models in
+#    the exposure export application
 
+class GedRouter(object):
+    def db_for_read(self, model, **hints):
+        "Point all operations on ged models to 'geddb'"
+        if model._meta.app_label == 'exposure':
+            return 'geddb'
+        return 'default'
 
-urlpatterns = patterns('geonode.exposure.views',
-                       (r'^population.json', 'read_pop'),
-	#		(r'^population.json', 'xhr_test'),
-)
+    def allow_syncdb(self, db, model):
+        if db == 'geddb' or model._meta.app_label == "ged":
+            return False # we're not using syncdb on our legacy database
+        else: # but all other models/databases are fine
+            return True
+
