@@ -25,6 +25,9 @@ class grump_pop_ur2(models.Model):
     is_urban = models.BooleanField()
     the_geom = models.PointField(srid=4326, dim=2)
 
+    class Meta:
+	managed=False
+
 class agg_build_infra_src(models.Model):
     shape_perimeter = models.IntegerField()
     shape_area = models.IntegerField()
@@ -36,6 +39,9 @@ class agg_build_infra_src(models.Model):
     gadm_admin_1_id = models.IntegerField()
     gadm_admin_2_id = models.IntegerField()
     the_geom = models.PointField(srid=4326, dim=2)
+
+    class Meta:
+        managed=False
 
 class mapping_scheme_src(models.Model):
     source = models.CharField()
@@ -50,6 +56,9 @@ class mapping_scheme_src(models.Model):
     occupancy = models.CharField()
     id_bk = models.IntegerField()
 
+    class Meta:
+        managed=False
+
 class gadm_country(models.Model):
     name = models.CharField()
     alias = models.CharField()
@@ -61,10 +70,16 @@ class gadm_country(models.Model):
     simple_geom = models.PointField(srid=4326, dim=2)
     gadm_id_0 = models.IntegerField()
 
+    class Meta:
+        managed=False
+
 class mapping_scheme(models.Model):
     mapping_scheme_src_id = models.IntegerField()
     ms_name = models.CharField()
     ms_value = models.FloatField(null=False, blank=False)
+
+    class Meta:
+        managed=False
 
 class pop_allocation(models.Model):
     gadm_country_id = models.IntegerField()
@@ -74,4 +89,7 @@ class pop_allocation(models.Model):
     transit_pop_ratio = models.FloatField(null=False, blank=False)
     occupancy_id = models.IntegerField()
     occupancy = models.CharField()
+
+    class Meta:
+        managed=False
      
