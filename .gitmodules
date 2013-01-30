@@ -7,3 +7,15 @@
 [submodule "oq-ui-client/app/static/externals/openlayers"]
 	path = oq-ui-client/app/static/externals/openlayers
 	url = https://github.com/openlayers/openlayers.git
+[submodule "oq-ui-client2/src/Leaflet"]
+	path = oq-ui-client2/src/Leaflet
+	url = git://github.com/Leaflet/Leaflet.git
+[submodule "oq-ui-client2/src/wax"]
+	path = oq-ui-client2/src/wax
+	url = git://github.com/mapbox/wax.git
+[submodule "oq-ui-client2/src/Leaflet.draw"]
+	path = oq-ui-client2/src/Leaflet.draw
+	url = git://github.com/Leaflet/Leaflet.draw.git
+[submodule "oq-ui-client2/src/jquery"]
+	path = oq-ui-client2/src/jquery
+	url = git://github.com/jquery/jquery.git
