@@ -93,6 +93,10 @@
                 <filter token="APP_NAME" value="${app.name}"/>
             </filterset>
         </copy>
+         <!-- copy L.Wax resources -->
+         <copy todir="${app.build}/src/L.Wax">
+            <fileset dir="${app.fullpath}/src/L.Wax"/>
+        </copy>
         <!-- copy Ext resources -->
         <copy todir="${app.build}/src/ext">
             <fileset dir="${app.fullpath}/src/ext"/>
