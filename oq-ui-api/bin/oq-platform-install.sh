@@ -408,7 +408,7 @@ SOUTH_DATABASE_ADAPTERS = {
     fi
 
     ###
-    echo "== Add 'geodetic', 'ged4gem', 'observations' and 'isc_viewer' Django applications =="
+    echo "== Add 'geodetic', 'ged4gem', 'observations', 'exposure' and 'isc_viewer' Django applications =="
 
 sudo su - $norm_user -c "
 cd $norm_dir 
@@ -466,6 +466,7 @@ exit 0"
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
     installed_apps_add 'geonode.isc_viewer'
+    installed_apps_add 'geonode.exposure'
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
@@ -474,7 +475,10 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/exposure_export.html'}, name='exposure'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
+
 
 
     ##
