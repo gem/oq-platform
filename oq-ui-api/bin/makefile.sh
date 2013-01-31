@@ -61,6 +61,7 @@ if [ "$1" = "deploy" ]; then
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/isc_viewer   /var/lib/geonode/src/GeoNodePy/geonode/isc_viewer
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
+    ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/exposure      /var/lib/geonode/src/GeoNodePy/geonode/exposure
 
     cp -r "$GEM_BASEDIR${GEM_PROJ}"/etc/geonode/ /etc/
 
