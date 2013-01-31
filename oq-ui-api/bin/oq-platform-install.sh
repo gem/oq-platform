@@ -364,6 +364,8 @@ oq_platform_install () {
 SOUTH_DATABASE_ADAPTERS = { 
     'default': 'south.db.postgresql_psycopg2',
 }" >> "$GEM_GN_LOCSET"
+    echo "\
+DATABASE_ROUTERS = ['exposure.router.GedRouter']" >> "$GEM_GN_LOCSET"
     fi
 
     ###
