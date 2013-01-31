@@ -277,7 +277,42 @@ oq_platform_install () {
             exit 1
         fi
     done
-        
+   
+        # Get exposure info
+	read -p "Do you want to install the Exposure Export tool' (y/n)?" newval
+	if [ $newval = "y" ]
+        then
+	    #get the user
+	    read -p "MANDATORY: GED DB user [$GED_USERNAME]: " newval
+            if [ "$newval" != "" ]; then
+                GED_USERNAME="$newval"
+            fi
+            export GED_USERNAME
+
+	    #get the password
+	    read -p "MANDATORY: GED DB password [$GED_PASSWORD]: " newval
+            if [ "$newval" != "" ]; then
+                GED_PASSWORD="$newval"
+            fi
+            export GED_PASSWORD
+
+	    #get the host
+	    read -p "MANDATORY: GED DB host [$GED_HOST]: " newval
+            if [ "$newval" != "" ]; then
+                GED_HOST="$newval"
+            fi
+            export GED_HOST
+
+	    #get the port
+	    read -p "MANDATORY: GED DB host [$GED_PORT]: " newval
+            if [ "$newval" != "" ]; then
+                GED_PORT="$newval"
+            fi
+            export GED_PORT
+	fi
+	if [ $REPLY = "n" -a "N" ]
+	    exit 1
+
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
 
@@ -309,8 +344,8 @@ oq_platform_install () {
 #
     apt-get install -y geonode
     
-    sed 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
-    sed 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
+    sed -i 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
+    sed -i 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
