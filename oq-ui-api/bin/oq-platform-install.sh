@@ -309,6 +309,7 @@ oq_platform_install () {
 #
     apt-get install -y geonode
     
+    sed 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
     sed 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
@@ -365,8 +366,6 @@ oq_platform_install () {
 SOUTH_DATABASE_ADAPTERS = { 
     'default': 'south.db.postgresql_psycopg2',
 }" >> "$GEM_GN_LOCSET"
-    echo "\
-DATABASE_ROUTERS = ['exposure.router.GedRouter']" >> "$GEM_GN_LOCSET"
     fi
 
     ###
@@ -478,7 +477,6 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/exposure_export.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/exposure_export.html'}, name='exposure'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
 
