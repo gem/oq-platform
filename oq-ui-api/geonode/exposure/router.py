@@ -30,5 +30,5 @@ class GedRouter(object):
         if db == 'geddb' or model._meta.app_label == "ged":
             return False # we're not using syncdb on our legacy database
         else: # but all other models/databases are fine
-            return True
+            return False
 
