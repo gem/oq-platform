@@ -278,40 +278,45 @@ oq_platform_install () {
         fi
     done
    
-        # Get exposure info
-	read -p "Do you want to install the Exposure Export tool' (y/n)?" newval
-	if [ $newval = "y" ]
-        then
-	    #get the user
-	    read -p "MANDATORY: GED DB user [$GED_USERNAME]: " newval
-            if [ "$newval" != "" ]; then
-                GED_USERNAME="$newval"
-            fi
-            export GED_USERNAME
+        while [ true ]; do
+            # Get exposure info
+            read -p "Do you want to install the Exposure Export tool (this requires a database connection to the EQGED database) (y/n)?" with_exposure
+            if [ $with_exposure = "y" -o "$with_exposure" = "Y" ]; then
+                #get the user
+                read -p "MANDATORY: GED DB user [$GED_USERNAME]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_USERNAME="$newval"
+                fi
+                export GED_USERNAME
 
-	    #get the password
-	    read -p "MANDATORY: GED DB password [$GED_PASSWORD]: " newval
-            if [ "$newval" != "" ]; then
-                GED_PASSWORD="$newval"
-            fi
-            export GED_PASSWORD
+                #get the password
+                read -p "MANDATORY: GED DB password [$GED_PASSWORD]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_PASSWORD="$newval"
+                fi
+                export GED_PASSWORD
 
-	    #get the host
-	    read -p "MANDATORY: GED DB host [$GED_HOST]: " newval
-            if [ "$newval" != "" ]; then
-                GED_HOST="$newval"
-            fi
-            export GED_HOST
+                #get the host
+                read -p "MANDATORY: GED DB host [$GED_HOST]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_HOST="$newval"
+                fi
+                export GED_HOST
 
-	    #get the port
-	    read -p "MANDATORY: GED DB host [$GED_PORT]: " newval
-            if [ "$newval" != "" ]; then
-                GED_PORT="$newval"
+                #get the port
+                read -p "MANDATORY: GED DB port [$GED_PORT]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_PORT="$newval"
+                fi
+                export GED_PORT
+
+                echo "You have input: GED DB User: [$GED_USERNAME], GED DB Password: [$GED_PASSWORD], GED DB host: [$GED_HOST], GED DB port: [$GED_PORT]"
+                read -p "do you wish to proceed? (y/n)" a
+                    if [ "$a" = "y" -o "$a" = "Y" ]; then
+                        break
+                    fi
             fi
-            export GED_PORT
-	fi
-	if [ $REPLY = "n" -a "N" ]
-	    exit 1
+        done
 
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
