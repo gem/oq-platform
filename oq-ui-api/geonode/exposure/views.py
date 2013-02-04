@@ -21,7 +21,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 #from django.utils import simplejson
 from django.contrib.contenttypes.models import ContentType
-from geonode.exposure import models
+#from geonode.exposure import models
 import simplejson
 from django.views.decorators.http import condition
 import cStringIO as StringIO
