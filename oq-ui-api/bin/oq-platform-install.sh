@@ -1,5 +1,6 @@
 #!/bin/bash
-# set -x
+ set -x
+# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
 # Version: v1.12.8
 # Guidelines
@@ -316,8 +317,10 @@ oq_platform_install () {
                         break
                     fi
             fi
+            if [ $with_exposure = "n" -o "$with_exposure" = "N" ]; then
+		break 
+	    fi
         done
-
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
 
@@ -348,9 +351,9 @@ oq_platform_install () {
 #    fi  
 #
     apt-get install -y geonode
-    
-    sed -i 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
-    sed -i 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
+   #  gdebi -n /home/bmw/geonode_1.2+xfinal_all.deb
+   
+
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
@@ -425,6 +428,12 @@ SOUTH_DATABASE_ADAPTERS = {
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
+    #exposure tool options 
+    if [ $with_exposure = "y" -o "$with_exposure" = "Y" ]; then
+        sed -i 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
+        sed -i 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
+    fi
+
     service apache2 start
     service tomcat6 start
 
@@ -450,7 +459,7 @@ SOUTH_DATABASE_ADAPTERS = {
     fi
 
     ###
-    echo "== Add 'geodetic', 'ged4gem', 'observations', 'exposure' and 'isc_viewer' Django applications =="
+    echo "== Add 'geodetic', 'ged4gem', 'observations' and 'isc_viewer' Django applications =="
 
 sudo su - $norm_user -c "
 cd $norm_dir 
@@ -508,18 +517,25 @@ exit 0"
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
     installed_apps_add 'geonode.isc_viewer'
-    installed_apps_add 'geonode.exposure'
+
+    # add exposure when indicated by user
+    if [ $with_exposure = "y" -o "$with_exposure" = "Y" ]; then
+        installed_apps_add 'geonode.exposure'
+    fi
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/faulted_earth.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/faulted_earth.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/exposure_export.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
 
+    # add exposure when indicated by user
+    if [ $with_exposure = "y" -o "$with_exposure" = "Y" ]; then
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'t    emplate': 'oq-platform2/exposure_export.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
+    fi
 
 
     ##
@@ -784,4 +800,5 @@ elif [ $# -eq 0 ]; then
 else
     usage "$0" 1
 fi
+
 
