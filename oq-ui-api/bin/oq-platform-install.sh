@@ -18,8 +18,8 @@
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
 
-export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=exposure_export
+export GEM_OQ_PLATF_GIT_REPO=git://github.com/bwyss/oq-platform.git
+export GEM_OQ_PLATF_GIT_VERS=master
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -40,6 +40,7 @@ export GEM_TMPDIR="gem_tmp"
 # GEM_BASEDIR ==REQUIRES== "/" at the end
 export GEM_BASEDIR="/var/lib/openquake/"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
+export GEM_DJANGO_MENU="${GEM_BASEDIR}etc/geonode/templates/oq-platform/includes/menu.html"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
@@ -498,6 +499,11 @@ exit 0"
     ret="$?"
     if [ $ret -ne 0 ]; then
         return 1
+    fi
+
+    #add exposure tool html file
+    if [ $with_exposure = "y" -o "$with_exposure" = "Y" ]; then
+	sed -i 's@/oq-platform/exposure_grid_index.html@/oq-platform2/exposure_export.html@g' "$GEM_DJANGO_MENU"
     fi
 
     ##
