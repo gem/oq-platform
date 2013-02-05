@@ -40,7 +40,7 @@ export GEM_TMPDIR="gem_tmp"
 # GEM_BASEDIR ==REQUIRES== "/" at the end
 export GEM_BASEDIR="/var/lib/openquake/"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
-export GEM_DJANGO_MENU="${GEM_BASEDIR}etc/geonode/templates/oq-platform/includes/menu.html"
+export GEM_DJANGO_MENU="${GEM_BASEDIR}oq-ui-api/etc/geonode/templates/oq-platform/includes/menu.html"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
