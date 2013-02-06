@@ -1,5 +1,5 @@
 #!/bin/bash
- set -x
+# set -x
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
 # Version: v1.12.8
@@ -18,8 +18,8 @@
 # PUBLIC GLOBAL VARS
 # version managements - use "master" or tagname to move to other versions
 
-export GEM_OQ_PLATF_GIT_REPO=git://github.com/bwyss/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=master
+export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
+export GEM_OQ_PLATF_GIT_VERS=exposure_export
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
