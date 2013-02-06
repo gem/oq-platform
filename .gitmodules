@@ -13,3 +13,6 @@
 [submodule "oq-ui-client2/src/wax"]
 	path = oq-ui-client2/src/wax
 	url = git://github.com/mapbox/wax.git
+[submodule "oq-ui-client2/src/Leaflet.draw"]
+	path = oq-ui-client2/src/Leaflet.draw
+	url = git://github.com/gem/Leaflet.draw.git
