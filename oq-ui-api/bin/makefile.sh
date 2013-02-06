@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -x
+ set -x
 
 # this function create a required directory. if fails the script exits with error level 2
 # with '-d' flag try to remove the dir before creation
@@ -41,6 +41,7 @@ mkreqdir () {
 #  MAIN
 export GEM_PROJ=oq-ui-api
 set | grep -q "^GEM_BASEDIR=" || export GEM_BASEDIR="/var/lib/openquake/"
+set | grep -q "^GEM_WITH_EXPOSURE=" || export GEM_WITH_EXPOSURE="n"
 set | grep -q "^GEM_OQ_PLATF_GIT_VERS=" || export GEM_OQ_PLATF_GIT_VERS="HEAD"
 set | grep -q "^MKREQDIR_ARG=" || export MKREQDIR_ARG="-o"
 
@@ -62,6 +63,11 @@ if [ "$1" = "deploy" ]; then
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/exposure      /var/lib/geonode/src/GeoNodePy/geonode/exposure
+
+    #add exposure tool html file
+    if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+        sed -i 's@/oq-platform/exposure_grid_index.html@/oq-platform2/exposure_export.html@g' "$GEM_BASEDIR${GEM_PROJ}/etc/geonode/templates/oq-platform/includes/menu.html"
+    fi
 
     cp -r "$GEM_BASEDIR${GEM_PROJ}"/etc/geonode/ /etc/
 
