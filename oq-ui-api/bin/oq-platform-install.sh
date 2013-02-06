@@ -535,7 +535,7 @@ exit 0"
 
     # add exposure when indicated by user
     if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'t    emplate': 'oq-platform2/exposure_export.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/exposure_export.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
     fi
 

@@ -93,6 +93,10 @@
                 <filter token="APP_NAME" value="${app.name}"/>
             </filterset>
         </copy>
+        <!-- copy Wax resources -->
+         <copy todir="${app.build}/src/wax">
+            <fileset dir="${app.fullpath}/src/wax"/>
+        </copy>
         <!-- copy Leaflet resources -->
          <copy todir="${app.build}/src/Leaflet">
             <fileset dir="${app.fullpath}/src/Leaflet"/>

@@ -16,6 +16,3 @@
 [submodule "oq-ui-client2/src/Leaflet.draw"]
 	path = oq-ui-client2/src/Leaflet.draw
 	url = git://github.com/Leaflet/Leaflet.draw.git
-[submodule "oq-ui-client2/src/jquery"]
-	path = oq-ui-client2/src/jquery
-	url = git://github.com/jquery/jquery.git
