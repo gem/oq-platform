@@ -7,3 +7,6 @@
 [submodule "oq-ui-client/app/static/externals/openlayers"]
 	path = oq-ui-client/app/static/externals/openlayers
 	url = https://github.com/openlayers/openlayers.git
+[submodule "oq-ui-client2/src/Leaflet"]
+	path = oq-ui-client2/src/Leaflet
+	url = https://github.com/Leaflet/Leaflet
