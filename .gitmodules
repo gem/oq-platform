@@ -10,3 +10,6 @@
 [submodule "oq-ui-client2/src/Leaflet"]
 	path = oq-ui-client2/src/Leaflet
 	url = https://github.com/Leaflet/Leaflet
+[submodule "oq-ui-client2/src/wax"]
+	path = oq-ui-client2/src/wax
+	url = git://github.com/mapbox/wax.git
