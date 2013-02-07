@@ -540,12 +540,6 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
     fi
 
-    # modify the leaflet.css
-    if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
-        sed -i '/.leaflet-right {/{n;s/right/left/;}' "$GEM_LEAFLET_CSS"
-        sed -i '/.leaflet-right .leaflet-control {/{n;s/10px/48px/;}' "$GEM_LEAFLET_CSS"
-    fi
-
     ##
     # deploy database
     cd /var/lib/geonode/
@@ -715,6 +709,12 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     #
     #  remove the geonode repo to avoid breaking upgrade of geonode package
     add-apt-repository -r -y ppa:geonode/release
+
+    # modify the leaflet.css
+    if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+        sed -i '/.leaflet-right {/{n;s/right/left/;}' "$GEM_LEAFLET_CSS"
+        sed -i '/.leaflet-right .leaflet-control {/{n;s/margin-right: 10px/margin-left: 48px/;}' "$GEM_LEAFLET_CSS"
+    fi
 
 #
 #  THE END
