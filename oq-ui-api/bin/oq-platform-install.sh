@@ -46,6 +46,7 @@ export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
 export GEM_TOMCAT_LOGFILE="/var/log/geonode/tomcat.log"
 export GEM_WSGI_CONFIG="/var/www/geonode/wsgi/geonode.wsgi"
+export GEM_LEAFLET_CSS="/var/www/geonode/static/oq-platform2/src/Leaflet/dist/leaflet.css"
 export NL='
 '
 export TB='	'
@@ -539,6 +540,11 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
     fi
 
+    # modify the leaflet.css
+    if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+        sed -i '/.leaflet-right {/{n;s/right/left/;}' "$GEM_LEAFLET_CSS"
+        sed -i '/.leaflet-right .leaflet-control {/{n;s/10px/48px/;}' "$GEM_LEAFLET_CSS"
+    fi
 
     ##
     # deploy database
