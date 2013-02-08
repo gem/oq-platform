@@ -108,7 +108,7 @@ def read_pop(request):
       for tod in tod_table:
         for df in df_table:
 	    if pop[6] == df[5]:
-	        writer.writerow([pop[7], pop[4] * tod[0] * df[1], pop[0], pop[2], pop[3], df[4], df[5], df[0], df[5]])
+	        writer.writerow([pop[7], pop[4] * tod[0] * df[1], pop[0], pop[2], pop[3], df[4], df[5], df[0], df[6]])
     return response
 
     # Stream file to client
