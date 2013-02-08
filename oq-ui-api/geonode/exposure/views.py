@@ -29,20 +29,15 @@ import csv
 
 @condition(etag_func=None)
 def read_pop(request):
+    resp = HttpResponse( stream_response_generator(request), mimetype='text/csv')
+    return resp
+
+def stream_response_generator(request):
     #get the lat long variables from the client
     lat1 = request.GET['lat1']
     lng1 = request.GET['lng1']
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
-
-    # get the response object, this can be used as a stream.
-    response = HttpResponse(mimetype='text/csv')
-
-    # force download.
-    response['Content-Disposition'] = 'attachment;filename="export.csv"'
-
-    # the csv writer
-    writer = csv.writer(response)
 
     #get the dwelling fractions table
     from django.db import connections
@@ -50,17 +45,15 @@ def read_pop(request):
     cursor.execute("SELECT ms.ms_name, ms.ms_value, mss.is_urban, mss.occupancy, abis.study_region_id, abis.gadm_country_id, pg.gem_shorthand_form FROM eqged.agg_build_infra_src abis JOIN eqged.mapping_scheme_src mss ON abis.mapping_scheme_src_id=mss.id JOIN eqged.mapping_scheme ms ON ms.mapping_scheme_src_id=mss.id JOIN eqged.pager_to_gem pg ON ms.ms_name=pg.pager_str WHERE ST_Intersects(the_geom, ST_MakeEnvelope(%s, %s, %s, %s, 4326)) AND is_urban AND occupancy='Res';", [lng1, lat1, lng2, lat2])
 
     df_table = cursor.fetchall()
-    
+
     #get the time of day table 
     cursor.execute("select night_pop_ratio from eqged.pop_allocation where gadm_country_id=65 AND occupancy='Res' AND is_urban")
-    tod_table = cursor.fetchall() 
+    tod_table = cursor.fetchall()
 
     result = []
 
     #get the population table
     cursor.execute("SELECT grid.id,grid.the_geom,grid.lat,grid.lon,pop.pop_value,gpa.is_urban, country.id,country.iso FROM eqged.grid_point grid JOIN eqged.population pop ON pop.grid_point_id=grid.id JOIN eqged.grid_point_country gpc ON gpc.grid_point_id=grid.id JOIN eqged.gadm_country country ON gpc.gadm_country_id=country.id JOIN eqged.grid_point_attribute gpa ON grid.id=gpa.grid_point_id WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326), grid.the_geom) AND pop.population_src_id=3 LIMIT 10;", [lng1, lat1, lng2, lat2])
-
-    pops = cursor.fetchall()
 
     # copyright header
     copyright = '''
@@ -75,8 +68,7 @@ def read_pop(request):
 #
 # THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. INSOFAR 
 # AS THIS WORK IS PROTECTED BY LAWS THAT NEIGHBOUR OR ARE SIMILARLY RELATED
-# TO COPYRIGHT, SUCH AS DATABASE RIGHTS AS INTRODUCED IN EUROPE BY THE 
-# DIRECTIVE 96/9/EC, YOU ALSO MAY USE THIS WORK UNDER THE TERMS OF 
+# TO COPYRIGHT, SUCH AS DATABASE RIGHTS AS INTRODUCED IN EUROPE BY THE # DIRECTIVE 96/9/EC, YOU ALSO MAY USE THIS WORK UNDER THE TERMS OF 
 # CC-BY-NC-SA 3.0 (unported).
 # [http://creativecommons.org/licenses/by-nc-sa/3.0/]
 #
@@ -90,39 +82,18 @@ def read_pop(request):
 # More information on licensing: http://www.globalquakemodel.org/licensing
 
 '''
-
-    writer.writerow([copyright])
-
-    #export metadata
-    coordinates =  '(%s, %s, %s, %s)' % (lat1, lng1, lat2, lng2)
-    metadata = '''# Metadata: Dataset Version X.X.X, Selection Bounding Box: %s, EPSG: 4326, Admin Level: 0, Time of Day: Night, Res/NonRes/Both: Res, Dwelling Fractions(s) Selected: PAGER
-'''% coordinates
-
-    writer.writerow([metadata]) 
+    yield (copyright)
 
     # csv header
-    writer.writerow(['''ISO, pop_calculated_value, pop_cell_ID, lon, lat, study_region, gadm country id, PAGER taxonomy, GEM taxonomy'''])
+    yield '''ISO, pop_calculated_value, pop_cell_ID, lon, lat, study_region, gadm country id, PAGER taxonomy, GEM taxonomy'''
+    yield "\n"
 
     # Exposure table
-    for pop in pops:
+    for pop in cursor:
       for tod in tod_table:
         for df in df_table:
-	    if pop[6] == df[5]:
-	        writer.writerow([pop[7], pop[4] * tod[0] * df[1], pop[0], pop[2], pop[3], df[4], df[5], df[0], df[6]])
-    return response
+            if pop[6] == df[5]:
+                yield ",".join([ str(pop[7]), str(pop[4] * tod[0] * df[1]), str(pop[0]), str(pop[2]), str(pop[3]), str(df[4]), str(df[5]), str(df[0]), str(df[6]) ])
+                yield "\n"
 
-    # Stream file to client
-#from django.views.decorators.http import condition
 
-#@condition(etag_func=None)
-#def stream_response(request):
-#    resp = HttpResponse( stream_response_generator(), mimetype='text/html')
-#    return resp
-
-def stream_response_generator():
-    yield "<html><body>\n"
-    for x in range(1,11):
-        yield "<div>%s</div>\n" % x
-        yield " " * 1024  # Encourage browser to render incrementally
-        time.sleep(1)
-    yield "</body></html>\n"
