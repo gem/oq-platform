@@ -302,6 +302,7 @@
 
     var map = L.map('map').setView([20, 20], 3);
 
+    // draw tool
     var drawControl = new L.Control.Draw({
         rectangle: {
 	    title: 'Selection Tool',
@@ -312,7 +313,24 @@
         }
     });
 
-    map.addControl(drawControl);
+    // add draw tool based on zoom level
+
+    function onZoomend() {
+        
+        try { 
+            map.removeControl(drawControl); 
+        } 
+        catch (err){ 
+            console.log('no draw control to remove'); 
+        };
+
+        if (map.getZoom() > 7) {
+            map.addControl(drawControl);
+            console.log(map.getZoom());
+        };
+
+    };
+    map.on('zoomend', onZoomend);
         
     var drawnItems = new L.LayerGroup();
     var latlonTopLeft = "";
@@ -326,37 +344,10 @@
 	$('#send_request').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng);
     });
 
-    //get request from django
-/*
-    $("#send_request").bind("click", function (){
-	$.get("/exposure/population.json", function(data) {
-                alert(latlonTopLeft);
-        });
-    });
-*/
-    /*pass bbox to django
-    $("#send_request").bind("click", function (){
-	
-        $.get("/exposure/population.json",  {
-                lat1: latlonTopLeft.lat,
-		lng1: latlonTopLeft.lng,
-                lat2: latlonBottomRight.lat,
-                lng2: latlonBottomRight.lng
-        },
-		function(data) {
-			alert(data);
-		}
-	);
-    });
-*/
     map.addLayer(drawnItems);
     
-    //L.tileLayer('http://{s}.tiles.mapbox.com/v3/benjamin-wyss.map-jnrrwol8/{z}/{x}/{y}.png', {
-      //  maxZoom: 7
-    //}).addTo(map);
-
     L.tileLayer('http://{s}.tiles.mapbox.com/v3/benjamin-wyss.map-th2h8esj/{z}/{x}/{y}.png', {
-        maxZoom: 7
+        maxZoom: 9
     }).addTo(map);
 
     L.control.layers(baselayer, overlays).addTo(map);
