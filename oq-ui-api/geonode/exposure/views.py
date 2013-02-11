@@ -53,7 +53,7 @@ def stream_response_generator(request):
     result = []
 
     #get the population table
-    cursor.execute("SELECT grid.id,grid.the_geom,grid.lat,grid.lon,pop.pop_value,gpa.is_urban, country.id,country.iso FROM eqged.grid_point grid JOIN eqged.population pop ON pop.grid_point_id=grid.id JOIN eqged.grid_point_country gpc ON gpc.grid_point_id=grid.id JOIN eqged.gadm_country country ON gpc.gadm_country_id=country.id JOIN eqged.grid_point_attribute gpa ON grid.id=gpa.grid_point_id WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326), grid.the_geom) AND pop.population_src_id=3 LIMIT 10;", [lng1, lat1, lng2, lat2])
+    cursor.execute("SELECT grid.id,grid.the_geom,grid.lat,grid.lon,pop.pop_value,gpa.is_urban, country.id,country.iso FROM eqged.grid_point grid JOIN eqged.population pop ON pop.grid_point_id=grid.id JOIN eqged.grid_point_country gpc ON gpc.grid_point_id=grid.id JOIN eqged.gadm_country country ON gpc.gadm_country_id=country.id JOIN eqged.grid_point_attribute gpa ON grid.id=gpa.grid_point_id WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326), grid.the_geom) AND pop.population_src_id=3;", [lng1, lat1, lng2, lat2])
 
     # copyright header
     copyright = '''
@@ -89,11 +89,9 @@ def stream_response_generator(request):
     yield "\n"
 
     # Exposure table
-    for pop in cursor:
+    for pop in cursor.fetchall():
       for tod in tod_table:
         for df in df_table:
             if pop[6] == df[5]:
                 yield ",".join([ str(pop[7]), str(pop[4] * tod[0] * df[1]), str(pop[0]), str(pop[2]), str(pop[3]), str(df[4]), str(df[5]), str(df[0]), str(df[6]) ])
                 yield "\n"
-
-
