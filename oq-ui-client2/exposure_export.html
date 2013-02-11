@@ -295,9 +295,7 @@
 
         'Dwelling Fractions Portugal' : L.tileLayer('http://193.206.66.82:8000/v2/PRT_dwelling_fractions/{z}/{x}/{y}.png', {
             wax: 'http://193.206.66.82:8000/v2/PRT_dwelling_fractions.json'
-        }),
-        
-        'osmStreets' : L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
+        })
     };
 
     var map = L.map('map').setView([20, 20], 3);
@@ -346,7 +344,7 @@
 
     map.addLayer(drawnItems);
     
-    L.tileLayer('http://{s}.tiles.mapbox.com/v3/benjamin-wyss.map-th2h8esj/{z}/{x}/{y}.png', {
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bright/{z}/{x}/{y}.png', {
         maxZoom: 9
     }).addTo(map);
 
