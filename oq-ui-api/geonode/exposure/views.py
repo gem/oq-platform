@@ -29,8 +29,10 @@ import csv
 
 @condition(etag_func=None)
 def read_pop(request):
-    resp = HttpResponse( stream_response_generator(request), mimetype='text/csv')
-    return resp
+    response = HttpResponse( stream_response_generator(request), mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="exposure_export.csv"'
+
+    return response
 
 def stream_response_generator(request):
     #get the lat long variables from the client
