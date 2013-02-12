@@ -226,7 +226,8 @@
  
 </div>  
 
-    <a href="#" id="send_request">Download CSV</a>
+    <a href="#" id="request_csv">Download CSV</a>
+    <a href="#" id="request_nrml">Download NRML</a>
     <div id="map" style="width: 100%; height: 500px"></div>
 
 <script type="text/javascript"> 
@@ -339,7 +340,8 @@
         drawnItems.addLayer(e.rect);
         latlonTopLeft = e.rect._latlngs[1];
         latlonBottomRight = e.rect._latlngs[3];
-	$('#send_request').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng);
+        $('#request_csv').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=csv');
+        $('#request_nrml').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=nrml');
     });
 
     map.addLayer(drawnItems);
