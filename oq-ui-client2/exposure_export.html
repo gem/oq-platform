@@ -358,9 +358,6 @@
 
     map.addLayer(drawnItems);
     
-    L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-blank-bright/{z}/{x}/{y}.png', {
-    }).addTo(map);
-
     L.control.layers(baselayer, overlays).addTo(map);
 
     // Add Wax support
