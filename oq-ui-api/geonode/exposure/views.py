@@ -39,7 +39,7 @@ def read_pop(request):
         mimetype = 'text/csv'
     elif output_type == "nrml":
         content_disp = 'attachment; filename="exposure_export.xml"'
-        mimetype = 'text/xml'
+        mimetype = 'text/plain'
     else:
         raise RuntimeError(
             "Unrecognized output type '%s', only 'nrml' and 'csv' are "
@@ -138,7 +138,8 @@ def stream_response_generator(request, output_type):
  data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
  the GEM Foundation at: licensing@globalquakemodel.org
 
- More information on licensing: http://www.globalquakemodel.org/licensing'''
+ More information on licensing: http://www.globalquakemodel.org/licensing\n
+'''
 
 
     if output_type == "csv":
@@ -167,10 +168,10 @@ def stream_response_generator(request, output_type):
         # export nrml
         # nrml header
         copyright = copyright_nrml(copyright_text)
-        yield '<?xml version='1.0' encoding='utf-8'?> \n'
+        yield "<?xml version='1.0' encoding='utf-8'?> \n"
         yield copyright
-        yield '''\
-<nrml xmlns="http://openquake.org/xmlns/nrml/0.4" \n
+        yield '''
+<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"
       xmlns:gml="http://www.opengis.net/gml>\n'''
 
         # nrml exposure file
@@ -189,11 +190,11 @@ def stream_response_generator(request, output_type):
                         </mgl:Point>
                     </site>
                     <number>%s</number>
-                    <taxonomy>VF</taxonomy>
+                    <taxonomy>%s</taxonomy>
                 </assetDefinition>
         </exposureList>
     </exposureModel>\n''' % (pop[0], df[0], pop[3], pop[2],
-                             pop[4] * tod[0] * df[1]))
+                             pop[4] * tod[0] * df[1], df[6]))
         # for loop ends here
         # finalize the document:
         yield "</nrml>\n"
