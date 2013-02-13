@@ -309,6 +309,7 @@
     var map = L.map('map', {
         center: [20, 20],
         zoom: 3,
+	maxZoom: 9,
 	layers: [osm, grump]
     });
 
@@ -358,7 +359,6 @@
     map.addLayer(drawnItems);
     
     L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-blank-bright/{z}/{x}/{y}.png', {
-        maxZoom: 9
     }).addTo(map);
 
     L.control.layers(baselayer, overlays).addTo(map);
