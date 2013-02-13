@@ -281,25 +281,36 @@
     });
 
     //The map
-    var baselayer = {
+    naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
 
-        'Natural Earth' : L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
-        
-        'GRUMP Population' : L.tileLayer('http://193.206.66.82:8000/v2/gdal_urban_rural_pop/{z}/{x}/{y}.png')
+    grump = L.tileLayer('http://193.206.66.82:8000/v2/gdal_urban_rural_pop/{z}/{x}/{y}.png');
+
+    var baselayer = {
+        'Natural Earth' : naturalEarth,
+        'GRUMP Population' : grump
     };
 
-    var overlays = {
-        'Dwelling Fractions Admin 0' : L.tileLayer('http://193.206.66.82:8000/v2/dwelling_fractions/{z}/{x}/{y}.png', {
+    osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
+
+    df_admin0 = L.tileLayer('http://193.206.66.82:8000/v2/dwelling_fractions/{z}/{x}/{y}.png', {
             wax: 'http://193.206.66.82:8000/v2/dwelling_fractions.json'
         }),
-            
 
-        'Dwelling Fractions Portugal' : L.tileLayer('http://193.206.66.82:8000/v2/PRT_dwelling_fractions/{z}/{x}/{y}.png', {
+    df_port = L.tileLayer('http://193.206.66.82:8000/v2/PRT_dwelling_fractions/{z}/{x}/{y}.png', {
             wax: 'http://193.206.66.82:8000/v2/PRT_dwelling_fractions.json'
-        })
+        });
+
+    var overlays = {
+	"Dwelling Fractions Admin 0" : df_admin0,
+	"Dwelling Fractions Portugal" : df_port,
+	"OpenStreetMap" : osm 
     };
 
-    var map = L.map('map').setView([20, 20], 3);
+    var map = L.map('map', {
+        center: [20, 20],
+        zoom: 3,
+	layers: [osm, grump]
+    });
 
     // draw tool
     var drawControl = new L.Control.Draw({
@@ -346,7 +357,7 @@
 
     map.addLayer(drawnItems);
     
-    L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bright/{z}/{x}/{y}.png', {
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-blank-bright/{z}/{x}/{y}.png', {
         maxZoom: 9
     }).addTo(map);
 
