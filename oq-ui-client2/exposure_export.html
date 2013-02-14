@@ -45,7 +45,8 @@
 
 	<!-- jquery and other stuff -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/leaflet-legend.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
 
 {% endblock %}
 	<!--Google Analytics-->
@@ -221,9 +222,22 @@
     <p>Dwelling_Types</p>
   </div>
 </div>  
-    
-    <a href="#" id="request_csv">Download CSV</a>
-    <a href="#" id="request_nrml">Download NRML</a>
+
+    <a href="#" id="request_csv"><button>Download CSV</button></a>
+    <a href="#" id="request_nrml"><button>Download NRML</button></a>
+    <a href="#" class="tooltip">Help
+      <span>
+        <img class="callout" src="src/callout.gif" />
+        <strong>Exposure Export Tool</strong><br />
+<p>Begin by zooming in to an area of interest, keep zooming until the 'Selection tool' <img src="{{ STATIC_URL }}theme/images/draw-rectangle.png"> appears just below the layer selection box (top left of the map).</p>
+<p>Click the selection tool, and pull a box on the map over the area on interest.</p>
+<p>Finally click 'download CSV' and or 'download NRML'.</p>
+        <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information first activate one of the dwelling fraction layers from the layer menu<br><img src="src/Leaflet/dist/images/layers.png"></p>
+<p>Next hover the mouse over the area of interest, and view the pie chart popup.</p>
+<p>Hover the mouse over the side panels to view the dwelling fraction types list & the GRUMP layer legend.</p>
+      </span>
+    </a>
+
     <div id="map" style="width: 100%; height: 500px"></div>
 <script type="text/javascript"> 
 
