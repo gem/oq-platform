@@ -286,11 +286,11 @@ oq_platform_install () {
     ###
     echo "== General requirements ==" 
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:geonode/testing
+    add-apt-repository -y ppa:geonode/release
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
-    apt-get install -y git ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl python-django-nose python-coverage
+    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl python-django-nose python-coverage
 
     ###
     echo "== Geonode installation ==" 
@@ -650,7 +650,7 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
 
     #
     #  remove the geonode repo to avoid breaking upgrade of geonode package
-    add-apt-repository -r -y ppa:geonode/testing
+    add-apt-repository -r -y ppa:geonode/release
 
 #
 #  THE END

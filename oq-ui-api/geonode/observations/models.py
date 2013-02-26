@@ -13,20 +13,21 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+#    You should have received a copy of the GNU Affero General Public
+#    License along with this program. If not, see
+#    <https://www.gnu.org/licenses/agpl.html>.
+
 
 from django.contrib.gis.db import models
-from django.conf import settings
 import math
 import numpy
 import jpype
-import shapely
+from django.conf import settings
 from django.contrib.gis.geos import collections
 
 
-SLIP_TYPE_COM_DEFAULT=0
-ASEIS_SLIP_COM_DEFAULT=0
+SLIP_TYPE_COM_DEFAULT = 0
+ASEIS_SLIP_COM_DEFAULT = 0
 
 # we do not store degress in radians
 sin = lambda degrees: math.sin(math.radians(degrees))
@@ -36,7 +37,11 @@ magnitude_law = lambda length, width: (4.18
                                        + 4.0 / 3.0 * math.log10(length)
                                        + 2.0 / 3.0 * math.log10(width))
 moment_law = lambda magnitude: 10 ** (16.05 + (1.5 * magnitude))
-displacement_law = lambda moment, area: moment / (3.0e11 * area * 1.0e10) * 0.01
+
+
+def displacement_law(moment, area):
+    return moment / (3.0e11 * area * 1.0e10) * 0.01
+
 
 DEFAULT_FIELD_ATTRIBUTES = {'null': True, 'blank': True}
 
@@ -56,7 +61,7 @@ DOWNTHROWN_SIDE_CHOICES = (('N', 'N'),
                            ('SE', 'SE'),
                            ('SW', 'SW'))
 
-SLIP_TYPE_CHOICES = ( 
+SLIP_TYPE_CHOICES = (
     ('Reverse', 'Reverse'),
     ('Thrust (dip <45 deg)', 'Thrust (dip <45 deg)'),
     ('Normal', 'Normal'),
@@ -69,7 +74,7 @@ SLIP_TYPE_CHOICES = (
     ('Dextral Reverse', 'Dextral Reverse'),
     ('Sinistral Reverse', 'Sinistral Reverse'),)
 
-SLIP_RATE_CATEGORY_CHOICES = ( 
+SLIP_RATE_CATEGORY_CHOICES = (
     ('0.001 - <0.01', '0.001 - <0.01'),
     ('0.01 - <0.1', '0.01 - <0.1'),
     ('0.1 - <1', '0.1 - <1'),
@@ -162,10 +167,14 @@ class WithDip(models.Model):
     class Meta:
         abstract = True
 
+
 class WithSlip(models.Model):
-    dip_slip_rate_min = models.FloatField(verbose_name="Dip Slip Rate Min", **DEFAULT_FIELD_ATTRIBUTES)
-    dip_slip_rate_max = models.FloatField(verbose_name="Dip Slip Rate Max", **DEFAULT_FIELD_ATTRIBUTES)
-    dip_slip_rate_pref = models.FloatField(verbose_name="Dip Slip Rate Pref", **DEFAULT_FIELD_ATTRIBUTES)
+    dip_slip_rate_min = models.FloatField(
+        verbose_name="Dip Slip Rate Min", **DEFAULT_FIELD_ATTRIBUTES)
+    dip_slip_rate_max = models.FloatField(
+        verbose_name="Dip Slip Rate Max", **DEFAULT_FIELD_ATTRIBUTES)
+    dip_slip_rate_pref = models.FloatField(
+        verbose_name="Dip Slip Rate Pref", **DEFAULT_FIELD_ATTRIBUTES)
 
     strike_slip_rate_min = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     strike_slip_rate_max = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -210,23 +219,32 @@ class WithSlipAndDip(WithSlip, WithDip):
         abstract = True
 
     def _update_net_slip_rate(self):
-        if self.strike_slip_rate_min is not None and self.dip_slip_rate_min is not None:
-            self.net_slip_rate_min = numpy.linalg.norm([self.strike_slip_rate_min,
-                                                        self.dip_slip_rate_min])
-        if self.strike_slip_rate_max is not None and self.dip_slip_rate_max is not None:
-            self.net_slip_rate_max = numpy.linalg.norm([self.strike_slip_rate_max,
-                                                        self.dip_slip_rate_max])
-        if self.strike_slip_rate_pref is not None and self.dip_slip_rate_pref is not None:
-            self.net_slip_rate_pref = numpy.linalg.norm([self.strike_slip_rate_pref,
-                                                         self.dip_slip_rate_pref])
-        if self.dip_max is not None and self.dip_slip_rate_min is not None:
-            self.vertical_slip_rate_min = self.dip_slip_rate_min * math.sin(self.dip_max / 180. * math.pi)
-
-        if self.dip_pref is not None and self.dip_slip_rate_pref is not None:
-            self.vertical_slip_rate_pref = self.dip_slip_rate_pref * math.sin(self.dip_pref / 180. * math.pi)
+        if (self.strike_slip_rate_min is not None and
+            self.dip_slip_rate_min is not None):
+            self.net_slip_rate_min = numpy.linalg.norm(
+                [self.strike_slip_rate_min, self.dip_slip_rate_min])
+        if (self.strike_slip_rate_max is not None and
+            self.dip_slip_rate_max is not None):
+            self.net_slip_rate_max = numpy.linalg.norm(
+                [self.strike_slip_rate_max, self.dip_slip_rate_max])
+        if (self.strike_slip_rate_pref is not None and
+            self.dip_slip_rate_pref is not None):
+            self.net_slip_rate_pref = numpy.linalg.norm(
+                [self.strike_slip_rate_pref, self.dip_slip_rate_pref])
+        if (self.dip_max is not None and
+            self.dip_slip_rate_min is not None):
+            self.vertical_slip_rate_min = (
+                self.dip_slip_rate_min * math.sin(
+                    self.dip_max / 180. * math.pi))
+        if (self.dip_pref is not None and
+            self.dip_slip_rate_pref is not None):
+            self.vertical_slip_rate_pref = (
+                self.dip_slip_rate_pref * math.sin(
+                    self.dip_pref / 180. * math.pi))
         if self.dip_min is not None and self.dip_slip_rate_max is not None:
-            self.vertical_slip_rate_max = self.dip_slip_rate_max * math.sin(self.dip_min / 180. * math.pi)
-
+            self.vertical_slip_rate_max = (
+                self.dip_slip_rate_max * math.sin(
+                    self.dip_min / 180. * math.pi))
 
 
 class WithMagnitude(models.Model):
@@ -241,8 +259,10 @@ class WithMagnitude(models.Model):
     class Meta:
         abstract = True
 
+
 class WithDisplacement(models.Model):
-    dis_total = models.FloatField(verbose_name="Total displacement", **DEFAULT_FIELD_ATTRIBUTES)
+    dis_total = models.FloatField(
+        verbose_name="Total displacement", **DEFAULT_FIELD_ATTRIBUTES)
 
     dis_category = models.CharField(max_length=255,
                                     verbose_name="Displacement Category",
@@ -264,9 +284,15 @@ class WithDisplacement(models.Model):
 
 class WithRecurrence(models.Model):
     # Recurrence Interval
-    re_int_min = models.IntegerField(verbose_name="Recurrence interval min (yr)", **DEFAULT_FIELD_ATTRIBUTES)
-    re_int_max = models.IntegerField(verbose_name="Recurrence interval min (yr)", **DEFAULT_FIELD_ATTRIBUTES)
-    re_int_pref = models.IntegerField(verbose_name="Recurrence interval min (yr)", **DEFAULT_FIELD_ATTRIBUTES)
+    re_int_min = models.IntegerField(
+        verbose_name="Recurrence interval min (yr)",
+        **DEFAULT_FIELD_ATTRIBUTES)
+    re_int_max = models.IntegerField(
+        verbose_name="Recurrence interval min (yr)",
+        **DEFAULT_FIELD_ATTRIBUTES)
+    re_int_pref = models.IntegerField(
+        verbose_name="Recurrence interval min (yr)",
+        **DEFAULT_FIELD_ATTRIBUTES)
     mov_min = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     mov_max = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     mov_pref = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
@@ -274,22 +300,26 @@ class WithRecurrence(models.Model):
     historical_earthquake = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     pre_historical_earthquake = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     marker_age = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
-    re_int_category = models.CharField(max_length=255,
-                                       choices=RECURRENCE_INTERVAL_CATEGORY_CHOICES,
-                                       **DEFAULT_FIELD_ATTRIBUTES)
+    re_int_category = models.CharField(
+        max_length=255,
+        choices=RECURRENCE_INTERVAL_CATEGORY_CHOICES,
+        **DEFAULT_FIELD_ATTRIBUTES)
 
-    mov_category = models.CharField(max_length=255,
-                                    verbose_name="Age of last movement category",
-                                    choices=AGE_OF_LAST_MOVEMENT_CATEGORY_CHOICES,
-                                    **DEFAULT_FIELD_ATTRIBUTES)
-    
+    mov_category = models.CharField(
+        max_length=255,
+        verbose_name="Age of last movement category",
+        choices=AGE_OF_LAST_MOVEMENT_CATEGORY_CHOICES,
+        **DEFAULT_FIELD_ATTRIBUTES)
+
     class Meta:
         abstract = True
 
 
 class Observation(models.Model):
-    compiler = models.CharField(max_length=30, default='', **DEFAULT_FIELD_ATTRIBUTES)
-    contrib = models.CharField(max_length=30, default='', **DEFAULT_FIELD_ATTRIBUTES)
+    compiler = models.CharField(max_length=30, default='',
+                                **DEFAULT_FIELD_ATTRIBUTES)
+    contrib = models.CharField(max_length=30, default='',
+                               **DEFAULT_FIELD_ATTRIBUTES)
     created = models.DateField(**DEFAULT_FIELD_ATTRIBUTES)
     all_com = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
 
@@ -297,21 +327,26 @@ class Observation(models.Model):
         abstract = True
 
     def _update_overall_completeness(self):
-        needed_attrs = ['u_sm_d_com', 'low_d_com', 'dip_com', 'dip_dir_com', 'net_slip_rate_com']
-        
-        if all([getattr(self, attr, None) is not None for attr in needed_attrs]):
-            self.all_com = (self.u_sm_d_com + self.low_d_com + self.dip_com + self.dip_dir_com + 
-                            (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) + 5 * self.net_slip_rate_com +
+        needed_attrs = ['u_sm_d_com', 'low_d_com', 'dip_com',
+                        'dip_dir_com', 'net_slip_rate_com']
+
+        if all(
+            [getattr(self, attr, None) is not None for attr in needed_attrs]):
+            self.all_com = (self.u_sm_d_com + self.low_d_com +
+                            self.dip_com + self.dip_dir_com +
+                            (self.slip_type_com or SLIP_TYPE_COM_DEFAULT) +
+                            5 * self.net_slip_rate_com +
                             (self.aseis_com or ASEIS_SLIP_COM_DEFAULT)) / 11
 
 
 class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
                   WithMagnitude, WithDisplacement, WithRecurrence):
     fault = models.ForeignKey('Fault')
-    source_nm  = models.CharField(max_length=255)
+    source_nm = models.CharField(max_length=255)
     fault_name = models.CharField(max_length=255)
 
-    geom = models.PolygonField(srid=4326, dim=3, **DEFAULT_FIELD_ATTRIBUTES)
+    geom = models.PolygonField(
+        srid=4326, dim=3, **DEFAULT_FIELD_ATTRIBUTES)
 
     def update_autocomputed_fields(self):
         self._update_geometry()
@@ -323,7 +358,7 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
         self._update_displacement()
         self._update_overall_completeness()
         self.save()
-        
+
     def _update_geometry(self):
         self.geom = self.fault.fault_poly_from_mls()
 
@@ -346,7 +381,7 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
         if self.length_min is not None and self.width_min is not None:
             self.area_min = self.length_min * self.width_min
         if self.length_max is not None and self.width_max is not None:
-            self.area_max = self.length_max * self.width_max        
+            self.area_max = self.length_max * self.width_max
 
     def _update_magnitude(self):
         if self.length_min > 0 and self.width_min > 0:
@@ -373,17 +408,20 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
             self.dis_max = displacement_law(self.mom_max, self.area_max)
         if self.mom_pref is not None and self.area_pref > 0:
             self.dis_pref = displacement_law(self.mom_pref, self.area_pref)
-        
 
-class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
+
+class Fault(Observation, WithLength, WithSlipAndDip,
+            WithDisplacement, WithRecurrence):
     fault_name = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
-    episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
+    episodic_behaviour = models.CharField(max_length=30,
+                                          **DEFAULT_FIELD_ATTRIBUTES)
     down_thro = models.CharField(max_length=255,
                                  verbose_name="Downthrown side",
                                  choices=DOWNTHROWN_SIDE_CHOICES,
                                  **DEFAULT_FIELD_ATTRIBUTES)
-    simple_geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
+    simple_geom = models.MultiLineStringField(srid=4326,
+                                              **DEFAULT_FIELD_ATTRIBUTES)
 
     def __unicode__(self):
         return "Fault %s %s" % (self.pk, self.fault_name)
@@ -404,7 +442,7 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
         if self.faultsection_set.count():
             self.simple_geom = self.faultsection_set.all()[0].geom
             for fault_section in self.faultsection_set.all()[1:]:
-                self.geom = self.simple_geom.union(fault_section.geom)
+                self.simple_geom = self.simple_geom.union(fault_section.geom)
 
     def fault_poly_from_mls(self):
         """Given a fault source geometry (as a MultiLineString), dip, upper
@@ -445,8 +483,8 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
 
         FT = jpype.JClass('org.opensha.sha.faultSurface.FaultTrace')
         LOC = jpype.JClass('org.opensha.commons.geo.Location')
-        LOC_LIST = jpype.JClass('org.opensha.commons.geo.LocationList')
-        SGS = jpype.JClass('org.opensha.sha.faultSurface.StirlingGriddedSurface')
+        SGS = jpype.JClass(
+            'org.opensha.sha.faultSurface.StirlingGriddedSurface')
 
         coords = fault_source_geom.coords
 
@@ -475,7 +513,8 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
         return collections.Polygon(poly_coords)
 
 
-class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
+class FaultSection(Observation, WithLength, WithSlipAndDip,
+                   WithDisplacement, WithRecurrence):
     # TODO. change this to plural. Do we really nead a m2m relation
     # instead of a fk?
     fault = models.ManyToManyField('Fault')
@@ -483,7 +522,8 @@ class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, Wi
     sec_name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     surface_dip = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
-    episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
+    episodic_behaviour = models.CharField(
+        max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     down_thro = models.CharField(max_length=255,
                                  verbose_name="Downthrown side",
                                  choices=DOWNTHROWN_SIDE_CHOICES,
@@ -521,8 +561,8 @@ class Trace(LocatedObservation):
     # TODO. change this to plural. Do we really need a m2m field?
     fault_section = models.ManyToManyField('FaultSection')
     loc_meth = models.CharField(max_length=30, choices=LOCATION_METHOD_CHOICES)
-    geomorphic_expression = models.CharField(max_length=255,
-                                             choices=GEOMORPHIC_EXPRESSION_CHOICES)
+    geomorphic_expression = models.CharField(
+        max_length=255, choices=GEOMORPHIC_EXPRESSION_CHOICES)
     geom = models.MultiLineStringField(srid=4326)
 
     def update_autocomputed_fields(self, update_depending=True):
@@ -549,7 +589,8 @@ class Event(SiteObservation, WithRecurrence):
 
 
 class FaultGeometry(SiteObservation):
-    dip_dir = models.IntegerField(verbose_name="Dip Direction", **DEFAULT_FIELD_ATTRIBUTES)
+    dip_dir = models.IntegerField(
+        verbose_name="Dip Direction", **DEFAULT_FIELD_ATTRIBUTES)
 
     down_thro = models.CharField(max_length=255,
                                  verbose_name="Downthrown side",
