@@ -63,6 +63,9 @@ faulted_earth.ObservationFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor,
 	      return output;
 	  }
 
+	  // hide the optional fields by default
+	  output.toggleOptionalFields();
+
 	  // we are adding a popup with an editor, so let's bind the
 	  // rowclick event to show our context sensitive help
 	  var popup = output;
