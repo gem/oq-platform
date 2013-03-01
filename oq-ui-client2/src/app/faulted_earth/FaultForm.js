@@ -146,6 +146,26 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     },
                     scope: this
                     }]
+            }, {
+                xtype: "box",
+                autoEl: {
+                    tag: "p",
+                    cls: "x-form-item"
+                },
+                html: "Select a Fault form from the grid below then click 'Export' to download it."
+            }, {
+                xtype: "container",
+                layout: "hbox",
+                items: [{
+                    xtype: "button",
+                    text: "Export",
+                    iconCls: "icon-layer-switcher",
+                    handler: function() {
+                        var featureManager = this.target.tools[this.featureManager];
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_fault&featureID=" + this.target.fault.fid + "&outputFormat=shape-zip");
+                    },
+                    scope: this
+                }]
              }],
             listeners: {
                 "added": function(cmp, ct) {

@@ -105,6 +105,26 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                     layout: "toolbar"
                 }]
             }, {
+                xtype: "box",
+                autoEl: {
+                    tag: "p",
+                    cls: "x-form-item"
+                },
+                html: "Select a Trace from the grid below then click 'Export' to download it."
+            }, {
+                xtype: "container",
+                layout: "hbox",
+                items: [{
+                    xtype: "button",
+                    text: "Export",
+                    iconCls: "icon-layer-switcher",
+                    handler: function() {
+                        var featureManager = this.target.tools[this.featureManager];
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_trace&featureID=" + this.target.traceId + "&outputFormat=shape-zip");
+                    },
+                    scope: this
+                }]
+            }, {
                 xtype: "container",
                 layout: "hbox",
                 cls: "composite-wrap",
