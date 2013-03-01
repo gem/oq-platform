@@ -248,7 +248,7 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                             method: "PUT",
                             url: this.target.localGeoServerUrl + "rest/workspaces/" +
                                 this.temporaryWorkspace + "/datastores/" +
-                                file.fileName + "/file.shp?update=overwrite",
+                                file.name + "/file.shp?update=overwrite",
                             xmlData: file,
                             headers: {
                                 "Content-Type": file.name.split(".").pop().toLowerCase() == "zip" ?
