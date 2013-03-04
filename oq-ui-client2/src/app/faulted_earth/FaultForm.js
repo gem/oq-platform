@@ -220,7 +220,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
         form.nameContains.getValue() && filters.push(
             new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.LIKE,
-                property: "name",
+                property: "fault_name",
                 value: "*" + form.nameContains.getValue() + "*",
                 matchCase: false
             })

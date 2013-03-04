@@ -17,11 +17,26 @@
 Ext.namespace('faulted_earth.utils');
 
 faulted_earth.utils.fieldDescriptions = {
-            // custom fied names for the fault summary table
-            "name": "Compulsory<br/>\
+            "trace_name": "Compulsory<br/>\
 Free text up to 96 characters long<br/>\
 Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
 For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
+            "fault_section_name": "Compulsory<br/>\
+Free text up to 96 characters long<br/>\
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
+            "fault_name": "Compulsory<br/>\
+Free text up to 96 characters long<br/>\
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
+            "fault_source_name": "Compulsory<br/>\
+Free text up to 96 characters long<br/>\
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
 
     "fault_section_id": "Fault section ID<br/>\
 The Feature ID of a Fault Section.<br/>\

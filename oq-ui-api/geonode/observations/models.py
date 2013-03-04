@@ -308,7 +308,7 @@ class Observation(models.Model):
 class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
                   WithMagnitude, WithDisplacement, WithRecurrence):
     fault = models.ForeignKey('Fault')
-    name  = models.CharField(max_length=255)
+    fault_source_name = models.CharField(max_length=255)
 
     geom = models.PolygonField(srid=4326, dim=3, **DEFAULT_FIELD_ATTRIBUTES)
 
@@ -375,7 +375,7 @@ class FaultSource(Observation, WithLength, WithArea, WithSlipAndDip,
         
 
 class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecurrence):
-    name = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
+    fault_name = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
     down_thro = models.CharField(max_length=255,
@@ -479,7 +479,7 @@ class FaultSection(Observation, WithLength, WithSlipAndDip, WithDisplacement, Wi
     # instead of a fk?
     fault = models.ManyToManyField('Fault')
     geom = models.MultiLineStringField(srid=4326, **DEFAULT_FIELD_ATTRIBUTES)
-    name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
+    fault_section_name = models.CharField(max_length=255, **DEFAULT_FIELD_ATTRIBUTES)
     strike = models.IntegerField(**DEFAULT_FIELD_ATTRIBUTES)
     surface_dip = models.FloatField(**DEFAULT_FIELD_ATTRIBUTES)
     episodic_behaviour = models.CharField(max_length=30, **DEFAULT_FIELD_ATTRIBUTES)
@@ -519,7 +519,7 @@ class LocatedObservation(models.Model):
 class Trace(LocatedObservation):
     # TODO. change this to plural. Do we really need a m2m field?
     fault_section = models.ManyToManyField('FaultSection')
-    name  = models.CharField(max_length=255)
+    trace_name = models.CharField(max_length=255)
     loc_meth = models.CharField(max_length=30, choices=LOCATION_METHOD_CHOICES)
     geomorphic_expression = models.CharField(max_length=255,
                                              choices=GEOMORPHIC_EXPRESSION_CHOICES)

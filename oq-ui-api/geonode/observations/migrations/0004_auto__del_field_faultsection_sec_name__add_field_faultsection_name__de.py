@@ -12,10 +12,10 @@ class Migration(SchemaMigration):
         db.delete_column('observations_faultsection', 'sec_name')
 
         # Adding field 'FaultSection.name'
-        db.add_column('observations_faultsection', 'name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
+        db.add_column('observations_faultsection', 'fault_section_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
 
         # Adding field 'Trace.name'
-        db.add_column('observations_trace', 'name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
+        db.add_column('observations_trace', 'trace_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
 
         # Deleting field 'FaultSource.source_nm'
         db.delete_column('observations_faultsource', 'source_nm')
@@ -24,7 +24,7 @@ class Migration(SchemaMigration):
         db.delete_column('observations_faultsource', 'fault_name')
 
         # Adding field 'FaultSource.name'
-        db.add_column('observations_faultsource', 'name', self.gf('django.db.models.fields.CharField')(default='', max_length=255), keep_default=False)
+        db.add_column('observations_faultsource', 'fault_source_name', self.gf('django.db.models.fields.CharField')(default='', max_length=255), keep_default=False)
 
         # Deleting field 'Fault.fault_name'
         db.delete_column('observations_fault', 'fault_name')
@@ -140,7 +140,7 @@ class Migration(SchemaMigration):
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -230,7 +230,7 @@ class Migration(SchemaMigration):
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -313,7 +313,7 @@ class Migration(SchemaMigration):
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'fault_source_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -382,7 +382,7 @@ class Migration(SchemaMigration):
         },
         'observations.trace': {
             'Meta': {'object_name': 'Trace'},
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'trace_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
             'fault_section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.FaultSection']", 'symmetrical': 'False'}),
             'geom': ('django.contrib.gis.db.models.fields.MultiLineStringField', [], {}),

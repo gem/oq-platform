@@ -254,7 +254,7 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
         form.nameContains.getValue() && filters.push(
             new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.LIKE,
-                property: "notes",
+                property: "trace_name",
                 value: "*" + form.nameContains.getValue() + "*",
                 matchCase: false
             })
