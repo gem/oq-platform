@@ -167,7 +167,7 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
         form.nameContains.getValue() && filters.push(
             new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.LIKE,
-                property: "source_nm",
+                property: "name",
                 value: "*" + form.nameContains.getValue() + "*",
                 matchCase: false
             })

@@ -79,6 +79,7 @@ faulted_earth.locatedObservationProperties = registerProperties([
 faulted_earth.traceProperties = registerProperties(faulted_earth.locatedObservationProperties.concat([
     { id: "loc_meth", label: "Location Method", choices: ['GPS Survey', 'LiDAR', 'Aerial photographs',
 							  'Topographic map', 'Google Earth', 'Composite'] },
+    { id: "name", label: "Name", isCompulsory: true },
     { id: "geomorphic_expression", label: "Geomorphic Expression", isCompulsory: true,
       choices: [
 	  'Surface trace', 'Eroded scarp', 'Sharp feature',
@@ -93,7 +94,7 @@ faulted_earth.siteProperties = registerProperties(faulted_earth.locatedObservati
 	  var choices = [];
 	  app.tools.faultsection_manager.featureStore.each(function(record) {
 	      var oid = record.data.fid.split('.').slice(-1)[0];
-	      choices.push([oid, record.data.sec_name]);
+	      choices.push([oid, record.data.name]);
 	  });
 	  return choices;						   
       } },
@@ -217,7 +218,7 @@ faulted_earth.faultsectionProperties = registerProperties(
 		    faulted_earth.slipRateProperties).concat(
 			faulted_earth.dipProperties).concat(
 			    faulted_earth.recurrenceProperties).concat([
-				{ id: "sec_name", label: "Fault Section name", isCompulsory: true },
+				{ id: "name", label: "Fault Section name", isCompulsory: true },
 				{ id: "down_thro", label: "Downthrown Side", choices: ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'] },
 				{ id: "strike", label: "Strike" },
 				{ id: "surface_dip", label: "Surface Dip" },
@@ -231,7 +232,7 @@ faulted_earth.faultProperties = registerProperties(
 		faulted_earth.dipProperties).concat(
 		    faulted_earth.displacementProperties).concat(
 			faulted_earth.recurrenceProperties).concat([
-			    { id: "fault_name", label: "Fault name", isCompulsory: true },
+			    { id: "name", label: "Fault name", isCompulsory: true },
 			    { id: "down_thro", label: "Downthrown Side", choices: ['N', 'S', 'W', 'E', 'NE', 'NW', 'SE', 'SW'] },
 			    { id: "strike", label: "Strike" },
 			    { id: "episodic_behaviour", label: "Episodic Behaviour" }]));
@@ -245,8 +246,7 @@ faulted_earth.faultSourceProperties = registerProperties(
 			faulted_earth.displacementProperties).concat(
 			    faulted_earth.magnitudeProperties).concat(
 				faulted_earth.recurrenceProperties).concat([
-				    { id: "source_nm", label: "Fault Source name" },
-				    { id: "fault_name", label: "Fault name", isCompulsory: true }]));
+				    { id: "name", label: "Fault name", isCompulsory: true }]));
 
 
 faulted_earth.models = [
