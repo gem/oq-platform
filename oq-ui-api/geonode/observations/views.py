@@ -32,7 +32,7 @@ OK_RESPONSE = HttpResponse('Ok')
 def join_traces(request):
     if request.method == 'POST':
         json_data = simplejson.loads(request.raw_post_data)
-        fault_section = models.FaultSection.objects.create(sec_name=json_data['section_name'])
+        fault_section = models.FaultSection.objects.create(fault_section_name=json_data['section_name'])
 
         traces = [models.Trace.objects.get(pk=trace_fid.split('.')[1])
                   for trace_fid in json_data['trace_ids']]

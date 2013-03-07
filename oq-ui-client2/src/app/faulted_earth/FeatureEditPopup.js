@@ -29,9 +29,58 @@ Ext.namespace('faulted_earth.utils');
  */
 
 origStartEditing = gxp.FeatureEditPopup.prototype.startEditing;
+origInitComponent = gxp.FeatureEditPopup.prototype.initComponent;
+
 Ext.override(gxp.FeatureEditPopup, {
+    toggleOptionalFields: function() {
+	if (!this.items) return;
+	var editorGrid = this.items.first();
+	var popup = editorGrid.featureEditor;
+
+	Ext.iterate(editorGrid.customEditors, function(field) {
+	    if (popup.optionalFieldsVisible) {
+		if (!faulted_earth.propertyNames[field].isCompulsory || faulted_earth.propertyNames[field].isCalculated) {
+		    popup.hiddenFields.push(editorGrid.propStore.getRec(field));
+		    editorGrid.propStore.remove(field);
+		}
+	    } else {
+		Ext.each(popup.hiddenFields, function(field) {
+		    editorGrid.propStore.store.add(field);
+		});
+		popup.hiddenFields = [];
+	    }
+	});
+	
+	popup.optionalFieldsVisible = !popup.optionalFieldsVisible;
+    },
+
+    initComponent: function() {
+	this.hiddenFields = [];
+	this.optionalFieldsVisible = true;
+
+	var ret = origInitComponent.call(this, arguments);
+	var newButton = new Ext.Button({
+            text: "More fields",
+            tooltip: "Click to toogle optional fields",
+            iconCls: "gxp-icon-settings",
+            hidden: false,
+            handler: function(button) {
+		this.toggleOptionalFields();
+
+		if (this.optionalFieldsVisible) {
+		    button.setText("Less fields");
+		} else {
+		    button.setText("More fields");
+		}
+            },
+            scope: this});
+	this.saveButton.ownerCt.add(newButton);
+	return ret;
+    },
+
     startEditing: function() {
 	origStartEditing.apply(this, arguments);
+	
 	this.addValidator();
     },
     

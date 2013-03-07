@@ -34,7 +34,7 @@ def create_faultsource(fault):
     strike_slip_rate_min strike_slip_rate_max strike_slip_rate_pref
     vertical_slip_rate_min vertical_slip_rate_max vertical_slip_rate_pref
     aseis_slip aseis_com mov_min mov_max mov_pref
-    fault_name contrib compiler created
+    contrib compiler created
     """.strip().split()
 
     optional_fields = ["contrib", "compiler", "created",
@@ -57,8 +57,7 @@ def create_faultsource(fault):
         elif not attrib_name in ["aseis_com", "slip_type_com"]:
             return attrib_name
 
-    faultsource = models.FaultSource.objects.create(
-        fault=fault, source_nm="Fault created by from %s" % fault.fault_name, **a)
+    faultsource = models.FaultSource.objects.create(fault=fault, fault_source_name=fault.fault_name, **a)
     faultsource.update_autocomputed_fields()
     
     return None
