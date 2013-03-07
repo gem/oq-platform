@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-# Version: v1.12.8
+# Version: v1.12.9
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -18,7 +18,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=trivial-fixes
+export GEM_OQ_PLATF_GIT_VERS=v1.12.9
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
