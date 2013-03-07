@@ -229,6 +229,10 @@ oq_platform_install () {
     fi
 
     declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
+   
+    if [ "$GEM_WITH_EXPOSURE" = "y" ]; then
+        declare -a GEM_REQ_VARS=('GED_USERNAME' 'GED_PASSWORD' 'GED_HOST' 'GED_PORT')
+    fi
     if [ -f "$norm_home/.oq-platform-install.conf" ]; then
         if [ "$(stat -c %a "$norm_home/.oq-platform-install.conf" | cut -c 2-)" != "00" ]; then
             echo "ERROR: the config file $norm_home/.oq-platform-install.conf exists but with too much relaxed access permissions (try chmod 600 $norm_home/.oq-platform-install.conf and run this script again)"
@@ -280,7 +284,8 @@ oq_platform_install () {
             exit 1
         fi
     done
-   
+  
+    if [ "$GEM_WITH_EXPOSURE" = "" ]; then 
         while [ true ]; do
             # Get exposure info
             read -p "Do you want to install the Exposure Export tool (this requires a database connection to the EQGED database) (y/n)?" GEM_WITH_EXPOSURE
@@ -324,6 +329,7 @@ oq_platform_install () {
 		break 
 	    fi
         done
+    fi
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
 
