@@ -17,16 +17,26 @@
 Ext.namespace('faulted_earth.utils');
 
 faulted_earth.utils.fieldDescriptions = {
-            // custom fied names for the fault summary table
+            "trace_name": "Compulsory<br/>\
+Free text up to 96 characters long<br/>\
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
+            "fault_section_name": "Compulsory<br/>\
+Free text up to 96 characters long<br/>\
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
             "fault_name": "Compulsory<br/>\
 Free text up to 96 characters long<br/>\
-Should be accompanied by comments or a description of the source of the name (free text up to 254 characters long)<br/>\
-The name of a fault. For unnamed faults, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
 
-            "sec_name": "Compulsory<br/>\
+            "fault_source_name": "Compulsory<br/>\
 Free text up to 96 characters long<br/>\
-Should be accompanied by comments or a description of the source of the name (free text up to 254 characters long)<br/>\
-The name of a fault section. For unnamed sections, the name should be given as the fault name followed by a section number (e.g., Alpine Fault – Section 1).",
+Should be accompanied by comments or a description (free text up to 254 characters long)<br/>\
+For unnamed observations, the name could be derived from a nearby locality, which may also include a number – e.g., Southern Alps Fault 1.",
+
 
     "fault_section_id": "Fault section ID<br/>\
 The Feature ID of a Fault Section.<br/>\
@@ -266,9 +276,6 @@ Brief notes of any neotectonic fault important information which are not include
 
             "summary_id": "Fault Section Summary ID",
 
-            // custom fied names for fault trace form
-            "section_name": "Fault Section Name",
-
             "loc_meth": "Compulsory<br/>\
 Choose from a list:<br/>\
 o GPS survey<br/>\
@@ -315,9 +322,6 @@ This attribute determines the linetypes used to display the faults in map view: 
             "s_feature": "Optional<br/>\
 Free text up to 24 characters long<br/>\
 Brief description of the feature at the site. For example, fault in trench, displaced riser, displaced fan, line of springs.",
-
-            // custom field names for fault source form
-    	    "source_nm": "Fault Source Name",
 
     	    "rake": "Optional<br/>\
 Reported in decimal degrees, from -180o to 180o, rounded to the nearest degree, whereby:<br/>\

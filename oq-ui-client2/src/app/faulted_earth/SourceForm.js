@@ -56,17 +56,11 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-		var current_feature = featureManager.layerRecord;
-                if (current_feature.get("name") == "geonode:observations_faultsource") {
-                    this.current_fault_source_url = "/observations/faultsource/export";
-                    this.sessionFids.push(e.feature.fid.split('.')[1]);
-                }
+                this.sessionFids.push(e.feature.fid.split('.')[1]);
             },
             "featureunselected": function(e) {
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_faultsource") {
                     this.sessionFids = [];
                     this.target.summaryId = null;
-                }
             },
             scope: this
         });
@@ -115,21 +109,7 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-                        Ext.Ajax.request({
-                            method: "PUT",
-                            url: faulted_earth.app_url + this.current_fault_source_url,
-                            params: Ext.encode(this.sessionFids),
-                            success: function(response, opts) {
-                                alert('Fault Source record recorded');
-                                this.sessionFids = [];
-                            },
-                            failure: function(response, opts){
-                                alert('Fault Source record NOT recorded');
-                            },
-                            
-                            scope: this
-                        });
-
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_faultsource&featureID=observations_faultsource." + this.sessionFids[0] + "&outputFormat=shape-zip");
                     },
                     scope: this
                 }]
@@ -187,7 +167,7 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
         form.nameContains.getValue() && filters.push(
             new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.LIKE,
-                property: "source_nm",
+                property: "fault_source_name",
                 value: "*" + form.nameContains.getValue() + "*",
                 matchCase: false
             })
@@ -248,7 +228,7 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                             method: "PUT",
                             url: this.target.localGeoServerUrl + "rest/workspaces/" +
                                 this.temporaryWorkspace + "/datastores/" +
-                                file.fileName + "/file.shp?update=overwrite",
+                                file.name + "/file.shp?update=overwrite",
                             xmlData: file,
                             headers: {
                                 "Content-Type": file.name.split(".").pop().toLowerCase() == "zip" ?

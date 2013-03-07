@@ -212,7 +212,7 @@ faulted_earth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
         form.nameContains.getValue() && filters.push(
             new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.LIKE,
-                property: "sec_name",
+                property: "fault_section_name",
                 value: "*" + form.nameContains.getValue() + "*",
                 matchCase: false
             })
@@ -273,14 +273,14 @@ faulted_earth.SummaryForm = Ext.extend(gxp.plugins.Tool, {
                             method: "PUT",
                             url: this.target.localGeoServerUrl + "rest/workspaces/" +
                                 this.temporaryWorkspace + "/datastores/" +
-                                file.fileName + "/file.shp?update=overwrite",
+                                file.name + "/file.shp?update=overwrite",
                             xmlData: file,
                             headers: {
-                                "Content-Type": file.fileName.split(".").pop().toLowerCase() == "zip" ?
+                                "Content-Type": file.name.split(".").pop().toLowerCase() == "zip" ?
                                     "application/zip" : file.type
                             },
                             success: this.handleUpload.createDelegate(this,
-                                [file.fileName, uploadWindow], true),
+                                [file.name, uploadWindow], true),
                             scope: this
                         });
                     },
