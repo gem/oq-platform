@@ -276,7 +276,7 @@ oq_platform_install () {
     fi
 
     if [ "$GEM_WITH_EXPOSURE" = "y" ]; then
-        GEM_REQ_VARS=("${GEM_REQ_VARS[@]}"  'GED_USERNAME' 'GED_PASSWORD' 'GED_HOST' 'GED_PORT')
+        GEM_REQ_VARS=("${GEM_REQ_VARS[@]}" "GED_USERNAME" "GED_PASSWORD" "GED_HOST" "GED_PORT")
     fi
 
     for rv in ${GEM_REQ_VARS[*]}; do
