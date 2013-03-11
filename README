@@ -82,6 +82,7 @@ We provide a simple script to perform this task (and return to http, if required
 
 === Howto ===
 
+  * get the ssl private key from the oq-private private repo 
   * cd into the parent directory of 'private-data'
   * run sudo <oq-platform directory>/oq-ui-api/bin/oq-platform2https.sh http2https
 
