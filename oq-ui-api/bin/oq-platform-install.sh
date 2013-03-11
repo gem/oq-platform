@@ -230,10 +230,6 @@ oq_platform_install () {
 
     declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
    
-    if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
-        GEM_REQ_VARS=("${GEM_REQ_VARS[@]}"  'GED_USERNAME' 'GED_PASSWORD' 'GED_HOST' 'GED_PORT')
-    fi
-
     if [ -f "$norm_home/.oq-platform-install.conf" ]; then
         if [ "$(stat -c %a "$norm_home/.oq-platform-install.conf" | cut -c 2-)" != "00" ]; then
             echo "ERROR: the config file $norm_home/.oq-platform-install.conf exists but with too much relaxed access permissions (try chmod 600 $norm_home/.oq-platform-install.conf and run this script again)"
@@ -278,6 +274,11 @@ oq_platform_install () {
         fi
         export GEM_DJANGO_SMAIL
     fi
+
+    if [ "$GEM_WITH_EXPOSURE" = "y" ]; then
+        GEM_REQ_VARS=("${GEM_REQ_VARS[@]}" "GED_USERNAME" "GED_PASSWORD" "GED_HOST" "GED_PORT")
+    fi
+
     for rv in ${GEM_REQ_VARS[*]}; do
         export $rv
         if [ -z "${!rv}" ]; then
