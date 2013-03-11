@@ -83,6 +83,8 @@ We provide a simple script to perform this task (and return to http, if required
 === Howto ===
 
   * get the ssl private key from the oq-private private repo 
+  * copy the oq-platform.key and the oq-platform.crt into the private_data directory
+  * copy gem_ca.pem to private_data dir and rename to oq-platform_CA.pem
   * cd into the parent directory of 'private-data'
   * run sudo <oq-platform directory>/oq-ui-api/bin/oq-platform2https.sh http2https
 
