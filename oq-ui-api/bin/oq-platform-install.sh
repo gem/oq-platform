@@ -230,7 +230,7 @@ oq_platform_install () {
 
     declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
    
-    if [ "$GEM_WITH_EXPOSURE" = "y" ]; then
+    if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
         GEM_REQ_VARS=("${GEM_REQ_VARS[@]}"  'GED_USERNAME' 'GED_PASSWORD' 'GED_HOST' 'GED_PORT')
     fi
 
