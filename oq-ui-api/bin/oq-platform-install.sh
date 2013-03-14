@@ -18,7 +18,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS=v1.12.9
+export GEM_OQ_PLATF_GIT_VERS="more-consistent"
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -79,7 +79,7 @@ EOF
 # tomcat_wait_start is a function that check if the tomcat daemon complete it's boot
 # looking inside it's log file searching the "INFO: Server startup" line
 tomcat_wait_start () {
-    local tws_i log_cur every nloop
+    local tws_i tws_ii log_cur every nloop
 
     log_cur=$1
     every=$2
@@ -88,7 +88,18 @@ tomcat_wait_start () {
     for tws_i in $(seq 1 $nloop); do
         tail -n +$log_cur $GEM_TOMCAT_LOGFILE | grep -q "^INFO: Server startup "
         if [ $? -eq 0 ]; then
-            return 0
+            for tws_ii in $(seq $tws_i $nloop); do
+                wget --save-headers -O "$GEM_TMPDIR/test_geoserver.html" --timeout=$every "http://localhost:8080/geoserver/"
+                if [ $? -eq 0 ]; then
+                    wget --save-headers -O "$GEM_TMPDIR/test_geonetwork.html" --timeout=$every "http://localhost:8080/geonetwork/"
+                    if [ $? -eq 0 ]; then
+                        return 0
+                    fi
+                fi
+                sleep $every
+            done
+
+            break
         fi
         sleep $every
     done
@@ -326,7 +337,11 @@ oq_platform_install () {
     # this fix the bug 972202 to inform jpype module where is the java installation
     sed -i "s@os.environ\['DJANGO_SETTINGS_MODULE'\] *= *'geonode.settings'@os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'\nos.environ['JAVA_HOME'] = '$GEM_JAVA_HOME'@g" "$GEM_WSGI_CONFIG"
 
-    service tomcat6 restart
+    service tomcat6 stop
+    tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
+    service tomcat6 start
+    tomcat_wait_start $tc_log_cur 24 5
+
     service apache2 restart
     wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "http://$SITE_HOST/"
 
@@ -384,7 +399,9 @@ SOUTH_DATABASE_ADAPTERS = {
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
     service apache2 start
+    tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
+    tomcat_wait_start $tc_log_cur 24 5
 
     postgis_vers="$(dpkg-query --show -f '${Version}' postgis 2>/dev/null)"
     if [ $? -ne 0 ]; then
@@ -568,7 +585,6 @@ rm -rf ./build
     ../opengeosuite-sdk/bin/suite-sdk deploy -b ./build .
     cd "$norm_dir"
 
-    service tomcat6 restart
     service apache2 restart
 
     ###
@@ -598,11 +614,11 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
 
     tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
+    tomcat_wait_start $tc_log_cur 24 5
     ##
     # final alignment
 
     # check if tomcat had finish it's startup (try every 5 secs for 24 times => 2 mins)
-    tomcat_wait_start $tc_log_cur 5 24
     service apache2 restart
     sleep 20
 
