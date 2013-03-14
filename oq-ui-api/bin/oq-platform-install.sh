@@ -18,7 +18,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="v1.12.10"
+export GEM_OQ_PLATF_GIT_VERS=unit-test-fe
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -301,7 +301,7 @@ oq_platform_install () {
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
-    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
+    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl python-django-nose python-coverage
 
     ###
     echo "== Geonode installation ==" 
@@ -383,18 +383,19 @@ SOUTH_DATABASE_ADAPTERS = {
 
     ###
     echo "== Database recreation ==" 
+
+    # Create template database suitable to be used for django nose
+    # tests
+    sudo su - postgres -c "
+createdb template_postgis
+psql -d postgres -c \"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';\"
+psql -f $GEM_POSTGIS_PATH/postgis.sql template_postgis
+psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
+"
     
     service apache2 stop 
     service tomcat6 stop
 
-#    sudo su - postgres -c "
-#dropdb $GEM_DB_NAME || true
-#createdb -O $GEM_DB_USER $GEM_DB_NAME
-#createlang plpgsql $GEM_DB_NAME
-#psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME
-#psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
-#"
-    
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
@@ -651,6 +652,10 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
         fi
         sleep 20
     done
+
+    # launch test
+    python ./manage.py test --noinput observations/tests.py
+
     deactivate
 
     #
