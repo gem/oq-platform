@@ -22,10 +22,12 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadReque
 from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
 from django.views.decorators.http import condition
+from django.db import connections
 import cStringIO as StringIO
 import csv
 import time
 
+#disabling etag for streaming
 @condition(etag_func=None)
 def read_pop(request):
 
@@ -77,7 +79,6 @@ def stream_response_generator(request, output_type):
     lng2 = request.GET['lng2']
 
     #get the dwelling fractions table
-    from django.db import connections
     cursor = connections['geddb'].cursor()
     cursor.execute("""
         SELECT ms.ms_name, ms.ms_value, mss.is_urban, mss.occupancy,

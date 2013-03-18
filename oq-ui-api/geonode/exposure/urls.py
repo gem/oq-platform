@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2010-2012, GEM Foundation.
+# Copyright (c) 2010-2013, GEM Foundation.
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,5 +21,4 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('geonode.exposure.views',
                        (r'^population.json', 'read_pop'),
-	#		(r'^population.json', 'xhr_test'),
 )
