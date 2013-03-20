@@ -89,9 +89,8 @@ class Migration(SchemaMigration):
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('fault', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.Fault'])),
-            ('source_nm', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('fault_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3)),
+            ('fault_source_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3, null=True, blank=True)),
         ))
         db.send_create_signal('observations', ['FaultSource'])
 
@@ -240,7 +239,7 @@ class Migration(SchemaMigration):
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')(null=True, blank=True)),
-            ('sec_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('fault_section_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('strike', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('surface_dip', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('episodic_behaviour', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
@@ -262,6 +261,7 @@ class Migration(SchemaMigration):
             ('scale', self.gf('django.db.models.fields.BigIntegerField')()),
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
             ('notes', self.gf('django.db.models.fields.TextField')()),
+            ('trace_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('loc_meth', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('geomorphic_expression', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')()),
@@ -559,6 +559,7 @@ class Migration(SchemaMigration):
             'down_thro': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'episodic_behaviour': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'fault': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.Fault']", 'symmetrical': 'False'}),
+            'fault_section_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.MultiLineStringField', [], {'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'horizontal_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -592,7 +593,6 @@ class Migration(SchemaMigration):
             're_int_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             're_int_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             're_int_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'sec_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'slip_rate_category': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'slip_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'slip_type_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -636,8 +636,8 @@ class Migration(SchemaMigration):
             'dis_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_total': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'fault': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.Fault']"}),
-            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'dim': '3'}),
+            'fault_source_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'dim': '3', 'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'horizontal_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -679,7 +679,6 @@ class Migration(SchemaMigration):
             'slip_rate_category': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'slip_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'slip_type_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'source_nm': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'strike_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'strike_slip_rate_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'strike_slip_rate_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -739,7 +738,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'loc_meth': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
-            'scale': ('django.db.models.fields.BigIntegerField', [], {})
+            'scale': ('django.db.models.fields.BigIntegerField', [], {}),
+            'trace_name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         }
     }
 
