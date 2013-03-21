@@ -18,7 +18,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="v1.12.11"
+export GEM_OQ_PLATF_GIT_VERS="unit-test-fe"
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
