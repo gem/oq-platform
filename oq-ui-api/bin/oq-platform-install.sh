@@ -301,7 +301,7 @@ oq_platform_install () {
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
-    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl python-django-nose python-coverage
+    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl python-coverage
 
     ###
     echo "== Geonode installation ==" 
@@ -501,8 +501,12 @@ exit 0"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
+
     echo "Upgrading httplib2 to 0.7.4 version to fix an https bug"
     pip install --upgrade "$norm_dir/oq-platform/oq-ui-api/data/httplib2.pybundle"
+    echo "Installing django-nose"
+    pip install "$norm_dir/oq-platform/oq-ui-api/data/django-nose-1.1.tar.gz"
+
     python ./manage.py syncdb --noinput
     python ./manage.py migrate geodetic
     python ./manage.py migrate isc_viewer
