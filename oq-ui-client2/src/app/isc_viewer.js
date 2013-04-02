@@ -114,7 +114,7 @@ Ext.onReady(function() {
                 version: "1.1.1"
             },
 	    mapbox: {
-		ptype: "client_tilestreamsource"
+		ptype: "client2_tilestreamsource"
             },
             osm: {
                 ptype: "gxp_osmsource"
