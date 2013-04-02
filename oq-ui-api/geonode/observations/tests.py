@@ -17,30 +17,114 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 """
-Run this test with manage.py test observations
+Run this test with manage.py test observations/tests.py
 """
 
 from django.test import TestCase
-from observations.models import FaultSource
+from observations import models, utils
 
 class FaultSourceAutoComputedTest(TestCase):
     def setUp(self):
-        self.fault_source, _ = FaultSource.objects.get_or_create(
-            fault_name="test fault name", source_nm = "test source name",
-            length_min=10., width_min=20., 
-            length_max=30., width_max=30.,
-            length_pref=20., width_pref=25.,
-            low_d_min=1., low_d_pref=2., low_d_max=3.,
-            u_sm_min=4., u_sm_pref=5., u_sm_max=6.,
-            dip_min=7., dip_pref=8., dip_max=9.,
-            geom="POLYGON ((174.6608247161522343 -41.3325857017038274 0.0, 174.6754120322273991 -41.3357535360505040 0.0, 174.6705494358949409 -41.3346977959105359 0.0, 174.6656869971967012 -41.3336418511235664 0.0, 174.6608247161522343 -41.3325857017038274 0.0))")
-                                                       
-    def test_update_width(self):
-        self.fault_source._update_width()
-        self.assertAlmostEqual(200, self.fault_source.width_min)
-        self.assertAlmostEqual(500, self.fault_source.width_pref)
-        self.assertAlmostEqual(900, self.fault_source.width_max)
+        self.expected_trace_geom = 'MULTILINESTRING ((10.0000000000000000 10.0000000000000000, 20.0000000000000000 20.0000000000000000, 10.0000000000000000 40.0000000000000000), (40.0000000000000000 40.0000000000000000, 30.0000000000000000 30.0000000000000000, 40.0000000000000000 20.0000000000000000, 30.0000000000000000 10.0000000000000000))'
+        self.trace = models.Trace(loc_meth="GPS Survey",
+                                  geomorphic_expression="Surface trace",
+                                  scale=10,
+                                  accuracy=20,
+                                  geom=self.expected_trace_geom)
+        self.trace.save()
 
-    def tearDown(self):
-        if self.fault_source:
-            self.fault_source.delete()
+        self.fault_section = models.FaultSection(
+            fault_section_name="Test Section",
+            strike_slip_rate_min=10., strike_slip_rate_max=30., strike_slip_rate_pref=20., 
+            dip_slip_rate_min=10., dip_slip_rate_max=30., dip_slip_rate_pref=20., 
+            length_min=10., length_pref=20., length_max=30.,
+            low_d_min=1., low_d_pref=2., low_d_max=3.,
+            u_sm_d_min=4., u_sm_d_pref=5., u_sm_d_max=6.,
+            dip_min=7., dip_pref=8., dip_max=9.,
+            strike=20, surface_dip=10, episodic_behaviour="test behavior", down_thro='N',
+            u_sm_d_com=1, low_d_com=1, dip_com=1, dip_dir_com=1, net_slip_rate_com=2)
+        self.fault_section.save()
+
+    def _join_traces(self):
+        utils.join_traces([self.trace], self.fault_section)
+        self.fault_section = models.FaultSection.objects.get(pk=self.fault_section.pk)
+
+    def _join_fault_sections(self, name="Test fault"):
+        utils.join_fault_sections([self.fault_section], name)
+        return self.fault_section.fault.all()[0]
+
+    def test_join_traces(self):
+        self._join_traces()
+        self.assertEqual(self.expected_trace_geom, self.fault_section.geom.wkt)
+        self.assertAlmostEqual(14.142135623731, self.fault_section.net_slip_rate_min)
+        self.assertEqual(28.2842712474619, self.fault_section.net_slip_rate_pref)
+        self.assertEqual(42.4264068711929, self.fault_section.net_slip_rate_max)
+        self.assertEqual(1, self.fault_section.all_com)
+
+    def test_join_fault_sections(self):
+        self._join_traces()
+
+        expected_name = "Test fault"
+        fault = self._join_fault_sections(expected_name)
+
+        self.assertEqual(expected_name, fault.fault_name)
+        self.assertEqual(self.expected_trace_geom, fault.simple_geom.wkt)
+
+    def _populate_fault(self, fault):
+        fault.strike_slip_rate_min = 3
+        fault.dip_slip_rate_min = 4
+
+        fault.strike_slip_rate_pref = 5
+        fault.dip_slip_rate_pref = 12
+
+        fault.strike_slip_rate_max = 7
+        fault.dip_slip_rate_max = 24
+
+        fault.u_sm_d_com = 3
+        fault.low_d_com = 3
+        fault.dip_com = 3
+        fault.dip_dir_com = 3
+        fault.net_slip_rate_com = 2
+
+        fault.save()
+
+        fault.update_autocomputed_fields()
+        return models.Fault.objects.get(pk=fault.pk)
+
+    def test_autocompute_fields_fault(self):
+        self._join_traces()
+        fault = self._populate_fault(self._join_fault_sections())
+
+        self.assertAlmostEqual(5, fault.net_slip_rate_min)
+        self.assertAlmostEqual(13, fault.net_slip_rate_pref)
+        self.assertAlmostEqual(25, fault.net_slip_rate_max)
+        self.assertEqual(2, fault.all_com)
+
+    def test_create_faultsource(self):
+        self._join_traces()
+        fault = self._populate_fault(self._join_fault_sections())
+        ret = utils.create_faultsource(fault)
+        
+        self.assertEqual('u_sm_d_min', ret)
+
+        fault.u_sm_d_min = 10
+        fault.u_sm_d_pref = 20
+        fault.u_sm_d_max = 30
+
+        fault.low_d_min = 100
+        fault.low_d_pref = 200
+        fault.low_d_max = 300
+        
+        fault.dip_min = 10
+        fault.dip_max = 30
+        fault.dip_pref = 20
+
+        fault.dip_dir = 20
+        fault.slip_type = 'reverse'
+        fault.aseis_slip = 10
+
+        fault.save()
+
+        ret = utils.create_faultsource(fault)
+        
+        self.assertEqual(None, ret)

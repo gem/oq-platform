@@ -21,7 +21,6 @@ from django.conf import settings
 import math
 import numpy
 import jpype
-import shapely
 from django.contrib.gis.geos import collections
 
 
@@ -36,7 +35,9 @@ magnitude_law = lambda length, width: (4.18
                                        + 4.0 / 3.0 * math.log10(length)
                                        + 2.0 / 3.0 * math.log10(width))
 moment_law = lambda magnitude: 10 ** (16.05 + (1.5 * magnitude))
-displacement_law = lambda moment, area: moment / (3.0e11 * area * 1.0e10) * 0.01
+
+def displacement_law(moment, area):
+    return moment / (3.0e11 * area * 1.0e10) * 0.01
 
 DEFAULT_FIELD_ATTRIBUTES = {'null': True, 'blank': True}
 
@@ -403,7 +404,7 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
         if self.faultsection_set.count():
             self.simple_geom = self.faultsection_set.all()[0].geom
             for fault_section in self.faultsection_set.all()[1:]:
-                self.geom = self.simple_geom.union(fault_section.geom)
+                self.simple_geom = self.simple_geom.union(fault_section.geom)
 
     def fault_poly_from_mls(self):
         """Given a fault source geometry (as a MultiLineString), dip, upper
@@ -444,7 +445,6 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
 
         FT = jpype.JClass('org.opensha.sha.faultSurface.FaultTrace')
         LOC = jpype.JClass('org.opensha.commons.geo.Location')
-        LOC_LIST = jpype.JClass('org.opensha.commons.geo.LocationList')
         SGS = jpype.JClass('org.opensha.sha.faultSurface.StirlingGriddedSurface')
 
         coords = fault_source_geom.coords

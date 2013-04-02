@@ -7,54 +7,25 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Deleting field 'FaultSection.sec_name'
-        db.delete_column('observations_faultsection', 'sec_name')
+        # We remove the old foreign key constraint from the m2m
+        # relationship and install new constraints with on delete
+        # cascade. The intent is to allow the deletion of an object
+        # also when it has a relationship with other
+        # objects. Depending objects will not be deleted, only the
+        # relationship.
 
-        # Adding field 'FaultSection.name'
-        db.add_column('observations_faultsection', 'fault_section_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
+        db.execute("alter table observations_faultsection_fault drop constraint if exists fault_id_refs_id_27ad45a8e855eaf6;")
+        db.execute("alter table observations_faultsection_fault drop constraint if exists faultsection_id_refs_id_24909e10145ff3d4")
+        db.execute("alter table observations_faultsection_fault add constraint fk_faultsection foreign key(faultsection_id) references observations_faultsection(id) on delete cascade;")
+        db.execute("alter table observations_faultsection_fault add constraint fk_fault foreign key(fault_id) references observations_fault(id) on delete cascade;")
 
-        # Adding field 'Trace.name'
-        db.add_column('observations_trace', 'trace_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
-
-        # Deleting field 'FaultSource.source_nm'
-        db.delete_column('observations_faultsource', 'source_nm')
-
-        # Deleting field 'FaultSource.fault_name'
-        db.delete_column('observations_faultsource', 'fault_name')
-
-        # Adding field 'FaultSource.name'
-        db.add_column('observations_faultsource', 'fault_source_name', self.gf('django.db.models.fields.CharField')(default='', max_length=255), keep_default=False)
-
-        # Deleting field 'Fault.fault_name'
-        db.delete_column('observations_fault', 'fault_name')
-
-        # Adding field 'Fault.name'
-        db.add_column('observations_fault', 'name', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True), keep_default=False)
-
+        db.execute("alter table observations_trace_fault_section drop constraint if exists trace_id_refs_id_33d54aa826acc32;")
+        db.execute("alter table observations_trace_fault_section drop constraint if exists faultsection_id_refs_id_1737d828c21760bf")
+        db.execute("alter table observations_trace_fault_section add constraint fk_faultsection foreign key(faultsection_id) references observations_faultsection(id) on delete cascade;")
+        db.execute("alter table observations_trace_fault_section add constraint fk_trace foreign key(trace_id) references observations_trace(id) on delete cascade;")
 
     def backwards(self, orm):
-        
-        # Adding field 'FaultSection.sec_name'
-        db.add_column('observations_faultsection', 'sec_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
-
-        # Deleting field 'FaultSection.name'
-        db.delete_column('observations_faultsection', 'name')
-
-        # User chose to not deal with backwards NULL issues for 'FaultSource.source_nm'
-        raise RuntimeError("Cannot reverse this migration. 'FaultSource.source_nm' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'FaultSource.fault_name'
-        raise RuntimeError("Cannot reverse this migration. 'FaultSource.fault_name' and its values cannot be restored.")
-
-        # Deleting field 'FaultSource.name'
-        db.delete_column('observations_faultsource', 'name')
-
-        # Adding field 'Fault.fault_name'
-        db.add_column('observations_fault', 'fault_name', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True), keep_default=False)
-
-        # Deleting field 'Fault.name'
-        db.delete_column('observations_fault', 'name')
+        pass
 
 
     models = {
@@ -121,6 +92,7 @@ class Migration(SchemaMigration):
             'dis_total': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'down_thro': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'episodic_behaviour': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'horizontal_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -140,7 +112,6 @@ class Migration(SchemaMigration):
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -210,6 +181,7 @@ class Migration(SchemaMigration):
             'down_thro': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'episodic_behaviour': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'fault': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.Fault']", 'symmetrical': 'False'}),
+            'fault_section_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.MultiLineStringField', [], {'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'horizontal_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -230,7 +202,6 @@ class Migration(SchemaMigration):
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'fault_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -287,6 +258,7 @@ class Migration(SchemaMigration):
             'dis_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_total': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'fault': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.Fault']"}),
+            'fault_source_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'dim': '3', 'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'horizontal_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -313,7 +285,6 @@ class Migration(SchemaMigration):
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_min': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_pref': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'fault_source_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -382,7 +353,6 @@ class Migration(SchemaMigration):
         },
         'observations.trace': {
             'Meta': {'object_name': 'Trace'},
-            'trace_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
             'fault_section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.FaultSection']", 'symmetrical': 'False'}),
             'geom': ('django.contrib.gis.db.models.fields.MultiLineStringField', [], {}),
@@ -390,7 +360,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'loc_meth': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
-            'scale': ('django.db.models.fields.BigIntegerField', [], {})
+            'scale': ('django.db.models.fields.BigIntegerField', [], {}),
+            'trace_name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         }
     }
 
