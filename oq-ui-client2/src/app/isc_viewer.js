@@ -18,6 +18,7 @@
  * @require plugins/GoogleSource.js
  * @require plugins/GoogleGeocoder.js
  * @require plugins/Legend.js
+ * @require plugins/TileStreamSource.js
  */
 
 var app;
@@ -111,6 +112,9 @@ Ext.onReady(function() {
                 ptype: "gxp_wmscsource",
                 url: "/geoserver/wms",
                 version: "1.1.1"
+            },
+	    mapbox: {
+		ptype: "client_tilestreamsource"
             },
             osm: {
                 ptype: "gxp_osmsource"
