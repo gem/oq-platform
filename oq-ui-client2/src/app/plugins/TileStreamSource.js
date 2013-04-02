@@ -96,14 +96,14 @@ client2.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
         var options = {
             sphericalMercator: true,
             wrapDateLine: true,
-            numZoomLevels: 7,
+            numZoomLevels: 7
         };
         
         var configs = [
             {name: "hazard-map-points-world", numZoomLevels: 7},
             {name: "white-base", numZoomLevels: 7},
             {name: "gdal-custom-urban", numZoomLevels: 7},
-            {name: "gdal-custom-rural", numZoomLevels: 7},
+            {name: "gdal-custom-rural", numZoomLevels: 7}
         ];
         
         var len = configs.length;
