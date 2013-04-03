@@ -68,7 +68,7 @@ Ext.ns("gxp.plugins");
 gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
     
     /** api: ptype = gxp_mapboxsource */
-    ptype: "cleint2_tilestreamsource",
+    ptype: "gxp_tilestreamsource",
 
     /** api: property[store]
      *  ``GeoExt.data.LayerStore``. Will contain records with name field values
