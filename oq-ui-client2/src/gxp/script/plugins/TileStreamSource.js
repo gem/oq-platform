@@ -79,7 +79,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
      *  ``String``
      *  A descriptive title for this layer source (i18n).
      */
-    title: "GEM Layers",
+    title: "GEM Tile Layers",
     
     /** i18n **/
     hazardMapPointsWorldTitle: "Hazard Map PGA_0.1",
