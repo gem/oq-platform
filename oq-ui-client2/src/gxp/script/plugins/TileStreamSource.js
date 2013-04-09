@@ -1,4 +1,11 @@
 /**
+
+This plugin is based on the MapBoxSource plugin. It was created in order to
+render tiles served from a TileStream server. The key difference to note is
+that this plugin uses OpenLayers.Layer.XYZ while the MapBox plugin uses TMS.
+We are using OpenLayers.Layer.XYZ because TileStream serves its tiles in 
+version 2 which is not compatible with TMS.
+
 copyright (c) 2008-2011 The Open Planning Project
  * 
  * Published under the GPL license.

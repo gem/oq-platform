@@ -113,8 +113,8 @@ Ext.onReady(function() {
                 url: "/geoserver/wms",
                 version: "1.1.1"
             },
-	    mapbox: {
-		ptype: "gxp_tilestreamsource"
+            mapbox: {
+                ptype: "gxp_tilestreamsource"
             },
             osm: {
                 ptype: "gxp_osmsource"
