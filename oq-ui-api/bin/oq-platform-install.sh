@@ -400,6 +400,9 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
+    #update the local_settings.py with tilestream plugin sorce 
+    sed -i "s@MAP_BASELAYERS *= *\[{ @MAP_BASELAYERS = [{\n    'source': {'ptype': 'gxp_tilestreamsource'}, \n    }, {  \n@g" "$GEM_GN_LOCSET"
+
     service apache2 start
     tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
