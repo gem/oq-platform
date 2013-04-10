@@ -3,13 +3,19 @@
                 width: 100%;
                 height: 100%;
             }
-            #sidePanel-leg{
+            #sidePanel-leg-exposure{
                 width:245px;
                 position:fixed;
                 left:-202px;
                 top:55%;
+                z-index:991; 
+            }
+            #sidePanel-leg-hazard{
+                width:245px;
+                position:fixed;
+                left:-202px;
+                top:35%;
                 z-index:991;
-                
             }
             #panelHandle-leg{
                 background-image: -webkit-linear-gradient(top,#333,#222);

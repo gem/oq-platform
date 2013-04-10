@@ -1,5 +1,5 @@
   <!--
- Copyright (c) 2010-2012, GEM Foundation.
+ Copyright (c) 2010-2013, GEM Foundation.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {% trans "Welcome to FaultedEarth!" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Exposure Export" %} - {{ block.super }} {% endblock %}
 {% block indexclass %} class="here" {% endblock %}
         
 {% block head %}
@@ -46,7 +46,7 @@
 	<!-- jquery and other stuff -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
 
 {% endblock %}
 	<!--Google Analytics-->
@@ -65,7 +65,7 @@
 	</script>
 
 {% block main %}
-<div id="sidePanel-leg">
+<div id="sidePanel-leg-exposure">
   <div id="panelContent-leg">
     <div class="map-legend-urban">
     <p>
@@ -287,19 +287,19 @@
     jQuery(function($) {
     $(document).ready(function() {
         $('#panelHandle-leg').hover(function() {
-            $('#sidePanel-leg').stop(true, false).animate({
+            $('#sidePanel-leg-exposure').stop(true, false).animate({
                 'left': '0px'
             }, 900);
         }, function() {
             jQuery.noConflict();
         });
  
-        jQuery('#sidePanel-leg').hover(function() {
+        jQuery('#sidePanel-leg-exposure').hover(function() {
             // Do nothing
         }, function() {
  
             jQuery.noConflict();
-            jQuery('#sidePanel-leg').animate({
+            jQuery('#sidePanel-leg-exposure').animate({
                 left: '-201px'
             }, 800);
  
