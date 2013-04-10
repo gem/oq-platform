@@ -1,4 +1,4 @@
-<!--
+  <!--
  Copyright (c) 2010-2012, GEM Foundation.
 
     This program is free software: you can redistribute it and/or modify
@@ -311,14 +311,19 @@
     // base layers
     naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
 
-    grump = L.tileLayer('http://193.206.66.82:8000/v2/gdal_urban_rural_pop/{z}/{x}/{y}.png');
+    GEM_base = L.tileLayer('http://193.206.66.82:8000/v2/world_landmass/{z}/{x}/{y}.png');
 
     var baselayer = {
         'Natural Earth' : naturalEarth,
-        'GRUMP Population' : grump
+        'GEM_base' : GEM Base Map
     };
 
     // overlay layers
+
+    grump_rural = L.tileLayer('http://193.206.66.82:8000/v2/gdal-custom-rural/{z}/{x}/{y}.png');
+
+    grump_urban = L.tileLayer('http://193.206.66.82:8000/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
+
     osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
 
     df_admin0 = L.tileLayer('http://193.206.66.82:8000/v2/dwelling_fractions/{z}/{x}/{y}.png', {
@@ -332,6 +337,8 @@
     var overlays = {
         "Dwelling Fractions Admin 0" : df_admin0,
         "Dwelling Fractions Portugal" : df_port,
+        "GRUMP Urban" : grump_urban,
+        "GRUMP Rural" : grump_rural,
         "OpenStreetMap" : osm 
     };
 
@@ -340,7 +347,7 @@
         center: [20, 20],
         zoom: 3,
         maxZoom: 9,
-        layers: [osm, grump]
+        layers: [osm, GEM_base]
     });
 
     // draw tool
