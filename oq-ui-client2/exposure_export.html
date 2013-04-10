@@ -65,7 +65,7 @@
 	</script>
 
 {% block main %}
-<div id="sidePanel-leg-exposure">
+<div id="sidePanel-leg">
   <div id="panelContent-leg">
     <div class="map-legend-urban">
     <p>
@@ -287,19 +287,19 @@
     jQuery(function($) {
     $(document).ready(function() {
         $('#panelHandle-leg').hover(function() {
-            $('#sidePanel-leg-exposure').stop(true, false).animate({
+            $('#sidePanel-leg').stop(true, false).animate({
                 'left': '0px'
             }, 900);
         }, function() {
             jQuery.noConflict();
         });
  
-        jQuery('#sidePanel-leg-exposure').hover(function() {
+        jQuery('#sidePanel-leg').hover(function() {
             // Do nothing
         }, function() {
  
             jQuery.noConflict();
-            jQuery('#sidePanel-leg-exposure').animate({
+            jQuery('#sidePanel-leg').animate({
                 left: '-201px'
             }, 800);
  
