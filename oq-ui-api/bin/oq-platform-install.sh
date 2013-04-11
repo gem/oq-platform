@@ -18,7 +18,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="v1.12.12"
+export GEM_OQ_PLATF_GIT_VERS="master"
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -399,6 +399,14 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
 
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
+
+    #update the local_settings.py with tilestream plugin sorce 
+    grep -q "     'source': {'ptype': 'gxp_tilestreamsource'}, " "$GEM_GN_LOCSET"
+    if [ $? -eq 0 ]; then 
+        echo "gxp_tilestreamsource is already installed"
+    else
+        sed -i "s@MAP_BASELAYERS *= *\[{@MAP_BASELAYERS = [{\n    'source': {'ptype': 'gxp_tilestreamsource'}, \n    }, {  \n@g" "$GEM_GN_LOCSET"
+    fi
 
     service apache2 start
     tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
