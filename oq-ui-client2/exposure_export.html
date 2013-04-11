@@ -311,7 +311,7 @@
     // base layers
     naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
 
-    GEM_base = L.tileLayer('http://193.206.66.82:8000/v2/world_landmass/{z}/{x}/{y}.png');
+    GEM_base = L.tileLayer('http://193.206.66.82:8000/v2/world-landmass/{z}/{x}/{y}.png');
 
     var baselayer = {
         'Natural Earth' : naturalEarth,
@@ -326,12 +326,12 @@
 
     osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
 
-    df_admin0 = L.tileLayer('http://193.206.66.82:8000/v2/dwelling_fractions/{z}/{x}/{y}.png', {
-            wax: 'http://193.206.66.82:8000/v2/dwelling_fractions.json'
+    df_admin0 = L.tileLayer('http://193.206.66.82:8000/v2/dwelling-fractions/{z}/{x}/{y}.png', {
+            wax: 'http://193.206.66.82:8000/v2/dwelling-fractions.json'
         }),
 
-    df_port = L.tileLayer('http://193.206.66.82:8000/v2/PRT_dwelling_fractions/{z}/{x}/{y}.png', {
-            wax: 'http://193.206.66.82:8000/v2/PRT_dwelling_fractions.json'
+    df_port = L.tileLayer('http://193.206.66.82:8000/v2/PRT-dwelling-fractions/{z}/{x}/{y}.png', {
+            wax: 'http://193.206.66.82:8000/v2/PRT-dwelling-fractions.json'
         });
 
     var overlays = {

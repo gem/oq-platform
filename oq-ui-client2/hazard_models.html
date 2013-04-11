@@ -149,7 +149,7 @@
       // base layers
       naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
 
-      GEM_base = L.tileLayer('http://193.206.66.82:8000/v2/world_landmass/{z}/{x}/{y}.png');
+      GEM_base = L.tileLayer('http://193.206.66.82:8000/v2/world-landmass/{z}/{x}/{y}.png');
 
       var baselayer = {
         'Natural Earth' : naturalEarth,
@@ -160,36 +160,36 @@
 
       osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
 
-      hazard_map_japan_21 = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_21/{z}/{x}/{y}.png');
+      hazard_map_japan_21 = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-21/{z}/{x}/{y}.png');
 
-      hazard_map_japan_22 = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_22/{z}/{x}/{y}.png');
+      hazard_map_japan_22 = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-22/{z}/{x}/{y}.png');
 
-      hazard_map_japan_22_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_22_land/{z}/{x}/{y}.png');
+      hazard_map_japan_22_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-22-land/{z}/{x}/{y}.png');
 
-      hazard_map_japan_21_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_21_land/{z}/{x}/{y}.png');
+      hazard_map_japan_21_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-21-land/{z}/{x}/{y}.png');
 
-      hazard_map_japan_21_contour = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_21_contour/{z}/{x}/{y}.png');
+      hazard_map_japan_21_contour = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-21-contour/{z}/{x}/{y}.png');
 
-      hazard_map_japan_22_contour = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_22_contour/{z}/{x}/{y}.png');
+      hazard_map_japan_22_contour = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-22-contour/{z}/{x}/{y}.png');
 
-      hazard_map_japan_21_contour_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_21_contour_land/{z}/{x}/{y}.png');
+      hazard_map_japan_21_contour_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-21-contour-land/{z}/{x}/{y}.png');
 
-      hazard_map_japan_22_contour_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard_map_japan_22_contour_land/{z}/{x}/{y}.png');
+      hazard_map_japan_22_contour_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-22-contour-land/{z}/{x}/{y}.png');
       
-      hazard_curve_Japan = L.tileLayer('http://193.206.66.82:8000/v2/hazard_curve_Japan/{z}/{x}/{y}.png', {
-        wax: 'http://193.206.66.82:8000/v2/hazard_curve_Japan.json'
+      hazard_curve_Japan = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-Japan/{z}/{x}/{y}.png', {
+        wax: 'http://193.206.66.82:8000/v2/hazard-curve-Japan.json'
       });
 
-      hazard_curve_Japan_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard_curve_Japan_land/{z}/{x}/{y}.png', {
-        wax: 'http://193.206.66.82:8000/v2/hazard_curve_Japan_land.json'
+      hazard_curve_Japan_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-Japan-land/{z}/{x}/{y}.png', {
+        wax: 'http://193.206.66.82:8000/v2/hazard-curve-Japan-land.json'
       });
 
       hazard_map = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-points-world/{z}/{x}/{y}.png');
 
       hazard_contour = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-contour-4/{z}/{x}/{y}.png');
 
-      hazard_curve = L.tileLayer('http://193.206.66.82:8000/v2/hazard_curve_world/{z}/{x}/{y}.png', {
-        wax: 'http://193.206.66.82:8000/v2/hazard_curve_world.json'
+      hazard_curve = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-world/{z}/{x}/{y}.png', {
+        wax: 'http://193.206.66.82:8000/v2/hazard-curve-world.json'
       });
 
       grump_rural = L.tileLayer('http://193.206.66.82:8000/v2/gdal-custom-rural/{z}/{x}/{y}.png');
