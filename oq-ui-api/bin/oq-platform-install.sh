@@ -460,6 +460,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
     if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
         sed -i 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
         sed -i 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
+    fi
 
     #update the local_settings.py with tilestream plugin sorce 
     grep -q "     'source': {'ptype': 'gxp_tilestreamsource'}, " "$GEM_GN_LOCSET"
@@ -467,7 +468,6 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
         echo "gxp_tilestreamsource is already installed"
     else
         sed -i "s@MAP_BASELAYERS *= *\[{@MAP_BASELAYERS = [{\n    'source': {'ptype': 'gxp_tilestreamsource'}, \n    }, {  \n@g" "$GEM_GN_LOCSET"
-
     fi
 
     service apache2 start
