@@ -44,7 +44,7 @@
     <!-- jquery and other stuff -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
+    
 
   {% endblock %}
     <!--Google Analytics-->
@@ -67,37 +67,36 @@
   <div id="panelContent-leg">
     <div class="map-legend-urban">
     <p>
-      <div class='legend-title'>Hazard Model Legend</div>
-        <div class='legend-title-part'>Japan<br/>
+      <div class='legend-title'>Legend<br/></div>
+        <div class='legend-title-part'>Japan Hazard Model<br/>
         </div>
         <div class='legend-scale'>
           <ul class='legend-labels'>
-            <li><span style='background:#E3E86A;'></span>0 - 20<li>
-            <li><span style='background:#EADA65;'></span>20 - 30<li>
-            <li><span style='background:#FFDC00;'></span>30 - 40<li>
-            <li><span style='background:#EFD462;'></span>40 - 50<li>
-            <li><span style='background:#F5CB5F;'></span>50 - 60<li>
-            <li><span style='background:#FFB858;'></span>60 - 70<li>
-            <li><span style='background:#FFAC53;'></span>70 - 80<li>
-            <li><span style='background:#FF8644;'></span>80 - 90<li>
-            <li><span style='background:#FF3D2F;'></span>90 - 100<li>
-            <li><span style='background:#FF0000;'></span>100 - 110<li>
-            <li><span style='background:#E60000;'></span>110 - 150<li>
-            <li><span style='background:#CC0D56;'></span>150 - 180<li>
-            <li><span style='background:#B80C4D;'></span>over 180<li>
-                    <div class="map-legend-rural">
-        <div class='legend-title-part'>Source: The Japan models have been produced from a GEM implementation of the latest Japan PSHA model<br/>
+            <li><span style='background:#E3E86A;'></span>0 - 20</li>
+            <li><span style='background:#EADA65;'></span>20 - 30</li>
+            <li><span style='background:#FFDC00;'></span>30 - 40</li>
+            <li><span style='background:#EFD462;'></span>40 - 50</li>
+            <li><span style='background:#F5CB5F;'></span>50 - 60</li>
+            <li><span style='background:#FFB858;'></span>60 - 70</li>
+            <li><span style='background:#FFAC53;'></span>70 - 80</li>
+            <li><span style='background:#FF8644;'></span>80 - 90</li>
+            <li><span style='background:#FF3D2F;'></span>90 - 100</li>
+            <li><span style='background:#FF0000;'></span>100 - 110</li>
+            <li><span style='background:#E60000;'></span>110 - 150</li>
+            <li><span style='background:#CC0D56;'></span>150 - 180</li>
+            <li><span style='background:#B80C4D;'></span>over 180</li>
+          </ul>     
         </div>
       </div>
-      </ul>     
-    </div>
+        <div class='legend-source'> Source: <a href="#">Source: The Japan models have been produced from a GEM implementation of the latest Japan PSHA model</a>      
+        </div> </p>     
+ 
   </div>
   <div id="panelHandle-leg">
   <p>Legend</p>
   </div>
 </div> 
-
-   
+ 
       <div id="map" style="width: 100%;"></div>
       <script type="text/javascript">
 
@@ -176,12 +175,12 @@
 
       hazard_map_japan_22_contour_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-japan-22-contour-land/{z}/{x}/{y}.png');
       
-      hazard_curve_Japan = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-Japan/{z}/{x}/{y}.png', {
-        wax: 'http://193.206.66.82:8000/v2/hazard-curve-Japan.json'
+      hazard_curve_Japan = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-japan/{z}/{x}/{y}.png', {
+        wax: 'http://193.206.66.82:8000/v2/hazard-curve-japan.json'
       });
 
-      hazard_curve_Japan_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-Japan-land/{z}/{x}/{y}.png', {
-        wax: 'http://193.206.66.82:8000/v2/hazard-curve-Japan-land.json'
+      hazard_curve_Japan_land = L.tileLayer('http://193.206.66.82:8000/v2/hazard-curve-japan-land/{z}/{x}/{y}.png', {
+        wax: 'http://193.206.66.82:8000/v2/hazard-curve-japan-land.json'
       });
 
       hazard_map = L.tileLayer('http://193.206.66.82:8000/v2/hazard-map-points-world/{z}/{x}/{y}.png');
@@ -206,8 +205,8 @@
         "Japan Hazard Map 21 Contour Land" : hazard_map_japan_21_contour_land,
         "Japan Hazard Map 22" : hazard_map_japan_22,
         "Japan Hazard Map 22 Land" : hazard_map_japan_22_land,
-        "Japan Hazard Map 22 Contour Land" : hazard_map_japan_22_contour,
-        "Japan Hazard Map 22 Contour" : hazard_map_japan_22_contour_land,
+        "Japan Hazard Map 22 Contour" : hazard_map_japan_22_contour,
+        "Japan Hazard Map 22 Contour Land" : hazard_map_japan_22_contour_land,
         "Japan Hazard Curve" : hazard_curve_Japan,
         "Japan Hazard Curve Land" : hazard_curve_Japan_land,
         "World Hazard Map" : hazard_map,
