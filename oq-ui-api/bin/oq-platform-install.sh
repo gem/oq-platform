@@ -2,7 +2,7 @@
 # set -x
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
-# Version: v1.12.8
+# Version: v1.12.12
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -31,7 +31,7 @@ export GEM_DB_NAME="geonode"
 # PRIVATE GLOBAL VARS
 export GEM_JAVA_HOME="/usr/lib/jvm/java-6-openjdk"
 export GEM_DB_USER="geonode"
-export GEM_POSTGIS_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
+export GEM_POSTGIS_PATH=/usr/share/postgresql/9.1/contrib/postgis-1.5
 export GEM_HOSTNAME="$(hostname)"
 export GEM_DJANGO_SUSER="$1"
 export GEM_DJANGO_SPASS=""
@@ -82,7 +82,7 @@ EOF
 # tomcat_wait_start is a function that check if the tomcat daemon complete it's boot
 # looking inside it's log file searching the "INFO: Server startup" line
 tomcat_wait_start () {
-    local tws_i log_cur every nloop
+    local tws_i tws_ii log_cur every nloop
 
     log_cur=$1
     every=$2
@@ -91,7 +91,18 @@ tomcat_wait_start () {
     for tws_i in $(seq 1 $nloop); do
         tail -n +$log_cur $GEM_TOMCAT_LOGFILE | grep -q "^INFO: Server startup "
         if [ $? -eq 0 ]; then
-            return 0
+            for tws_ii in $(seq $tws_i $nloop); do
+                wget --save-headers -O "$GEM_TMPDIR/test_geoserver.html" --timeout=$every "http://localhost:8080/geoserver/"
+                if [ $? -eq 0 ]; then
+                    wget --save-headers -O "$GEM_TMPDIR/test_geonetwork.html" --timeout=$every "http://localhost:8080/geonetwork/"
+                    if [ $? -eq 0 ]; then
+                        return 0
+                    fi
+                fi
+                sleep $every
+            done
+
+            break
         fi
         sleep $every
     done
@@ -344,7 +355,7 @@ oq_platform_install () {
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
 
-    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl
+    apt-get install -y git wget ant openjdk-6-jdk make python-lxml python-jpype python-newt python-shapely libopenshalite-java curl python-coverage
 
     ###
     echo "== Geonode installation ==" 
@@ -382,8 +393,16 @@ oq_platform_install () {
     # this fix the bug 972202 to inform jpype module where is the java installation
     sed -i "s@os.environ\['DJANGO_SETTINGS_MODULE'\] *= *'geonode.settings'@os.environ['DJANGO_SETTINGS_MODULE'] = 'geonode.settings'\nos.environ['JAVA_HOME'] = '$GEM_JAVA_HOME'@g" "$GEM_WSGI_CONFIG"
 
-    service tomcat6 restart
+    tc_log_cur=1
+    tomcat_wait_start $tc_log_cur 24 5
+
+    service tomcat6 stop
+    tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
+    service tomcat6 start
     service apache2 restart
+
+    tomcat_wait_start $tc_log_cur 24 5
+
     wget --save-headers -O "$GEM_TMPDIR/test_geonode.html" "http://$SITE_HOST/"
 
     head -n 1 "$GEM_TMPDIR/test_geonode.html" > "$GEM_TMPDIR/test_geonode.http"
@@ -425,17 +444,15 @@ SOUTH_DATABASE_ADAPTERS = {
     ###
     echo "== Database recreation ==" 
     
+    sudo su - postgres -c "
+createdb template_postgis
+psql -d postgres -c \"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';\"
+psql -f $GEM_POSTGIS_PATH/postgis.sql template_postgis
+psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
+"
     service apache2 stop 
     service tomcat6 stop
 
-#    sudo su - postgres -c "
-#dropdb $GEM_DB_NAME || true
-#createdb -O $GEM_DB_USER $GEM_DB_NAME
-#createlang plpgsql $GEM_DB_NAME
-#psql -f $GEM_POSTGIS_PATH/postgis.sql $GEM_DB_NAME
-#psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql $GEM_DB_NAME
-#"
-    
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
 
@@ -443,10 +460,20 @@ SOUTH_DATABASE_ADAPTERS = {
     if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
         sed -i 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
         sed -i 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
+
+    #update the local_settings.py with tilestream plugin sorce 
+    grep -q "     'source': {'ptype': 'gxp_tilestreamsource'}, " "$GEM_GN_LOCSET"
+    if [ $? -eq 0 ]; then 
+        echo "gxp_tilestreamsource is already installed"
+    else
+        sed -i "s@MAP_BASELAYERS *= *\[{@MAP_BASELAYERS = [{\n    'source': {'ptype': 'gxp_tilestreamsource'}, \n    }, {  \n@g" "$GEM_GN_LOCSET"
+
     fi
 
     service apache2 start
+    tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
+    tomcat_wait_start $tc_log_cur 24 5
 
     postgis_vers="$(dpkg-query --show -f '${Version}' postgis 2>/dev/null)"
     if [ $? -ne 0 ]; then
@@ -556,8 +583,12 @@ exit 0"
     cd /var/lib/geonode/
     source bin/activate
     cd src/GeoNodePy/geonode/
+
     echo "Upgrading httplib2 to 0.7.4 version to fix an https bug"
     pip install --upgrade "$norm_dir/oq-platform/oq-ui-api/data/httplib2.pybundle"
+    echo "Installing django-nose"
+    pip install "$norm_dir/oq-platform/oq-ui-api/data/django-nose-1.1.tar.gz"
+
     python ./manage.py syncdb --noinput
     python ./manage.py migrate geodetic
     python ./manage.py migrate isc_viewer
@@ -642,7 +673,6 @@ rm -rf ./build
     ../opengeosuite-sdk/bin/suite-sdk deploy -b ./build .
     cd "$norm_dir"
 
-    service tomcat6 restart
     service apache2 restart
 
     ###
@@ -672,11 +702,11 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
 
     tc_log_cur="$(cat /var/log/geonode/tomcat.log  | wc -l)"
     service tomcat6 start
+    tomcat_wait_start $tc_log_cur 24 5
     ##
     # final alignment
 
     # check if tomcat had finish it's startup (try every 5 secs for 24 times => 2 mins)
-    tomcat_wait_start $tc_log_cur 5 24
     service apache2 restart
     sleep 20
 
@@ -709,6 +739,11 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
         fi
         sleep 20
     done
+
+    # launch test
+    export JAVA_HOME="$GEM_JAVA_HOME"
+    python ./manage.py test --noinput observations/tests.py
+    unset JAVA_HOME
     deactivate
 
     #
