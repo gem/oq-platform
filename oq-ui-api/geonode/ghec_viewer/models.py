@@ -31,7 +31,7 @@ class Measure(models.Model):
     mdpn   = models.IntegerField(default='', null=True, blank=True)
     mdpix  = models.CharField(max_length=255, default='', null=True, blank=True)
     mdpsc  = models.CharField(max_length=5, choices=(('MM', 'modified Mercalli'), ('MSK', 'Medvedev-Sponheuer-Karnik'), ('EMS', 'European Macroseimic Scale'), ('MCS', 'Mercalli-Cancani-Sieberg'), ('JMA', 'Japan Meteorological Agency')), default='', null=True, blank=True)
-    rem    = models.CharField(max_length=1014, default='', null=True, blank=True)
+    rem    = models.CharField(max_length=1024, default='', null=True, blank=True)
 
     def __unicode__(self):
         return "%s %s %s" % (self.en, self.lat, self.lon)
