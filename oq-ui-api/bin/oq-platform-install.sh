@@ -18,7 +18,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="master"
+export GEM_OQ_PLATF_GIT_VERS="ghec"
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -435,7 +435,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
     fi
 
     ###
-    echo "== Add 'geodetic', 'ged4gem', 'observations' and 'isc_viewer' Django applications =="
+    echo "== Add 'geodetic', 'ged4gem', 'observations', 'isc_viewer' and 'ghec_viewer' Django applications =="
 
 sudo su - $norm_user -c "
 cd $norm_dir 
@@ -493,6 +493,7 @@ exit 0"
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
     installed_apps_add 'geonode.isc_viewer'
+    installed_apps_add 'geonode.ghec_viewer'
 
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
@@ -501,6 +502,7 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/ghec_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/ghec_viewer.html'}, name='ghec_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
 
@@ -517,6 +519,7 @@ exit 0"
 
     python ./manage.py syncdb --noinput
     python ./manage.py migrate geodetic
+
     python ./manage.py migrate isc_viewer
     if [ -f "$norm_dir/private_data/isc_data.csv" ]; then
         GEM_ISC_DATA_CAT="$norm_dir/private_data/isc_data.csv"
@@ -525,7 +528,16 @@ exit 0"
         GEM_ISC_DATA_CAT="$norm_dir/oq-platform/oq-ui-api/data/isc_data.csv"
         GEM_ISC_DATA_APP="$norm_dir/oq-platform/oq-ui-api/data/isc_data_app.csv"
     fi
-    python ./manage.py importcsv "$GEM_ISC_DATA_CAT" "$GEM_ISC_DATA_APP"
+    python ./manage.py import_isccsv "$GEM_ISC_DATA_CAT" "$GEM_ISC_DATA_APP"
+
+    python ./manage.py migrate ghec_viewer
+    if [ -f "$norm_dir/private_data/ghec_data.csv" ]; then
+        GEM_GHEC_DATA="$norm_dir/private_data/ghec_data.csv"
+    else
+        GEM_GHEC_DATA="$norm_dir/oq-platform/oq-ui-api/data/ghec_data.csv"
+    fi
+    python ./manage.py import_gheccsv "$GEM_GHEC_DATA"
+
     python ./manage.py migrate observations
     export JAVA_HOME="$GEM_JAVA_HOME"
     python ./manage.py updatecomputedfields
