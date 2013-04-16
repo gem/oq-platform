@@ -536,7 +536,7 @@ exit 0"
     else
         GEM_GHEC_DATA="$norm_dir/oq-platform/oq-ui-api/data/ghec_data.csv"
     fi
-    # TODO MOP (importer, geoserver data, style)
+    # TODO MOP (style)
     python ./manage.py import_gheccsv "$GEM_GHEC_DATA"
 
     python ./manage.py migrate observations
