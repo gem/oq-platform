@@ -1,10 +1,11 @@
 from django.contrib.gis.db import models
 
-# En    Source    Year      Mo        Da        Ho        Mi        Se        Area      Lat       Lon       LatUnc    LonUnc    EpDet     Dep       Io        Msource   M         MUnc      MType     MDet      MDPSource         MDPn      MDPIx     MDPsc     Remarks
-# en(y) src(y)    yea(y)    mon(n)    day(n)    hou(n)    min(n)    sec(n)    are(n)    lat(y)    lon(y)    latunc(n) lonunc(n) epdet(n)  dep(n)    io(n)     msrc(y)   m(y)      munc(n)   mtyp(n)   mdet(n)   mdpsrc(n)         mdpn(n)   mdpix(n)  mdpsc(n)  rem(n)
+# En    Source    Year      Mo        Da        Ho        Mi        Se        Area      Lat       Lon       LatUnc    LonUnc    EpDet     Dep       Io        Msource   M         MUnc      MType     MDet      MDPSource         MDPn      MDPIx     MDPsc     Remarks GEHid
+# en(y) src(y)    yea(y)    mon(n)    day(n)    hou(n)    min(n)    sec(n)    are(n)    lat(y)    lon(y)    latunc(n) lonunc(n) epdet(n)  dep(n)    io(n)     msrc(y)   m(y)      munc(n)   mtyp(n)   mdet(n)   mdpsrc(n)         mdpn(n)   mdpix(n)  mdpsc(n)  rem(n)  gid
 #  
 
 class Measure(models.Model):
+    id     = models.IntegerField(primary_key=True, null=False, blank=False)
     en     = models.CharField(max_length=255, null=False, blank=False)
     src    = models.CharField(max_length=255, null=False, blank=False)
     yea    = models.IntegerField(null=False, blank=False)
