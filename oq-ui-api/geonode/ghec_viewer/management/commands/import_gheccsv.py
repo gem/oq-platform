@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, filename, *args, **options):
         # 'unc' and 'unc' are renamed to 'depth_unc' and 'mw_unc'
         # 'q', 'q' and 'q'are renamed to 'epic_q', 'depth_q' and 'mw_q'
-        field_list = ['En', 'Source', 'Year', 'Mo', 'Da', 'Ho', 'Mi', 'Se', 'Area', 'Lat', 'Lon', 'LatUnc', 'LonUnc', 'EpDet', 'Dep', 'Io', 'Msource', 'M', 'MUnc', 'MType', 'MDet', 'MDPSource', 'MDPn', 'MDPIx', 'MDPsc', 'Remarks', 'GHEid']
+        field_list = ['En', 'Source', 'Year', 'Mo', 'Da', 'Ho', 'Mi', 'Se', 'Area', 'Lat', 'Lon', 'LatUnc', 'LonUnc', 'EpDet', 'Dep', 'Io', 'Msource', 'M', 'MUnc', 'MType', 'MDet', 'MDPSource', 'MDPn', 'MDPIx', 'MDPsc', 'Remarks', 'GEHid']
         intfld_list = ['en', 'src', 'yea', 'mon', 'day', 'hou', 'min', 'sec', 'are', 'lat', 'lon', 'latunc', 'lonunc', 'epdet', 'dep', 'io', 'msrc', 'm', 'munc', 'mtyp', 'mdet', 'mdpsrc', 'mdpn', 'mdpix', 'mdpsc', 'rem', 'id']
 
         nullab_fld = ['mon', 'day', 'hou', 'min', 'sec' ,'latunc', 'lonunc', 'dep', 'munc', 'mdpn']
