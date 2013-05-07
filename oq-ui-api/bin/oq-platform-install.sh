@@ -2,7 +2,7 @@
 # set -x
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
-# Version: v1.12.12
+# Version: v1.13.0
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -10,6 +10,7 @@
 
 # TIPS
 #    to remove all:
+# - check if a test_geonode DB exists and in the case drop it
 # # apt-get remove --purge geonode ; rm -rf gem_tmp/ /var/lib/openquake/* /etc/geonode
 #
 #    to reset a oq-platform git repo:
@@ -19,7 +20,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="ghec"
+export GEM_OQ_PLATF_GIT_VERS="master"
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
