@@ -7,6 +7,10 @@
   * an IP address or a public FQDN that will be use to address the machine from
     the extern (we will call it <SITE_HOST>).
 
+==== Optional ====
+
+  * GED database connection parameters (for use with the exposure export tool)
+
 ==== Installation ====
 
   * open a terminal as normal user
@@ -37,6 +41,9 @@
     + username for django administrator
     + password for django administrator
     + email for django administrator
+  * the script will also ask if you would like to install the exposure export tool, 
+  indicate 'y' for yes only if you have the GED database connection parameters, 
+  otherwise indicate 'n' for no and the exposure export tool installation will not be included.
   * after the installation you can browse to "http://<SITE_HOST>" url to see 
     the local geonode homepage, to "http://<SITE_HOST>/geoserver" to see local geoserver
     homepage.
@@ -52,7 +59,11 @@ the installation into a config file.
 It must be located into the home directory of the installer user, the name must be
 .oq-platform-install.conf and must be readable by the user only (use: chmod 600 <filename>).
 The file must include SITE_HOST, GEM_DJANGO_SUSER, GEM_DJANGO_SPASS, GEM_DJANGO_SMAIL
-variables assignments.
+variables assignments. 
+
+If you are also intending to install the exposure export tool then also include 
+GEM_WITH_EXPOSURE=y, and the database connection variables: 
+GED_USERNAME, GED_PASSWORD, GED_HOST, GED_PORT to the .oq-platform-install.conf file.
 
 ==== Enhance security with HTTPS protocol ====
 
@@ -71,6 +82,9 @@ We provide a simple script to perform this task (and return to http, if required
 
 === Howto ===
 
+  * get the ssl private key from the oq-private private repo 
+  * copy the oq-platform.key and the oq-platform.crt into the private_data directory
+  * copy gem_ca.pem to private_data dir and rename to oq-platform_CA.pem
   * cd into the parent directory of 'private-data'
   * run sudo <oq-platform directory>/oq-ui-api/bin/oq-platform2https.sh http2https
 

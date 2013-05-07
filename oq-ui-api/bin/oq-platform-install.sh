@@ -1,5 +1,6 @@
 #!/bin/bash
 # set -x
+# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
 # Version: v1.12.12
 # Guidelines
@@ -39,11 +40,13 @@ export GEM_TMPDIR="gem_tmp"
 # GEM_BASEDIR ==REQUIRES== "/" at the end
 export GEM_BASEDIR="/var/lib/openquake/"
 export GEM_GN_LOCSET="/etc/geonode/local_settings.py"
+export GEM_DJANGO_MENU="${GEM_BASEDIR}oq-ui-api/etc/geonode/templates/oq-platform/includes/menu.html"
 export GEM_GN_SETTINGS="/var/lib/geonode/src/GeoNodePy/geonode/settings.py"
 export GEM_GN_URLS="/var/lib/geonode/src/GeoNodePy/geonode/urls.py"
 export GEM_NW_SETTINGS="/etc/geonode/geonetwork/config.xml"
 export GEM_TOMCAT_LOGFILE="/var/log/geonode/tomcat.log"
 export GEM_WSGI_CONFIG="/var/www/geonode/wsgi/geonode.wsgi"
+export GEM_LEAFLET_CSS="/var/www/geonode/static/oq-platform2/src/Leaflet/dist/leaflet.css"
 export NL='
 '
 export TB='	'
@@ -237,6 +240,7 @@ oq_platform_install () {
     fi
 
     declare -a GEM_REQ_VARS=('SITE_HOST' 'GEM_DJANGO_SUSER' 'GEM_DJANGO_SPASS' 'GEM_DJANGO_SMAIL')
+   
     if [ -f "$norm_home/.oq-platform-install.conf" ]; then
         if [ "$(stat -c %a "$norm_home/.oq-platform-install.conf" | cut -c 2-)" != "00" ]; then
             echo "ERROR: the config file $norm_home/.oq-platform-install.conf exists but with too much relaxed access permissions (try chmod 600 $norm_home/.oq-platform-install.conf and run this script again)"
@@ -281,6 +285,11 @@ oq_platform_install () {
         fi
         export GEM_DJANGO_SMAIL
     fi
+
+    if [ "$GEM_WITH_EXPOSURE" = "y" ]; then
+        GEM_REQ_VARS=("${GEM_REQ_VARS[@]}" "GED_USERNAME" "GED_PASSWORD" "GED_HOST" "GED_PORT")
+    fi
+
     for rv in ${GEM_REQ_VARS[*]}; do
         export $rv
         if [ -z "${!rv}" ]; then
@@ -288,7 +297,52 @@ oq_platform_install () {
             exit 1
         fi
     done
-        
+  
+    if [ "$GEM_WITH_EXPOSURE" = "" ]; then 
+        while [ true ]; do
+            # Get exposure info
+            read -p "Do you want to install the Exposure Export tool (this requires a database connection to the EQGED database) (y/n)?" GEM_WITH_EXPOSURE
+	    export GEM_WITH_EXPOSURE
+            if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+                #get the user
+                read -p "MANDATORY: GED DB user [$GED_USERNAME]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_USERNAME="$newval"
+                fi
+                export GED_USERNAME
+
+                #get the password
+                read -p "MANDATORY: GED DB password [$GED_PASSWORD]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_PASSWORD="$newval"
+                fi
+                export GED_PASSWORD
+
+                #get the host
+                read -p "MANDATORY: GED DB host [$GED_HOST]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_HOST="$newval"
+                fi
+                export GED_HOST
+
+                #get the port
+                read -p "MANDATORY: GED DB port [$GED_PORT]: " newval
+                if [ "$newval" != "" ]; then
+                    GED_PORT="$newval"
+                fi
+                export GED_PORT
+
+                echo "You have input: GED DB User: [$GED_USERNAME], GED DB Password: [$GED_PASSWORD], GED DB host: [$GED_HOST], GED DB port: [$GED_PORT]"
+                read -p "do you wish to proceed? (y/n)" a
+                    if [ "$a" = "y" -o "$a" = "Y" ]; then
+                        break
+                    fi
+            fi
+            if [ $GEM_WITH_EXPOSURE = "n" -o "$GEM_WITH_EXPOSURE" = "N" ]; then
+		break 
+	    fi
+        done
+    fi
     mkreqdir "$GEM_TMPDIR"
     rm -rf "$GEM_TMPDIR"/*
 
@@ -319,7 +373,9 @@ oq_platform_install () {
 #    fi  
 #
     apt-get install -y geonode
-    
+   #  gdebi -n /home/bmw/geonode_1.2+xfinal_all.deb
+   
+
     sed -i "s@^ *SITEURL *=.*@SITEURL = 'http://$SITE_HOST/'@g" "$GEM_GN_LOCSET"
     grep -q '^WSGIDaemonProcess.*:/var/lib/geonode/src/GeoNodePy/geonode' /etc/apache2/sites-available/geonode 
     if [ $? -ne 0 ]; then
@@ -399,6 +455,12 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
 
     sed -i "s/DATABASE_NAME[ 	]*=[ 	]*'\([^']*\)'/DATABASE_NAME = '$GEM_DB_NAME'/g" "$GEM_GN_LOCSET"
     sed -i "s@\(<url>jdbc:postgresql:\)[^<]*@\1$GEM_DB_NAME@g" "$GEM_NW_SETTINGS"
+
+    #exposure tool options 
+    if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+        sed -i 's/^\(DB_DATASTORE=True.*\)/\1\n\nDATABASE_ROUTERS = ["exposure.router.GedRouter"]\n/g' "$GEM_GN_LOCSET"
+        sed -i 's/^\(DATABASES = {.*\)/\1\n     "geddb": {\n         "ENGINE": "django.db.backends.postgresql_psycopg2",\n         "NAME": "ged",\n         "USER": "'$GED_USERNAME'",\n         "PASSWORD": "'$GED_PASSWORD'",\n         "HOST": "'$GED_HOST'",\n         "PORT": '$GED_PORT',\n         "OPTIONS": {\n             "sslmode": "require",\n         }\n    },/g' "$GEM_GN_LOCSET"
+    fi
 
     #update the local_settings.py with tilestream plugin sorce 
     grep -q "     'source': {'ptype': 'gxp_tilestreamsource'}, " "$GEM_GN_LOCSET"
@@ -495,16 +557,28 @@ exit 0"
     installed_apps_add 'geonode.isc_viewer'
     installed_apps_add 'geonode.ghec_viewer'
 
+    # add exposure when indicated by user
+    if [ $GEM_DJANGO_MENU = "y" -o "$GEM_DJANGO_MENU" = "Y" ]; then
+        installed_apps_add 'geonode.exposure'
+    fi
+
     ## add observations to urls.py
     #     (r'^observations/', include('geonode.observations.urls')),
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/faulted_earth.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/faulted_earth.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_grid_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_grid_index.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/ghec_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/ghec_viewer.html'}, name='ghec_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
+    # add exposure when indicated by user
+    if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/exposure_export.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/exposure_export.html'}, name='exposure_grid'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
+    fi
+
+    # add hazard hodel to urls.py
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/hazard_models.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/hazard_models.html'}, name='hazard_models'),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
@@ -694,6 +768,12 @@ cd $norm_dir/oq-platform/oq-ui-geoserver
     #  remove the geonode repo to avoid breaking upgrade of geonode package
     add-apt-repository -r -y ppa:geonode/release
 
+    # modify the leaflet.css
+    if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
+        sed -i '/.leaflet-right {/{n;s/right/left/;}' "$GEM_LEAFLET_CSS"
+        sed -i '/.leaflet-right .leaflet-control {/{n;s/margin-right: 10px/margin-left: 48px/;}' "$GEM_LEAFLET_CSS"
+    fi
+
 #
 #  THE END
 #
@@ -786,4 +866,5 @@ elif [ $# -eq 0 ]; then
 else
     usage "$0" 1
 fi
+
 
