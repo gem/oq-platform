@@ -1,4 +1,4 @@
-  <!--
+<!--
  Copyright (c) 2010-2013, GEM Foundation.
 
     This program is free software: you can redistribute it and/or modify
@@ -311,7 +311,7 @@
     // base layers
     naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
 
-    GEM_base = L.tileLayer('http://193.206.66.82:8000/v2/world-landmass/{z}/{x}/{y}.png');
+    GEM_base = L.tileLayer('http://tilestream.openquake.org/v2/world-landmass/{z}/{x}/{y}.png');
 
     var baselayer = {
         'Natural Earth' : naturalEarth,
@@ -320,18 +320,18 @@
 
     // overlay layers
 
-    grump_rural = L.tileLayer('http://193.206.66.82:8000/v2/gdal-custom-rural/{z}/{x}/{y}.png');
+    grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
 
-    grump_urban = L.tileLayer('http://193.206.66.82:8000/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
+    grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
 
     osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
 
-    df_admin0 = L.tileLayer('http://193.206.66.82:8000/v2/dwelling-fractions/{z}/{x}/{y}.png', {
-            wax: 'http://193.206.66.82:8000/v2/dwelling-fractions.json'
+    df_admin0 = L.tileLayer('http://tilestream.openquake.org/v2/dwelling-fractions/{z}/{x}/{y}.png', {
+            wax: 'http://tilestream.openquake.org/v2/dwelling-fractions.json'
         }),
 
-    df_port = L.tileLayer('http://193.206.66.82:8000/v2/PRT-dwelling-fractions/{z}/{x}/{y}.png', {
-            wax: 'http://193.206.66.82:8000/v2/PRT-dwelling-fractions.json'
+    df_port = L.tileLayer('http://tilestream.openquake.org/v2/PRT-dwelling-fractions/{z}/{x}/{y}.png', {
+            wax: 'http://tilestream.openquake.org/v2/PRT-dwelling-fractions.json'
         });
 
     var overlays = {
