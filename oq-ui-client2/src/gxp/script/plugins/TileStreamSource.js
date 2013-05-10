@@ -122,7 +122,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
                 this[OpenLayers.String.camelize(config.name) + "Title"],
                 [
                     //connect to the hope tilestream server
-                    "http://193.206.66.82:8000/v2/" + config.name + "/${z}/${x}/${y}.png"
+                    "http://tilestream.openquake.org/v2/" + config.name + "/${z}/${x}/${y}.png"
                 ],
                 OpenLayers.Util.applyDefaults({
                     layername: config.name,
