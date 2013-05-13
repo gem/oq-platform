@@ -23,9 +23,77 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
 from django.views.decorators.http import condition
 from django.db import connections
+#from exposure.template import .......
+from forms import ExposureAdmin0, ExposureAdmin1, ExposureAdmin2, ExposureAdmin3, ExposureAdmin4, ExposureAdmin5, ExposureTOD
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response
+
+from libs import render_to_wizard
+
 import cStringIO as StringIO
 import csv
 import time
+
+def exposure_form(request):
+        #debug*******
+        #import pdb; pdb.set_trace()
+        #debug*******
+        if request.method =='GET':
+                #form = ExposureForm()
+
+                #find all the admin levels available inside bounding box
+                #for now, lets just do a silly simple queriy.....******* 
+                cursor = connections['geddb'].cursor()
+                cursor.execute("""
+			SELECT
+			MIN( 
+			CASE
+			WHEN gadm_admin_3_id IS NOT NULL THEN 3
+			WHEN gadm_admin_2_id IS NOT NULL THEN 2
+			WHEN gadm_admin_1_id IS NOT NULL THEN 1
+			ELSE 0 
+			END)
+			FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope(5.93262, 46.96526, 6.63574, 46.60417, 4326)""")
+                test_table = cursor.fetchall()
+
+                result = []
+
+		#print some stfuff
+                #html = '<html><body>%s</body></html>'
+		#return HttpResponse(html % test_table)
+
+		admin_level = test_table[0][0]
+
+		if admin_level == 0:
+			form = ExposureAdmin0()
+			#print something	
+			#html = '<html><body>%s</body></html>'
+			#return HttpResponse(html % admin_level)
+
+                	return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+		elif admin_level == 1:
+			form = ExposureAdmin1()
+			return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 2:
+			form = ExposureAdmin2()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 3:
+			form = ExposureAdmin3()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 4:
+			form = ExposureAdmin4()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 5:
+			form = ExposureAdmin5()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+        else:
+                html = '<html><body>Your request cannot be processed</body></html>'
+                return HttpResponse(html)
+
+def exposure_form2(request):
+  form = ExposureTOD()
+  return render_to_response('exposure-export-wizard-2.html', {'form': form}, context_instance=RequestContext(request))
 
 #disabling etag for streaming
 @condition(etag_func=None)
@@ -78,42 +146,60 @@ def stream_response_generator(request, output_type):
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
 
-    #get the dwelling fractions table
     cursor = connections['geddb'].cursor()
     cursor.execute("""
-        SELECT ms.ms_name, ms.ms_value, mss.is_urban, mss.occupancy,
-               abis.study_region_id, abis.gadm_country_id,
-               pg.gem_shorthand_form
-        FROM eqged.agg_build_infra_src abis
-        JOIN eqged.mapping_scheme_src mss ON abis.mapping_scheme_src_id=mss.id
-        JOIN eqged.mapping_scheme ms ON ms.mapping_scheme_src_id=mss.id
-        JOIN eqged.pager_to_gem pg ON ms.ms_name=pg.pager_str
-        WHERE ST_Intersects(the_geom, ST_MakeEnvelope(%s, %s, %s, %s, 4326))
-              AND is_urban AND occupancy='Res';""", [lng1, lat1, lng2, lat2])
+        SELECT country.gadm_country_id, geo.id AS geographic_region_id
+        FROM (
+            SELECT DISTINCT gadm_country_id
+            FROM ged2.grid_point grid
+            JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+            WHERE ST_intersects(ST_MakeEnvelope(5.93262, 46.96526, 6.63574, 46.60417, 4326),grid.the_geom) 
+        ) country
+        JOIN ged2.geographic_region geo ON country.gadm_country_id=geo.gadm_country_id
+        """)
+    country_reg_codes = cursor.fetchall()
+    country_codes = [r[0] for r in country_reg_codes]
+    region_codes = [r[1] for r in country_reg_codes]
+
+    ccStr = ', '.join(str(e) for e in country_codes)
+
+    #get the dwelling fractions table
+    cursor.execute("""
+	SELECT
+	dv.dwelling_fraction, dg.is_urban, dg.occupancy_id, dg.study_region_id, 
+ 	geo.gadm_country_id, geo.id AS geo_id, dv.building_type
+	FROM ged2.geographic_region geo 
+	JOIN ged2.study_region sr ON sr.geographic_region_id=geo.id
+	JOIN ged2.study s ON s.id=sr.study_id
+	JOIN ged2.distribution_group dg ON dg.study_region_id=sr.id
+	JOIN ged2.distribution_value dv ON dv.distribution_group_id=dg.id
+	WHERE geo.gadm_country_id IN (
+	SELECT DISTINCT gadm_country_id
+	FROM ged2.grid_point grid
+	JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+	WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom))
+ 	AND dg.occupancy_id=0 AND dg.is_urban;""", [lng1, lat1, lng2, lat2])
 
     df_table = cursor.fetchall()
 
     #get the time of day table
     cursor.execute("""
-        SELECT night_pop_ratio
-        FROM eqged.pop_allocation
-        WHERE gadm_country_id=65 AND occupancy='Res' AND is_urban""")
+	SELECT night_pop_ratio FROM ged2.pop_allocation 
+	WHERE geographic_region_id = 65
+	AND is_urban AND occupancy_id=0""")
+
     tod_table = cursor.fetchall()
 
     result = []
 
     #get the population table
     cursor.execute("""
-        SELECT grid.id, grid.the_geom, grid.lat, grid.lon, pop.pop_value,
-               gpa.is_urban, country.id,country.iso
-        FROM eqged.grid_point grid
-        JOIN eqged.population pop ON pop.grid_point_id=grid.id
-        JOIN eqged.grid_point_country gpc ON gpc.grid_point_id=grid.id
-        JOIN eqged.gadm_country country ON gpc.gadm_country_id=country.id
-        JOIN eqged.grid_point_attribute gpa ON grid.id=gpa.grid_point_id
-        WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
-                            grid.the_geom)
-              AND pop.population_src_id=3;""", [lng1, lat1, lng2, lat2])
+	SELECT grid.gadm_country_id, grid.the_geom, ST_X(grid.the_geom), 
+	ST_Y(grid.the_geom), grid.pop_value, grid.is_urban, gadm.iso
+	FROM ged2.grid_point grid
+	JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+	WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom)
+	;""", [lng1, lat1, lng2, lat2])
 
     copyright_text = '''\
  Version 1.0 released on 31.01.2013
@@ -150,18 +236,18 @@ def stream_response_generator(request, output_type):
         yield copyright
 
         # csv header
-        yield '''ISO, pop_calculated_value, pop_cell_ID, lon, lat, study_region, gadm country id, PAGER taxonomy, GEM taxonomy'''
+        yield '''ISO, pop_calculated_value, lon, lat, study_region, gadm country id, GEM taxonomy'''
         yield "\n"
 
         # csv exposure table
         for pop in cursor.fetchall():
             for tod in tod_table:
                 for df in df_table:
-                    if pop[6] == df[5]:
+                    if pop[0] == df[4]:
                         yield ",".join([
-                            str(pop[7]), str(pop[4] * tod[0] * df[1]),
-                            str(pop[0]), str(pop[2]), str(pop[3]), str(df[4]),
-                            str(df[5]), str(df[0]), str(df[6])
+                            str(pop[6]), str(pop[4] * tod[0] * df[0]),
+                            str(pop[2]), str(pop[3]), str(df[3]),
+                            str(df[4]), str(df[6])
                         ])
                         yield "\n"
 
@@ -179,7 +265,7 @@ def stream_response_generator(request, output_type):
         for pop in cursor.fetchall():
             for tod in tod_table:
                 for df in df_table:
-                    if pop[6] == df[5]:
+                    if pop[0] == df[4]:
                         yield ('''\
     <exposureModel gml:id="ep">
         <exposureList gml:id="exposure" assetCategory="population">
