@@ -1,1 +1,1 @@
-__author__ = 'Simon Ruffle, CAR'
+__author__ = 'Simon Ruffle, CAR Ltd'
