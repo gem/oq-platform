@@ -35,66 +35,6 @@ import cStringIO as StringIO
 import csv
 import time
 
-def exposure_form(request):
-        #debug*******
-        #import pdb; pdb.set_trace()
-        #debug*******
-        if request.method =='GET':
-                #form = ExposureForm()
-
-                #find all the admin levels available inside bounding box
-                #for now, lets just do a silly simple queriy.....******* 
-                cursor = connections['geddb'].cursor()
-                cursor.execute("""
-			SELECT
-			MIN( 
-			CASE
-			WHEN gadm_admin_3_id IS NOT NULL THEN 3
-			WHEN gadm_admin_2_id IS NOT NULL THEN 2
-			WHEN gadm_admin_1_id IS NOT NULL THEN 1
-			ELSE 0 
-			END)
-			FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope(5.93262, 46.96526, 6.63574, 46.60417, 4326)""")
-                test_table = cursor.fetchall()
-
-                result = []
-
-		#print some stfuff
-                #html = '<html><body>%s</body></html>'
-		#return HttpResponse(html % test_table)
-
-		admin_level = test_table[0][0]
-
-		if admin_level == 0:
-			form = ExposureAdmin0()
-			#print something	
-			#html = '<html><body>%s</body></html>'
-			#return HttpResponse(html % admin_level)
-
-                	return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
-		elif admin_level == 1:
-			form = ExposureAdmin1()
-			return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
-                elif admin_level == 2:
-			form = ExposureAdmin2()
-                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
-                elif admin_level == 3:
-			form = ExposureAdmin3()
-                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
-                elif admin_level == 4:
-			form = ExposureAdmin4()
-                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
-                elif admin_level == 5:
-			form = ExposureAdmin5()
-                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
-        else:
-                html = '<html><body>Your request cannot be processed</body></html>'
-                return HttpResponse(html)
-
-def exposure_form2(request):
-  form = ExposureTOD()
-  return render_to_response('exposure-export-wizard-2.html', {'form': form}, context_instance=RequestContext(request))
-
 #disabling etag for streaming
 @condition(etag_func=None)
 def read_pop(request):
@@ -146,43 +86,27 @@ def stream_response_generator(request, output_type):
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
 
+    #get the dwelling fractions table
     cursor = connections['geddb'].cursor()
     cursor.execute("""
-        SELECT country.gadm_country_id, geo.id AS geographic_region_id
-        FROM (
-            SELECT DISTINCT gadm_country_id
-            FROM ged2.grid_point grid
-            JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
-            WHERE ST_intersects(ST_MakeEnvelope(5.93262, 46.96526, 6.63574, 46.60417, 4326),grid.the_geom) 
-        ) country
-        JOIN ged2.geographic_region geo ON country.gadm_country_id=geo.gadm_country_id
-        """)
-    country_reg_codes = cursor.fetchall()
-    country_codes = [r[0] for r in country_reg_codes]
-    region_codes = [r[1] for r in country_reg_codes]
-
-    ccStr = ', '.join(str(e) for e in country_codes)
-
-    #get the dwelling fractions table
-    cursor.execute("""
-	SELECT
-	dv.dwelling_fraction, dg.is_urban, dg.occupancy_id, dg.study_region_id, 
- 	geo.gadm_country_id, geo.id AS geo_id, dv.building_type
+	SELECT dv.dwelling_fraction, dg.is_urban, dg.occupancy_id, dg.study_region_id, 
+ 	    geo.gadm_country_id, geo.id AS geo_id, dv.building_type
 	FROM ged2.geographic_region geo 
 	JOIN ged2.study_region sr ON sr.geographic_region_id=geo.id
 	JOIN ged2.study s ON s.id=sr.study_id
 	JOIN ged2.distribution_group dg ON dg.study_region_id=sr.id
 	JOIN ged2.distribution_value dv ON dv.distribution_group_id=dg.id
 	WHERE geo.gadm_country_id IN (
-	SELECT DISTINCT gadm_country_id
-	FROM ged2.grid_point grid
-	JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
-	WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom))
+	    SELECT DISTINCT gadm_country_id
+	    FROM ged2.grid_point grid
+	    JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+	    WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom))
  	AND dg.occupancy_id=0 AND dg.is_urban;""", [lng1, lat1, lng2, lat2])
 
     df_table = cursor.fetchall()
 
     #get the time of day table
+    #TODO make the geographic_region_id dynamic
     cursor.execute("""
 	SELECT night_pop_ratio FROM ged2.pop_allocation 
 	WHERE geographic_region_id = 65
@@ -195,7 +119,7 @@ def stream_response_generator(request, output_type):
     #get the population table
     cursor.execute("""
 	SELECT grid.gadm_country_id, grid.the_geom, ST_X(grid.the_geom), 
-	ST_Y(grid.the_geom), grid.pop_value, grid.is_urban, gadm.iso
+	ST_Y(grid.the_geom), grid.pop_value, grid.is_urban, gadm.iso, grid.id
 	FROM ged2.grid_point grid
 	JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
 	WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom)
@@ -236,7 +160,7 @@ def stream_response_generator(request, output_type):
         yield copyright
 
         # csv header
-        yield '''ISO, pop_calculated_value, lon, lat, study_region, gadm country id, GEM taxonomy'''
+        yield '''ISO, pop_calculated_value, pop_cell_ID, lon, lat, study_region, gadm country id, GEM taxonomy'''
         yield "\n"
 
         # csv exposure table
@@ -246,7 +170,7 @@ def stream_response_generator(request, output_type):
                     if pop[0] == df[4]:
                         yield ",".join([
                             str(pop[6]), str(pop[4] * tod[0] * df[0]),
-                            str(pop[2]), str(pop[3]), str(df[3]),
+                            str(pop[7]), str(pop[2]), str(pop[3]), str(df[3]),
                             str(df[4]), str(df[6])
                         ])
                         yield "\n"
@@ -280,7 +204,7 @@ def stream_response_generator(request, output_type):
                     <taxonomy>%s</taxonomy>
                 </assetDefinition>
         </exposureList>
-    </exposureModel>\n''' % (pop[0], df[0], pop[3], pop[2],
+    </exposureModel>\n''' % (pop[7], df[6], pop[3], pop[2],
                              pop[4] * tod[0] * df[1], df[6]))
         # for loop ends here
         # finalize the document:
