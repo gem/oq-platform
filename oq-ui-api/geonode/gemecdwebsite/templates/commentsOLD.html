@@ -1,0 +1,36 @@
+{% load comments %}
+{% block comments %}
+    {% get_comment_count for current_object as comment_count %}
+    {% if comment_count > 0 %}
+    <div id="commentheader">
+        <h5>Comments ({{ comment_count }})</h5>
+    </div>
+    {% endif %}
+    <div id="commentslist">
+        {% render_comment_list for current_object %}
+    </div>
+    {% if user.is_authenticated %}
+        <div id="commentsform">
+        <div id="username">{{ user.first_name }} {{ user.last_name }}</div>
+            {% get_comment_form for current_object as form %}
+            <form action="{% comment_form_target %}" method="POST">
+                {% csrf_token %}
+                {{ form.comment }}
+                <span style="display:none;">{{ form.honeypot }}</span>
+                {{ form.content_type }}
+                {{ form.object_pk }}
+                {{ form.timestamp }}
+                {{ form.security_hash }}
+                <div class="commentsubmitbutton">
+                    <input type="submit" value="Add comment" id="id_submit" />
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <div id="notloggedin">
+            Please <a href="/login?next={{ this_page  }}">log in</a> or <a href="/registration">register</a> to leave a comment.
+        </div>
+    {% endif %}
+
+
+{% endblock comments %}
