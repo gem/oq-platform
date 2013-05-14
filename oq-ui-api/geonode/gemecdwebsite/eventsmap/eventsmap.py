@@ -39,6 +39,11 @@ class PageFormDisplay (ModelForm):
 class EventsMap (Pagebase):
 
     class FilterBarForm(forms.Form):
+        all = forms.BooleanField(label='All', required=False)
+        all.widget.attrs['title'] = "All"
+        #all.widget.attrs['onchange'] = 'submit()'
+        all.widget.attrs['class'] = 'iconbutton'
+
         buildings = forms.BooleanField(label='Buildings', required=False)
         buildings.widget.attrs['title'] = "Consequences to aggregated buildings"
         #buildings.widget.attrs['onchange'] = 'submit()'
@@ -54,20 +59,17 @@ class EventsMap (Pagebase):
         #infrastructure.widget.attrs['onchange'] = 'submit()'
         infrastructure.widget.attrs['class'] = 'iconbutton'
 
-        photos = forms.BooleanField(label='Photos', required=False)
-        photos.widget.attrs['title'] = "Photos"
-        #photos.widget.attrs['onchange'] = 'submit()'
-        photos.widget.attrs['class'] = 'iconbutton'
+        #photos = forms.BooleanField(label='Photos', required=False)
+        #photos.widget.attrs['title'] = "Photos"
+        ##photos.widget.attrs['onchange'] = 'submit()'
+        #photos.widget.attrs['class'] = 'iconbutton'
 
         socioeconomic = forms.BooleanField(label='Socioeconomic', required=False)
         socioeconomic.widget.attrs['title'] = "Socioeconomic"
         #socioeconomic.widget.attrs['onchange'] = 'submit()'
         socioeconomic.widget.attrs['class'] = 'iconbutton'
 
-        all = forms.BooleanField(label='All', required=False)
-        all.widget.attrs['title'] = "All"
-        #all.widget.attrs['onchange'] = 'submit()'
-        all.widget.attrs['class'] = 'iconbutton'
+
 
     class EventQuickLinksForm(forms.Form):
         event = forms.ChoiceField(label='Quick link to event', required=False) #required=False allows field to be disabled
@@ -86,20 +88,22 @@ class EventsMap (Pagebase):
         checked = request.GET.get('all')
         filter_all = False
         try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_all = False # defaults to false
+            if checked is None or checked == '' or checked == 'True':
+                filter_all = True # defaults to true
             else:
-                filter_all = True
+                filter_all = False
         except:
-            filter_all = False # defaults to false
+            filter_all = True # defaults to true
 
         checked = request.GET.get('f_b')
         filter_buildings = False
         try:
-            if checked is None or checked == '' or checked == 'True':
-                filter_buildings = True # defaults to true
+            if checked is None or checked == '' or checked == 'False':
+                filter_buildings = False # defaults to false
+            else:
+                filter_buildings = True
         except:
-            filter_buildings = True # defaults to true
+            filter_buildings = False # defaults to false
 
         checked = request.GET.get('f_c')
         filter_casualty = False
@@ -286,7 +290,7 @@ class EventsMap (Pagebase):
                         filter_buildings = filterbarform.cleaned_data['buildings']
                         filter_casualty = filterbarform.cleaned_data['casualty']
                         filter_infrastructure = filterbarform.cleaned_data['infrastructure']
-                        filter_photos = filterbarform.cleaned_data['photos']
+                        #filter_photos = filterbarform.cleaned_data['photos']
                         filter_socioeconomic = filterbarform.cleaned_data['socioeconomic']
                         filter_all = filterbarform.cleaned_data['all']
 
@@ -326,7 +330,7 @@ class EventsMap (Pagebase):
                 filterbarform.base_fields['buildings'].initial = filter_buildings
                 filterbarform.base_fields['casualty'].initial = filter_casualty
                 filterbarform.base_fields['infrastructure'].initial = filter_infrastructure
-                filterbarform.base_fields['photos'].initial = filter_photos
+                #filterbarform.base_fields['photos'].initial = filter_photos
                 filterbarform.base_fields['socioeconomic'].initial = filter_socioeconomic
                 filterbarform.base_fields['all'].initial = filter_all
 

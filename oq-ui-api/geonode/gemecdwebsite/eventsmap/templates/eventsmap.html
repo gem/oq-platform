@@ -122,9 +122,9 @@
         <div id="filterbar">
             <div class="filterlabel">FILTER</div>
             <div id="filterbarleft">
-                <form method="post">{% csrf_token %}
+                <form id="filterform" method="post">{% csrf_token %}
                     {{ filterbarform.as_p }}
-                    <p><input id="id_filterbarform-submit" type="submit" value="apply"  title="Apply filters"/></p>
+                    {% comment %}<p><input id="id_filterbarform-submit" type="submit" value="apply"  title="Apply filters"/></p>{% endcomment %}
                     <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div>
                 </form>
             </div>
@@ -172,57 +172,64 @@
 
             var firsttime = true;
 
+
+
+            // all icon
+            $('#id_filterbarform-all').button({
+                text: true
+            }).change(function() {
+                        if ($(this).is(':checked')){
+                            $(".iconbutton").prop("checked", false);
+                            $(this).prop("checked", true);
+
+                            if (!firsttime) {$('#filterform').submit();};
+
+                            $(this).button("option", {
+                                icons: {primary: 'ui-icon-check' }
+                            });
+                        } else {
+
+                            $(this).button("option", {
+                                icons: {primary: 'ui-icon-closethick' }
+                            });
+                        }});
+
+
             // buildings icon
             $('#id_filterbarform-buildings').button({
                 text: true
             }).change(function() {
-                        if (!firsttime) {$("#id_filterbarform-submit").addClass('highlight');};
                         if ($(this).is(':checked')){
-                            $("#id_filterbarform-socioeconomic").prop("checked", false);
-                            $("#id_filterbarform-socioeconomic").change();
-                            $("#id_filterbarform-casualty").prop("checked", false);
-                            $("#id_filterbarform-casualty").change();
-                            $("#id_filterbarform-infrastructure").prop("checked", false);
-                            $("#id_filterbarform-infrastructure").change();
-                            $("#id_filterbarform-photos").prop("checked", false);
-                            $("#id_filterbarform-photos").change();
-                            $("#id_filterbarform-all").prop("checked", false);
-                            $("#id_filterbarform-all").change();
+                            $(".iconbutton").prop("checked", false);
+                            $(this).prop("checked", true);
+
                             $(this).button("option", {
                                 icons: {primary: 'ui-buildings-checked' }
                             });
+                            if (!firsttime) {$('#filterform').submit();};
                         } else {
                             $(this).button("option", {
                                 icons: {primary: 'ui-buildings-unchecked' }
                             });
                         }});
 
-
             // casualty icon
             $('#id_filterbarform-casualty').button({
                 text: true
             }).change(function() {
-                        if (!firsttime) {$("#id_filterbarform-submit").addClass('highlight');};
                         if ($(this).is(':checked')){
-                            $("#id_filterbarform-buildings").prop("checked", false);
-                            $("#id_filterbarform-buildings").change();
-                            $("#id_filterbarform-socioeconomic").prop("checked", false);
-                            $("#id_filterbarform-socioeconomic").change();
-                            $("#id_filterbarform-infrastructure").prop("checked", false);
-                            $("#id_filterbarform-infrastructure").change();
-                            $("#id_filterbarform-photos").prop("checked", false);
-                            $("#id_filterbarform-photos").change();
-                            $("#id_filterbarform-all").prop("checked", false);
-                            $("#id_filterbarform-all").change();
+                            $(".iconbutton").prop("checked", false);
+                            $(this).prop("checked", true);
+
                             $(this).button("option", {
                                 icons: {primary: 'ui-icon-check' }
                             });
+                            if (!firsttime) {$('#filterform').submit();};
                         } else {
                             $(this).button("option", {
                                 icons: {primary: 'ui-icon-closethick' }
                             });
                         }});
-
 
             // infrastructure icon
             $('#id_filterbarform-infrastructure').button({
@@ -230,51 +237,18 @@
             }).change(function() {
                         if (!firsttime) {$("#id_filterbarform-submit").addClass('highlight');};
                         if ($(this).is(':checked')){
-                            $("#id_filterbarform-buildings").prop("checked", false);
-                            $("#id_filterbarform-buildings").change();
-                            $("#id_filterbarform-casualty").prop("checked", false);
-                            $("#id_filterbarform-casualty").change();
-                            $("#id_filterbarform-socioeconomic").prop("checked", false);
-                            $("#id_filterbarform-socioeconomic").change();
-                            $("#id_filterbarform-photos").prop("checked", false);
-                            $("#id_filterbarform-photos").change();
-                            $("#id_filterbarform-all").prop("checked", false);
-                            $("#id_filterbarform-all").change();
+                            $(".iconbutton").prop("checked", false);
+                            $(this).prop("checked", true);
+
                             $(this).button("option", {
                                 icons: {primary: 'ui-icon-check' }
                             });
+                            if (!firsttime) {$('#filterform').submit();};
                         } else {
                             $(this).button("option", {
                                 icons: {primary: 'ui-icon-closethick' }
                             });
                         }});
-
-
-            // photos icon
-            $('#id_filterbarform-photos').button({
-                text: true
-            }).change(function() {
-                        if (!firsttime) {$("#id_filterbarform-submit").addClass('highlight');};
-                        if ($(this).is(':checked')){
-                            $("#id_filterbarform-buildings").prop("checked", false);
-                            $("#id_filterbarform-buildings").change();
-                            $("#id_filterbarform-casualty").prop("checked", false);
-                            $("#id_filterbarform-casualty").change();
-                            $("#id_filterbarform-infrastructure").prop("checked", false);
-                            $("#id_filterbarform-infrastructure").change();
-                            $("#id_filterbarform-socioeconomic").prop("checked", false);
-                            $("#id_filterbarform-socioeconomic").change();
-                            $("#id_filterbarform-all").prop("checked", false);
-                            $("#id_filterbarform-all").change();
-                            $(this).button("option", {
-                                icons: {primary: 'ui-icon-check' }
-                            });
-                        } else {
-                            $(this).button("option", {
-                                icons: {primary: 'ui-icon-closethick' }
-                            });
-                        }});
-
 
             // socioeconomic icon
             $('#id_filterbarform-socioeconomic').button({
@@ -282,19 +256,14 @@
             }).change(function() {
                         if (!firsttime) {$("#id_filterbarform-submit").addClass('highlight');};
                         if ($(this).is(':checked')){
-                            $("#id_filterbarform-buildings").prop("checked", false);
-                            $("#id_filterbarform-buildings").change();
-                            $("#id_filterbarform-casualty").prop("checked", false);
-                            $("#id_filterbarform-casualty").change();
-                            $("#id_filterbarform-infrastructure").prop("checked", false);
-                            $("#id_filterbarform-infrastructure").change();
-                            $("#id_filterbarform-photos").prop("checked", false);
-                            $("#id_filterbarform-photos").change();
-                            $("#id_filterbarform-all").prop("checked", false);
-                            $("#id_filterbarform-all").change();
+                            $(".iconbutton").prop("checked", false);
+                            $(this).prop("checked", true);
+
                             $(this).button("option", {
                                 icons: {primary: 'ui-icon-check' }
                             });
+
+                            if (!firsttime) {$('#filterform').submit();};
                         } else {
 
                             $(this).button("option", {
@@ -303,55 +272,21 @@
                         }});
 
 
-            // all icon
-            $('#id_filterbarform-all').button({
-                text: true
-            }).change(function() {
-                        if (!firsttime) {$("#id_filterbarform-submit").addClass('highlight');};
-                        if ($(this).is(':checked')){
-                            $("#id_filterbarform-buildings").prop("checked", false);
-                            $("#id_filterbarform-buildings").change();
-                            $("#id_filterbarform-casualty").prop("checked", false);
-                            $("#id_filterbarform-casualty").change();
-                            $("#id_filterbarform-infrastructure").prop("checked", false);
-                            $("#id_filterbarform-infrastructure").change();
-                            $("#id_filterbarform-photos").prop("checked", false);
-                            $("#id_filterbarform-photos").change();
-                            $("#id_filterbarform-socioeconomic").prop("checked", false);
-                            $("#id_filterbarform-socioeconomic").change();
-                            //$("#id_filterbarform-buildings").button("option", {disabled:true});
-                            //$("#id_filterbarform-casualty").button("option", {disabled:true});
-                            //$("#id_filterbarform-infrastructure").button("option", {disabled:true});
-                            //$("#id_filterbarform-photos").button("option", {disabled:true});
-                            //$("#id_filterbarform-socioeconomic").button("option", {disabled:true});
-                            $(this).button("option", {
-                                icons: {primary: 'ui-icon-check' }
-                            });
-                        } else {
-                            //$("#id_filterbarform-buildings").button("option", {disabled:false});
-                            //$("#id_filterbarform-casualty").button("option", {disabled:false});
-                            //$("#id_filterbarform-infrastructure").button("option", {disabled:false});
-                            //$("#id_filterbarform-photos").button("option", {disabled:false});
-                            //$("#id_filterbarform-socioeconomic").button("option", {disabled:false});
-                            $(this).button("option", {
-                                icons: {primary: 'ui-icon-closethick' }
-                            });
-                        }});
 
             // get buttons to pick up their default values
             $("#id_filterbarform-buildings").change();
             $("#id_filterbarform-casualty").change();
             $("#id_filterbarform-infrastructure").change();
-            $("#id_filterbarform-photos").change();
+            //$("#id_filterbarform-photos").change();
             $("#id_filterbarform-socioeconomic").change();
             $("#id_filterbarform-all").change();
 
 
             // apply button
-            $('#id_filterbarform-submit').button({
-                text:true,
-                icons:{primary: 'ui-icon-closethick' }
-            });
+            //$('#id_filterbarform-submit').button({
+            //    text:true,
+            //    icons:{primary: 'ui-icon-closethick' }
+            //});
 
             // advanced button
             $('#advanced').click(function(event){
