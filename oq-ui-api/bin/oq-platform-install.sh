@@ -498,7 +498,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
     fi
 
     ###
-    echo "== Add 'geodetic', 'ged4gem', 'observations', 'isc_viewer' and 'ghec_viewer' Django applications =="
+    echo "== Add 'geodetic', 'ged4gem', 'observations', 'isc_viewer', 'ghec_viewer' and 'gaf_viewer' Django applications =="
 
 sudo su - $norm_user -c "
 cd $norm_dir 
@@ -557,6 +557,7 @@ exit 0"
     installed_apps_add 'geonode.geodetic'
     installed_apps_add 'geonode.isc_viewer'
     installed_apps_add 'geonode.ghec_viewer'
+    installed_apps_add 'geonode.gaf_viewer'
 
     # add exposure when indicated by user
     if [ $GEM_DJANGO_MENU = "y" -o "$GEM_DJANGO_MENU" = "Y" ]; then
@@ -570,6 +571,7 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/ghec_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/ghec_viewer.html'}, name='ghec_viewer'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/gaf_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/gaf_viewer.html'}, name='gaf_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
 
     # add exposure when indicated by user
@@ -612,6 +614,14 @@ exit 0"
         GEM_GHEC_DATA="$norm_dir/oq-platform/oq-ui-api/data/ghec_data.csv"
     fi
     python ./manage.py import_gheccsv "$GEM_GHEC_DATA"
+
+    python ./manage.py migrate gaf_viewer
+    if [ -f "$norm_dir/private_data/gaf_data.csv" ]; then
+        GEM_GAF_DATA="$norm_dir/private_data/gaf_data.csv"
+    else
+        GEM_GAF_DATA="$norm_dir/oq-platform/oq-ui-api/data/gaf_data.csv"
+    fi
+    python ./manage.py import_gafcsv "$GEM_GAF_DATA"
 
     python ./manage.py migrate observations
     export JAVA_HOME="$GEM_JAVA_HOME"
