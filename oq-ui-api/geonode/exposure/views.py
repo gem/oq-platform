@@ -23,6 +23,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
 from django.views.decorators.http import condition
 from django.db import connections
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+
 import cStringIO as StringIO
 import csv
 import time
@@ -81,39 +84,41 @@ def stream_response_generator(request, output_type):
     #get the dwelling fractions table
     cursor = connections['geddb'].cursor()
     cursor.execute("""
-        SELECT ms.ms_name, ms.ms_value, mss.is_urban, mss.occupancy,
-               abis.study_region_id, abis.gadm_country_id,
-               pg.gem_shorthand_form
-        FROM eqged.agg_build_infra_src abis
-        JOIN eqged.mapping_scheme_src mss ON abis.mapping_scheme_src_id=mss.id
-        JOIN eqged.mapping_scheme ms ON ms.mapping_scheme_src_id=mss.id
-        JOIN eqged.pager_to_gem pg ON ms.ms_name=pg.pager_str
-        WHERE ST_Intersects(the_geom, ST_MakeEnvelope(%s, %s, %s, %s, 4326))
-              AND is_urban AND occupancy='Res';""", [lng1, lat1, lng2, lat2])
+	SELECT dv.dwelling_fraction, dg.is_urban, dg.occupancy_id, dg.study_region_id, 
+ 	    geo.gadm_country_id, geo.id AS geo_id, dv.building_type
+	FROM ged2.geographic_region geo 
+	JOIN ged2.study_region sr ON sr.geographic_region_id=geo.id
+	JOIN ged2.study s ON s.id=sr.study_id
+	JOIN ged2.distribution_group dg ON dg.study_region_id=sr.id
+	JOIN ged2.distribution_value dv ON dv.distribution_group_id=dg.id
+	WHERE geo.gadm_country_id IN (
+	    SELECT DISTINCT gadm_country_id
+	    FROM ged2.grid_point grid
+	    JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+	    WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom))
+ 	AND dg.occupancy_id=0 AND dg.is_urban;""", [lng1, lat1, lng2, lat2])
 
     df_table = cursor.fetchall()
 
     #get the time of day table
+    #TODO make the geographic_region_id dynamic
     cursor.execute("""
-        SELECT night_pop_ratio
-        FROM eqged.pop_allocation
-        WHERE gadm_country_id=65 AND occupancy='Res' AND is_urban""")
+	SELECT night_pop_ratio FROM ged2.pop_allocation 
+	WHERE geographic_region_id = 65
+	AND is_urban AND occupancy_id=0""")
+
     tod_table = cursor.fetchall()
 
     result = []
 
     #get the population table
     cursor.execute("""
-        SELECT grid.id, grid.the_geom, grid.lat, grid.lon, pop.pop_value,
-               gpa.is_urban, country.id,country.iso
-        FROM eqged.grid_point grid
-        JOIN eqged.population pop ON pop.grid_point_id=grid.id
-        JOIN eqged.grid_point_country gpc ON gpc.grid_point_id=grid.id
-        JOIN eqged.gadm_country country ON gpc.gadm_country_id=country.id
-        JOIN eqged.grid_point_attribute gpa ON grid.id=gpa.grid_point_id
-        WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
-                            grid.the_geom)
-              AND pop.population_src_id=3;""", [lng1, lat1, lng2, lat2])
+	SELECT grid.gadm_country_id, grid.the_geom, ST_X(grid.the_geom), 
+	ST_Y(grid.the_geom), grid.pop_value, grid.is_urban, gadm.iso, grid.id
+	FROM ged2.grid_point grid
+	JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+	WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),grid.the_geom)
+	;""", [lng1, lat1, lng2, lat2])
 
     copyright_text = '''\
  Version 1.0 released on 31.01.2013
@@ -150,20 +155,35 @@ def stream_response_generator(request, output_type):
         yield copyright
 
         # csv header
-        yield '''ISO, pop_calculated_value, pop_cell_ID, lon, lat, study_region, gadm country id, PAGER taxonomy, GEM taxonomy'''
+        yield '''ISO, pop_calculated_value, pop_cell_ID, lon, lat, study_region, gadm country id, GEM taxonomy'''
         yield "\n"
 
         # csv exposure table
-        for pop in cursor.fetchall():
+	for pop in cursor.fetchall():
+            pop_gadm_country_id = pop[0]
+            pop_lat = pop[2]
+            pop_lon = pop[3]
+            pop_value = pop[4]
+            pop_iso = pop[6]
+            pop_grid_id = pop[7]
             for tod in tod_table:
+                tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    if pop[6] == df[5]:
+                    df_dwelling_fraction = df[0]
+                    df_is_urban = df[1]
+                    df_study_region = df[3]
+                    df_gadm_country_id = df[4]
+                    df_geo = df[5]
+                    df_building_type = df[6]
+                    if pop_gadm_country_id == df_gadm_country_id:
                         yield ",".join([
-                            str(pop[7]), str(pop[4] * tod[0] * df[1]),
-                            str(pop[0]), str(pop[2]), str(pop[3]), str(df[4]),
-                            str(df[5]), str(df[0]), str(df[6])
+                            str(pop_iso),
+                            str(pop_value * tod_night_pop_ratio * df_dwelling_fraction),
+                            str(pop_grid_id), str(pop_lon), str(pop_lat), str(df_study_region),
+                            str(df_gadm_country_id), str(df_building_type)
                         ])
                         yield "\n"
+
 
     elif output_type == "nrml":
         # export nrml
@@ -177,9 +197,22 @@ def stream_response_generator(request, output_type):
 
         # nrml exposure file
         for pop in cursor.fetchall():
+            pop_gadm_country_id = pop[0]
+            pop_lat = pop[2]
+            pop_lon = pop[3]
+            pop_value = pop[4]
+            pop_iso = pop[6]
+            pop_grid_id = pop[7]
             for tod in tod_table:
+                tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    if pop[6] == df[5]:
+                    df_dwelling_fraction = df[0]
+                    df_is_urban = df[1]
+                    df_study_region = df[3]
+                    df_gadm_country_id = df[4]
+                    df_geo = df[5]
+                    df_building_type = df[6]
+                    if pop_gadm_country_id == df_gadm_country_id:
                         yield ('''\
     <exposureModel gml:id="ep">
         <exposureList gml:id="exposure" assetCategory="population">
@@ -194,8 +227,8 @@ def stream_response_generator(request, output_type):
                     <taxonomy>%s</taxonomy>
                 </assetDefinition>
         </exposureList>
-    </exposureModel>\n''' % (pop[0], df[0], pop[3], pop[2],
-                             pop[4] * tod[0] * df[1], df[6]))
+    </exposureModel>\n''' % (pop_grid_id, df_building_type, pop_lon, pop_lat,
+                             pop_value * tod_night_pop_ratio * df_is_urban, df_building_type))
         # for loop ends here
         # finalize the document:
         yield "</nrml>\n"
