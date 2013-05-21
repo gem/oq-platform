@@ -622,7 +622,7 @@ exit 0"
         else
             GEM_GAF_DATA="$norm_dir/oq-platform/oq-ui-api/data/gaf_${model}_data.csv"
         fi
-        python ./manage.py import_gaf_ft_csv "$GEM_GAF_DATA"
+        python ./manage.py import_gaf_${model}_csv "$GEM_GAF_DATA"
     done
 
 
