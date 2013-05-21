@@ -8,8 +8,8 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'Measure'
-        db.create_table('gaf_viewer_measure', (
+        # Adding model 'FaultTrace'
+        db.create_table('gaf_viewer_faulttrace', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('src_id', self.gf('django.db.models.fields.IntegerField')(default=-1)),
             ('the_geom', self.gf('django.contrib.gis.db.models.fields.LineStringField')(null=True, blank=True)),
@@ -67,18 +67,101 @@ class Migration(SchemaMigration):
             ('fs_vert_slip_rate', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
             ('slip_type', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
         ))
-        db.send_create_signal('gaf_viewer', ['Measure'])
+        db.send_create_signal('gaf_viewer', ['FaultTrace'])
+
+        # Adding model 'FaultSource'
+        db.create_table('gaf_viewer_faultsource', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('src_id', self.gf('django.db.models.fields.IntegerField')(default=-1)),
+            ('fault_summary_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('aseismic_slip_factor', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('compiler_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('completion_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('contributor_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('dip', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('dip_dir', self.gf('django.db.models.fields.IntegerField')()),
+            ('last_movement', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('length', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('lower_sm_depth', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('magnitude', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('name', self.gf('django.db.models.fields.CharField')(default='', max_length=96)),
+            ('recurrence_interval', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('slip_rate', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('slip_type_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('upper_sm_depth', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('created_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('modified_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('tectonic_region', self.gf('django.db.models.fields.CharField')(default='', max_length=96)),
+            ('area', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('width', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('the_geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(null=True, blank=True)),
+            ('compiler_name', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('contributor_name', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
+            ('pref_magnitude', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_dip', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('pref_slip_rate', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_length', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_width', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_area', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_lsd', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_usd', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('pref_recint', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('slip_type', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+        ))
+        db.send_create_signal('gaf_viewer', ['FaultSource'])
 
 
     def backwards(self, orm):
         
-        # Deleting model 'Measure'
-        db.delete_table('gaf_viewer_measure')
+        # Deleting model 'FaultTrace'
+        db.delete_table('gaf_viewer_faulttrace')
+
+        # Deleting model 'FaultSource'
+        db.delete_table('gaf_viewer_faultsource')
 
 
     models = {
-        'gaf_viewer.measure': {
-            'Meta': {'object_name': 'Measure'},
+        'gaf_viewer.faultsource': {
+            'Meta': {'object_name': 'FaultSource'},
+            'area': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'aseismic_slip_factor': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'compiler_id': ('django.db.models.fields.IntegerField', [], {}),
+            'compiler_name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'completion_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'contributor_id': ('django.db.models.fields.IntegerField', [], {}),
+            'contributor_name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'created_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'dip': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'dip_dir': ('django.db.models.fields.IntegerField', [], {}),
+            'fault_summary_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_movement': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'length': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'lower_sm_depth': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'magnitude': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'modified_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '96'}),
+            'pref_area': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_dip': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_length': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_lsd': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_magnitude': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_recint': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_slip_rate': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_usd': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'pref_width': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'recurrence_interval': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'slip_rate': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64'}),
+            'slip_type': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'slip_type_id': ('django.db.models.fields.IntegerField', [], {}),
+            'src_id': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
+            'tectonic_region': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '96'}),
+            'the_geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'null': 'True', 'blank': 'True'}),
+            'upper_sm_depth': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'width': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'})
+        },
+        'gaf_viewer.faulttrace': {
+            'Meta': {'object_name': 'FaultTrace'},
             'accuracy': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'null': 'True', 'blank': 'True'}),
             'fs_aseismic_slip_factor': ('django.db.models.fields.DecimalField', [], {'max_digits': '3', 'decimal_places': '2'}),
             'fs_average_dip': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),

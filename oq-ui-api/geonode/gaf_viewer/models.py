@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 
 # id|geom|accuracy|neotectonic_section_id|fault_summary_id|average_dip|is_active|is_episodic|surface_dip|name|aseismic_slip_factor|compiler_id|completion_id|contributor_id|dip_dir|disp|downthrown_side_id|last_movement|length|lower_sm_depth|recurrence_interval|net_slip_rate|slip_type_id|strike|strike_slip_rate|upper_sm_depth|vert_slip_rate|created_date|modified_date|fault_summary_id|aseismic_slip_factor|compiler_id|completion_id|contributor_id|average_dip|dip_dir|displacement|downthrown_side_id|is_active|is_episodic|is_section_summary|last_movement|length|lower_sm_depth|name|recurrence_interval|strike_slip_rate|slip_type_id|strike|upper_sm_depth|created_date|modified_date|net_slip_rate|vert_slip_rate|slip_type
 
-class Measure(models.Model):
+class FaultTrace(models.Model):
     src_id = models.IntegerField(null=False, blank=False, default=-1)
     the_geom = models.LineStringField(srid=4326, dim=2, null=True, blank=True)
     accuracy = models.IntegerField(null=True, blank=True, default=-1)
@@ -65,3 +65,44 @@ class Measure(models.Model):
         return "%s" % (self.src_id)
 
 
+class FaultSource(models.Model):
+    src_id = models.IntegerField(null=False, blank=False, default=-1)
+    fault_summary_id = models.IntegerField(null=True, blank=True)
+    aseismic_slip_factor = models.CharField(max_length=64, default='', null=False, blank=False)
+    compiler_id = models.IntegerField(null=False, blank=False)
+    completion_id = models.IntegerField(null=True, blank=True)
+    contributor_id = models.IntegerField(null=False, blank=False)
+    dip = models.CharField(max_length=64, default='', null=False, blank=False)
+    dip_dir = models.IntegerField(null=False, blank=False)
+    last_movement = models.CharField(max_length=64, default='', null=True, blank=True)
+    length = models.CharField(max_length=64, default='', null=True, blank=True)
+    lower_sm_depth = models.CharField(max_length=64, default='', null=True, blank=True)
+    magnitude = models.CharField(max_length=64, default='', null=False, blank=False)
+    name = models.CharField(max_length=96, default='', null=False, blank=False)
+    recurrence_interval = models.CharField(max_length=64, default='', null=True, blank=True)
+    slip_rate = models.CharField(max_length=64, default='', null=False, blank=False)
+    slip_type_id = models.IntegerField(null=False, blank=False)
+    upper_sm_depth = models.CharField(max_length=64, default='', null=True, blank=True)
+    created_date = models.DateTimeField(null=True, blank=True)
+    modified_date = models.DateTimeField(null=True, blank=True)
+    tectonic_region = models.CharField(max_length=96, default='', null=False, blank=False)
+    area = models.CharField(max_length=64, default='', null=True, blank=True)
+    width = models.CharField(max_length=64, default='', null=True, blank=True)
+    the_geom = models.PolygonField(srid=4326, dim=2, null=True, blank=True)
+
+    compiler_name = models.CharField(max_length=64, default='', null=False, blank=False)
+    contributor_name = models.CharField(max_length=64, default='', null=False, blank=False)
+
+    pref_magnitude = models.FloatField(null=True, blank=True)
+    pref_dip = models.IntegerField(null=True, blank=True)
+    pref_slip_rate = models.FloatField(null=True, blank=True)
+    pref_length = models.FloatField(null=True, blank=True)
+    pref_width = models.FloatField(null=True, blank=True)
+    pref_area = models.FloatField(null=True, blank=True)
+    pref_lsd = models.FloatField(null=True, blank=True)
+    pref_usd = models.FloatField(null=True, blank=True)
+    pref_recint = models.IntegerField(null=True, blank=True)
+    slip_type = models.CharField(max_length=64, default='', null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s" % (self.src_id)

@@ -15,7 +15,7 @@
 
 import csv
 from django.core.management.base import BaseCommand, CommandError
-from gaf_viewer.models import Measure
+from gaf_viewer.models import FaultTrace
 
 
 class Command(BaseCommand):
@@ -34,7 +34,7 @@ class Command(BaseCommand):
         rows_in = [line for line in file(filename) if not line.startswith("#")]
         rows = csv.reader(rows_in, delimiter = '|')
 
-        Measure.objects.all().delete()
+        FaultTrace.objects.all().delete()
 
         # TEST
         is_first = True
@@ -55,7 +55,7 @@ class Command(BaseCommand):
                 if intfld_list[i] in nullab_fld and field == '':
                     row[i] = None
             d = dict(zip(intfld_list, row))
-            m = Measure(src_id=data_id, **d)
+            m = FaultTrace(src_id=data_id, **d)
 
             print m
             m.save()

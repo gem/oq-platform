@@ -616,12 +616,15 @@ exit 0"
     python ./manage.py import_gheccsv "$GEM_GHEC_DATA"
 
     python ./manage.py migrate gaf_viewer
-    if [ -f "$norm_dir/private_data/gaf_data.csv" ]; then
-        GEM_GAF_DATA="$norm_dir/private_data/gaf_data.csv"
-    else
-        GEM_GAF_DATA="$norm_dir/oq-platform/oq-ui-api/data/gaf_data.csv"
-    fi
-    python ./manage.py import_gafcsv "$GEM_GAF_DATA"
+    for model in ft fs; do
+        if [ -f "$norm_dir/private_data/gaf_${model}_data.csv" ]; then
+            GEM_GAF_DATA="$norm_dir/private_data/gaf_${model}_data.csv"
+        else
+            GEM_GAF_DATA="$norm_dir/oq-platform/oq-ui-api/data/gaf_${model}_data.csv"
+        fi
+        python ./manage.py import_gaf_ft_csv "$GEM_GAF_DATA"
+    done
+
 
     python ./manage.py migrate observations
     export JAVA_HOME="$GEM_JAVA_HOME"
