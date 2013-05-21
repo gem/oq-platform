@@ -159,16 +159,31 @@ def stream_response_generator(request, output_type):
         yield "\n"
 
         # csv exposure table
-        for pop in cursor.fetchall():
+	for pop in cursor.fetchall():
+            pop_gadm_country_id = pop[0]
+            pop_lat = pop[2]
+            pop_lon = pop[3]
+            pop_value = pop[4]
+            pop_iso = pop[6]
+            pop_grid_id = pop[7]
             for tod in tod_table:
+                tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    if pop[0] == df[4]:
+                    df_dwelling_fraction = df[0]
+                    df_is_urban = df[1]
+                    df_study_region = df[3]
+                    df_gadm_country_id = df[4]
+                    df_geo = df[5]
+                    df_building_type = df[6]
+                    if pop_gadm_country_id == df_gadm_country_id:
                         yield ",".join([
-                            str(pop[6]), str(pop[4] * tod[0] * df[0]),
-                            str(pop[7]), str(pop[2]), str(pop[3]), str(df[3]),
-                            str(df[4]), str(df[6])
+                            str(pop_iso),
+                            str(pop_value * tod_night_pop_ratio * df_dwelling_fraction),
+                            str(pop_grid_id), str(pop_lon), str(pop_lat), str(df_study_region),
+                            str(df_gadm_country_id), str(df_building_type)
                         ])
                         yield "\n"
+
 
     elif output_type == "nrml":
         # export nrml
@@ -182,9 +197,22 @@ def stream_response_generator(request, output_type):
 
         # nrml exposure file
         for pop in cursor.fetchall():
+            pop_gadm_country_id = pop[0]
+            pop_lat = pop[2]
+            pop_lon = pop[3]
+            pop_value = pop[4]
+            pop_iso = pop[6]
+            pop_grid_id = pop[7]
             for tod in tod_table:
+                tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    if pop[0] == df[4]:
+                    df_dwelling_fraction = df[0]
+                    df_is_urban = df[1]
+                    df_study_region = df[3]
+                    df_gadm_country_id = df[4]
+                    df_geo = df[5]
+                    df_building_type = df[6]
+                    if pop_gadm_country_id == df_gadm_country_id:
                         yield ('''\
     <exposureModel gml:id="ep">
         <exposureList gml:id="exposure" assetCategory="population">
@@ -199,8 +227,8 @@ def stream_response_generator(request, output_type):
                     <taxonomy>%s</taxonomy>
                 </assetDefinition>
         </exposureList>
-    </exposureModel>\n''' % (pop[7], df[6], pop[3], pop[2],
-                             pop[4] * tod[0] * df[1], df[6]))
+    </exposureModel>\n''' % (pop_grid_id, df_building_type, pop_lon, pop_lat,
+                             pop_value * tod_night_pop_ratio * df_is_urban, df_building_type))
         # for loop ends here
         # finalize the document:
         yield "</nrml>\n"
