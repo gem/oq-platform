@@ -28,9 +28,6 @@ class Command(BaseCommand):
         intfld_list = ['id', 'fault_summary_id', 'aseismic_slip_factor', 'compiler_id', 'completion_id', 'contributor_id', 'dip', 'dip_dir', 'last_movement', 'length', 'lower_sm_depth', 'magnitude', 'name', 'recurrence_interval', 'slip_rate', 'slip_type_id', 'upper_sm_depth', 'created_date', 'modified_date', 'tectonic_region', 'area', 'width', 'the_geom', 'compiler_name', 'contributor_name', 'pref_magnitude', 'pref_dip', 'pref_slip_rate', 'pref_length', 'pref_width', 'pref_area', 'pref_lsd', 'pref_usd', 'pref_recint', 'slip_type']
         nullab_fld = ['fault_summary_id', 'completion_id', 'last_movement', 'length', 'lower_sm_depth', 'recurrence_interval', 'upper_sm_depth', 'created_date', 'modified_date', 'area', 'width', 'the_geom', 'pref_magnitude', 'pref_dip', 'pref_slip_rate', 'pref_length', 'pref_width', 'pref_area', 'pref_lsd', 'pref_usd', 'pref_recint', 'slip_type']
 
-#suppall_in = [line for line in file(supp_name) if not line.startswith("#")]
-#    suppall_cs = csv.reader(suppall_in, delimiter = '|', escapechar = '\\' )
-
         rows_in = [line for line in file(filename) if not line.startswith("#")]
         rows = csv.reader(rows_in, delimiter = '|')
 
@@ -40,7 +37,7 @@ class Command(BaseCommand):
         is_first = True
         for data_id, row in enumerate(rows):
             if is_first:
-                # check the first row with 
+                # check the first row to verify columns names
                 for i, field in enumerate(field_list):
                     if field != row[i]:
                         print "Field [%s] expected, [%s] is provided" % (field, row[i])
@@ -59,4 +56,3 @@ class Command(BaseCommand):
 
             print m
             m.save()
-            
