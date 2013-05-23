@@ -17,8 +17,12 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 from django.conf.urls.defaults import *
+from exposure.forms import ExposureAdmin0, ExposureAdmin1, ExposureAdmin2, ExposureAdmin3, ExposureAdmin4, ExposureAdmin5, ExposureTOD
+from exposure.views import exposure_form, exposure_form2
 
 
 urlpatterns = patterns('geonode.exposure.views',
+			url(r'wizard1', exposure_form),
+			url(r'wizard2', exposure_form2),
                        (r'^population.json', 'read_pop'),
 )

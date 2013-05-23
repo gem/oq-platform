@@ -23,12 +23,84 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
 from django.views.decorators.http import condition
 from django.db import connections
+#from exposure.template import .......
+from forms import ExposureAdmin0, ExposureAdmin1, ExposureAdmin2, ExposureAdmin3, ExposureAdmin4, ExposureAdmin5, ExposureTOD
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response
+
+from libs import render_to_wizard
 
 import cStringIO as StringIO
 import csv
 import time
+
+@csrf_exempt
+def exposure_form(request):
+        #debug*******
+        #import pdb; pdb.set_trace()
+        #debug*******
+
+        if request.method =='POST':
+           	# get the lat long variables from the client
+                lat1 = request.POST['lat1']
+            	lng1 = request.POST['lng1']
+            	lat2 = request.POST['lat2']
+            	lng2 = request.POST['lng2']
+                #form = ExposureForm()
+
+                #find all the admin levels available inside bounding box
+                cursor = connections['geddb'].cursor()
+                cursor.execute("""
+			SELECT
+			MIN( 
+			CASE
+			WHEN gadm_admin_3_id IS NOT NULL THEN 3
+			WHEN gadm_admin_2_id IS NOT NULL THEN 2
+			WHEN gadm_admin_1_id IS NOT NULL THEN 1
+			ELSE 0 
+			END)
+			FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope
+			    (%s, %s, %s, %s, 4326);""", [lng1, lat1, lng2, lat2])
+                admin_level_flag = cursor.fetchall()
+
+                result = []
+
+		#print some stfuff
+                #html = '<html><body>%s</body></html>'
+		#return HttpResponse(html % test_table)
+
+		admin_level = admin_level_flag[0][0]
+
+		if admin_level == 0:
+			form = ExposureAdmin0()
+			#print something	
+			#html = '<html><body>%s</body></html>'
+			#return HttpResponse(html % admin_level)
+
+                	return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+		elif admin_level == 1:
+			form = ExposureAdmin1()
+			return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 2:
+			form = ExposureAdmin2()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 3:
+			form = ExposureAdmin3()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 4:
+			form = ExposureAdmin4()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+                elif admin_level == 5:
+			form = ExposureAdmin5()
+                        return render_to_response('exposure-export-wizard-1.html', {'form': form}, context_instance=RequestContext(request))
+        else:
+                html = '<html><body>Your request cannot be processed</body></html>'
+                return HttpResponse(html)
+
+def exposure_form2(request):
+  form = ExposureTOD()
+  return render_to_response('exposure-export-wizard-2.html', {'form': form}, context_instance=RequestContext(request))
 
 #disabling etag for streaming
 @condition(etag_func=None)
@@ -81,8 +153,24 @@ def stream_response_generator(request, output_type):
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
 
-    #get the dwelling fractions table
     cursor = connections['geddb'].cursor()
+    cursor.execute("""
+        SELECT country.gadm_country_id, geo.id AS geographic_region_id
+        FROM (
+            SELECT DISTINCT gadm_country_id
+            FROM ged2.grid_point grid
+            JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+            WHERE ST_intersects(ST_MakeEnvelope(5.93262, 46.96526, 6.63574, 46.60417, 4326),grid.the_geom) 
+        ) country
+        JOIN ged2.geographic_region geo ON country.gadm_country_id=geo.gadm_country_id
+        """)
+    country_reg_codes = cursor.fetchall()
+    country_codes = [r[0] for r in country_reg_codes]
+    region_codes = [r[1] for r in country_reg_codes]
+
+    ccStr = ', '.join(str(e) for e in country_codes)
+
+    #get the dwelling fractions table
     cursor.execute("""
 	SELECT dv.dwelling_fraction, dg.is_urban, dg.occupancy_id, dg.study_region_id, 
  	    geo.gadm_country_id, geo.id AS geo_id, dv.building_type
@@ -176,9 +264,9 @@ def stream_response_generator(request, output_type):
                     df_geo = df[5]
                     df_building_type = df[6]
                     if pop_gadm_country_id == df_gadm_country_id:
-                        yield ",".join([
-                            str(pop_iso),
-                            str(pop_value * tod_night_pop_ratio * df_dwelling_fraction),
+			yield ",".join([
+                            str(pop_iso), 
+			    str(pop_value * tod_night_pop_ratio * df_dwelling_fraction),
                             str(pop_grid_id), str(pop_lon), str(pop_lat), str(df_study_region),
                             str(df_gadm_country_id), str(df_building_type)
                         ])
@@ -197,16 +285,16 @@ def stream_response_generator(request, output_type):
 
         # nrml exposure file
         for pop in cursor.fetchall():
-            pop_gadm_country_id = pop[0]
-            pop_lat = pop[2]
+	    pop_gadm_country_id = pop[0]
+	    pop_lat = pop[2]
             pop_lon = pop[3]
             pop_value = pop[4]
             pop_iso = pop[6]
             pop_grid_id = pop[7]
             for tod in tod_table:
-                tod_night_pop_ratio = tod[0]
+		tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    df_dwelling_fraction = df[0]
+		    df_dwelling_fraction = df[0]
                     df_is_urban = df[1]
                     df_study_region = df[3]
                     df_gadm_country_id = df[4]

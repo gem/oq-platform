@@ -1,4 +1,4 @@
-<!--
+  <!--
  Copyright (c) 2010-2013, GEM Foundation.
 
     This program is free software: you can redistribute it and/or modify
@@ -223,6 +223,20 @@
   </div>
 </div>  
 <div id="tooltip">
+<!-- wizard divs -->
+<div id="wizard1"  align="center" style="display:none">
+    <form action="/wizard1.html" method="get">{% csrf_token %}
+{{ form.as_p }}
+
+</div>
+
+<div id="wizard2"  align="center" style="display:none">
+    <form action="/wizard2.html" method="get">{% csrf_token %}
+{{ form.as_p }}
+
+</div>
+
+    <button id="export_wizard">Export Wizard</button>
     <a href="#" id="request_csv"><button>Download CSV</button></a>
     <a href="#" id="request_nrml"><button>Download NRML</button></a>
     <a href="#" class="tooltip">Help
@@ -381,12 +395,26 @@
     var latlonTopLeft = "";
     var latlonBottomRight = "";
 
+    $("button").click(function() {
+        $("#wizard1").toggle();
+    });
+//    function newPopup(url) {
+//	popupWindow = window.open(
+//		url,'popUpWindow','height=700,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+  //  }
     // send values to Django
     map.on('draw:rectangle-created', function (e) {
         drawnItems.clearLayers();
         drawnItems.addLayer(e.rect);
         latlonTopLeft = e.rect._latlngs[1];
         latlonBottomRight = e.rect._latlngs[3];
+        //wizard pop-up
+        $('#export_wizard').click(function(event) { event.preventDefault();
+            $('#wizard1').load('/wizard1.html/ #exposure-export-form', {'lat1': latlonTopLeft.lat, 'lng1': latlonTopLeft.lng, 'lat2': latlonBottomRight.lat, 'lng2': latlonBottomRight.lng });
+        })
+
+	$('#request_wizard').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=wizard');
+	// remove these
         $('#request_csv').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=csv');
         $('#request_nrml').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=nrml');
     });
