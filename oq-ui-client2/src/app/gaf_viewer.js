@@ -145,16 +145,16 @@ Ext.onReady(function() {
                 source: "osm",
                 name: "mapnik",
                 group: "background"
-            }, {
-                source: "local",
-                name: "gaf_viewer:gaf_viewer_faulttrace",
-                title : "Global Fault Traces"
             },
             {
                 source: "local",
                 name: "gaf_viewer:gaf_viewer_faultsource",
                 title : "Global Fault Sources"
-            } ],
+            }, {
+                source: "local",
+                name: "gaf_viewer:gaf_viewer_faulttrace",
+                title : "Global Fault Traces"
+            }],
             items: [{
                 xtype: "gx_zoomslider",
                 vertical: true,
