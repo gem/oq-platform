@@ -398,14 +398,43 @@
         latlonTopLeft = e.rect._latlngs[1];
         latlonBottomRight = e.rect._latlngs[3];
         //wizard pop-up
-        $('#export_wizard').click(function(event) { event.preventDefault();
-            $('#wizard1').load('/wizard1.html/ #exposure-export-form', {'lat1': latlonTopLeft.lat, 'lng1': latlonTopLeft.lng, 'lat2': latlonBottomRight.lat, 'lng2': latlonBottomRight.lng });
-        })
 
-	$('#request_wizard').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=wizard');
-	// remove these
-        $('#request_csv').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=csv');
-        $('#request_nrml').attr('href', '/exposure/population.json?lat1=' + latlonTopLeft.lat + '&lng1=' + latlonTopLeft.lng + '&lat2=' + latlonBottomRight.lat + '&lng2=' + latlonBottomRight.lng + '&output_type=nrml');
+
+        var exposureExportFormLoaded = function() {
+            /*
+             * Hook in radio selection logic.
+             * When time of day is 'off', disable the 'both' selection
+             * for residential.
+             */
+            $("#exposure-export-form").change(
+                function() {
+                    // NOTE: The radio button ids are given by Django
+                    // form rendering.
+                    var disableResidentialBoth = false;
+                    if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
+                        disableResidentialBoth = true;
+                    }
+                    $("input[id=id_residential_2]").attr('disabled',
+                                                         disableResidentialBoth);
+                }
+            );
+        };
+
+
+        $('#export_button').click(
+            function(event) {
+                event.preventDefault();
+                $('#wizard').load('/wizard1.html/ #exposure-export-form',
+                                  {'lat1': latlonTopLeft.lat,
+                                   'lng1': latlonTopLeft.lng,
+                                   'lat2': latlonBottomRight.lat,
+                                   'lng2': latlonBottomRight.lng },
+                                   exposureExportFormLoaded);
+
+
+            }
+        );
+
     });
 
     map.addLayer(drawnItems);
