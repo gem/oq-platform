@@ -225,7 +225,7 @@
 <div id="tooltip">
 <!-- wizard divs -->
 <div id="wizard" align="center" style="display:none">
-    <form action="/wizard1.html" method="get">{% csrf_token %}
+    <form action="/exposure/wizard1" method="get">{% csrf_token %}
 {{ form.as_p }}
 
 </div>
@@ -424,7 +424,7 @@
         $('#export_button').click(
             function(event) {
                 event.preventDefault();
-                $('#wizard').load('/wizard1.html/ #exposure-export-form',
+                $('#wizard').load('/exposure/wizard1/ #exposure-export-form',
                                   {'lat1': latlonTopLeft.lat,
                                    'lng1': latlonTopLeft.lng,
                                    'lat2': latlonBottomRight.lat,
