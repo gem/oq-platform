@@ -17,22 +17,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
-from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from django.http import HttpResponseBadRedirect
-from django.contrib.contenttypes.models import ContentType
-from django.utils import simplejson
 from django.views.decorators.http import condition
 from django.db import connections
 from forms import ExposureExportForm
-from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.shortcuts import render_to_response
-
-import cStringIO as StringIO
-import csv
-import time
 
 
 @csrf_exempt
