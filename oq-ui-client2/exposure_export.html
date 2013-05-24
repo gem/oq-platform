@@ -46,7 +46,7 @@
 	<!-- jquery and other stuff -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
 
 {% endblock %}
 	<!--Google Analytics-->
@@ -229,13 +229,6 @@
 {{ form.as_p }}
 
 </div>
-
-<div id="wizard2"  align="center" style="display:none">
-    <form action="/wizard2.html" method="get">{% csrf_token %}
-{{ form.as_p }}
-
-</div>
-
     <button id="export_wizard">Export Wizard</button>
     <a href="#" id="request_csv"><button>Download CSV</button></a>
     <a href="#" id="request_nrml"><button>Download NRML</button></a>
@@ -251,7 +244,7 @@
       </span>
     </a>
 </div>
-    <div id="map" style="width: 100%;"></div>
+<div id="map" style="width: 100%;"></div>
     <script type="text/javascript">
 
     //resize the main and map div
@@ -398,10 +391,6 @@
     $("button").click(function() {
         $("#wizard1").toggle();
     });
-//    function newPopup(url) {
-//	popupWindow = window.open(
-//		url,'popUpWindow','height=700,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-  //  }
     // send values to Django
     map.on('draw:rectangle-created', function (e) {
         drawnItems.clearLayers();
@@ -425,8 +414,7 @@
 
     // Add Wax support
     L.wax(map);
-        </script>       </script>
     </script>
-        <span id="showGrid"></span>
+    <span id="showGrid"></span>
 {% endblock %}
 
