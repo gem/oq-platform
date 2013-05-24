@@ -248,7 +248,6 @@ def stream_response_generator(request, output_type):
                     df_is_urban = df[1]
                     df_study_region = df[3]
                     df_gadm_country_id = df[4]
-                    df_geo = df[5]
                     df_building_type = df[6]
                     if pop_gadm_country_id == df_gadm_country_id:
                         yield ",".join([
@@ -288,7 +287,6 @@ def stream_response_generator(request, output_type):
                     df_is_urban = df[1]
                     df_study_region = df[3]
                     df_gadm_country_id = df[4]
-                    df_geo = df[5]
                     df_building_type = df[6]
                     if pop_gadm_country_id == df_gadm_country_id:
                         yield ('''\
