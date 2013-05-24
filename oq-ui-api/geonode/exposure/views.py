@@ -75,7 +75,11 @@ def get_exposure_export_form(request):
         # if the admin level is okay, display the admin level selection form
         form = ExposureExportForm(highest_admin_level=admin_level)
         return render_to_response('exposure-export-wizard-1.html',
-                                  {'form': form},
+                                  {'exposure_form': form,
+                                   'lat1': lat1,
+                                   'lng1': lng1,
+                                   'lat2': lat2,
+                                   'lng2': lng2},
                                   context_instance=RequestContext(request))
     else:
         html = '<html><body>Not implemented</body></html>'
@@ -85,10 +89,6 @@ def get_exposure_export_form(request):
 #disabling etag for streaming
 @condition(etag_func=None)
 def export_exposure(request):
-
-    html = '<html><body>%s</body></html>' % str(request.GET)
-    return HttpResponse(html)
-
     # output_type = request.GET['output_type']
     # TODO: from request.GET, get:
     #  * 'outputype'
@@ -98,6 +98,7 @@ def export_exposure(request):
 
     content_disp = None
     mimetype = None
+    output_type = request.GET['outputType']
 
     if output_type == "csv":
         content_disp = 'attachment; filename="exposure_export.csv"'
@@ -129,17 +130,28 @@ def stream_response_generator(request, output_type):
         A string indicating the desired output type. Valid values are 'csv'
         and 'nrml' (XML).
     """
+    # possible values are 'res', 'non-res', or 'both'
+    res_select = request.GET['residential']
+    tod_select = request.GET['timeOfDay']
+    admin_select = request.GET['adminLevel']
+    lat1 = request.GET['lat1']
+    lng1 = request.GET['lng1']
+    lat2 = request.GET['lat2']
+    lng2 = request.GET['lng2']
+
+    if res_select == 'res':
+        occupancy = [0]
+    elif res_select == 'non-res':
+        occupancy = [1]
+    else:
+        # assume that it's 'both'
+        occupancy = [0, 1]
+
     if output_type not in ('csv', 'nrml'):
         raise RuntimeError(
             "Unrecognized output type '%s', only 'nrml' and 'csv' are "
             "supported" % output_type
         )
-
-    # get the lat long variables from the client
-    lat1 = request.GET['lat1']
-    lng1 = request.GET['lng1']
-    lat2 = request.GET['lat2']
-    lng2 = request.GET['lng2']
 
     cursor = connections['geddb'].cursor()
     cursor.execute("""
@@ -180,8 +192,11 @@ def stream_response_generator(request, output_type):
     #TODO make the geographic_region_id dynamic
     cursor.execute("""
         SELECT night_pop_ratio FROM ged2.pop_allocation WHERE
-            geographic_region_id = %s AND is_urban AND occupancy_id=0;
-    """, [region_codes])
+            geographic_region_id IN = (%s)
+            AND is_urban
+            AND occupancy_id IN (%s);
+    """, [', '.join(region_codes),
+          ', '.join(occupancy)])
 
     tod_table = cursor.fetchall()
 
@@ -236,19 +251,18 @@ def stream_response_generator(request, output_type):
         # csv exposure table
         for pop in cursor.fetchall():
             pop_gadm_country_id = pop[0]
-            pop_lat = pop[2]
-            pop_lon = pop[3]
-            pop_value = pop[4]
-            pop_iso = pop[6]
-            pop_grid_id = pop[7]
+            pop_value = pop[2]
+            pop_grid_id = pop[3]
+            pop_iso = pop[4]
+            pop_lat = pop[5]
+            pop_lon = pop[6]
             for tod in tod_table:
                 tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    df_dwelling_fraction = df[0]
-                    df_is_urban = df[1]
-                    df_study_region = df[3]
-                    df_gadm_country_id = df[4]
-                    df_building_type = df[6]
+                    df_building_type = df[0]
+                    df_dwelling_fraction = df[1]
+                    df_is_urban = df[2]
+                    df_study_region = df[4]
                     if pop_gadm_country_id == df_gadm_country_id:
                         yield ",".join([
                             str(pop_iso),
@@ -258,7 +272,7 @@ def stream_response_generator(request, output_type):
                             str(pop_lon),
                             str(pop_lat),
                             str(df_study_region),
-                            str(df_gadm_country_id), str(df_building_type)
+                            str(country_codes), str(df_building_type)
                         ])
                         yield "\n"
 
@@ -275,19 +289,18 @@ def stream_response_generator(request, output_type):
         # nrml exposure file
         for pop in cursor.fetchall():
             pop_gadm_country_id = pop[0]
-            pop_lat = pop[2]
-            pop_lon = pop[3]
-            pop_value = pop[4]
-            pop_iso = pop[6]
-            pop_grid_id = pop[7]
+            pop_value = pop[2]
+            pop_grid_id = pop[3]
+            pop_iso = pop[4]
+            pop_lat = pop[5]
+            pop_lon = pop[6]
             for tod in tod_table:
                 tod_night_pop_ratio = tod[0]
                 for df in df_table:
-                    df_dwelling_fraction = df[0]
-                    df_is_urban = df[1]
-                    df_study_region = df[3]
-                    df_gadm_country_id = df[4]
-                    df_building_type = df[6]
+                    df_building_type = df[0]
+                    df_dwelling_fraction = df[1]
+                    df_is_urban = df[2]
+                    df_study_region = df[4]
                     if pop_gadm_country_id == df_gadm_country_id:
                         yield ('''\
     <exposureModel gml:id="ep">
