@@ -21,33 +21,19 @@
 {% block indexclass %} class="here" {% endblock %}
 
 {% block head %}
-
 {{ block.super }}
-
-        <!-- IE 8 Compatibility -->
-        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
-
+    <!-- IE 8 Compatibility -->
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
 
 {% endblock %}
 
 {% block main %}
 
-<form action="/wizard2/" method="get" id="exposure-export-form">{% csrf_token %}
+<form action="/exposure/export_exposure/" method="get" id="exposure-export-form">{% csrf_token %}
 {{ form.as_p }}
-<button id="wizard_step2">Next</button>
 <br>
+<input type="submit" value="Submit">
+
 </form>
-
-    <script type="text/javascript">
-        #('#wizard_step2').click(
-
-        )
-	$('#wizard_step2').live('click', function(event) { 
-     	    event.preventDefault();
-     	    $('#wizard2').load('/wizard2.html/', 
-                 { admin_level: $('.admin_level:checked').val() }
-	    ); 
-	});
-    </script>
-        <span id="showGrid"></span>
+<span id="showGrid"></span>
 {% endblock %}
