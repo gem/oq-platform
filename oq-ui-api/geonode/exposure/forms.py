@@ -1,7 +1,4 @@
 from django import forms
-from django.shortcuts import render_to_response
-from exposure.libs import FormWizardSnip
-from django.template import RequestContext
 
 admin_level0 = [['admin0','Admin Level 0']]
 admin_level1 = [['admin0','Admin Level 0'],['admin1','Admin Level 1']]
