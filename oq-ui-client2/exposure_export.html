@@ -224,12 +224,12 @@
 </div>  
 <div id="tooltip">
 <!-- wizard divs -->
-<div id="wizard1"  align="center" style="display:none">
+<div id="wizard" align="center" style="display:none">
     <form action="/wizard1.html" method="get">{% csrf_token %}
 {{ form.as_p }}
 
 </div>
-    <button id="export_wizard">Export Wizard</button>
+    <button id="export_button">Export Wizard</button>
     <a href="#" id="request_csv"><button>Download CSV</button></a>
     <a href="#" id="request_nrml"><button>Download NRML</button></a>
     <a href="#" class="tooltip">Help
@@ -389,7 +389,7 @@
     var latlonBottomRight = "";
 
     $("button").click(function() {
-        $("#wizard1").toggle();
+        $("#wizard").toggle();
     });
     // send values to Django
     map.on('draw:rectangle-created', function (e) {
