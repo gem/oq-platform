@@ -30,7 +30,13 @@
 {% block main %}
 
 <form action="/exposure/export_exposure/" method="get" id="exposure-export-form">{% csrf_token %}
-{{ form.as_p }}
+{{ exposure_form.as_p }}
+
+<input type="hidden" name="lat1" value="{{ lat1 }}">
+<input type="hidden" name="lng1" value="{{ lng1 }}">
+<input type="hidden" name="lat2" value="{{ lat2 }}">
+<input type="hidden" name="lng2" value="{{ lng2 }}">
+
 <br>
 <input type="submit" value="Submit">
 
