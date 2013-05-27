@@ -21,7 +21,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.views.decorators.http import condition
 from django.db import connections
-from forms import ExposureExportForm
+from exposure import forms
+from exposure import util
 from django.shortcuts import render_to_response
 
 COPYRIGHT_HEADER = '''\
@@ -104,7 +105,7 @@ def get_exposure_export_form(request):
             return HttpResponse(html)
 
         # if the admin level is okay, display the admin level selection form
-        form = ExposureExportForm(highest_admin_level=admin_level)
+        form = forms.ExposureExportForm(highest_admin_level=admin_level)
         return render_to_response('exposure-export-wizard-1.html',
                                   {'exposure_form': form,
                                    'lat1': lat1,
@@ -220,6 +221,8 @@ def _get_dwelling_fractions(country_codes, occupancy):
 
 def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
     """
+    :param list region_codes:
+        List of GADM region codes (as ints).
     :param tod:
         Possible values are::
 
@@ -243,15 +246,20 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
         FROM ged2.pop_allocation
         WHERE geographic_region_id IN %%s
         AND is_urban
-        AND occupancy_id IN %%s;
+        AND occupancy_id IN %%s
     """
+    if tod not in ('day', 'night', 'transit', 'all', 'off'):
+        msg = ("Invalid time of day: '%s'. Expected 'day', 'night', 'transit',"
+               " 'all', or 'off'")
+        msg %= tod
+        raise RuntimeError(msg)
 
     if tod == 'off':
         # pop_ratio is hard-coded to 1 for each region code
         return [(rc, 1) for rc in region_codes]
     elif tod == 'all':
         query %= {
-            'pop_ratio_column': ('SUM(day_pop_ratio, night_pop_ratio, '
+            'pop_ratio_column': ('(day_pop_ratio + night_pop_ratio + '
                                  'transit_pop_ratio)')}
     elif tod in ('day', 'night', 'transit'):
         # otherwise, query the database for the population ratio
@@ -261,16 +269,13 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
             'night': 'night_pop_ratio',
             'transit': 'transit_pop_ratio',
         }
-
         query %= dict(pop_ratio_column=tod_column_map[tod])
-    else:
-        pass
-        # TODO: invalid ``tod`` parameter
-        # TODO: raise an exception
 
-    cursor.execute(query % (num_list_to_sql_array(region_codes),
-                            num_list_to_sql_array(occupancy)))
-    reg_codes_pop_ratios = cursor.fetchall()
+    reg_codes_pop_ratios = util.exec_query(
+        cursor,
+        query % (num_list_to_sql_array(region_codes),
+                 num_list_to_sql_array(occupancy))
+    )
     return reg_codes_pop_ratios
 
 
@@ -290,6 +295,62 @@ def _get_pop_table(lng1, lat1, lng2, lat2):
 
     pop_table = cursor.fetchall()
     return pop_table
+
+
+def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
+    """
+    A helper function which implements the looping logic for contructing
+    assets.
+
+    Generates tuples of the following information (each datum as a string)::
+
+        * ISO
+        * Calculated population value (taking into account dwelling fraction
+          and popluation ratio, based on the time of day)
+        * Population cell ID
+        * Longitude
+        * Latitude
+        * Study Region ID
+        * GADM Country ID
+        * GEM Taxonomy
+
+    :param pop_table:
+        Population data. See :func:`_get_pop_table`.
+    :param reg_codes_pop_ratios:
+        Region codes and population ratios. See
+        :func:`_get_reg_codes_pop_ratios`.
+    :param df_table:
+        Dwelling fraction data. See :func:`_get_dwelling_fractions`.
+    """
+    for pop in pop_table:
+        pop_gadm_country_id = pop[0]
+        pop_value = pop[2]
+        pop_grid_id = pop[3]
+        pop_iso = pop[4]
+        pop_lat = pop[5]
+        pop_lon = pop[6]
+        for reg_code, pop_ratio in reg_codes_pop_ratios:
+            for df in df_table:
+                df_building_type = df[0]
+                df_dwelling_fraction = df[1]
+                df_is_urban = df[2]
+                df_study_region = df[3]
+                df_gadm_country_id = df[4]
+                df_region_id = df[5]
+
+                # only generate asset results for the current region_id and
+                # country_id, to avoid writing out incorrect/extra data
+                if  (df_region_id == reg_code and
+                     df_gadm_country_id == pop_gadm_country_id):
+                    asset = (pop_iso,
+                             (pop_value * pop_ratio * df_dwelling_fraction),
+                             pop_grid_id,
+                             pop_lon,
+                             pop_lat,
+                             df_study_region,
+                             df_gadm_country_id,
+                             df_building_type)
+                    yield tuple([str(x) for x in asset])
 
 
 def stream_response_generator(request, output_type):
@@ -330,10 +391,11 @@ def stream_response_generator(request, output_type):
                                                                 lng2, lat2)
     ccStr = ', '.join(str(e) for e in country_codes)
 
-    df_table = _get_dwelling_fractions(country_codes, occupancy)
+    # Get all of the data we need for the loops below:
+    pop_table = _get_pop_table(lng1, lat1, lng2, lat2)
     reg_codes_pop_ratios = _get_reg_codes_pop_ratios(region_codes, tod_select,
                                                      occupancy)
-    pop_table = _get_pop_table(lng1, lat1, lng2, lat2)
+    df_table = _get_dwelling_fractions(country_codes, occupancy)
 
     if output_type == "csv":
         # export csv
@@ -343,41 +405,12 @@ def stream_response_generator(request, output_type):
 
         # csv header
         yield ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-               'study_region, gadm country id, GEM taxonomy')
-        yield "\n"
+               'study_region, gadm country id, GEM taxonomy\n')
 
         # csv exposure table
-        for pop in pop_table:
-            pop_gadm_country_id = pop[0]
-            pop_value = pop[2]
-            pop_grid_id = pop[3]
-            pop_iso = pop[4]
-            pop_lat = pop[5]
-            pop_lon = pop[6]
-            for reg_code, pop_ratio in reg_codes_pop_ratios:
-                for df in df_table:
-                    df_building_type = df[0]
-                    df_dwelling_fraction = df[1]
-                    df_is_urban = df[2]
-                    df_study_region = df[3]
-                    df_gadm_country_id = df[4]
-                    df_region_id = df[5]
-
-                    # only write out results for the current region_id and
-                    # country_id, to avoid writing out incorrect/extra data
-                    if  (df_region_id == reg_code and
-                         df_gadm_country_id == pop_gadm_country_id):
-                        yield ",".join([
-                            str(pop_iso),
-                            str(pop_value * pop_ratio * df_dwelling_fraction),
-                            str(pop_grid_id),
-                            str(pop_lon),
-                            str(pop_lat),
-                            str(df_study_region),
-                            str(df_gadm_country_id),
-                            str(df_building_type)
-                        ])
-                        yield "\n"
+        for asset in _asset_generator(pop_table, reg_codes_pop_ratios,
+                                      df_table):
+            yield '%s\n' % ','.join(asset)
 
     elif output_type == "nrml":
         # export nrml
@@ -387,33 +420,13 @@ def stream_response_generator(request, output_type):
         yield copyright
         yield '''
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4"
-      xmlns:gml="http://www.opengis.net/gml>\n'''
-
-        # nrml exposure file
-        for pop in pop_table:
-            pop_gadm_country_id = pop[0]
-            pop_value = pop[2]
-            pop_grid_id = pop[3]
-            pop_iso = pop[4]
-            pop_lat = pop[5]
-            pop_lon = pop[6]
-            for reg_code, pop_ratio in reg_codes_pop_ratios:
-                for df in df_table:
-                    df_building_type = df[0]
-                    df_dwelling_fraction = df[1]
-                    df_is_urban = df[2]
-                    df_study_region = df[3]
-                    df_gadm_country_id = df[4]
-                    df_region_id = df[5]
-
-                    # only write out results for the current region_id and
-                    # country_id, to avoid writing out incorrect/extra data
-                    if  (df_region_id == reg_code and
-                         df_gadm_country_id == pop_gadm_country_id):
-                        yield ('''\
+      xmlns:gml="http://www.opengis.net/gml>
     <exposureModel gml:id="ep">
         <exposureList gml:id="exposure" assetCategory="population">
             <gml:description>Source: OQP exposure export tool</gml:description>
+'''
+
+        asset_nrml_fmt = """
                 <assetDefinition gml:id=%s_%s>
                     <site>
                         <gml:Point srsName="epsg:4326">
@@ -422,14 +435,23 @@ def stream_response_generator(request, output_type):
                     </site>
                     <number>%s</number>
                     <taxonomy>%s</taxonomy>
-                </assetDefinition>
-        </exposureList>
-    </exposureModel>\n''' % (pop_grid_id, df_building_type, pop_lon, pop_lat,
-                             (pop_value * pop_ratio * df_dwelling_fraction),
-                             df_building_type))
-        # for loop ends here
+                </assetDefinition>"""
+
+        for (_, pop_value, pop_grid_id, pop_lon, pop_lat, _, _,
+            df_building_type) in _asset_generator(pop_table,
+                                                  reg_codes_pop_ratios,
+                                                  df_table):
+            asset = asset_nrml_fmt % (
+                pop_grid_id, df_building_type,
+                pop_lon, pop_lat,
+                pop_value, df_building_type
+            )
+            yield '%s' % asset
         # finalize the document:
-        yield "</nrml>\n"
+        yield """
+        </exposureList>
+    </exposureModel>
+</nrml>\n"""
 
 
 def copyright_csv(cr_text):
