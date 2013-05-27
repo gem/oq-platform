@@ -51,6 +51,13 @@ COPYRIGHT_HEADER = '''\
  More information on licensing: http://www.globalquakemodel.org/licensing\n
 '''
 
+#: Convert a Python list (containing numbers, such as record IDs as integers)
+#: to the format required for a SQL query.
+num_list_to_sql_array = lambda a_list: (
+    '(' + ', '.join(str(x) for x in a_list) + ')'
+)
+
+
 @csrf_exempt
 def get_exposure_export_form(request):
     #debug*******
