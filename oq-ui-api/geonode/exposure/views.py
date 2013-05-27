@@ -87,8 +87,6 @@ def get_exposure_export_form(request):
                 (%s, %s, %s, %s, 4326);""", [lng1, lat1, lng2, lat2])
         admin_level_flag = cursor.fetchall()
 
-        result = []
-
         #print some stfuff
                 #html = '<html><body>%s</body></html>'
         #return HttpResponse(html % test_table)
