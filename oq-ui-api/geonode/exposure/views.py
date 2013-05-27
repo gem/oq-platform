@@ -24,6 +24,32 @@ from django.db import connections
 from forms import ExposureExportForm
 from django.shortcuts import render_to_response
 
+COPYRIGHT_HEADER = '''\
+ Version 1.0 released on 31.01.2013
+
+ Copyright (C) 2013 GEM Foundation
+
+ Contributions by: see http://www.globalquakemodel.org/contributors
+
+ You may use this work under the terms of the CC-BY-NC-SA 3.0 (unported)
+ [http://creativecommons.org/licenses/by-nc-sa/3.0/]
+
+ THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. INSOFAR
+ AS THIS WORK IS PROTECTED BY LAWS THAT NEIGHBOUR OR ARE SIMILARLY RELATED
+ TO COPYRIGHT, SUCH AS DATABASE RIGHTS AS INTRODUCED IN EUROPE BY THE
+ DIRECTIVE 96/9/EC, YOU ALSO MAY USE THIS WORK UNDER THE TERMS OF
+ CC-BY-NC-SA 3.0 (unported).
+ [http://creativecommons.org/licenses/by-nc-sa/3.0/]
+
+ ANY USE OF THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR
+ DIRECTLY ALLOWED BY THE APPLICABLE LAW IS PROHIBITED.
+
+ If you have any questions or if you wish to seek permission to use this
+ data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
+ the GEM Foundation at: licensing@globalquakemodel.org
+
+ More information on licensing: http://www.globalquakemodel.org/licensing\n
+'''
 
 @csrf_exempt
 def get_exposure_export_form(request):
