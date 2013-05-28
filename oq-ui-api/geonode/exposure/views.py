@@ -175,7 +175,7 @@ def export_exposure(request):
         content_disp = 'attachment; filename="exposure_export.xml"'
         mimetype = 'text/plain'
     else:
-        raise RuntimeError(
+        raise ValueError(
             "Unrecognized output type '%s', only 'nrml' and 'csv' are "
             "supported" % output_type
         )
@@ -286,7 +286,7 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
         msg = ("Invalid time of day: '%s'. Expected 'day', 'night', 'transit',"
                " 'all', or 'off'")
         msg %= tod
-        raise RuntimeError(msg)
+        raise ValueError(msg)
 
     if tod == 'off':
         # pop_ratio is hard-coded to 1 for each region code
@@ -408,7 +408,7 @@ def stream_response_generator(request, output_type):
         and 'nrml' (XML).
     """
     if output_type not in ('csv', 'nrml'):
-        raise RuntimeError(
+        raise ValueError(
             "Unrecognized output type '%s', only 'nrml' and 'csv' are "
             "supported" % output_type
         )
