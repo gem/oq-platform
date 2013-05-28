@@ -6,15 +6,9 @@ admin_level2 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1'],
                 ['admin2', 'Admin Level 2']]
 admin_level3 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1'],
                 ['admin2', 'Admin Level 2'], ['admin3', 'Admin Level 3']]
-admin_level4 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1'],
-                ['admin2', 'Admin Level 2'], ['admin3', 'Admin Level 3'],
-                ['admin4', 'Admin Level 4']]
-admin_level5 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1'],
-                ['admin2', 'Admin Level 2'], ['admin3', 'Admin Level 3'],
-                ['admin4', 'Admin Level 4'], ['admin5', 'Admin Level 5']]
 
 ADMIN_LEVELS = [admin_level0, admin_level1, admin_level2,
-                admin_level3, admin_level4, admin_level5]
+                admin_level3]
 
 TOD = [['day', 'Day'], ['night', 'Night'], ['transit', 'Transit'], ['all', 'All'], ['off', 'Off']]
 res = [['res', 'Residential'], ['non-res', 'Non-Residential'], ['both', 'Both']]
