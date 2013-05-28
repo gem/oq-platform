@@ -61,10 +61,7 @@ num_list_to_sql_array = lambda a_list: (
 
 @csrf_exempt
 def get_exposure_export_form(request):
-    #debug*******
-    #import pdb; pdb.set_trace()
-    #debug*******
-
+    # TODO(LB): Why is this a POST? I would expect a GET.
     if request.method == 'POST':
         # get the lat long variables from the client
         lat1 = request.POST['lat1']
@@ -121,13 +118,21 @@ def get_exposure_export_form(request):
 #disabling etag for streaming
 @condition(etag_func=None)
 def export_exposure(request):
-    # output_type = request.GET['output_type']
-    # TODO: from request.GET, get:
-    #  * 'outputype'
-    #  * 'residential'
-    #  * 'timeofday'
-    #  * 'adminlevel'
+    """
+    Perform a streaming export of the requested exposure data.
 
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameters::
+
+            * 'outputType' ('csv' or 'nrml')
+            * 'timeOfDay'
+            * 'adminLevel'
+            * 'lng1'
+            * 'lat1'
+            * 'lng2'
+            * 'lat2'
+    """
     content_disp = None
     mimetype = None
     output_type = request.GET['outputType']
@@ -281,6 +286,16 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
 
 def _get_pop_table(lng1, lat1, lng2, lat2):
     """
+    Given the lon/lat of a bounding box, query the following data from the GED
+    DB::
+
+        * gadm_country_id
+        * is_urban
+        * pop_value
+        * the_geom
+        * iso
+        * longitude
+        * latitude
     """
     cursor = connections['geddb'].cursor()
     query = """
@@ -389,7 +404,6 @@ def stream_response_generator(request, output_type):
 
     country_codes, region_codes = _get_country_and_region_codes(lng1, lat1,
                                                                 lng2, lat2)
-    ccStr = ', '.join(str(e) for e in country_codes)
 
     # Get all of the data we need for the loops below:
     pop_table = _get_pop_table(lng1, lat1, lng2, lat2)
