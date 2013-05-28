@@ -150,10 +150,122 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
     Tests for `stream_response_generator`.
     """
 
+    def setUp(self):
+        req_params = {
+            'outputType': 'csv',
+            'residential': 'res',
+            'timeOfDay': 'day',
+            'adminLevel': 'fake',
+            'lng1': '8.1',
+            'lat1': '45.2',
+            'lng2': '9.1',
+            'lat2': '46.2',
+        }
+        self.request = FakeHttpGetRequest(req_params)
+
+        self.gcrc_patch = mock.patch('exposure.views.'
+                                     '_get_country_and_region_codes')
+        self.gcrc_mock = self.gcrc_patch.start()
+        self.gcrc_mock.return_value = ['fake_country_codes',
+                                       'fake_region_codes']
+
+        self.pop_patch = mock.patch('exposure.views._get_pop_table')
+        self.pop_mock = self.pop_patch.start()
+
+        self.grcpr_patch = mock.patch('exposure.views.'
+                                      '_get_reg_codes_pop_ratios')
+        self.grcpr_mock = self.grcpr_patch.start()
+
+        self.df_patch = mock.patch('exposure.views._get_dwelling_fractions')
+        self.df_mock = self.df_patch.start()
+
+        self.ag_patch = mock.patch('exposure.views._asset_generator')
+        self.ag_mock = self.ag_patch.start()
+        self.ag_mock.return_value = []
+
+        self.patches = [self.gcrc_patch, self.pop_patch, self.grcpr_patch,
+                        self.df_patch, self.ag_patch]
+        self.mocks = [self.gcrc_mock, self.pop_mock, self.grcpr_mock,
+                      self.df_mock, self.ag_mock]
+
+    def tearDown(self):
+        for p in self.patches:
+            p.stop()
+
     def test_invalid_output_type(self):
-        with self.assertRaises(RuntimeError) as ar:
+        with self.assertRaises(ValueError) as ar:
             list(views.stream_response_generator(None, 'pdf'))
 
         expected_error = ("Unrecognized output type 'pdf', only 'nrml' and "
                           "'csv' are supported")
         self.assertEqual(expected_error, ar.exception.message)
+
+    def test_query_func_calls_residential(self):
+        # Test that the proper arguments are passed to the various DB query
+        # helper functions.
+        # 'Residential' selection is 'res'
+
+        # The list cast is done here to exhause the generator
+        # (since all function calls happen in the context of a generator,
+        # which is lazy)
+        list(views.stream_response_generator(self.request, 'csv'))
+        for m in self.mocks:
+            self.assertEqual(1, m.call_count)
+
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+                         self.gcrc_mock.call_args[0])
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+                         self.pop_mock.call_args[0])
+        self.assertEqual(('fake_region_codes', 'day', [0]),
+                         self.grcpr_mock.call_args[0])
+        self.assertEqual(('fake_country_codes', [0]),
+                         self.df_mock.call_args[0])
+
+    def test_query_func_calls_non_residential(self):
+        # Test that the proper arguments are passed to the various DB query
+        # helper functions.
+        # 'Residential' selection is 'non-res'
+        self.request.GET['residential'] = 'non-res'
+
+        list(views.stream_response_generator(self.request, 'csv'))
+        for m in self.mocks:
+            self.assertEqual(1, m.call_count)
+
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+                         self.gcrc_mock.call_args[0])
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+                         self.pop_mock.call_args[0])
+        self.assertEqual(('fake_region_codes', 'day', [1]),
+                         self.grcpr_mock.call_args[0])
+        self.assertEqual(('fake_country_codes', [1]),
+                         self.df_mock.call_args[0])
+
+    def test_query_func_calls_both(self):
+        # Test that the proper arguments are passed to the various DB query
+        # helper functions.
+        # 'Residential' selection is 'both'
+        self.request.GET['residential'] = 'both'
+
+        list(views.stream_response_generator(self.request, 'nrml'))
+        for m in self.mocks:
+            self.assertEqual(1, m.call_count)
+
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+                         self.gcrc_mock.call_args[0])
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+                         self.pop_mock.call_args[0])
+        self.assertEqual(('fake_region_codes', 'day', [0, 1]),
+                         self.grcpr_mock.call_args[0])
+        self.assertEqual(('fake_country_codes', [0, 1]),
+                         self.df_mock.call_args[0])
+
+
+    def test_invalid_residential(self):
+        self.request.GET['residential'] = 'invalid'
+
+        with self.assertRaises(ValueError) as ar:
+            list(views.stream_response_generator(self.request, 'nrml'))
+
+        self.assertEqual("Invalid 'residential' selection: 'invalid'. "
+                         "Expected 'res', 'non-res', or 'both'.",
+                         ar.exception.message)
