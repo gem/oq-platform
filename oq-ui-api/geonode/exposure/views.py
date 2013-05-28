@@ -368,18 +368,18 @@ def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
     """
     for pop in pop_table:
         pop_gadm_country_id = pop[0]
-        pop_value = pop[2]
-        pop_grid_id = pop[3]
-        pop_iso = pop[4]
-        pop_lat = pop[5]
-        pop_lon = pop[6]
+        pop_value = pop[1]
+        pop_grid_id = pop[2]
+        pop_iso = pop[3]
+        pop_lat = pop[4]
+        pop_lon = pop[5]
         for reg_code, pop_ratio in reg_codes_pop_ratios:
             for df in df_table:
                 df_building_type = df[0]
                 df_dwelling_fraction = df[1]
-                df_study_region = df[3]
-                df_gadm_country_id = df[4]
-                df_region_id = df[5]
+                df_study_region = df[2]
+                df_gadm_country_id = df[3]
+                df_region_id = df[4]
 
                 # only generate asset results for the current region_id and
                 # country_id, to avoid writing out incorrect/extra data
