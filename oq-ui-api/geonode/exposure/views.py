@@ -426,9 +426,13 @@ def stream_response_generator(request, output_type):
         occupancy = [0]
     elif res_select == 'non-res':
         occupancy = [1]
-    else:
-        # assume that it's 'both'
+    elif res_select == 'both':
         occupancy = [0, 1]
+    else:
+        msg = ("Invalid 'residential' selection: '%s'."
+               " Expected 'res', 'non-res', or 'both'."
+               % res_select)
+        raise ValueError(msg)
 
     country_codes, region_codes = _get_country_and_region_codes(lng1, lat1,
                                                                 lng2, lat2)
