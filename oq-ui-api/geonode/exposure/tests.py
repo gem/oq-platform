@@ -20,7 +20,7 @@ class ExportExposureTestCase(unittest.TestCase):
 
         request = FakeHttpGetRequest(dict(outputType='pdf'))
 
-        with self.assertRaises(RuntimeError) as ar:
+        with self.assertRaises(ValueError) as ar:
             views.export_exposure(request)
 
         expected_error = (
@@ -134,7 +134,7 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
 
     def test_invalid_tod(self):
         tod = 'tea_time'
-        with self.assertRaises(RuntimeError) as ar:
+        with self.assertRaises(ValueError) as ar:
             views._get_reg_codes_pop_ratios(self.region_codes,
                                             tod,
                                             self.occupancy)
