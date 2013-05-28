@@ -187,7 +187,6 @@ def _get_dwelling_fractions(country_codes, occupancy):
 
         * building_type
         * dwelling_fraction
-        * is_urban
         * study_region_id
         * gadm_country_id (same as ``country_codes``)
         * region_id
@@ -201,7 +200,6 @@ def _get_dwelling_fractions(country_codes, occupancy):
         SELECT
             dist_value.building_type,
             dist_value.dwelling_fraction,
-            dist_group.is_urban,
             dist_group.study_region_id,
             geo_region.gadm_country_id,
             geo_region.id
@@ -290,7 +288,6 @@ def _get_pop_table(lng1, lat1, lng2, lat2):
     DB::
 
         * gadm_country_id
-        * is_urban
         * pop_value
         * the_geom
         * iso
@@ -299,8 +296,9 @@ def _get_pop_table(lng1, lat1, lng2, lat2):
     """
     cursor = connections['geddb'].cursor()
     query = """
-        SELECT grid.gadm_country_id, grid.is_urban, grid.pop_value,
-            grid.the_geom, gadm.iso, ST_X(grid.the_geom), ST_Y(grid.the_geom)
+        SELECT
+            grid.gadm_country_id, grid.pop_value, grid.the_geom, gadm.iso,
+            ST_X(grid.the_geom), ST_Y(grid.the_geom)
         FROM ged2.grid_point grid
         JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
         WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
@@ -348,7 +346,6 @@ def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
             for df in df_table:
                 df_building_type = df[0]
                 df_dwelling_fraction = df[1]
-                df_is_urban = df[2]
                 df_study_region = df[3]
                 df_gadm_country_id = df[4]
                 df_region_id = df[5]
