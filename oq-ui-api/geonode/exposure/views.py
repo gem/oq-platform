@@ -25,7 +25,7 @@ from exposure import forms
 from exposure import util
 from django.shortcuts import render_to_response
 
-COPYRIGHT_HEADER = '''\
+COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
 
  Copyright (C) 2013 GEM Foundation
@@ -50,7 +50,38 @@ COPYRIGHT_HEADER = '''\
  the GEM Foundation at: licensing@globalquakemodel.org
 
  More information on licensing: http://www.globalquakemodel.org/licensing\n
-'''
+"""
+
+CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
+              'study_region, gadm country id, GEM taxonomy\n')
+
+XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
+
+NRML_HEADER = """
+<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"
+      xmlns:gml="http://www.opengis.net/gml>
+    <exposureModel gml:id="ep">
+        <exposureList gml:id="exposure" assetCategory="population">
+            <gml:description>Source: OQP exposure export tool</gml:description>
+"""
+
+NRML_ASSET_FMT = """
+                <assetDefinition gml:id=%s_%s>
+                    <site>
+                        <gml:Point srsName="epsg:4326">
+                            <gml:pos>%s %s</gml:pos>
+                        </mgl:Point>
+                    </site>
+                    <number>%s</number>
+                    <taxonomy>%s</taxonomy>
+                </assetDefinition>"""
+
+NRML_FOOTER = """
+        </exposureList>
+    </exposureModel>
+</nrml>\n"""
+
+
 
 #: Convert a Python list (containing numbers, such as record IDs as integers)
 #: to the format required for a SQL query.
@@ -415,8 +446,7 @@ def stream_response_generator(request, output_type):
         yield copyright
 
         # csv header
-        yield ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-               'study_region, gadm country id, GEM taxonomy\n')
+        yield CSV_HEADER
 
         # csv exposure table
         for asset in _asset_generator(pop_table, reg_codes_pop_ratios,
@@ -428,41 +458,22 @@ def stream_response_generator(request, output_type):
         # nrml header
         copyright = copyright_nrml(COPYRIGHT_HEADER)
         yield "<?xml version='1.0' encoding='utf-8'?> \n"
+        yield XML_HEADER
         yield copyright
-        yield '''
-<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"
-      xmlns:gml="http://www.opengis.net/gml>
-    <exposureModel gml:id="ep">
-        <exposureList gml:id="exposure" assetCategory="population">
-            <gml:description>Source: OQP exposure export tool</gml:description>
-'''
-
-        asset_nrml_fmt = """
-                <assetDefinition gml:id=%s_%s>
-                    <site>
-                        <gml:Point srsName="epsg:4326">
-                            <gml:pos>%s %s</gml:pos>
-                        </mgl:Point>
-                    </site>
-                    <number>%s</number>
-                    <taxonomy>%s</taxonomy>
-                </assetDefinition>"""
+        yield NRML_HEADER
 
         for (_, pop_value, pop_grid_id, pop_lon, pop_lat, _, _,
             df_building_type) in _asset_generator(pop_table,
                                                   reg_codes_pop_ratios,
                                                   df_table):
-            asset = asset_nrml_fmt % (
+            asset = NRML_ASSET_FMT % (
                 pop_grid_id, df_building_type,
                 pop_lon, pop_lat,
                 pop_value, df_building_type
             )
             yield '%s' % asset
         # finalize the document:
-        yield """
-        </exposureList>
-    </exposureModel>
-</nrml>\n"""
+        yield NRML_FOOTER
 
 
 def copyright_csv(cr_text):
