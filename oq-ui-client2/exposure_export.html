@@ -391,8 +391,6 @@
         $("#wizard").toggle();
     });
 
-    //validate that all selections have been made
-
     // send values to Django
     map.on('draw:rectangle-created', function (e) {
         drawnItems.clearLayers();
@@ -426,6 +424,7 @@
                     var disableResidentialBoth = false;
                     if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
                         disableResidentialBoth = true;
+                        //clear 'Both' selection if TOD 'off' is selected
                         $('input[id=id_residential_2]').removeAttr('checked');
                     }
                     $("input[id=id_residential_2]").attr('disabled',
