@@ -224,20 +224,18 @@
 </div>  
 <div id="tooltip">
 <!-- wizard divs -->
-<div id="wizard" align="center" style="display:none">
+<div class="wizard" id="wizard" align="center" style="display:none">
     <form action="/exposure/wizard1" method="get">{% csrf_token %}
 {{ form.as_p }}
 
 </div>
     <button id="export_button">Export Wizard</button>
-    <a href="#" id="request_csv"><button>Download CSV</button></a>
-    <a href="#" id="request_nrml"><button>Download NRML</button></a>
     <a href="#" class="tooltip">Help
       <span>
         <strong>Exposure Export Tool</strong><br />
 <p>Begin by zooming in to an area of interest, keep zooming until the 'Selection tool' <img src="{{ STATIC_URL }}theme/images/draw-rectangle.png"> appears just below the layer selection box (top left of the map).</p>
 <p>Click the selection tool, and pull a box on the map over the area on interest.</p>
-<p>Finally click 'download CSV' and or 'download NRML'.</p>
+<p>Click the 'Export Wizard' button, and make selections to specify the data you wish to download.</p>
         <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information first activate one of the dwelling fraction layers from the layer menu<br><img src="src/Leaflet/dist/images/layers.png"></p>
 <p>Next hover the mouse over the area of interest, and view the pie chart popup.</p>
 <p>Hover the mouse over the side panels to view the dwelling fraction types list & the GRUMP layer legend.</p>
@@ -388,9 +386,13 @@
     var latlonTopLeft = "";
     var latlonBottomRight = "";
 
+    // show hide the exosure export selection list
     $("button").click(function() {
         $("#wizard").toggle();
     });
+
+    //validate that all selections have been made
+
     // send values to Django
     map.on('draw:rectangle-created', function (e) {
         drawnItems.clearLayers();
@@ -399,8 +401,19 @@
         latlonBottomRight = e.rect._latlngs[3];
         //wizard pop-up
 
-
         var exposureExportFormLoaded = function() {
+            //disable submit button  untill the user has made selections
+            $('input[type="submit"]').attr('disabled','disabled');
+            //enable the submit button once the selections have been made
+            $("#exposure-export-form").change(
+                function() {
+                    var isChecked =  $('form input[type=radio]:checked');
+                    if (isChecked.size() == 5){
+                        $('input[type="submit"]').removeAttr('disabled');
+                    }
+                }
+            );
+                                                                                 
             /*
              * Hook in radio selection logic.
              * When time of day is 'off', disable the 'both' selection
@@ -413,6 +426,7 @@
                     var disableResidentialBoth = false;
                     if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
                         disableResidentialBoth = true;
+                        $('input[id=id_residential_2]').removeAttr('checked');
                     }
                     $("input[id=id_residential_2]").attr('disabled',
                                                          disableResidentialBoth);
