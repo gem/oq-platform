@@ -205,6 +205,7 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         # Test that the proper arguments are passed to the various DB query
         # helper functions.
         # 'Residential' selection is 'res'
+        self.request.GET['adminLevel'] = 'admin0'
 
         # The list cast is done here to exhause the generator
         # (since all function calls happen in the context of a generator,
@@ -215,49 +216,51 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
 
         self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
                          self.adm_lvl_reg_mock.call_args[0])
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
                          self.pop_mock.call_args[0])
         self.assertEqual(('fake_region_ids', 'day', [0]),
                          self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_admin_lvl_ids', [0]),
+        self.assertEqual(('fake_admin_lvl_ids', [0], 'gadm_country_id'),
                          self.df_mock.call_args[0])
 
     def test_query_func_calls_non_residential(self):
         # Test that the proper arguments are passed to the various DB query
         # helper functions.
         # 'Residential' selection is 'non-res'
+        self.request.GET['adminLevel'] = 'admin1'
         self.request.GET['residential'] = 'non-res'
 
         list(views.stream_response_generator(self.request, 'csv'))
         for m in self.mocks:
             self.assertEqual(1, m.call_count)
 
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_1_id'),
                          self.adm_lvl_reg_mock.call_args[0])
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_1_id'),
                          self.pop_mock.call_args[0])
         self.assertEqual(('fake_region_ids', 'day', [1]),
                          self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_admin_lvl_ids', [1]),
+        self.assertEqual(('fake_admin_lvl_ids', [1], 'gadm_admin_1_id'),
                          self.df_mock.call_args[0])
 
     def test_query_func_calls_both(self):
         # Test that the proper arguments are passed to the various DB query
         # helper functions.
         # 'Residential' selection is 'both'
+        self.request.GET['adminLevel'] = 'admin3'
         self.request.GET['residential'] = 'both'
 
         list(views.stream_response_generator(self.request, 'nrml'))
         for m in self.mocks:
             self.assertEqual(1, m.call_count)
 
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_3_id'),
                          self.adm_lvl_reg_mock.call_args[0])
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_3_id'),
                          self.pop_mock.call_args[0])
         self.assertEqual(('fake_region_ids', 'day', [0, 1]),
                          self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_admin_lvl_ids', [0, 1]),
+        self.assertEqual(('fake_admin_lvl_ids', [0, 1], 'gadm_admin_3_id'),
                          self.df_mock.call_args[0])
 
 
