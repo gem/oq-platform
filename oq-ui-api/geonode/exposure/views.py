@@ -357,7 +357,7 @@ def _get_pop_table(lng1, lat1, lng2, lat2, admin_level_col):
         SELECT
             grid.%(admin_level_col)s,
             grid.pop_value,
-            grid.the_geom,
+            grid.id,
             gadm.iso,
             ST_X(grid.the_geom),
             ST_Y(grid.the_geom),
