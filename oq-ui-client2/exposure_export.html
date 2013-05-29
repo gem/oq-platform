@@ -415,9 +415,17 @@
     map.on(
         'draw:rectangle-created',
         function (e) {
-            console.log(e);
+            // Clear layers, selections, and any previous download dialogs:
+            var expForm = $("#exposure-export-form");
+            if (expForm.size()) {
+                // If the form was once loaded, dispose of it:
+                expForm.children().remove();
+            }
             drawnItems.clearLayers();
+
+            // Draw the bounding box
             drawnItems.addLayer(e.rect);
+            // Record the bounds of the bounding box
             latlonTopLeft = e.rect._latlngs[1];
             latlonBottomRight = e.rect._latlngs[3];
 
@@ -468,7 +476,10 @@
 
                 // Display the form as a jqueryui popup:
                 $("#exposure-export-form").dialog(
-                    {height: 300, width: 450, modal: true}
+                    {title: 'Download Exposure Data',
+                     height: 275,
+                     width: 500,
+                     modal: true}
                 );
                 // And finally, hide the leaflet popup with the export button:
                 map.closePopup(exportPopup);
