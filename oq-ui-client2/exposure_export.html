@@ -400,14 +400,39 @@
         success: function() {}
     });
 
+    var showExportButtonPopup = function(popupLon, popupLat) {
+        var expButton = (
+            '<button id="export_button">Export Exposure</button>' +
+            '<img id="export_button_spinner"' +
+            ' src="{{ STATIC_URL }}theme/images/ajax-loader.gif"' +
+            ' style="display: none;" />'
+        );
+        // WARNING: Note the lon/lat ordering
+        var popupLoc = new L.LatLng(popupLat, popupLon);
+
+        var popup = L.popup();
+        popup.setContent(expButton);
+        popup.setLatLng(popupLoc);
+        popup.openOn(map);
+    };
+
     // send values to Django
     map.on(
         'draw:rectangle-created',
         function (e) {
+            console.log(e);
             drawnItems.clearLayers();
             drawnItems.addLayer(e.rect);
             latlonTopLeft = e.rect._latlngs[1];
             latlonBottomRight = e.rect._latlngs[3];
+
+            // Compute the center coordinates of the selected bounding box
+            // and display a leaflet popup with the export button:
+            var halfWidth = (latlonBottomRight.lng - latlonTopLeft.lng) / 2;
+            var halfHeight = (latlonBottomRight.lat - latlonTopLeft.lat) / 2;
+            var boxCenterLon = latlonTopLeft.lng + halfWidth;
+            var boxCenterLat = latlonTopLeft.lat + halfHeight;
+            showExportButtonPopup(boxCenterLon, boxCenterLat);
 
             var exposureExportFormLoaded = function() {
                 //disable submit button  untill the user has made selections
@@ -445,20 +470,27 @@
 
                     }
                 );
+
+                // Finally, display the form as a jqueryui popup:
+                $("#exposure-export-form").dialog(
+                    {height: 300, width: 450, modal: true}
+                );
             };
 
-            $('#export_button').click(
-                function(event) {
+            // Hook the export button click functionality:
+            var exportButtonClick = function(event) {
                     event.preventDefault();
+                    // show the progress spinner:
+                    $("#export_button_spinner").css("display", "");
+                    // Load the form into the dom:
                     $('#wizard').load('/exposure/wizard1/ #exposure-export-form',
                                       {'lat1': latlonTopLeft.lat,
                                        'lng1': latlonTopLeft.lng,
                                        'lat2': latlonBottomRight.lat,
                                        'lng2': latlonBottomRight.lng },
                                        exposureExportFormLoaded);
-
-                }
-            );
+            }
+            $('#export_button').click(exportButtonClick);
         }
     );
 
