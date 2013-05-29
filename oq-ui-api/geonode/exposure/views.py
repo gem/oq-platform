@@ -53,7 +53,7 @@ COPYRIGHT_HEADER = """\
 """
 
 CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-              'study_region, gadm country id, GEM taxonomy\n')
+              'study_region, gadm level id, GEM taxonomy\n')
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 
@@ -426,7 +426,7 @@ def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
                              pop_lon,
                              pop_lat,
                              df_study_region,
-                             df_gadm_country_id,
+                             df_admin_level_id,
                              df_building_type)
                     yield tuple([str(x) for x in asset])
 
