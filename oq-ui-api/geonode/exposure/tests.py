@@ -100,10 +100,10 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
             expected_query = """
         SELECT
             geographic_region_id AS region_code,
-            (day_pop_ratio + night_pop_ratio + transit_pop_ratio) AS pop_ratio
+            (day_pop_ratio + night_pop_ratio + transit_pop_ratio) AS pop_ratio,
+            is_urban
         FROM ged2.pop_allocation
         WHERE geographic_region_id IN (1, 2, 3)
-        AND is_urban
         AND occupancy_id IN (0, 1)""".strip()
             actual_query = eq.call_args[0][1]
             actual_query = actual_query.strip()
@@ -121,10 +121,10 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
                 expected_query = """
         SELECT
             geographic_region_id AS region_code,
-            %s_pop_ratio AS pop_ratio
+            %s_pop_ratio AS pop_ratio,
+            is_urban
         FROM ged2.pop_allocation
         WHERE geographic_region_id IN (1, 2, 3)
-        AND is_urban
         AND occupancy_id IN (0, 1)""".strip()
 
                 expected_query %= tod
@@ -155,7 +155,7 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
             'outputType': 'csv',
             'residential': 'res',
             'timeOfDay': 'day',
-            'adminLevel': 'fake',
+            'adminLevel': 'admin0',
             'lng1': '8.1',
             'lat1': '45.2',
             'lng2': '9.1',
@@ -163,11 +163,12 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         }
         self.request = FakeHttpGetRequest(req_params)
 
-        self.gcrc_patch = mock.patch('exposure.views.'
-                                     '_get_country_and_region_codes')
-        self.gcrc_mock = self.gcrc_patch.start()
-        self.gcrc_mock.return_value = ['fake_country_codes',
-                                       'fake_region_codes']
+        self.adm_lvl_reg_patch = mock.patch(
+            'exposure.views._get_admin_level_ids_region_ids'
+        )
+        self.adm_lvl_reg_mock = self.adm_lvl_reg_patch.start()
+        self.adm_lvl_reg_mock.return_value = ['fake_admin_lvl_ids',
+                                              'fake_region_ids']
 
         self.pop_patch = mock.patch('exposure.views._get_pop_table')
         self.pop_mock = self.pop_patch.start()
@@ -183,9 +184,9 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         self.ag_mock = self.ag_patch.start()
         self.ag_mock.return_value = []
 
-        self.patches = [self.gcrc_patch, self.pop_patch, self.grcpr_patch,
-                        self.df_patch, self.ag_patch]
-        self.mocks = [self.gcrc_mock, self.pop_mock, self.grcpr_mock,
+        self.patches = [self.adm_lvl_reg_patch, self.pop_patch,
+                        self.grcpr_patch, self.df_patch, self.ag_patch]
+        self.mocks = [self.adm_lvl_reg_mock, self.pop_mock, self.grcpr_mock,
                       self.df_mock, self.ag_mock]
 
     def tearDown(self):
@@ -212,13 +213,13 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         for m in self.mocks:
             self.assertEqual(1, m.call_count)
 
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
-                         self.gcrc_mock.call_args[0])
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
+                         self.adm_lvl_reg_mock.call_args[0])
         self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
                          self.pop_mock.call_args[0])
-        self.assertEqual(('fake_region_codes', 'day', [0]),
+        self.assertEqual(('fake_region_ids', 'day', [0]),
                          self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_country_codes', [0]),
+        self.assertEqual(('fake_admin_lvl_ids', [0]),
                          self.df_mock.call_args[0])
 
     def test_query_func_calls_non_residential(self):
@@ -231,13 +232,13 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         for m in self.mocks:
             self.assertEqual(1, m.call_count)
 
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
-                         self.gcrc_mock.call_args[0])
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
+                         self.adm_lvl_reg_mock.call_args[0])
         self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
                          self.pop_mock.call_args[0])
-        self.assertEqual(('fake_region_codes', 'day', [1]),
+        self.assertEqual(('fake_region_ids', 'day', [1]),
                          self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_country_codes', [1]),
+        self.assertEqual(('fake_admin_lvl_ids', [1]),
                          self.df_mock.call_args[0])
 
     def test_query_func_calls_both(self):
@@ -250,13 +251,13 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         for m in self.mocks:
             self.assertEqual(1, m.call_count)
 
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
-                         self.gcrc_mock.call_args[0])
+        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
+                         self.adm_lvl_reg_mock.call_args[0])
         self.assertEqual(('8.1', '45.2', '9.1', '46.2'),
                          self.pop_mock.call_args[0])
-        self.assertEqual(('fake_region_codes', 'day', [0, 1]),
+        self.assertEqual(('fake_region_ids', 'day', [0, 1]),
                          self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_country_codes', [0, 1]),
+        self.assertEqual(('fake_admin_lvl_ids', [0, 1]),
                          self.df_mock.call_args[0])
 
 
