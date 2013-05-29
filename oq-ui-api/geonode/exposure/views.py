@@ -206,13 +206,17 @@ def _get_admin_level_ids_region_ids(lng1, lat1, lng2, lat2, admin_level_col):
         FROM (
             SELECT DISTINCT %(admin_level_col)s AS admin_level_id
             FROM ged2.grid_point grid
-            WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
+            WHERE ST_intersects(ST_MakeEnvelope(%(lng1)s, %(lat1)s,
+                                                %(lng2)s, %(lat2)s, 4326),
                                 grid.the_geom)
         ) country
         JOIN ged2.geographic_region geo
             ON country.admin_level_id=geo.%(admin_level_col)s
-        """ % dict(admin_level_col=admin_level_col),
-        [lng1, lat1, lng2, lat2])
+        """ % dict(admin_level_col=admin_level_col,
+                   lng1=lng1,
+                   lat1=lat1,
+                   lng2=lng2,
+                   lat2=lat2))
 
     country_reg_codes = cursor.fetchall()
     admin_level_ids = [r[0] for r in country_reg_codes]
@@ -353,11 +357,13 @@ def _get_pop_table(lng1, lat1, lng2, lat2, admin_level_col):
         SELECT
             grid.%(admin_level_col)s,
             grid.pop_value,
-            grid.the_geom, gadm.iso,
+            grid.the_geom,
+            gadm.iso,
             ST_X(grid.the_geom),
             ST_Y(grid.the_geom),
             grid.is_urban
         FROM ged2.grid_point grid
+        JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
         WHERE ST_intersects(ST_MakeEnvelope(%(lng1)s, %(lat1)s,
                                             %(lng2)s, %(lat2)s, 4326),
                             grid.the_geom)
