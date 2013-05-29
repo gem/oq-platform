@@ -99,7 +99,6 @@ def get_exposure_export_form(request):
         lng1 = request.POST['lng1']
         lat2 = request.POST['lat2']
         lng2 = request.POST['lng2']
-        #form = ExposureForm()
 
         #find all the admin levels available inside bounding box
         cursor = connections['geddb'].cursor()
@@ -115,10 +114,6 @@ def get_exposure_export_form(request):
             FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope
                 (%s, %s, %s, %s, 4326);""", [lng1, lat1, lng2, lat2])
         admin_level_flag = cursor.fetchall()
-
-        #print some stfuff
-                #html = '<html><body>%s</body></html>'
-        #return HttpResponse(html % test_table)
 
         admin_level = admin_level_flag[0][0]
 
