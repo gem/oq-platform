@@ -1,12 +1,12 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-admin_level0 = [['admin0', 'Admin Level 0']]
-admin_level1 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1']]
-admin_level2 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1'],
-                ['admin2', 'Admin Level 2']]
-admin_level3 = [['admin0', 'Admin Level 0'], ['admin1', 'Admin Level 1'],
-                ['admin2', 'Admin Level 2'], ['admin3', 'Admin Level 3']]
+admin_level0 = [['admin0', 'Level 0']]
+admin_level1 = [['admin0', 'Level 0'], ['admin1', 'Level 1']]
+admin_level2 = [['admin0', 'Level 0'], ['admin1', 'Level 1'],
+                ['admin2', 'Level 2']]
+admin_level3 = [['admin0', 'Level 0'], ['admin1', 'Level 1'],
+                ['admin2', 'Level 2'], ['admin3', 'Level 3']]
 
 ADMIN_LEVELS = [admin_level0, admin_level1, admin_level2,
                 admin_level3]
