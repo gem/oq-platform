@@ -490,7 +490,8 @@ def stream_response_generator(request, output_type):
     pop_table = _get_pop_table(lng1, lat1, lng2, lat2, admin_level_col)
     reg_codes_pop_ratios = _get_reg_codes_pop_ratios(region_ids, tod_select,
                                                      occupancy)
-    df_table = _get_dwelling_fractions(admin_level_ids, occupancy, admin_level_col)
+    df_table = _get_dwelling_fractions(admin_level_ids, occupancy,
+                                       admin_level_col)
 
     if output_type == "csv":
         # export csv
