@@ -54,6 +54,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-export.css" media="screen" />
 
 {% endblock %}
+
 	<!--Google Analytics-->
 	<script type="text/javascript">
 
@@ -231,8 +232,6 @@
 <!-- wizard divs -->
 <div class="wizard" id="wizard" align="center" style="display:none">
 <div id='loader'><img src="{{ STATIC_URL }}theme/images/ajax-loader.gif"/></div>
-    <form action="/exposure/wizard1" method="get">{% csrf_token %}
-{{ form.as_p }}
 
 </div>
     <button id="export_button">Export Wizard</button>
@@ -409,67 +408,66 @@
     });
 
     // send values to Django
-    map.on('draw:rectangle-created', function (e) {
-        drawnItems.clearLayers();
-        drawnItems.addLayer(e.rect);
-        latlonTopLeft = e.rect._latlngs[1];
-        latlonBottomRight = e.rect._latlngs[3];
-        //wizard pop-up
+    map.on(
+        'draw:rectangle-created',
+        function (e) {
+            drawnItems.clearLayers();
+            drawnItems.addLayer(e.rect);
+            latlonTopLeft = e.rect._latlngs[1];
+            latlonBottomRight = e.rect._latlngs[3];
 
-        var exposureExportFormLoaded = function() {
-            //disable submit button  untill the user has made selections
-            $('input[type="submit"]').attr('disabled','disabled');
-            //enable the submit button once the selections have been made
+            var exposureExportFormLoaded = function() {
+                //disable submit button  untill the user has made selections
+                $('input[type="submit"]').attr('disabled','disabled');
+                //enable the submit button once the selections have been made
 
-            /*
-             * Hook in radio selection logic.
-             * When time of day is 'off', disable the 'both' selection
-             * for residential.
-             *
-             * Also, make sure the submit is enabled only if all radio button
-             * groups have a selection.
-             */
-            $("#exposure-export-form").change(
-                function() {
-                    // NOTE: The radio button ids are given by Django
-                    // form rendering.
-                    var disableResidentialBoth = false;
-                    if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
-                        disableResidentialBoth = true;
-                        //clear 'Both' selection if TOD 'off' is selected
-                        $('input[id=id_residential_2]').removeAttr('checked');
-                        $('input[type="submit"]').attr('disabled','disabled');
+                /*
+                 * Hook in radio selection logic.
+                 * When time of day is 'off', disable the 'both' selection
+                 * for residential.
+                 *
+                 * Also, make sure the submit is enabled only if all radio button
+                 * groups have a selection.
+                 */
+                $("#exposure-export-form").change(
+                    function() {
+                        // NOTE: The radio button ids are given by Django
+                        // form rendering.
+                        var disableResidentialBoth = false;
+                        if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
+                            disableResidentialBoth = true;
+                            //clear 'Both' selection if TOD 'off' is selected
+                            $('input[id=id_residential_2]').removeAttr('checked');
+                            $('input[type="submit"]').attr('disabled','disabled');
+                        }
+                        $("input[id=id_residential_2]").attr('disabled',
+                                                             disableResidentialBoth);
+
+                        // Only enable the submit button if all of the radio button groups
+                        // have a selection:
+                        var isChecked = $('form input[type=radio]:checked');
+                        if (isChecked.size() == 5){
+                            $('input[type="submit"]').removeAttr('disabled');
+                        }
+
                     }
-                    $("input[id=id_residential_2]").attr('disabled',
-                                                         disableResidentialBoth);
+                );
+            };
 
-                    // Only enable the submit button if all of the radio button groups
-                    // have a selection:
-                    var isChecked = $('form input[type=radio]:checked');
-                    if (isChecked.size() == 5){
-                        $('input[type="submit"]').removeAttr('disabled');
-                    }
+            $('#export_button').click(
+                function(event) {
+                    event.preventDefault();
+                    $('#wizard').load('/exposure/wizard1/ #exposure-export-form',
+                                      {'lat1': latlonTopLeft.lat,
+                                       'lng1': latlonTopLeft.lng,
+                                       'lat2': latlonBottomRight.lat,
+                                       'lng2': latlonBottomRight.lng },
+                                       exposureExportFormLoaded);
 
                 }
             );
-        };
-
-
-        $('#export_button').click(
-            function(event) {
-                event.preventDefault();
-                $('#wizard').load('/exposure/wizard1/ #exposure-export-form',
-                                  {'lat1': latlonTopLeft.lat,
-                                   'lng1': latlonTopLeft.lng,
-                                   'lat2': latlonBottomRight.lat,
-                                   'lng2': latlonBottomRight.lng },
-                                   exposureExportFormLoaded);
-
-
-            }
-        );
-
-    });
+        }
+    );
 
     map.addLayer(drawnItems);
 
