@@ -35,6 +35,3 @@ class ExposureExportForm(forms.Form):
         )
 
 
-class ExposureTOD(forms.Form):
-    timeOfDay = forms.ChoiceField(widget=forms.RadioSelect(), choices=TOD)
-    residential = forms.ChoiceField(widget=forms.RadioSelect(), choices=res)
