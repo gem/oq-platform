@@ -59,7 +59,7 @@ XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4"
-      xmlns:gml="http://www.opengis.net/gml>
+      xmlns:gml="http://www.opengis.net/gml">
     <exposureModel gml:id="ep">
         <exposureList gml:id="exposure" assetCategory="population">
             <gml:description>Source: OQP exposure export tool</gml:description>
@@ -511,7 +511,6 @@ def stream_response_generator(request, output_type):
         # export nrml
         # nrml header
         copyright = copyright_nrml(COPYRIGHT_HEADER)
-        yield "<?xml version='1.0' encoding='utf-8'?> \n"
         yield XML_HEADER
         yield copyright
         yield NRML_HEADER
