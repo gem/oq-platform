@@ -81,7 +81,12 @@ NRML_FOOTER = """
     </exposureModel>
 </nrml>\n"""
 
-
+ADMIN_LEVEL_TO_COLUMN_MAP = {
+    'admin0': 'gadm_country_id',
+    'admin1': 'gadm_admin_1_id',
+    'admin2': 'gadm_admin_2_id',
+    'admin3': 'gadm_admin_3_id',
+}
 
 #: Convert a Python list (containing numbers, such as record IDs as integers)
 #: to the format required for a SQL query.
@@ -152,8 +157,8 @@ def export_exposure(request):
         following parameters::
 
             * 'outputType' ('csv' or 'nrml')
-            * 'timeOfDay'
-            * 'adminLevel'
+            * 'timeOfDay' ('day', 'night', 'transit', 'all', 'off')
+            * 'adminLevel' ('admin0', 'admin1', 'admin2', or 'admin3')
             * 'lng1'
             * 'lat1'
             * 'lng2'
@@ -182,16 +187,24 @@ def export_exposure(request):
     return response
 
 
-def _get_country_and_region_codes(lng1, lat1, lng2, lat2):
+def _get_admin_level_ids_region_ids(lng1, lat1, lng2, lat2, admin_level_col):
     """
-    Query the GED database and get all of the country codes and region codes
+    Query the GED database and get all of the admin level IDs and region IDs
     for the bouding box given by the input coordinates.
+
+    :param lng1, lat1, lng2, lat2:
+        Longitude and latitude values of the user selected bounding box.
+    :param str admin_level_col:
+        Valid values are 'gadm_country_id', 'gadm_admin_1_id',
+        'gadm_admin_2_id', 'gadm_admin_3_id'
+
+        This determines which column is selected from `ged2.grid_point`.
     """
     cursor = connections['geddb'].cursor()
     cursor.execute("""
-        SELECT country.gadm_country_id, geo.id AS geographic_region_id
+        SELECT country.admin_level_id, geo.id AS geographic_region_id
         FROM (
-            SELECT DISTINCT gadm_country_id
+            SELECT DISTINCT %(column)s AS admin_level_id
             FROM ged2.grid_point grid
             JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
             WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
@@ -199,27 +212,34 @@ def _get_country_and_region_codes(lng1, lat1, lng2, lat2):
         ) country
         JOIN ged2.geographic_region geo
             ON country.gadm_country_id=geo.gadm_country_id
-        """, [lng1, lat1, lng2, lat2])
+        """ % dict(column=admin_level_col),
+        [lng1, lat1, lng2, lat2])
 
     country_reg_codes = cursor.fetchall()
-    country_codes = [r[0] for r in country_reg_codes]
-    region_codes = [r[1] for r in country_reg_codes]
-    return country_codes, region_codes
+    admin_level_ids = [r[0] for r in country_reg_codes]
+    region_ids = [r[1] for r in country_reg_codes]
+    return admin_level_ids, region_ids
 
 
-def _get_dwelling_fractions(country_codes, occupancy):
+def _get_dwelling_fractions(admin_level_ids, occupancy, admin_level_col):
     """
     For the given country codes, return a table (2d list) of the following::
 
         * building_type
         * dwelling_fraction
         * study_region_id
-        * gadm_country_id (same as ``country_codes``)
+        * gadm_country_id (same as ``admin_level_ids``)
         * region_id
+        * dist_group.is_urban
 
     :param list occupancy:
         List containing 0, 1, or both (indicating 0=residential,
         1=non-residential).
+    :param str admin_level_col:
+        Valid values are 'gadm_country_id', 'gadm_admin_1_id',
+        'gadm_admin_2_id', 'gadm_admin_3_id'
+
+        This determines which column is selected from `ged2.geographic_region`.
     """
     cursor = connections['geddb'].cursor()
     cursor.execute("""
@@ -227,8 +247,9 @@ def _get_dwelling_fractions(country_codes, occupancy):
             dist_value.building_type,
             dist_value.dwelling_fraction,
             dist_group.study_region_id,
-            geo_region.gadm_country_id,
-            geo_region.id
+            geo_region.%(admin_level_col)s,
+            geo_region.id,
+            dist_group.is_urban
         FROM ged2.geographic_region as geo_region
         JOIN ged2.study_region AS study_region
             ON study_region.geographic_region_id = geo_region.id
@@ -237,20 +258,21 @@ def _get_dwelling_fractions(country_codes, occupancy):
         JOIN ged2.distribution_value AS dist_value
             ON dist_value.distribution_group_id = dist_group.id
         WHERE
-            geo_region.gadm_country_id IN %s
-            AND dist_group.occupancy_id IN %s
-            AND dist_group.is_urban
+            geo_region.%(admin_level_col)s IN %(admin_level_ids)s
+            AND dist_group.occupancy_id IN %(occupancy_ids)s
         ORDER BY geo_region.gadm_country_id;
-        """ % (num_list_to_sql_array(country_codes),
-               num_list_to_sql_array(occupancy)))
+        """
+        % dict(admin_level_col=admin_level_col,
+               admin_level_ids=num_list_to_sql_array(admin_level_ids),
+               occupancy_ids=num_list_to_sql_array(occupancy)))
 
     df_table = cursor.fetchall()
     return df_table
 
 
-def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
+def _get_reg_codes_pop_ratios(region_ids, tod, occupancy):
     """
-    :param list region_codes:
+    :param list region_ids:
         List of GADM region codes (as ints).
     :param tod:
         Possible values are::
@@ -271,10 +293,10 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
     query = """
         SELECT
             geographic_region_id AS region_code,
-            %(pop_ratio_column)s AS pop_ratio
+            %(pop_ratio_column)s AS pop_ratio,
+            is_urban
         FROM ged2.pop_allocation
         WHERE geographic_region_id IN %%s
-        AND is_urban
         AND occupancy_id IN %%s
     """
     if tod not in ('day', 'night', 'transit', 'all', 'off'):
@@ -285,7 +307,7 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
 
     if tod == 'off':
         # pop_ratio is hard-coded to 1 for each region code
-        return [(rc, 1) for rc in region_codes]
+        return [(rc, 1) for rc in region_ids]
     elif tod == 'all':
         query %= {
             'pop_ratio_column': ('(day_pop_ratio + night_pop_ratio + '
@@ -302,7 +324,7 @@ def _get_reg_codes_pop_ratios(region_codes, tod, occupancy):
 
     reg_codes_pop_ratios = util.exec_query(
         cursor,
-        query % (num_list_to_sql_array(region_codes),
+        query % (num_list_to_sql_array(region_ids),
                  num_list_to_sql_array(occupancy))
     )
     return reg_codes_pop_ratios
@@ -319,12 +341,13 @@ def _get_pop_table(lng1, lat1, lng2, lat2):
         * iso
         * longitude
         * latitude
+        * is_urban
     """
     cursor = connections['geddb'].cursor()
     query = """
         SELECT
             grid.gadm_country_id, grid.pop_value, grid.the_geom, gadm.iso,
-            ST_X(grid.the_geom), ST_Y(grid.the_geom)
+            ST_X(grid.the_geom), ST_Y(grid.the_geom), grid.is_urban
         FROM ged2.grid_point grid
         JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
         WHERE ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
@@ -362,24 +385,28 @@ def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
         Dwelling fraction data. See :func:`_get_dwelling_fractions`.
     """
     for pop in pop_table:
-        pop_gadm_country_id = pop[0]
+        pop_admin_level_id = pop[0]
         pop_value = pop[1]
         pop_grid_id = pop[2]
         pop_iso = pop[3]
         pop_lat = pop[4]
         pop_lon = pop[5]
-        for reg_code, pop_ratio in reg_codes_pop_ratios:
+        pop_is_urban = pop[6]
+        for reg_code, pop_ratio, is_urban in reg_codes_pop_ratios:
             for df in df_table:
                 df_building_type = df[0]
                 df_dwelling_fraction = df[1]
                 df_study_region = df[2]
-                df_gadm_country_id = df[3]
+                df_admin_level_id = df[3]
                 df_region_id = df[4]
+                df_is_urban = df[5]
 
                 # only generate asset results for the current region_id and
                 # country_id, to avoid writing out incorrect/extra data
-                if  (df_region_id == reg_code and
-                     df_gadm_country_id == pop_gadm_country_id):
+                if (df_region_id == reg_code
+                        and df_admin_level_id == pop_admin_level_id
+                        and pop_is_urban == is_urban
+                        and df_is_urban == is_urban):
                     asset = (pop_iso,
                              (pop_value * pop_ratio * df_dwelling_fraction),
                              pop_grid_id,
@@ -417,6 +444,13 @@ def stream_response_generator(request, output_type):
     lng2 = request.GET['lng2']
     lat2 = request.GET['lat2']
 
+    admin_level_col = ADMIN_LEVEL_TO_COLUMN_MAP.get(admin_select)
+    if admin_level_col is None:
+        msg = ("Invalid 'adminLevel' selection: '%s'."
+               " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
+               % admin_select)
+        raise ValueError(msg)
+
     if res_select == 'res':
         occupancy = [0]
     elif res_select == 'non-res':
@@ -429,14 +463,15 @@ def stream_response_generator(request, output_type):
                % res_select)
         raise ValueError(msg)
 
-    country_codes, region_codes = _get_country_and_region_codes(lng1, lat1,
-                                                                lng2, lat2)
+    admin_level_ids, region_ids = _get_admin_level_ids_region_ids(
+        lng1, lat1, lng2, lat2, admin_level_col
+    )
 
     # Get all of the data we need for the loops below:
     pop_table = _get_pop_table(lng1, lat1, lng2, lat2)
-    reg_codes_pop_ratios = _get_reg_codes_pop_ratios(region_codes, tod_select,
+    reg_codes_pop_ratios = _get_reg_codes_pop_ratios(region_ids, tod_select,
                                                      occupancy)
-    df_table = _get_dwelling_fractions(country_codes, occupancy)
+    df_table = _get_dwelling_fractions(admin_level_ids, occupancy)
 
     if output_type == "csv":
         # export csv
