@@ -29,7 +29,9 @@
 
 {% block main %}
 
-<form action="/exposure/export_exposure/" method="get" id="exposure-export-form">{% csrf_token %}
+<form id="exposure-export-form" class="exposure_export_form"
+      action="/exposure/export_exposure/" method="get">
+{% csrf_token %}
 {{ exposure_form.as_p }}
 
 <input type="hidden" name="lat1" value="{{ lat1 }}">
