@@ -258,56 +258,62 @@
         $('#map').css("height", map_height + "px");
         map.invalidateSize(false);
     };
+
+    /*
+     * Sliding side panel animation functions:
+     */
+    var legendSlidingPanel = function() {
+        $('#panelHandle-leg').hover(
+            function() {
+                $('#sidePanel-leg').stop(true, false).animate(
+                    {left: '0px'}, 900
+                );
+            },
+            function() {
+                // Do nothing
+            }
+        );
+
+        $('#sidePanel-leg').hover(
+            function() {
+                // Do nothing
+            },
+            function() {
+                $('#sidePanel-leg').animate(
+                    { left: '-201px' }, 800
+                );
+            }
+        );
+    };
+    var dwellingFractionSlidingPanel = function() {
+        $('#panelHandle-dwel').hover(
+            function() {
+                $('#sidePanel-dwel').stop(true, false).animate(
+                    {left: '0px'}, 900
+                );
+            },
+            function() {
+                // Do nothing
+            }
+        );
+
+        $('#sidePanel-dwel').hover(
+            function() {
+            // Do nothing
+            },
+            function() {
+                $('#sidePanel-dwel').animate(
+                    {left: '-328px'}, 800
+                );
+            }
+        );
+    };
+
     $(document).ready(mapFit);
     $(window).resize(mapFit);
 
-    // sliding panel for legend and dwelling fractions table
-    jQuery(function($) {
-    $(document).ready(function() {
-        $('#panelHandle-dwel').hover(function() {
-            $('#sidePanel-dwel').stop(true, false).animate({
-                'left': '0px'
-            }, 900);
-        }, function() {
-            jQuery.noConflict();
-        });
-
-        jQuery('#sidePanel-dwel').hover(function() {
-            // Do nothing
-        }, function() {
-
-            jQuery.noConflict();
-            jQuery('#sidePanel-dwel').animate({
-                left: '-328px'
-            }, 800);
-
-        });
-    });
-    });
-
-    // sliding panel
-    jQuery(function($) {
-    $(document).ready(function() {
-        $('#panelHandle-leg').hover(function() {
-            $('#sidePanel-leg').stop(true, false).animate({
-                'left': '0px'
-            }, 900);
-        }, function() {
-            jQuery.noConflict();
-        });
-
-        jQuery('#sidePanel-leg').hover(function() {
-            // Do nothing
-        }, function() {
-
-            jQuery.noConflict();
-            jQuery('#sidePanel-leg').animate({
-                left: '-201px'
-            }, 800);
-
-        });
-    });
-    });
+    $(document).ready(dwellingFractionSlidingPanel);
+    $(document).ready(legendSlidingPanel);
 
     // The map
     // base layers
