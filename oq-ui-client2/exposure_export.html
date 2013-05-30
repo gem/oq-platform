@@ -474,11 +474,18 @@
 
                         // Only enable the submit button if all of the radio button groups
                         // have a selection:
-                        var isChecked = $('form input[type=radio]:checked');
-                        if (isChecked.size() == 5){
-                            $('input[type="submit"]').removeAttr('disabled');
+                        var radioSelections = [];
+                        // Collect names of the radio groups with a selection:
+                        $('form input[type=radio][class=exposure_export_widget]:checked').each(
+                            function() {
+                                radioSelections.push(this.name);
+                            }
+                        );
+                        if (JSON.stringify(radioSelections.sort())
+                            == JSON.stringify(['adminLevel', 'residential',
+                                               'timeOfDay', 'outputType'].sort())) {
+                            $('input[type=submit][id=exposure-download-button]').removeAttr('disabled');
                         }
-
                     }
                 );
 
