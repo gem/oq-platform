@@ -455,11 +455,19 @@
                         // NOTE: The radio button ids are given by Django
                         // form rendering.
                         var disableResidentialBoth = false;
+                        // If 'time of day' is 'off',
+                        // disable the 'both' option in the 'Residential' group,
+                        // and clear the 'both' selection if it is already selected.
                         if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
                             disableResidentialBoth = true;
-                            //clear 'Both' selection if TOD 'off' is selected
-                            $('input[id=id_residential_2]').removeAttr('checked');
-                            $('input[type="submit"]').attr('disabled','disabled');
+
+                            // if 'both' is selected AND the TOD is 'off',
+                            // clear the both selection
+                            if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
+                                $('input[id=id_residential_2]').removeAttr('checked');
+                                // Disable the submit/Download button
+                                $('input[type="submit"]').attr('disabled','disabled');
+                            }
                         }
                         $("input[id=id_residential_2]").attr('disabled',
                                                              disableResidentialBoth);
