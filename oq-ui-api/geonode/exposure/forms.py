@@ -17,6 +17,9 @@ res = [['res', 'Residential'], ['non-res', 'Non-Residential'],
        ['both', 'Both']]
 OUTPUT_TYPES = [('csv', 'CSV'), ('nrml', 'NRML')]
 
+#: Default widget attrs for each widget rendered to HTML:
+WIDGET_ATTRS = {'class': 'exposure_export_widget'}
+
 
 class HorizontalRadioRenderer(forms.RadioSelect.renderer):
 
@@ -24,21 +27,26 @@ class HorizontalRadioRenderer(forms.RadioSelect.renderer):
         return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
+class ExpRadioSelect(forms.RadioSelect):
+    renderer = HorizontalRadioRenderer
+
+
 class ExposureExportForm(forms.Form):
+
     adminLevel = forms.Field()
     timeOfDay = forms.ChoiceField(
         label='Time of Day',
-        widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
+        widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
         choices=TOD
     )
     residential = forms.ChoiceField(
         label='Residential',
-        widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
+        widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
         choices=res
     )
     outputType = forms.ChoiceField(
         label='Output Type',
-        widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
+        widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
         choices=OUTPUT_TYPES
     )
 
@@ -49,6 +57,6 @@ class ExposureExportForm(forms.Form):
 
         self.fields['adminLevel'] = forms.ChoiceField(
             label='Admin Level',
-            widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
+            widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
             choices=ADMIN_LEVELS[highest_admin_level],
         )
