@@ -285,12 +285,18 @@ var startExposureApp = function() {
                     // show the progress spinner:
                     $("#export_button_spinner").css("display", "");
                     // Load the form into the dom:
-                    $('#wizard').load('/exposure/wizard1/ #exposure-export-form',
-                                      {'lat1': latlonTopLeft.lat,
-                                       'lng1': latlonTopLeft.lng,
-                                       'lat2': latlonBottomRight.lat,
-                                       'lng2': latlonBottomRight.lng },
-                                       exposureExportFormLoaded);
+                    $.get(
+                        '/exposure/wizard1/',
+                        {'lat1': latlonTopLeft.lat,
+                         'lng1': latlonTopLeft.lng,
+                         'lat2': latlonBottomRight.lat,
+                         'lng2': latlonBottomRight.lng },
+                        function(data) {
+                            var formHtml = $(data).find('form[id=exposure-export-form]');
+                            $('#wizard').html(formHtml);
+                            exposureExportFormLoaded();
+                        }
+                    );
             }
             $('#export_button').click(exportButtonClick);
         }
