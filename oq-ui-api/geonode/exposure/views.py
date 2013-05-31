@@ -91,13 +91,15 @@ ADMIN_LEVEL_TO_COLUMN_MAP = {
 
 @csrf_exempt
 def get_exposure_export_form(request):
-    # TODO(LB): Why is this a POST? I would expect a GET.
-    if request.method == 'POST':
+    if not request.method == 'GET':
+        # "Method not allowed"
+        return HttpResponse(status=405)
+    else:
         # get the lat long variables from the client
-        lat1 = request.POST['lat1']
-        lng1 = request.POST['lng1']
-        lat2 = request.POST['lat2']
-        lng2 = request.POST['lng2']
+        lat1 = request.GET['lat1']
+        lng1 = request.GET['lng1']
+        lat2 = request.GET['lat2']
+        lng2 = request.GET['lng2']
 
         #find all the admin levels available inside bounding box
         cursor = connections['geddb'].cursor()
@@ -137,9 +139,6 @@ def get_exposure_export_form(request):
                                    'lat2': lat2,
                                    'lng2': lng2},
                                   context_instance=RequestContext(request))
-    else:
-        html = '<html><body>Not implemented</body></html>'
-        return HttpResponse(html)
 
 
 #disabling etag for streaming
