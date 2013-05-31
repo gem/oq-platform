@@ -101,6 +101,8 @@ def get_exposure_export_form(request):
 
         #find all the admin levels available inside bounding box
         cursor = connections['geddb'].cursor()
+        # Get the lowest admin level (0, 1, 2, or 3) which is common to all
+        # grid points in the selected area:
         cursor.execute("""
             SELECT
             MIN(
