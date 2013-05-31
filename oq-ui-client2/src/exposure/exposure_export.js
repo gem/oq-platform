@@ -228,7 +228,7 @@ var startExposureApp = function() {
             var boxCenterLat = latlonTopLeft.lat + halfHeight;
             showExportButtonPopup(boxCenterLon, boxCenterLat);
 
-            var exposureExportFormLoaded = function() {
+            var loadExposureExportForm = function() {
                 //disable submit button  untill the user has made selections
                 $('input[type="submit"]').attr('disabled','disabled');
                 //enable the submit button once the selections have been made
@@ -306,7 +306,7 @@ var startExposureApp = function() {
                         function(data) {
                             var formHtml = $(data).find('form[id=exposure-export-form]');
                             $('#wizard').html(formHtml);
-                            exposureExportFormLoaded();
+                            loadExposureExportForm();
                         }
                     );
             }
