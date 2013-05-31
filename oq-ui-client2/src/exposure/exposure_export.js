@@ -191,6 +191,18 @@ var startExposureApp = function() {
     };
 
 
+    /* Generic jquery error dialog, which renders to the '#error-dialog' div */
+    var showErrorDialog = function(message) {
+        $("#error-dialog").append(message);
+        $("#error-dialog").dialog(
+            {modal: true,
+             close: function(event, ui) { $("#error-dialog").empty(); },
+             title: "Woops!"
+            }
+        );
+    };
+
+
     map.on(
         'draw:rectangle-created',
         function (e) {
