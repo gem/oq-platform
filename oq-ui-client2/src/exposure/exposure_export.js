@@ -1,8 +1,9 @@
+// vars for storing lon/lat of the bounding box selection
+var latlonTopLeft;
+var latlonBottomRight;
+
 var startExposureApp = function() {
     var drawnItems = new L.LayerGroup();
-    // vars for storing lon/lat of the bounding box selection
-    var latlonTopLeft;
-    var latlonBottomRight;
     // Leaflet popup for the map-interactive export function
     var exportPopup;
 
