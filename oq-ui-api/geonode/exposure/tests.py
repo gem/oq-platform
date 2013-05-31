@@ -1,6 +1,7 @@
 import mock
 import unittest
 
+from exposure import util
 from exposure import views
 
 
@@ -71,7 +72,7 @@ class ExportExposureTestCase(unittest.TestCase):
 
 class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     """
-    Tests for the `_get_reg_codes_pop_ratios` function.
+    Tests for the `exposure.util._get_reg_codes_pop_ratios` function.
     """
 
     def setUp(self):
@@ -81,7 +82,7 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_tod_off(self):
         tod = 'off'
 
-        result = views._get_reg_codes_pop_ratios(self.region_codes,
+        result = util._get_reg_codes_pop_ratios(self.region_codes,
                                                  tod,
                                                  self.occupancy)
         expected = [(1, 1), (2, 1), (3, 1)]
@@ -91,7 +92,7 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
         tod = 'all'
 
         with mock.patch('exposure.util.exec_query') as eq:
-            result = views._get_reg_codes_pop_ratios(self.region_codes,
+            result = util._get_reg_codes_pop_ratios(self.region_codes,
                                                      tod,
                                                      self.occupancy)
 
@@ -112,7 +113,7 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_tod_day_night_transit(self):
         with mock.patch('exposure.util.exec_query') as eq:
             for i, tod in enumerate(('day', 'night', 'transit')):
-                result = views._get_reg_codes_pop_ratios(self.region_codes,
+                result = util._get_reg_codes_pop_ratios(self.region_codes,
                                                          tod,
                                                          self.occupancy)
 
@@ -135,7 +136,7 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_invalid_tod(self):
         tod = 'tea_time'
         with self.assertRaises(ValueError) as ar:
-            views._get_reg_codes_pop_ratios(self.region_codes,
+            util._get_reg_codes_pop_ratios(self.region_codes,
                                             tod,
                                             self.occupancy)
 
@@ -164,20 +165,20 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         self.request = FakeHttpGetRequest(req_params)
 
         self.adm_lvl_reg_patch = mock.patch(
-            'exposure.views._get_admin_level_ids_region_ids'
+            'exposure.util._get_admin_level_ids_region_ids'
         )
         self.adm_lvl_reg_mock = self.adm_lvl_reg_patch.start()
         self.adm_lvl_reg_mock.return_value = ['fake_admin_lvl_ids',
                                               'fake_region_ids']
 
-        self.pop_patch = mock.patch('exposure.views._get_pop_table')
+        self.pop_patch = mock.patch('exposure.util._get_pop_table')
         self.pop_mock = self.pop_patch.start()
 
-        self.grcpr_patch = mock.patch('exposure.views.'
+        self.grcpr_patch = mock.patch('exposure.util.'
                                       '_get_reg_codes_pop_ratios')
         self.grcpr_mock = self.grcpr_patch.start()
 
-        self.df_patch = mock.patch('exposure.views._get_dwelling_fractions')
+        self.df_patch = mock.patch('exposure.util._get_dwelling_fractions')
         self.df_mock = self.df_patch.start()
 
         self.ag_patch = mock.patch('exposure.views._asset_generator')
