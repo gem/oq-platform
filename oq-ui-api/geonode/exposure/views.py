@@ -16,14 +16,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
+from django.db import connections
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from django.views.decorators.http import condition
-from django.db import connections
+
 from exposure import forms
 from exposure import util
-from django.shortcuts import render_to_response
 
 COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
