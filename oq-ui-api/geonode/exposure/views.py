@@ -96,6 +96,13 @@ def get_exposure_export_form(request):
         # "Method not allowed"
         return HttpResponse(status=405)
     else:
+        if not request.user.is_authenticated():
+            msg = ("You must be signed into the OpenQuake Platform to use this"
+                   " feature.")
+            # 401: "Unauthorized"
+            return HttpResponse(content=msg, content_type="text/plain",
+                                status=401)
+
         # get the lat long variables from the client
         lat1 = request.GET['lat1']
         lng1 = request.GET['lng1']
