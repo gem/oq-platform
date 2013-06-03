@@ -4,12 +4,36 @@ import unittest
 from exposure import util
 from exposure import views
 
+from django.http import HttpResponse
+
+
+class FakeUser(object):
+    def __init__(self, authed):
+        self.authed = authed
+
+    def is_authenticated(self):
+        return self.authed
 
 class FakeHttpGetRequest(object):
     def __init__(self, get_dict):
         self.GET = get_dict
         self.META = dict()
-        self.method = 'get'
+        self.method = 'GET'
+        self.user = FakeUser(True)
+
+class FakeHttpPostRequest(object):
+    def __init__(self, post_dict):
+        self.POST = post_dict
+        self.META = dict()
+        self.method = 'POST'
+        self.user = FakeUser(True)
+
+class FakeHttpDeleteRequest(object):
+    def __init__(self, del_dict):
+        self.DELETE = del_dict
+        self.META = dict()
+        self.method = 'DELETE'
+        self.user = FakeUser(True)
 
 
 class ExportExposureTestCase(unittest.TestCase):
