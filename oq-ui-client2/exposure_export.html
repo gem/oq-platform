@@ -24,6 +24,14 @@
 
 {{ block.super }}
 
+    <script type="text/javascript">
+    // URL params, captured and rendered to the template:
+    var URL_PARAMS = {};
+    {% for k, v in request.GET.iteritems %}
+    URL_PARAMS.{{ k }} = {{ v }};
+    {% endfor %}
+    </script>
+
     <!-- IE 8 Compatibility -->
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"></meta>
 
