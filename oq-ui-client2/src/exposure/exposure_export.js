@@ -223,6 +223,9 @@ var startExposureApp = function() {
 
     var exportFromURL = function(lat1, lng1, lat2, lng2, zoomLevel) {
         selectionFromURL(lat1, lng1, lat2, lng2, zoomLevel);
+        showExportButtonPopup(
+            boundingBoxCenter(latlonTopLeft, latlonBottomRight)
+        );
         doExport();
     };
 
@@ -299,9 +302,6 @@ var startExposureApp = function() {
 
     var exportButtonClick = function(event) {
         event.preventDefault();
-        // show the progress spinner:
-        $("#export_button_spinner").css("display", "");
-
         doExport();
     };
 
@@ -310,6 +310,12 @@ var startExposureApp = function() {
      * the actual export.
      */
     var doExport = function() {
+        // Update the popup:
+        // First, disable the button, to prevent redundant clicks
+        $("#export_button").attr('disabled','disabled');
+        // then show the progress spinner
+        $("#export_button_spinner").css("display", "");
+
         // Load the form into the dom:
         var data = {'lat1': latlonTopLeft.lat,
                     'lng1': latlonTopLeft.lng,
