@@ -92,9 +92,9 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
         tod = 'all'
 
         with mock.patch('exposure.util.exec_query') as eq:
-            result = util._get_reg_codes_pop_ratios(self.region_codes,
-                                                     tod,
-                                                     self.occupancy)
+            util._get_reg_codes_pop_ratios(self.region_codes,
+                                           tod,
+                                           self.occupancy)
 
             self.assertEqual(1, eq.call_count)
 
@@ -113,9 +113,9 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_tod_day_night_transit(self):
         with mock.patch('exposure.util.exec_query') as eq:
             for i, tod in enumerate(('day', 'night', 'transit')):
-                result = util._get_reg_codes_pop_ratios(self.region_codes,
-                                                         tod,
-                                                         self.occupancy)
+                util._get_reg_codes_pop_ratios(self.region_codes,
+                                               tod,
+                                               self.occupancy)
 
                 self.assertEqual(i + 1, eq.call_count)
 
@@ -275,7 +275,6 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
                          self.grcpr_mock.call_args[0])
         self.assertEqual(('fake_admin_lvl_ids', [0, 1], 'gadm_admin_3_id'),
                          self.df_mock.call_args[0])
-
 
     def test_invalid_residential(self):
         self.request.GET['residential'] = 'invalid'
