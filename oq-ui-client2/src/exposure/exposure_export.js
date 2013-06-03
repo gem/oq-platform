@@ -2,11 +2,28 @@
 var latlonTopLeft;
 var latlonBottomRight;
 
+var map;
+var drawnItems;
+var drawControl;
+
+var MAX_ZOOM_LEVEL = 8;
+var DRAW_TOOL_COLOR = '#FFA54F';
+
 var startExposureApp = function() {
-    var drawnItems = new L.LayerGroup();
+    drawnItems = new L.LayerGroup();
+    // draw tool
+    drawControl = new L.Control.Draw({
+        rectangle: {
+        title: 'Selection Tool',
+            allowIntersection: false,
+            shapeOptions: {
+                color: DRAW_TOOL_COLOR
+            }
+        }
+    });
+
     // Leaflet popup for the map-interactive export function
     var exportPopup;
-
 
     /***************
      * Base layers *
@@ -18,7 +35,6 @@ var startExposureApp = function() {
         'Natural Earth' : naturalEarth,
         'GEM Base Map' : GEM_base
     };
-
 
     /******************
      * Overlay layers *
@@ -43,22 +59,19 @@ var startExposureApp = function() {
         "OpenStreetMap" : osm
     };
 
-
     /***********
      * The map *
      ***********/
-    var map = L.map('map', {
+    map = L.map('map', {
         center: [20, 20],
         zoom: 3,
         maxZoom: 8,
         layers: [osm, GEM_base]
     });
-
     map.addLayer(drawnItems);
     L.control.layers(baselayer, overlays).addTo(map);
     // Add Wax support
     L.wax(map);
-
 
     //resize the main and map div
     var mapFit = function() {
@@ -74,7 +87,6 @@ var startExposureApp = function() {
         $('#map').css("height", map_height + "px");
         map.invalidateSize(false);
     };
-
 
     /*
      * Sliding side panel animation functions:
@@ -132,64 +144,35 @@ var startExposureApp = function() {
     $(document).ready(dwellingFractionSlidingPanel);
     $(document).ready(legendSlidingPanel);
 
-
-    // draw tool
-    var drawControl = new L.Control.Draw({
-        rectangle: {
-        title: 'Selection Tool',
-            allowIntersection: false,
-            shapeOptions: {
-                color: '#FFA54F'
-            }
-        }
-    });
-
-
     // add draw tool based on zoom level
     function onZoomend() {
-           try {
+       try {
             map.removeControl(drawControl);
         }
         catch (err){
             console.log('no draw control to remove');
         };
 
-        if (map.getZoom() > 7) {
+        if (map.getZoom() >= MAX_ZOOM_LEVEL) {
                map.addControl(drawControl);
                console.log(map.getZoom());
-           };
+        }
     };
     map.on('zoomend', onZoomend);
 
-
-    //show loading when ajax is called
-    jQuery.ajaxSetup({
-        beforeSend: function() {
-            $('#loader').show();
-        },
-        complete: function(){
-            $('#loader').hide();
-        },
-        success: function() {}
-    });
-
-
-    var showExportButtonPopup = function(popupLon, popupLat) {
+    var showExportButtonPopup = function(popupLatLng) {
         var expButton = (
             '<button id="export_button">Export Exposure</button>' +
             '<img id="export_button_spinner"' +
             ' src="{{ STATIC_URL }}theme/images/ajax-loader.gif"' +
             ' style="display: none;" />'
         );
-        // WARNING: Note the lon/lat ordering
-        var popupLoc = new L.LatLng(popupLat, popupLon);
 
         exportPopup = L.popup();
         exportPopup.setContent(expButton);
-        exportPopup.setLatLng(popupLoc);
+        exportPopup.setLatLng(popupLatLng);
         exportPopup.openOn(map);
     };
-
 
     /* Generic jquery error dialog, which renders to the '#error-dialog' div */
     var showErrorDialog = function(message) {
@@ -202,117 +185,197 @@ var startExposureApp = function() {
         );
     };
 
+    var selectArea = function(topLeft, bottomRight) {
+        latlonTopLeft = topLeft;
+        latlonBottomRight = bottomRight;
 
-    map.on(
-        'draw:rectangle-created',
-        function (e) {
-            // Clear layers, selections, and any previous download dialogs:
-            var expForm = $("#exposure-export-form");
-            if (expForm.size()) {
-                // If the form was once loaded, dispose of it:
-                expForm.children().remove();
-            }
-            drawnItems.clearLayers();
+        var rectBounds = [[topLeft.lat, topLeft.lng],
+                          [bottomRight.lat, bottomRight.lng]];
+        var rect = new L.rectangle(rectBounds);
+        rect.options.color = DRAW_TOOL_COLOR;
 
-            // Draw the bounding box
-            drawnItems.addLayer(e.rect);
-            // Record the bounds of the bounding box
-            latlonTopLeft = e.rect._latlngs[1];
-            latlonBottomRight = e.rect._latlngs[3];
+        // Clear drawn layer
+        drawnItems.clearLayers();
+        // Add the new selection
+        drawnItems.addLayer(rect);
+    };
 
-            // Compute the center coordinates of the selected bounding box
-            // and display a leaflet popup with the export button:
-            var halfWidth = (latlonBottomRight.lng - latlonTopLeft.lng) / 2;
-            var halfHeight = (latlonBottomRight.lat - latlonTopLeft.lat) / 2;
-            var boxCenterLon = latlonTopLeft.lng + halfWidth;
-            var boxCenterLat = latlonTopLeft.lat + halfHeight;
-            showExportButtonPopup(boxCenterLon, boxCenterLat);
+    var boundingBoxCenter = function(topLeft, bottomRight) {
+        var halfWidth = (bottomRight.lng - topLeft.lng) / 2;
+        var halfHeight = (bottomRight.lat - topLeft.lat) / 2;
+        return new L.LatLng(topLeft.lat + halfHeight, topLeft.lng + halfWidth);
+    };
 
-            var loadExposureExportForm = function() {
-                //disable submit button  untill the user has made selections
+    /*
+     * Create a map selection and zoom to it, given location and zoom level
+     * URL params
+     */
+    var selectionFromURL = function(lat1, lng1, lat2, lng2, zoomLevel) {
+        var topLeft;
+        var bottomRight;
+        topLeft = new L.LatLng(lat1, lng1);
+        bottomRight = new L.LatLng(lat2, lng2);
+        var centerPoint
+
+        selectArea(topLeft, bottomRight);
+        map.setView(boundingBoxCenter(topLeft, bottomRight), zoomLevel);
+    };
+
+    var exportFromURL = function(lat1, lng1, lat2, lng2, zoomLevel) {
+        selectionFromURL(lat1, lng1, lat2, lng2, zoomLevel);
+        doExport();
+    };
+
+    /*
+     * When time of day is 'off', disable the 'both' selection
+     * for residential.
+     *
+     * Also, make sure the submit is enabled only if all radio button
+     * groups have a selection.
+     */
+    var exposureExportFormSelectionChanged = function() {
+        // NOTE: The radio button ids are given by Django
+        // form rendering.
+        var disableResidentialBoth = false;
+        // If 'time of day' is 'off',
+        // disable the 'both' option in the 'Residential' group,
+        // and clear the 'both' selection if it is already selected.
+        if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
+            disableResidentialBoth = true;
+
+            // if 'both' is selected AND the TOD is 'off',
+            // clear the both selection
+            if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
+                $('input[id=id_residential_2]').removeAttr('checked');
+                // Disable the submit/Download button
                 $('input[type="submit"]').attr('disabled','disabled');
-                //enable the submit button once the selections have been made
-
-                /*
-                 * Hook in radio selection logic.
-                 * When time of day is 'off', disable the 'both' selection
-                 * for residential.
-                 *
-                 * Also, make sure the submit is enabled only if all radio button
-                 * groups have a selection.
-                 */
-                $("#exposure-export-form").change(
-                    function() {
-                        // NOTE: The radio button ids are given by Django
-                        // form rendering.
-                        var disableResidentialBoth = false;
-                        // If 'time of day' is 'off',
-                        // disable the 'both' option in the 'Residential' group,
-                        // and clear the 'both' selection if it is already selected.
-                        if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
-                            disableResidentialBoth = true;
-
-                            // if 'both' is selected AND the TOD is 'off',
-                            // clear the both selection
-                            if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
-                                $('input[id=id_residential_2]').removeAttr('checked');
-                                // Disable the submit/Download button
-                                $('input[type="submit"]').attr('disabled','disabled');
-                            }
-                        }
-                        $("input[id=id_residential_2]").attr('disabled',
-                                                             disableResidentialBoth);
-
-                        // Only enable the submit button if all of the radio button groups
-                        // have a selection:
-                        var radioSelections = [];
-                        // Collect names of the radio groups with a selection:
-                        $('form input[type=radio][class=exposure_export_widget]:checked').each(
-                            function() {
-                                radioSelections.push(this.name);
-                            }
-                        );
-                        if (JSON.stringify(radioSelections.sort())
-                            == JSON.stringify(['adminLevel', 'residential',
-                                               'timeOfDay', 'outputType'].sort())) {
-                            $('input[type=submit][id=exposure-download-button]').removeAttr('disabled');
-                        }
-                    }
-                );
-
-                // Display the form as a jqueryui popup:
-                $("#exposure-export-form").dialog(
-                    {title: 'Download Exposure Data',
-                     height: 275,
-                     width: 500,
-                     modal: true}
-                );
-                // And finally, hide the leaflet popup with the export button:
-                map.closePopup(exportPopup);
-            };
-
-            // Hook the export button click functionality:
-            var exportButtonClick = function(event) {
-                    event.preventDefault();
-                    // show the progress spinner:
-                    $("#export_button_spinner").css("display", "");
-                    // Load the form into the dom:
-                    $.get(
-                        '/exposure/wizard1/',
-                        {'lat1': latlonTopLeft.lat,
-                         'lng1': latlonTopLeft.lng,
-                         'lat2': latlonBottomRight.lat,
-                         'lng2': latlonBottomRight.lng },
-                        function(data) {
-                            var formHtml = $(data).find('form[id=exposure-export-form]');
-                            $('#wizard').html(formHtml);
-                            loadExposureExportForm();
-                        }
-                    );
             }
-            $('#export_button').click(exportButtonClick);
         }
-    );
+        $("input[id=id_residential_2]").attr('disabled',
+                                             disableResidentialBoth);
+
+        // Only enable the submit button if all of the radio button groups
+        // have a selection:
+        var radioSelections = [];
+        // Collect names of the radio groups with a selection:
+        $('form input[type=radio][class=exposure_export_widget]:checked').each(
+            function() {
+                radioSelections.push(this.name);
+            }
+        );
+        if (JSON.stringify(radioSelections.sort())
+            == JSON.stringify(['adminLevel', 'residential',
+                               'timeOfDay', 'outputType'].sort())) {
+            $('input[type=submit][id=exposure-download-button]').removeAttr('disabled');
+        }
+    };
+
+    /*
+     * Show the export form as a jquery ui dialog
+     */
+    var showExposureExportForm = function() {
+
+        //disable submit button  untill the user has made selections
+        $('input[type="submit"]').attr('disabled','disabled');
+        //enable the submit button once the selections have been made
+
+        /*
+         * Hook in radio selection logic.
+         */
+        $("#exposure-export-form").change(
+            exposureExportFormSelectionChanged
+        );
+
+        // Display the form as a jqueryui popup:
+        $("#exposure-export-form").dialog(
+            {title: 'Download Exposure Data',
+             height: 275,
+             width: 500,
+             modal: true}
+        );
+        // And finally, hide the leaflet popup with the export button:
+        map.closePopup(exportPopup);
+    };
+
+    var exportButtonClick = function(event) {
+        event.preventDefault();
+        // show the progress spinner:
+        $("#export_button_spinner").css("display", "");
+
+        doExport();
+    };
+
+    /*
+     * Load the export form, which has all attached functionality to perform
+     * the actual export.
+     */
+    var doExport = function() {
+        // Load the form into the dom:
+        var data = {'lat1': latlonTopLeft.lat,
+                    'lng1': latlonTopLeft.lng,
+                    'lat2': latlonBottomRight.lat,
+                    'lng2': latlonBottomRight.lng};
+        $.ajax({
+            type: 'get',
+            data: data,
+            url: '/exposure/wizard1/',
+            error: function(request, error) {
+                if (request.status == 401) {
+                    // Ask the user to login and redirect back here when
+                    // they're done logging in:
+                    var signInMsg = (
+                        // Include the error message from the server
+                        request.responseText
+                        + '<br/><a href="/accounts/login?next='
+                        + '/oq-platform2/exposure_export.html'
+                        + '%3Flat1=' + data.lat1
+                        + '%26lng1=' + data.lng1
+                        + '%26lat2=' + data.lat2
+                        + '%26lng2=' + data.lng2
+                        + '%26zoom=' + map.getZoom()
+                        + '">Sign in</a>'
+                    );
+                    showErrorDialog(signInMsg);
+                    map.closePopup(exportPopup);
+                }
+            },
+            success: function(data, textStatus, jqXHR) {
+                var formHtml = $(data).find('form[id=exposure-export-form]');
+                $('#wizard').html(formHtml);
+                showExposureExportForm();
+            }
+        });
+    };
+
+    var onRectangleDraw = function(e) {
+        // Clear layers, selections, and any previous download dialogs:
+        var expForm = $("#exposure-export-form");
+        if (expForm.size()) {
+            // If the form was once loaded, dispose of it:
+            expForm.children().remove();
+        }
+
+        // Record the bounds of the bounding box
+        latlonBottomRight = e.rect._latlngs[1];
+        latlonTopLeft = e.rect._latlngs[3];
+        selectArea(latlonTopLeft, latlonBottomRight);
+
+        showExportButtonPopup(
+            boundingBoxCenter(latlonTopLeft, latlonBottomRight)
+        );
+
+        // Hook the export button click functionality:
+        $('#export_button').click(exportButtonClick);
+    };
+    map.on('draw:rectangle-created', onRectangleDraw);
+
+    if (URL_PARAMS.lat1 && URL_PARAMS.lng1
+            && URL_PARAMS.lat2 && URL_PARAMS.lng2
+            && URL_PARAMS.zoom) {
+        exportFromURL(URL_PARAMS.lat1, URL_PARAMS.lng1,
+                      URL_PARAMS.lat2, URL_PARAMS.lng2,
+                      URL_PARAMS.zoom);
+    }
 };
 
 $(document).ready(startExposureApp);
