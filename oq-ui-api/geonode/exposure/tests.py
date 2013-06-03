@@ -202,6 +202,18 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
                           "'csv' are supported")
         self.assertEqual(expected_error, ar.exception.message)
 
+    def test_invalid_admin_level(self):
+        self.request.GET['adminLevel'] = 'admin4'
+
+        with self.assertRaises(ValueError) as ar:
+            list(views.stream_response_generator(self.request, 'csv'))
+
+        expected_error = (
+            "Invalid 'adminLevel' selection: 'admin4'."
+            " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
+        )
+        self.assertEqual(expected_error, ar.exception.message)
+
     def test_query_func_calls_residential(self):
         # Test that the proper arguments are passed to the various DB query
         # helper functions.
