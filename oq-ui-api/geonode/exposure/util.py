@@ -17,6 +17,34 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 from django.db import connections
+from django.http import HttpResponse
+
+SIGN_IN_REQUIRED = ('You must be signed into the OpenQuake Platform to use '
+                    'this feature.')
+
+
+class allowed_methods(object):
+    def __init__(self, methods):
+        self.methods = methods
+
+    def __call__(self, func):
+        def wrapped(request):
+            if not request.method in self.methods:
+                return HttpResponse(status=405)
+            else:
+                return func(request)
+        return wrapped
+
+
+def sign_in_required(func):
+    def wrapped(request):
+        if not request.user.is_authenticated():
+            return HttpResponse(content=SIGN_IN_REQUIRED,
+                                content_type="text/plain",
+                                status=401)
+        else:
+            return func(request)
+    return wrapped
 
 
 #: Convert a Python list (containing numbers, such as record IDs as integers)
