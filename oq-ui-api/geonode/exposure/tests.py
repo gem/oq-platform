@@ -309,3 +309,38 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         self.assertEqual("Invalid 'residential' selection: 'invalid'. "
                          "Expected 'res', 'non-res', or 'both'.",
                          ar.exception.message)
+
+
+class DecoratorUtilTestcase(unittest.TestCase):
+
+    def test_allowed_methods(self):
+        @util.allowed_methods(('GET', 'POST'))
+        def fake_view(request):
+            return HttpResponse(status=200)
+
+        req = FakeHttpGetRequest(None)
+        resp = fake_view(req)
+        self.assertEqual(200, resp.status_code)
+
+        req = FakeHttpPostRequest(None)
+        resp = fake_view(req)
+        self.assertEqual(200, resp.status_code)
+
+        req = FakeHttpDeleteRequest(None)
+        resp = fake_view(req)
+        self.assertEqual(405, resp.status_code)
+
+    def test_sign_in_required(self):
+        @util.sign_in_required
+        def fake_view(request):
+            return HttpResponse(status=200)
+
+        req = FakeHttpGetRequest(None)
+        req.user.authed = False
+
+        resp = fake_view(req)
+        self.assertEqual(401, resp.status_code)
+
+        req.user.authed = True
+        resp = fake_view(req)
+        self.assertEqual(200, resp.status_code)
