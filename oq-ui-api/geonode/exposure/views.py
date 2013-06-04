@@ -89,6 +89,9 @@ ADMIN_LEVEL_TO_COLUMN_MAP = {
     'admin3': 'gadm_admin_3_id',
 }
 
+#: The maximum bounding box area which can be exported.
+MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
+
 
 @csrf_exempt
 @util.allowed_methods(('GET', ))
@@ -160,9 +163,28 @@ def export_exposure(request):
             * 'lng2'
             * 'lat2'
     """
+    lng1 = request.GET['lng1']
+    lat1 = request.GET['lat1']
+    lng2 = request.GET['lng2']
+    lat2 = request.GET['lat2']
+
+    width = abs(float(lng2) - float(lng1))
+    height = abs(float(lat2) - float(lat1))
+    area = width * height
+    if area > MAX_EXPORT_AREA_SQ_DEG:
+        msg = ('Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
+               ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'
+               '<br />Selected area: %(area)s square degrees.'
+               '<br />Max selection area: %(max_area)s square degrees.')
+        msg %= dict(lat1=lat1, lng1=lng1, lat2=lat2, lng2=lng2,
+                    area=area, max_area=MAX_EXPORT_AREA_SQ_DEG)
+        return HttpResponse(content=msg,
+                            content_type="text/html",
+                            status=403)
+
+    output_type = request.GET['outputType']
     content_disp = None
     mimetype = None
-    output_type = request.GET['outputType']
 
     if output_type == "csv":
         content_disp = 'attachment; filename="exposure_export.csv"'

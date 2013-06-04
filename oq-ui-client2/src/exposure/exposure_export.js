@@ -1,3 +1,4 @@
+var JQXHR;
 // vars for storing lon/lat of the bounding box selection
 var latlonTopLeft;
 var latlonBottomRight;
@@ -177,14 +178,21 @@ var startExposureApp = function() {
     };
 
     /* Generic jquery error dialog, which renders to the '#error-dialog' div */
-    var showErrorDialog = function(message) {
+    var showErrorDialog = function(message, options) {
+        // Options are optional
+        if (typeof options === 'undefined') {
+            options = {};
+        }
+        options.modal = true;
+        options.close = function(event, ui) {
+            $("#error-dialog").empty();
+        };
+        if (typeof options.title === 'undefined') {
+            // Use a default title
+            options.title = 'Woops!'
+        }
         $("#error-dialog").append(message);
-        $("#error-dialog").dialog(
-            {modal: true,
-             close: function(event, ui) { $("#error-dialog").empty(); },
-             title: "Woops!"
-            }
-        );
+        $("#error-dialog").dialog(options);
     };
 
     var selectArea = function(topLeft, bottomRight) {
@@ -253,7 +261,7 @@ var startExposureApp = function() {
             if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
                 $('input[id=id_residential_2]').removeAttr('checked');
                 // Disable the submit/Download button
-                $('input[type="submit"]').attr('disabled','disabled');
+                $('input[id=exposure-download-button]').attr('disabled','disabled');
             }
         }
         $("input[id=id_residential_2]").attr('disabled',
@@ -271,7 +279,7 @@ var startExposureApp = function() {
         if (JSON.stringify(radioSelections.sort())
             == JSON.stringify(['adminLevel', 'residential',
                                'timeOfDay', 'outputType'].sort())) {
-            $('input[type=submit][id=exposure-download-button]').removeAttr('disabled');
+            $('input[id=exposure-download-button]').removeAttr('disabled');
         }
     };
 
@@ -280,8 +288,8 @@ var startExposureApp = function() {
      */
     var showExposureExportForm = function() {
 
-        //disable submit button  untill the user has made selections
-        $('input[type="submit"]').attr('disabled','disabled');
+        //disable submit button until the user has made selections
+        $('input[id="exposure-download-button"]').attr('disabled','disabled');
         //enable the submit button once the selections have been made
 
         /*
@@ -300,6 +308,41 @@ var startExposureApp = function() {
         );
         // And finally, hide the leaflet popup with the export button:
         map.closePopup(exportPopup);
+
+        // Hook functionality for Download button
+        $("#exposure-download-button").click(
+            function(event) {
+                event.preventDefault();
+                $("#exposure-download-button").attr('disabled', 'disabled');
+
+                var data = {
+                    adminLevel: $('input[name=adminLevel]:checked').val(),
+                    timeOfDay: $('input[name=timeOfDay]:checked').val(),
+                    residential: $('input[name=residential]:checked').val(),
+                    outputType: $('input[name=outputType]:checked').val(),
+                    lat1: latlonTopLeft.lat,
+                    lng1: latlonTopLeft.lng,
+                    lat2: latlonBottomRight.lat,
+                    lng2: latlonBottomRight.lng,
+                };
+                $.ajax({
+                    type: 'get',
+                    data: data,
+                    url: '/exposure/export_exposure/',
+                    error: function(reponse, error){
+                        if (response.status == 403) {
+                            showErrorDialog(
+                                response.responseText,
+                                {height: 175, width: 420}
+                            );
+                        }
+                    },
+                    success: function(data, textStatus, jqXHR) {
+                        JQXHR = jqXHR;
+                    },
+                });
+            }
+        );
     };
 
     var exportButtonClick = function(event) {
@@ -319,10 +362,10 @@ var startExposureApp = function() {
         $("#export_button_spinner").css("display", "");
 
         // Load the form into the dom:
-        var data = {'lat1': latlonTopLeft.lat,
-                    'lng1': latlonTopLeft.lng,
-                    'lat2': latlonBottomRight.lat,
-                    'lng2': latlonBottomRight.lng};
+        var data = {lat1: latlonTopLeft.lat,
+                    lng1: latlonTopLeft.lng,
+                    lat2: latlonBottomRight.lat,
+                    lng2: latlonBottomRight.lng};
         $.ajax({
             type: 'get',
             data: data,
