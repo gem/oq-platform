@@ -9,6 +9,8 @@ var drawControl;
 var MAX_ZOOM_LEVEL = 8;
 var DRAW_TOOL_COLOR = '#FFA54F';
 
+var AJAX_SPINNER = '/static/theme/images/ajax-loader.gif';
+
 var startExposureApp = function() {
     drawnItems = new L.LayerGroup();
     // draw tool
@@ -164,7 +166,7 @@ var startExposureApp = function() {
         var expButton = (
             '<button id="export_button">Export Exposure</button>' +
             '<img id="export_button_spinner"' +
-            ' src="{{ STATIC_URL }}theme/images/ajax-loader.gif"' +
+            ' src="' + AJAX_SPINNER +'"' +
             ' style="display: none;" />'
         );
 
