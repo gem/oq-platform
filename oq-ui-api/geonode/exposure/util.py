@@ -201,7 +201,7 @@ def _get_reg_codes_pop_ratios(region_ids, tod, occupancy):
 
     if tod == 'off':
         # pop_ratio is hard-coded to 1 for each region code
-        return [(rc, 1) for rc in region_ids]
+        query %= {'pop_ratio_column': '1'}
     elif tod == 'all':
         query %= {
             'pop_ratio_column': ('(day_pop_ratio + night_pop_ratio + '
