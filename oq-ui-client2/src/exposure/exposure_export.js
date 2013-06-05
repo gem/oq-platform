@@ -12,6 +12,17 @@ var DRAW_TOOL_COLOR = '#FFA54F';
 
 var AJAX_SPINNER = '/static/theme/images/ajax-loader.gif';
 
+var objToUrlParams = function(obj) {
+    var url;
+
+    var params = [];
+    for (var key in obj) {
+        params.push(key + '=' + obj[key]);
+    }
+    url = params.join('&');
+    return url;
+};
+
 var startExposureApp = function() {
     drawnItems = new L.LayerGroup();
     // draw tool
@@ -315,7 +326,7 @@ var startExposureApp = function() {
                 event.preventDefault();
                 $("#exposure-download-button").attr('disabled', 'disabled');
 
-                var data = {
+                var params = {
                     adminLevel: $('input[name=adminLevel]:checked').val(),
                     timeOfDay: $('input[name=timeOfDay]:checked').val(),
                     residential: $('input[name=residential]:checked').val(),
@@ -325,11 +336,15 @@ var startExposureApp = function() {
                     lat2: latlonBottomRight.lat,
                     lng2: latlonBottomRight.lng,
                 };
+
+                // Check if export for the given parameters is allowed.
+                // If so, go head with the download.
+                // Otherwise, display an error.
                 $.ajax({
                     type: 'get',
-                    data: data,
-                    url: '/exposure/export_exposure/',
-                    error: function(reponse, error){
+                    data: params,
+                    url: '/exposure/validate_export/',
+                    error: function(response, error){
                         if (response.status == 403) {
                             showErrorDialog(
                                 response.responseText,
@@ -338,7 +353,9 @@ var startExposureApp = function() {
                         }
                     },
                     success: function(data, textStatus, jqXHR) {
-                        JQXHR = jqXHR;
+                        var url = '/exposure/export_exposure?';
+                        url += objToUrlParams(params);
+                        window.location.href = url;
                     },
                 });
             }
