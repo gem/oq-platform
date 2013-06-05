@@ -40,10 +40,14 @@ class ExportExposureTestCase(unittest.TestCase):
     """
     Tests for the `export_exposure` view.
     """
+    def setUp(self):
+        self.get_dict = dict(lat1=8, lng1=45,
+                             lat2=9, lng2=46,
+                             outputType='nrml')
 
     def test_export_exposure_invalid_output_type(self):
-
-        request = FakeHttpGetRequest(dict(outputType='pdf'))
+        self.get_dict['outputType'] = 'pdf'
+        request = FakeHttpGetRequest(self.get_dict)
 
         with self.assertRaises(ValueError) as ar:
             views.export_exposure(request)
@@ -58,7 +62,8 @@ class ExportExposureTestCase(unittest.TestCase):
         # Test that the `export_exposure` function calls the
         # `stream_response_generator` with the correct arguments.
         # Also test that the HttpResponse `Content-Disposition` is correct.
-        request = FakeHttpGetRequest(dict(outputType='csv'))
+        self.get_dict['outputType'] = 'csv'
+        request = FakeHttpGetRequest(self.get_dict)
 
         srg_path = 'exposure.views.stream_response_generator'
         with mock.patch(srg_path) as srg_mock:
@@ -76,7 +81,7 @@ class ExportExposureTestCase(unittest.TestCase):
         srg_mock.stop()
 
     def test_export_exposure_calls_nrml(self):
-        request = FakeHttpGetRequest(dict(outputType='nrml'))
+        request = FakeHttpGetRequest(self.get_dict)
 
         srg_path = 'exposure.views.stream_response_generator'
         with mock.patch(srg_path) as srg_mock:
