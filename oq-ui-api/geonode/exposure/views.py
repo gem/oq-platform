@@ -143,6 +143,53 @@ def get_exposure_export_form(request):
                               context_instance=RequestContext(request))
 
 
+def _export_area_valid(lat1, lng1, lat2, lng2):
+    """
+    Simple validation to check the bounding box size.
+
+    If the area is too large, return False and an error message.
+    Else, (True, '').
+    """
+    width = abs(float(lng2) - float(lng1))
+    height = abs(float(lat2) - float(lat1))
+    area = width * height
+    if area > MAX_EXPORT_AREA_SQ_DEG:
+        msg = ('Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
+               ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'
+               '<br />Selected area: %(area)s square degrees.'
+               '<br />Max selection area: %(max_area)s square degrees.')
+        msg %= dict(lat1=lat1, lng1=lng1, lat2=lat2, lng2=lng2,
+                    area=area, max_area=MAX_EXPORT_AREA_SQ_DEG)
+        return False, msg
+    return True, ''
+
+
+def validate_export(request):
+    """
+    Check that the given export parameters are okay, and if the export should
+    be allowed.
+
+    At the moment, we just check that the selected area is not too large to
+    export. If the area is too large, throw back a 403 response (forbidden).
+    Otherwise, return a 200 (OK).
+    """
+    lat1 = request.GET['lat1']
+    lng1 = request.GET['lng1']
+    lat2 = request.GET['lat2']
+    lng2 = request.GET['lng2']
+
+    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
+    if not valid:
+        return HttpResponse(content=error,
+                            content_type="text/html",
+                            status=403)
+    else:
+        # Everything is okay
+        return HttpResponse(
+            content='Export is allowed with the given parameters'
+        )
+
+
 #disabling etag for streaming
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
@@ -168,16 +215,8 @@ def export_exposure(request):
     lng2 = request.GET['lng2']
     lat2 = request.GET['lat2']
 
-    width = abs(float(lng2) - float(lng1))
-    height = abs(float(lat2) - float(lat1))
-    area = width * height
-    if area > MAX_EXPORT_AREA_SQ_DEG:
-        msg = ('Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
-               ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'
-               '<br />Selected area: %(area)s square degrees.'
-               '<br />Max selection area: %(max_area)s square degrees.')
-        msg %= dict(lat1=lat1, lng1=lng1, lat2=lat2, lng2=lng2,
-                    area=area, max_area=MAX_EXPORT_AREA_SQ_DEG)
+    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
+    if not valid:
         return HttpResponse(content=msg,
                             content_type="text/html",
                             status=403)
