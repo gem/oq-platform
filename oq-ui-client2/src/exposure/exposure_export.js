@@ -1,4 +1,3 @@
-var JQXHR;
 // vars for storing lon/lat of the bounding box selection
 var latlonTopLeft;
 var latlonBottomRight;
