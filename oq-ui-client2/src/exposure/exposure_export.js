@@ -271,7 +271,7 @@ var startExposureApp = function() {
             if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
                 $('input[id=id_residential_2]').removeAttr('checked');
                 // Disable the submit/Download button
-                $('input[id=exposure-download-button]').attr('disabled','disabled');
+                $('#exposure-download-button').attr('disabled','disabled');
             }
         }
         $("input[id=id_residential_2]").attr('disabled',
@@ -289,7 +289,7 @@ var startExposureApp = function() {
         if (JSON.stringify(radioSelections.sort())
             == JSON.stringify(['adminLevel', 'residential',
                                'timeOfDay', 'outputType'].sort())) {
-            $('input[id=exposure-download-button]').removeAttr('disabled');
+            $('#exposure-download-button').removeAttr('disabled');
         }
     };
 
@@ -299,7 +299,7 @@ var startExposureApp = function() {
     var showExposureExportForm = function() {
 
         //disable submit button until the user has made selections
-        $('input[id="exposure-download-button"]').attr('disabled','disabled');
+        $("#exposure-download-button").attr('disabled','disabled');
         //enable the submit button once the selections have been made
 
         /*
