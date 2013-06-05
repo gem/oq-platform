@@ -111,11 +111,22 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_tod_off(self):
         tod = 'off'
 
-        result = util._get_reg_codes_pop_ratios(self.region_codes,
-                                                 tod,
-                                                 self.occupancy)
-        expected = [(1, 1), (2, 1), (3, 1)]
-        self.assertEqual(expected, result)
+        with mock.patch('exposure.util.exec_query') as eq:
+            util._get_reg_codes_pop_ratios(self.region_codes,
+                                           tod,
+                                           self.occupancy)
+            self.assertEqual(1, eq.call_count)
+            expected_query = """
+        SELECT
+            geographic_region_id AS region_code,
+            1 AS pop_ratio,
+            is_urban
+        FROM ged2.pop_allocation
+        WHERE geographic_region_id IN (1, 2, 3)
+        AND occupancy_id IN (0, 1)""".strip()
+            actual_query = eq.call_args[0][1]
+            actual_query = actual_query.strip()
+            self.assertEqual(expected_query, actual_query)
 
     def test_tod_all(self):
         tod = 'all'
