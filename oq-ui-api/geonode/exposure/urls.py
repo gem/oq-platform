@@ -16,9 +16,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import url
+from exposure.views import get_exposure_export_form
+from exposure.views import export_exposure
 
 
-urlpatterns = patterns('geonode.exposure.views',
-                       (r'^population.json', 'read_pop'),
+urlpatterns = patterns(
+            'geonode.exposure.views',
+            url(r'wizard1', get_exposure_export_form),
+            url(r'^population.json', export_exposure),
+            url(r'^export_exposure', export_exposure),
 )
