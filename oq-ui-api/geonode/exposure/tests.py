@@ -349,3 +349,49 @@ class DecoratorUtilTestcase(unittest.TestCase):
         req.user.authed = True
         resp = fake_view(req)
         self.assertEqual(200, resp.status_code)
+
+
+class ExportAreaValidTestCase(unittest.TestCase):
+
+    def test_valid(self):
+        lat1 = '8'
+        lng1 = '45'
+        lat2 = '10'
+        lng2 = '47'
+
+        valid, _ = views._export_area_valid(lat1, lng1, lat2, lng2)
+        self.assertTrue(valid)
+
+    def test_invalid(self):
+        lat1 = '8'
+        lng1 = '45'
+        lat2 = '10'
+        lng2 = '47.001'
+
+        valid, _ = views._export_area_valid(lat1, lng1, lat2, lng2)
+        self.assertFalse(valid)
+
+
+class ValidateExportTestCase(unittest.TestCase):
+
+    def setUp(self):
+        req_params = {
+            'outputType': 'csv',
+            'residential': 'res',
+            'timeOfDay': 'day',
+            'adminLevel': 'admin0',
+            'lng1': '8.0',
+            'lat1': '45.0',
+            'lng2': '10.0',
+            'lat2': '47.0',
+        }
+        self.request = FakeHttpGetRequest(req_params)
+
+    def test_valid(self):
+        resp = views.validate_export(self.request)
+        self.assertEqual(200, resp.status_code)
+
+    def test_invalid(self):
+        self.request.GET['lat2'] = '47.001'
+        resp = views.validate_export(self.request)
+        self.assertEqual(403, resp.status_code)
