@@ -125,6 +125,11 @@
         <copy todir="${app.build}/src/gxp/theme">
             <fileset dir="${app.fullpath}/src/gxp/theme"/>
         </copy>
+        <!-- copy exposure application -->
+        <copy todir="${app.build}/src/exposure">                    
+            <fileset dir="${app.fullpath}/src/exposure"/>
+        </copy>
+
         <!-- build app js -->
         <mkdir dir="${app.build}/lib"/>
         <java classname="org.ringojs.tools.launcher.Main" failonerror="true" fork="true" output="${sdk.logfile}" append="true">
