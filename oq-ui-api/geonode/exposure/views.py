@@ -134,7 +134,7 @@ def get_exposure_export_form(request):
 
     # if the admin level is okay, display the admin level selection form
     form = forms.ExposureExportForm(highest_admin_level=admin_level)
-    return render_to_response('oq-platform2/exposure-export-wizard-1.html',
+    return render_to_response('oq-platform2/exposure_model_export.html',
                               {'exposure_form': form,
                                'lat1': lat1,
                                'lng1': lng1,
