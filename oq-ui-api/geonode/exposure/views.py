@@ -16,14 +16,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
+from django.db import connections
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from django.views.decorators.http import condition
-from django.db import connections
+
 from exposure import forms
 from exposure import util
-from django.shortcuts import render_to_response
 
 COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
@@ -90,59 +91,59 @@ ADMIN_LEVEL_TO_COLUMN_MAP = {
 
 
 @csrf_exempt
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
 def get_exposure_export_form(request):
-    if not request.method == 'GET':
-        # "Method not allowed"
-        return HttpResponse(status=405)
-    else:
-        # get the lat long variables from the client
-        lat1 = request.GET['lat1']
-        lng1 = request.GET['lng1']
-        lat2 = request.GET['lat2']
-        lng2 = request.GET['lng2']
+    # get the lat long variables from the client
+    lat1 = request.GET['lat1']
+    lng1 = request.GET['lng1']
+    lat2 = request.GET['lat2']
+    lng2 = request.GET['lng2']
 
-        #find all the admin levels available inside bounding box
-        cursor = connections['geddb'].cursor()
-        # Get the lowest admin level (0, 1, 2, or 3) which is common to all
-        # grid points in the selected area:
-        cursor.execute("""
-            SELECT
-            MIN(
-            CASE
-            WHEN gadm_admin_3_id IS NOT NULL THEN 3
-            WHEN gadm_admin_2_id IS NOT NULL THEN 2
-            WHEN gadm_admin_1_id IS NOT NULL THEN 1
-            ELSE 0
-            END)
-            FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope
-                (%s, %s, %s, %s, 4326);""", [lng1, lat1, lng2, lat2])
-        admin_level_flag = cursor.fetchall()
+    #find all the admin levels available inside bounding box
+    cursor = connections['geddb'].cursor()
+    # Get the lowest admin level (0, 1, 2, or 3) which is common to all
+    # grid points in the selected area:
+    cursor.execute("""
+        SELECT
+        MIN(
+        CASE
+        WHEN gadm_admin_3_id IS NOT NULL THEN 3
+        WHEN gadm_admin_2_id IS NOT NULL THEN 2
+        WHEN gadm_admin_1_id IS NOT NULL THEN 1
+        ELSE 0
+        END)
+        FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope
+            (%s, %s, %s, %s, 4326);""", [lng1, lat1, lng2, lat2])
+    admin_level_flag = cursor.fetchall()
 
-        admin_level = admin_level_flag[0][0]
+    admin_level = admin_level_flag[0][0]
 
-        # Make sure it is a valid admin admin level.
-        # If not, respond with an 'error' message.
-        # (Valid values are 0-5)
-        if not admin_level in range(6):
-            html = ('<html><body>'
-                    'Your request cannot be processed.'
-                    ' Invalid admin level %s.'
-                    '</body></html>' % admin_level)
-            return HttpResponse(html)
+    # Make sure it is a valid admin admin level.
+    # If not, respond with an 'error' message.
+    # (Valid values are 0-5)
+    if not admin_level in range(6):
+        html = ('<html><body>'
+                'Your request cannot be processed.'
+                ' Invalid admin level %s.'
+                '</body></html>' % admin_level)
+        return HttpResponse(html)
 
-        # if the admin level is okay, display the admin level selection form
-        form = forms.ExposureExportForm(highest_admin_level=admin_level)
-        return render_to_response('oq-platform2/exposure-export-wizard-1.html',
-                                  {'exposure_form': form,
-                                   'lat1': lat1,
-                                   'lng1': lng1,
-                                   'lat2': lat2,
-                                   'lng2': lng2},
-                                  context_instance=RequestContext(request))
+    # if the admin level is okay, display the admin level selection form
+    form = forms.ExposureExportForm(highest_admin_level=admin_level)
+    return render_to_response('oq-platform2/exposure-export-wizard-1.html',
+                              {'exposure_form': form,
+                               'lat1': lat1,
+                               'lng1': lng1,
+                               'lat2': lat2,
+                               'lng2': lng2},
+                              context_instance=RequestContext(request))
 
 
 #disabling etag for streaming
 @condition(etag_func=None)
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
 def export_exposure(request):
     """
     Perform a streaming export of the requested exposure data.

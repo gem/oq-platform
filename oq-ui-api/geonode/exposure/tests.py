@@ -4,12 +4,36 @@ import unittest
 from exposure import util
 from exposure import views
 
+from django.http import HttpResponse
+
+
+class FakeUser(object):
+    def __init__(self, authed):
+        self.authed = authed
+
+    def is_authenticated(self):
+        return self.authed
 
 class FakeHttpGetRequest(object):
     def __init__(self, get_dict):
         self.GET = get_dict
         self.META = dict()
-        self.method = 'get'
+        self.method = 'GET'
+        self.user = FakeUser(True)
+
+class FakeHttpPostRequest(object):
+    def __init__(self, post_dict):
+        self.POST = post_dict
+        self.META = dict()
+        self.method = 'POST'
+        self.user = FakeUser(True)
+
+class FakeHttpDeleteRequest(object):
+    def __init__(self, del_dict):
+        self.DELETE = del_dict
+        self.META = dict()
+        self.method = 'DELETE'
+        self.user = FakeUser(True)
 
 
 class ExportExposureTestCase(unittest.TestCase):
@@ -92,9 +116,9 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
         tod = 'all'
 
         with mock.patch('exposure.util.exec_query') as eq:
-            result = util._get_reg_codes_pop_ratios(self.region_codes,
-                                                     tod,
-                                                     self.occupancy)
+            util._get_reg_codes_pop_ratios(self.region_codes,
+                                           tod,
+                                           self.occupancy)
 
             self.assertEqual(1, eq.call_count)
 
@@ -113,9 +137,9 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_tod_day_night_transit(self):
         with mock.patch('exposure.util.exec_query') as eq:
             for i, tod in enumerate(('day', 'night', 'transit')):
-                result = util._get_reg_codes_pop_ratios(self.region_codes,
-                                                         tod,
-                                                         self.occupancy)
+                util._get_reg_codes_pop_ratios(self.region_codes,
+                                               tod,
+                                               self.occupancy)
 
                 self.assertEqual(i + 1, eq.call_count)
 
@@ -202,6 +226,18 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
                           "'csv' are supported")
         self.assertEqual(expected_error, ar.exception.message)
 
+    def test_invalid_admin_level(self):
+        self.request.GET['adminLevel'] = 'admin4'
+
+        with self.assertRaises(ValueError) as ar:
+            list(views.stream_response_generator(self.request, 'csv'))
+
+        expected_error = (
+            "Invalid 'adminLevel' selection: 'admin4'."
+            " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
+        )
+        self.assertEqual(expected_error, ar.exception.message)
+
     def test_query_func_calls_residential(self):
         # Test that the proper arguments are passed to the various DB query
         # helper functions.
@@ -264,7 +300,6 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         self.assertEqual(('fake_admin_lvl_ids', [0, 1], 'gadm_admin_3_id'),
                          self.df_mock.call_args[0])
 
-
     def test_invalid_residential(self):
         self.request.GET['residential'] = 'invalid'
 
@@ -274,3 +309,38 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         self.assertEqual("Invalid 'residential' selection: 'invalid'. "
                          "Expected 'res', 'non-res', or 'both'.",
                          ar.exception.message)
+
+
+class DecoratorUtilTestcase(unittest.TestCase):
+
+    def test_allowed_methods(self):
+        @util.allowed_methods(('GET', 'POST'))
+        def fake_view(request):
+            return HttpResponse(status=200)
+
+        req = FakeHttpGetRequest(None)
+        resp = fake_view(req)
+        self.assertEqual(200, resp.status_code)
+
+        req = FakeHttpPostRequest(None)
+        resp = fake_view(req)
+        self.assertEqual(200, resp.status_code)
+
+        req = FakeHttpDeleteRequest(None)
+        resp = fake_view(req)
+        self.assertEqual(405, resp.status_code)
+
+    def test_sign_in_required(self):
+        @util.sign_in_required
+        def fake_view(request):
+            return HttpResponse(status=200)
+
+        req = FakeHttpGetRequest(None)
+        req.user.authed = False
+
+        resp = fake_view(req)
+        self.assertEqual(401, resp.status_code)
+
+        req.user.authed = True
+        resp = fake_view(req)
+        self.assertEqual(200, resp.status_code)
