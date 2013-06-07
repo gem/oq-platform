@@ -37,6 +37,20 @@ class allowed_methods(object):
 
 
 def sign_in_required(func):
+    """
+    View decorator. This can be used as an alternative to
+    `django.contrib.auth.decorators.login_required`, but the function is
+    distinctly different.
+
+    Instead of immediately redirecting to a login URL, simply return a 401
+    ("Unauthorized") and let the client figure out what to do with it. If the
+    client then wants to authenticate to allow the wrapped view to be used, it
+    needs to have some intimate knowledge of the server application in order to
+    do so.
+
+    In this way, the wrapped view can be used a bit more generically by any
+    client (and not just a Django application).
+    """
     def wrapped(request):
         if not request.user.is_authenticated():
             return HttpResponse(content=SIGN_IN_REQUIRED,
