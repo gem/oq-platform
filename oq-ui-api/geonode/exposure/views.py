@@ -96,7 +96,7 @@ MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
 @csrf_exempt
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
-def get_exposure_export_form(request):
+def get_exposure_building_form(request):
     # get the lat long variables from the client
     lat1 = request.GET['lat1']
     lng1 = request.GET['lng1']
@@ -134,7 +134,7 @@ def get_exposure_export_form(request):
 
     # if the admin level is okay, display the admin level selection form
     form = forms.ExposureExportForm(highest_admin_level=admin_level)
-    return render_to_response('oq-platform2/exposure_model_export.html',
+    return render_to_response('oq-platform2/exposure_building_form.html',
                               {'exposure_form': form,
                                'lat1': lat1,
                                'lng1': lng1,
@@ -194,7 +194,7 @@ def validate_export(request):
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
-def export_exposure(request):
+def export_building(request):
     """
     Perform a streaming export of the requested exposure data.
 
