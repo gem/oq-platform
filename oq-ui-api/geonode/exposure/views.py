@@ -275,8 +275,8 @@ def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
         pop_value = pop[1]
         pop_grid_id = pop[2]
         pop_iso = pop[3]
-        pop_lat = pop[4]
-        pop_lon = pop[5]
+        pop_lon = pop[4]
+        pop_lat = pop[5]
         pop_is_urban = pop[6]
         for reg_code, pop_ratio, is_urban in reg_codes_pop_ratios:
             for df in df_table:
