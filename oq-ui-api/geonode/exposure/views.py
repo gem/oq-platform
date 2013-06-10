@@ -217,7 +217,7 @@ def export_building(request):
 
     valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
     if not valid:
-        return HttpResponse(content=msg,
+        return HttpResponse(content=error,
                             content_type="text/html",
                             status=403)
 
