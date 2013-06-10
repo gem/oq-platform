@@ -314,7 +314,9 @@ var startExposureApp = function() {
             {title: 'Download Exposure Data',
              height: 275,
              width: 500,
-             modal: true}
+             modal: true,
+             close: function(event, ui) { $("#exposure-export-form").remove(); },
+            }
         );
         // And finally, hide the leaflet popup with the export button:
         map.closePopup(exportPopup);
