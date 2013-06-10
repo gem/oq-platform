@@ -38,19 +38,19 @@ class FakeHttpDeleteRequest(object):
 
 class ExportExposureTestCase(unittest.TestCase):
     """
-    Tests for the `export_exposure` view.
+    Tests for the `export_building` view.
     """
     def setUp(self):
         self.get_dict = dict(lat1=8, lng1=45,
                              lat2=9, lng2=46,
                              outputType='nrml')
 
-    def test_export_exposure_invalid_output_type(self):
+    def test_export_building_invalid_output_type(self):
         self.get_dict['outputType'] = 'pdf'
         request = FakeHttpGetRequest(self.get_dict)
 
         with self.assertRaises(ValueError) as ar:
-            views.export_exposure(request)
+            views.export_building(request)
 
         expected_error = (
             "Unrecognized output type 'pdf', only 'nrml' and 'csv' are "
@@ -58,8 +58,8 @@ class ExportExposureTestCase(unittest.TestCase):
         )
         self.assertEqual(expected_error, ar.exception.message)
 
-    def test_export_exposure_calls_csv(self):
-        # Test that the `export_exposure` function calls the
+    def test_export_building_calls_csv(self):
+        # Test that the `export_building` function calls the
         # `stream_response_generator` with the correct arguments.
         # Also test that the HttpResponse `Content-Disposition` is correct.
         self.get_dict['outputType'] = 'csv'
@@ -67,7 +67,7 @@ class ExportExposureTestCase(unittest.TestCase):
 
         srg_path = 'exposure.views.stream_response_generator'
         with mock.patch(srg_path) as srg_mock:
-            response = views.export_exposure(request)
+            response = views.export_building(request)
 
             # Check that the `stream_response_generator` is getting called:
             self.assertEqual(1, srg_mock.call_count)
@@ -80,12 +80,12 @@ class ExportExposureTestCase(unittest.TestCase):
             self.assertEqual(response['Content-Type'], 'text/csv')
         srg_mock.stop()
 
-    def test_export_exposure_calls_nrml(self):
+    def test_export_building_calls_nrml(self):
         request = FakeHttpGetRequest(self.get_dict)
 
         srg_path = 'exposure.views.stream_response_generator'
         with mock.patch(srg_path) as srg_mock:
-            response = views.export_exposure(request)
+            response = views.export_building(request)
 
             # Check that the `stream_response_generator` is getting called:
             self.assertEqual(1, srg_mock.call_count)
