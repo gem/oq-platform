@@ -54,7 +54,7 @@ COPYRIGHT_HEADER = """\
 """
 
 CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-              'study_region, gadm level id, GEM taxonomy\n')
+              'study_region, gadm_level_id, GEM_taxonomy\n')
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 
