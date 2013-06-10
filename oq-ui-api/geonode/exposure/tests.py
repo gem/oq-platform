@@ -40,10 +40,14 @@ class ExportExposureTestCase(unittest.TestCase):
     """
     Tests for the `export_exposure` view.
     """
+    def setUp(self):
+        self.get_dict = dict(lat1=8, lng1=45,
+                             lat2=9, lng2=46,
+                             outputType='nrml')
 
     def test_export_exposure_invalid_output_type(self):
-
-        request = FakeHttpGetRequest(dict(outputType='pdf'))
+        self.get_dict['outputType'] = 'pdf'
+        request = FakeHttpGetRequest(self.get_dict)
 
         with self.assertRaises(ValueError) as ar:
             views.export_exposure(request)
@@ -58,7 +62,8 @@ class ExportExposureTestCase(unittest.TestCase):
         # Test that the `export_exposure` function calls the
         # `stream_response_generator` with the correct arguments.
         # Also test that the HttpResponse `Content-Disposition` is correct.
-        request = FakeHttpGetRequest(dict(outputType='csv'))
+        self.get_dict['outputType'] = 'csv'
+        request = FakeHttpGetRequest(self.get_dict)
 
         srg_path = 'exposure.views.stream_response_generator'
         with mock.patch(srg_path) as srg_mock:
@@ -76,7 +81,7 @@ class ExportExposureTestCase(unittest.TestCase):
         srg_mock.stop()
 
     def test_export_exposure_calls_nrml(self):
-        request = FakeHttpGetRequest(dict(outputType='nrml'))
+        request = FakeHttpGetRequest(self.get_dict)
 
         srg_path = 'exposure.views.stream_response_generator'
         with mock.patch(srg_path) as srg_mock:
@@ -106,11 +111,22 @@ class GetRegCodesPopRatiosTestCase(unittest.TestCase):
     def test_tod_off(self):
         tod = 'off'
 
-        result = util._get_reg_codes_pop_ratios(self.region_codes,
-                                                 tod,
-                                                 self.occupancy)
-        expected = [(1, 1), (2, 1), (3, 1)]
-        self.assertEqual(expected, result)
+        with mock.patch('exposure.util.exec_query') as eq:
+            util._get_reg_codes_pop_ratios(self.region_codes,
+                                           tod,
+                                           self.occupancy)
+            self.assertEqual(1, eq.call_count)
+            expected_query = """
+        SELECT
+            geographic_region_id AS region_code,
+            1 AS pop_ratio,
+            is_urban
+        FROM ged2.pop_allocation
+        WHERE geographic_region_id IN (1, 2, 3)
+        AND occupancy_id IN (0, 1)""".strip()
+            actual_query = eq.call_args[0][1]
+            actual_query = actual_query.strip()
+            self.assertEqual(expected_query, actual_query)
 
     def test_tod_all(self):
         tod = 'all'
@@ -344,3 +360,49 @@ class DecoratorUtilTestcase(unittest.TestCase):
         req.user.authed = True
         resp = fake_view(req)
         self.assertEqual(200, resp.status_code)
+
+
+class ExportAreaValidTestCase(unittest.TestCase):
+
+    def test_valid(self):
+        lat1 = '8'
+        lng1 = '45'
+        lat2 = '10'
+        lng2 = '47'
+
+        valid, _ = views._export_area_valid(lat1, lng1, lat2, lng2)
+        self.assertTrue(valid)
+
+    def test_invalid(self):
+        lat1 = '8'
+        lng1 = '45'
+        lat2 = '10'
+        lng2 = '47.001'
+
+        valid, _ = views._export_area_valid(lat1, lng1, lat2, lng2)
+        self.assertFalse(valid)
+
+
+class ValidateExportTestCase(unittest.TestCase):
+
+    def setUp(self):
+        req_params = {
+            'outputType': 'csv',
+            'residential': 'res',
+            'timeOfDay': 'day',
+            'adminLevel': 'admin0',
+            'lng1': '8.0',
+            'lat1': '45.0',
+            'lng2': '10.0',
+            'lat2': '47.0',
+        }
+        self.request = FakeHttpGetRequest(req_params)
+
+    def test_valid(self):
+        resp = views.validate_export(self.request)
+        self.assertEqual(200, resp.status_code)
+
+    def test_invalid(self):
+        self.request.GET['lat2'] = '47.001'
+        resp = views.validate_export(self.request)
+        self.assertEqual(403, resp.status_code)
