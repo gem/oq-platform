@@ -143,6 +143,23 @@ def get_exposure_building_form(request):
                               context_instance=RequestContext(request))
 
 
+@csrf_exempt
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
+def get_exposure_population_form(request):
+    lat1 = request.GET['lat1']
+    lng1 = request.GET['lng1']
+    lat2 = request.GET['lat2']
+    lng2 = request.GET['lng2']
+
+    return render_to_response('oq-platform2/exposure_population_form.html',
+                              {'lat1': lat1,
+                               'lng1': lng1,
+                               'lat2': lat2,
+                               'lng2': lng2},
+                              context_instance=RequestContext(request))
+
+
 def _export_area_valid(lat1, lng1, lat2, lng2):
     """
     Simple validation to check the bounding box size.
@@ -239,6 +256,57 @@ def export_building(request):
 
     # build the response object
     response_data = stream_response_generator(request, output_type)
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    return response
+
+
+#disabling etag for streaming
+@condition(etag_func=None)
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
+def export_population(request):
+    """
+    Perform a streaming export of the requested exposure data.
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameters::
+
+            * 'outputType' ('csv' or 'nrml')
+            * 'lng1'
+            * 'lat1'
+            * 'lng2'
+            * 'lat2'
+    """
+    lng1 = request.GET['lng1']
+    lat1 = request.GET['lat1']
+    lng2 = request.GET['lng2']
+    lat2 = request.GET['lat2']
+
+    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
+    if not valid:
+        return HttpResponse(content=msg,
+                            content_type="text/html",
+                            status=403)
+
+    output_type = request.GET['outputType']
+    content_disp = None
+    mimetype = None
+
+    if output_type == "csv":
+        content_disp = 'attachment; filename="exposure_export.csv"'
+        mimetype = 'text/csv'
+    elif output_type == "nrml":
+        content_disp = 'attachment; filename="exposure_export.xml"'
+        mimetype = 'text/plain'
+    else:
+        raise ValueError(
+            "Unrecognized output type '%s', only 'nrml' and 'csv' are "
+            "supported" % output_type
+        )
+
+    response_data = iter(['foo', 'bar'])
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
