@@ -95,6 +95,9 @@ ADMIN_LEVEL_TO_TABLE_MAP = {
     'admin3': 'gadm_admin_3',
 }
 
+#: The maximum bounding box area which can be exported.
+MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
+
 
 @csrf_exempt
 @util.allowed_methods(('GET', ))
@@ -289,7 +292,7 @@ def export_population(request):
 
     valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
     if not valid:
-        return HttpResponse(content=msg,
+        return HttpResponse(content=error,
                             content_type="text/html",
                             status=403)
 
@@ -402,7 +405,8 @@ def stream_response_generator(request, output_type):
     lat2 = request.GET['lat2']
 
     admin_level_col = ADMIN_LEVEL_TO_COLUMN_MAP.get(admin_select)
-    if admin_level_col is None:
+    admin_level_table = ADMIN_LEVEL_TO_TABLE_MAP.get(admin_select)
+    if None in (admin_level_col, admin_level_table):
         msg = ("Invalid 'adminLevel' selection: '%s'."
                " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
                % admin_select)
