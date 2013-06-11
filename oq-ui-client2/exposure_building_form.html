@@ -29,7 +29,7 @@
 
 {% block main %}
 
-<form id="exposure-export-form" class="exposure_export_form">
+<form id="exposure-building-form" class="exposure_export_form">
 {% csrf_token %}
 {{ exposure_form.as_p }}
 
@@ -39,7 +39,7 @@
 <input type="hidden" name="lng2" value="{{ lng2 }}">
 
 <br>
-<button id="exposure-download-button" type="button">Download</button>
+<button id="exposure-bldg-download-button" type="button">Download</button>
 
 </form>
 <span id="showGrid"></span>
