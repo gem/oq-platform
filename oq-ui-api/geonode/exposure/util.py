@@ -224,7 +224,7 @@ def _get_reg_codes_pop_ratios(region_ids, tod, occupancy):
     return reg_codes_pop_ratios
 
 
-def _get_pop_table(lng1, lat1, lng2, lat2, admin_level_col):
+def _get_pop_table(lng1, lat1, lng2, lat2, admin_level_table):
     """
     Given the lon/lat of a bounding box, query the following data from the GED
     DB::
@@ -237,16 +237,14 @@ def _get_pop_table(lng1, lat1, lng2, lat2, admin_level_col):
         * latitude
         * is_urban
 
-    :param str admin_level_col:
-        Valid values are 'gadm_country_id', 'gadm_admin_1_id',
-        'gadm_admin_2_id', 'gadm_admin_3_id'
-
-        This determines which column is selected from `ged2.grid_point`.
+    :param str admin_level_table:
+        Valid values are 'gadm_country', 'gadm_admin_1', 'gadm_admin_2',
+        'gadm_admin_3'.
     """
     cursor = connections['geddb'].cursor()
     query = """
         SELECT
-            grid.%(admin_level_col)s,
+            grid.%(admin_level_table)s_id,
             grid.pop_value,
             grid.id,
             gadm.iso,
@@ -254,11 +252,11 @@ def _get_pop_table(lng1, lat1, lng2, lat2, admin_level_col):
             ST_Y(grid.the_geom),
             grid.is_urban
         FROM ged2.grid_point grid
-        JOIN ged2.gadm_country gadm ON gadm.id=grid.gadm_country_id
+        JOIN ged2.%(admin_level_table)s gadm ON gadm.id=grid.%(admin_level_table)s_id
         WHERE ST_intersects(ST_MakeEnvelope(%(lng1)s, %(lat1)s,
                                             %(lng2)s, %(lat2)s, 4326),
                             grid.the_geom)
-    """ % dict(admin_level_col=admin_level_col,
+    """ % dict(admin_level_table=admin_level_table,
                lng1=lng1,
                lat1=lat1,
                lng2=lng2,

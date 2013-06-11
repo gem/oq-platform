@@ -88,9 +88,12 @@ ADMIN_LEVEL_TO_COLUMN_MAP = {
     'admin2': 'gadm_admin_2_id',
     'admin3': 'gadm_admin_3_id',
 }
-
-#: The maximum bounding box area which can be exported.
-MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
+ADMIN_LEVEL_TO_TABLE_MAP = {
+    'admin0': 'gadm_country',
+    'admin1': 'gadm_admin_1',
+    'admin2': 'gadm_admin_2',
+    'admin3': 'gadm_admin_3',
+}
 
 
 @csrf_exempt
@@ -422,7 +425,8 @@ def stream_response_generator(request, output_type):
     )
 
     # Get all of the data we need for the loops below:
-    pop_table = util._get_pop_table(lng1, lat1, lng2, lat2, admin_level_col)
+    pop_table = util._get_pop_table(lng1, lat1, lng2, lat2, admin_level_col,
+                                    admin_level_table)
     reg_codes_pop_ratios = util._get_reg_codes_pop_ratios(
         region_ids, tod_select, occupancy
     )
