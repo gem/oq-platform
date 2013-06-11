@@ -1,16 +1,8 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-admin_level0 = [['admin0', 'Level 0']]
-admin_level1 = [['admin0', 'Level 0'], ['admin1', 'Level 1']]
-admin_level2 = [['admin0', 'Level 0'], ['admin1', 'Level 1'],
-                ['admin2', 'Level 2']]
-admin_level3 = [['admin0', 'Level 0'], ['admin1', 'Level 1'],
-                ['admin2', 'Level 2'], ['admin3', 'Level 3']]
-
-ADMIN_LEVELS = [admin_level0, admin_level1, admin_level2,
-                admin_level3]
-
+ADMIN_LEVEL_CHOICES = [['admin0', 'Level 0'], ['admin1', 'Level 1'],
+                       ['admin2', 'Level 2'], ['admin3', 'Level 3']]
 TOD = [['day', 'Day'], ['night', 'Night'], ['transit', 'Transit'],
        ['all', 'All'], ['off', 'Off']]
 res = [['res', 'Residential'], ['non-res', 'Non-Residential'],
@@ -31,7 +23,15 @@ class ExpRadioSelect(forms.RadioSelect):
     renderer = HorizontalRadioRenderer
 
 
-class ExposureExportForm(forms.Form):
+class PopulationExposureForm(forms.Form):
+    outputType = forms.ChoiceField(
+        label='Output Type',
+        widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
+        choices=OUTPUT_TYPES
+    )
+
+
+class BuildingExposureForm(forms.Form):
 
     adminLevel = forms.Field()
     timeOfDay = forms.ChoiceField(
@@ -51,12 +51,12 @@ class ExposureExportForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        highest_admin_level = kwargs.pop('highest_admin_level')
+        admin_levels = kwargs.pop('admin_levels')
 
-        super(ExposureExportForm, self).__init__(*args, **kwargs)
+        super(BuildingExposureForm, self).__init__(*args, **kwargs)
 
         self.fields['adminLevel'] = forms.ChoiceField(
             label='Admin Level',
             widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
-            choices=ADMIN_LEVELS[highest_admin_level],
+            choices=[ADMIN_LEVEL_CHOICES[i] for i in admin_levels],
         )
