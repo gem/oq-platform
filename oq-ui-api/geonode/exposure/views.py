@@ -95,6 +95,7 @@ ADMIN_LEVEL_TO_TABLE_MAP = {
     'admin3': 'gadm_admin_3',
 }
 
+
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
 
@@ -109,37 +110,15 @@ def get_exposure_building_form(request):
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
 
-    #find all the admin levels available inside bounding box
-    cursor = connections['geddb'].cursor()
-    # Get the lowest admin level (0, 1, 2, or 3) which is common to all
-    # grid points in the selected area:
-    cursor.execute("""
-        SELECT
-        MIN(
-        CASE
-        WHEN gadm_admin_3_id IS NOT NULL THEN 3
-        WHEN gadm_admin_2_id IS NOT NULL THEN 2
-        WHEN gadm_admin_1_id IS NOT NULL THEN 1
-        ELSE 0
-        END)
-        FROM ged2.grid_point WHERE the_geom && ST_MakeEnvelope
-            (%s, %s, %s, %s, 4326);""", [lng1, lat1, lng2, lat2])
-    admin_level_flag = cursor.fetchall()
+    admin_levels = util._get_available_admin_levels(lng1, lat1, lng2, lat2)
 
-    admin_level = admin_level_flag[0][0]
-
-    # Make sure it is a valid admin admin level.
-    # If not, respond with an 'error' message.
-    # (Valid values are 0-5)
-    if not admin_level in range(6):
-        html = ('<html><body>'
-                'Your request cannot be processed.'
-                ' Invalid admin level %s.'
-                '</body></html>' % admin_level)
-        return HttpResponse(html)
+    if not admin_levels:
+        # There is no grid data for any admin level; this can happen if, for
+        # example, the bounding box is drawn over the ocean somewhere.
+        return HttpResponse(status=204)
 
     # if the admin level is okay, display the admin level selection form
-    form = forms.ExposureExportForm(highest_admin_level=admin_level)
+    form = forms.BuildingExposureForm(admin_levels=admin_levels)
     return render_to_response('oq-platform2/exposure_building_form.html',
                               {'exposure_form': form,
                                'lat1': lat1,
