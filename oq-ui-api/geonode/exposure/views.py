@@ -278,6 +278,7 @@ def export_population(request):
             "supported" % output_type
         )
 
+    # TODO: implement me
     response_data = iter(['foo', 'bar'])
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
@@ -326,12 +327,12 @@ def stream_building_exposure(request, output_type):
         # National
         exposure_data = util._get_national_exposure(lng1, lat1, lng2, lat2,
                                                     tod_select, occupancy)
+
         if output_type == 'csv':
             copyright = copyright_csv(COPYRIGHT_HEADER)
             yield copyright
-            # csv header
             yield CSV_HEADER
-            # csv exposure table
+
             for (grid_id, lon, lat, pop_value, country_id, iso,
                      study_region_id, building_type, dwelling_fraction,
                      pop_ratio) in exposure_data:
