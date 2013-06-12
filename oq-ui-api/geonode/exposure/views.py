@@ -335,54 +335,46 @@ def stream_response_generator(request, output_type):
                % res_select)
         raise ValueError(msg)
 
-    admin_level_ids, region_ids = util._get_admin_level_ids_region_ids(
-        lng1, lat1, lng2, lat2, admin_level_col
-    )
+    if admin_select == 'admin0':
+        # National
+        exposure_data = util._get_national_exposure(lng1, lat1, lng2, lat2,
+                                                    tod_select, occupancy)
+        if output_type == 'csv':
+            copyright = copyright_csv(COPYRIGHT_HEADER)
+            yield copyright
+            # csv header
+            yield CSV_HEADER
+            # csv exposure table
+            for (grid_id, lon, lat, pop_value, country_id, iso,
+                     study_region_id, building_type, dwelling_fraction,
+                     pop_ratio) in exposure_data:
 
-    # Get all of the data we need for the loops below:
-    pop_table = util._get_pop_table(lng1, lat1, lng2, lat2, admin_level_col,
-                                    admin_level_table)
-    reg_codes_pop_ratios = util._get_reg_codes_pop_ratios(
-        region_ids, tod_select, occupancy
-    )
-    df_table = util._get_dwelling_fractions(
-        admin_level_ids, occupancy, admin_level_col
-    )
+                calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+                row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
+                       country_id, building_type]
+                row = [str(x) for x in row]
+                yield '%s\n' % ','.join(row)
+        elif output_type == 'nrml':
+            copyright = copyright_nrml(COPYRIGHT_HEADER)
+            yield XML_HEADER
+            yield copyright
+            yield NRML_HEADER
 
-    if output_type == "csv":
-        # export csv
-        # export copyright
-        copyright = copyright_csv(COPYRIGHT_HEADER)
-        yield copyright
+            for (grid_id, lon, lat, pop_value, country_id, iso,
+                     study_region_id, building_type, dwelling_fraction,
+                     pop_ratio) in exposure_data:
 
-        # csv header
-        yield CSV_HEADER
-
-        # csv exposure table
-        for asset in _asset_generator(pop_table, reg_codes_pop_ratios,
-                                      df_table):
-            yield '%s\n' % ','.join(asset)
-
-    elif output_type == "nrml":
-        # export nrml
-        # nrml header
-        copyright = copyright_nrml(COPYRIGHT_HEADER)
-        yield XML_HEADER
-        yield copyright
-        yield NRML_HEADER
-
-        for (_, pop_value, pop_grid_id, pop_lon, pop_lat, _, _,
-            df_building_type) in _asset_generator(pop_table,
-                                                  reg_codes_pop_ratios,
-                                                  df_table):
-            asset = NRML_ASSET_FMT % (
-                pop_grid_id, df_building_type,
-                pop_lon, pop_lat,
-                pop_value, df_building_type
-            )
-            yield '%s' % asset
-        # finalize the document:
-        yield NRML_FOOTER
+                calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+                asset = NRML_ASSET_FMT % (
+                    grid_id, building_type, lon, lat, calc_pop_value,
+                    building_type
+                )
+                yield '%s' % asset
+            # finalize the document:
+            yield NRML_FOOTER
+    else:
+        # Subnational
+        pass # TODO:
 
 
 def copyright_csv(cr_text):
