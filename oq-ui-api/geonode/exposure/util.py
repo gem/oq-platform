@@ -78,6 +78,47 @@ def exec_query(cursor, query, *args):
     return cursor.fetchall()
 
 
+def _get_available_admin_levels(lng1, lat1, lng2, lat2):
+    """
+    Given a geographical bounding box, get the admin levels for which there is
+    grid data.
+
+    :returns:
+        A list containing any or none of the following values: [0, 1, 2, 3],
+        representing admin 0 (national) and admin 1, 2, and 3 (sub-national),
+        respectively.
+    """
+    query = """
+SELECT BOOL_AND(a0) as has_a0,
+       BOOL_AND(a1) AS has_a1,
+       BOOL_AND(a2) AS has_a2,
+       BOOL_AND(a3) AS has_a3
+FROM (
+    SELECT gr0.id IS NOT NULL as a0,
+           gr1.id IS NOT NULL AS a1,
+           gr2.id IS NOT NULL AS a2,
+           gr3.id IS NOT NULL AS a3
+      FROM ged2.grid_point grid
+      LEFT JOIN ged2.geographic_region gr0
+        ON gr0.gadm_country_id=grid.gadm_country_id
+      LEFT JOIN ged2.geographic_region gr1
+        ON gr1.gadm_admin_1_id=grid.gadm_admin_1_id
+      LEFT JOIN ged2.geographic_region gr2
+        ON gr2.gadm_admin_2_id=grid.gadm_admin_2_id
+      LEFT JOIN ged2.geographic_region gr3
+        ON gr3.gadm_admin_3_id=grid.gadm_admin_3_id
+     WHERE grid.the_geom && ST_MakeEnvelope
+        (%s, %s, %s, %s, 4326)
+) inner_query
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [lng1, lat1, lng2, lat2])
+
+    [admin_level_bools] = cursor.fetchall()
+    admin_levels = [i for i, b in enumerate(admin_level_bools) if b]
+    return admin_levels
+
+
 def _get_admin_level_ids_region_ids(lng1, lat1, lng2, lat2, admin_level_col):
     """
     Query the GED database and get all of the admin level IDs and region IDs
