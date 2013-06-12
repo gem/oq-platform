@@ -362,7 +362,41 @@ def stream_building_exposure(request, output_type):
             yield NRML_FOOTER
     else:
         # Subnational
-        pass # TODO:
+        exposure_data = util._get_subnational_exposure(lng1, lat1, lng2, lat2,
+                                                       occupancy, admin_select)
+
+        if output_type == 'csv':
+            copyright = copyright_csv(COPYRIGHT_HEADER)
+            yield copyright
+            yield CSV_HEADER
+
+            for (grid_id, lon, lat, pop_value, country_id, iso,
+                     study_region_id, building_type,
+                     dwelling_fraction) in exposure_data:
+                calc_pop_value = pop_value * dwelling_fraction
+                row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
+                       country_id, building_type]
+                row = [str(x) for x in row]
+                yield '%s\n' % ','.join(row)
+
+        elif output_type == 'nrml':
+            copyright = copyright_nrml(COPYRIGHT_HEADER)
+            yield XML_HEADER
+            yield copyright
+            yield NRML_HEADER
+
+            for (grid_id, lon, lat, pop_value, country_id, iso,
+                     study_region_id, building_type,
+                     dwelling_fraction) in exposure_data:
+                calc_pop_value = pop_value * dwelling_fraction
+
+                asset = NRML_ASSET_FMT % (
+                    grid_id, building_type, lon, lat, calc_pop_value,
+                    building_type
+                )
+                yield '%s' % asset
+            # finalize the document:
+            yield NRML_FOOTER
 
 
 def copyright_csv(cr_text):
