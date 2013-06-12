@@ -121,6 +121,8 @@ FROM (
 
 def _get_national_exposure(lng1, lat1, lng2, lat2, tod, occupancy):
     """
+    :param lng1, lat1, lng2, lat2:
+        Lat/lon of the selected bounding box.
     :param tod_select:
         'day', 'night', 'transit', 'all', or 'off'
     :param occupancy:
