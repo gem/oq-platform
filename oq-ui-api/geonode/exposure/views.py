@@ -82,19 +82,6 @@ NRML_FOOTER = """
     </exposureModel>
 </nrml>\n"""
 
-ADMIN_LEVEL_TO_COLUMN_MAP = {
-    'admin0': 'gadm_country_id',
-    'admin1': 'gadm_admin_1_id',
-    'admin2': 'gadm_admin_2_id',
-    'admin3': 'gadm_admin_3_id',
-}
-ADMIN_LEVEL_TO_TABLE_MAP = {
-    'admin0': 'gadm_country',
-    'admin1': 'gadm_admin_1',
-    'admin2': 'gadm_admin_2',
-    'admin3': 'gadm_admin_3',
-}
-
 
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
