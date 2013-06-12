@@ -178,3 +178,58 @@ WHERE
     cursor.execute(query, [lng1, lat1, lng2, lat2])
 
     return cursor.fetchall()
+
+
+def _get_subnational_exposure(lng1, lat1, lng2, lat2, occupancy, admin_level):
+    """
+    :param lng1, lat1, lng2, lat2:
+        Lat/lon of the selected bounding box.
+    :param occupancy:
+        List. [0], [1], or [0, 1]. 0 represents residential, 1 represents
+        non-residential.
+    :param admin_level:
+        'admin1', 'admin2', or 'admin3'
+    """
+    admin_level_column_map = {
+        'admin1': 'gadm_admin_1_id',
+        'admin2': 'gadm_admin_2_id',
+        'admin3': 'gadm_admin_3_id',
+    }
+
+    query = """\
+SELECT
+    grid_point.id,
+    ST_X(grid_point.the_geom) AS lon,
+    ST_Y(grid_point.the_geom) AS lat,
+    grid_point.pop_value,
+    grid_point.%(admin_level_id)s,
+    gadm_country.iso,
+    dist_group.study_region_id,
+    dist_value.building_type,
+    dist_value.dwelling_fraction
+FROM ged2.grid_point AS grid_point
+
+JOIN ged2.gadm_country AS gadm_country
+    ON grid_point.gadm_country_id = gadm_country.id
+JOIN ged2.geographic_region AS geo_region
+    ON geo_region.%(admin_level_id)s = grid_point.%(admin_level_id)s
+JOIN ged2.study_region AS study_region
+    ON study_region.geographic_region_id = geo_region.id
+JOIN ged2.distribution_group AS dist_group
+    ON dist_group.study_region_id = study_region.id
+JOIN ged2.distribution_value AS dist_value
+    ON dist_value.distribution_group_id = dist_group.id
+
+WHERE
+    grid_point.pop_value > 0
+    AND ST_intersects(ST_MakeEnvelope(%%s, %%s, %%s, %%s, 4326),
+                      grid_point.the_geom)
+    AND grid_point.is_urban = dist_group.is_urban
+    AND dist_group.occupancy_id IN %(occ)s
+"""
+    query %= dict(admin_level_id=admin_level_column_map.get(admin_level),
+                  occ=num_list_to_sql_array(occupancy))
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [lng1, lat1, lng2, lat2])
+
+    return cursor.fetchall()
