@@ -297,66 +297,6 @@ def export_population(request):
     return response
 
 
-def _asset_generator(pop_table, reg_codes_pop_ratios, df_table):
-    """
-    A helper function which implements the looping logic for contructing
-    assets.
-
-    Generates tuples of the following information (each datum as a string)::
-
-        * ISO
-        * Calculated population value (taking into account dwelling fraction
-          and popluation ratio, based on the time of day)
-        * Population cell ID
-        * Longitude
-        * Latitude
-        * Study Region ID
-        * GADM Country ID
-        * GEM Taxonomy
-
-    :param pop_table:
-        Population data. See :func:`exposure.util._get_pop_table`.
-    :param reg_codes_pop_ratios:
-        Region codes and population ratios. See
-        :func:`exposure.util._get_reg_codes_pop_ratios`.
-    :param df_table:
-        Dwelling fraction data. See
-        :func:`exposure.util._get_dwelling_fractions`.
-    """
-    for pop in pop_table:
-        pop_admin_level_id = pop[0]
-        pop_value = pop[1]
-        pop_grid_id = pop[2]
-        pop_iso = pop[3]
-        pop_lon = pop[4]
-        pop_lat = pop[5]
-        pop_is_urban = pop[6]
-        for reg_code, pop_ratio, is_urban in reg_codes_pop_ratios:
-            for df in df_table:
-                df_building_type = df[0]
-                df_dwelling_fraction = df[1]
-                df_study_region = df[2]
-                df_admin_level_id = df[3]
-                df_region_id = df[4]
-                df_is_urban = df[5]
-
-                # only generate asset results for the current region_id and
-                # country_id, to avoid writing out incorrect/extra data
-                if (df_region_id == reg_code
-                        and df_admin_level_id == pop_admin_level_id
-                        and pop_is_urban == is_urban
-                        and df_is_urban == is_urban):
-                    asset = (pop_iso,
-                             (pop_value * pop_ratio * df_dwelling_fraction),
-                             pop_grid_id,
-                             pop_lon,
-                             pop_lat,
-                             df_study_region,
-                             df_admin_level_id,
-                             df_building_type)
-                    yield tuple([str(x) for x in asset])
-
-
 def stream_response_generator(request, output_type):
     """
     Stream exposure/population data from the database into a file of the
@@ -382,14 +322,6 @@ def stream_response_generator(request, output_type):
     lat1 = request.GET['lat1']
     lng2 = request.GET['lng2']
     lat2 = request.GET['lat2']
-
-    admin_level_col = ADMIN_LEVEL_TO_COLUMN_MAP.get(admin_select)
-    admin_level_table = ADMIN_LEVEL_TO_TABLE_MAP.get(admin_select)
-    if None in (admin_level_col, admin_level_table):
-        msg = ("Invalid 'adminLevel' selection: '%s'."
-               " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
-               % admin_select)
-        raise ValueError(msg)
 
     if res_select == 'res':
         occupancy = [0]
