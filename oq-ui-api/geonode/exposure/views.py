@@ -136,8 +136,10 @@ def get_exposure_population_form(request):
                             status=403)
 
     else:
+        form = forms.PopulationExposureForm()
         return render_to_response('oq-platform2/exposure_population_form.html',
-                              {'lat1': lat1,
+                              {'exposure_form': form,
+                               'lat1': lat1,
                                'lng1': lng1,
                                'lat2': lat2,
                                'lng2': lng2},
