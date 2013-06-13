@@ -36,7 +36,7 @@ class FakeHttpDeleteRequest(object):
         self.user = FakeUser(True)
 
 
-class ExportExposureTestCase(unittest.TestCase):
+class ExportBuildingTestCase(unittest.TestCase):
     """
     Tests for the `export_building` view.
     """
@@ -44,6 +44,20 @@ class ExportExposureTestCase(unittest.TestCase):
         self.get_dict = dict(lat1=8, lng1=45,
                              lat2=9, lng2=46,
                              outputType='nrml')
+
+    def test_invalid_export_area(self):
+        self.get_dict = dict(lat1=8, lng1=45,
+                             lat2=10, lng2=47.001,
+                             outputType='nrml')
+        request = FakeHttpGetRequest(self.get_dict)
+
+        with mock.patch('exposure.views._export_area_valid') as eav:
+            eav.return_value = (False, 'Invalid area')
+            response = views.export_building(request)
+
+            self.assertEqual(1, eav.call_count)
+
+            self.assertEqual(403, response.status_code)
 
     def test_export_building_invalid_output_type(self):
         self.get_dict['outputType'] = 'pdf'
@@ -60,135 +74,48 @@ class ExportExposureTestCase(unittest.TestCase):
 
     def test_export_building_calls_csv(self):
         # Test that the `export_building` function calls the
-        # `stream_response_generator` with the correct arguments.
+        # `stream_building_exposure` with the correct arguments.
         # Also test that the HttpResponse `Content-Disposition` is correct.
         self.get_dict['outputType'] = 'csv'
         request = FakeHttpGetRequest(self.get_dict)
 
-        srg_path = 'exposure.views.stream_response_generator'
-        with mock.patch(srg_path) as srg_mock:
+        sbe_path = 'exposure.views.stream_building_exposure'
+        with mock.patch(sbe_path) as sbe_mock:
             response = views.export_building(request)
 
-            # Check that the `stream_response_generator` is getting called:
-            self.assertEqual(1, srg_mock.call_count)
+            # Check that the `stream_building_exposure` is getting called:
+            self.assertEqual(1, sbe_mock.call_count)
             # Check that the generator is being called with the correct output
             # type:
-            self.assertEqual('csv', srg_mock.call_args[0][1])
+            self.assertEqual('csv', sbe_mock.call_args[0][1])
 
             self.assertEqual(response['Content-Disposition'],
                              'attachment; filename="exposure_export.csv"')
             self.assertEqual(response['Content-Type'], 'text/csv')
-        srg_mock.stop()
+        sbe_mock.stop()
 
     def test_export_building_calls_nrml(self):
         request = FakeHttpGetRequest(self.get_dict)
 
-        srg_path = 'exposure.views.stream_response_generator'
-        with mock.patch(srg_path) as srg_mock:
+        sbe_path = 'exposure.views.stream_building_exposure'
+        with mock.patch(sbe_path) as sbe_mock:
             response = views.export_building(request)
 
-            # Check that the `stream_response_generator` is getting called:
-            self.assertEqual(1, srg_mock.call_count)
+            # Check that the `stream_building_exposure` is getting called:
+            self.assertEqual(1, sbe_mock.call_count)
             # Check that the generator is being called with the correct output
             # type:
-            self.assertEqual('nrml', srg_mock.call_args[0][1])
+            self.assertEqual('nrml', sbe_mock.call_args[0][1])
 
             self.assertEqual(response['Content-Disposition'],
                              'attachment; filename="exposure_export.xml"')
             self.assertEqual(response['Content-Type'], 'text/plain')
-        srg_mock.stop()
+        sbe_mock.stop()
 
 
-class GetRegCodesPopRatiosTestCase(unittest.TestCase):
+class StreamBuildingExposureTestCase(unittest.TestCase):
     """
-    Tests for the `exposure.util._get_reg_codes_pop_ratios` function.
-    """
-
-    def setUp(self):
-        self.region_codes = [1, 2, 3]
-        self.occupancy = [0, 1]
-
-    def test_tod_off(self):
-        tod = 'off'
-
-        with mock.patch('exposure.util.exec_query') as eq:
-            util._get_reg_codes_pop_ratios(self.region_codes,
-                                           tod,
-                                           self.occupancy)
-            self.assertEqual(1, eq.call_count)
-            expected_query = """
-        SELECT
-            geographic_region_id AS region_code,
-            1 AS pop_ratio,
-            is_urban
-        FROM ged2.pop_allocation
-        WHERE geographic_region_id IN (1, 2, 3)
-        AND occupancy_id IN (0, 1)""".strip()
-            actual_query = eq.call_args[0][1]
-            actual_query = actual_query.strip()
-            self.assertEqual(expected_query, actual_query)
-
-    def test_tod_all(self):
-        tod = 'all'
-
-        with mock.patch('exposure.util.exec_query') as eq:
-            util._get_reg_codes_pop_ratios(self.region_codes,
-                                           tod,
-                                           self.occupancy)
-
-            self.assertEqual(1, eq.call_count)
-
-            expected_query = """
-        SELECT
-            geographic_region_id AS region_code,
-            (day_pop_ratio + night_pop_ratio + transit_pop_ratio) AS pop_ratio,
-            is_urban
-        FROM ged2.pop_allocation
-        WHERE geographic_region_id IN (1, 2, 3)
-        AND occupancy_id IN (0, 1)""".strip()
-            actual_query = eq.call_args[0][1]
-            actual_query = actual_query.strip()
-            self.assertEqual(expected_query, actual_query)
-
-    def test_tod_day_night_transit(self):
-        with mock.patch('exposure.util.exec_query') as eq:
-            for i, tod in enumerate(('day', 'night', 'transit')):
-                util._get_reg_codes_pop_ratios(self.region_codes,
-                                               tod,
-                                               self.occupancy)
-
-                self.assertEqual(i + 1, eq.call_count)
-
-                expected_query = """
-        SELECT
-            geographic_region_id AS region_code,
-            %s_pop_ratio AS pop_ratio,
-            is_urban
-        FROM ged2.pop_allocation
-        WHERE geographic_region_id IN (1, 2, 3)
-        AND occupancy_id IN (0, 1)""".strip()
-
-                expected_query %= tod
-                actual_query = eq.call_args[0][1]
-                actual_query = actual_query.strip()
-                self.assertEqual(expected_query, actual_query)
-
-    def test_invalid_tod(self):
-        tod = 'tea_time'
-        with self.assertRaises(ValueError) as ar:
-            util._get_reg_codes_pop_ratios(self.region_codes,
-                                            tod,
-                                            self.occupancy)
-
-        expected_error = ("Invalid time of day: 'tea_time'. "
-                          "Expected 'day', 'night', 'transit', 'all', or "
-                          "'off'")
-        self.assertEqual(expected_error, ar.exception.message)
-
-
-class StreamResponseGeneratorTestCase(unittest.TestCase):
-    """
-    Tests for `stream_response_generator`.
+    Tests for `stream_building_exposure`.
     """
 
     def setUp(self):
@@ -204,39 +131,9 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
         }
         self.request = FakeHttpGetRequest(req_params)
 
-        self.adm_lvl_reg_patch = mock.patch(
-            'exposure.util._get_admin_level_ids_region_ids'
-        )
-        self.adm_lvl_reg_mock = self.adm_lvl_reg_patch.start()
-        self.adm_lvl_reg_mock.return_value = ['fake_admin_lvl_ids',
-                                              'fake_region_ids']
-
-        self.pop_patch = mock.patch('exposure.util._get_pop_table')
-        self.pop_mock = self.pop_patch.start()
-
-        self.grcpr_patch = mock.patch('exposure.util.'
-                                      '_get_reg_codes_pop_ratios')
-        self.grcpr_mock = self.grcpr_patch.start()
-
-        self.df_patch = mock.patch('exposure.util._get_dwelling_fractions')
-        self.df_mock = self.df_patch.start()
-
-        self.ag_patch = mock.patch('exposure.views._asset_generator')
-        self.ag_mock = self.ag_patch.start()
-        self.ag_mock.return_value = []
-
-        self.patches = [self.adm_lvl_reg_patch, self.pop_patch,
-                        self.grcpr_patch, self.df_patch, self.ag_patch]
-        self.mocks = [self.adm_lvl_reg_mock, self.pop_mock, self.grcpr_mock,
-                      self.df_mock, self.ag_mock]
-
-    def tearDown(self):
-        for p in self.patches:
-            p.stop()
-
     def test_invalid_output_type(self):
         with self.assertRaises(ValueError) as ar:
-            list(views.stream_response_generator(None, 'pdf'))
+            list(views.stream_building_exposure(None, 'pdf'))
 
         expected_error = ("Unrecognized output type 'pdf', only 'nrml' and "
                           "'csv' are supported")
@@ -245,86 +142,152 @@ class StreamResponseGeneratorTestCase(unittest.TestCase):
     def test_invalid_admin_level(self):
         self.request.GET['adminLevel'] = 'admin4'
 
-        with self.assertRaises(ValueError) as ar:
-            list(views.stream_response_generator(self.request, 'csv'))
+        with mock.patch('exposure.util._get_subnational_exposure') as gse:
+            gse.return_value = []
 
-        expected_error = (
-            "Invalid 'adminLevel' selection: 'admin4'."
-            " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
-        )
-        self.assertEqual(expected_error, ar.exception.message)
+            with self.assertRaises(ValueError) as ar:
+                list(views.stream_building_exposure(self.request, 'csv'))
 
-    def test_query_func_calls_residential(self):
-        # Test that the proper arguments are passed to the various DB query
-        # helper functions.
-        # 'Residential' selection is 'res'
-        self.request.GET['adminLevel'] = 'admin0'
+            expected_error = (
+                "Invalid 'adminLevel' selection: 'admin4'."
+                " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
+            )
+            self.assertEqual(expected_error, ar.exception.message)
 
-        # The list cast is done here to exhause the generator
-        # (since all function calls happen in the context of a generator,
-        # which is lazy)
-        list(views.stream_response_generator(self.request, 'csv'))
-        for m in self.mocks:
-            self.assertEqual(1, m.call_count)
-
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
-                         self.adm_lvl_reg_mock.call_args[0])
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_country_id'),
-                         self.pop_mock.call_args[0])
-        self.assertEqual(('fake_region_ids', 'day', [0]),
-                         self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_admin_lvl_ids', [0], 'gadm_country_id'),
-                         self.df_mock.call_args[0])
-
-    def test_query_func_calls_non_residential(self):
-        # Test that the proper arguments are passed to the various DB query
-        # helper functions.
-        # 'Residential' selection is 'non-res'
-        self.request.GET['adminLevel'] = 'admin1'
-        self.request.GET['residential'] = 'non-res'
-
-        list(views.stream_response_generator(self.request, 'csv'))
-        for m in self.mocks:
-            self.assertEqual(1, m.call_count)
-
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_1_id'),
-                         self.adm_lvl_reg_mock.call_args[0])
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_1_id'),
-                         self.pop_mock.call_args[0])
-        self.assertEqual(('fake_region_ids', 'day', [1]),
-                         self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_admin_lvl_ids', [1], 'gadm_admin_1_id'),
-                         self.df_mock.call_args[0])
-
-    def test_query_func_calls_both(self):
-        # Test that the proper arguments are passed to the various DB query
-        # helper functions.
-        # 'Residential' selection is 'both'
-        self.request.GET['adminLevel'] = 'admin3'
-        self.request.GET['residential'] = 'both'
-
-        list(views.stream_response_generator(self.request, 'nrml'))
-        for m in self.mocks:
-            self.assertEqual(1, m.call_count)
-
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_3_id'),
-                         self.adm_lvl_reg_mock.call_args[0])
-        self.assertEqual(('8.1', '45.2', '9.1', '46.2', 'gadm_admin_3_id'),
-                         self.pop_mock.call_args[0])
-        self.assertEqual(('fake_region_ids', 'day', [0, 1]),
-                         self.grcpr_mock.call_args[0])
-        self.assertEqual(('fake_admin_lvl_ids', [0, 1], 'gadm_admin_3_id'),
-                         self.df_mock.call_args[0])
+            self.assertEqual(0, gse.call_count)
 
     def test_invalid_residential(self):
         self.request.GET['residential'] = 'invalid'
 
         with self.assertRaises(ValueError) as ar:
-            list(views.stream_response_generator(self.request, 'nrml'))
+            list(views.stream_building_exposure(self.request, 'nrml'))
 
         self.assertEqual("Invalid 'residential' selection: 'invalid'. "
                          "Expected 'res', 'non-res', or 'both'.",
                          ar.exception.message)
+
+    def test_stream_admin_0_csv(self):
+        self.request.GET['adminLevel'] = 'admin0'
+        self.request.GET['outputType'] = 'csv'
+        self.request.GET['residential'] = 'non-res'
+
+        with mock.patch('exposure.util._get_national_exposure') as gne:
+            # Fake query result data
+            gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
+
+            result = list(views.stream_building_exposure(self.request, 'csv'))
+
+            self.assertEqual(1, gne.call_count)
+            self.assertEqual((('8.1', '45.2', '9.1', '46.2', 'day', [1]), {}),
+                             gne.call_args)
+
+            # 4 rows expected: copyright, csv header, and two data rows
+            self.assertEqual(4, len(result))
+            self.assertEqual('6,360,1,2,3,7,5,8\n', result[2])
+            self.assertEqual('16,5320,11,12,13,17,15,18\n', result[3])
+
+    def test_stream_admin_0_nrml(self):
+        self.request.GET['adminLevel'] = 'admin0'
+        self.request.GET['outputType'] = 'nrml'
+        self.request.GET['residential'] = 'non-res'
+
+        with mock.patch('exposure.util._get_national_exposure') as gne:
+            # Fake query result data
+            gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
+
+            result = list(views.stream_building_exposure(self.request, 'nrml'))
+
+            self.assertEqual(1, gne.call_count)
+            self.assertEqual((('8.1', '45.2', '9.1', '46.2', 'day', [1]), {}),
+                             gne.call_args)
+
+            # 6 rows expected: xml header, copyright, nrml header,
+            # two data rows, and nrml footer
+            self.assertEqual(6, len(result))
+            exp1 = """
+                <assetDefinition gml:id=1_8>
+                    <site>
+                        <gml:Point srsName="epsg:4326">
+                            <gml:pos>2 3</gml:pos>
+                        </mgl:Point>
+                    </site>
+                    <number>360</number>
+                    <taxonomy>8</taxonomy>
+                </assetDefinition>"""
+            self.assertEqual(exp1, result[3])
+            exp2 = """
+                <assetDefinition gml:id=11_18>
+                    <site>
+                        <gml:Point srsName="epsg:4326">
+                            <gml:pos>12 13</gml:pos>
+                        </mgl:Point>
+                    </site>
+                    <number>5320</number>
+                    <taxonomy>18</taxonomy>
+                </assetDefinition>"""
+            self.assertEqual(exp2, result[4])
+
+    def test_stream_admin_1_csv(self):
+        self.request.GET['adminLevel'] = 'admin1'
+        self.request.GET['outputType'] = 'csv'
+        self.request.GET['residential'] = 'both'
+
+        with mock.patch('exposure.util._get_subnational_exposure') as gse:
+            gse.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
+                                [10, 11, 12, 13, 14, 15, 16, 17, 18]]
+
+            result = list(views.stream_building_exposure(self.request, 'csv'))
+
+            self.assertEqual(1, gse.call_count)
+            self.assertEqual((('8.1', '45.2', '9.1', '46.2', [0, 1], 'admin1'),
+                              {}),
+                             gse.call_args)
+
+            self.assertEqual(4, len(result))
+            self.assertEqual('6,36,1,2,3,7,5,8\n', result[2])
+            self.assertEqual('15,234,10,11,12,16,14,17\n', result[3])
+
+    def test_stream_admin_1_nrml(self):
+        self.request.GET['adminLevel'] = 'admin1'
+        self.request.GET['outputType'] = 'nrml'
+        self.request.GET['residential'] = 'both'
+
+        with mock.patch('exposure.util._get_subnational_exposure') as gse:
+            gse.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
+                                [10, 11, 12, 13, 14, 15, 16, 17, 18]]
+
+            result = list(views.stream_building_exposure(self.request, 'nrml'))
+
+            self.assertEqual(1, gse.call_count)
+            self.assertEqual((('8.1', '45.2', '9.1', '46.2', [0, 1], 'admin1'),
+                              {}),
+                             gse.call_args)
+
+            self.assertEqual(6, len(result))
+            exp1 = """
+                <assetDefinition gml:id=1_8>
+                    <site>
+                        <gml:Point srsName="epsg:4326">
+                            <gml:pos>2 3</gml:pos>
+                        </mgl:Point>
+                    </site>
+                    <number>36</number>
+                    <taxonomy>8</taxonomy>
+                </assetDefinition>"""
+            self.assertEqual(exp1, result[3])
+            exp2 = """
+                <assetDefinition gml:id=10_17>
+                    <site>
+                        <gml:Point srsName="epsg:4326">
+                            <gml:pos>11 12</gml:pos>
+                        </mgl:Point>
+                    </site>
+                    <number>234</number>
+                    <taxonomy>17</taxonomy>
+                </assetDefinition>"""
+            self.assertEqual(exp2, result[4])
 
 
 class DecoratorUtilTestcase(unittest.TestCase):
