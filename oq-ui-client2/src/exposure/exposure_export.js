@@ -282,11 +282,22 @@ var startExposureApp = function() {
             if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
                 $('input[id=id_residential_2]').removeAttr('checked');
                 // Disable the submit/Download button
-                $('#exposure-bldg-download-button').attr('disabled','disabled');
+                $('#exposure-bldg-download-button').attr('disabled', 'disabled');
             }
         }
         $("input[id=id_residential_2]").attr('disabled',
                                              disableResidentialBoth);
+
+        // If a subnational admin level (admin 1-3) is selected, clear the time
+        // of day selection and disable it.
+        var disableToD = false;
+        if ($('input[id=id_adminLevel_0]:radio:checked').val() == null) {
+            // A subnational selection has been made.
+            // Disable ToD:
+            $('input[name=timeOfDay]').removeAttr('checked');
+            disableToD = true;
+        }
+        $('input[name=timeOfDay]').attr('disabled', disableToD);
 
         // Only enable the submit button if all of the radio button groups
         // have a selection:
@@ -297,10 +308,17 @@ var startExposureApp = function() {
                 radioSelections.push(this.name);
             }
         );
+
+        var expectedSelections = ['adminLevel', 'residential', 'outputType'];
+        if (!disableToD) {
+            expectedSelections.push('timeOfDay');
+        }
         if (JSON.stringify(radioSelections.sort())
-            == JSON.stringify(['adminLevel', 'residential',
-                               'timeOfDay', 'outputType'].sort())) {
+                == JSON.stringify(expectedSelections.sort())) {
             $('#exposure-bldg-download-button').removeAttr('disabled');
+        }
+        else {
+            $('#exposure-bldg-download-button').attr('disabled', 'disabled');
         }
     };
 
