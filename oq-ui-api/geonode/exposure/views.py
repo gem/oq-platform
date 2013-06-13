@@ -173,13 +173,11 @@ def validate_export(request):
                             content_type="text/html",
                             status=403)
     else:
-        # Everything is okay
         return HttpResponse(
             content='Export is allowed with the given parameters'
         )
 
 
-#disabling etag for streaming
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
@@ -226,14 +224,12 @@ def export_building(request):
             "supported" % output_type
         )
 
-    # build the response object
     response_data = stream_building_exposure(request, output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
 
 
-#disabling etag for streaming
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
