@@ -465,13 +465,13 @@ var startExposureApp = function() {
             type: 'get',
             data: data,
             url: '/exposure/get_exposure_building_form/',
-            error: function(request, error) {
-                if (request.status == 401) {
+            error: function(response, error) {
+                if (response.status == 401) {
                     // Ask the user to login and redirect back here when
                     // they're done logging in:
                     var signInMsg = (
                         // Include the error message from the server
-                        request.responseText
+                        response.responseText
                         + '<br/><a href="/accounts/login?next='
                         + '/oq-platform2/exposure_export.html'
                         + '%3Flat1=' + data.lat1
@@ -483,6 +483,12 @@ var startExposureApp = function() {
                         + '">Sign in</a>'
                     );
                     showErrorDialog(signInMsg);
+                }
+                else if (response.status == 403) {
+                    showErrorDialog(
+                        response.responseText,
+                        {height: 175, width: 420}
+                    );
                 }
             },
             success: function(data, textStatus, jqXHR) {
@@ -513,13 +519,13 @@ var startExposureApp = function() {
             type: 'get',
             data: params,
             url: '/exposure/get_exposure_population_form/',
-            error: function(request, error) {
-                if (request.status == 401) {
+            error: function(response, error) {
+                if (response.status == 401) {
                     // Ask the user to login and redirect back here when
                     // they're done logging in:
                     var signInMsg = (
                         // Include the error message from the server
-                        request.responseText
+                        response.responseText
                         + '<br/><a href="/accounts/login?next='
                         + '/oq-platform2/exposure_export.html'
                         + '%3Flat1=' + params.lat1
@@ -532,6 +538,13 @@ var startExposureApp = function() {
                     );
                     showErrorDialog(signInMsg);
                 }
+                else if (response.status == 403) {
+                    showErrorDialog(
+                        response.responseText,
+                        {height: 175, width: 420}
+                    );
+                }
+
             },
             success: function(data, textStatus, jqXHR) {
                 var formHtml = $(data).find('form[id=exposure-population-form]');
