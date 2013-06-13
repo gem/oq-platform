@@ -69,9 +69,9 @@ NRML_HEADER = """
 NRML_ASSET_FMT = """
                 <assetDefinition gml:id=%s_%s>
                     <site>
-                        <gml:Point srsName="epsg:4326">
+                        <gml:Point>
                             <gml:pos>%s %s</gml:pos>
-                        </mgl:Point>
+                        </gml:Point>
                     </site>
                     <number>%s</number>
                     <taxonomy>%s</taxonomy>
@@ -81,7 +81,6 @@ NRML_FOOTER = """
         </exposureList>
     </exposureModel>
 </nrml>\n"""
-
 
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
