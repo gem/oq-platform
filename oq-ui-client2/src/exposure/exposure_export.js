@@ -79,6 +79,7 @@ var startExposureApp = function() {
     });
     map.addLayer(drawnItems);
     L.control.layers(baselayer, overlays).addTo(map);
+    map.addControl(drawControl);
     // Add Wax support
     L.wax(map);
 
@@ -152,22 +153,6 @@ var startExposureApp = function() {
 
     $(document).ready(dwellingFractionSlidingPanel);
     $(document).ready(legendSlidingPanel);
-
-    // add draw tool based on zoom level
-    function onZoomend() {
-       try {
-            map.removeControl(drawControl);
-        }
-        catch (err){
-            console.log('no draw control to remove');
-        };
-
-        if (map.getZoom() >= MAX_ZOOM_LEVEL) {
-               map.addControl(drawControl);
-               console.log(map.getZoom());
-        }
-    };
-    map.on('zoomend', onZoomend);
 
     var showExportButtonPopup = function(popupLatLng) {
         var expButton = (
