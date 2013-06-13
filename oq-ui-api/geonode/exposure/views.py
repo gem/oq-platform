@@ -155,10 +155,12 @@ def _export_area_valid(lat1, lng1, lat2, lng2):
     height = abs(float(lat2) - float(lat1))
     area = width * height
     if area > MAX_EXPORT_AREA_SQ_DEG:
-        msg = ('Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
-               ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'
-               '<br />Selected area: %(area)s square degrees.'
-               '<br />Max selection area: %(max_area)s square degrees.')
+        msg = (
+            'Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
+            ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'
+            '<br />Selected area: %(area)s square degrees.'
+            '<br />Max allowed selection area: %(max_area)s square degrees.'
+        )
         msg %= dict(lat1=lat1, lng1=lng1, lat2=lat2, lng2=lng2,
                     area=area, max_area=MAX_EXPORT_AREA_SQ_DEG)
         return False, msg
