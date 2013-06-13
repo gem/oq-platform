@@ -79,11 +79,11 @@ class ExportBuildingTestCase(unittest.TestCase):
         self.get_dict['outputType'] = 'csv'
         request = FakeHttpGetRequest(self.get_dict)
 
-        sbe_path = 'exposure.views.stream_building_exposure'
+        sbe_path = 'exposure.views._stream_building_exposure'
         with mock.patch(sbe_path) as sbe_mock:
             response = views.export_building(request)
 
-            # Check that the `stream_building_exposure` is getting called:
+            # Check that the `_stream_building_exposure` is getting called:
             self.assertEqual(1, sbe_mock.call_count)
             # Check that the generator is being called with the correct output
             # type:
@@ -97,11 +97,11 @@ class ExportBuildingTestCase(unittest.TestCase):
     def test_export_building_calls_nrml(self):
         request = FakeHttpGetRequest(self.get_dict)
 
-        sbe_path = 'exposure.views.stream_building_exposure'
+        sbe_path = 'exposure.views._stream_building_exposure'
         with mock.patch(sbe_path) as sbe_mock:
             response = views.export_building(request)
 
-            # Check that the `stream_building_exposure` is getting called:
+            # Check that the `_stream_building_exposure` is getting called:
             self.assertEqual(1, sbe_mock.call_count)
             # Check that the generator is being called with the correct output
             # type:
@@ -115,7 +115,7 @@ class ExportBuildingTestCase(unittest.TestCase):
 
 class StreamBuildingExposureTestCase(unittest.TestCase):
     """
-    Tests for `stream_building_exposure`.
+    Tests for `_stream_building_exposure`.
     """
 
     def setUp(self):
@@ -146,7 +146,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             gse.return_value = []
 
             with self.assertRaises(ValueError) as ar:
-                list(views.stream_building_exposure(self.request, 'csv'))
+                list(views._stream_building_exposure(self.request, 'csv'))
 
             expected_error = (
                 "Invalid 'adminLevel' selection: 'admin4'."
@@ -160,7 +160,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
         self.request.GET['residential'] = 'invalid'
 
         with self.assertRaises(ValueError) as ar:
-            list(views.stream_building_exposure(self.request, 'nrml'))
+            list(views._stream_building_exposure(self.request, 'nrml'))
 
         self.assertEqual("Invalid 'residential' selection: 'invalid'. "
                          "Expected 'res', 'non-res', or 'both'.",
@@ -176,7 +176,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                                 [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
 
-            result = list(views.stream_building_exposure(self.request, 'csv'))
+            result = list(views._stream_building_exposure(self.request, 'csv'))
 
             self.assertEqual(1, gne.call_count)
             self.assertEqual((('8.1', '45.2', '9.1', '46.2', 'day', [1]), {}),
@@ -197,7 +197,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                                 [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
 
-            result = list(views.stream_building_exposure(self.request, 'nrml'))
+            result = list(views._stream_building_exposure(self.request, 'nrml'))
 
             self.assertEqual(1, gne.call_count)
             self.assertEqual((('8.1', '45.2', '9.1', '46.2', 'day', [1]), {}),
@@ -238,7 +238,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             gse.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
                                 [10, 11, 12, 13, 14, 15, 16, 17, 18]]
 
-            result = list(views.stream_building_exposure(self.request, 'csv'))
+            result = list(views._stream_building_exposure(self.request, 'csv'))
 
             self.assertEqual(1, gse.call_count)
             self.assertEqual((('8.1', '45.2', '9.1', '46.2', [0, 1], 'admin1'),
@@ -258,7 +258,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             gse.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
                                 [10, 11, 12, 13, 14, 15, 16, 17, 18]]
 
-            result = list(views.stream_building_exposure(self.request, 'nrml'))
+            result = list(views._stream_building_exposure(self.request, 'nrml'))
 
             self.assertEqual(1, gse.call_count)
             self.assertEqual((('8.1', '45.2', '9.1', '46.2', [0, 1], 'admin1'),
