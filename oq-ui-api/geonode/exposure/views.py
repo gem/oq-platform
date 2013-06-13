@@ -360,7 +360,8 @@ def stream_building_exposure(request, output_type):
                 yield '%s' % asset
             # finalize the document:
             yield NRML_FOOTER
-    else:
+
+    elif admin_select in ('admin1', 'admin2', 'admin3'):
         # Subnational
         exposure_data = util._get_subnational_exposure(lng1, lat1, lng2, lat2,
                                                        occupancy, admin_select)
@@ -397,6 +398,14 @@ def stream_building_exposure(request, output_type):
                 yield '%s' % asset
             # finalize the document:
             yield NRML_FOOTER
+    else:
+        msg = (
+            "Invalid 'adminLevel' selection: '%s'."
+            " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
+            % admin_select
+        )
+        raise ValueError(msg)
+
 
 
 def copyright_csv(cr_text):
