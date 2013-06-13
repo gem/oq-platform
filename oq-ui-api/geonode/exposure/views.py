@@ -292,12 +292,6 @@ def _stream_building_exposure(request, output_type):
         A string indicating the desired output type. Valid values are 'csv'
         and 'nrml' (XML).
     """
-    if output_type not in ('csv', 'nrml'):
-        raise ValueError(
-            "Unrecognized output type '%s', only 'nrml' and 'csv' are "
-            "supported" % output_type
-        )
-
     # possible values are 'res', 'non-res', or 'both'
     res_select = request.GET['residential']
     tod_select = request.GET['timeOfDay']
