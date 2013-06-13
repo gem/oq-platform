@@ -224,7 +224,7 @@ def export_building(request):
             "supported" % output_type
         )
 
-    response_data = stream_building_exposure(request, output_type)
+    response_data = _stream_building_exposure(request, output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
@@ -281,7 +281,7 @@ def export_population(request):
     return response
 
 
-def stream_building_exposure(request, output_type):
+def _stream_building_exposure(request, output_type):
     """
     Stream exposure/population data from the database into a file of the
     specified ``output_type``.
