@@ -96,6 +96,12 @@ def get_exposure_building_form(request):
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
 
+    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
+    if not valid:
+        return HttpResponse(content=error,
+                            content_type="text/html",
+                            status=403)
+
     admin_levels = util._get_available_admin_levels(lng1, lat1, lng2, lat2)
 
     if not admin_levels:
@@ -123,7 +129,14 @@ def get_exposure_population_form(request):
     lat2 = request.GET['lat2']
     lng2 = request.GET['lng2']
 
-    return render_to_response('oq-platform2/exposure_population_form.html',
+    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
+    if not valid:
+        return HttpResponse(content=error,
+                            content_type="text/html",
+                            status=403)
+
+    else:
+        return render_to_response('oq-platform2/exposure_population_form.html',
                               {'lat1': lat1,
                                'lng1': lng1,
                                'lat2': lat2,
