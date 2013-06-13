@@ -6,7 +6,7 @@ var map;
 var drawnItems;
 var drawControl;
 
-var MAX_ZOOM_LEVEL = 8;
+var MAX_ZOOM_LEVEL = 16;
 var DRAW_TOOL_COLOR = '#FFA54F';
 
 var AJAX_SPINNER = '/static/theme/images/ajax-loader.gif';
@@ -41,12 +41,10 @@ var startExposureApp = function() {
     /***************
      * Base layers *
      ***************/
-    var naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png');
-    var GEM_base = L.tileLayer('http://tilestream.openquake.org/v2/world-landmass/{z}/{x}/{y}.png');
+    var GEM_base = new L.tileLayer("http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png", {subdomains: ['a', 'b', 'c', 'd']});
 
     var baselayer = {
-        'Natural Earth' : naturalEarth,
-        'GEM Base Map' : GEM_base
+        'Base Map' : GEM_base
     };
 
     /******************
@@ -54,7 +52,6 @@ var startExposureApp = function() {
      ******************/
     var grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
     var grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
-    var osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png');
     var df_admin0 = L.tileLayer(
         'http://tilestream.openquake.org/v2/dwelling-fractions/{z}/{x}/{y}.png',
         {wax: 'http://tilestream.openquake.org/v2/dwelling-fractions.json'}
@@ -69,7 +66,6 @@ var startExposureApp = function() {
         "Dwelling Fractions Portugal" : df_port,
         "GRUMP Urban" : grump_urban,
         "GRUMP Rural" : grump_rural,
-        "OpenStreetMap" : osm
     };
 
     /***********
@@ -78,8 +74,8 @@ var startExposureApp = function() {
     map = L.map('map', {
         center: [20, 20],
         zoom: 3,
-        maxZoom: 8,
-        layers: [osm, GEM_base]
+        maxZoom: MAX_ZOOM_LEVEL,
+        layers: [GEM_base]
     });
     map.addLayer(drawnItems);
     L.control.layers(baselayer, overlays).addTo(map);
