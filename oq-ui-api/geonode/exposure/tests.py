@@ -131,14 +131,6 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
         }
         self.request = FakeHttpGetRequest(req_params)
 
-    def test_invalid_output_type(self):
-        with self.assertRaises(ValueError) as ar:
-            list(views.stream_building_exposure(None, 'pdf'))
-
-        expected_error = ("Unrecognized output type 'pdf', only 'nrml' and "
-                          "'csv' are supported")
-        self.assertEqual(expected_error, ar.exception.message)
-
     def test_invalid_admin_level(self):
         self.request.GET['adminLevel'] = 'admin4'
 
