@@ -332,6 +332,7 @@ var startExposureApp = function() {
             function(event) {
                 event.preventDefault();
                 $("#exposure-bldg-download-button").attr('disabled', 'disabled');
+                $("#download-button-spinner").css("display", "");
 
                 var params = {
                     adminLevel: $('input[name=adminLevel]:checked').val(),
@@ -363,6 +364,9 @@ var startExposureApp = function() {
                         var url = '/exposure/export_building?';
                         url += objToUrlParams(params);
                         window.location.href = url;
+                    },
+                    complete: function() {
+                        $("#download-button-spinner").css("display", "none");
                     },
                 });
             }
@@ -398,6 +402,7 @@ var startExposureApp = function() {
             function(event) {
                 event.preventDefault();
                 $("#exposure-pop-download-button").attr('disabled', 'disabled');
+                $("#download-button-spinner").css("display", "");
 
                 var params = {
                     outputType: $('input[name=outputType]:checked').val(),
@@ -432,6 +437,9 @@ var startExposureApp = function() {
                             url += objToUrlParams(params);
                             window.location.href = url;
                         }
+                    },
+                    complete: function() {
+                        $("#download-button-spinner").css("display", "none");
                     },
                 });
             }
