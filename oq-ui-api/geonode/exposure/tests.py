@@ -113,6 +113,52 @@ class ExportBuildingTestCase(unittest.TestCase):
         sbe_mock.stop()
 
 
+class ExportPopulationTestCase(unittest.TestCase):
+
+    def setUp(self):
+        request_params = dict(
+            lat1=8, lng1=45,
+            lat2=9, lng2=46,
+            outputType='csv'
+        )
+        self.request = FakeHttpGetRequest(request_params)
+
+    def test_invalid_output_type(self):
+        self.request.GET['outputType'] = 'pdf'
+        with self.assertRaises(ValueError) as ar:
+            views.export_population(self.request)
+
+        expected_error = (
+            "Unrecognized output type 'pdf', only 'nrml' and 'csv' are "
+            "supported"
+        )
+        self.assertEqual(expected_error, ar.exception.message)
+
+    def test_calls_csv(self):
+        with mock.patch('exposure.views._stream_population_exposure') as spe:
+            response = views.export_population(self.request)
+
+            self.assertEqual(1, spe.call_count)
+            self.assertEqual('csv', spe.call_args[0][1])
+
+            self.assertEqual(response['Content-Disposition'],
+                             'attachment; filename="exposure_export.csv"')
+            self.assertEqual(response['Content-Type'], 'text/csv')
+
+    def test_calls_nrml(self):
+        self.request.GET['outputType'] = 'nrml'
+
+        with mock.patch('exposure.views._stream_population_exposure') as spe:
+            response = views.export_population(self.request)
+
+            self.assertEqual(1, spe.call_count)
+            self.assertEqual('nrml', spe.call_args[0][1])
+
+            self.assertEqual(response['Content-Disposition'],
+                             'attachment; filename="exposure_export.xml"')
+            self.assertEqual(response['Content-Type'], 'text/plain')
+
+
 class StreamBuildingExposureTestCase(unittest.TestCase):
     """
     Tests for `_stream_building_exposure`.
@@ -278,6 +324,70 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
                     </site>
                     <number>234</number>
                     <taxonomy>17</taxonomy>
+                </assetDefinition>"""
+            self.assertEqual(exp2, result[4])
+
+
+class StreamPopulationExposureTestCase(unittest.TestCase):
+
+    def setUp(self):
+        req_params = {
+            'outputType': 'csv',
+            'lng1': '8.1',
+            'lat1': '45.2',
+            'lng2': '9.1',
+            'lat2': '46.2',
+        }
+        self.request = FakeHttpGetRequest(req_params)
+
+    def test_stream_csv(self):
+        with mock.patch('exposure.util._get_population_exposure') as gpe:
+            gpe.return_value = [[1, 2, 3, 4, 5],[6, 7, 8, 9, 10]]
+
+            result = list(views._stream_population_exposure(self.request,
+                                                            'csv'))
+            self.assertEqual(1, gpe.call_count)
+            self.assertEqual((('8.1', '45.2', '9.1', '46.2'), {}),
+                             gpe.call_args)
+
+            self.assertEqual(4, len(result))
+            self.assertEqual('5,4,1,2,3\n', result[2])
+            self.assertEqual('10,9,6,7,8\n', result[3])
+
+    def test_stream_nrml(self):
+        self.request.GET['outputType'] = 'nrml'
+
+        with mock.patch('exposure.util._get_population_exposure') as gpe:
+            gpe.return_value = [[1, 2, 3, 4, 5],[6, 7, 8, 9, 10]]
+
+            result = list(views._stream_population_exposure(self.request,
+                                                            'nrml'))
+
+            self.assertEqual(1, gpe.call_count)
+            self.assertEqual((('8.1', '45.2', '9.1', '46.2'), {}),
+                             gpe.call_args)
+
+            self.assertEqual(6, len(result))
+            exp1 = """
+                <assetDefinition gml:id=1>
+                    <site>
+                        <gml:Point>
+                            <gml:pos>2 3</gml:pos>
+                        </gml:Point>
+                    </site>
+                    <number>4</number>
+                    <taxonomy></taxonomy>
+                </assetDefinition>"""
+            self.assertEqual(exp1, result[3])
+            exp2 = """
+                <assetDefinition gml:id=6>
+                    <site>
+                        <gml:Point>
+                            <gml:pos>7 8</gml:pos>
+                        </gml:Point>
+                    </site>
+                    <number>9</number>
+                    <taxonomy></taxonomy>
                 </assetDefinition>"""
             self.assertEqual(exp2, result[4])
 
