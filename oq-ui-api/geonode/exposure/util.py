@@ -235,3 +235,34 @@ ORDER BY grid_point.id
     cursor.execute(query, [lng1, lat1, lng2, lat2])
 
     return cursor.fetchall()
+
+
+def _get_population_exposure(lng1, lat1, lng2, lat2):
+    """
+    Get population-only exposure data (no building/taxonomy information).
+
+    :param lng1, lat1, lng2, lat2:
+        Bounding box coordinates.
+    """
+    query = """\
+SELECT
+    grid_point.id,
+    ST_X(grid_point.the_geom) AS lon,
+    ST_Y(grid_point.the_geom) AS lat,
+    grid_point.pop_value,
+    gadm_country.iso
+FROM ged2.grid_point AS grid_point
+
+JOIN ged2.gadm_country AS gadm_country
+    ON grid_point.gadm_country_id = gadm_country.id
+
+WHERE
+    grid_point.pop_value > 0
+    AND ST_intersects(ST_MakeEnvelope(%s, %s, %s, %s, 4326),
+                      grid_point.the_geom)
+ORDER BY grid_point.id;
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [lng1, lat1, lng2, lat2])
+
+    return cursor.fetchall()
