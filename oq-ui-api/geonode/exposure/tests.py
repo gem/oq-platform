@@ -201,9 +201,9 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             exp1 = """
                 <assetDefinition gml:id=1_8>
                     <site>
-                        <gml:Point srsName="epsg:4326">
+                        <gml:Point>
                             <gml:pos>2 3</gml:pos>
-                        </mgl:Point>
+                        </gml:Point>
                     </site>
                     <number>360</number>
                     <taxonomy>8</taxonomy>
@@ -212,9 +212,9 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             exp2 = """
                 <assetDefinition gml:id=11_18>
                     <site>
-                        <gml:Point srsName="epsg:4326">
+                        <gml:Point>
                             <gml:pos>12 13</gml:pos>
-                        </mgl:Point>
+                        </gml:Point>
                     </site>
                     <number>5320</number>
                     <taxonomy>18</taxonomy>
@@ -261,9 +261,9 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             exp1 = """
                 <assetDefinition gml:id=1_8>
                     <site>
-                        <gml:Point srsName="epsg:4326">
+                        <gml:Point>
                             <gml:pos>2 3</gml:pos>
-                        </mgl:Point>
+                        </gml:Point>
                     </site>
                     <number>36</number>
                     <taxonomy>8</taxonomy>
@@ -272,9 +272,9 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             exp2 = """
                 <assetDefinition gml:id=10_17>
                     <site>
-                        <gml:Point srsName="epsg:4326">
+                        <gml:Point>
                             <gml:pos>11 12</gml:pos>
-                        </mgl:Point>
+                        </gml:Point>
                     </site>
                     <number>234</number>
                     <taxonomy>17</taxonomy>
