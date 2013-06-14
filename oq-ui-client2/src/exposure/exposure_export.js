@@ -75,13 +75,21 @@ var startExposureApp = function() {
         center: [20, 20],
         zoom: 3,
         maxZoom: MAX_ZOOM_LEVEL,
-        layers: [GEM_base]
+        layers: [GEM_base],
+        attributionControl: false,
     });
+
     map.addLayer(drawnItems);
     L.control.layers(baselayer, overlays).addTo(map);
     map.addControl(drawControl);
     // Add Wax support
     L.wax(map);
+    L.control.coordinates({
+        position: "bottomleft",
+        labelTemplateLat: "Latitude: {y}",
+        labelTemplateLng: "Longitude: {x}",
+        enableUserInput: false,
+    }).addTo(map);
 
     //resize the main and map div
     var mapFit = function() {
