@@ -84,6 +84,13 @@ var startExposureApp = function() {
     map.addLayer(drawnItems);
     L.control.layers(baselayer, overlays).addTo(map);
     map.addControl(drawControl);
+    $('div.leaflet-control-draw').css({
+        'position': 'absolute',
+        'left': '45px',
+        'top': '1px',
+        'z-index': '6'
+    });
+
     // Add Wax support
     L.wax(map);
     L.control.coordinates({
