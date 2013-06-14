@@ -172,6 +172,7 @@ WHERE
     AND grid_point.is_urban = dist_group.is_urban
     AND dist_group.occupancy_id IN %(occ)s
     AND pop_alloc.occupancy_id IN %(occ)s
+ORDER BY grid_point.id
 """
     query %= dict(tod=tod_map.get(tod), occ=num_list_to_sql_array(occupancy))
     cursor = connections['geddb'].cursor()
@@ -226,6 +227,7 @@ WHERE
                       grid_point.the_geom)
     AND grid_point.is_urban = dist_group.is_urban
     AND dist_group.occupancy_id IN %(occ)s
+ORDER BY grid_point.id
 """
     query %= dict(admin_level_id=admin_level_column_map.get(admin_level),
                   occ=num_list_to_sql_array(occupancy))
