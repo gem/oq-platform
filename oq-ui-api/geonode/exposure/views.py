@@ -53,8 +53,9 @@ COPYRIGHT_HEADER = """\
  More information on licensing: http://www.globalquakemodel.org/licensing\n
 """
 
-CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-              'study_region, gadm_level_id, GEM_taxonomy\n')
+BLDG_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
+                   'study_region, gadm_level_id, GEM_taxonomy\n')
+POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 
@@ -290,8 +291,7 @@ def export_population(request):
             "supported" % output_type
         )
 
-    # TODO: implement me
-    response_data = iter(['foo', 'bar'])
+    response_data = _stream_population_exposure(request, output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
@@ -299,7 +299,7 @@ def export_population(request):
 
 def _stream_building_exposure(request, output_type):
     """
-    Stream exposure/population data from the database into a file of the
+    Stream building exposure data from the database into a file of the
     specified ``output_type``.
 
     :param request:
@@ -337,7 +337,7 @@ def _stream_building_exposure(request, output_type):
         if output_type == 'csv':
             copyright = copyright_csv(COPYRIGHT_HEADER)
             yield copyright
-            yield CSV_HEADER
+            yield BLDG_CSV_HEADER
 
             for (grid_id, lon, lat, pop_value, country_id, iso,
                      study_region_id, building_type, dwelling_fraction,
@@ -379,7 +379,7 @@ def _stream_building_exposure(request, output_type):
         if output_type == 'csv':
             copyright = copyright_csv(COPYRIGHT_HEADER)
             yield copyright
-            yield CSV_HEADER
+            yield BLDG_CSV_HEADER
 
             for (grid_id, lon, lat, pop_value, country_id, iso,
                      study_region_id, building_type,
@@ -419,6 +419,48 @@ def _stream_building_exposure(request, output_type):
         )
         raise ValueError(msg)
 
+
+def _stream_population_exposure(request, output_type):
+    """
+    Stream population exposure data from the database into a file of the
+    specified ``output_type``.
+
+    :param request:
+        A :class:`django.http.request.HttpRequest` object.
+    :param str output_type:
+        A string indicating the desired output type. Valid values are 'csv'
+        and 'nrml' (XML).
+    """
+    lng1 = request.GET['lng1']
+    lat1 = request.GET['lat1']
+    lng2 = request.GET['lng2']
+    lat2 = request.GET['lat2']
+
+    exposure_data = util._get_population_exposure(lng1, lat1, lng2, lat2)
+
+    if output_type == 'csv':
+        copyright = copyright_csv(COPYRIGHT_HEADER)
+        yield copyright
+        yield POP_CSV_HEADER
+        for grid_id, lon, lat, pop_value, iso in exposure_data:
+            row = [iso, pop_value, grid_id, lon, lat]
+            row = [str(x) for x in row]
+            yield '%s\n' % ','.join(row)
+
+    elif output_type == 'nrml':
+        copyright = copyright_nrml(COPYRIGHT_HEADER)
+        yield XML_HEADER
+        yield copyright
+        yield NRML_HEADER
+        for grid_id, lon, lat, pop_value, iso in exposure_data:
+            asset = NRML_ASSET_FMT % dict(
+                gml_id=grid_id,
+                lon=lon,
+                lat=lat,
+                pop=pop_value,
+                tax='',
+            )
+            yield asset
 
 
 def copyright_csv(cr_text):
