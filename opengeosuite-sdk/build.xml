@@ -105,6 +105,11 @@
          <copy todir="${app.build}/src/Leaflet.draw">
             <fileset dir="${app.fullpath}/src/Leaflet.draw"/>
         </copy>
+        </copy>
+        <!-- copy Leaflet.Coordinates resources -->
+        <copy todir="${app.build}/src/Leaflet.Coordinates">
+            <fileset dir="${app.fullpath}/src/Leaflet.Coordinates"/>
+        </copy>
         <!-- copy L.Wax resources -->
          <copy todir="${app.build}/src/L.Wax">
             <fileset dir="${app.fullpath}/src/L.Wax"/>
