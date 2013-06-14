@@ -67,14 +67,14 @@ NRML_HEADER = """
 """
 
 NRML_ASSET_FMT = """
-                <assetDefinition gml:id=%s_%s>
+                <assetDefinition gml:id=%(gml_id)s>
                     <site>
                         <gml:Point>
-                            <gml:pos>%s %s</gml:pos>
+                            <gml:pos>%(lon)s %(lat)s</gml:pos>
                         </gml:Point>
                     </site>
-                    <number>%s</number>
-                    <taxonomy>%s</taxonomy>
+                    <number>%(pop)s</number>
+                    <taxonomy>%(tax)s</taxonomy>
                 </assetDefinition>"""
 
 NRML_FOOTER = """
@@ -359,9 +359,13 @@ def _stream_building_exposure(request, output_type):
                      pop_ratio) in exposure_data:
 
                 calc_pop_value = pop_value * dwelling_fraction * pop_ratio
-                asset = NRML_ASSET_FMT % (
-                    grid_id, building_type, lon, lat, calc_pop_value,
-                    building_type
+
+                asset = NRML_ASSET_FMT % dict(
+                    gml_id='%s_%s' % (grid_id, building_type),
+                    lon=lon,
+                    lat=lat,
+                    pop=calc_pop_value,
+                    tax=building_type,
                 )
                 yield '%s' % asset
             # finalize the document:
@@ -397,11 +401,14 @@ def _stream_building_exposure(request, output_type):
                      dwelling_fraction) in exposure_data:
                 calc_pop_value = pop_value * dwelling_fraction
 
-                asset = NRML_ASSET_FMT % (
-                    grid_id, building_type, lon, lat, calc_pop_value,
-                    building_type
+                asset = NRML_ASSET_FMT % dict(
+                    gml_id='%s_%s' % (grid_id, building_type),
+                    lon=lon,
+                    lat=lat,
+                    pop=calc_pop_value,
+                    tax=building_type,
                 )
-                yield '%s' % asset
+                yield asset
             # finalize the document:
             yield NRML_FOOTER
     else:
