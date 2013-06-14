@@ -41,7 +41,8 @@ var startExposureApp = function() {
     /***************
      * Base layers *
      ***************/
-    var GEM_base = new L.tileLayer("http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png", {subdomains: ['a', 'b', 'c', 'd']});
+    var GEM_base = new L.tileLayer("http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png",
+                                   {subdomains: ['a', 'b', 'c', 'd'], noWrap: true});
 
     var baselayer = {
         'Base Map' : GEM_base
@@ -75,6 +76,7 @@ var startExposureApp = function() {
         center: [20, 20],
         zoom: 3,
         maxZoom: MAX_ZOOM_LEVEL,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -185), new L.LatLng(90, 185)),
         layers: [GEM_base],
         attributionControl: false,
     });
