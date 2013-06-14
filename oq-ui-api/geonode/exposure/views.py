@@ -461,6 +461,7 @@ def _stream_population_exposure(request, output_type):
                 tax='',
             )
             yield asset
+        yield NRML_FOOTER
 
 
 def copyright_csv(cr_text):
