@@ -294,6 +294,133 @@ def export_population(request):
     return response
 
 
+def _bldg_csv_admin0_generator(exposure_data):
+    """
+    Helper function for generating admin level 0 CSV data for building
+    exposure.
+    """
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    yield BLDG_CSV_HEADER
+
+    for (grid_id, lon, lat, pop_value, country_id, iso,
+             study_region_id, building_type, dwelling_fraction,
+             pop_ratio) in exposure_data:
+
+        calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+        row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
+               country_id, building_type]
+        row = [str(x) for x in row]
+        yield '%s\n' % ','.join(row)
+
+
+def _bldg_nrml_admin0_generator(exposure_data):
+    """
+    Helper function for generating admin level 0 NRML data for building
+    exposure.
+    """
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
+    yield XML_HEADER
+    yield copyright
+    yield NRML_HEADER
+
+    for (grid_id, lon, lat, pop_value, country_id, iso,
+             study_region_id, building_type, dwelling_fraction,
+             pop_ratio) in exposure_data:
+
+        calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+
+        asset = NRML_ASSET_FMT % dict(
+            gml_id='%s_%s' % (grid_id, building_type),
+            lon=lon,
+            lat=lat,
+            pop=calc_pop_value,
+            tax=building_type,
+        )
+        yield '%s' % asset
+    # finalize the document:
+    yield NRML_FOOTER
+
+
+def _bldg_csv_subnat_generator(exposure_data):
+    """
+    Helper function for generating admin level 1-3 CSV data for building
+    exposure.
+    """
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    yield BLDG_CSV_HEADER
+
+    for (grid_id, lon, lat, pop_value, country_id, iso,
+             study_region_id, building_type,
+             dwelling_fraction) in exposure_data:
+        calc_pop_value = pop_value * dwelling_fraction
+        row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
+               country_id, building_type]
+        row = [str(x) for x in row]
+        yield '%s\n' % ','.join(row)
+
+
+def _bldg_nrml_subnat_generator(exposure_data):
+    """
+    Helper function for generating admin level 1-3 NRML data for building
+    exposure.
+    """
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
+    yield XML_HEADER
+    yield copyright
+    yield NRML_HEADER
+
+    for (grid_id, lon, lat, pop_value, country_id, iso,
+             study_region_id, building_type,
+             dwelling_fraction) in exposure_data:
+        calc_pop_value = pop_value * dwelling_fraction
+
+        asset = NRML_ASSET_FMT % dict(
+            gml_id='%s_%s' % (grid_id, building_type),
+            lon=lon,
+            lat=lat,
+            pop=calc_pop_value,
+            tax=building_type,
+        )
+        yield asset
+    # finalize the document:
+    yield NRML_FOOTER
+
+
+def _pop_csv_generator(exposure_data):
+    """
+    Helper function for generating CSV data for population exposure.
+    """
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    yield POP_CSV_HEADER
+    for grid_id, lon, lat, pop_value, iso in exposure_data:
+        row = [iso, pop_value, grid_id, lon, lat]
+        row = [str(x) for x in row]
+        yield '%s\n' % ','.join(row)
+
+
+def _pop_nrml_generator(exposure_data):
+    """
+    Helper function for generating CSV data for population exposure.
+    """
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
+    yield XML_HEADER
+    yield copyright
+    yield NRML_HEADER
+    for grid_id, lon, lat, pop_value, iso in exposure_data:
+        asset = NRML_ASSET_FMT % dict(
+            gml_id=grid_id,
+            lon=lon,
+            lat=lat,
+            pop=pop_value,
+            tax='',
+        )
+        yield asset
+    yield NRML_FOOTER
+
+
 def _stream_building_exposure(request, output_type):
     """
     Stream building exposure data from the database into a file of the
@@ -332,41 +459,11 @@ def _stream_building_exposure(request, output_type):
                                                     tod_select, occupancy)
 
         if output_type == 'csv':
-            copyright = copyright_csv(COPYRIGHT_HEADER)
-            yield copyright
-            yield BLDG_CSV_HEADER
-
-            for (grid_id, lon, lat, pop_value, country_id, iso,
-                     study_region_id, building_type, dwelling_fraction,
-                     pop_ratio) in exposure_data:
-
-                calc_pop_value = pop_value * dwelling_fraction * pop_ratio
-                row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
-                       country_id, building_type]
-                row = [str(x) for x in row]
-                yield '%s\n' % ','.join(row)
+            for text in _bldg_csv_admin0_generator(exposure_data):
+                yield text
         elif output_type == 'nrml':
-            copyright = copyright_nrml(COPYRIGHT_HEADER)
-            yield XML_HEADER
-            yield copyright
-            yield NRML_HEADER
-
-            for (grid_id, lon, lat, pop_value, country_id, iso,
-                     study_region_id, building_type, dwelling_fraction,
-                     pop_ratio) in exposure_data:
-
-                calc_pop_value = pop_value * dwelling_fraction * pop_ratio
-
-                asset = NRML_ASSET_FMT % dict(
-                    gml_id='%s_%s' % (grid_id, building_type),
-                    lon=lon,
-                    lat=lat,
-                    pop=calc_pop_value,
-                    tax=building_type,
-                )
-                yield '%s' % asset
-            # finalize the document:
-            yield NRML_FOOTER
+            for text _bldg_nrml_admin0_generator(exposure_data):
+                yield text
 
     elif admin_select in ('admin1', 'admin2', 'admin3'):
         # Subnational
@@ -374,40 +471,12 @@ def _stream_building_exposure(request, output_type):
                                                        occupancy, admin_select)
 
         if output_type == 'csv':
-            copyright = copyright_csv(COPYRIGHT_HEADER)
-            yield copyright
-            yield BLDG_CSV_HEADER
-
-            for (grid_id, lon, lat, pop_value, country_id, iso,
-                     study_region_id, building_type,
-                     dwelling_fraction) in exposure_data:
-                calc_pop_value = pop_value * dwelling_fraction
-                row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
-                       country_id, building_type]
-                row = [str(x) for x in row]
-                yield '%s\n' % ','.join(row)
+            for text in _bldg_csv_subnat_generator(exposure_data):
+                yield text
 
         elif output_type == 'nrml':
-            copyright = copyright_nrml(COPYRIGHT_HEADER)
-            yield XML_HEADER
-            yield copyright
-            yield NRML_HEADER
-
-            for (grid_id, lon, lat, pop_value, country_id, iso,
-                     study_region_id, building_type,
-                     dwelling_fraction) in exposure_data:
-                calc_pop_value = pop_value * dwelling_fraction
-
-                asset = NRML_ASSET_FMT % dict(
-                    gml_id='%s_%s' % (grid_id, building_type),
-                    lon=lon,
-                    lat=lat,
-                    pop=calc_pop_value,
-                    tax=building_type,
-                )
-                yield asset
-            # finalize the document:
-            yield NRML_FOOTER
+            for text in _bldg_nrml_subnat_generator(exposure_data):
+                yield text
     else:
         msg = (
             "Invalid 'adminLevel' selection: '%s'."
@@ -436,29 +505,12 @@ def _stream_population_exposure(request, output_type):
     exposure_data = util._get_population_exposure(lng1, lat1, lng2, lat2)
 
     if output_type == 'csv':
-        copyright = copyright_csv(COPYRIGHT_HEADER)
-        yield copyright
-        yield POP_CSV_HEADER
-        for grid_id, lon, lat, pop_value, iso in exposure_data:
-            row = [iso, pop_value, grid_id, lon, lat]
-            row = [str(x) for x in row]
-            yield '%s\n' % ','.join(row)
+        for text in _csv_generator(exposure_data):
+            yield text
 
     elif output_type == 'nrml':
-        copyright = copyright_nrml(COPYRIGHT_HEADER)
-        yield XML_HEADER
-        yield copyright
-        yield NRML_HEADER
-        for grid_id, lon, lat, pop_value, iso in exposure_data:
-            asset = NRML_ASSET_FMT % dict(
-                gml_id=grid_id,
-                lon=lon,
-                lat=lat,
-                pop=pop_value,
-                tax='',
-            )
-            yield asset
-        yield NRML_FOOTER
+        for text in _nrml_generator(exposure_data):
+            yield text
 
 
 def copyright_csv(cr_text):
