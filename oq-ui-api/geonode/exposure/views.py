@@ -462,7 +462,7 @@ def _stream_building_exposure(request, output_type):
             for text in _bldg_csv_admin0_generator(exposure_data):
                 yield text
         elif output_type == 'nrml':
-            for text _bldg_nrml_admin0_generator(exposure_data):
+            for text in _bldg_nrml_admin0_generator(exposure_data):
                 yield text
 
     elif admin_select in ('admin1', 'admin2', 'admin3'):
@@ -505,11 +505,11 @@ def _stream_population_exposure(request, output_type):
     exposure_data = util._get_population_exposure(lng1, lat1, lng2, lat2)
 
     if output_type == 'csv':
-        for text in _csv_generator(exposure_data):
+        for text in _pop_csv_generator(exposure_data):
             yield text
 
     elif output_type == 'nrml':
-        for text in _nrml_generator(exposure_data):
+        for text in _pop_nrml_generator(exposure_data):
             yield text
 
 
