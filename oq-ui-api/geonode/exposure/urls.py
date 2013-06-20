@@ -18,15 +18,18 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from exposure.views import get_exposure_export_form
-from exposure.views import export_exposure
+from exposure.views import export_building
+from exposure.views import export_population
+from exposure.views import get_exposure_building_form
+from exposure.views import get_exposure_population_form
 from exposure.views import validate_export
 
 
 urlpatterns = patterns(
     'geonode.exposure.views',
-    url(r'wizard1', get_exposure_export_form),
-    url(r'^population.json', export_exposure),
-    url(r'^export_exposure', export_exposure),
     url(r'^validate_export', validate_export),
+    url(r'^get_exposure_building_form', get_exposure_building_form),
+    url(r'^get_exposure_population_form', get_exposure_population_form),
+    url(r'^export_building', export_building),
+    url(r'^export_population', export_population),
 )
