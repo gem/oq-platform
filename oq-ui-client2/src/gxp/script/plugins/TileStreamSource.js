@@ -98,7 +98,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
     hazardMapJapan22ContourLandTitle: "Japan Hazard Map - 2% in 50 years - Contour",
     gdalCustomUrbanTitle: "GDAL Urban Population",
     gdalCustomRuralTitle: "GDAL Rural Population",
-    strainTitle: "Geodetic Strain"    
+    strainTitle: "Geodetic Strain",   
  
     /** api: method[createStore]
      *
