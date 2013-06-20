@@ -44,9 +44,13 @@
 
     <!-- leaflet -->
     <script type="text/javascript" src="src/Leaflet/dist/leaflet.js"></script>
-    <script src="src/Leaflet.draw/dist/leaflet.draw.js"></script>
     <link rel="stylesheet" href="src/Leaflet/dist/leaflet.css" />
+
+    <!-- leaflet plug-ins -->
+    <script src="src/Leaflet.draw/dist/leaflet.draw.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/leaflet.draw.css" media="screen" >
+    <script src="src/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="src/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
 
     <!-- wax -->
     <script type='text/javascript' src='src/L.Wax/L.Wax.js'></script>
@@ -244,11 +248,11 @@
     <a href="#" class="tooltip">Help
       <span>
         <strong>Exposure Export Tool</strong><br />
-<p>Begin by zooming in to an area of interest, keep zooming until the 'Selection tool' <img src="{{ STATIC_URL }}theme/images/draw-rectangle.png"> appears just below the layer selection box (top left of the map).</p>
-<p>Click the selection tool, and pull a box on the map over the area on interest.</p>
-<p>Click the 'Export Wizard' button, and make selections to specify the data you wish to download.</p>
-        <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information first activate one of the dwelling fraction layers from the layer menu<br><img src="src/Leaflet/dist/images/layers.png"></p>
-<p>Next hover the mouse over the area of interest, and view the pie chart popup.</p>
+<p>Begin by zooming in to an area of interest.</p>
+<p>Activate the selection tool <img src="{{ STATIC_URL }}theme/images/draw-rectangle.png"> and pull a box on the map over the area of interest.</p>
+<p>Make selections from the following dialog boxes to download data.</p>
+        <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information, first activate one of the dwelling fraction layers from the layer menu.<br><img src="src/Leaflet/dist/images/layers.png"></p>
+<p>Next, hover the mouse over the area of interest and view the pie chart popup.</p>
 <p>Hover the mouse over the side panels to view the dwelling fraction types list & the GRUMP layer legend.</p>
       </span>
     </a>
