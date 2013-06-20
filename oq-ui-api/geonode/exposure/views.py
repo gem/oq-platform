@@ -20,7 +20,6 @@ from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import condition
 
 from exposure import forms
@@ -87,7 +86,6 @@ NRML_FOOTER = """
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
 
 
-@csrf_exempt
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
 def get_exposure_building_form(request):
@@ -121,7 +119,6 @@ def get_exposure_building_form(request):
                               context_instance=RequestContext(request))
 
 
-@csrf_exempt
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
 def get_exposure_population_form(request):
