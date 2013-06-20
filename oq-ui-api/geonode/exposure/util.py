@@ -68,16 +68,6 @@ num_list_to_sql_array = lambda a_list: (
 )
 
 
-def exec_query(cursor, query, *args):
-    """
-    Helper function for executing DB queries.
-
-    Makes testing and mocking easier.
-    """
-    cursor.execute(query, args)
-    return cursor.fetchall()
-
-
 def _get_available_admin_levels(lng1, lat1, lng2, lat2):
     """
     Given a geographical bounding box, get the admin levels for which there is
