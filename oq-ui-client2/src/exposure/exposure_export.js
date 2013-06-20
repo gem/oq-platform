@@ -506,8 +506,7 @@ var startExposureApp = function() {
                     showErrorDialog(msg, {title: 'Nothing here'});
                 }
                 else {
-                    var formHtml = $(data).find('form[id=exposure-building-form]');
-                    $('#export_form_placeholder').html(formHtml);
+                    $('#export_form_placeholder').html(data);
                     showBuildingExportForm();
                 }
             },
@@ -555,8 +554,7 @@ var startExposureApp = function() {
 
             },
             success: function(data, textStatus, jqXHR) {
-                var formHtml = $(data).find('form[id=exposure-population-form]');
-                $('#export_form_placeholder').html(formHtml);
+                $('#export_form_placeholder').html(data);
                 showPopulationExportForm();
             },
             complete: function() { map.closePopup(exportPopup); },
