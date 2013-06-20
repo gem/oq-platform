@@ -33,6 +33,9 @@ class PopulationExposureForm(forms.Form):
 
 class BuildingExposureForm(forms.Form):
 
+    #: The `adminLevel` field is first stubbed out as a plain field.
+    #: The content of this field will be dynamically determined in the
+    #: constructor. See below.
     adminLevel = forms.Field()
     timeOfDay = forms.ChoiceField(
         label='Time of Day',
@@ -55,6 +58,12 @@ class BuildingExposureForm(forms.Form):
 
         super(BuildingExposureForm, self).__init__(*args, **kwargs)
 
+        # The `adminLevel` choices are chosen here dynamically (rather than
+        # being statically defined) because, for a given area, data for any
+        # combination of admin levels can be found. For example, a region could
+        # contain only admin 0 and 1 data, or admin 0, 1, and 3, or admin 0 and
+        # 2, etc.
+        # The form needs to be dynamic to support this.
         self.fields['adminLevel'] = forms.ChoiceField(
             label='Admin Level',
             widget=ExpRadioSelect(attrs=WIDGET_ATTRS),
