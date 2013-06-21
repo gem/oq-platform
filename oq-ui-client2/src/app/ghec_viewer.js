@@ -85,7 +85,7 @@ Ext.onReady(function() {
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "tree.tbar",
-            format: "grid", 
+            format: "html", 
             outputConfig: {
                 width: 400
             }
