@@ -65,6 +65,7 @@ class Migration(SchemaMigration):
             ('fs_modified_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('fs_net_slip_rate', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
             ('fs_vert_slip_rate', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
+            ('ns_net_slip_rate_comp', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=10, decimal_places=4, blank=True)),
             ('slip_type', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
         ))
         db.send_create_signal('gaf_viewer', ['FaultTrace'])
@@ -208,6 +209,7 @@ class Migration(SchemaMigration):
             'ns_name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '96', 'null': 'True', 'blank': 'True'}),
             'ns_neotectonic_section_id': ('django.db.models.fields.IntegerField', [], {}),
             'ns_net_slip_rate': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'ns_net_slip_rate_comp': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '4', 'blank': 'True'}),
             'ns_recurrence_interval': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'ns_slip_type_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'ns_strike': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
