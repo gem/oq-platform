@@ -211,8 +211,11 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
 
         with mock.patch('exposure.util._get_national_exposure') as gne:
             # Fake query result data
-            gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
+            gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, None, 0.2, None],
+                                [11, 12, 13, 14, 15, 16, 17, 18, 19, 0.4, 0.5,
+                                 0.6],
+                                [20, 21, 22, 23, 24, 25, 26, 27, 28, None,
+                                 None, None]]
 
             result = list(views._stream_building_exposure(self.request, 'csv'))
 
@@ -220,10 +223,13 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
             self.assertEqual((('8.1', '45.2', '9.1', '46.2', 'day', [1]), {}),
                              gne.call_args)
 
-            # 4 rows expected: copyright, csv header, and two data rows
-            self.assertEqual(4, len(result))
-            self.assertEqual('6,360,1,2,3,7,5,8\n', result[2])
-            self.assertEqual('16,5320,11,12,13,17,15,18\n', result[3])
+            # 6 rows expected: copyright, csv header, and 4 data rows
+            self.assertEqual(7, len(result))
+            self.assertEqual('6,7.2,1,2,3,7,5,8,night\n', result[2])
+            self.assertEqual('16,106.4,11,12,13,17,15,18,day\n', result[3])
+            self.assertEqual('16,133.0,11,12,13,17,15,18,night\n', result[4])
+            self.assertEqual('16,159.6,11,12,13,17,15,18,transit\n', result[5])
+            self.assertEqual('25,23,20,21,22,26,24,27,\n', result[6])
 
     def test_stream_admin_0_nrml(self):
         self.request.GET['adminLevel'] = 'admin0'
@@ -232,8 +238,11 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
 
         with mock.patch('exposure.util._get_national_exposure') as gne:
             # Fake query result data
-            gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
+            gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 0.1, None, 0.3],
+                                [11, 12, 13, 14, 15, 16, 17, 18, 19, 0.4, 0.5,
+                                 0.6],
+                                [20, 21, 22, 23, 24, 25, 26, 27, 28, None,
+                                 None, None]]
 
             result = list(views._stream_building_exposure(self.request, 'nrml'))
 
@@ -243,29 +252,33 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
 
             # 6 rows expected: xml header, copyright, nrml header,
             # two data rows, and nrml footer
-            self.assertEqual(6, len(result))
+            self.assertEqual(7, len(result))
             exp1 = """
-                <assetDefinition gml:id=1_8>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>2 3</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>360</number>
-                    <taxonomy>8</taxonomy>
-                </assetDefinition>"""
+            <asset id="1_8" number="10.8" taxonomy="8">
+                <location lon="2" lat="3" />
+
+                <occupancies>
+                    <occupancy occupants="3.6" period="day" />
+                    <occupancy occupants="10.8" period="transit" />
+                </occupancies>
+            </asset>"""
             self.assertEqual(exp1, result[3])
             exp2 = """
-                <assetDefinition gml:id=11_18>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>12 13</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>5320</number>
-                    <taxonomy>18</taxonomy>
-                </assetDefinition>"""
+            <asset id="11_18" number="159.6" taxonomy="18">
+                <location lon="12" lat="13" />
+
+                <occupancies>
+                    <occupancy occupants="106.4" period="day" />
+                    <occupancy occupants="133.0" period="night" />
+                    <occupancy occupants="159.6" period="transit" />
+                </occupancies>
+            </asset>"""
             self.assertEqual(exp2, result[4])
+            exp3 = """
+            <asset id="20_27" number="23" taxonomy="27">
+                <location lon="21" lat="22" />
+            </asset>"""
+            self.assertEqual(exp3, result[5])
 
     def test_stream_admin_1_csv(self):
         self.request.GET['adminLevel'] = 'admin1'
@@ -305,26 +318,14 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
 
             self.assertEqual(6, len(result))
             exp1 = """
-                <assetDefinition gml:id=1_8>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>2 3</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>36</number>
-                    <taxonomy>8</taxonomy>
-                </assetDefinition>"""
+            <asset id="1_8" number="36" taxonomy="8">
+                <location lon="2" lat="3" />
+            </asset>"""
             self.assertEqual(exp1, result[3])
             exp2 = """
-                <assetDefinition gml:id=10_17>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>11 12</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>234</number>
-                    <taxonomy>17</taxonomy>
-                </assetDefinition>"""
+            <asset id="10_17" number="234" taxonomy="17">
+                <location lon="11" lat="12" />
+            </asset>"""
             self.assertEqual(exp2, result[4])
 
 
@@ -369,26 +370,14 @@ class StreamPopulationExposureTestCase(unittest.TestCase):
 
             self.assertEqual(6, len(result))
             exp1 = """
-                <assetDefinition gml:id=1>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>2 3</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>4</number>
-                    <taxonomy></taxonomy>
-                </assetDefinition>"""
+            <asset id="1" number="4" taxonomy="">
+                <location lon="2" lat="3" />
+            </asset>"""
             self.assertEqual(exp1, result[3])
             exp2 = """
-                <assetDefinition gml:id=6>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>7 8</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>9</number>
-                    <taxonomy></taxonomy>
-                </assetDefinition>"""
+            <asset id="6" number="9" taxonomy="">
+                <location lon="7" lat="8" />
+            </asset>"""
             self.assertEqual(exp2, result[4])
 
 

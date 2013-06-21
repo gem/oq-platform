@@ -52,35 +52,43 @@ COPYRIGHT_HEADER = """\
  More information on licensing: http://www.globalquakemodel.org/licensing\n
 """
 
-BLDG_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-                   'study_region, gadm_level_id, GEM_taxonomy\n')
+BLDG_ADMIN_0_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
+                           'study_region, gadm_level_id, GEM_taxonomy, '
+                           'time_of_day\n')
+BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
+                           'study_region, gadm_level_id, GEM_taxonomy\n')
+
 POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
-
 NRML_HEADER = """
-<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"
-      xmlns:gml="http://www.opengis.net/gml">
-    <exposureModel gml:id="ep">
-        <exposureList gml:id="exposure" assetCategory="population">
-            <gml:description>Source: OQP exposure export tool</gml:description>
+<nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
+    <exposureModel
+        id="ep"
+        category="%(cat)s"
+        taxonomySource="GEM/PAGER">
+
+        <description>Source: OQP exposure export tool</description>
+        <assets>
 """
-
 NRML_ASSET_FMT = """
-                <assetDefinition gml:id=%(gml_id)s>
-                    <site>
-                        <gml:Point>
-                            <gml:pos>%(lon)s %(lat)s</gml:pos>
-                        </gml:Point>
-                    </site>
-                    <number>%(pop)s</number>
-                    <taxonomy>%(tax)s</taxonomy>
-                </assetDefinition>"""
+            <asset id="%(gml_id)s" number="%(pop)s" taxonomy="%(tax)s">
+                <location lon="%(lon)s" lat="%(lat)s" />
+            </asset>"""
+NRML_ASSET_ADMIN_0_FMT = """
+            <asset id="%(gml_id)s" number="%(pop)s" taxonomy="%(tax)s">
+                <location lon="%(lon)s" lat="%(lat)s" />
 
+                <occupancies>%(occ)s
+                </occupancies>
+            </asset>"""
+OCCUPANCY_FMT = """
+                    <occupancy occupants="%s" period="%s" />"""
 NRML_FOOTER = """
-        </exposureList>
+        </assets>
     </exposureModel>
-</nrml>\n"""
+</nrml>
+"""
 
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
@@ -301,17 +309,30 @@ def _bldg_csv_admin0_generator(exposure_data):
     """
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
-    yield BLDG_CSV_HEADER
+    yield BLDG_ADMIN_0_CSV_HEADER
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
              study_region_id, building_type, dwelling_fraction,
-             pop_ratio) in exposure_data:
+             day_pop_ratio, night_pop_ratio,
+             transit_pop_ratio) in exposure_data:
 
-        calc_pop_value = pop_value * dwelling_fraction * pop_ratio
-        row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
-               country_id, building_type]
-        row = [str(x) for x in row]
-        yield '%s\n' % ','.join(row)
+        if all([x is None for x in (day_pop_ratio,
+                                    night_pop_ratio,
+                                    transit_pop_ratio)]):
+            row = [iso, pop_value, grid_id, lon, lat,
+                   study_region_id, country_id, building_type, '']
+            row = [str(x) for x in row]
+            yield '%s\n' % ','.join(row)
+        else:
+            for tod, pop_ratio in (('day', day_pop_ratio),
+                                   ('night', night_pop_ratio),
+                                   ('transit', transit_pop_ratio)):
+                if pop_ratio is not None:
+                    calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+                    row = [iso, calc_pop_value, grid_id, lon, lat,
+                           study_region_id, country_id, building_type, tod]
+                    row = [str(x) for x in row]
+                    yield '%s\n' % ','.join(row)
 
 
 def _bldg_nrml_admin0_generator(exposure_data):
@@ -319,25 +340,47 @@ def _bldg_nrml_admin0_generator(exposure_data):
     Helper function for generating admin level 0 NRML data for building
     exposure.
     """
-    copyright = copyright_nrml(COPYRIGHT_HEADER)
     yield XML_HEADER
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
     yield copyright
-    yield NRML_HEADER
+    yield NRML_HEADER % dict(cat='buildings')
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
              study_region_id, building_type, dwelling_fraction,
-             pop_ratio) in exposure_data:
+             day_pop_ratio, night_pop_ratio,
+             transit_pop_ratio) in exposure_data:
 
-        calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+        if all([x is None for x in (day_pop_ratio,
+                                    night_pop_ratio,
+                                    transit_pop_ratio)]):
+            asset_params = dict(
+                gml_id='%s_%s' % (grid_id, building_type),
+                lon=lon,
+                lat=lat,
+                pop=pop_value,
+                tax=building_type,
+            )
+            asset = NRML_ASSET_FMT % asset_params
+            yield '%s' % asset
+        else:
+            occ = ''
+            for tod, pop_ratio in (('day', day_pop_ratio),
+                                   ('night', night_pop_ratio),
+                                   ('transit', transit_pop_ratio)):
+                if pop_ratio is not None:
+                    calc_pop_value = pop_value * dwelling_fraction * pop_ratio
+                    occ += OCCUPANCY_FMT % (calc_pop_value, tod)
 
-        asset = NRML_ASSET_FMT % dict(
-            gml_id='%s_%s' % (grid_id, building_type),
-            lon=lon,
-            lat=lat,
-            pop=calc_pop_value,
-            tax=building_type,
-        )
-        yield '%s' % asset
+            asset_params = dict(
+                gml_id='%s_%s' % (grid_id, building_type),
+                lon=lon,
+                lat=lat,
+                pop=calc_pop_value,
+                tax=building_type,
+                occ=occ,
+            )
+            asset = NRML_ASSET_ADMIN_0_FMT % asset_params
+            yield '%s' % asset
     # finalize the document:
     yield NRML_FOOTER
 
@@ -349,7 +392,7 @@ def _bldg_csv_subnat_generator(exposure_data):
     """
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
-    yield BLDG_CSV_HEADER
+    yield BLDG_SUBNAT_CSV_HEADER
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
              study_region_id, building_type,
@@ -366,10 +409,10 @@ def _bldg_nrml_subnat_generator(exposure_data):
     Helper function for generating admin level 1-3 NRML data for building
     exposure.
     """
-    copyright = copyright_nrml(COPYRIGHT_HEADER)
     yield XML_HEADER
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
     yield copyright
-    yield NRML_HEADER
+    yield NRML_HEADER % dict(cat='buildings')
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
              study_region_id, building_type,
@@ -405,10 +448,11 @@ def _pop_nrml_generator(exposure_data):
     """
     Helper function for generating CSV data for population exposure.
     """
-    copyright = copyright_nrml(COPYRIGHT_HEADER)
     yield XML_HEADER
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
     yield copyright
-    yield NRML_HEADER
+    yield NRML_HEADER % dict(cat='population')
+
     for grid_id, lon, lat, pop_value, iso in exposure_data:
         asset = NRML_ASSET_FMT % dict(
             gml_id=grid_id,

@@ -123,9 +123,6 @@ def _get_national_exposure(lng1, lat1, lng2, lat2, tod, occupancy):
         'day': 'pop_alloc.day_pop_ratio',
         'night': 'pop_alloc.night_pop_ratio',
         'transit': 'pop_alloc.transit_pop_ratio',
-        'all': '(pop_alloc.day_pop_ratio + pop_alloc.night_pop_ratio '
-               '+ pop_alloc.transit_pop_ratio)',
-        'off': '1',
     }
     query = """\
 SELECT
@@ -138,7 +135,9 @@ SELECT
     dist_group.study_region_id,
     dist_value.building_type,
     dist_value.dwelling_fraction,
-    %(tod)s AS pop_ratio
+    %(day)s as day_pop_ratio,
+    %(night)s as night_pop_ratio,
+    %(transit)s as transit_pop_ratio
 FROM ged2.grid_point AS grid_point
 
 JOIN ged2.gadm_country AS gadm_country
@@ -164,7 +163,20 @@ WHERE
     AND pop_alloc.occupancy_id IN %(occ)s
 ORDER BY grid_point.id
 """
-    query %= dict(tod=tod_map.get(tod), occ=num_list_to_sql_array(occupancy))
+    args = dict(day='NULL', night='NULL', transit='NULL',
+                occ=num_list_to_sql_array(occupancy))
+    if tod == 'day':
+        args['day'] = tod_map['day']
+    elif tod == 'night':
+        args['night'] = tod_map['night']
+    elif tod == 'transit':
+        args['transit'] = tod_map['transit']
+    elif tod == 'all':
+        args['day'] = tod_map['day']
+        args['night'] = tod_map['night']
+        args['transit'] = tod_map['transit']
+
+    query %= args
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [lng1, lat1, lng2, lat2])
 
