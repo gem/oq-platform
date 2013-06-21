@@ -43,4 +43,4 @@ psql -q -A -c 'SELECT
   JOIN gem.fearth_gem_user contributor
     ON contributor.user_id=fs.contributor_id
   LEFT OUTER JOIN gem.fearth_lookup st
-    ON st.lookup_id=fs.slip_type_id;' -W -p 5432 -h hope -d fe215 mnastasi
+    ON st.lookup_id=fs.slip_type_id;' -W -p 5432 -h hope -d fe300 mnastasi

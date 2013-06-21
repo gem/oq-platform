@@ -20,7 +20,7 @@ psql -q -A -c 'SELECT
   JOIN gem.fearth_fault_summary fs
   ON ns.fault_summary_id = fs.fault_summary_id
   LEFT OUTER JOIN gem.fearth_lookup slip_type
-    ON slip_type.lookup_id=ns.slip_type_id;' -W -p 5432 -h hope -d fe215 mnastasi >/tmp/gaf_fs.$$
+    ON slip_type.lookup_id=ns.slip_type_id;' -W -p 5432 -h hope -d fe300 mnastasi >/tmp/gaf_fs.$$
 #    ON slip_type.lookup_id=ns.slip_type_id;' -W -p 5432 -h hope -d fe215 mnastasi >/tmp/gaf_fs.$$
 # limit 100
 #    ON slip_type.lookup_id=ns.slip_type_id LIMIT 100;' -W -p 5432 -h hope -d fe215 mnastasi >/tmp/gaf_fs.$$
