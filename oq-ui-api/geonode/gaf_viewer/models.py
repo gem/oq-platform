@@ -91,7 +91,7 @@ class FaultSource(models.Model):
     tectonic_region = models.CharField(max_length=96, default='', null=False, blank=False)
     area = models.CharField(max_length=64, default='', null=True, blank=True)
     width = models.CharField(max_length=64, default='', null=True, blank=True)
-    the_geom = models.PolygonField(srid=4326, dim=2, null=True, blank=True)
+    the_geom = models.MultiPolygonField(srid=4326, dim=2, null=True, blank=True)
 
     compiler_name = models.CharField(max_length=64, default='', null=False, blank=False)
     contributor_name = models.CharField(max_length=64, default='', null=False, blank=False)

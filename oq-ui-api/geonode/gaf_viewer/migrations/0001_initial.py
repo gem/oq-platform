@@ -95,7 +95,7 @@ class Migration(SchemaMigration):
             ('tectonic_region', self.gf('django.db.models.fields.CharField')(default='', max_length=96)),
             ('area', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
             ('width', self.gf('django.db.models.fields.CharField')(default='', max_length=64, null=True, blank=True)),
-            ('the_geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(null=True, blank=True)),
+            ('the_geom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')(null=True, blank=True)),
             ('compiler_name', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
             ('contributor_name', self.gf('django.db.models.fields.CharField')(default='', max_length=64)),
             ('pref_magnitude', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -157,7 +157,7 @@ class Migration(SchemaMigration):
             'slip_type_id': ('django.db.models.fields.IntegerField', [], {}),
             'src_id': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'tectonic_region': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '96'}),
-            'the_geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'null': 'True', 'blank': 'True'}),
+            'the_geom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {'null': 'True', 'blank': 'True'}),
             'upper_sm_depth': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'width': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '64', 'null': 'True', 'blank': 'True'})
         },
