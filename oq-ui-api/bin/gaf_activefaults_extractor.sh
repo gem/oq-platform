@@ -5,6 +5,14 @@ psql -q -A -c 'SELECT
 	ST_AsText(st.geom) as geom, st.accuracy,
 	ns.*,
 	fs.*,
+          CASE WHEN (ns.net_slip_rate).preferred IS NOT NULL THEN (ns.net_slip_rate).preferred
+             WHEN (ns.net_slip_rate).minimum IS NOT NULL AND
+                  (ns.net_slip_rate).maximum IS NOT NULL THEN ((ns.net_slip_rate).minimum + 
+                                                               (ns.net_slip_rate).maximum) / 2
+             WHEN (ns.net_slip_rate).minimum IS NOT NULL THEN (ns.net_slip_rate).minimum
+             WHEN (ns.net_slip_rate).maximum IS NOT NULL THEN (ns.net_slip_rate).maximum
+             ELSE NULL 
+             END AS ns_net_slip_rate_comp,
 	slip_type.value AS slip_type
   FROM gem.fearth_section_trace st
   JOIN gem.fearth_neotectonic_section ns
@@ -25,3 +33,9 @@ rm /tmp/gaf_fs.$$
 
 
 
+
+
+# CASE WHEN a=1 THEN 'one'
+#            WHEN a=2 THEN 'two'
+#            ELSE 'other'
+#       END

@@ -59,6 +59,9 @@ class FaultTrace(models.Model):
     fs_modified_date = models.DateTimeField(null=True, blank=True)
     fs_net_slip_rate = models.CharField(max_length=64, default='', null=True, blank=True)
     fs_vert_slip_rate = models.CharField(max_length=64, default='', null=True, blank=True)
+
+    ns_net_slip_rate_comp = models.DecimalField(max_digits=6, decimal_places=4, null=True, blank=True)
+
     slip_type = models.CharField(max_length=64, default='', null=True, blank=True)
 
     def __unicode__(self):
