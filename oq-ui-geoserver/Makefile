@@ -44,6 +44,13 @@ populate:
 
 	curl -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -XPUT -H 'Content-type: text/xml' -d '<layer><defaultStyle><name>ghec_viewer</name></defaultStyle><enabled>true</enabled></layer>' http://$(SITE_HOST):8080/geoserver/rest/layers/ghec_viewer_measure
 
+        # gaf_viewer
+	curl --header "Content-Type: text/xml" -v -d @data/styles/gaf_viewer__ns_net_slip_rate.xml-u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -X POST http://$(SITE_HOST):8080/geoserver/rest/styles
+
+	curl --header "Content-Type: application/vnd.ogc.sld+xml" -v -d @data/styles/gaf_viewer__ns_net_slip_rate.sld -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -X PUT http://$(SITE_HOST):8080/geoserver/rest/styles/gaf_viewer__ns_net_slip_rate.sld
+
+	curl -u $(GEM_DJANGO_SUSER):$(GEM_DJANGO_SPASS) -XPUT -H 'Content-type: text/xml' -d '<layer><defaultStyle><name>ghec_viewer</name></defaultStyle><enabled>true</enabled></layer>' http://$(SITE_HOST):8080/geoserver/rest/layers/ghec_viewer_measure
+
 
 .PHONY: deploy install postinst template debugvars populate
 
