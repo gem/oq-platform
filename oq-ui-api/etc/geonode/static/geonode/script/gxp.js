@@ -163,60 +163,60 @@ gxp.util = {
                 ]
             ];
         return function (i) {
-            var s, o, u, f, l, h, p, v, m, g, y;
+            var s, o, u, a, f, l, c, h, p, d, v;
             s = [1732584193, 4023233417, 2562383102, 271733878];
             o = i.length;
             u = o & 63;
-            f = 56 > u ? 56 - u : 120 - u;
-            if (0 < f) {
+            a = 56 > u ? 56 - u : 120 - u;
+            if (0 < a) {
                 i += "";
-                for (u = 0; u < f - 1; u++) i += "\0"
+                for (u = 0; u < a - 1; u++) i += "\0"
             }
             i += e(8 * o);
             i += e(0);
-            o += f + 8;
-            f = [0, 1, 2, 3];
-            l = [16];
-            h = [4];
-            for (g = 0; g < o; g += 64) {
-                for (u = 0, m = g; 16 > u; u++, m += 4) l[u] = i.charCodeAt(m) | i.charCodeAt(m + 1) << 8 | i.charCodeAt(m + 2) << 16 | i.charCodeAt(m + 3) << 24;
-                for (u = 0; 4 > u; u++) h[u] = s[u];
+            o += a + 8;
+            a = [0, 1, 2, 3];
+            f = [16];
+            l = [4];
+            for (d = 0; d < o; d += 64) {
+                for (u = 0, p = d; 16 > u; u++, p += 4) f[u] = i.charCodeAt(p) | i.charCodeAt(p + 1) << 8 | i.charCodeAt(p + 2) << 16 | i.charCodeAt(p + 3) << 24;
+                for (u = 0; 4 > u; u++) l[u] = s[u];
                 for (u = 0; 4 > u; u++) {
-                    p = r[u][0];
-                    v = r[u][1];
-                    for (m = 0; 16 > m; m++) {
-                        y = l;
-                        var w = h,
-                            E = v[m],
+                    c = r[u][0];
+                    h = r[u][1];
+                    for (p = 0; 16 > p; p++) {
+                        v = f;
+                        var m = l,
+                            g = h[p],
+                            y = void 0,
+                            b = void 0,
+                            w = void 0,
+                            E = void 0,
                             S = void 0,
                             x = void 0,
                             T = void 0,
-                            N = void 0,
-                            C = void 0,
-                            k = void 0,
-                            L = void 0,
-                            T = C = void 0,
-                            S = f[0],
-                            x = f[1],
-                            T = f[2],
-                            N = f[3],
-                            C = E[0],
-                            k = E[1],
-                            L = E[2],
-                            T = p(w[x], w[T], w[N]),
-                            C = w[S] + T + y[C] + n[L],
-                            C = t(C),
-                            C = C << k | C >>> 32 - k,
-                            C = C + w[x];
-                        w[S] = t(C);
-                        y = f[0];
-                        f[0] = f[3];
-                        f[3] = f[2];
-                        f[2] = f[1];
-                        f[1] = y
+                            w = S = void 0,
+                            y = a[0],
+                            b = a[1],
+                            w = a[2],
+                            E = a[3],
+                            S = g[0],
+                            x = g[1],
+                            T = g[2],
+                            w = c(m[b], m[w], m[E]),
+                            S = m[y] + w + v[S] + n[T],
+                            S = t(S),
+                            S = S << x | S >>> 32 - x,
+                            S = S + m[b];
+                        m[y] = t(S);
+                        v = a[0];
+                        a[0] = a[3];
+                        a[3] = a[2];
+                        a[2] = a[1];
+                        a[1] = v
                     }
                 }
-                for (u = 0; 4 > u; u++) s[u] += h[u], s[u] = t(s[u])
+                for (u = 0; 4 > u; u++) s[u] += l[u], s[u] = t(s[u])
             }
             u = e(s[0]) + e(s[1]) + e(s[2]) + e(s[3]);
             s = "";
@@ -1099,7 +1099,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
     hazardMapJapan22ContourLandTitle: "Japan Hazard Map - 2% in 50 years - Contour",
     gdalCustomUrbanTitle: "GDAL Urban Population",
     gdalCustomRuralTitle: "GDAL Rural Population",
-    strainTitle: "Geodetic Strain"
+    strainTitle: "Geodetic Strain",
     createStore: function () {
         var e = {
             sphericalMercator: true,
@@ -1142,7 +1142,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
         var i;
         for (var s = 0; s < n; ++s) {
             i = t[s];
-            r[s] = new OpenLayers.Layer.XYZ(this[OpenLayers.String.camelize(i.name) + "Title"], ["http://tilestream.openquake.org/v2/" + i.name + "/${z}/${x}/${y}.png"], OpenLayers.Util.applyDefaults({
+            r[s] = new OpenLayers.Layer.XYZ(this[OpenLayers.String.camelize(i.name) + "Title"], ["http://193.206.66.82:8000/v2/" + i.name + "/${z}/${x}/${y}.png"], OpenLayers.Util.applyDefaults({
                 layername: i.name,
                 numZoomLevels: i.numZoomLevels
             }, e))
@@ -1622,21 +1622,21 @@ gxp.plugins.WMSGetFeatureInfo = Ext.extend(gxp.plugins.Tool, {
                     o;
                 if (this.layerParams)
                     for (var u = this.layerParams.length - 1; 0 <= u; --u) o = this.layerParams[u].toUpperCase(), s[o] = i.params[o];
-                var f = t.get("infoFormat");
-                void 0 === f && (f = "html" == this.format ? "text/html" : "application/vnd.ogc.gml");
+                var a = t.get("infoFormat");
+                void 0 === a && (a = "html" == this.format ? "text/html" : "application/vnd.ogc.gml");
                 i = new OpenLayers.Control.WMSGetFeatureInfo(Ext.applyIf({
                     url: i.url,
                     queryVisible: !0,
                     layers: [i],
-                    infoFormat: f,
+                    infoFormat: a,
                     vendorParams: s,
                     eventListeners: {
                         getfeatureinfo: function (e) {
                             var n = t.get("title") || t.get("name");
-                            if ("text/html" == f) {
+                            if ("text/html" == a) {
                                 var r = e.text.match(/<body[^>]*>([\s\S]*)<\/body>/);
                                 r && !r[1].match(/^\s*$/) && this.displayPopup(e, n, r[1])
-                            } else "text/plain" == f ? this.displayPopup(e, n, "<pre>" + e.text + "</pre>") : e.features && 0 < e.features.length && this.displayPopup(e, n)
+                            } else "text/plain" == a ? this.displayPopup(e, n, "<pre>" + e.text + "</pre>") : e.features && 0 < e.features.length && this.displayPopup(e, n)
                         },
                         scope: this
                     }
