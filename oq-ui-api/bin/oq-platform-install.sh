@@ -617,10 +617,10 @@ exit 0"
 
     python ./manage.py migrate gaf_viewer
     for model in ft fs; do
-        if [ -f "$norm_dir/private_data/gaf_${model}_data.csv" ]; then
-            GEM_GAF_DATA="$norm_dir/private_data/gaf_${model}_data.csv"
+        if [ -f "$norm_dir/private_data/gaf_data_${model}.csv" ]; then
+            GEM_GAF_DATA="$norm_dir/private_data/gaf_data_${model}.csv"
         else
-            GEM_GAF_DATA="$norm_dir/oq-platform/oq-ui-api/data/gaf_${model}_data.csv"
+            GEM_GAF_DATA="$norm_dir/oq-platform/oq-ui-api/data/gaf_data_${model}.csv"
         fi
         python ./manage.py import_gaf_${model}_csv "$GEM_GAF_DATA"
     done
