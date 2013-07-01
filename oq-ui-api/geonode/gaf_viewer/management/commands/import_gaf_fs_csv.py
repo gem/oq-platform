@@ -19,8 +19,8 @@ from gaf_viewer.models import FaultSource
 
 
 class Command(BaseCommand):
-    args = '<csv catalogue filename> <csv appendix filename>'
-    help = 'Import csv of GEM Global Active Faults fault sources'
+    args = '<csv active fault filename>'
+    help = 'Imports csv of GEM Global Active Faults - Fault Sources'
 
     def handle(self, filename, *args, **options):
         field_list = ['fault_source_id', 'fault_summary_id', 'aseismic_slip_factor', 'compiler_id', 'completion_id', 'contributor_id', 'dip', 'dip_dir', 'last_movement', 'length', 'lower_sm_depth', 'magnitude', 'name', 'recurrence_interval', 'slip_rate', 'slip_type_id', 'upper_sm_depth', 'created_date', 'modified_date', 'tectonic_region', 'area', 'width', 'geom', 'compiler_name', 'contributor_name', 'pref_magnitude', 'pref_dip', 'pref_slip_rate', 'pref_length', 'pref_width', 'pref_area', 'pref_lsd', 'pref_usd', 'pref_recint', 'slip_type']
@@ -33,7 +33,6 @@ class Command(BaseCommand):
 
         FaultSource.objects.all().delete()
 
-        # TEST
         is_first = True
         for data_id, row in enumerate(rows):
             if is_first:
