@@ -580,8 +580,11 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^exposure/', include('geonode.exposure.urls')),\n@g" "$GEM_GN_URLS"
     fi
 
-    # add hazard hodel to urls.py
+    # add hazard model to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/hazard_models.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/hazard_models.html'}, name='hazard_models'),\n@g" "$GEM_GN_URLS"
+
+    # add GeoJSON visualizer to urls.py
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geojson.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geojson.html'}, name='geojson'),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
