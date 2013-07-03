@@ -133,5 +133,6 @@ var startHazardModelApp = function() {
             }
         );
     };
+    $(document).ready(legendSlidingPanel);
 };
 $(document).ready(startHazardModelApp);
