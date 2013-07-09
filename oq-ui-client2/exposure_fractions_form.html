@@ -1,0 +1,35 @@
+  <!--
+ Copyright (c) 2013, GEM Foundation.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+
+{% block form_header %}
+<form id="exposure-fractions-form" class="exposure_export_form">
+{% endblock %}
+
+{{ exposure_form.as_p }}
+
+<input type="hidden" name="lat1" value="{{ lat1 }}">
+<input type="hidden" name="lng1" value="{{ lng1 }}">
+<input type="hidden" name="lat2" value="{{ lat2 }}">
+<input type="hidden" name="lng2" value="{{ lng2 }}">
+
+<br>
+
+{% block download_button %}
+<button id="exposure-frac-download-button" type="button">Download</button>
+{% endblock %}
+<img id="download-button-spinner" src="../static/theme/images/ajax-loader.gif"
+     style="display: none;" />
+</form>

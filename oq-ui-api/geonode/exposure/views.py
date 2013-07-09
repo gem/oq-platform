@@ -143,6 +143,38 @@ def get_exposure_population_form(request):
                                'lng2': lng2},
                               context_instance=RequestContext(request))
 
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
+def get_exposure_fractions_form(request):
+    # get the lat long variables from the client
+    lat1 = request.GET['lat1']
+    lng1 = request.GET['lng1']
+    lat2 = request.GET['lat2']
+    lng2 = request.GET['lng2']
+
+    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
+    if not valid:
+        return HttpResponse(content=error,
+                            content_type="text/html",
+                            status=403)
+
+    admin_levels = util._get_available_admin_levels(lng1, lat1, lng2, lat2)
+
+    if not admin_levels:
+        # There is no grid data for any admin level; this can happen if, for
+        # example, the bounding box is drawn over the ocean somewhere.
+        return HttpResponse(status=204)
+
+    # if the admin level is okay, display the admin level selection form
+    form = forms.FractionsExposureForm(admin_levels=admin_levels)
+    return render_to_response('oq-platform2/exposure_fractions_form.html',
+                              {'exposure_form': form,
+                               'lat1': lat1,
+                               'lng1': lng1,
+                               'lat2': lat2,
+                               'lng2': lng2},
+                              context_instance=RequestContext(request))
+
 
 def _export_area_valid(lat1, lng1, lat2, lng2):
     """

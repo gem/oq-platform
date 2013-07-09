@@ -22,6 +22,7 @@ from exposure.views import export_building
 from exposure.views import export_population
 from exposure.views import get_exposure_building_form
 from exposure.views import get_exposure_population_form
+from exposure.views import get_exposure_fractions_form
 from exposure.views import validate_export
 
 
@@ -30,6 +31,7 @@ urlpatterns = patterns(
     url(r'^validate_export', validate_export),
     url(r'^get_exposure_building_form', get_exposure_building_form),
     url(r'^get_exposure_population_form', get_exposure_population_form),
+    url(r'^get_exposure_fractions_form', get_exposure_fractions_form),
     url(r'^export_building', export_building),
     url(r'^export_population', export_population),
 )

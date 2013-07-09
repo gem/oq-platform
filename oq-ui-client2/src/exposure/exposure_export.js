@@ -162,6 +162,7 @@ var startExposureApp = function() {
             '<ul>' +
             '<li><a href="#" id="export_building">Building exposure</a></li>' +
             '<li><a href="#" id="export_population">Population exposure</a></li>' +
+            '<li><a href="#" id="export_fractions">Dwelling fractions</a></li>' +
             '</ul></div>' +
             '<img id="export_button_spinner"' +
             ' src="' + AJAX_SPINNER +'"' +
@@ -447,6 +448,137 @@ var startExposureApp = function() {
 
     };
 
+    var fractionsExportFormSelectionChanged = function() {                                
+        var radioSelections = [];
+        //TODO update this line
+        $('form input[type=radio][class=exposure_export_widget]:checked').each(
+            function() {
+                radioSelections.push(this.name);
+            }
+        );
+
+        if (JSON.stringify(radioSelections.sort()) == JSON.stringify(['outputType'])) {
+            $('#exposure-frac-download-button').removeAttr('disabled');
+        }
+    };
+
+    var fractionsExportFormSelectionChanged = function() {                               
+        // NOTE: The radio button ids are given by Django
+        // form rendering.
+        var disableResidentialBoth = false;
+        // If 'time of day' is 'off',
+        // disable the 'both' option in the 'Residential' group,
+        // and clear the 'both' selection if it is already selected.
+        if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
+            disableResidentialBoth = true;
+
+            // if 'both' is selected AND the TOD is 'off',
+            // clear the both selection
+            if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
+                $('input[id=id_residential_2]').removeAttr('checked');
+                // Disable the submit/Download button
+                $('#exposure-frac-download-button').attr('disabled', 'disabled');
+            }
+        }
+        $("input[id=id_residential_2]").attr('disabled',
+                                             disableResidentialBoth);
+
+        // If a subnational admin level (admin 1-3) is selected, clear the time
+        // of day selection and disable it.
+        var disableToD = false;
+        if ($('input[id=id_adminLevel_0]:radio:checked').val() == null) {
+            // A subnational selection has been made.
+            // Disable ToD:
+            $('input[name=timeOfDay]').removeAttr('checked');
+            disableToD = true;
+        }
+        $('input[name=timeOfDay]').attr('disabled', disableToD);
+
+        // Only enable the submit button if all of the radio button groups
+        // have a selection:
+        var radioSelections = [];
+        // Collect names of the radio groups with a selection:
+        $('form input[type=radio][class=exposure_export_widget]:checked').each(
+            function() {
+                radioSelections.push(this.name);
+            }
+        );
+
+        var expectedSelections = ['adminLevel', 'residential', 'outputType'];
+        if (!disableToD) {
+            expectedSelections.push('timeOfDay');
+        }
+        if (JSON.stringify(radioSelections.sort())
+                == JSON.stringify(expectedSelections.sort())) {
+            $('#exposure-frac-download-button').removeAttr('disabled');
+        }
+        else {
+            $('#exposure-frac-download-button').attr('disabled', 'disabled');
+        }
+    };
+
+
+    var showFractionsExportForm = function() {
+        $("#exposure-frac-download-button").attr('disabled','disabled');
+        $("#exposure-fractions-form").change(
+            fractionsExportFormSelectionChanged
+        );
+
+        // Display the form as a jqueryui popup:
+        $("#exposure-fractions-form").dialog(
+            {title: 'Download Dwelling Fractions',
+             height: 275,
+             width: 500,
+             modal: true}
+        );
+
+        // Hook functionality for Download button
+        $("#exposure-frac-download-button").click(
+            function(event) {
+                event.preventDefault();
+                $("#exposure-frac-download-button").attr('disabled', 'disabled');
+                $("#download-button-spinner").css("display", "");
+
+                var params = {
+                    adminLevel: $('input[name=adminLevel]:checked').val(),
+                    timeOfDay: $('input[name=timeOfDay]:checked').val(),
+                    residential: $('input[name=residential]:checked').val(),
+                    outputType: $('input[name=outputType]:checked').val(),
+                    lat1: latlonTopLeft.lat,
+                    lng1: latlonTopLeft.lng,
+                    lat2: latlonBottomRight.lat,
+                    lng2: latlonBottomRight.lng,
+                };
+
+                // Check if export for the given parameters is allowed.
+                // If so, go head with the download.
+                // Otherwise, display an error.
+                $.ajax({
+                    type: 'get',
+                    data: params,
+                    url: '/exposure/validate_export/',
+                    error: function(response, error){
+                        if (response.status == 403) {
+                            showErrorDialog(
+                                response.responseText,
+                                {height: 175, width: 420}
+                            );
+                        }
+                    },
+                    success: function(data, textStatus, jqXHR) {
+                        var url = '/exposure/export_building?';
+                        url += objToUrlParams(params);
+                        window.location.href = url;
+                    },
+                    complete: function() {
+                        $("#download-button-spinner").css("display", "none");
+                    },
+                });
+            }
+        );
+    };
+
+
     var exportBuildingClick = function(event) {
         event.preventDefault();
         doExportBuilding();
@@ -455,6 +587,11 @@ var startExposureApp = function() {
     var exportPopulationClick = function(event) {
         event.preventDefault();
         doExportPopulation();
+    };
+
+    var exportFractionsClick = function(event) {                       
+        event.preventDefault();
+        doExportFractions();
     };
 
     /*
@@ -561,6 +698,54 @@ var startExposureApp = function() {
         });
     };
 
+    var doExportFractions = function() {
+        $("#export_options").hide();
+        $("#export_button_spinner").css("display", "");
+
+        var params = {lat1: latlonTopLeft.lat,
+                      lng1: latlonTopLeft.lng,
+                      lat2: latlonBottomRight.lat,
+                      lng2: latlonBottomRight.lng};
+        $.ajax({
+            type: 'get',
+            data: params,
+            url: '/exposure/get_exposure_fractions_form/',
+            error: function(response, error) {
+                if (response.status == 401) {
+                    // Ask the user to login and redirect back here when
+                    // they're done logging in:
+                    var signInMsg = (
+                        // Include the error message from the server
+                        response.responseText
+                        + '<br/><a href="/accounts/login?next='
+                        + '/oq-platform2/exposure_export.html'
+                        + '%3Flat1=' + params.lat1
+                        + '%26lng1=' + params.lng1
+                        + '%26lat2=' + params.lat2
+                        + '%26lng2=' + params.lng2
+                        + '%26zoom=' + map.getZoom()
+                        + '%26export_type=population'
+                        + '">Sign in</a>'
+                    );
+                    showErrorDialog(signInMsg);
+                }
+                else if (response.status == 403) {
+                    showErrorDialog(
+                        response.responseText,
+                        {height: 175, width: 420}
+                    );
+                }
+
+            },
+            success: function(data, textStatus, jqXHR) {
+                $('#export_form_placeholder').html(data);
+                showFractionsExportForm();
+            },
+            complete: function() { map.closePopup(exportPopup); },
+        });
+    };
+
+
     var onRectangleDraw = function(e) {
         // Clear layers, selections, and any previous download dialogs:
         var expForm = $("form.exposure_export_form");
@@ -581,6 +766,7 @@ var startExposureApp = function() {
         // Hook the export links click functionality:
         $('#export_building').click(exportBuildingClick);
         $('#export_population').click(exportPopulationClick);
+        $('#export_fractions').click(exportFractionsClick);
         // TODO: hook the same functionality for 'export_population'
     };
     map.on('draw:rectangle-created', onRectangleDraw);
