@@ -65,7 +65,6 @@ if [ "$1" = "deploy" ]; then
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/observations /var/lib/geonode/src/GeoNodePy/geonode/observations
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/ged4gem      /var/lib/geonode/src/GeoNodePy/geonode/ged4gem
     ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/exposure      /var/lib/geonode/src/GeoNodePy/geonode/exposure
-    ln -sf "${GEM_BASEDIR}${GEM_PROJ}"/geonode/geodetic-strain      /var/lib/geonode/src/GeoNodePy/geonode/geodetic-strain
 
     #add exposure tool html file
     if [ $GEM_WITH_EXPOSURE = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
