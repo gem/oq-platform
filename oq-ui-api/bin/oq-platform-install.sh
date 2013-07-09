@@ -584,7 +584,7 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/hazard_models.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/hazard_models.html'}, name='hazard_models'),\n@g" "$GEM_GN_URLS"
 
     # add geodetic-strain to urls.py
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic-strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic-strain.html'}, name='geodetic-strain'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic_strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic_strain.html'}, name='geodetic_strain'),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
