@@ -11,16 +11,15 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
-from econd.models import EventsQuick, GeoArchiveMasterOverview, GeoArchiveLocations, GeoArchiveEvents, GeoArchiveDamageLevels, GeoArchiveInventoryClasses, GeoArchiveLocationsForJSON, GeoArchiveAssetClasses, GeoArchiveEventsQuick, GeoArchiveDamageLevelsQuick,GeoArchiveAssetClassesQuick
+from econd.models import EventsQuick, LocationsForJSON, Study
+from weblib.utils import JSONResponse
 
-
-template_name = 'eventsmap/templates/eventsmap.html'
+template_name = 'eventoverview/templates/eventoverview.html'
 appname = 'weblib'
 modelname = 'Page'
 editfields = {'include': ('name', 'subtitle', 'introtext', 'image1', 'maintext', ), 'exclude': None}
 displayfields = {'include': ( 'introtext', 'image1', 'maintext', ), 'exclude': None}
 formphotosize = 'admin_thumbnail'
-
 
 class PageFormEdit (ModelForm):
     class Meta:
@@ -35,8 +34,92 @@ class PageFormDisplay (ModelForm):
         fields = displayfields['include']
         exclude = displayfields['exclude']
 
+# location AJAX POST callback
+def locationjson (request, *args, **kwargs):
+    markerid = ''
+    try:
+        markerid = request.REQUEST['markerid']
+        markerid = int(markerid)
+    except:
+        markerid = 0
 
-class EventsMap (Pagebase):
+    locationid = ''
+    try:
+        locationid = request.REQUEST['locationid']
+        locationid = int(locationid)
+    except:
+        locationid = 0
+
+    json = []
+
+    location = LocationsForJSON.objects.filter(id=locationid)
+
+    if ( len(location) ) > 0:
+        locationrecord = location[0]; # for CRI and PHOTO studies there is only one record in the queryset; for aggregated studies there may be more than one, so take the first
+
+        if getattr(locationrecord,'samplephotoid') is not None:
+            photourl = getattr(locationrecord,'samplephotoid').get_url('overview_grid')  # get url of cached photo thumbnail (this is the first photo with lowest id if there are multiple photos)
+
+            # fudge to allow image to be got directly from geoarchive
+            if platform.system() == 'Windows':
+                photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
+            else:
+                photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
+        else:
+            photourl = ''
+
+        locationname = getattr(locationrecord,'locationname')
+        photocount = getattr(locationrecord,'photocount')
+        eventtitle =  getattr(locationrecord,'event') + ' ' + getattr(locationrecord,'country') + ' ' + unicode(getattr(locationrecord,'yearint'))
+        studyname = getattr(locationrecord,'study')
+
+        # the following attributes only make sense at location level if this is a non aggregate study
+        if ( len(location) ) == 1:
+            inventoryclass = getattr(locationrecord,'inventoryclassname')
+            inventorydescription = getattr(locationrecord,'description')
+            damagelevel = getattr(locationrecord,'unifieddamagelevelname')
+            assetclass = getattr(locationrecord,'assetclass')
+            assettype = getattr(locationrecord,'assettype')
+            assetsubtype = getattr(locationrecord,'assetsubtype')
+            designcode = getattr(locationrecord,'designcode')
+        else:
+            inventoryclass = ''
+            inventorydescription = ''
+            damagelevel = ''
+            assetclass = ''
+            assettype = ''
+            assetsubtype = ''
+            designcode = ''
+
+        json =\
+        {
+            'markerid': markerid,
+            'locationid' : locationid,
+            'photourl' : photourl,
+            'locationname' : locationname,
+            'photocount' : photocount,
+            'eventtitle' : eventtitle,
+            'study' : studyname,
+            'inventoryclass' : inventoryclass,
+            'inventorydescription' : inventorydescription,
+            'damagelevel' : damagelevel,
+            'assetclass' : assetclass,
+            'assettype' : assettype,
+            'assetsubtype' : assetsubtype,
+            'designcode' : designcode,
+        }
+    else:
+        json =\
+        {
+            'markerid': markerid,
+            'locationid': locationid,
+            'locationname': 'error in json request',
+        }
+
+    return JSONResponse(json)
+
+
+class EventOverview (Pagebase):
 
     class FilterBarForm(forms.Form):
         all = forms.BooleanField(label='All', required=False)
@@ -72,7 +155,12 @@ class EventsMap (Pagebase):
 
 
     class EventQuickLinksForm(forms.Form):
-        event = forms.ChoiceField(label='Quick link to event', required=False) #required=False allows field to be disabled
+        study = forms.ChoiceField(label='Study', required=False) #required=False allows field to be disabled
+        study.widget.attrs['title'] = "Filter by study"
+        study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
+        study.widget.attrs['class'] = 'studydropdown'
+
+        event = forms.ChoiceField(label='Event', required=False) #required=False allows field to be disabled
         event.widget.attrs['title'] = "Quick link to event details"
         event.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         event.widget.attrs['class'] = 'eventdropdown'
@@ -155,46 +243,49 @@ class EventsMap (Pagebase):
         except:
             eventid = 0 # in case of input error
 
-        # gemecd.org
-        # urlStr = 'http://gemecd.org:8080/geoserver/gemecd/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gemecd:geoarchiveevents&maxFeatures=5000&outputFormat=json'
-        # ecd-dev.openquake.org
-        #urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:geoarchiveevents&maxFeatures=5000&outputFormat=json'
+        studytype = ''
 
-        if filter_all:
-            # show all events with no filtering applied so request all events layer from Geoserver
-            urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdallevents&maxFeatures=5000&outputFormat=json'
+        if filter_buildings:
+            studytype = 'B'
+        if filter_casualty:
+            studytype = 'C'
+        if filter_infrastructure:
+            studytype = 'CRI'
+        if filter_photos:
+            studytype = 'PHOTO'
 
-        else:
-            # if socio economic filter is on, we restrict the query to events that have socioeconomic studies
-            # (socioeconomic filter currently commented out)
-            if filter_socioeconomic:
-                urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdfilterwithsocioeconomic&maxFeatures=5000&outputFormat=json'
+        # study id default
+        studyid = request.GET.get('studyid')
+        try:
+            if studyid is None or studyid == '':
+                studyid = 0
+            studyid = int(studyid) # check it is a number
 
-            else:
-                # filters are active so request filter layer from Geoserver
-                urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdfilter&maxFeatures=5000&outputFormat=json'
+            # need to check this study is available according to current filter settings and event choice
+            study_found = False
+            studies = Study.objects.filter(parentid=eventid)
+            if not filter_all:
+                studies = studies.filter(studytypecode=studytype)
+            for study in studies:
+                if study.id == studyid:
+                    study_found = True
 
-                # if socio economic filter is on, we restrict the query to events that have socioeconomic studies (but this query is combined with the other filters)
-                if filter_socioeconomic:
-                    urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdfilterwithsocioeconomic&maxFeatures=5000&outputFormat=json'
+            if not study_found:
+                studyid = 0
 
-                # compose filter string suitable for the request to Geoserver
-                # NOTE 1: in viewparams can't use the SQL IN () notation because commas not allowed; and must escape spaces as %20
-                # NOTE 2: POSSIBLE SECURITY ISSUE: this string is passed in free text to Geoserver and could be used in an sql injection
-                filterStr = ''
-                if filter_buildings:
-                    filterStr += "studytypecode='B'%20OR%20"
-                if filter_casualty:
-                    filterStr += "studytypecode='C'%20OR%20"
-                if filter_infrastructure:
-                    filterStr += "studytypecode='CRI'%20OR%20"
-                if filter_photos:
-                    filterStr += "studytypecode='PHOTO'%20OR%20"
-                if filterStr == '':
-                    filterStr = "studytypecode='X'%20OR%20"
-                filterStr = filterStr[:-8] # chop off final %20OR%20
-                urlStr += "&viewparams=studytypecodes:" + filterStr
+        except:
+            studyid = 0 # in case of input error
 
+        # Prepare GeoServer request. We are viewing an individual event, so show the locations
+        urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
+        urlStr += '&viewparams=override_e:0;eventid:' + unicode(eventid) + ';'
+
+        # study selection
+        if studyid > 0:
+            urlStr += 'override_s:0;studyid:' + unicode(studyid) + ';'
+
+        if not filter_all:
+            urlStr += 'override_c:0;studytypecode:' + studytype + ';'
 
         # fudge for dealing with different locations of the "src" static directory on the development system
         self.page_context['src_folder'] = '/oq-platform2/'
@@ -281,6 +372,7 @@ class EventsMap (Pagebase):
 
                     if valid_eventquicklinksform: # All validation rules pass
                         eventid = eventquicklinksform.cleaned_data['event']
+                        studyid = eventquicklinksform.cleaned_data['study']
 
                 else:
                     # the filter bar was changed
@@ -296,9 +388,9 @@ class EventsMap (Pagebase):
                         filter_all = filterbarform.cleaned_data['all']
 
                 pagename = '/ecd/eventsmap'
-                if unicode(eventid) != '0':
+                if eventid != '0':
                     pagename = '/ecd/eventoverview' # locations page
-                return HttpResponseRedirect(pagename + '?eventid=' + str(eventid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
+                return HttpResponseRedirect(pagename + '?eventid=' + str(eventid) + '&studyid=' + str(studyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
                                             '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all) ) # Redirect after POST
 
 
@@ -323,7 +415,7 @@ class EventsMap (Pagebase):
                     GeoJsonStr = ''
 
                 self.page_context['geojson'] = GeoJsonStr
-                self.page_context['maptype'] = 'event'
+                self.page_context['maptype'] = 'location'
 
                 # filter bar form - the filter icons
                 filterbarform = self.FilterBarForm
@@ -348,6 +440,22 @@ class EventsMap (Pagebase):
 
                 eventquicklinksform.base_fields['event'].choices = eventlist
                 eventquicklinksform.base_fields['event'].initial = eventid
+
+                # populate study dropdown
+
+                studies = Study.objects.filter(parentid=eventid).order_by('name')
+                if studytype is not '':
+                    studies = studies.filter(studytypecode=studytype)
+
+                if len(studies) > 0:
+                    studylist = [('0','All studies')]
+                    for study in studies:
+                        studylist.append((unicode(study.id), study.name))
+                else:
+                    studylist = [('0','NO STUDIES')]
+
+                eventquicklinksform.base_fields['study'].choices = studylist
+                eventquicklinksform.base_fields['study'].initial = studyid
 
                 # filter settings for the link on the dropdown
                 self.page_context['filterstring'] = '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)

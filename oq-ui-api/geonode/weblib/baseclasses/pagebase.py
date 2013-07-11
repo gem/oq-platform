@@ -27,6 +27,7 @@ class Pagebase(FormView):
         self.page_context['page_subtitle'] = ''
         self.page_context['righttext'] = ''
         self.page_context['containerclass'] = ''
+        self.page_context['browser'] = ''
 
         #unpack parameters of the page
         self.page_context['ix'] = kwargs.get('ix')
@@ -46,10 +47,14 @@ class Pagebase(FormView):
                 addmode = False;
             self.page_context['addmode'] = addmode
 
+        user_agent = request.META['HTTP_USER_AGENT']
+        if "MSIE" in user_agent:
+            self.page_context['browser'] = 'MSIE'
+
         return True # always returns true, and return result can be ignored. This is only here for legacy code that still expects a boolean.
 
 
-    def showErrorPage(self, request, message, template='base.html'):
+    def showErrorPage(self, request, message):
         # Create an error page, based on the base template
         # sample usage:
         # except ObjectDoesNotExist:
@@ -59,7 +64,7 @@ class Pagebase(FormView):
         self.page_context['haspageerrors'] = True
 
         #return HttpResponse
-        return render(request, template, self.page_context)
+        return render(request, 'base.html', self.page_context)
 
 
     # return a structure for a single record that can be passed to generictablerenderer template tag
@@ -99,7 +104,7 @@ class Pagebase(FormView):
         #                [{'location_c' :  { 'title' : 'Location: comment', 'type' : 'text', 'description' : 'An optional comment on the location and loss at the location', }}],
         #            ]
 
-    def processSimpleForm(self, request, appname, modelname, formphotosize, template_name, displayfields, editfields, template='base.html'):
+    def processSimpleForm(self, request, appname, modelname, formphotosize, template_name, displayfields, editfields):
 
         class PageFormEdit (ModelForm):
             class Meta:
@@ -119,9 +124,9 @@ class Pagebase(FormView):
             try:
                 current_object = get_model(appname, modelname).objects.get(pk=self.page_context['ix'])
             except ObjectDoesNotExist:
-                return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist', template)
+                return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist')
             except:
-                return self.showErrorPage(request, 'Error: invalid parameter supplied', template)
+                return self.showErrorPage(request, 'Error: invalid parameter supplied')
 
             self.page_context['current_object'] = current_object
             if hasattr(current_object,'name'):

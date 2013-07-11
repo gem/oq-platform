@@ -148,6 +148,22 @@
 
     <script type="text/javascript">
 
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
         //resize the main and map div
         $(document).ready(function() {
             var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
@@ -168,11 +184,16 @@
         });
 
         jQuery(document).ready(function($){
+
+            // first fit the bounds to the locations (must be done in the document ready function)
+            var bounds = L.geoJson(geojsonFeature).getBounds();
+            if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
+            {
+                map.fitBounds(bounds);
+            }
+
             // code to impose custom icons over the top of the checkboxes in the filter bar
-
             var firsttime = true;
-
-
 
             // all icon
             $('#id_filterbarform-all').button({
@@ -331,7 +352,13 @@
         naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
         GEM_base = L.tileLayer('http://tilestream.openquake.org/v2/world-landmass/{z}/{x}/{y}.png');
 
+         backgroundmap = new L.tileLayer('http://{s}.tile.cloudmade.com/4cc00f0c8a8e42f2a2693481a431870a/998/256/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>[…]',
+                maxZoom: 18
+            });
+
         var baselayer = {
+            'Open Street Map' : backgroundmap,
             'Natural Earth' : naturalEarth,
             'GEM Base Map' : GEM_base
         };
@@ -410,6 +437,9 @@
                                     }
                                     var mkr =  L.marker(latlng, {icon:customIcon, title:year + " " + feature.properties.n + " " + feature.properties.c });
                                 {% endif %}
+                                {% if maptype == 'location' %}
+                                    var mkr =  L.marker(latlng, {icon:customIcon, title:feature.properties.s + ": " + feature.properties.n });
+                                {% endif %}
 
                                 mkr.featureID = feature.properties.i;
                                 return mkr;
@@ -424,12 +454,56 @@
                                     }
                                     html = '<span id="eventdate">' + year + '</span><span id="eventname">' + feature.properties.n + '</span><span id="eventcountry">' + feature.properties.c + '</span>';
                                     html = html + '<span id="photocount">' + feature.properties.s + ' study(s)</span>'
-                                    html = html + '<a href=/ecd/eventoverview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '{{ filterstring }}>Locations on map &raquo;</a>';
+                                    html = html + '<a href=eventoverview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '>Locations on map &raquo;</a>';
                                     //html = html + '<a href=/overview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '&tab=photos>Photos &raquo;</a>';
                                     html = '<div id="eventpopupcontainer">\n' + html + '</div>\n'
                                     layer.bindPopup( html );
                                 {% endif %}
+                                {% if maptype == 'location' %}
+                                    layer.on("click", function(e)
+                                            {
+                                                var csrftoken = getCookie('csrftoken');
+                                                jQuery.ajaxSetup({
+                                                    beforeSend: function(xhr, settings)
+                                                    {
+                                                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                                    }
+                                                });
 
+                                                var post = jQuery.post
+                                                (
+                                                        "eventoverview/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID,
+                                                        function(json)
+                                                        {   // callback
+                                                            imagehtml = ''
+                                                            if ( json.photourl != '' )
+                                                            {
+                                                                imagehtml = '<img src="' + json.photourl + '" /><br />';
+                                                            }
+
+                                                            html =        '' + json.eventtitle + '<br />' +
+                                                                    '<i>' + json.study + '</i><br />' +
+                                                                    imagehtml  +
+                                                                    '<span id="locationame">' + json.locationname + '</span><br />' +
+                                                                    '<b>Inventory class: </b>' + json.inventoryclass + ' (' + json.inventorydescription + ')'+ '<br />' +
+                                                                    '<b>Damage level: </b>' + json.damagelevel + '<br />' +
+                                                                    '<b>Asset class: </b>' + json.assetclass + '<br />' +
+                                                                    '<b>Asset type: </b>' + json.assettype + '<br />' +
+                                                                    '<b>Asset subtype: </b>' + json.assetsubtype + '<br />' +
+                                                                    '<b>Design code: </b>' + json.designcode + '<br />' ; // +
+                                                                    //<a href="eventoverview?{{ tabsquerystring }}&tab=photos&locationid=' + json.locationid + '">see all ' + json.photocount + ' photo(s) &raquo;</a>' +
+                                                                    //'<a href="/location/' + json.locationid + '">location details &raquo;</a>';
+
+                                                            html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
+
+                                                            e.target._layers[json.markerid].bindPopup(html).openPopup();
+                                                            jQuery("#id_locationid").val(json.locationid);
+                                                            jQuery("#currentlocationname").text(json.locationname);
+                                                        }
+                                                );
+                                            }
+                                    );
+                                {% endif %}
                             }
                         }
                 );
@@ -465,16 +539,14 @@
         var map = L.map('map', {
             center: [20, 20],
             zoom: 2,
-            maxZoom: 9,
-            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} GEM_base, eventsLayer]
+            maxZoom: 18,
+            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, eventsLayer]
         });
 
         L.control.layers(baselayer, overlays).addTo(map);
 
         // Add Wax support
         L.wax(map);
-
-
 
 
     </script>
