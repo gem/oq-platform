@@ -133,6 +133,10 @@
         <copy todir="${app.build}/src/exposure">                    
             <fileset dir="${app.fullpath}/src/exposure"/>
         </copy>
+	<!-- copy hazard application -->
+        <copy todir="${app.build}/src/hazard">
+            <fileset dir="${app.fullpath}/src/hazard"/>
+        </copy>
 
         <!-- build app js -->
         <mkdir dir="${app.build}/lib"/>
