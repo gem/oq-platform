@@ -16,8 +16,15 @@
 */
 
 var MAX_ZOOM_LEVEL = 16;
+var map;
+var layerControl;
+// Keep track of the layer names
+var layers;
 
 var startExploreApp = function() {
+
+    var layerControl = L.control.layers();
+    layers = [];
 
     /***************
      * Base layers *
@@ -85,7 +92,6 @@ var startExploreApp = function() {
     //get layer names from tilestream
     var tileStreamLayer = "";
     var sel = document.getElementById('tile-list');
-    $(".someSpinnerImage").show();
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
        for (var i=0; i < json.length; i++) {
@@ -97,19 +103,29 @@ var startExploreApp = function() {
         }
     });
     
-    var layerControl = L.control.layers(overlays);
     map.addControl(layerControl);
 
     $(document).ready(function() {
         $('#addLayer').click(function() {
+
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
-            var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
-                + selectedLayer 
-                + '/{z}/{x}/{y}.png',{opacity: 0.8}); 
-            var name = selectedLayer
-            layerControl.addOverlay(tileLayer, name);
-            map.addLayer(tileLayer);
+            // Check for duplicae layes
+            var found = $.inArray(selectedLayer, layers) > -1;
+            // If a duplicate lauyer is found, throw error
+            if (found == true) {
+                alert("This layer has already been added to the map");
+                }
+            else
+                {
+                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+                    + selectedLayer 
+                    + '/{z}/{x}/{y}.png',{opacity: 0.8}); 
+                var name = selectedLayer
+                layerControl.addOverlay(tileLayer, name);
+                map.addLayer(tileLayer);
+                layers.push(selectedLayer);
+                }
         });
     });
 
