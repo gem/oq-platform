@@ -136,6 +136,9 @@
         <!-- copy geojson application -->
         <copy todir="${app.build}/src/geojson">
             <fileset dir="${app.fullpath}/src/geojson"/>
+	<!-- copy hazard application -->
+        <copy todir="${app.build}/src/hazard">
+            <fileset dir="${app.fullpath}/src/hazard"/>
         </copy>
 
         <!-- build app js -->
