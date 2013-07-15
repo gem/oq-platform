@@ -133,6 +133,11 @@
         <copy todir="${app.build}/src/exposure">                    
             <fileset dir="${app.fullpath}/src/exposure"/>
         </copy>
+        <!-- copy geodetic strain application -->
+        <copy todir="${app.build}/src/geodetic_strain">
+            <fileset dir="${app.fullpath}/src/geodetic_strain"/>
+        </copy>
+
 
         <!-- build app js -->
         <mkdir dir="${app.build}/lib"/>
