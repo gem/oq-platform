@@ -498,7 +498,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
     fi
 
     ###
-    echo "== Add 'geodetic', 'ged4gem', 'observations', 'isc_viewer', 'ghec_viewer' and 'gaf_viewer' Django applications =="
+    echo "== Add 'geodetic', 'observations', 'isc_viewer', 'ghec_viewer' and 'gaf_viewer' Django applications =="
 
 sudo su - $norm_user -c "
 cd $norm_dir 
@@ -552,7 +552,6 @@ exit 0"
      
     ##
     # /var/lib/geonode/src/GeoNodePy/geonode/settings.py    
-    installed_apps_add 'geonode.ged4gem'
     installed_apps_add 'geonode.observations'
     installed_apps_add 'geonode.geodetic'
     installed_apps_add 'geonode.isc_viewer'
@@ -568,7 +567,6 @@ exit 0"
     #     (r'^observations/', include('geonode.observations.urls')),
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/faulted_earth.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/faulted_earth.html'}, name='faultedearth'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/geodetic_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/geodetic_index.html'}, name='geodetic'),\n@g" "$GEM_GN_URLS"
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform/exposure_country_index.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform/exposure_country_index.html'}, name='exposure_country'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/isc_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/isc_viewer.html'}, name='isc_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/ghec_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/ghec_viewer.html'}, name='ghec_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/gaf_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/gaf_viewer.html'}, name='gaf_viewer'),\n@g" "$GEM_GN_URLS"
@@ -630,7 +628,6 @@ exit 0"
     export JAVA_HOME="$GEM_JAVA_HOME"
     python ./manage.py updatecomputedfields
     unset JAVA_HOME
-    python ./manage.py migrate ged4gem
 
     cd $norm_dir
 
