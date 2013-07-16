@@ -20,7 +20,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="master"
+export GEM_OQ_PLATF_GIT_VERS="leaflet-strain"
 
 export GEM_OQ_PLATF_SUBMODS="oq-ui-client/app/static/externals/geoext
 oq-ui-client/app/static/externals/gxp
@@ -580,6 +580,9 @@ exit 0"
 
     # add hazard hodel to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/hazard_models.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/hazard_models.html'}, name='hazard_models'),\n@g" "$GEM_GN_URLS"
+
+    # add geodetic-strain to urls.py
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic_strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic_strain.html'}, name='geodetic_strain'),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
