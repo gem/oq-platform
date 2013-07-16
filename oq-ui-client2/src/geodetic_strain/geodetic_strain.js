@@ -58,13 +58,11 @@ var startStrainApp = function() {
 
     //resize the main and map div
     $(document).ready(function() {
-        $(window).resize(function(){
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
-            $('#main').css("height",main_height + "px");
-            $('#map').css("height",map_height + "px");
-	    map.invalidateSize(false);
-       });
+        var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
+        var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
+        $('#main').css("height",main_height + "px");
+        $('#map').css("height",map_height + "px");
+    map.invalidateSize(false);
     });
 
     /*
