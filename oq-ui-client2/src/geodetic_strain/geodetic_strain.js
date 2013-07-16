@@ -98,6 +98,7 @@ var startStrainApp = function() {
         );
     };
     $(document).ready(mapFit);
+    $(window).resize(mapFit);
     $(document).ready(legendSlidingPanel);
 };
 $(document).ready(startStrainApp);
