@@ -39,18 +39,18 @@ var startExploreApp = function() {
     /******************
      * Overlay layers *
      ******************/
-/*
-odk_wms = new L.TileLayer.WMS("http://geoserving.net/geoserver/odk/wms", {
-    layers: 'odk:bryans_survey',
-    format: 'image/png',
-    transparent: true
-});
-*/
-    test = new L.TileLayer.WMS("http://193.206.66.163/geoserver/geonode/wms", {
-    layers: 'ged:pop_vals_gbr_urban', 
-    format: 'image/png',
-    transparent: true
-});
+
+    odk_wms = new L.TileLayer.WMS("http://geoserving.net/geoserver/wms", {
+        layers: 'odk:bryans_survey',
+        format: 'image/png',
+        transparent: true
+    });
+
+    test = new L.TileLayer.WMS("http://193.206.66.163/geoserver/wms", {
+        layers: 'ged:pop_vals_gbr_urban', 
+        format: 'image/png',
+        transparent: true
+    });
 
     var overlays = {};
 
@@ -65,7 +65,7 @@ odk_wms = new L.TileLayer.WMS("http://geoserving.net/geoserver/odk/wms", {
         layers: [GEM_base],
         attributionControl: false,
     });
-    map.addLayer(test);
+    map.addLayer(odk_wms);
     // L.control.layers(baselayer, overlays).addTo(map);
 
     // Add Wax support
