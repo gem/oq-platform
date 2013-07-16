@@ -50,9 +50,10 @@ var startGeoJSONApp = function() {
 	L.Control.fileLayerLoad({
 	    fitBounds: true,
 	    layerOptions: {
-		style: style,
-	        pointToLayer: function (data, latlng) {
-		     return L.circleMarker(latlng, {style: style});
+            style: style,
+            pointToLayer: function (data, latlng) {
+                return L.circleMarker(latlng, {style: style}
+            );
 		}},
 	}).addTo(map);
 
@@ -62,17 +63,8 @@ var startGeoJSONApp = function() {
         var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
         $('#main').css("height",main_height + "px");
         $('#map').css("height",map_height + "px");
-    map.invalidateSize(false);
+    	map.invalidateSize(false);
     });
 
-    $(document).ready(function() {
-        $(window).resize(function(){
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
-            $('#main').css("height",main_height + "px");
-            $('#map').css("height",map_height + "px");
-        map.invalidateSize(false);
-       });
-    });
 };
 $(document).ready(startGeoJSONApp);
