@@ -57,13 +57,19 @@ var startStrainApp = function() {
     L.wax(map);
 
     //resize the main and map div
-    $(document).ready(function() {
-        var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-        var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
-        $('#main').css("height",main_height + "px");
-        $('#map').css("height",map_height + "px");
-    map.invalidateSize(false);
-    });
+    var mapFit = function() {
+        var main_height = $(window).height()
+                          - $("#header-wrapper").height()
+                          - $("#footer").height();
+        var map_height = $(window).height()
+                         - $("#header-wrapper").height()
+                         - $("#footer").height()
+                         - $("#tooltip").height();
+
+        $('#main').css("height", main_height + "px");
+        $('#map').css("height", map_height + "px");
+        map.invalidateSize(false);
+    };
 
     /*
      * Sliding side panel animation functions:
@@ -91,6 +97,7 @@ var startStrainApp = function() {
             }
         );
     };
+    $(document).ready(mapFit);
     $(document).ready(legendSlidingPanel);
 };
 $(document).ready(startStrainApp);
