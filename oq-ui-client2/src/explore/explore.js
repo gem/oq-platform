@@ -39,6 +39,18 @@ var startExploreApp = function() {
     /******************
      * Overlay layers *
      ******************/
+/*
+odk_wms = new L.TileLayer.WMS("http://geoserving.net/geoserver/odk/wms", {
+    layers: 'odk:bryans_survey',
+    format: 'image/png',
+    transparent: true
+});
+*/
+    test = new L.TileLayer.WMS("http://193.206.66.163/geoserver/geonode/wms", {
+    layers: 'ged:pop_vals_gbr_urban', 
+    format: 'image/png',
+    transparent: true
+});
 
     var overlays = {};
 
@@ -53,13 +65,13 @@ var startExploreApp = function() {
         layers: [GEM_base],
         attributionControl: false,
     });
-
-    //L.control.layers(baselayer, overlays).addTo(map);
+    map.addLayer(test);
+    // L.control.layers(baselayer, overlays).addTo(map);
 
     // Add Wax support
     L.wax(map);
 
-    //resize the main and map div
+    // Resize the main and map div
     var mapFit = function() {
         var main_height = $(window).height()
                         - $("#header-wrapper").height()
@@ -77,7 +89,7 @@ var startExploreApp = function() {
     $(document).ready(mapFit);
     $(window).resize(mapFit);
 
-    //layer selection dialog
+    // Layer selection dialog
     $("#dialog-layers").dialog({
         autoOpen: false,
         height: 300,
@@ -89,12 +101,12 @@ var startExploreApp = function() {
         $("#dialog-layers").dialog("open");
     });
 
-    //get layer names from tilestream
+    // Get layer names from tilestream
     var tileStreamLayer = "";
     var sel = document.getElementById('tile-list');
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
-       for (var i=0; i < json.length; i++) {
+        for (var i=0; i < json.length; i++) {
             var tileStreamLayer = json[i].id;
             var opt = document.createElement('option');
             opt.innerHTML = tileStreamLayer;
@@ -102,11 +114,12 @@ var startExploreApp = function() {
             sel.appendChild(opt);
         }
     });
-    
+
     map.addControl(layerControl);
 
+    // Add layers form tilestream list
     $(document).ready(function() {
-        $('#addLayer').click(function() {
+        $('#addTileLayer').click(function() {
 
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
@@ -121,13 +134,64 @@ var startExploreApp = function() {
                 var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
                     + selectedLayer 
                     + '/{z}/{x}/{y}.png',{opacity: 0.8}); 
-                var name = selectedLayer
-                layerControl.addOverlay(tileLayer, name);
+                layerControl.addOverlay(tileLayer, selectedLayer);
                 map.addLayer(tileLayer);
+                // Keep track of layers that have been added
                 layers.push(selectedLayer);
                 }
         });
     });
+
+    // Remove layers from tilestream
+    $(document).ready(function() {
+        $('#removeTileLayer').click(function() {
+            var e = document.getElementById("tile-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+            //layerControl.removeLayer(selectedLayer);
+            console.log("remove layer " + selectedLayer);
+            map.removeLayer(selectedLayer);
+            //layers.push(selectedLayer);
+
+        });
+    });
+
+    // Get layers names from geoserver
+    var geoserverLayer = "";
+    var geosel = document.getElementById('geoserver-list');
+    $.getJSON('http://193.206.66.163/geoserver/rest/layers.json',
+    function(json) {
+        for (var i=0; i < json.layers.layer.length; i++) {
+            var geoserverLayer = json.layers.layer[i].name;
+            var opt = document.createElement('option');
+            opt.innerHTML = geoserverLayer;
+            opt.value = json.layers.layer[i].name;
+            geosel.appendChild(opt);
+        }
+    });
+    
+     // Add layers form geoserver list
+     $(document).ready(function() {
+         $('#addGeoLayer').click(function() {
+ 
+             var e = document.getElementById("geoserver-list");
+             var selectedLayer = e.options[e.selectedIndex].value;
+             // Check for duplicae layes
+             var found = $.inArray(selectedLayer, layers) > -1;
+             // If a duplicate lauyer is found, throw error
+             if (found == true) {
+                 alert("This layer has already been added to the map");
+                 }
+             else
+                 {
+                 var geoLayer = "L.tileLayer.wms('http://193.206.66.163/geoserver/geonode/wms',{layers: geonode:" + selectedLayer + ", declared SRS: EPSG:63266405, format: 'image/png'}";
+                 console.log(geoLayer);
+                 layerControl.addOverlay(geoLayer, selectedLayer);
+                 map.addLayer(geoLayer);
+                 // Keep track of layers that have been added
+                 layers.push(selectedLayer);
+                 }
+         });
+     });
 
 };
 

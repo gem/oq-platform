@@ -69,14 +69,23 @@
 
   {% block main %}
 
-      <div id="dialog-layers" title="Layers">
-        <p>TileStream Layers:
+      <div id="dialog-layers" title="Layer Options">
         <form id="tile-form-list">
-        <select id="tile-list"></select>
-        <br><br>
-        <input type="button" id="addLayer" value="Add Layer">
+            TileStream Layers:
+            <select id="tile-list"></select>
+            <br><br>
+            <input type="button" id="addTileLayer" value="Add Layer">
+            <input type="button" id="removeTileLayer" value="Remove Layer">
+            
         </form>
-        </p>
+        <form>
+            <br>
+            Geoerver Layers:
+            <select id="geoserver-list"></select>
+            <br><br>
+            <input type="button" id="addGeoLayer" value="Add Layer">
+            <input type="button" id="removeGeoLayer" value="Remove Layer">
+        </form>
       </div> 
 
       <div id="layer-selection">
@@ -84,7 +93,6 @@
       </div>
       <div id="map" style="width: 100%;"></div>
       <script type="text/javascript">
-
       
       </script>
           <span id="showGrid"></span>
