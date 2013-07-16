@@ -46,8 +46,8 @@ var startGeoJSONApp = function() {
     * GeoJSON *
     **********/
     var style = {color:'red', fillColor:'orange', radius: 4, apacity: 1.0, fillOpacity: 1.0, weight: 2, clickable: false};
-	L.Control.FileLayerLoad.LABEL = '<i class="icon-folder-open"></i>';
-	L.Control.fileLayerLoad({
+    L.Control.FileLayerLoad.LABEL = '<i class="icon-folder-open"></i>';
+    L.Control.fileLayerLoad({
 	    fitBounds: true,
 	    layerOptions: {
             style: style,
