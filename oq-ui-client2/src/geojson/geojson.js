@@ -15,6 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var map:
 var MAX_ZOOM_LEVEL = 16;
 
 var startGeoJSONApp = function() {
