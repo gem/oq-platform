@@ -160,6 +160,7 @@ var startExploreApp = function() {
  
              var e = document.getElementById("geoserver-list");
              var selectedLayer = e.options[e.selectedIndex].value;
+             var test = "pop_vals_gbr_urban";
              // Check for duplicae layes
              var found = $.inArray(selectedLayer, layers) > -1;
              // If a duplicate lauyer is found, throw error
@@ -168,8 +169,11 @@ var startExploreApp = function() {
                  }
              else
                  {
-                 var geoLayer = new L.TileLayer.WMS('http://193.206.66.163/geoserver/wms',{layers : 'geonode: + selectedLayer  +', format: 'image/png'});
-                 console.log(geoLayer);
+                 var geoLayer = new L.TileLayer.WMS('http://193.206.66.163/geoserver/wms', {
+                    layers : 'ged:'+selectedLayer, 
+                    format: 'image/png', 
+                    transparent: true
+                    });
                  layerControl.addOverlay(geoLayer, selectedLayer);
                  map.addLayer(geoLayer);
                  // Keep track of layers that have been added
