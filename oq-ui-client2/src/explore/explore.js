@@ -39,19 +39,6 @@ var startExploreApp = function() {
     /******************
      * Overlay layers *
      ******************/
-
-    odk_wms = new L.TileLayer.WMS("http://geoserving.net/geoserver/wms", {
-        layers: 'odk:bryans_survey',
-        format: 'image/png',
-        transparent: true
-    });
-
-    test = new L.TileLayer.WMS("http://193.206.66.163/geoserver/wms", {
-        layers: 'ged:pop_vals_gbr_urban', 
-        format: 'image/png',
-        transparent: true
-    });
-
     var overlays = {};
 
     /***********
@@ -65,8 +52,6 @@ var startExploreApp = function() {
         layers: [GEM_base],
         attributionControl: false,
     });
-    map.addLayer(odk_wms);
-    // L.control.layers(baselayer, overlays).addTo(map);
 
     // Add Wax support
     L.wax(map);
@@ -183,7 +168,7 @@ var startExploreApp = function() {
                  }
              else
                  {
-                 var geoLayer = "L.tileLayer.wms('http://193.206.66.163/geoserver/geonode/wms',{layers: geonode:" + selectedLayer + ", declared SRS: EPSG:63266405, format: 'image/png'}";
+                 var geoLayer = new L.TileLayer.WMS('http://193.206.66.163/geoserver/wms',{layers : 'geonode: + selectedLayer  +', format: 'image/png'});
                  console.log(geoLayer);
                  layerControl.addOverlay(geoLayer, selectedLayer);
                  map.addLayer(geoLayer);
