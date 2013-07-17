@@ -46,7 +46,7 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
 
     <!-- Hazard Models application -->
-    <script type="text/javascript" src="src/hazard/hazard_models.js"></script>
+    <script type="text/javascript" src="src/geodetic_strain/geodetic_strain.js"></script>
     
 
   {% endblock %}
@@ -66,45 +66,8 @@
     </script>
 
   {% block main %}
-<div id="sidePanel-leg-hazard">
-  <div id="panelContent-leg">
-    <div class="map-legend-urban">
-    <p>
-      <div class='legend-title'>Legend<br/></div>
-        <div class='legend-title-part'>Japan Hazard Model<br/>
-        </div>
-        <div class='legend-scale'>
-          <ul class='legend-labels'>
-            <li><span style='background:#E3E86A;'></span>0 - 20</li>
-            <li><span style='background:#EADA65;'></span>20 - 30</li>
-            <li><span style='background:#FFDC00;'></span>30 - 40</li>
-            <li><span style='background:#EFD462;'></span>40 - 50</li>
-            <li><span style='background:#F5CB5F;'></span>50 - 60</li>
-            <li><span style='background:#FFB858;'></span>60 - 70</li>
-            <li><span style='background:#FFAC53;'></span>70 - 80</li>
-            <li><span style='background:#FF8644;'></span>80 - 90</li>
-            <li><span style='background:#FF3D2F;'></span>90 - 100</li>
-            <li><span style='background:#FF0000;'></span>100 - 110</li>
-            <li><span style='background:#E60000;'></span>110 - 150</li>
-            <li><span style='background:#CC0D56;'></span>150 - 180</li>
-            <li><span style='background:#B80C4D;'></span>over 180</li>
-          </ul>     
-        </div>
-      </div>
-        <div class='legend-source'> Source: <a href="#">Source: The Japan models have been produced from a GEM implementation of the latest Japan PSHA model</a>      
-        </div> </p>     
- 
-  </div>
-  <div id="panelHandle-leg">
-  <p>Legend</p>
-  </div>
-</div> 
  
       <div id="map" style="width: 100%;"></div>
-      <script type="text/javascript">
-
       
-      </script>
-          <span id="showGrid"></span>
   {% endblock %}
 
