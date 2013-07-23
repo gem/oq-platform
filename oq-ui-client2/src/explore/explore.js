@@ -15,6 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+//var X2JS = new X2JS();
 var MAX_ZOOM_LEVEL = 16;
 var map;
 var layerControl;
@@ -141,26 +142,36 @@ var startExploreApp = function() {
     });
 
     // Get layers names from geoserver
+    // XML string to JSON
     var geoserverLayer = "";
-    var geosel = document.getElementById('geoserver-list');
-    $.getJSON('http://193.206.66.163/geoserver/rest/layers.json',
-    function(json) {
-        for (var i=0; i < json.layers.layer.length; i++) {
-            var geoserverLayer = json.layers.layer[i].name;
-            var opt = document.createElement('option');
-            opt.innerHTML = geoserverLayer;
-            opt.value = json.layers.layer[i].name;
-            geosel.appendChild(opt);
+    var geoSel = document.getElementById('geoserver-list');
+
+    $.ajax({
+        type: "GET",
+        url: "/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&TILED=true&VERSION=1.1.1",
+        dataType: "xml",
+        success: function(xmlDoc) {
+            var layerName  = $('Layer > Name', xmlDoc);
+
+            for (var i=0; i < layerName.length; i++) {
+                var xmlLayerList = (new XMLSerializer()).serializeToString(layerName[i]);
+                // TODO this can probably be done in a cleaner way
+                var xmlLayerListClean = xmlLayerList.replace("<Name>", '');
+                var layerList = xmlLayerListClean.replace("</Name>", '');
+                var opt = document.createElement('option');
+                opt.innerHTML = layerList;
+                opt.value = layerList;
+                geoSel.appendChild(opt);
+            }
         }
     });
-    
+
      // Add layers form geoserver list
      $(document).ready(function() {
          $('#addGeoLayer').click(function() {
- 
              var e = document.getElementById("geoserver-list");
              var selectedLayer = e.options[e.selectedIndex].value;
-             var test = "pop_vals_gbr_urban";
+                console.log(selectedLayer);
              // Check for duplicae layes
              var found = $.inArray(selectedLayer, layers) > -1;
              // If a duplicate lauyer is found, throw error
@@ -169,8 +180,8 @@ var startExploreApp = function() {
                  }
              else
                  {
-                 var geoLayer = new L.TileLayer.WMS('http://193.206.66.163/geoserver/wms', {
-                    layers : 'ged:'+selectedLayer, 
+                 var geoLayer = new L.TileLayer.WMS('/geoserver/wms', {
+                    layers : selectedLayer, 
                     format: 'image/png', 
                     transparent: true
                     });
