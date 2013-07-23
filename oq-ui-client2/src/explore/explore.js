@@ -24,8 +24,8 @@ var layers;
 
 var startExploreApp = function() {
 
-    var layerControl = L.control.layers();
-    layers = [];
+    layerControl = L.control.layers();
+    layers = {};
 
     /***************
      * Base layers *
@@ -106,13 +106,12 @@ var startExploreApp = function() {
     // Add layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
-
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
             // Check for duplicae layes
-            var found = $.inArray(selectedLayer, layers) > -1;
-            // If a duplicate lauyer is found, throw error
-            if (found == true) {
+            if ( selectedLayer in layers) 
+                {
+                // If a duplicate lauyer is found, throw error
                 alert("This layer has already been added to the map");
                 }
             else
@@ -123,7 +122,7 @@ var startExploreApp = function() {
                 layerControl.addOverlay(tileLayer, selectedLayer);
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
-                layers.push(selectedLayer);
+                layers[selectedLayer] = tileLayer;
                 }
         });
     });
@@ -133,26 +132,25 @@ var startExploreApp = function() {
         $('#removeTileLayer').click(function() {
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
-            //layerControl.removeLayer(selectedLayer);
-            console.log("remove layer " + selectedLayer);
-            map.removeLayer(selectedLayer);
-            //layers.push(selectedLayer);
-
+            layerControl.removeLayer(layers[selectedLayer]);
+            map.removeLayer(layers[selectedLayer]);
+            delete layers[selectedLayer];
         });
     });
 
     // Get layers names from geoserver
-    // XML string to JSON
     var geoserverLayer = "";
     var geoSel = document.getElementById('geoserver-list');
 
+    // Get Geoserver info with GetCapabilities
     $.ajax({
         type: "GET",
         url: "/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&TILED=true&VERSION=1.1.1",
         dataType: "xml",
         success: function(xmlDoc) {
+            // Access the name tag that is a child of the Layer tag
             var layerName  = $('Layer > Name', xmlDoc);
-
+            // Iterate through the list and create an option pull down menu
             for (var i=0; i < layerName.length; i++) {
                 var xmlLayerList = (new XMLSerializer()).serializeToString(layerName[i]);
                 // TODO this can probably be done in a cleaner way
@@ -169,30 +167,38 @@ var startExploreApp = function() {
      // Add layers form geoserver list
      $(document).ready(function() {
          $('#addGeoLayer').click(function() {
-             var e = document.getElementById("geoserver-list");
-             var selectedLayer = e.options[e.selectedIndex].value;
-                console.log(selectedLayer);
-             // Check for duplicae layes
-             var found = $.inArray(selectedLayer, layers) > -1;
-             // If a duplicate lauyer is found, throw error
-             if (found == true) {
-                 alert("This layer has already been added to the map");
-                 }
-             else
-                 {
-                 var geoLayer = new L.TileLayer.WMS('/geoserver/wms', {
+            var e = document.getElementById("geoserver-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+            // Check for duplicae layes
+            if ( selectedLayer in layers ) 
+                {
+                // If a duplicate lauyer is found, throw error
+                alert("This layer has already been added to the map");
+                }
+            else
+                {
+                var geoLayer = new L.TileLayer.WMS('/geoserver/wms', {
                     layers : selectedLayer, 
                     format: 'image/png', 
                     transparent: true
                     });
-                 layerControl.addOverlay(geoLayer, selectedLayer);
-                 map.addLayer(geoLayer);
-                 // Keep track of layers that have been added
-                 layers.push(selectedLayer);
-                 }
+                layerControl.addOverlay(geoLayer, selectedLayer);
+                map.addLayer(geoLayer);
+                // Keep track of layers that have been added
+                layers[selectedLayer] =  geoLayer;
+                }
          });
      });
-
+    // Remove layers from Geoserver
+    $(document).ready(function() {
+        $('#removeGeoLayer').click(function() {
+            var e = document.getElementById("geoserver-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+            layerControl.removeLayer(layers[selectedLayer]);
+            map.removeLayer(layers[selectedLayer]);
+            delete layers[selectedLayer];
+        });
+    });
 };
 
 $(document).ready(startExploreApp);
