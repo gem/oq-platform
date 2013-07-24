@@ -15,7 +15,6 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-//var X2JS = new X2JS();
 var MAX_ZOOM_LEVEL = 16;
 var map;
 var layerControl;
@@ -36,11 +35,6 @@ var startExploreApp = function() {
     var baselayer = {
         'Base Map' : GEM_base
     };
-
-    /******************
-     * Overlay layers *
-     ******************/
-    var overlays = {};
 
     /***********
      * The map *
@@ -109,13 +103,11 @@ var startExploreApp = function() {
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
             // Check for duplicae layes
-            if ( selectedLayer in layers) 
-                {
+            if ( selectedLayer in layers) {
                 // If a duplicate lauyer is found, throw error
                 alert("This layer has already been added to the map");
-                }
-            else
-                {
+            }
+            else {
                 var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
                     + selectedLayer 
                     + '/{z}/{x}/{y}.png',{opacity: 0.8}); 
@@ -123,7 +115,7 @@ var startExploreApp = function() {
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
-                }
+            }
         });
     });
 
@@ -170,25 +162,24 @@ var startExploreApp = function() {
             var e = document.getElementById("geoserver-list");
             var selectedLayer = e.options[e.selectedIndex].value;
             // Check for duplicae layes
-            if ( selectedLayer in layers ) 
-                {
+            if ( selectedLayer in layers ) {
                 // If a duplicate lauyer is found, throw error
                 alert("This layer has already been added to the map");
-                }
-            else
-                {
+            }
+            else {
                 var geoLayer = new L.TileLayer.WMS('/geoserver/wms', {
                     layers : selectedLayer, 
                     format: 'image/png', 
                     transparent: true
-                    });
+                });
                 layerControl.addOverlay(geoLayer, selectedLayer);
                 map.addLayer(geoLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] =  geoLayer;
-                }
+            }
          });
      });
+
     // Remove layers from Geoserver
     $(document).ready(function() {
         $('#removeGeoLayer').click(function() {
