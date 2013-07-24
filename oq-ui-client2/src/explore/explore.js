@@ -23,7 +23,6 @@ var layers;
 
 var startExploreApp = function() {
 
-    layerControl = L.control.layers();
     layers = {};
 
     /***************
@@ -35,6 +34,8 @@ var startExploreApp = function() {
     var baselayer = {
         'Base Map' : GEM_base
     };
+
+    layerControl = L.control.layers(baselayer);
 
     /***********
      * The map *
