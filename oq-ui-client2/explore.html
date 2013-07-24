@@ -68,7 +68,7 @@
 
   {% block main %}
 
-      <div id="dialog-layers" title="Layer Options">
+    <div id="dialog-layers" title="Layer Options">
         <form id="tile-form-list">
             TileStream Layers:
             <br>
@@ -87,10 +87,20 @@
             <input type="button" id="addGeoLayer" value="Add Layer">
             <input type="button" id="removeGeoLayer" value="Remove Layer">
         </form>
-      </div> 
+    </div> 
 
-      <div id="layer-selection">
+    <div id="layer-selection">
         <input id="layer-selection" type="button" value="Layers"/>
-      </div>
+    </div>
+
+    <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
+        <p>This layer has already been added to the map</p>
+    </div> 
+
+    <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+        <p>This layer in not loaded in the map</p>
+    </div> 
+ 
+
       <div id="map" style="width: 100%;"></div>
   {% endblock %}

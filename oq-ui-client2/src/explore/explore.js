@@ -81,6 +81,35 @@ var startExploreApp = function() {
         $("#dialog-layers").dialog("open");
     });
 
+    // Duplicate layer warnning message
+    function showDuplicateMsg() {
+        $("#worning-duplicate").dialog("open");
+    };
+
+    $(document).ready(function() {
+        $("#worning-duplicate").dialog({
+            autoOpen: false,
+            hieght: 300,
+            width: 350,
+            modal: true
+        });
+    });
+
+    // No Layer to remove warnning message
+    function showRemoveMsg() {
+        $("#worning-no-layer").dialog("open");
+    };
+
+    $(document).ready(function() {
+        $("#worning-no-layer").dialog({
+            autoOpen: false,
+            hieght: 300,
+            width: 350,
+            modal: true
+        });
+    });
+
+
     // Get layer names from tilestream
     var tileStreamLayer = "";
     var sel = document.getElementById('tile-list');
@@ -103,9 +132,8 @@ var startExploreApp = function() {
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
             // Check for duplicae layes
-            if ( selectedLayer in layers) {
-                // If a duplicate lauyer is found, throw error
-                alert("This layer has already been added to the map");
+            if (selectedLayer in layers) {
+               showDuplicateMsg(); 
             }
             else {
                 var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
@@ -124,9 +152,15 @@ var startExploreApp = function() {
         $('#removeTileLayer').click(function() {
             var e = document.getElementById("tile-list");
             var selectedLayer = e.options[e.selectedIndex].value;
-            layerControl.removeLayer(layers[selectedLayer]);
-            map.removeLayer(layers[selectedLayer]);
-            delete layers[selectedLayer];
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
         });
     });
 
@@ -163,8 +197,7 @@ var startExploreApp = function() {
             var selectedLayer = e.options[e.selectedIndex].value;
             // Check for duplicae layes
             if ( selectedLayer in layers ) {
-                // If a duplicate lauyer is found, throw error
-                alert("This layer has already been added to the map");
+                showDuplicateMsg();
             }
             else {
                 var geoLayer = new L.TileLayer.WMS('/geoserver/wms', {
@@ -185,9 +218,15 @@ var startExploreApp = function() {
         $('#removeGeoLayer').click(function() {
             var e = document.getElementById("geoserver-list");
             var selectedLayer = e.options[e.selectedIndex].value;
-            layerControl.removeLayer(layers[selectedLayer]);
-            map.removeLayer(layers[selectedLayer]);
-            delete layers[selectedLayer];
+             // Check in the layer is in the map port
+             if (selectedLayer in layers) {
+                 layerControl.removeLayer(layers[selectedLayer]);
+                 map.removeLayer(layers[selectedLayer]);
+                 delete layers[selectedLayer];
+             }
+             else {
+                 showRemoveMsg();                                                     
+             }
         });
     });
 };
