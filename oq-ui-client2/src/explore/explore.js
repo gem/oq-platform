@@ -176,7 +176,7 @@ var startExploreApp = function() {
         dataType: "xml",
         success: function(xmlDoc) {
             // Access the name tag that is a child of the Layer tag
-            var layerName  = $('Layer > Name', xmlDoc);
+            var layerName = $('Layer > Name', xmlDoc);
             // Iterate through the list and create an option pull down menu
             for (var i=0; i < layerName.length; i++) {
                 var xmlLayerList = (new XMLSerializer()).serializeToString(layerName[i]);
