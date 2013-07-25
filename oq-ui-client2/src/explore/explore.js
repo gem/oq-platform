@@ -175,17 +175,12 @@ var startExploreApp = function() {
         url: "/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&TILED=true&VERSION=1.1.1",
         dataType: "xml",
         success: function(xmlDoc) {
-            // Access the name tag that is a child of the Layer tag
-            var layerName = $('Layer > Name', xmlDoc);
-            // Iterate through the list and create an option pull down menu
-            for (var i=0; i < layerName.length; i++) {
-                var xmlLayerList = (new XMLSerializer()).serializeToString(layerName[i]);
-                // TODO this can probably be done in a cleaner way
-                var xmlLayerListClean = xmlLayerList.replace("<Name>", '');
-                var layerList = xmlLayerListClean.replace("</Name>", '');
+            var layerNames = $(xmlDoc).find('Layer > Name');
+            for (var i = 0; i < layerNames.length; i++) {
+                var layerName = layerNames[i].textContent;
                 var opt = document.createElement('option');
-                opt.innerHTML = layerList;
-                opt.value = layerList;
+                opt.innerHTML = layerName;
+                opt.value = layerName;
                 geoSel.appendChild(opt);
             }
         }
