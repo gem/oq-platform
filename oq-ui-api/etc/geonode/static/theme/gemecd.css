@@ -4,7 +4,7 @@ html
 {
     background-color:#fff;
 }
-
+/*
 body
 {
     margin-left: auto!important;
@@ -18,7 +18,7 @@ body
     min-width: 960px!important;
     width: 960px!important;
 }
-
+*/
 /*
 #header
 {
@@ -65,7 +65,7 @@ body
 
 
 */
-
+/*
 #footer .onecol
 {
     padding-left:0;
@@ -75,7 +75,7 @@ body
     width:960px;
 }
 
-
+*/
 
 div#ie8message, div#errormessage
 {
