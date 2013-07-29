@@ -54,7 +54,7 @@ class Pagebase(FormView):
         return True # always returns true, and return result can be ignored. This is only here for legacy code that still expects a boolean.
 
 
-    def showErrorPage(self, request, message):
+    def showErrorPage(self, request, message, errorTemplate=''):
         # Create an error page, based on the base template
         # sample usage:
         # except ObjectDoesNotExist:
@@ -63,8 +63,11 @@ class Pagebase(FormView):
         self.page_context['pageerrors'] = message
         self.page_context['haspageerrors'] = True
 
+        if len(errorTemplate) == 0:
+            errorTemplate = 'base.html'
+
         #return HttpResponse
-        return render(request, 'base.html', self.page_context)
+        return render(request, errorTemplate, self.page_context)
 
 
     # return a structure for a single record that can be passed to generictablerenderer template tag

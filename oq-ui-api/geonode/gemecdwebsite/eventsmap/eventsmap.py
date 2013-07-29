@@ -209,7 +209,7 @@ class EventsMap (Pagebase):
         except ObjectDoesNotExist:
             return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist', 'errorpage.html')
         except:
-            return self.showErrorPage(request, 'Error: invalid parameter supplied', 'errorpage.html')
+            return self.showErrorPage(request, 'Error: cannot find ' + appname + ' ' + modelname + ' ' + self.page_context['ix'], 'errorpage.html')
 
         self.page_context['current_object'] = current_object
         if hasattr(current_object,'name'):

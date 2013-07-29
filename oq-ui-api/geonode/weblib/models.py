@@ -11,7 +11,7 @@ class PhotologueWatermark(models.Model):
     style = models.CharField(max_length=5)
     opacity = models.FloatField()
     class Meta:
-        db_table = u'photologue_watermark'
+        db_table = u'econd\".\"photologue_watermark'
 
 class PhotologuePhotoeffect(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -27,7 +27,7 @@ class PhotologuePhotoeffect(models.Model):
     reflection_strength = models.FloatField()
     background_color = models.CharField(max_length=7)
     class Meta:
-        db_table = u'photologue_photoeffect'
+        db_table = u'econd\".\"photologue_photoeffect'
 
 class PhotologuePhotosize(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -42,7 +42,7 @@ class PhotologuePhotosize(models.Model):
     effect = models.ForeignKey(PhotologuePhotoeffect, null=True, blank=True)
     watermark = models.ForeignKey(PhotologueWatermark, null=True, blank=True)
     class Meta:
-        db_table = u'photologue_photosize'
+        db_table = u'econd\".\"photologue_photosize'
 
     def __unicode__(self):
         return  self.name + '(' + str(self.width) + 'x' + str(self.height) + ')'
@@ -64,7 +64,7 @@ class PhotologuePhoto(models.Model):
     is_public = models.BooleanField()
     tags = models.CharField(max_length=255)
     class Meta:
-        db_table = u'photologue_photo'
+        db_table = u'econd\".\"photologue_photo'
 
 
 class WebLibPhoto(ImageModel):
@@ -77,7 +77,7 @@ class WebLibPhoto(ImageModel):
     tags = models.CharField(max_length=255)
 
     class Meta:
-        db_table = u'photologue_photo'
+        db_table =u'econd\".\"photologue_photo'
         managed = False
 
     def __unicode__(self):
@@ -109,6 +109,9 @@ class Page(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        db_table = db_table = u'econd\".\"weblib_page'
+
 class Link(models.Model):
     id = models.AutoField(primary_key=True)
     parentid = models.IntegerField()
@@ -127,7 +130,7 @@ class Link(models.Model):
     lastupdatebyid = models.IntegerField(null=True, blank=True)
     ownerid = models.IntegerField(null=True, blank=True)
     class Meta:
-        db_table = u'weblib_link'
+        db_table = u'econd\".\"weblib_link'
 
     def __unicode__(self):
         return self.name
