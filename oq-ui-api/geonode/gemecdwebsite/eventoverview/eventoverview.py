@@ -281,16 +281,20 @@ class EventOverview (Pagebase):
         except:
             studyid = 0 # in case of input error
 
-        # Prepare GeoServer request for point-based data. We are viewing an individual event, so show the locations
-        urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
-        urlStr += '&viewparams=override_e:0;eventid:' + unicode(eventid) + ';'
+        # Prepare GeoServer request for point-based locations.
+        urlStrPoints = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
+        urlStrPoints += '&viewparams=override_e:0;eventid:' + unicode(eventid) + ';'
 
         # study selection
         if studyid > 0:
-            urlStr += 'override_s:0;studyid:' + unicode(studyid) + ';'
+            urlStrPoints += 'override_s:0;studyid:' + unicode(studyid) + ';'
 
         if not filter_all:
-            urlStr += 'override_c:0;studytypecode:' + studytype + ';'
+            urlStrPoints += 'override_c:0;studytypecode:' + studytype + ';'
+
+        # Prepare GeoServer request for polygon-based locations
+        urlStrPolygons = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json'
+        urlStrPolygons += '&viewparams=parenttype:study;parentid:193;jointable:geobase_laquila;joincolumn:id;boundarygeom:the_geom;override:0;'
 
         # fudge for dealing with different locations of the "src" static directory on the development system
         self.page_context['src_folder'] = '/oq-platform2/'
@@ -359,14 +363,21 @@ class EventOverview (Pagebase):
             else:
                 # display mode
 
-                # get the map overlay GeoJSON from Geoserver
-                GeoJsonStr = urllib2.urlopen(urlStr).read()
+                # get the map overlay points GeoJSON from Geoserver
+                GeoJsonStrPoints = urllib2.urlopen(urlStrPoints).read()
+
+                 # get the map overlay points GeoJSON from Geoserver
+                GeoJsonStrPolygons = urllib2.urlopen(urlStrPolygons).read()
 
                 # trap errors coming back from Geoserver and dont send them on to the webpage
-                if 'ServiceExceptionReport' in GeoJsonStr:
-                    GeoJsonStr = ''
+                if 'ServiceExceptionReport' in GeoJsonStrPoints:
+                    GeoJsonStrPoints = ''
 
-                self.page_context['geojson'] = GeoJsonStr
+                if 'ServiceExceptionReport' in GeoJsonStrPolygons:
+                    GeoJsonStrPolygons = ''
+
+                self.page_context['geojsonpoints'] = GeoJsonStrPoints
+                self.page_context['geojsonpolygons'] = GeoJsonStrPolygons
                 self.page_context['maptype'] = 'location'
 
                 # filter bar form - the filter icons

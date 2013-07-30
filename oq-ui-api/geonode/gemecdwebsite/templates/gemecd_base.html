@@ -163,7 +163,7 @@
         jQuery(document).ready(function($){
 
             // first fit the bounds to the locations (must be done in the document ready function)
-            var bounds = L.geoJson(geojsonFeature).getBounds();
+            var bounds = L.geoJson(geojsonFeaturePoints).getBounds();
             if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
             {
                 map.fitBounds(bounds);
@@ -387,7 +387,8 @@
         {% endblock gemecd_map %}
 <script type="text/javascript">
         var overlays = {
-            "ECD events" : eventsLayer,
+            "Points layer" : pointsLayer,
+            "Polygons layer" : polygonsLayer,
             "Sample shakemap": shakemap,
             "GRUMP Urban" : grump_urban,
             "GRUMP Rural" : grump_rural,
@@ -415,7 +416,7 @@
             center: [20, 20],
             zoom: 2,
             maxZoom: 18,
-            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, eventsLayer]
+            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, pointsLayer, polygonsLayer]
         });
 
         L.control.layers(baselayer, overlays).addTo(map);

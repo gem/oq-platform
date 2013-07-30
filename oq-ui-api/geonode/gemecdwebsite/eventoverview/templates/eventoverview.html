@@ -67,9 +67,10 @@
             popupAnchor:  [0, -20] // point from which the popup should open relative to the iconAnchor
         });
 
-        var geojsonFeature = {{ geojson|safe }}
+        var geojsonFeaturePoints = {{ geojsonpoints|safe }}
+        var geojsonFeaturePolygons = {{ geojsonpolygons|safe }}
 
-                eventsLayer = L.geoJson(geojsonFeature,
+                pointsLayer = L.geoJson(geojsonFeaturePoints,
                         {
                             pointToLayer: function (feature, latlng)
                             {
@@ -81,6 +82,81 @@
                                     }
                                     var mkr =  L.marker(latlng, {icon:customIcon, title:year + " " + feature.properties.n + " " + feature.properties.c });
                                 {% endif %}
+                                {% if maptype == 'location' %}
+                                    var mkr =  L.marker(latlng, {icon:customIcon, title:feature.properties.s + ": " + feature.properties.n });
+                                {% endif %}
+
+                                mkr.featureID = feature.properties.i;
+                                return mkr;
+                            },
+                            onEachFeature:function (feature, layer)
+                            {
+                                {% if maptype == 'event' %}
+                                    year = parseInt(feature.properties.y);
+                                    if (year < 1900)
+                                    {
+                                        year = year + 100;
+                                    }
+                                    html = '<span id="eventdate">' + year + '</span><span id="eventname">' + feature.properties.n + '</span><span id="eventcountry">' + feature.properties.c + '</span>';
+                                    html = html + '<span id="photocount">' + feature.properties.s + ' study(s)</span>'
+                                    html = html + '<a href=eventoverview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '>Locations on map &raquo;</a>';
+                                    //html = html + '<a href=/overview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '&tab=photos>Photos &raquo;</a>';
+                                    html = '<div id="eventpopupcontainer">\n' + html + '</div>\n'
+                                    layer.bindPopup( html );
+                                {% endif %}
+                                {% if maptype == 'location' %}
+                                    layer.on("click", function(e)
+                                            {
+                                                var csrftoken = getCookie('csrftoken');
+                                                jQuery.ajaxSetup({
+                                                    beforeSend: function(xhr, settings)
+                                                    {
+                                                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                                    }
+                                                });
+
+                                                var post = jQuery.post
+                                                (
+                                                        "eventoverview/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID,
+                                                        function(json)
+                                                        {   // callback
+                                                            imagehtml = ''
+                                                            if ( json.photourl != '' )
+                                                            {
+                                                                imagehtml = '<img src="' + json.photourl + '" /><br />';
+                                                            }
+
+                                                            html =        '' + json.eventtitle + '<br />' +
+                                                                    '<i>' + json.study + '</i><br />' +
+                                                                    imagehtml  +
+                                                                    '<span id="locationame">' + json.locationname + '</span><br />' +
+                                                                    '<b>Inventory class: </b>' + json.inventoryclass + ' (' + json.inventorydescription + ')'+ '<br />' +
+                                                                    '<b>Damage level: </b>' + json.damagelevel + '<br />' +
+                                                                    '<b>Asset class: </b>' + json.assetclass + '<br />' +
+                                                                    '<b>Asset type: </b>' + json.assettype + '<br />' +
+                                                                    '<b>Asset subtype: </b>' + json.assetsubtype + '<br />' +
+                                                                    '<b>Design code: </b>' + json.designcode + '<br />' ; // +
+                                                                    //<a href="eventoverview?{{ tabsquerystring }}&tab=photos&locationid=' + json.locationid + '">see all ' + json.photocount + ' photo(s) &raquo;</a>' +
+                                                                    //'<a href="/location/' + json.locationid + '">location details &raquo;</a>';
+
+                                                            html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
+
+                                                            e.target._layers[json.markerid].bindPopup(html).openPopup();
+                                                            jQuery("#id_locationid").val(json.locationid);
+                                                            jQuery("#currentlocationname").text(json.locationname);
+                                                        }
+                                                );
+                                            }
+                                    );
+                                {% endif %}
+                            }
+                        }
+                );
+
+                polygonsLayer = L.geoJson(geojsonFeaturePolygons,
+                        {
+                            pointToLayer: function (feature, latlng)
+                            {
                                 {% if maptype == 'location' %}
                                     var mkr =  L.marker(latlng, {icon:customIcon, title:feature.properties.s + ": " + feature.properties.n });
                                 {% endif %}
