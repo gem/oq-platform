@@ -146,13 +146,6 @@ div#ecd-filterbar select.eventdropdown
     font-size:13px;
 }
 
-div#ecd-filterbar select.studydropdown
-{
-    margin:3px 9px 0 0;
-    width:180px;
-    font-size:13px;
-}
-
 div#ecd-filterbar input.iconbutton
 {
     height:24px;
@@ -178,9 +171,60 @@ div#ecd-filterbar input.highlight
     background-image:none;
     background-color:#ff0;
 }
-
-
 /* end of filter bar with dropdown and iconic buttons */
+
+/* left panel beside the map */
+div#ecd-leftpanel
+{
+    width:20%;
+    float:left;
+    min-width:185px;
+}
+
+div#panelcontainer
+{
+    margin-left:5px;
+    max-width: 200px;
+}
+
+div#panelcontainer h1
+{
+    font-size:18px;
+}
+
+div#ecd-leftpanel select.eventdropdown
+{
+    margin:1px 0 0 0;
+    width:180px;
+    font-size:13px;
+}
+
+div#ecd-leftpanel select.studydropdown
+{
+    margin:1px 0 0 0;
+    width:180px;
+    font-size:13px;
+}
+
+div#ecd-leftpanel select.locationdropdown
+{
+    margin:1px 0 0 0;
+    width:180px;
+    font-size:13px;
+}
+
+div#ecd-leftpanel div#backlink a
+{
+    text-decoration:none;
+}
+
+/* end of left panel beside the map */
+
+/* The map */
+div#map
+{
+
+}
 
 /* Advanced filter settings panel in the map */
 #advancedfilterpanel
@@ -208,9 +252,6 @@ div#ecd-filterbar input.highlight
 {
     padding:0!important;
 }
-
-
-
 
 /* end of Advanced filter settings panel in the map */
 
@@ -261,3 +302,17 @@ div#eventpopupcontainer a:hover,div#locationpopupcontainer a:hover
 }
 
 /* end of map popup */
+
+
+/* GEMECD's error page */
+div#ecd-errorpage
+{
+    padding:30px;
+}
+
+div#ecd-errorpage h1
+{
+    font-size:18px;
+}
+
+/* end of GEMECD's error page */

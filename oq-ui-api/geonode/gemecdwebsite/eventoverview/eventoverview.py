@@ -12,6 +12,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
 from econd.models import EventsQuick, LocationsForJSON, Study
+from econd.event_models import Event
+from econd.sql_views import LocationsQuick
 from weblib.utils import JSONResponse
 
 template_name = 'eventoverview/templates/eventoverview.html'
@@ -154,19 +156,22 @@ class EventOverview (Pagebase):
 
 
 
-    class EventQuickLinksForm(forms.Form):
+    class PanelForm(forms.Form):
         study = forms.ChoiceField(label='Study', required=False) #required=False allows field to be disabled
         study.widget.attrs['title'] = "Filter by study"
         study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         study.widget.attrs['class'] = 'studydropdown'
 
-        event = forms.ChoiceField(label='Event', required=False) #required=False allows field to be disabled
-        event.widget.attrs['title'] = "Quick link to event details"
-        event.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
-        event.widget.attrs['class'] = 'eventdropdown'
+        location = forms.ChoiceField(label='Location', required=False) #required=False allows field to be disabled
+        location.widget.attrs['title'] = "Go to location"
+        location.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
+        location.widget.attrs['class'] = 'locationdropdown'
 
-
-        #buttonArray = forms.MultipleChoiceField(label='', required=False, widget = CheckboxSelectMultiple())
+        # if we were to want the event dropdown on this page:
+        #event = forms.ChoiceField(label='Event', required=False) #required=False allows field to be disabled
+        #event.widget.attrs['title'] = "Quick link to event details"
+        #event.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
+        #event.widget.attrs['class'] = 'eventdropdown'
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -276,7 +281,7 @@ class EventOverview (Pagebase):
         except:
             studyid = 0 # in case of input error
 
-        # Prepare GeoServer request. We are viewing an individual event, so show the locations
+        # Prepare GeoServer request for point-based data. We are viewing an individual event, so show the locations
         urlStr = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
         urlStr += '&viewparams=override_e:0;eventid:' + unicode(eventid) + ';'
 
@@ -292,46 +297,13 @@ class EventOverview (Pagebase):
         if platform.system() == 'Windows':
             self.page_context['src_folder'] = '/static/'
 
-        self.page_context['ix'] = '5' # override ix parameter which is 5 for the events map page
-        current_object = None
-
         try:
-            current_object = get_model(appname, modelname).objects.get(pk=self.page_context['ix'])
-        except ObjectDoesNotExist:
-            return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist', 'errorpage.html')
+            event = Event.objects.get(pk=eventid)
+            self.page_context['paneltitle'] = unicode(event.yearint) + ' ' + event.name + ' ' + event.country
+            self.page_context['page_title'] = self.page_context['paneltitle']
+            self.page_context['page_backlink'] = '<a href="/ecd/eventsmap">&laquo; Back to world map</a>'
         except:
-            return self.showErrorPage(request, 'Error: invalid parameter supplied', 'errorpage.html')
-
-        self.page_context['current_object'] = current_object
-        if hasattr(current_object,'name'):
-            self.page_context['page_title'] = current_object.name
-        if hasattr(current_object,'subtitle'):
-            self.page_context['page_subtitle'] = current_object.subtitle
-        if hasattr(current_object,'righttext'):
-            self.page_context['righttext'] = current_object.righttext
-
-        # display
-        pageFormDisplay = PageFormDisplay (instance=current_object)
-        pagefields = self.createFormFieldStructure( pageFormDisplay, current_object )
-
-        # intercept the field structure dictionary for "image1" field and
-        # change the type to WebLibPhoto and provide the photo size
-        # this only affects generictablerenderer so is only for display
-        index = 0
-        for i in pageFormDisplay.visible_fields():
-            if i.name == 'image1':
-                pagefields['fields'][index][0]['image1']['type'] = 'WebLibPhoto'
-                pagefields['fields'][index][0]['image1']['photosize'] = formphotosize
-                break
-            index += 1
-
-        self.page_context['simpleformfields1'] = pagefields  #pass field structure to generictablerenderer
-
-        # other info to pass through the page context
-        self.page_context['pageclass'] = 'basicpage'
-        self.page_context['editlink'] = ('/' + modelname + '/' + str(self.page_context['ix'])).lower()
-
-
+            return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 
         ###############
         # POST
@@ -343,36 +315,17 @@ class EventOverview (Pagebase):
             # by testing for a field in the content management form
             if 'mainpageform-name' in request.POST:
                 # we are editing the content management form
-
-                # Create a form bound to the POST data, prefix allows multiple forms
-                pageFormEdit = PageFormEdit(request.POST, instance=current_object, prefix='mainpageform')
-                if pageFormEdit.is_valid():
-                    # All validation rules pass
-                    self.page_context['editmode'] = False  # no errors
-                    current_object.lastupdate = datetime.now()
-                    current_object.lastupdatebyid = request.user.id
-
-                    # save the user input from the form to the record
-                    pageFormEdit.save()
-
-                    # Redirect after successful POST to the display version of the page
-                    return HttpResponseRedirect(('/' + modelname + '/' + str(self.page_context['ix'])).lower())
-                else:
-                    # Validation Error - return just the form when there is an error -
-                    # the template must not try and render anything outside the form
-                    # because the context data is not present
-                    self.page_context['form'] = pageFormEdit
-                    return render(request, template_name, self.page_context)
+                pass
             else:
                 # the user has used a form on the page; which one?
-                if 'eventquicklinksform-event' in request.POST:
-                    # the event quick link dropdown
-                    eventquicklinksform = self.EventQuickLinksForm(request.POST, prefix='eventquicklinksform')
-                    valid_eventquicklinksform = eventquicklinksform.is_valid()
+                if 'panelform-study' in request.POST:
+                    # the study dropdown
+                    panelform = self.PanelForm(request.POST, prefix='panelform')
+                    valid_panelform = panelform.is_valid()
 
-                    if valid_eventquicklinksform: # All validation rules pass
-                        eventid = eventquicklinksform.cleaned_data['event']
-                        studyid = eventquicklinksform.cleaned_data['study']
+                    if valid_panelform: # All validation rules pass
+                        #eventid = studyform.cleaned_data['event']
+                        studyid = panelform.cleaned_data['study']
 
                 else:
                     # the filter bar was changed
@@ -402,8 +355,7 @@ class EventOverview (Pagebase):
             # edit mode
             if self.page_context['editmode']:
                 # Create the form for either the new dummy record or an existing one; prefix allows multiple forms
-                pageFormEdit = PageFormEdit (instance=current_object, prefix="mainpageform")
-                self.page_context['mainpageform'] = pageFormEdit
+                pass
             else:
                 # display mode
 
@@ -429,20 +381,18 @@ class EventOverview (Pagebase):
 
                 self.page_context['filterbarform'] = filterbarform(prefix="filterbarform", label_suffix='')
 
-                # events quick links dropdown form
-                eventquicklinksform = self.EventQuickLinksForm
+                panelform = self.PanelForm
 
                 # populate event dropdown
-                eventlist = [('0','All ECD events')]
-                events = EventsQuick.objects.all().order_by('-yearint')
-                for event in events:
-                    eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
+                #eventlist = [('0','All ECD events')]
+                #events = EventsQuick.objects.all().order_by('-yearint')
+                #for event in events:
+                #    eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
 
-                eventquicklinksform.base_fields['event'].choices = eventlist
-                eventquicklinksform.base_fields['event'].initial = eventid
+                #panelform.base_fields['event'].choices = eventlist
+                #panelform.base_fields['event'].initial = eventid
 
                 # populate study dropdown
-
                 studies = Study.objects.filter(parentid=eventid).order_by('name')
                 if studytype is not '':
                     studies = studies.filter(studytypecode=studytype)
@@ -454,12 +404,30 @@ class EventOverview (Pagebase):
                 else:
                     studylist = [('0','NO STUDIES')]
 
-                eventquicklinksform.base_fields['study'].choices = studylist
-                eventquicklinksform.base_fields['study'].initial = studyid
+                panelform.base_fields['study'].choices = studylist
+                panelform.base_fields['study'].initial = studyid
+
+                # populate location dropdown
+                locations = LocationsQuick.objects.filter(eventid=eventid).order_by('locationname')
+                if studyid > 0 :
+                    locations = locations.filter(studyid=studyid)
+
+                if studytype is not '':
+                    locations = locations.filter(studytypecode=studytype)
+
+                if len(locations) > 0:
+                    locationlist = [('0','All locations')]
+                    for location in locations:
+                        locationlist.append((unicode(location.id), location.locationname))
+                else:
+                    locationlist = [('0','NO LOCATIONS')]
+
+                panelform.base_fields['location'].choices = locationlist
+                #panelform.base_fields['location'].initial = locationid
 
                 # filter settings for the link on the dropdown
                 self.page_context['filterstring'] = '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
 
-                self.page_context['eventquicklinksform'] = eventquicklinksform(prefix="eventquicklinksform", label_suffix='')
+                self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
 
             return render(request, template_name, self.page_context)

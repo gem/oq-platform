@@ -2,8 +2,11 @@ __author__ = 'Simon Ruffle, CAR'
 
 from django.db import models
 
-# Study models
+# Study level models
 from econd.study_models import *
+
+# Event level models
+from econd.event_models import *
 
 # GeoArchive and Photo related
 from econd.photo_models import *
@@ -14,9 +17,14 @@ from econd.static_lookup_models import *
 # SQL Views
 from econd.sql_views import *
 
+# Sub events
+from econd.subevent_models import *
+
 #####################
 # core data structure
 #####################
+
+
 
 class Unifiedcasualtylevel(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -79,7 +87,7 @@ class Location(models.Model):
     parentid = models.IntegerField(verbose_name='Parent study or subevent', help_text='The  primary study or subevent which owns this location. Set on creation, this must not be changed.')
     parenttype = models.CharField(max_length=25, blank=True, verbose_name='Parent study or subevent type', help_text='The type of primary study or subevent which owns this location. Set on creation, this must not be changed.')
     address = models.CharField(max_length=255, blank=True, verbose_name='Address or location', help_text='')
-    boundaryid = models.IntegerField(verbose_name='User defined boundary or administrative area name', help_text='User defined boundary or administrative area name')
+    boundaryid = models.IntegerField(verbose_name='User defined boundary or administrative area id', help_text='User defined boundary or administrative area id')
     location = models.CharField(max_length=50, blank=True, verbose_name='Geometry (long/lat)', help_text='The location or boundary in WKT GIS format eg POINT (long lat).')
     boundary_c = models.TextField(blank=True, verbose_name='Location precision notes', help_text='A comment on the precision of the location or boundary')
     originalsurveyreference = models.CharField(max_length=50, blank=True, verbose_name='Original survey reference', help_text='')
@@ -103,15 +111,15 @@ class Location(models.Model):
         return  self.name
 
 # test code for Taxonomy lookups
-class LookupMaterialType(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)   # lookup to a VIEW
-    name = models.CharField(max_length=255, blank=True)
-
-    class Meta:
-        db_table = u'econd\".\"lookupmaterialtype'
-
-    def __unicode__(self):
-        return  self.name
+# class LookupMaterialType(models.Model):
+#     id = models.CharField(max_length=10, primary_key=True)   # lookup to a VIEW
+#     name = models.CharField(max_length=255, blank=True)
+#
+#     class Meta:
+#         db_table = u'econd\".\"lookupmaterialtype'
+#
+#     def __unicode__(self):
+#         return  self.name
 
 
 class Inventoryclass(models.Model):
@@ -170,7 +178,7 @@ class Surveyvalue(models.Model):
     assetclasscode = models.ForeignKey(Lookupassetclass, db_column='assetclasscode')
     assettypecode = models.ForeignKey(Lookupassettype, db_column='assettypecode')
     assetsubtypecode = models.ForeignKey(Lookupassetsubtype, db_column='assetsubtypecode')
-    typeofdamagecode = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode', related_name="%(app_label)s_%(class)s_related",)
+    typeofdamagecode = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode', related_name='+',)
     value = models.FloatField(null=True, blank=True)
     value_q = models.CharField(max_length=10)
     ownerid = models.IntegerField()
@@ -179,7 +187,7 @@ class Surveyvalue(models.Model):
     assetconstructioncode = models.ForeignKey(Lookupassetconstruction, db_column='assetconstructioncode')
     parentdamagesurveymatrixid = models.IntegerField()
     parentcasualtysurveymatrixid = models.IntegerField()
-    typeofdamagecode2 = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode2', related_name="%(app_label)s_%(class)s_related2",)
+    typeofdamagecode2 = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode2', related_name='+',)
     originalsurveyreference = models.CharField(max_length=50, blank=True)
 
     class Meta:
@@ -188,4 +196,22 @@ class Surveyvalue(models.Model):
     def __unicode__(self):
         return  self.name
 
+
+class Uploadedfile(models.Model):
+      id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
+      name = models.CharField(max_length=255, null=True, blank=True, default='unknown', verbose_name='File title', help_text='An optional descriptive title for the file', )
+      fileuri = models.CharField(max_length=255, null=True, blank=True, default='', verbose_name='File URI', help_text='The location of the file in the filesystem', )
+      filetype = models.CharField(max_length=50, null=True, blank=True, default='', verbose_name='File type', help_text='Type of the file', )
+      status = models.CharField(max_length=255, null=True, blank=True, verbose_name='Status', help_text='The status of the file. Any error message about the file will be placed here', )
+      filesize = models.IntegerField(null=True, blank=True, default='0', verbose_name='Size', help_text='Size of the file', )
+      ownerid = models.IntegerField(null=False, default='1', verbose_name='Owner ID', help_text='ID of the creator/owner of the record', )
+      lastupdatebyid = models.IntegerField(null=False, default='1', verbose_name='Last update by ID', help_text='ID of the last person to update this record', )
+      lastupdate = models.DateTimeField(null=True, blank=True, help_text='Last record update date', )
+
+      class Meta:
+            db_table = u'econd\".\"uploadedfile'
+            managed = False
+
+      def __unicode__(self):
+            return self.name
 

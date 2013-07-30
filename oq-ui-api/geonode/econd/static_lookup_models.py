@@ -16,6 +16,66 @@ class Lookupassetclass(models.Model):
     def __unicode__(self):
         return  self.name
 
+class Lookupmagnitudeunit(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupmagnitudeunit'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupqualitymetric(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupqualtymetric'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupregion(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupregion'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupstatus(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupstatus'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupstudytype(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupstudytype'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupunit(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupunit'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
 class Lookupassettype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -99,13 +159,66 @@ class Lookupyesno(models.Model):
     def __unicode__(self):
         return  self.name
 
+# photo related lookup tables
+
+class Lookupyesnonull(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupyesnonull'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupsubjectmastercode(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupsubjectmastercode'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupsubjectsubcode(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    parentid = models.ForeignKey(Lookupsubjectmastercode, db_column='parentid')
+    class Meta:
+        db_table = u'econd\".\"lookupsubjectsubcode'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookuptypeofstructurecode(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookuptypeofstructurecode'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+class Lookupcityscalecode(models.Model):
+    id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    weight = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = u'econd\".\"lookupcityscalecode'
+        ordering = ['weight']
+    def __unicode__(self):
+        return  self.name
+
+# this table ultimately to be removed as it has been superceded
 class Lookupdetailcode(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
     weight = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = u'econd\".\"lookupdetailcode'
-        ordering = ['weight']
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
@@ -151,6 +264,7 @@ class Lookupphotographerprofessioncode(models.Model):
     def __unicode__(self):
         return  self.name
 
+# end of photo related lookup tables
 
 class Lookupmaterialtype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)

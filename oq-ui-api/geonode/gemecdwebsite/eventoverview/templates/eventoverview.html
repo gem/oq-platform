@@ -21,15 +21,26 @@
             </div>
 
             <div id="filterbarright">
-                <form method="post">{% csrf_token %}
-                    {{ eventquicklinksform.as_p }}
-                    <!--<input type="submit" value=" &raquo; " class="gobutton" title="Quick link to details of event"/>-->
-                </form>
+                <a href="/ecd/eventsmap">Back to world map</a>
             </div>
         </div>
         <!--end filter bar -->
     </div>
 {% endblock filterbar %}
+
+{% block leftpanel %}
+        <div id="ecd-leftpanel">
+            <div id="panelcontainer">
+                <div id="backlink">{{ page_backlink|safe }}</div>
+                <h1>{{ paneltitle }}</h1>
+                    <form method="post">{% csrf_token %}
+                    {{ panelform.as_p }}
+                    <!--<input type="submit" value=" &raquo; " class="gobutton" title="Quick link to details of event"/>-->
+                </form>
+            </div>
+        </div>
+
+{% endblock leftpanel %}
 
 {% block gemecd_map %}
     <script type="text/javascript">

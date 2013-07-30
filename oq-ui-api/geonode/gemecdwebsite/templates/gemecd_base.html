@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% load i18n %}
 
-{% block title %} {% trans page_title %} - {{ block.super }} {% endblock title %}
+{% block title %} {% trans page_title %} {% endblock title %}
 {% block indexclass %} class="here" {% endblock indexclass %}
 
 {% block head %}
@@ -112,7 +112,11 @@
 
     {% endblock filterbar %}
 
-    <div id="map" style="width: 100%;">
+    {% block leftpanel %}
+
+    {% endblock leftpanel %}
+
+    <div id="map" style="width: 80%;">
 
     </div>
 
@@ -140,7 +144,7 @@
         //resize the main and map div
         $(document).ready(function() {
             var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 10;
+            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25;
             $('#main').css("height",main_height + "px");
             $('#map').css("height",map_height + "px");
             map.invalidateSize(false);
@@ -149,7 +153,7 @@
         $(document).ready(function() {
             $(window).resize(function(){
                 var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-                var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height()- $("#ecd-filterbar").height() - 10;
+                var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height()- $("#ecd-filterbar").height() - 25;
                 $('#main').css("height",main_height + "px");
                 $('#map').css("height",map_height + "px");
                 map.invalidateSize(false);
