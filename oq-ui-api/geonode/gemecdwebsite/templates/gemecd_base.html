@@ -163,7 +163,14 @@
         jQuery(document).ready(function($){
 
             // first fit the bounds to the locations (must be done in the document ready function)
-            var bounds = L.geoJson(geojsonFeaturePoints).getBounds();
+            //var bounds = L.geoJson(geojsonFeaturePoints).getBounds();
+            //if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
+            //{
+            //    map.fitBounds(bounds);
+            //}
+
+            // first fit the bounds to the union of all the layers that are visible (must be done in the document ready function)
+            var bounds = boundsGroup.getBounds();
             if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
             {
                 map.fitBounds(bounds);
@@ -388,7 +395,7 @@
 <script type="text/javascript">
         var overlays = {
             "Points layer" : pointsLayer,
-            "Polygons layer" : polygonsLayer,
+            //"Polygons layer" : polygonsLayer,
             "Sample shakemap": shakemap,
             "GRUMP Urban" : grump_urban,
             "GRUMP Rural" : grump_rural,
@@ -411,13 +418,22 @@
              {% endif %}
         };
 
+
+
         // create the map
         var map = L.map('map', {
             center: [20, 20],
             zoom: 2,
             maxZoom: 18,
-            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, pointsLayer, polygonsLayer]
+            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, pointsLayer]
         });
+
+        // add polygon layers
+        for (var i=0; i<polyCount;i++ )
+        {
+            overlays["Polygon Layer " + i] = polygonsLayerList[i];
+            map.addLayer(polygonsLayerList[i]);
+        }
 
         L.control.layers(baselayer, overlays).addTo(map);
 

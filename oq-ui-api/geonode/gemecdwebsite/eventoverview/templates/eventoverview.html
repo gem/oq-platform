@@ -67,8 +67,9 @@
             popupAnchor:  [0, -20] // point from which the popup should open relative to the iconAnchor
         });
 
+        var boundsGroup = new L.FeatureGroup();
+
         var geojsonFeaturePoints = {{ geojsonpoints|safe }}
-        var geojsonFeaturePolygons = {{ geojsonpolygons|safe }}
 
                 pointsLayer = L.geoJson(geojsonFeaturePoints,
                         {
@@ -129,8 +130,11 @@
                                                             html =        '' + json.eventtitle + '<br />' +
                                                                     '<i>' + json.study + '</i><br />' +
                                                                     imagehtml  +
-                                                                    '<span id="locationame">' + json.locationname + '</span><br />' +
-                                                                    '<b>Inventory class: </b>' + json.inventoryclass + ' (' + json.inventorydescription + ')'+ '<br />' +
+                                                                    '<span id="locationame">' + json.locationname + '</span><br />' ;
+
+                                                            if (json.inventoryclass != '[aggregated]')
+                                                            {
+                                                                    html += '<b>Inventory class: </b>' + json.inventoryclass + ' (' + json.inventorydescription + ')'+ '<br />' +
                                                                     '<b>Damage level: </b>' + json.damagelevel + '<br />' +
                                                                     '<b>Asset class: </b>' + json.assetclass + '<br />' +
                                                                     '<b>Asset type: </b>' + json.assettype + '<br />' +
@@ -138,12 +142,18 @@
                                                                     '<b>Design code: </b>' + json.designcode + '<br />' ; // +
                                                                     //<a href="eventoverview?{{ tabsquerystring }}&tab=photos&locationid=' + json.locationid + '">see all ' + json.photocount + ' photo(s) &raquo;</a>' +
                                                                     //'<a href="/location/' + json.locationid + '">location details &raquo;</a>';
+                                                            }
+                                                            else
+                                                            {
+                                                                html += 'Aggregated survey<br />';
+                                                            }
+
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
                                                             e.target._layers[json.markerid].bindPopup(html).openPopup();
-                                                            jQuery("#id_locationid").val(json.locationid);
-                                                            jQuery("#currentlocationname").text(json.locationname);
+                                                            //jQuery("#id_locationid").val(json.locationid);
+                                                            //jQuery("#currentlocationname").text(json.locationname);
                                                         }
                                                 );
                                             }
@@ -152,34 +162,28 @@
                             }
                         }
                 );
+                if ((pointsLayer._layers[1] != null) ) // only way I can find of detecting a leaflet layer that is empty
+                {
+                    boundsGroup.addLayer(pointsLayer);
+                }
+
+                //var polygonsLayer = new L.geoJson('',{}) // create null geoJson polygon layer in case there are none to be displayed
+                var polyCount = 0;
+                //var polygonsGroup = new L.FeatureGroup();
+                //var boundsGroup = new L.FeatureGroup([pointsLayer]);
+                var polygonsLayerList = [];
+
+        {% for geojsonpolygons in geojsonpolygonslist %}
+
+                var geojsonFeaturePolygons = {{ geojsonpolygons|safe }}
 
                 polygonsLayer = L.geoJson(geojsonFeaturePolygons,
                         {
-                            pointToLayer: function (feature, latlng)
-                            {
-                                {% if maptype == 'location' %}
-                                    var mkr =  L.marker(latlng, {icon:customIcon, title:feature.properties.s + ": " + feature.properties.n });
-                                {% endif %}
-
-                                mkr.featureID = feature.properties.i;
-                                return mkr;
-                            },
+                            // note - polygon popups are done in a different way to points
                             onEachFeature:function (feature, layer)
                             {
-                                {% if maptype == 'event' %}
-                                    year = parseInt(feature.properties.y);
-                                    if (year < 1900)
-                                    {
-                                        year = year + 100;
-                                    }
-                                    html = '<span id="eventdate">' + year + '</span><span id="eventname">' + feature.properties.n + '</span><span id="eventcountry">' + feature.properties.c + '</span>';
-                                    html = html + '<span id="photocount">' + feature.properties.s + ' study(s)</span>'
-                                    html = html + '<a href=eventoverview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '>Locations on map &raquo;</a>';
-                                    //html = html + '<a href=/overview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '&tab=photos>Photos &raquo;</a>';
-                                    html = '<div id="eventpopupcontainer">\n' + html + '</div>\n'
-                                    layer.bindPopup( html );
-                                {% endif %}
                                 {% if maptype == 'location' %}
+
                                     layer.on("click", function(e)
                                             {
                                                 var csrftoken = getCookie('csrftoken');
@@ -192,7 +196,7 @@
 
                                                 var post = jQuery.post
                                                 (
-                                                        "eventoverview/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID,
+                                                        "eventoverview/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + feature.properties.i + "&polygon=1",
                                                         function(json)
                                                         {   // callback
                                                             imagehtml = ''
@@ -204,8 +208,11 @@
                                                             html =        '' + json.eventtitle + '<br />' +
                                                                     '<i>' + json.study + '</i><br />' +
                                                                     imagehtml  +
-                                                                    '<span id="locationame">' + json.locationname + '</span><br />' +
-                                                                    '<b>Inventory class: </b>' + json.inventoryclass + ' (' + json.inventorydescription + ')'+ '<br />' +
+                                                                    '<span id="locationame">' + json.locationname + '</span><br />' ;
+
+                                                            if (json.inventoryclass != '[aggregated]')
+                                                            {
+                                                                    html += '<b>Inventory class: </b>' + json.inventoryclass + ' (' + json.inventorydescription + ')'+ '<br />' +
                                                                     '<b>Damage level: </b>' + json.damagelevel + '<br />' +
                                                                     '<b>Asset class: </b>' + json.assetclass + '<br />' +
                                                                     '<b>Asset type: </b>' + json.assettype + '<br />' +
@@ -213,20 +220,38 @@
                                                                     '<b>Design code: </b>' + json.designcode + '<br />' ; // +
                                                                     //<a href="eventoverview?{{ tabsquerystring }}&tab=photos&locationid=' + json.locationid + '">see all ' + json.photocount + ' photo(s) &raquo;</a>' +
                                                                     //'<a href="/location/' + json.locationid + '">location details &raquo;</a>';
+                                                            }
+                                                            else
+                                                            {
+                                                                html += 'Aggregated survey</br>';
+                                                            }
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
-                                                            e.target._layers[json.markerid].bindPopup(html).openPopup();
-                                                            jQuery("#id_locationid").val(json.locationid);
-                                                            jQuery("#currentlocationname").text(json.locationname);
+                                                            //e.target._layers[json.markerid].bindPopup(html);
+                                                            var bounds = e.target._layers[json.markerid].getBounds();
+                                                            pop = new L.Popup();
+                                                            pop.setLatLng(bounds.getCenter());
+                                                            pop.setContent(html);
+                                                            map.openPopup(pop);
+                                                            //jQuery("#id_locationid").val(json.locationid);
+                                                            //jQuery("#currentlocationname").text(json.locationname);
                                                         }
                                                 );
-                                            }
+                                            },feature // this is how you pass the feature into the click event
                                     );
                                 {% endif %}
                             }
                         }
                 );
+                //polygonsGroup.addLayer(polygonsLayer);
+                polygonsLayerList.push(polygonsLayer);
+                boundsGroup.addLayer(polygonsLayer);
+                polyCount++;
+        {% endfor %}
+
+        // set up the bounds group which defines how the map is fitted
+        //var boundsGroup = new L.FeatureGroup([pointsLayer,polygonsLayer]);
 
         //end of GEM ECD mapping
     </script>

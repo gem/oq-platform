@@ -69,6 +69,8 @@
         var geojsonFeaturePoints = {{ geojson|safe }}
 
         var polygonsLayer = new L.geoJson('',{}) // create null geoJson polygon layer
+        var polygonLayersList = [];  // need this variable even if there are no polygon layers
+        var polyCount = 0;
 
         var pointsLayer = L.geoJson(geojsonFeaturePoints,
                         {
@@ -105,6 +107,8 @@
                             }
                         }
                 );
+        // set up the bounds group which defines how the map is fitted
+        var boundsGroup = new L.FeatureGroup([pointsLayer]);
 
         //end of GEM ECD mapping
     </script>

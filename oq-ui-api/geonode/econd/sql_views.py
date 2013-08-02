@@ -46,6 +46,23 @@ class LocationsForJSON ( models.Model ):
     def __unicode__(self):
         return self.locationname
 
+class LocationsForJSONAggregated ( models.Model ):
+    id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
+    locationname = models.CharField(max_length=255)
+    photocount= models.IntegerField()
+    samplephotoid = models.ForeignKey( 'WebLibPhoto', db_column='samplephotoid',null=True, blank=True)  # returns the photo with the lowest id number to use as a sample iconic image
+    event = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    yearint = models.IntegerField()
+    study = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = u'econd\".\"gemecdlocationsforjsonaggregated'     #note this is a VIEW
+        managed = False
+
+    def __unicode__(self):
+        return self.locationname
+
 class Locations ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255)

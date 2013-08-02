@@ -11,7 +11,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
-from econd.models import EventsQuick, LocationsForJSON, Study
+from econd.models import EventsQuick, LocationsForJSON, LocationsForJSONAggregated,Study
 from econd.event_models import Event
 from econd.sql_views import LocationsQuick
 from weblib.utils import JSONResponse
@@ -52,12 +52,21 @@ def locationjson (request, *args, **kwargs):
     except:
         locationid = 0
 
+    isPolygon = False
+    try:
+        isPolygon = (request.REQUEST['polygon'] == '1')
+    except:
+        pass
+
     json = []
 
+    # first try and find the location in the building-by-building non-aggregated view
+    # this view will only find locations where isaggregated = 0
     location = LocationsForJSON.objects.filter(id=locationid)
 
     if ( len(location) ) > 0:
-        locationrecord = location[0]; # for CRI and PHOTO studies there is only one record in the queryset; for aggregated studies there may be more than one, so take the first
+        # it is not aggregated
+        locationrecord = location[0]; # in properly  aggregated studies there is only one record in the queryset; however if its actually aggregated and the isaggregated flag is set wrong, multiple records will be returned and we take the first
 
         if getattr(locationrecord,'samplephotoid') is not None:
             photourl = getattr(locationrecord,'samplephotoid').get_url('overview_grid')  # get url of cached photo thumbnail (this is the first photo with lowest id if there are multiple photos)
@@ -75,8 +84,8 @@ def locationjson (request, *args, **kwargs):
         eventtitle =  getattr(locationrecord,'event') + ' ' + getattr(locationrecord,'country') + ' ' + unicode(getattr(locationrecord,'yearint'))
         studyname = getattr(locationrecord,'study')
 
-        # the following attributes only make sense at location level if this is a non aggregate study
-        if ( len(location) ) == 1:
+        # just in case we are looking at a mis labelled aggregate study
+        if ( len(location) ) == 1: # it is definitely not aggregated
             inventoryclass = getattr(locationrecord,'inventoryclassname')
             inventorydescription = getattr(locationrecord,'description')
             damagelevel = getattr(locationrecord,'unifieddamagelevelname')
@@ -84,8 +93,8 @@ def locationjson (request, *args, **kwargs):
             assettype = getattr(locationrecord,'assettype')
             assetsubtype = getattr(locationrecord,'assetsubtype')
             designcode = getattr(locationrecord,'designcode')
-        else:
-            inventoryclass = ''
+        else: # is actually aggregated
+            inventoryclass = '[aggregated]'
             inventorydescription = ''
             damagelevel = ''
             assetclass = ''
@@ -111,12 +120,54 @@ def locationjson (request, *args, **kwargs):
             'designcode' : designcode,
         }
     else:
-        json =\
-        {
-            'markerid': markerid,
-            'locationid': locationid,
-            'locationname': 'error in json request',
-        }
+        # location probably is aggregated. This view returns one record for aggregated survey locations
+        location = LocationsForJSONAggregated.objects.filter(id=locationid)
+
+        if ( len(location) ) > 0:
+            # it is aggregated
+            locationrecord = location[0];
+
+            if getattr(locationrecord,'samplephotoid') is not None:
+                photourl = getattr(locationrecord,'samplephotoid').get_url('overview_grid')  # get url of cached photo thumbnail (this is the first photo with lowest id if there are multiple photos)
+
+                # fudge to allow image to be got directly from geoarchive
+                if platform.system() == 'Windows':
+                    photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
+                else:
+                    photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
+            else:
+                photourl = ''
+
+            locationname = getattr(locationrecord,'locationname')
+            photocount = getattr(locationrecord,'photocount')
+            eventtitle =  getattr(locationrecord,'event') + ' ' + getattr(locationrecord,'country') + ' ' + unicode(getattr(locationrecord,'yearint'))
+            studyname = getattr(locationrecord,'study')
+
+            json =\
+            {
+                'markerid': markerid,
+                'locationid' : locationid,
+                'photourl' : photourl,
+                'locationname' : locationname,
+                'photocount' : photocount,
+                'eventtitle' : eventtitle,
+                'study' : studyname,
+                'inventoryclass' : '[aggregated]',
+                'inventorydescription' : '',
+                'damagelevel' : '',
+                'assetclass' : '',
+                'assettype' : '',
+                'assetsubtype' : '',
+                'designcode' : '',
+            }
+
+        else:
+            json =\
+            {
+                'markerid': markerid,
+                'locationid': locationid,
+                'locationname': 'error in json request',
+            }
 
     return JSONResponse(json)
 
@@ -292,9 +343,31 @@ class EventOverview (Pagebase):
         if not filter_all:
             urlStrPoints += 'override_c:0;studytypecode:' + studytype + ';'
 
-        # Prepare GeoServer request for polygon-based locations
-        urlStrPolygons = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json'
-        urlStrPolygons += '&viewparams=parenttype:study;parentid:193;jointable:geobase_laquila;joincolumn:id;boundarygeom:the_geom;override:0;'
+        # polygon layers
+        urlStrPolygonsList = []
+        if studyid > 0:
+            # just one study is selected
+            studies = Study.objects.filter(pk=studyid)
+        else:
+            # multiple studies
+            studies = Study.objects.filter(parentid=eventid)
+            if not filter_all:
+                studies = studies.filter(studytypecode=studytype)
+
+        # iterate through studies
+        for study in studies:
+            try:
+                geobase = study.geobaseid # will give an exception if this study does not have a geobese
+
+                # we have a geobase, so
+                # Prepare GeoServer request for polygon-based locations
+                urlStrPolygons = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json'
+                urlStrPolygons += '&viewparams=parenttype:study;parentid:' + unicode(study.id) + ';jointable:' + geobase.tablename + ';joincolumn:' + geobase.idcolumnname + ';boundarygeom:' + geobase.geomcolumnname + ';override:0;'
+
+                urlStrPolygonsList.append(urlStrPolygons)
+            except:
+                pass
+
 
         # fudge for dealing with different locations of the "src" static directory on the development system
         self.page_context['src_folder'] = '/oq-platform2/'
@@ -363,21 +436,32 @@ class EventOverview (Pagebase):
             else:
                 # display mode
 
-                # get the map overlay points GeoJSON from Geoserver
-                GeoJsonStrPoints = urllib2.urlopen(urlStrPoints).read()
+                # points
 
-                 # get the map overlay points GeoJSON from Geoserver
-                GeoJsonStrPolygons = urllib2.urlopen(urlStrPolygons).read()
+                # get the map overlay points GeoJSON from Geoserver
+                geoJsonStrPoints = urllib2.urlopen(urlStrPoints).read()
 
                 # trap errors coming back from Geoserver and dont send them on to the webpage
-                if 'ServiceExceptionReport' in GeoJsonStrPoints:
+                if 'ServiceExceptionReport' in geoJsonStrPoints:
                     GeoJsonStrPoints = ''
 
-                if 'ServiceExceptionReport' in GeoJsonStrPolygons:
-                    GeoJsonStrPolygons = ''
+                self.page_context['geojsonpoints'] = geoJsonStrPoints
 
-                self.page_context['geojsonpoints'] = GeoJsonStrPoints
-                self.page_context['geojsonpolygons'] = GeoJsonStrPolygons
+                # polygons
+
+                geoJsonStrPolygonsList = []
+
+                 # get the map overlay polygons GeoJSON from Geoserver - we may have multiple polygon layers
+                for urlStrPolygons in urlStrPolygonsList:
+                    geoJsonStrPolygons = urllib2.urlopen(urlStrPolygons).read()
+
+                    if 'ServiceExceptionReport' in geoJsonStrPolygons:
+                        geoJsonStrPolygons = ''
+                    else:
+                        geoJsonStrPolygonsList.append(geoJsonStrPolygons)
+
+
+                self.page_context['geojsonpolygonslist'] = geoJsonStrPolygonsList
                 self.page_context['maptype'] = 'location'
 
                 # filter bar form - the filter icons
