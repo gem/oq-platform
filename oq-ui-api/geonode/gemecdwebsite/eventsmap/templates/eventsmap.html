@@ -98,7 +98,7 @@
                                     }
                                     html = '<span id="eventdate">' + year + '</span><span id="eventname">' + feature.properties.n + '</span><span id="eventcountry">' + feature.properties.c + '</span>';
                                     html = html + '<span id="photocount">' + feature.properties.s + ' study(s)</span>'
-                                    html = html + '<a href=/ecd/eventoverview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '{{ filterstring }}>Locations on map &raquo;</a>';
+                                    html = html + '<a href=/ecd/eventoverview/' + feature.properties.i + '?{{ eventquerystring }}&zoomtoextent=True{{ filterstring }}>Locations on map &raquo;</a>';
                                     //html = html + '<a href=/overview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '&tab=photos>Photos &raquo;</a>';
                                     html = '<div id="eventpopupcontainer">\n' + html + '</div>\n'
                                     layer.bindPopup( html );

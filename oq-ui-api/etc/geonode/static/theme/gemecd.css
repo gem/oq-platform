@@ -220,6 +220,33 @@ div#ecd-leftpanel div#backlink a
 
 /* end of left panel beside the map */
 
+/* left panel on the locations page */
+div#ecd-leftpanelwide
+{
+    width:80%;
+    float:left;
+}
+
+div#panelcontainerwide
+{
+    margin-left:5px;
+}
+
+div#panelcontainerwide h1
+{
+    font-size:20px;
+    margin-top:5px;
+}
+div#panelcontainerwide h3
+{
+    font-size:14px;
+    margin-bottom:0;
+    margin-top:5px;
+}
+
+
+/* end of left panel on the locations page */
+
 /* The map */
 div#map
 {

@@ -118,7 +118,7 @@
 
                                                 var post = jQuery.post
                                                 (
-                                                        "eventoverview/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID,
+                                                        "/ecd/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID,
                                                         function(json)
                                                         {   // callback
                                                             imagehtml = ''
@@ -139,15 +139,16 @@
                                                                     '<b>Asset class: </b>' + json.assetclass + '<br />' +
                                                                     '<b>Asset type: </b>' + json.assettype + '<br />' +
                                                                     '<b>Asset subtype: </b>' + json.assetsubtype + '<br />' +
-                                                                    '<b>Design code: </b>' + json.designcode + '<br />' ; // +
+                                                                    '<b>Design code: </b>' + json.designcode + '<br />' ;
                                                                     //<a href="eventoverview?{{ tabsquerystring }}&tab=photos&locationid=' + json.locationid + '">see all ' + json.photocount + ' photo(s) &raquo;</a>' +
-                                                                    //'<a href="/location/' + json.locationid + '">location details &raquo;</a>';
+
                                                             }
                                                             else
                                                             {
                                                                 html += 'Aggregated survey<br />';
                                                             }
 
+                                                            html += '<a href="/ecd/location/' + json.locationid + '">location details &raquo;</a>';
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
@@ -196,7 +197,7 @@
 
                                                 var post = jQuery.post
                                                 (
-                                                        "eventoverview/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + feature.properties.i + "&polygon=1",
+                                                        "/ecd/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + feature.properties.i + "&polygon=1",
                                                         function(json)
                                                         {   // callback
                                                             imagehtml = ''
@@ -217,14 +218,16 @@
                                                                     '<b>Asset class: </b>' + json.assetclass + '<br />' +
                                                                     '<b>Asset type: </b>' + json.assettype + '<br />' +
                                                                     '<b>Asset subtype: </b>' + json.assetsubtype + '<br />' +
-                                                                    '<b>Design code: </b>' + json.designcode + '<br />' ; // +
+                                                                    '<b>Design code: </b>' + json.designcode + '<br />' ;
                                                                     //<a href="eventoverview?{{ tabsquerystring }}&tab=photos&locationid=' + json.locationid + '">see all ' + json.photocount + ' photo(s) &raquo;</a>' +
-                                                                    //'<a href="/location/' + json.locationid + '">location details &raquo;</a>';
+
                                                             }
                                                             else
                                                             {
                                                                 html += 'Aggregated survey</br>';
                                                             }
+
+                                                            html += '<a href="/ecd/location/' + json.locationid + '">location details &raquo;</a>';
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 

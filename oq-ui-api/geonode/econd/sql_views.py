@@ -72,13 +72,10 @@ class Locations ( models.Model ):
     yearint = models.IntegerField()
     study = models.CharField(max_length=255)
     studyid = models.IntegerField()
+    studytypecode = models.CharField(max_length=10)
     locationaggregateflag = models.IntegerField()
-    inventoryclassname = models.CharField(max_length=255)
-    inventoryclassid = models.IntegerField()
-    unifieddamagelevelname = models.CharField(max_length=255)
-    unifieddamagelevelid = models.IntegerField()
-    assetclass = models.CharField(max_length=255)
-    assetclassid = models.CharField(max_length=10)
+    numberofsurveyvalues = models.IntegerField()
+    photocount = models.IntegerField()
 
     class Meta:
         db_table = u'econd\".\"gemecdlocations'     #note this is a VIEW

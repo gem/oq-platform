@@ -243,7 +243,7 @@ class EventsMap (Pagebase):
                 pagename = '/ecd/eventsmap'
                 if unicode(eventid) != '0':
                     pagename = '/ecd/eventoverview' # locations page
-                return HttpResponseRedirect(pagename + '?eventid=' + str(eventid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
+                return HttpResponseRedirect(pagename + '/' + str(eventid) + '?&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
                                             '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all) ) # Redirect after POST
 
 

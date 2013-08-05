@@ -4,19 +4,17 @@ import platform
 from weblib.baseclasses.pagebase import Pagebase
 import urllib2
 from django import forms
-from django.forms.widgets import CheckboxSelectMultiple
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
-from econd.models import EventsQuick, LocationsForJSON, LocationsForJSONAggregated,Study
+from econd.models import EventsQuick, LocationsForJSON, LocationsForJSONAggregated,Study, Location, Locations
 from econd.event_models import Event
 from econd.sql_views import LocationsQuick
-from weblib.utils import JSONResponse
 
-template_name = 'eventoverview/templates/eventoverview.html'
+template_name = 'location/templates/location.html'
 appname = 'weblib'
 modelname = 'Page'
 editfields = {'include': ('name', 'subtitle', 'introtext', 'image1', 'maintext', ), 'exclude': None}
@@ -29,150 +27,13 @@ class PageFormEdit (ModelForm):
         fields = editfields['include']
         exclude = editfields['exclude']
 
-
 class PageFormDisplay (ModelForm):
     class Meta:
         model = get_model(appname, modelname)
         fields = displayfields['include']
         exclude = displayfields['exclude']
 
-# location AJAX POST callback
-def locationjson (request, *args, **kwargs):
-    markerid = ''
-    try:
-        markerid = request.REQUEST['markerid']
-        markerid = int(markerid)
-    except:
-        markerid = 0
-
-    locationid = ''
-    try:
-        locationid = request.REQUEST['locationid']
-        locationid = int(locationid)
-    except:
-        locationid = 0
-
-    isPolygon = False
-    try:
-        isPolygon = (request.REQUEST['polygon'] == '1')
-    except:
-        pass
-
-    json = []
-
-    # first try and find the location in the building-by-building non-aggregated view
-    # this view will only find locations where isaggregated = 0
-    location = LocationsForJSON.objects.filter(id=locationid)
-
-    if ( len(location) ) > 0:
-        # it is not aggregated
-        locationrecord = location[0]; # in properly  aggregated studies there is only one record in the queryset; however if its actually aggregated and the isaggregated flag is set wrong, multiple records will be returned and we take the first
-
-        if getattr(locationrecord,'samplephotoid') is not None:
-            photourl = getattr(locationrecord,'samplephotoid').get_url('overview_grid')  # get url of cached photo thumbnail (this is the first photo with lowest id if there are multiple photos)
-
-            # fudge to allow image to be got directly from geoarchive
-            if platform.system() == 'Windows':
-                photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
-            else:
-                photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
-        else:
-            photourl = ''
-
-        locationname = getattr(locationrecord,'locationname')
-        photocount = getattr(locationrecord,'photocount')
-        eventtitle =  getattr(locationrecord,'event') + ' ' + getattr(locationrecord,'country') + ' ' + unicode(getattr(locationrecord,'yearint'))
-        studyname = getattr(locationrecord,'study')
-
-        # just in case we are looking at a mis labelled aggregate study
-        if ( len(location) ) == 1: # it is definitely not aggregated
-            inventoryclass = getattr(locationrecord,'inventoryclassname')
-            inventorydescription = getattr(locationrecord,'description')
-            damagelevel = getattr(locationrecord,'unifieddamagelevelname')
-            assetclass = getattr(locationrecord,'assetclass')
-            assettype = getattr(locationrecord,'assettype')
-            assetsubtype = getattr(locationrecord,'assetsubtype')
-            designcode = getattr(locationrecord,'designcode')
-        else: # is actually aggregated
-            inventoryclass = '[aggregated]'
-            inventorydescription = ''
-            damagelevel = ''
-            assetclass = ''
-            assettype = ''
-            assetsubtype = ''
-            designcode = ''
-
-        json =\
-        {
-            'markerid': markerid,
-            'locationid' : locationid,
-            'photourl' : photourl,
-            'locationname' : locationname,
-            'photocount' : photocount,
-            'eventtitle' : eventtitle,
-            'study' : studyname,
-            'inventoryclass' : inventoryclass,
-            'inventorydescription' : inventorydescription,
-            'damagelevel' : damagelevel,
-            'assetclass' : assetclass,
-            'assettype' : assettype,
-            'assetsubtype' : assetsubtype,
-            'designcode' : designcode,
-        }
-    else:
-        # location probably is aggregated. This view returns one record for aggregated survey locations
-        location = LocationsForJSONAggregated.objects.filter(id=locationid)
-
-        if ( len(location) ) > 0:
-            # it is aggregated
-            locationrecord = location[0];
-
-            if getattr(locationrecord,'samplephotoid') is not None:
-                photourl = getattr(locationrecord,'samplephotoid').get_url('overview_grid')  # get url of cached photo thumbnail (this is the first photo with lowest id if there are multiple photos)
-
-                # fudge to allow image to be got directly from geoarchive
-                if platform.system() == 'Windows':
-                    photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
-                else:
-                    photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
-            else:
-                photourl = ''
-
-            locationname = getattr(locationrecord,'locationname')
-            photocount = getattr(locationrecord,'photocount')
-            eventtitle =  getattr(locationrecord,'event') + ' ' + getattr(locationrecord,'country') + ' ' + unicode(getattr(locationrecord,'yearint'))
-            studyname = getattr(locationrecord,'study')
-
-            json =\
-            {
-                'markerid': markerid,
-                'locationid' : locationid,
-                'photourl' : photourl,
-                'locationname' : locationname,
-                'photocount' : photocount,
-                'eventtitle' : eventtitle,
-                'study' : studyname,
-                'inventoryclass' : '[aggregated]',
-                'inventorydescription' : '',
-                'damagelevel' : '',
-                'assetclass' : '',
-                'assettype' : '',
-                'assetsubtype' : '',
-                'designcode' : '',
-            }
-
-        else:
-            json =\
-            {
-                'markerid': markerid,
-                'locationid': locationid,
-                'locationname': 'error in json request',
-            }
-
-    return JSONResponse(json)
-
-
-class EventOverview (Pagebase):
+class LocationPage (Pagebase):
 
     class FilterBarForm(forms.Form):
         all = forms.BooleanField(label='All', required=False)
@@ -195,26 +56,15 @@ class EventOverview (Pagebase):
         #infrastructure.widget.attrs['onchange'] = 'submit()'
         infrastructure.widget.attrs['class'] = 'iconbutton'
 
-        #photos = forms.BooleanField(label='Photos', required=False)
-        #photos.widget.attrs['title'] = "Photos"
-        ##photos.widget.attrs['onchange'] = 'submit()'
-        #photos.widget.attrs['class'] = 'iconbutton'
-
-        #socioeconomic = forms.BooleanField(label='Socioeconomic', required=False)
-        #socioeconomic.widget.attrs['title'] = "Socioeconomic"
-        ##socioeconomic.widget.attrs['onchange'] = 'submit()'
-        #socioeconomic.widget.attrs['class'] = 'iconbutton'
-
-
+    class LocationForm (ModelForm):
+        class Meta:
+            model = Location
+            exclude = ('id', 'parentid','parenttype','guid', 'location_q', 'ownerid', 'lastupdatebyid', 'lastupdate', )
 
     class PanelForm(forms.Form):
-        study = forms.ChoiceField(label='Study', required=False) #required=False allows field to be disabled
-        study.widget.attrs['title'] = "Filter by study"
-        study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
-        study.widget.attrs['class'] = 'studydropdown'
 
-        location = forms.ChoiceField(label='Location', required=False) #required=False allows field to be disabled
-        location.widget.attrs['title'] = "Go to location"
+        location = forms.ChoiceField(label='Quick link to Location', required=False) #required=False allows field to be disabled
+        location.widget.attrs['title'] = "Quick link to a location in this event"
         location.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         location.widget.attrs['class'] = 'locationdropdown'
 
@@ -223,6 +73,13 @@ class EventOverview (Pagebase):
         #event.widget.attrs['title'] = "Quick link to event details"
         #event.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         #event.widget.attrs['class'] = 'eventdropdown'
+
+        # if we were to want the study dropdown on this page
+        #study = forms.ChoiceField(label='Study', required=False) #required=False allows field to be disabled
+        #study.widget.attrs['title'] = "Filter by study"
+        #study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
+        #study.widget.attrs['class'] = 'studydropdown'
+
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -290,15 +147,6 @@ class EventOverview (Pagebase):
         except:
             filter_socioeconomic = False # defaults to false
 
-        # event id
-        eventid = kwargs.get('ix')
-        try:
-            if eventid is None or eventid == '':
-                eventid = 0
-            eventid = int(eventid) # check its a number
-        except:
-            eventid = 0 # in case of input error
-
         studytype = ''
 
         if filter_buildings:
@@ -310,27 +158,43 @@ class EventOverview (Pagebase):
         if filter_photos:
             studytype = 'PHOTO'
 
-        # study id default
-        studyid = request.GET.get('studyid')
+        # study id so we can return to the overview page with the right study selection
+        rememberstudyid = request.GET.get('studyid')
         try:
-            if studyid is None or studyid == '':
-                studyid = 0
-            studyid = int(studyid) # check it is a number
-
-            # need to check this study is available according to current filter settings and event choice
-            study_found = False
-            studies = Study.objects.filter(parentid=eventid)
-            if not filter_all:
-                studies = studies.filter(studytypecode=studytype)
-            for study in studies:
-                if study.id == studyid:
-                    study_found = True
-
-            if not study_found:
-                studyid = 0
-
+            if rememberstudyid is None or rememberstudyid == '':
+                rememberstudyid = 0
+            rememberstudyid = int(rememberstudyid) # check it is a number
         except:
-            studyid = 0 # in case of input error
+            rememberstudyid = 0 # in case of input error
+
+        # location id
+        locationid = kwargs.get('ix')
+        try:
+            if locationid is None or locationid == '':
+                locationid = 0
+            locationid = int(locationid) # check it is a number
+        except:
+            locationid = 0 # in case of input error
+
+        # get location record
+        try:
+            location_record = Location.objects.get(pk=locationid)
+        except:
+            return self.showErrorPage(request, 'Cannot find location with id ' + unicode(locationid), 'errorpage.html')
+
+        #get overview record for the location, so we can derive its parent event etc
+        overview_record = Locations.objects.get(id=locationid)
+
+        # get the study and event for this location
+        eventid = overview_record.eventid
+        studyid = overview_record.studyid
+        self.page_context['event_name'] = unicode(overview_record.yearint) + ' ' + overview_record.event + ' ' + overview_record.country
+        self.page_context['study_name'] = overview_record.study
+        self.page_context['location_name'] = overview_record.locationname
+        self.page_context['page_title'] = self.page_context['location_name']
+        self.page_context['page_backlink'] = '<a href="/ecd/eventoverview/' + str(eventid) + '?&studyid=' + str(rememberstudyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty)\
+                                             + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' \
+                                             + str(filter_socioeconomic) + '&all=' + str(filter_all) + '">&laquo; Back to Event Overview</a>'
 
         # Prepare GeoServer request for point-based locations.
         urlStrPoints = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
@@ -374,13 +238,7 @@ class EventOverview (Pagebase):
         if platform.system() == 'Windows':
             self.page_context['src_folder'] = '/static/'
 
-        try:
-            event = Event.objects.get(pk=eventid)
-            self.page_context['paneltitle'] = unicode(event.yearint) + ' ' + event.name + ' ' + event.country
-            self.page_context['page_title'] = self.page_context['paneltitle']
-            self.page_context['page_backlink'] = '<a href="/ecd/eventsmap">&laquo; Back to world map</a>'
-        except:
-            return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
+
 
         ###############
         # POST
@@ -390,20 +248,30 @@ class EventOverview (Pagebase):
             # As this page can contain different forms depending on its mode
             # we must check to see which forms we are processing
             # by testing for a field in the content management form
-            if 'mainpageform-name' in request.POST:
-                # we are editing the content management form
-                pass
+            if 'locationform-name' in request.POST:
+                # we are editing the location
+                locationForm = self.LocationForm(request.POST, instance=location_record , prefix='locationform') # A form bound to the POST data, prefix allows multiple forms
+                locationFormvalid = locationForm.is_valid()
+
+                if locationFormvalid:
+                    location_record.lastupdate = datetime.now()
+                    location_record.lastupdatebyid = request.user.id
+                    locationForm.save()
+                    return HttpResponseRedirect('/ecd/location/' + str(locationid)) # Redirect after successful POST to the non editing version
+                else:
+                    self.page_context['locationform'] = locationForm
+                    return render(request, self.template_name, self.page_context)  # Error - return just the form when there is an error - the template must not try and render anything outside the form because the contact data is not present
+
             else:
                 # the user has used a form on the page; which one?
-                locationid = '0'
-                if 'panelform-study' in request.POST:
+                if 'panelform-location' in request.POST:
                     # the study dropdown
                     panelform = self.PanelForm(request.POST, prefix='panelform')
                     valid_panelform = panelform.is_valid()
 
                     if valid_panelform: # All validation rules pass
                         locationid = panelform.cleaned_data['location']
-                        studyid = panelform.cleaned_data['study']
+                        #studyid = panelform.cleaned_data['study']
 
                 else:
                     # the filter bar was changed
@@ -418,10 +286,8 @@ class EventOverview (Pagebase):
                         #filter_socioeconomic = filterbarform.cleaned_data['socioeconomic']
                         filter_all = filterbarform.cleaned_data['all']
 
-                pagename = '/ecd/eventoverview/' + str(eventid)
-                if locationid != '0':
-                    pagename = '/ecd/location/' + str(locationid) # locations page
-                return HttpResponseRedirect(pagename + '?&studyid=' + str(studyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
+                pagename = '/ecd/location'
+                return HttpResponseRedirect(pagename + '/' + str(locationid) + '?&studyid=' + str(rememberstudyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
                                             '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all) ) # Redirect after POST
 
 
@@ -489,41 +355,50 @@ class EventOverview (Pagebase):
                 #panelform.base_fields['event'].initial = eventid
 
                 # populate study dropdown
-                studies = Study.objects.filter(parentid=eventid).order_by('name')
-                if studytype is not '':
-                    studies = studies.filter(studytypecode=studytype)
+                #studies = Study.objects.filter(parentid=eventid).order_by('name')
+                #if studytype is not '':
+                #    studies = studies.filter(studytypecode=studytype)
 
-                if len(studies) > 0:
-                    studylist = [('0','All studies')]
-                    for study in studies:
-                        studylist.append((unicode(study.id), study.name))
-                else:
-                    studylist = [('0','NO STUDIES')]
+                #if len(studies) > 0:
+                #    studylist = [('0','All studies')]
+                #    for study in studies:
+                #        studylist.append((unicode(study.id), study.name))
+                #else:
+                #    studylist = [('0','NO STUDIES')]
 
-                panelform.base_fields['study'].choices = studylist
-                panelform.base_fields['study'].initial = studyid
+                #panelform.base_fields['study'].choices = studylist
+                #panelform.base_fields['study'].initial = studyid
 
                 # populate location dropdown
                 locations = LocationsQuick.objects.filter(eventid=eventid).order_by('locationname')
-                if studyid > 0 :
-                    locations = locations.filter(studyid=studyid)
+                if rememberstudyid > 0 :
+                    locations = locations.filter(studyid=rememberstudyid)
 
                 if studytype is not '':
                     locations = locations.filter(studytypecode=studytype)
 
                 if len(locations) > 0:
-                    locationlist = [('0','All locations')]
+                    locationlist = []
                     for location in locations:
                         locationlist.append((unicode(location.id), location.locationname))
                 else:
                     locationlist = [('0','NO LOCATIONS')]
 
                 panelform.base_fields['location'].choices = locationlist
-                #panelform.base_fields['location'].initial = locationid
+                panelform.base_fields['location'].initial = locationid
+
+                ##############################################
+                # Set up location for input form and display
+                ##############################################
+                location_record = Location.objects.get(pk=locationid) # get the location record
+                locationForm = self.LocationForm(instance=location_record, prefix="locationform")  # create the ModelForm
+                locationfieldstructure = self.createFormFieldStructure( locationForm, location_record ) # generate field structure to pass to generictablerenderer (createFormFieldStructure is in weblib baseclasses pagebase.py)
+                self.page_context['locationfields'] = locationfieldstructure
+                self.page_context['pageclass'] = 'locationpage'
 
                 # filter settings for the link on the dropdown
                 self.page_context['filterstring'] = '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
-
+                self.page_context['locationform'] = locationForm
                 self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
 
             return render(request, template_name, self.page_context)
