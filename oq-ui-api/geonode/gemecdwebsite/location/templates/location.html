@@ -103,6 +103,10 @@
     <div id="map" style="width:20%;height:300px;float:right;">
     </div>
 
+    <div id="photogrid">
+        <div class="photomessage">{{ photomessage }}</div>
+        {% gridlist field_structure=photogrid %}
+    </div>
     <!--[if lt IE 8]><div id="ie8message">You are using a version of Internet Explorer that cannot display this page - This page requires at least Internet Explorer 9 - or you can use Firefox, Chrome or Safari</div><![endif]-->
 
     <script type="text/javascript">
@@ -196,7 +200,13 @@
 
                 var geojsonFeaturePolygons = {{ geojsonpolygons|safe }}
 
-                polygonsLayer = L.geoJson(geojsonFeaturePolygons,{ });
+                var polyStyle = {
+                    "color": "#ff7800",
+                    "weight": 1,
+                    "opacity": 0.65
+                };
+
+                polygonsLayer = L.geoJson(geojsonFeaturePolygons,{ style:polyStyle });
                 polygonsLayerList.push(polygonsLayer);
                 boundsGroup.addLayer(polygonsLayer);
                 polyCount++;

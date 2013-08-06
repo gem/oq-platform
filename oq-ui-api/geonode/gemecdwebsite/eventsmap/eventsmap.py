@@ -224,8 +224,11 @@ class EventsMap (Pagebase):
                     panelform = self.PanelForm(request.POST, prefix='panelform')
                     valid_panelform = panelform.is_valid()
 
-                    if valid_panelform: # All validation rules pass
-                        eventid = panelform.cleaned_data['event']
+                    #if valid_panelform: # All validation rules pass
+                    #    eventid = panelform.cleaned_data['event']
+
+                    # get raw unvalidated data, because the validation was failing on remote site [why?]
+                    eventid = panelform.data['panelform-event']
 
                 else:
                     # the filter bar was changed

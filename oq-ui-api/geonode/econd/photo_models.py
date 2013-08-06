@@ -68,6 +68,22 @@ class WebLibPhoto(ImageModel):
     def get_url(self,photosizename):
         return self._get_SIZE_url(photosizename)
 
+class Photos ( models.Model ):
+    id = models.IntegerField(primary_key=True,db_column='photoid',verbose_name='Photo id') # impersonate a primary key from the photon id
+    photofilename = models.CharField(max_length=255,verbose_name='Photo filename')
+    locationname = models.CharField(max_length=255, verbose_name='Location name')
+    locationid = models.IntegerField()
+    locationaggregateflag = models.IntegerField()
+    qualitycode = models.CharField(max_length=255, verbose_name='Quality code')
+    thephoto = models.ForeignKey( 'WebLibPhoto', db_column='photoid',null=True, blank=True)
+
+    class Meta:
+        db_table = u'econd\".\"gemecdphotos'     #note this is a VIEW
+        managed = False
+
+    def __unicode__(self):
+        return self.photofilename
+
 
 class GeoArchiveMasterOverview ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='photoid')  # impersonate a primary key from the photo id

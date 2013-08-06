@@ -73,9 +73,11 @@ def locationjson (request, *args, **kwargs):
 
             # fudge to allow image to be got directly from geoarchive
             if platform.system() == 'Windows':
-                photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
+                #photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
+                pass
             else:
-                photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
+                #photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
+                pass # ecd-dev has the MEDIA_URL set to point to geoarchive
         else:
             photourl = ''
 
@@ -132,9 +134,11 @@ def locationjson (request, *args, **kwargs):
 
                 # fudge to allow image to be got directly from geoarchive
                 if platform.system() == 'Windows':
-                    photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
+                    #photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
+                    pass # locally MEDIA_URL set to point to geoarchive
                 else:
-                    photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
+                    #photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
+                    pass # ecd-dev has the MEDIA_URL set to point to geoarchive
             else:
                 photourl = ''
 
@@ -401,9 +405,14 @@ class EventOverview (Pagebase):
                     panelform = self.PanelForm(request.POST, prefix='panelform')
                     valid_panelform = panelform.is_valid()
 
-                    if valid_panelform: # All validation rules pass
-                        locationid = panelform.cleaned_data['location']
-                        studyid = panelform.cleaned_data['study']
+                    # This was failing on remote site [why?], so commented out - there cant be any validation errors
+                    #if valid_panelform:
+                    #    locationid = panelform.cleaned_data['location']
+                    #    studyid = panelform.cleaned_data['study']
+
+                    # get raw data
+                    locationid = panelform.data['panelform-location']
+                    studyid = panelform.data['panelform-study']
 
                 else:
                     # the filter bar was changed

@@ -36,7 +36,7 @@
                     <form method="post">{% csrf_token %}
                     {{ panelform.as_p }}
                     <!--<input type="submit" value=" &raquo; " class="gobutton" title="Quick link to details of event"/>-->
-                </form>
+                    </form>
             </div>
         </div>
 
@@ -178,8 +178,15 @@
 
                 var geojsonFeaturePolygons = {{ geojsonpolygons|safe }}
 
+                var polyStyle = {
+                    "color": "#ff7800",
+                    "weight": 1,
+                    "opacity": 0.65
+                };
+
                 polygonsLayer = L.geoJson(geojsonFeaturePolygons,
                         {
+                            style: polyStyle,
                             // note - polygon popups are done in a different way to points
                             onEachFeature:function (feature, layer)
                             {

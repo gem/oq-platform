@@ -13,6 +13,7 @@ from django.db.models import get_model
 from econd.models import EventsQuick, LocationsForJSON, LocationsForJSONAggregated,Study, Location, Locations
 from econd.event_models import Event
 from econd.sql_views import LocationsQuick
+from econd.photo_models import Photos
 
 template_name = 'location/templates/location.html'
 appname = 'weblib'
@@ -35,27 +36,6 @@ class PageFormDisplay (ModelForm):
 
 class LocationPage (Pagebase):
 
-    class FilterBarForm(forms.Form):
-        all = forms.BooleanField(label='All', required=False)
-        all.widget.attrs['title'] = "All"
-        #all.widget.attrs['onchange'] = 'submit()'
-        all.widget.attrs['class'] = 'iconbutton'
-
-        buildings = forms.BooleanField(label='Buildings', required=False)
-        buildings.widget.attrs['title'] = "Consequences to aggregated buildings"
-        #buildings.widget.attrs['onchange'] = 'submit()'
-        buildings.widget.attrs['class'] = 'iconbutton'
-
-        casualty = forms.BooleanField(label='Casualty', required=False)
-        casualty.widget.attrs['title'] = "Consequences to casualty"
-        #casualty.widget.attrs['onchange'] = 'submit()'
-        casualty.widget.attrs['class'] = 'iconbutton'
-
-        infrastructure = forms.BooleanField(label='CBI', required=False)
-        infrastructure.widget.attrs['title'] = "Consequences to infrastructure"
-        #infrastructure.widget.attrs['onchange'] = 'submit()'
-        infrastructure.widget.attrs['class'] = 'iconbutton'
-
     class LocationForm (ModelForm):
         class Meta:
             model = Location
@@ -63,7 +43,7 @@ class LocationPage (Pagebase):
 
     class PanelForm(forms.Form):
 
-        location = forms.ChoiceField(label='Quick link to Location', required=False) #required=False allows field to be disabled
+        location = forms.ChoiceField(label='Quick link to related location', required=False) #required=False allows field to be disabled
         location.widget.attrs['title'] = "Quick link to a location in this event"
         location.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         location.widget.attrs['class'] = 'locationdropdown'
@@ -80,12 +60,21 @@ class LocationPage (Pagebase):
         #study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         #study.widget.attrs['class'] = 'studydropdown'
 
+    class PhotoGridForm (ModelForm):
+        class Meta:
+            model = Photos
+            fields = ( 'thephoto', 'photofilename', 'locationname',   )
 
     def dispatch(self, request, *args, **kwargs):
 
         self.preProcessPage(request, **kwargs)
 
-        # get checkbox defaults from the querystring
+        ##############################################
+        # Read the querystring
+        ##############################################
+
+        # get checkbox defaults from the querystring, not that we use them here
+        # but we pass them back when going back to the eventoverview
         checked = request.GET.get('all')
         filter_all = False
         try:
@@ -176,6 +165,10 @@ class LocationPage (Pagebase):
         except:
             locationid = 0 # in case of input error
 
+        #######################################
+        # Process the chosen location
+        #######################################
+
         # get location record
         try:
             location_record = Location.objects.get(pk=locationid)
@@ -196,18 +189,21 @@ class LocationPage (Pagebase):
                                              + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' \
                                              + str(filter_socioeconomic) + '&all=' + str(filter_all) + '">&laquo; Back to Event Overview</a>'
 
-        # Prepare GeoServer request for point-based locations.
+        # Prepare GeoServer request for point-based layers.
         urlStrPoints = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
         urlStrPoints += '&viewparams=override_e:0;eventid:' + unicode(eventid) + ';'
 
         # study selection
-        if studyid > 0:
-            urlStrPoints += 'override_s:0;studyid:' + unicode(studyid) + ';'
+        #if studyid > 0:
+        #    urlStrPoints += 'override_s:0;studyid:' + unicode(studyid) + ';'
 
-        if not filter_all:
-            urlStrPoints += 'override_c:0;studytypecode:' + studytype + ';'
+        #if not filter_all:
+        #    urlStrPoints += 'override_c:0;studytypecode:' + studytype + ';'
 
-        # polygon layers
+        # now select the individual location point
+        urlStrPoints += 'override_i:0;locationid:' + unicode(locationid) + ';'
+
+        # now deal with polygon layers
         urlStrPolygonsList = []
         if studyid > 0:
             # just one study is selected
@@ -218,7 +214,7 @@ class LocationPage (Pagebase):
             if not filter_all:
                 studies = studies.filter(studytypecode=studytype)
 
-        # iterate through studies
+        # iterate through studies, to pick out those that have polygon layers
         for study in studies:
             try:
                 geobase = study.geobaseid # will give an exception if this study does not have a geobese
@@ -227,18 +223,41 @@ class LocationPage (Pagebase):
                 # Prepare GeoServer request for polygon-based locations
                 urlStrPolygons = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json'
                 urlStrPolygons += '&viewparams=parenttype:study;parentid:' + unicode(study.id) + ';jointable:' + geobase.tablename + ';joincolumn:' + geobase.idcolumnname + ';boundarygeom:' + geobase.geomcolumnname + ';override:0;'
+                # now select the individual location point
+                urlStrPolygons += 'override_i:0;locationid:' + unicode(locationid) + ';'
 
                 urlStrPolygonsList.append(urlStrPolygons)
             except:
                 pass
 
+        #################################
+        # Photos
+        #################################
+
+        photoqueryset = Photos.objects.all().order_by('id').filter(locationid=locationid)
+
+        photocount = len(photoqueryset)
+        photomessage = unicode(photocount) + ' photo(s)'
+
+        photoGridForm = self.PhotoGridForm()  # create the ModelForm
+        photogrid = self.createListFieldStructure(photoGridForm, photoqueryset, '/ecd/photo/')
+
+        # intercept the dictionary for "thephoto" field and change the type to WebLibPhoto and provide the photo size
+        index = 0
+        for i in photoGridForm.visible_fields():
+            if i.name == 'thephoto':
+                break
+            index = index + 1
+        photogrid['fields'][index][0]['thephoto']['type'] = 'WebLibPhoto'
+        photogrid['fields'][index][0]['thephoto']['photosize'] = 'overview_grid'
+
+        self.page_context['photogrid'] = photogrid
+        self.page_context['photomessage'] = photomessage
 
         # fudge for dealing with different locations of the "src" static directory on the development system
         self.page_context['src_folder'] = '/oq-platform2/'
         if platform.system() == 'Windows':
             self.page_context['src_folder'] = '/static/'
-
-
 
         ###############
         # POST
@@ -269,22 +288,13 @@ class LocationPage (Pagebase):
                     panelform = self.PanelForm(request.POST, prefix='panelform')
                     valid_panelform = panelform.is_valid()
 
-                    if valid_panelform: # All validation rules pass
-                        locationid = panelform.cleaned_data['location']
-                        #studyid = panelform.cleaned_data['study']
+                    #if valid_panelform: # All validation rules pass
+                    #    locationid = panelform.cleaned_data['location']
+
+                    locationid = panelform.data['panelform-location']
 
                 else:
-                    # the filter bar was changed
-                    filterbarform = self.FilterBarForm(request.POST, prefix='filterbarform')
-                    valid_filterbarform = filterbarform.is_valid()
-
-                    if valid_filterbarform : # All validation rules pass
-                        filter_buildings = filterbarform.cleaned_data['buildings']
-                        filter_casualty = filterbarform.cleaned_data['casualty']
-                        filter_infrastructure = filterbarform.cleaned_data['infrastructure']
-                        #filter_photos = filterbarform.cleaned_data['photos']
-                        #filter_socioeconomic = filterbarform.cleaned_data['socioeconomic']
-                        filter_all = filterbarform.cleaned_data['all']
+                    pass
 
                 pagename = '/ecd/location'
                 return HttpResponseRedirect(pagename + '/' + str(locationid) + '?&studyid=' + str(rememberstudyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +
@@ -330,18 +340,6 @@ class LocationPage (Pagebase):
 
                 self.page_context['geojsonpolygonslist'] = geoJsonStrPolygonsList
                 self.page_context['maptype'] = 'location'
-
-                # filter bar form - the filter icons
-                filterbarform = self.FilterBarForm
-
-                filterbarform.base_fields['buildings'].initial = filter_buildings
-                filterbarform.base_fields['casualty'].initial = filter_casualty
-                filterbarform.base_fields['infrastructure'].initial = filter_infrastructure
-                #filterbarform.base_fields['photos'].initial = filter_photos
-                #filterbarform.base_fields['socioeconomic'].initial = filter_socioeconomic
-                filterbarform.base_fields['all'].initial = filter_all
-
-                self.page_context['filterbarform'] = filterbarform(prefix="filterbarform", label_suffix='')
 
                 panelform = self.PanelForm
 
