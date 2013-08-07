@@ -290,6 +290,17 @@ class EventsMap (Pagebase):
                 # populate event dropdown
                 eventlist = [('0','All events')]
                 events = EventsQuick.objects.all().order_by('-yearint')
+                if filter_buildings:
+                    events = events.filter(studytypecode='B')
+                if filter_casualty:
+                    events = events.filter(studytypecode='C')
+                if filter_infrastructure:
+                    events = events.filter(studytypecode='CRI')
+                if filter_photos:
+                    events = events.filter(studytypecode='PHOTO')
+
+                events = events.distinct('id', 'yearint', 'eventname', 'country', 'partner' )
+
                 for event in events:
                     eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
 

@@ -21,7 +21,7 @@
             </div>
 
             <div id="filterbarright">
-                <a href="/ecd/eventsmap">Back to world map</a>
+                <div id="backlink">{{ page_backlink|safe }}</div>
             </div>
         </div>
         <!--end filter bar -->
@@ -118,7 +118,7 @@
 
                                                 var post = jQuery.post
                                                 (
-                                                        "/ecd/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID,
+                                                        "/ecd/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + e.target.featureID + "&filterstring=" + encodeURIComponent('{{ filterstring }}'),
                                                         function(json)
                                                         {   // callback
                                                             imagehtml = ''
@@ -148,7 +148,7 @@
                                                                 html += 'Aggregated survey<br />';
                                                             }
 
-                                                            html += '<a href="/ecd/location/' + json.locationid + '">location details &raquo;</a>';
+                                                            html += '<a href="/ecd/location/' + json.locationid + decodeURIComponent(json.filterstring) + '">location details &raquo;</a>';
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
@@ -204,7 +204,7 @@
 
                                                 var post = jQuery.post
                                                 (
-                                                        "/ecd/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + feature.properties.i + "&polygon=1",
+                                                        "/ecd/locationjson?markerid=" + e.target._leaflet_id + "&locationid=" + feature.properties.i + "&polygon=1" + "&filterstring=" + encodeURIComponent('{{ filterstring }}'),
                                                         function(json)
                                                         {   // callback
                                                             imagehtml = ''
@@ -234,7 +234,7 @@
                                                                 html += 'Aggregated survey</br>';
                                                             }
 
-                                                            html += '<a href="/ecd/location/' + json.locationid + '">location details &raquo;</a>';
+                                                            html += '<a href="/ecd/location/' + json.locationid + decodeURIComponent(json.filterstring) + '">location details &raquo;</a>';
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 

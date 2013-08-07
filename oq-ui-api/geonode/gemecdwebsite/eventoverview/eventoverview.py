@@ -52,6 +52,13 @@ def locationjson (request, *args, **kwargs):
     except:
         locationid = 0
 
+    filterstring = ''
+    try:
+        # TODO this string ought to be sanitised
+        filterstring = request.REQUEST['filterstring']
+    except:
+        filterstring = 0
+
     isPolygon = False
     try:
         isPolygon = (request.REQUEST['polygon'] == '1')
@@ -120,6 +127,7 @@ def locationjson (request, *args, **kwargs):
             'assettype' : assettype,
             'assetsubtype' : assetsubtype,
             'designcode' : designcode,
+            'filterstring' : filterstring,
         }
     else:
         # location probably is aggregated. This view returns one record for aggregated survey locations
@@ -163,6 +171,7 @@ def locationjson (request, *args, **kwargs):
                 'assettype' : '',
                 'assetsubtype' : '',
                 'designcode' : '',
+                'filterstring' : filterstring,
             }
 
         else:
@@ -382,7 +391,7 @@ class EventOverview (Pagebase):
             event = Event.objects.get(pk=eventid)
             self.page_context['paneltitle'] = unicode(event.yearint) + ' ' + event.name + ' ' + event.country
             self.page_context['page_title'] = self.page_context['paneltitle']
-            self.page_context['page_backlink'] = '<a href="/ecd/eventsmap">&laquo; Back to world map</a>'
+            self.page_context['page_backlink'] = '<a href="/ecd/eventsmap?&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +'&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all) +'">&laquo; Back to world map</a>'
         except:
             return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 
@@ -530,8 +539,8 @@ class EventOverview (Pagebase):
                 panelform.base_fields['location'].choices = locationlist
                 #panelform.base_fields['location'].initial = locationid
 
-                # filter settings for the link on the dropdown
-                self.page_context['filterstring'] = '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
+                # filter settings for the link on the AJAX popup
+                self.page_context['filterstring'] = '?studyid=' + str(studyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
 
                 self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
 

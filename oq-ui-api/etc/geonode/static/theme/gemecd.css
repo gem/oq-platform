@@ -83,6 +83,14 @@ div#ie8message, div#errormessage
     margin-bottom:1em;
 }
 
+div#backlink a
+{
+    text-decoration:none;
+    padding-bottom:5px;
+    display:block;
+    color:#555;
+}
+
 /* filter bar with dropdown and iconic buttons */
 div#ecd-filterbar
 {
@@ -183,7 +191,7 @@ div#ecd-leftpanel
 
 div#panelcontainer
 {
-    margin-left:5px;
+    margin-left:10px;
     max-width: 200px;
 }
 
@@ -213,10 +221,7 @@ div#ecd-leftpanel select.locationdropdown
     font-size:13px;
 }
 
-div#ecd-leftpanel div#backlink a
-{
-    text-decoration:none;
-}
+
 
 /* end of left panel beside the map */
 
@@ -229,23 +234,84 @@ div#ecd-leftpanelwide
 
 div#panelcontainerwide
 {
-    margin-left:5px;
+    margin-left:10px;
 }
 
 div#panelcontainerwide h1
 {
-    font-size:20px;
+    font-size:22px;
     margin-top:5px;
 }
+
+div#panelcontainerwide div#studyname
+{
+    font-style:italic;
+}
+
 div#panelcontainerwide h3
 {
-    font-size:14px;
-    margin-bottom:0;
-    margin-top:5px;
+    font-size:18px;
+    margin-bottom:5px;
+
+}
+
+div#ecd-leftpanelwide div#backlink a
+{
+    text-decoration:none;
+    padding-bottom:5px;
+    display:block;
+    color:#555;
 }
 
 
 /* end of left panel on the locations page */
+
+/* main body of locations page */
+div.locationpage table.formview
+{
+    border-collapse: collapse;
+    margin-right:10px;
+    max-width:800px;
+}
+div.locationpage table.formview th
+{
+    padding:5px;
+    border:solid 1px #ccc;
+    color:#555;
+}
+
+div.locationpage table.formview td
+{
+    padding:5px;
+    border:solid 1px #ccc;
+    color:#555;
+}
+
+/* end of main body of location page */
+
+/* Photo grid on location page */
+
+div.locationpage div.container ul
+{
+    margin:0;
+}
+
+div#photogrid
+{
+    float:right;
+    margin-top:10px;
+}
+
+div#photogrid div.photomessage
+{
+    float:left;
+}
+
+div#photogrid a
+{
+    text-decoration:none;
+}
+/* end of Photo grid on location page */
 
 /* The map */
 div#map

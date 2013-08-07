@@ -27,58 +27,69 @@ from econd.subevent_models import *
 
 
 class Unifiedcasualtylevel(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True, null=False, help_text='Primary Key: lookup code', )
+    name = models.CharField(max_length=255, null=True, blank=True, default='', help_text='The name', )
+    weight = models.IntegerField(null=True, blank=True, default='0', help_text='Controls order in which items are displayed in menus', )
+
     class Meta:
-        db_table = u'unifiedcasualtylevel'
+        db_table = u'econd\".\"unifiedcasualtylevel'
+        managed = False
 
     def __unicode__(self):
-        return  self.name
+        return self.name
+
 
 class Casualtylevel(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255)
-    parentid = models.IntegerField()
-    mappingid = models.ForeignKey(Unifiedcasualtylevel, db_column='mappingid')
-    description = models.CharField(max_length=255, blank=True)
-    ownerid = models.IntegerField()
-    lastupdatebyid = models.IntegerField()
-    lastupdate = models.DateTimeField(null=True, blank=True)
-    parenttype = models.CharField(max_length=25, blank=True)
-    levelorder = models.IntegerField(null=True, blank=True)
+    id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
+    name = models.CharField(max_length=255, null=False, default='casualty level name', verbose_name='casualty level name', help_text='casualty level name', )
+    parentid = models.IntegerField(default='0', verbose_name='Parent study', help_text='The study which owns this casualty level - normally no need to change this', )
+    parenttype = models.CharField(max_length=25, null=True, blank=True, verbose_name='Parent type', help_text='The type of parent which owns this. Set on creation, this must not be changed.', )
+    mappingid = models.ForeignKey(Unifiedcasualtylevel, db_column='mappingid', related_name='+', null=False, default='0', verbose_name='Mapping to unified casualty level', help_text='Mapping to unified casualty level in the unified scale mapping', )
+    description = models.CharField(max_length=255, null=True, blank=True, verbose_name='casualty level description', help_text='casualty level description', )
+    levelorder = models.IntegerField(null=True, blank=True, default='0', verbose_name='Level order', help_text='Use this field when the scale levels need to be in a particular order, eg when used in a survey matrix', )
+    ownerid = models.IntegerField(null=False, default='1', verbose_name='Owner ID', help_text='ID of the creator/owner of the record', )
+    lastupdatebyid = models.IntegerField(null=False, default='1', verbose_name='Last update by ID', help_text='ID of the last person to update this record', )
+    lastupdate = models.DateTimeField(null=True, blank=True, help_text='Last record update date', )
+
     class Meta:
-        db_table = u'casualtylevel'
+        db_table = u'econd\".\"casualtylevel'
+        managed = False
 
     def __unicode__(self):
-        return  self.name
+        return self.name
 
 class Unifieddamagelevel(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True, null=False, help_text='Primary Key: lookup code', )
+    name = models.CharField(max_length=255, null=True, blank=True, default='', help_text='The name', )
+    weight = models.IntegerField(null=True, blank=True, default='0', help_text='Controls order in which items are displayed in menus', )
+
     class Meta:
-        db_table = u'unifieddamagelevel'
+        db_table = u'econd\".\"unifieddamagelevel'
+        managed = False
 
     def __unicode__(self):
-        return  self.name
+        return self.name
+
 
 class Damagelevel(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255)
-    parentid = models.IntegerField()
-    mappingid = models.ForeignKey(Unifieddamagelevel, db_column='mappingid')
-    description = models.CharField(max_length=255, blank=True)
-    ownerid = models.IntegerField()
-    lastupdatebyid = models.IntegerField()
-    lastupdate = models.DateTimeField(null=True, blank=True)
-    parenttype = models.CharField(max_length=25, blank=True)
-    levelorder = models.IntegerField(null=True, blank=True)
+    id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
+    name = models.CharField(max_length=255, null=False, default='Damage level name', verbose_name='Damage level name', help_text='Damage level name eg "collapsed", or "D3", or "yellow"', )
+    parentid = models.IntegerField(default='0', verbose_name='Parent study', help_text='The study which owns this damage level - normally no need to change this',)
+    parenttype = models.CharField(max_length=25, null=True, blank=True, verbose_name='Parent type', help_text='The type of parent which owns this. Set on creation, this must not be changed.', )
+    mappingid = models.ForeignKey(Unifieddamagelevel, db_column='mappingid', related_name='+', null=False, default='0', verbose_name='Mapping to unified damage level', help_text='Mapping to unified damage level in the unified scale mapping', )
+    description = models.CharField(max_length=255, null=True, blank=True, verbose_name='Damage level description', help_text='Damage level description', )
+    levelorder = models.IntegerField(null=True, blank=True, default='0', verbose_name='Level order', help_text='Use this field when the scale levels need to be in a particular order, eg when used in a survey matrix', )
+    ownerid = models.IntegerField(null=False, default='1', verbose_name='Owner ID', help_text='ID of the creator/owner of the record', )
+    lastupdatebyid = models.IntegerField(null=False, default='1', verbose_name='Last update by ID', help_text='ID of the last person to update this record', )
+    lastupdate = models.DateTimeField(null=True, blank=True, help_text='Last record update date', )
+
     class Meta:
-        db_table = u'damagelevel'
+        db_table = u'econd\".\"damagelevel'
+        managed = False
 
     def __unicode__(self):
-        return  self.name
+        return self.name
+
 
 
 class Location(models.Model):
@@ -121,7 +132,6 @@ class Location(models.Model):
 #     def __unicode__(self):
 #         return  self.name
 
-
 class Inventoryclass(models.Model):
     id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
     name = models.CharField(max_length=255, null=False, default='Inventory class name', verbose_name='Inventory class name', help_text='Inventory class name from original survey', )
@@ -159,6 +169,24 @@ class Inventoryclass(models.Model):
     lastupdatebyid = models.IntegerField(null=False, default='1', verbose_name='Last update by ID', help_text='ID of the last person to update this record', )
     lastupdate = models.DateTimeField(null=True, blank=True, help_text='Last record update date', )
 
+    # Taxonomy attributes not supported in GEMECD 1.0
+    llrs_qual = models.CharField(max_length=20, blank=True)
+    plan_shape = models.CharField(max_length=20, blank=True)
+    position = models.CharField(max_length=20, blank=True)
+    nonstrcexw = models.CharField(max_length=20, blank=True)
+    roof_conn = models.CharField(max_length=20, blank=True)
+    roofcovmat = models.CharField(max_length=20, blank=True)
+    roof_shape = models.CharField(max_length=20, blank=True)
+    floor_conn = models.CharField(max_length=20, blank=True)
+    foundn_sys = models.CharField(max_length=20, blank=True)
+    story_bg_q = models.CharField(max_length=20, blank=True)
+    story_bg_1 = models.IntegerField(null=True, blank=True)
+    story_bg_2 = models.IntegerField(null=True, blank=True)
+    ht_gr_gf_q = models.CharField(max_length=20, blank=True)
+    ht_gr_gf_1 = models.IntegerField(null=True, blank=True)
+    ht_gr_gf_2 = models.IntegerField(null=True, blank=True)
+    slope = models.IntegerField(null=True, blank=True)
+
     class Meta:
         db_table = u'econd\".\"inventoryclass'
         managed = False
@@ -166,36 +194,36 @@ class Inventoryclass(models.Model):
     def __unicode__(self):
         return self.name
 
-
 class Surveyvalue(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=64)
-    parentid = models.IntegerField()
-    metriccode = models.ForeignKey(Lookupmetric, db_column='metriccode')
-    damagelevelid = models.ForeignKey(Damagelevel, db_column='damagelevelid')
-    casualtylevelid = models.ForeignKey(Casualtylevel, db_column='casualtylevelid')
-    inventoryclassid = models.ForeignKey(Inventoryclass, db_column='inventoryclassid')
-    assetclasscode = models.ForeignKey(Lookupassetclass, db_column='assetclasscode')
-    assettypecode = models.ForeignKey(Lookupassettype, db_column='assettypecode')
-    assetsubtypecode = models.ForeignKey(Lookupassetsubtype, db_column='assetsubtypecode')
-    typeofdamagecode = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode', related_name='+',)
-    value = models.FloatField(null=True, blank=True)
-    value_q = models.CharField(max_length=10)
-    ownerid = models.IntegerField()
-    lastupdatebyid = models.IntegerField()
-    lastupdate = models.DateTimeField(null=True, blank=True)
-    assetconstructioncode = models.ForeignKey(Lookupassetconstruction, db_column='assetconstructioncode')
-    parentdamagesurveymatrixid = models.IntegerField()
-    parentcasualtysurveymatrixid = models.IntegerField()
-    typeofdamagecode2 = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode2', related_name='+',)
-    originalsurveyreference = models.CharField(max_length=50, blank=True)
+    id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
+    name = models.CharField(max_length=64, null=False, default='GUID', verbose_name='Name', help_text='Optional name for the survey value', )
+    parentid = models.ForeignKey(Location, db_column='parentid', related_name='+', null=False, default='0', verbose_name='For location', help_text='The location which owns this survey value record - normally no need to change this', )
+    parentdamagesurveymatrixid = models.IntegerField(null=False, default='0', verbose_name='Parent damage survey matrix id', help_text='If this survey value was created through a survey matrix this records its id', )
+    parentcasualtysurveymatrixid = models.IntegerField(null=False, default='0', verbose_name='Parent casualty survey matrix id', help_text='If this survey value was created through a survey matrix this records its id', )
+    metriccode = models.ForeignKey(Lookupmetric, db_column='metriccode', related_name='+', max_length=5, null=False, default='N', verbose_name='Metric', help_text='The metric of the value - number of buildings/assets, number of people, length m, height m, area sq m, volume cu m, cost $, ratio, damage per km', )
+    damagelevelid = models.ForeignKey(Damagelevel, db_column='damagelevelid', related_name='+', null=False, default='0', verbose_name='Damage level', help_text='Damage level in the chosen damage scale', )
+    casualtylevelid = models.ForeignKey(Casualtylevel, db_column='casualtylevelid', related_name='+', null=False, default='0', verbose_name='Casualty level', help_text='casualty level in the chosen casualty scale', )
+    inventoryclassid = models.ForeignKey(Inventoryclass, db_column='inventoryclassid', related_name='+', null=False, default='0', verbose_name='Inventory class', help_text='Inventory class', )
+    assetclasscode = models.ForeignKey(Lookupassetclass, db_column='assetclasscode', related_name='+', max_length=10, null=False, default='0', verbose_name='Asset class', help_text='Asset class', )
+    assettypecode = models.ForeignKey(Lookupassettype, db_column='assettypecode', related_name='+', max_length=10, null=False, default='0', verbose_name='Asset type', help_text='Asset type', )
+    assetsubtypecode = models.ForeignKey(Lookupassetsubtype, db_column='assetsubtypecode', related_name='+', max_length=10, null=False, default='0', verbose_name='Asset sub type', help_text='Asset sub type', )
+    assetconstructioncode = models.ForeignKey(Lookupassetconstruction, db_column='assetconstructioncode', related_name='+', max_length=10, null=False, default='0', verbose_name='Asset form of construction', help_text='Asset form of construction', )
+    typeofdamagecode = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode', related_name='+', max_length=10, null=False, default='0', verbose_name='Type of damage', help_text='Type of damage', )
+    typeofdamagecode2 = models.ForeignKey(Lookuptypeofdamage, db_column='typeofdamagecode2', related_name='+', max_length=10, null=False, default='0', verbose_name='Type of damage - secondary', help_text='Type of damage - secondary', )
+    structuretypecode = models.CharField(max_length=10, null=False, default='0', verbose_name='Structure type code IMS 2014', help_text='Structure type code for future compatibility with IMS 2014', )
+    vulnerabilityclasscode = models.CharField(max_length=10, null=False, default='0', verbose_name='Vulnerability class IMS 2014', help_text='Vulnerability class for future compatibility with IMS 2014', )
+    value = models.FloatField(verbose_name='Value', help_text='The survey value, a single number or percentage', )
+    value_q = models.ForeignKey(Lookupstatus, db_column='value_q', related_name='+', max_length=10, null=False, default='0', verbose_name='Value: status', help_text='The status of the data', )
+    ownerid = models.IntegerField(null=False, default='1', verbose_name='Owner ID', help_text='ID of the creator/owner of the record', )
+    lastupdatebyid = models.IntegerField(null=False, default='1', verbose_name='Last update by ID', help_text='ID of the last person to update this record', )
+    lastupdate = models.DateTimeField(null=True, blank=True, help_text='Last record update date', )
 
     class Meta:
         db_table = u'econd\".\"surveyvalue'
+        managed = False
 
     def __unicode__(self):
-        return  self.name
-
+        return self.name
 
 class Uploadedfile(models.Model):
       id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )

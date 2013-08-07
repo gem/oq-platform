@@ -12,6 +12,8 @@ class EventsQuick ( models.Model ):
     yearint = models.IntegerField()
     country = models.CharField(max_length=255)
     partner = models.CharField(max_length=255)
+    studyname = models.CharField(max_length=255)
+    studytypecode = models.CharField(max_length=10)
 
     class Meta:
         db_table = u'econd\".\"gemecdevents_quick'     #note this is a VIEW
