@@ -10,6 +10,7 @@ from econd.event_models import *
 # Study Level Models
 ###############
 
+
 class Geobase(models.Model):
       id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
       name = models.CharField(max_length=255, null=False, default='unknown', verbose_name='Geobase name', help_text='The name of the geobase, in the form country_GADM level number e.g. Italy_1 or Japan_2. ', )
@@ -27,7 +28,6 @@ class Geobase(models.Model):
 
       class Meta:
             db_table = u'econd\".\"geobase'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -67,7 +67,6 @@ class Study(models.Model):
 
       class Meta:
             db_table = u'econd\".\"study'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -281,7 +280,6 @@ class Socioeconomicstudy(models.Model):
 
       class Meta:
             db_table = u'econd\".\"socioeconomicstudy'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -413,7 +411,6 @@ class Tsunamistudy(models.Model):
 
       class Meta:
             db_table = u'econd\".\"tsunamistudy'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -509,7 +506,6 @@ class Slopefailurestudy(models.Model):
 
       class Meta:
             db_table = u'econd\".\"slopefailurestudy'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -616,7 +612,6 @@ class Firefollowingstudy(models.Model):
 
       class Meta:
             db_table = u'econd\".\"firefollowingstudy'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -699,7 +694,6 @@ class Liquefactionstudy(models.Model):
 
       class Meta:
             db_table = u'econd\".\"liquefactionstudy'
-            managed = False
 
       def __unicode__(self):
             return self.name

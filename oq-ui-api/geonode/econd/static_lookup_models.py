@@ -6,6 +6,7 @@ from django.db import models
 # Static lookup tables
 ########################
 
+
 class Lookupassetclass(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -15,6 +16,7 @@ class Lookupassetclass(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupmagnitudeunit(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -26,15 +28,17 @@ class Lookupmagnitudeunit(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupqualitymetric(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
     weight = models.IntegerField(null=True, blank=True)
     class Meta:
-        db_table = u'econd\".\"lookupqualtymetric'
+        db_table = u'econd\".\"lookupqualitymetric'
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupregion(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -46,6 +50,7 @@ class Lookupregion(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupstatus(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -55,6 +60,7 @@ class Lookupstatus(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupstudytype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -66,6 +72,7 @@ class Lookupstudytype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupunit(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -75,6 +82,7 @@ class Lookupunit(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupassettype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -87,6 +95,7 @@ class Lookupassettype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupassetsubtype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -97,6 +106,7 @@ class Lookupassetsubtype(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupassetconstruction(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -109,6 +119,7 @@ class Lookupassetconstruction(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupintensityzone(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -118,6 +129,7 @@ class Lookupintensityzone(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupmetric(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -129,6 +141,7 @@ class Lookupmetric(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupsoilclass(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -138,6 +151,7 @@ class Lookupsoilclass(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookuptypeofdamage(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -149,6 +163,7 @@ class Lookuptypeofdamage(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupyesno(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -158,6 +173,7 @@ class Lookupyesno(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 # photo related lookup tables
 
@@ -171,6 +187,7 @@ class Lookupyesnonull(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupsubjectmastercode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -180,6 +197,7 @@ class Lookupsubjectmastercode(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupsubjectsubcode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -192,6 +210,7 @@ class Lookupsubjectsubcode(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookuptypeofstructurecode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -202,6 +221,7 @@ class Lookuptypeofstructurecode(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupcityscalecode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -211,6 +231,7 @@ class Lookupcityscalecode(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 # this table ultimately to be removed as it has been superceded
 class Lookupdetailcode(models.Model):
@@ -223,6 +244,7 @@ class Lookupdetailcode(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookuporientationcode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -232,6 +254,7 @@ class Lookuporientationcode(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupphotoqualitycode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -243,6 +266,7 @@ class Lookupphotoqualitycode(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookuptimeofdaycode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -252,6 +276,7 @@ class Lookuptimeofdaycode(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupphotographerprofessioncode(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -263,6 +288,7 @@ class Lookupphotographerprofessioncode(models.Model):
 
     def __unicode__(self):
         return  self.name
+
 
 # end of photo related lookup tables
 
@@ -276,6 +302,7 @@ class Lookupmaterialtype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupmaterialtechnology(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -285,6 +312,7 @@ class Lookupmaterialtechnology(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupmasonrymortartype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -296,6 +324,7 @@ class Lookupmasonrymortartype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupmasonryreinforcement(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -305,6 +334,7 @@ class Lookupmasonryreinforcement(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupsteelconnectiontype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -316,6 +346,7 @@ class Lookupsteelconnectiontype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookuploadresistingsystem(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -325,6 +356,7 @@ class Lookuploadresistingsystem(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupductility(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -346,6 +378,7 @@ class Lookuproofmaterial(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookuprooftype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -356,6 +389,7 @@ class Lookuprooftype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupfloormaterial(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -365,6 +399,7 @@ class Lookupfloormaterial(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupfloortype(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -398,6 +433,7 @@ class Lookupdateofconstruction(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupirregularityqualifier(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -419,6 +455,7 @@ class Lookupirregularitytype(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookuphorizontalirregularity(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -428,6 +465,7 @@ class Lookuphorizontalirregularity(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
+
 
 class Lookupverticalirregularity(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
@@ -439,6 +477,7 @@ class Lookupverticalirregularity(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupoccupancy(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -449,6 +488,7 @@ class Lookupoccupancy(models.Model):
     def __unicode__(self):
         return  self.name
 
+
 class Lookupoccupancydetail(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -458,8 +498,5 @@ class Lookupoccupancydetail(models.Model):
         ordering = ['weight']
     def __unicode__(self):
         return  self.name
-
-
-
 
         #end of static lookup tables

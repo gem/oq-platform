@@ -25,7 +25,6 @@ from econd.subevent_models import *
 #####################
 
 
-
 class Unifiedcasualtylevel(models.Model):
     id = models.IntegerField(primary_key=True, null=False, help_text='Primary Key: lookup code', )
     name = models.CharField(max_length=255, null=True, blank=True, default='', help_text='The name', )
@@ -33,7 +32,6 @@ class Unifiedcasualtylevel(models.Model):
 
     class Meta:
         db_table = u'econd\".\"unifiedcasualtylevel'
-        managed = False
 
     def __unicode__(self):
         return self.name
@@ -53,10 +51,10 @@ class Casualtylevel(models.Model):
 
     class Meta:
         db_table = u'econd\".\"casualtylevel'
-        managed = False
 
     def __unicode__(self):
         return self.name
+
 
 class Unifieddamagelevel(models.Model):
     id = models.IntegerField(primary_key=True, null=False, help_text='Primary Key: lookup code', )
@@ -65,7 +63,6 @@ class Unifieddamagelevel(models.Model):
 
     class Meta:
         db_table = u'econd\".\"unifieddamagelevel'
-        managed = False
 
     def __unicode__(self):
         return self.name
@@ -85,11 +82,9 @@ class Damagelevel(models.Model):
 
     class Meta:
         db_table = u'econd\".\"damagelevel'
-        managed = False
 
     def __unicode__(self):
         return self.name
-
 
 
 class Location(models.Model):
@@ -119,18 +114,8 @@ class Location(models.Model):
         db_table = u'econd\".\"location'
 
     def __unicode__(self):
-        return  self.name
+        return self.name
 
-# test code for Taxonomy lookups
-# class LookupMaterialType(models.Model):
-#     id = models.CharField(max_length=10, primary_key=True)   # lookup to a VIEW
-#     name = models.CharField(max_length=255, blank=True)
-#
-#     class Meta:
-#         db_table = u'econd\".\"lookupmaterialtype'
-#
-#     def __unicode__(self):
-#         return  self.name
 
 class Inventoryclass(models.Model):
     id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
@@ -189,7 +174,6 @@ class Inventoryclass(models.Model):
 
     class Meta:
         db_table = u'econd\".\"inventoryclass'
-        managed = False
 
     def __unicode__(self):
         return self.name
@@ -220,7 +204,6 @@ class Surveyvalue(models.Model):
 
     class Meta:
         db_table = u'econd\".\"surveyvalue'
-        managed = False
 
     def __unicode__(self):
         return self.name
@@ -238,7 +221,6 @@ class Uploadedfile(models.Model):
 
       class Meta:
             db_table = u'econd\".\"uploadedfile'
-            managed = False
 
       def __unicode__(self):
             return self.name

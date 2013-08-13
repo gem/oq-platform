@@ -11,6 +11,7 @@ from econd.study_models import *
 # Event level Models
 ###############
 
+
 class Event(models.Model):
       id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id for the event', )
       usgsshakemapid = models.CharField(max_length=50, null=True, blank=True, verbose_name='Event ID', help_text='USGS ID number for the earthquake event, eg 197005312023', )
@@ -179,7 +180,6 @@ class Event(models.Model):
 
       class Meta:
             db_table = u'econd\".\"event'
-            managed = False
 
       def __unicode__(self):
             return self.name

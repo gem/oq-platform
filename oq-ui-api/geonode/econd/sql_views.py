@@ -6,6 +6,7 @@ from django.db import models
 # VIEWS
 ######################
 
+
 class EventsQuick ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='eventid') # impersonate a primary key from the event id
     eventname = models.CharField(max_length=255)
@@ -48,6 +49,7 @@ class LocationsForJSON ( models.Model ):
     def __unicode__(self):
         return self.locationname
 
+
 class LocationsForJSONAggregated ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255)
@@ -64,6 +66,7 @@ class LocationsForJSONAggregated ( models.Model ):
 
     def __unicode__(self):
         return self.locationname
+
 
 class Locations ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id

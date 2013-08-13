@@ -140,7 +140,6 @@ class Tsunamisubevent(models.Model):
 
       class Meta:
             db_table = u'econd\".\"tsunamisubevent'
-            managed = False
 
       def __unicode__(self):
             return self.name
@@ -243,10 +242,10 @@ class Slopefailuresubevent(models.Model):
 
       class Meta:
             db_table = u'econd\".\"slopefailuresubevent'
-            managed = False
 
       def __unicode__(self):
             return self.name
+
 
 class Firefollowingsubevent(models.Model):
       id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
@@ -348,10 +347,11 @@ class Firefollowingsubevent(models.Model):
 
       class Meta:
             db_table = u'econd\".\"firefollowingsubevent'
-            managed = False
 
       def __unicode__(self):
             return self.name
+
+
 class Liquefactionsubevent(models.Model):
       id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id', )
       name = models.CharField(max_length=255, null=False, default='untitled', verbose_name='Liquefaction name', help_text='The name of the liquefaction: Commonly accepted name', )
@@ -423,7 +423,6 @@ class Liquefactionsubevent(models.Model):
 
       class Meta:
             db_table = u'econd\".\"liquefactionsubevent'
-            managed = False
 
       def __unicode__(self):
             return self.name

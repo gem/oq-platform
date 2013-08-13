@@ -10,6 +10,7 @@ from econd.static_lookup_models import *
 # GeoArchive and Photo related
 ##############################
 
+
 class WebLibPhoto(ImageModel):
     id = models.IntegerField(primary_key=True)
     #you cant put title here , it wont save
@@ -68,7 +69,8 @@ class WebLibPhoto(ImageModel):
     def get_url(self,photosizename):
         return self._get_SIZE_url(photosizename)
 
-class Photos ( models.Model ):
+
+class Photos (models.Model):
     id = models.IntegerField(primary_key=True,db_column='photoid',verbose_name='Photo id') # impersonate a primary key from the photon id
     photofilename = models.CharField(max_length=255,verbose_name='Photo filename')
     locationname = models.CharField(max_length=255, verbose_name='Location name')
@@ -85,7 +87,7 @@ class Photos ( models.Model ):
         return self.photofilename
 
 
-class GeoArchiveMasterOverview ( models.Model ):
+class GeoArchiveMasterOverview (models.Model):
     id = models.IntegerField(primary_key=True,db_column='photoid')  # impersonate a primary key from the photo id
     thephoto = models.ForeignKey( 'WebLibPhoto', db_column='photoid',null=True, blank=True)
     photofilename = models.CharField(max_length=255, unique=True)
@@ -115,6 +117,7 @@ class GeoArchiveMasterOverview ( models.Model ):
             self.photofilename = 'unknown'
         return self.photofilename
 
+
 class GeoArchiveLocations ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='locationid',verbose_name='Location id') # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255,verbose_name='Location name')
@@ -133,13 +136,13 @@ class GeoArchiveLocations ( models.Model ):
     unifieddamagelevelid = models.IntegerField()
     assetclassid = models.CharField(max_length=10)
 
-
     class Meta:
         db_table = u'econd\".\"geoarchivelocations'     #note this is a VIEW
         managed = False
 
     def __unicode__(self):
         return self.locationname
+
 
 class GeoArchiveLocationsForJSON ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
@@ -165,6 +168,7 @@ class GeoArchiveLocationsForJSON ( models.Model ):
     def __unicode__(self):
         return self.locationname
 
+
 class GeoArchiveEvents ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='eventid') # impersonate a primary key from the event id
     event = models.CharField(max_length=255)
@@ -177,6 +181,7 @@ class GeoArchiveEvents ( models.Model ):
 
     def __unicode__(self):
         return self.event
+
 
 class GeoArchiveEventsQuick ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='eventid') # impersonate a primary key from the event id
@@ -191,6 +196,7 @@ class GeoArchiveEventsQuick ( models.Model ):
 
     def __unicode__(self):
         return self.country + ' ' + unicode(self.yearint)
+
 
 class GeoArchiveDamageLevels ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='damagelevelid') # impersonate a primary key from the event id
@@ -215,6 +221,7 @@ class GeoArchiveDamageLevelsQuick ( models.Model ):
     def __unicode__(self):
         return self.damagelevelname
 
+
 class GeoArchiveInventoryClasses ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='inventoryclassid') # impersonate a primary key from the event id
     inventoryclassname = models.CharField(max_length=255)
@@ -225,6 +232,7 @@ class GeoArchiveInventoryClasses ( models.Model ):
 
     def __unicode__(self):
         return self.inventoryclassname
+
 
 class GeoArchiveAssetClasses ( models.Model ):
     id = models.IntegerField(primary_key=True,db_column='assetclassid') # impersonate a primary key from the event id
@@ -237,16 +245,18 @@ class GeoArchiveAssetClasses ( models.Model ):
     def __unicode__(self):
         return self.assetclass
 
+
 class GeoArchiveAssetClassesQuick ( models.Model ):
     id = models.CharField(max_length=10,primary_key=True,db_column='assetclassid') # impersonate a primary key from the event id
     assetclass = models.CharField(max_length=255)
 
     class Meta:
-        db_table = u'econd\".\"geoarchiveassetclasses_quick'     #note this is a VIEW
+        db_table = u'econd\".\"geoarchiveassetclasses_quick'  # note this is a VIEW
         managed = False
 
     def __unicode__(self):
         return self.assetclass
+
 
 # used to underpin the search page
 class GeoArchiveOverviewFull (models.Model):
@@ -329,5 +339,10 @@ class GeoArchiveOverviewFull (models.Model):
     assetclass = models.CharField(max_length=255, blank=True)
     assetclassid = models.ForeignKey(GeoArchiveAssetClassesQuick, null=True, db_column='assetclassid', blank=True,verbose_name='Asset class',default='0')
     aggregationtest = models.BigIntegerField(null=True, blank=True)
+
     class Meta:
         db_table = u'econd\".\"geoarchivemasterfull'
+        managed = False
+
+    def __unicode__(self):
+        return self.event
