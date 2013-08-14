@@ -272,6 +272,7 @@ div.locationpage table.formview
     border-collapse: collapse;
     margin-right:10px;
     max-width:800px;
+    margin-bottom:18px;
 }
 div.locationpage table.formview th
 {
@@ -312,6 +313,20 @@ div#photogrid a
     text-decoration:none;
 }
 /* end of Photo grid on location page */
+
+/* quick link dropdown under map on location page */
+
+form.quicklinklocation
+{
+    width:20%;
+    float:right;
+    overflow:hidden;
+}
+
+form.quicklinklocation select
+{
+    width:200px;
+}
 
 /* The map */
 div#map
@@ -409,3 +424,20 @@ div#ecd-errorpage h1
 }
 
 /* end of GEMECD's error page */
+
+/* errors on forms */
+ul.errorlist
+{
+    margin-top:18px;
+    color:red;
+    font-weight:bold;
+    font-size:14px;
+    list-style: square;
+}
+
+div.formerrorheader
+{
+    color:red;
+    font-size:18px;
+    font-weight:bold;
+}

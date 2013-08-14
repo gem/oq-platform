@@ -69,39 +69,96 @@
         <div id="ecd-leftpanelwide">
             <div id="panelcontainerwide">
 
-                {% if form.errors %}
-                    <div class="formerrorheader">Error in form</div>
-                {%  endif %}
+
                 {%  if editmode %}
                     <form method="post" class="pageedit">{% csrf_token %}
 
                      <table>
+                        {% if locationform.errors %}
+                             <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                        {%  endif %}
+                        {% if inventoryclassform.errors %}
+                             <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                        {%  endif %}
+
+
                         {{ locationform.as_table }}
+
+                        {{ inventoryclassform.as_table }}
+
+                        {% for surveyform in surveyformlist %}
+                            {% if surveyform.errors %}
+                                <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                            {%  endif %}
+                            {{ surveyform.as_table }}
+                        {% endfor %}
+
+                        {% for damagecell in damagematrixform %}
+                            {% if damagecell.cell.errors %}
+                                <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                            {%  endif %}
+                            {{ damagecell.cell.as_table }}
+                        {% endfor %}
+
+                        {% for casualtycell in casualtymatrixform %}
+                            {% if casualtycell.cell.errors %}
+                                <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                            {%  endif %}
+                            {{ casualtycell.cell.as_table }}
+                        {% endfor %}
+
                     </table>
 
                     <input type="submit" value="Save" class="gobutton"/>
                      </form>
                 {%  endif %}
 
-                {% if not form.errors and not editmode%}
+                {% if not input_errors and not editmode%}
                 <div id="backlink">{{ page_backlink|safe }}</div>
 
                 <h3>{{ event_name }}</h3>
                 <div id = "studyname">{{ study_name }}</div>
                 <h1>{{location_name }}</h1>
 
-                <form method="post">{% csrf_token %}
-                    {{ panelform.as_p }}
-                    {% formviewastable field_structure=locationfields %}
-                </form>
+                {% if nonaggoverviewfields != '' %}
+                    <h4>Overview</h4>
+                    {% formviewastable field_structure=nonaggoverviewfields %}
+                {% endif %}
+
+                <h4>Location details</h4>
+                {% formviewastable field_structure=locationfields %}
+
+                {% if inventoryclassfields != '' %}
+                    <h4>Inventory Class details</h4>
+                    {% formviewastable field_structure=inventoryclassfields %}
+                {% endif %}
+
+                {% for surveyfields in surveyfieldlist %}
+                    <h4>Survey details</h4>
+                    {% formviewastable field_structure=surveyfields %}
+                {% endfor %}
+
+                {% for damagecell in damagematrix %}
+                    {% formviewastable field_structure=damagecell.cell %}
+                {% endfor %}
+
+                {% for casualtycell in casualtymatrix %}
+                    {% formviewastable field_structure=casualtycell.cell %}
+                {% endfor %}
+
                 {% endif %}
             </div>
         </div>
 
 {% endblock leftpanel %}
 
+    {% if not input_errors %}
     <div id="map" style="width:20%;height:300px;float:right;">
     </div>
+
+    <form class="quicklinklocation" method="post">{% csrf_token %}
+        {{ panelform.as_p }}
+    </form>
 
     <div id="photogrid">
         <div class="photomessage">{{ photomessage }}</div>
@@ -269,6 +326,6 @@
     </script>
 
 
-
+   {% endif %}
 
 {% endblock main %}
