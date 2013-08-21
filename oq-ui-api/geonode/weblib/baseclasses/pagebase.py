@@ -71,24 +71,30 @@ class Pagebase(FormView):
 
 
     # return a structure for a single record that can be passed to generictablerenderer template tag
-    def createFormFieldStructure (self, theModelForm, theRecord):
+    def createFormFieldStructure (self, theModelForm, theRecord, params = {}):
+        foreignkeylinkprefix = ''
+        if 'foreignkeylinkprefix' in params:
+            foreignkeylinkprefix = params['foreignkeylinkprefix']
         queryset = []  # create the queryset to pass to generictablerenderer
         queryset.append(theRecord) # to make it iterable by generictablerenderer
         fieldlist = [] # create the fieldlist to pass to generictablerenderer
         for boundField in theModelForm.visible_fields():
             thetype = queryset[0]._meta.get_field(boundField.name).get_internal_type()
             fieldlist.append([{boundField.name :  { 'title' : boundField.label, 'type' : thetype, 'description' : boundField.help_text }}])
-        fieldstructure = { 'entity' : queryset, 'targeturl' : '', 'fields' : fieldlist }
+        fieldstructure = { 'entity' : queryset, 'targeturl' : '', 'fields' : fieldlist, 'foreignkeylinkprefix': foreignkeylinkprefix  }
         return fieldstructure
 
 
     # return a structure for a queryset that can be passed to generictablerenderer template tag
-    def createListFieldStructure(self, theModelForm, theQuerySet, targeturl):
+    def createListFieldStructure(self, theModelForm, theQuerySet, targeturl, params = {}):
+        foreignkeylinkprefix = ''
+        if 'foreignkeylinkprefix' in params:
+            foreignkeylinkprefix = params['foreignkeylinkprefix']
         fieldlist = [] # create the fieldlist to pass to generictablerenderer
         for boundField in theModelForm.visible_fields():
             thetype = theQuerySet.model._meta.get_field(boundField.name).get_internal_type()
             fieldlist.append([{boundField.name :  { 'title' : boundField.label, 'type' : thetype, 'description' : boundField.help_text }}])
-        fieldstructure = { 'entity' : theQuerySet, 'targeturl' : targeturl, 'fields' : fieldlist }
+        fieldstructure = { 'entity' : theQuerySet, 'targeturl' : targeturl, 'fields' : fieldlist, 'foreignkeylinkprefix': foreignkeylinkprefix }
         return fieldstructure
 
         # example of a manually created field list,
@@ -107,7 +113,7 @@ class Pagebase(FormView):
         #                [{'location_c' :  { 'title' : 'Location: comment', 'type' : 'text', 'description' : 'An optional comment on the location and loss at the location', }}],
         #            ]
 
-    def processSimpleForm(self, request, appname, modelname, formphotosize, template_name, displayfields, editfields):
+    def processSimpleForm(self, request, appname, modelname, formphotosize, template_name, displayfields, editfields, params = {}):
 
         class PageFormEdit (ModelForm):
             class Meta:
@@ -121,15 +127,22 @@ class Pagebase(FormView):
                 fields = displayfields['include']
                 exclude = displayfields['exclude']
 
+        errortemplate = ''
+        if 'errortemplate' in params:
+            errortemplate = params['errortemplate']
+        foreignkeylinkprefix = ''
+        if 'foreignkeylinkprefix' in params:
+            foreignkeylinkprefix = params['foreignkeylinkprefix']
+
         current_object = None
 
         if not self.page_context['addmode']:  # we are reading an existing record
             try:
                 current_object = get_model(appname, modelname).objects.get(pk=self.page_context['ix'])
             except ObjectDoesNotExist:
-                return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist')
+                return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist', errortemplate)
             except:
-                return self.showErrorPage(request, 'Error: invalid parameter supplied')
+                return self.showErrorPage(request, 'Error: invalid parameter supplied', errortemplate)
 
             self.page_context['current_object'] = current_object
             if hasattr(current_object,'name'):
@@ -141,7 +154,7 @@ class Pagebase(FormView):
 
             # display
             pageFormDisplay = PageFormDisplay (instance=current_object)
-            pagefields = self.createFormFieldStructure( pageFormDisplay, current_object )
+            pagefields = self.createFormFieldStructure( pageFormDisplay, current_object, params )
 
             # intercept the field structure dictionary for "image1" field and
             # change the type to WebLibPhoto and provide the photo size
@@ -158,7 +171,7 @@ class Pagebase(FormView):
 
         # other info to pass through the page context
         self.page_context['pageclass'] = 'basicpage'
-        self.page_context['editlink'] = ('/' + modelname + '/' + str(self.page_context['ix'])).lower()
+        self.page_context['editlink'] = (foreignkeylinkprefix + '/' + modelname + '/' + str(self.page_context['ix'])).lower()
 
 
         ###############
@@ -197,7 +210,7 @@ class Pagebase(FormView):
                 pageFormEdit.save()
 
                 # Redirect after successful POST to the display version of the page
-                return HttpResponseRedirect(('/' + modelname + '/' + str(self.page_context['ix'])).lower())
+                return HttpResponseRedirect((foreignkeylinkprefix + '/' + modelname + '/' + str(self.page_context['ix'])).lower())
             else:
                 # Validation Error - return just the form when there is an error -
                 # the template must not try and render anything outside the form

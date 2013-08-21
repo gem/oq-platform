@@ -260,8 +260,18 @@
                 polyCount++;
         {% endfor %}
 
-        // set up the bounds group which defines how the map is fitted
-        //var boundsGroup = new L.FeatureGroup([pointsLayer,polygonsLayer]);
+        // set up epicentre graphics
+        var epicentre = L.marker([{{ epicentre.lat }}, {{ epicentre.lon }}], {'title': 'Epicentre: {{ paneltitle }}'});
+        boundsGroup.addLayer(epicentre);
+
+        var radius = 5000;  // metres
+        var numberOfCircles = 10;
+        var radiusLayer = L.layerGroup();
+
+        for (var i=1; i < numberOfCircles + 1; i++)
+        {
+                radiusLayer.addLayer(L.circle([{{ epicentre.lat }}, {{ epicentre.lon }}], radius * i, {'weight':1, 'color': '#f88', 'fillColor': '#f66', 'fillOpacity': 0.03}));
+        }
 
         //end of GEM ECD mapping
     </script>

@@ -104,11 +104,11 @@ class Location(models.Model):
     location_c = models.TextField(blank=True, verbose_name='Location: comment', help_text='An optional comment on the location and loss at the location')
 
     location_q = models.CharField(max_length=10, default=0)
-    guid = models.CharField(max_length=36, blank=True, verbose_name='Globally unique ID', help_text='For future use')
+    guid = models.CharField(max_length=36, blank=True, verbose_name='Globally unique ID', help_text='For future use', default='00000000-0000-0000-0000-000000000000')
 
-    ownerid = models.IntegerField()
-    lastupdatebyid = models.IntegerField()
-    lastupdate = models.DateTimeField(null=True, blank=True)
+    ownerid = models.IntegerField(null=False, default='1', verbose_name='Owner ID', help_text='ID of the creator/owner of the record', )
+    lastupdatebyid = models.IntegerField(null=False, default='1', verbose_name='Last update by ID', help_text='ID of the last person to update this record', )
+    lastupdate = models.DateTimeField(null=True, blank=True, help_text='Last record update date', )
 
     class Meta:
         db_table = u'econd\".\"location'

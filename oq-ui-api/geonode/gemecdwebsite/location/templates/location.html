@@ -69,8 +69,7 @@
         <div id="ecd-leftpanelwide">
             <div id="panelcontainerwide">
 
-
-                {%  if editmode %}
+                {%  if editmode and not addmode%}
                     <form method="post" class="pageedit">{% csrf_token %}
 
                      <table>
@@ -92,26 +91,80 @@
                             {%  endif %}
                             {{ surveyform.as_table }}
                         {% endfor %}
+                     </table>
 
-                        {% for damagecell in damagematrixform %}
-                            {% if damagecell.cell.errors %}
-                                <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
-                            {%  endif %}
-                            {{ damagecell.cell.as_table }}
-                        {% endfor %}
+                     {% if damagelevelsdict|length > 0 %}
+                        <h4 class="matrixtitle damage">Damage Matrix</h4>
 
-                        {% for casualtycell in casualtymatrixform %}
-                            {% if casualtycell.cell.errors %}
-                                <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
-                            {%  endif %}
-                            {{ casualtycell.cell.as_table }}
-                        {% endfor %}
+                        <div class="matrixdisplay damage">
+                        <table class="matrixdisplay damage"><tr><th class="damagelevelheader inventoryclassheader"></th>
+                        {%  for key,value in damagelevelsdict.items %}
+                            <th class="damagelevelheader"><a href="/ecd/damagelevel/{{ key }}">{{ value }}</a></th>
+                        {%  endfor %}</tr>
+                        {% for row in damagematrixformarray %}
+                        <tr>
+                            <th class="inventoryclassheader">{% for key,value in inventoryclassesdict.items %}{% ifequal forloop.counter forloop.parentloop.counter %}<a href="/ecd/inventoryclass/{{ key }}">{{ value }}</a>{% endifequal %}{% endfor %}</th>
+                            {%  for cell in row %}
+                                    {% if cell.errors %}
+                                        <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                                    {%  endif %}
+                                   {% if cell != '-' %}
+                                    <td class="cell"><table>{{ cell.as_table }}</table></td>
+                                   {% else %}
+                                    <td class="cell">-</td>
+                                   {% endif %}
+                            {% endfor %}
+                         </tr>
+                         {% endfor %}
+                         </table>
+                         </div>
+                     {% endif %}
 
-                    </table>
+                     {% if casualtylevelsdict|length > 0 %}
+                        <h4 class="matrixtitle casualty">Casualty Matrix</h4>
+
+                        <div class="matrixdisplay casualty">
+                        <table class="matrixdisplay casualty"><tr><th class="casualtylevelheader inventoryclassheader"></th>
+                        {%  for key,value in casualtylevelsdict.items %}
+                            <th class="casualtylevelheader"><a href="/ecd/casualtylevel/{{ key }}">{{ value }}</a></th>
+                        {%  endfor %}</tr>
+                        {% for row in casualtymatrixformarray %}
+                        <tr>
+                            <th class="inventoryclassheader">{% for key,value in inventoryclassesdict.items %}{% ifequal forloop.counter forloop.parentloop.counter %}<a href="/ecd/inventoryclass/{{ key }}">{{ value }}</a>{% endifequal %}{% endfor %}</th>
+                            {%  for cell in row %}
+                                    {% if cell.errors %}
+                                        <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                                    {%  endif %}
+                                   {% if cell != '-' %}
+                                    <td class="cell"><table>{{ cell.as_table }}</table></td>
+                                   {% else %}
+                                    <td class="cell">-</td>
+                                   {% endif %}
+                            {% endfor %}
+                         </tr>
+                         {% endfor %}
+                         </table>
+                         </div>
+                     {% endif %}
+
 
                     <input type="submit" value="Save" class="gobutton"/>
                      </form>
                 {%  endif %}
+
+                {%  if editmode and addmode%}
+                    <form method="post" class="pageedit">{% csrf_token %}
+
+                     <table>
+                        {% if form.errors %}
+                             <div class="formerrorheader">Sorry, there are some error(s) in your input - see below</div>
+                        {%  endif %}
+
+                        {{ form.as_table }}
+                     </table>
+                     <input type="submit" value="Save" class="gobutton"/>
+
+                {% endif %}
 
                 {% if not input_errors and not editmode%}
                 <div id="backlink">{{ page_backlink|safe }}</div>
@@ -138,13 +191,53 @@
                     {% formviewastable field_structure=surveyfields %}
                 {% endfor %}
 
-                {% for damagecell in damagematrix %}
-                    {% formviewastable field_structure=damagecell.cell %}
-                {% endfor %}
+                {% if damagelevelsdict|length > 0 %}
+                    <h4 class="matrixtitle damage">Damage Matrix</h4>
 
-                {% for casualtycell in casualtymatrix %}
-                    {% formviewastable field_structure=casualtycell.cell %}
-                {% endfor %}
+                    <div class="matrixdisplay damage">
+                    <table class="matrixdisplay damage"><tr><th class="damagelevelheader inventoryclassheader"></th>
+                    {%  for key,value in damagelevelsdict.items %}
+                        <th class="damagelevelheader"><a href="/ecd/damagelevel/{{ key }}">{{ value }}</a></th>
+                    {%  endfor %}</tr>
+                    {% for row in damagematrixdisplayarray %}
+                    <tr>
+                        <th class="inventoryclassheader">{% for key,value in inventoryclassesdict.items %}{% ifequal forloop.counter forloop.parentloop.counter %}<a href="/ecd/inventoryclass/{{ key }}">{{ value }}</a>{% endifequal %}{% endfor %}</th>
+                        {%  for element in row %}
+                               {% if element != '-' %}
+                                <td class="cell"><a href="/ecd/surveyvalue/{{ element.id }}">{% formview field_structure=element.cell %}</a></td>
+                               {% else %}
+                                <td class="cell">-</td>
+                               {% endif %}
+                        {% endfor %}
+                     </tr>
+                     {% endfor %}
+                     </table>
+                     </div>
+                {% endif %}
+
+                {% if casualtylevelsdict|length > 0 %}
+                    <h4 class="matrixtitle casualty">Casualty Matrix</h4>
+
+                    <div class="matrixdisplay casualty">
+                    <table class="matrixdisplay casualty"><tr><th class="casualtylevelheader inventoryclassheader"></th>
+                    {%  for key,value in casualtylevelsdict.items %}
+                        <th class="casualtylevelheader"><a href="/ecd/casualtylevel/{{ key }}">{{ value }}</a></th>
+                    {%  endfor %}</tr>
+                    {% for row in casualtymatrixdisplayarray %}
+                    <tr>
+                        <th class="inventoryclassheader">{% for key,value in inventoryclassesdict.items %}{% ifequal forloop.counter forloop.parentloop.counter %}<a href="/ecd/inventoryclass/{{ key }}">{{ value }}</a>{% endifequal %}{% endfor %}</th>
+                        {%  for element in row %}
+                               {% if element != '-' %}
+                                <td class="cell"><a href="/ecd/surveyvalue/{{ element.id }}">{% formview field_structure=element.cell %}</a></td>
+                               {% else %}
+                                <td class="cell">-</td>
+                               {% endif %}
+                        {% endfor %}
+                     </tr>
+                     {% endfor %}
+                     </table>
+                     </div>
+                {% endif %}
 
                 {% endif %}
             </div>
@@ -160,10 +253,13 @@
         {{ panelform.as_p }}
     </form>
 
+    {% if photogrid != '' %}
     <div id="photogrid">
         <div class="photomessage">{{ photomessage }}</div>
         {% gridlist field_structure=photogrid %}
     </div>
+    {% endif %}
+
     <!--[if lt IE 8]><div id="ie8message">You are using a version of Internet Explorer that cannot display this page - This page requires at least Internet Explorer 9 - or you can use Firefox, Chrome or Safari</div><![endif]-->
 
     <script type="text/javascript">
@@ -269,6 +365,18 @@
                 polyCount++;
         {% endfor %}
 
+        // set up epicentre graphics
+        var epicentre = L.marker([{{ epicentre.lat }}, {{ epicentre.lon }}], {'title': 'Epicentre: {{ paneltitle }}'});
+        boundsGroup.addLayer(epicentre);
+
+        var radius = 5000;  // metres
+        var numberOfCircles = 10;
+        var radiusLayer = L.layerGroup();
+
+        for (var i=1; i < numberOfCircles + 1; i++)
+        {
+                radiusLayer.addLayer(L.circle([{{ epicentre.lat }}, {{ epicentre.lon }}], radius * i, {'weight':1, 'color': '#f88', 'fillColor': '#f66', 'fillOpacity': 0.03}));
+        }
 
         //end of GEM ECD mapping
     </script>
@@ -297,6 +405,8 @@
         };
 
         var overlays = {
+            "Epicenter" : epicentre,
+            "5km radial rings": radiusLayer,
             "Points layer" : pointsLayer,
             //"Polygons layer" : polygonsLayer,
             "Sample shakemap": shakemap
@@ -308,7 +418,7 @@
             center: [20, 20],
             zoom: 2,
             maxZoom: 18,
-            layers: [ backgroundmap, pointsLayer]
+            layers: [ backgroundmap, pointsLayer, epicentre, radiusLayer]
         });
 
         // add polygon layers

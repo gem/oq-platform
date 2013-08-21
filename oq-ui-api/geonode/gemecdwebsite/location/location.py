@@ -10,29 +10,18 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
-from econd.models import EventsQuick, LocationsForJSON, LocationsForJSONAggregated,Study, Location, Locations, Inventoryclass, Surveyvalue
 from econd.event_models import Event
+from econd.models import Study, Location, Locations, Inventoryclass, Surveyvalue, Damagelevel, Casualtylevel
 from econd.sql_views import LocationsQuick
-from econd.photo_models import Photos,GeoArchiveLocations
+from econd.photo_models import Photos, GeoArchiveLocations
 
-
-appname = 'weblib'
-modelname = 'Page'
-editfields = {'include': ('name', 'subtitle', 'introtext', 'image1', 'maintext', ), 'exclude': None}
-displayfields = {'include': ( 'introtext', 'image1', 'maintext', ), 'exclude': None}
+# parameters for simple location editing as used when adding a new loaction
+appname = 'econd'
+modelname = 'Location'
 formphotosize = 'admin_thumbnail'
 
-class PageFormEdit (ModelForm):
-    class Meta:
-        model = get_model(appname, modelname)
-        fields = editfields['include']
-        exclude = editfields['exclude']
-
-class PageFormDisplay (ModelForm):
-    class Meta:
-        model = get_model(appname, modelname)
-        fields = displayfields['include']
-        exclude = displayfields['exclude']
+editfields = {'include': None, 'exclude': ['ownerid', 'lastupdatebyid', 'lastupdate', 'guid', ] }
+displayfields = {'include': None, 'exclude': ['guid', ]}
 
 class LocationPage (Pagebase):
 
@@ -81,7 +70,22 @@ class LocationPage (Pagebase):
 
     def dispatch(self, request, *args, **kwargs):
 
+        # clear the page context
+        self.page_context['inventoryclassesdict'] = ''
+        self.page_context['damagelevelsdict'] = ''
+        self.page_context['casualtylevelsdict'] = ''
+        self.page_context['damagematrixdisplayarray'] = ''
+        self.page_context['damagematrixformarray'] = ''
+        self.page_context['casualtymatrixdisplayarray'] = ''
+        self.page_context['casualtymatrixformarray'] = ''
+        self.page_context['surveyformlist'] = ''
+        self.page_context['surveyfieldlist'] = ''
+        self.page_context['photogrid'] = ''
+
         self.preProcessPage(request, **kwargs)
+        if self.page_context['addmode']:
+            self.page_context['page_title'] = 'Add new location'
+            return self.processSimpleForm(request, appname, modelname, formphotosize, self.template_name, displayfields, editfields, {'errortemplate': 'errorpage.html', 'foreignkeylinkprefix': '/ecd'})
 
         ##############################################
         # Read the querystring
@@ -208,7 +212,7 @@ class LocationPage (Pagebase):
         ##############################################################################
 
         locationForm = self.LocationForm(instance=location_record, prefix="locationform")  # create the ModelForm
-        locationfieldstructure = self.createFormFieldStructure( locationForm, location_record ) # generate field structure to pass to generictablerenderer (createFormFieldStructure is in weblib baseclasses pagebase.py)
+        locationfieldstructure = self.createFormFieldStructure( locationForm, location_record, {'foreignkeylinkprefix': '/ecd'} ) # generate field structure to pass to generictablerenderer (createFormFieldStructure is in weblib baseclasses pagebase.py)
         self.page_context['locationfields'] = locationfieldstructure # for display
         self.page_context['locationform'] = locationForm # for editing
 
@@ -217,6 +221,7 @@ class LocationPage (Pagebase):
         #######################################################
 
         # we borrow GeoArchives' locations because it sorts out Unified Damage Levels etc (but cant click on them)
+        # also we use it to look up the inventory class for non aggregated
         try:
             nonaggoverview_record = GeoArchiveLocations.objects.get(id=locationid)
             nonaggoverviewqueryset = []
@@ -235,7 +240,7 @@ class LocationPage (Pagebase):
             inventoryclassid = nonaggoverview_record.inventoryclassid
             inventoryclass_record = Inventoryclass.objects.get(pk=inventoryclassid)
             inventoryclassForm = self.InventoryclassForm(instance=inventoryclass_record, prefix='inventoryclassform')
-            inventoryclassfields = self.createFormFieldStructure( inventoryclassForm, inventoryclass_record)
+            inventoryclassfields = self.createFormFieldStructure( inventoryclassForm, inventoryclass_record, {'foreignkeylinkprefix': '/ecd'})
             self.page_context['inventoryclassfields'] = inventoryclassfields # for display
             self.page_context['inventoryclassform'] = inventoryclassForm # for editing
         except:
@@ -253,10 +258,42 @@ class LocationPage (Pagebase):
         if len(survey_record_list) > 0:
             surveyfieldlist = []
             surveyformlist = []
-            damagematrix = []
-            damagematrixform = []
-            casualtymatrix = []
-            casualtymatrixform = []
+
+            from collections import OrderedDict
+            inventoryClassesDict = OrderedDict()
+            damageLevelsDict = OrderedDict()
+            casualtyLevelsDict = OrderedDict()
+
+            damageMatrixDisplayArr = []
+            casualtyMatrixDisplayArr = []
+            damageMatrixFormArr = []
+            casualtyMatrixFormArr = []
+
+            if isAggregated:
+                # start to build the rows and columns of the matrix
+                inventoryClasses = Inventoryclass.objects.filter(parentid=studyid).order_by('levelorder','name')
+                inventoryClassesCount = len(inventoryClasses)
+                for inv in inventoryClasses:
+                    inventoryClassesDict[inv.id] = inv.name
+                inventoryClassesList = list(inventoryClassesDict) # make a list of keys from the dictionary so we can find the index value of the item
+
+                damageLevels = Damagelevel.objects.filter(parentid=studyid).order_by('levelorder','name')
+                damageLevelsCount = len(damageLevels)
+                for dam in damageLevels:
+                    damageLevelsDict[dam.id] = dam.name
+                damageLevelsList = list(damageLevelsDict) # make a list of keys from the dictionary so we can find the index value of the item
+
+                casualtyLevels = Casualtylevel.objects.filter(parentid=studyid).order_by('levelorder','name')
+                casualtyLevelsCount = len(casualtyLevels)
+                for cas in casualtyLevels:
+                    casualtyLevelsDict[cas.id] = cas.name
+                casualtyLevelsList = list(casualtyLevelsDict) # make a list of keys from the dictionary so we can find the index value of the item
+
+                # build empty 2D arrays for the damage and casualty matrices - this is pythons 'elegant' way of defining a 2d array
+                damageMatrixDisplayArr = [['-']*damageLevelsCount for i in range(inventoryClassesCount)]
+                casualtyMatrixDisplayArr = [['-']*casualtyLevelsCount for i in range(inventoryClassesCount)]
+                damageMatrixFormArr = [['-']*damageLevelsCount for i in range(inventoryClassesCount)]
+                casualtyMatrixFormArr = [['-']*casualtyLevelsCount for i in range(inventoryClassesCount)]
 
             for survey_record in survey_record_list:
 
@@ -272,26 +309,34 @@ class LocationPage (Pagebase):
                 if isAggregated and (isInDamageMatrix or isInCasualtyMatrix):
                     if isInDamageMatrix:
                         surveyForm = self.DamageMatrixSurveyForm(instance=survey_record, prefix='damagecell' + str(survey_record.id))
-                        damagematrixform.append({'cell': surveyForm, 'damagelevelid': survey_record.damagelevelid_id, 'inventoryclassid': survey_record.inventoryclassid_id, })
+                        # note order is [row][column]
+                        damageMatrixFormArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][damageLevelsList.index(survey_record.damagelevelid_id)] = surveyForm
                         surveyfields = self.createFormFieldStructure(surveyForm, survey_record )
-                        damagematrix.append({'cell': surveyfields, 'damagelevelid': survey_record.damagelevelid_id, 'inventoryclassid': survey_record.inventoryclassid_id, })
+                        # note order is [row][column]
+                        damageMatrixDisplayArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][damageLevelsList.index(survey_record.damagelevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
                     if isInCasualtyMatrix:
                         surveyForm = self.CasualtyMatrixSurveyForm(instance=survey_record, prefix='casualtycell' + str(survey_record.id))
-                        casualtymatrixform.append({'cell': surveyForm, 'casualtylevelid': survey_record.casualtylevelid_id, 'inventoryclassid': survey_record.inventoryclassid_id, })
+                        # note order is [row][column]
+                        casualtyMatrixFormArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = surveyForm
                         surveyfields = self.createFormFieldStructure(surveyForm, survey_record )
-                        casualtymatrix.append({'cell': surveyfields, 'casualtylevelid': survey_record.casualtylevelid_id, 'inventoryclassid': survey_record.inventoryclassid_id, })
+                        # note order is [row][column]
+                        casualtyMatrixDisplayArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.damagelevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
                 else:
                     surveyForm = self.SurveyForm(instance=survey_record, prefix='surveyform' + str(survey_record.id))
                     surveyformlist.append(surveyForm)
-                    surveyfields = self.createFormFieldStructure(surveyForm, survey_record )
+                    surveyfields = self.createFormFieldStructure(surveyForm, survey_record, {'foreignkeylinkprefix': '/ecd'} )
                     surveyfieldlist.append(surveyfields)
+                    self.page_context['surveyformlist'] = surveyformlist
+                    self.page_context['surveyfieldlist'] = surveyfieldlist
 
-            self.page_context['surveyfieldlist'] = surveyfieldlist # for display
-            self.page_context['surveyformlist'] = surveyformlist # for editing
-            self.page_context['damagematrix'] = damagematrix # for display
-            self.page_context['damagematrixform'] = damagematrixform # for edit
-            self.page_context['casualtymatrix'] = casualtymatrix # for display
-            self.page_context['casualtymatrixform'] = casualtymatrixform # for edit
+            self.page_context['inventoryclassesdict'] = inventoryClassesDict
+            self.page_context['damagelevelsdict'] = damageLevelsDict
+            self.page_context['casualtylevelsdict'] = casualtyLevelsDict
+
+            self.page_context['damagematrixdisplayarray'] = damageMatrixDisplayArr # for display
+            self.page_context['damagematrixformarray'] = damageMatrixFormArr # for edit
+            self.page_context['casualtymatrixdisplayarray'] = casualtyMatrixDisplayArr # for display
+            self.page_context['casualtymatrixformarray'] = casualtyMatrixFormArr # for edit
 
         # fudge for dealing with different locations of the "src" static directory on the development system
         self.page_context['src_folder'] = '/oq-platform2/'
@@ -319,6 +364,11 @@ class LocationPage (Pagebase):
             #######################
 
             # this code could be simplified
+
+            # get event epicentre
+            event = Event.objects.get(pk=eventid)
+            epicentreWKT = event.location.split(' ')
+            self.page_context['epicentre'] = {'lat': epicentreWKT[1][:-1], 'lon': epicentreWKT[0][6:]}
 
             # Prepare GeoServer request for point-based layers.
             urlStrPoints = 'http://ecd-dev.openquake.org/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdlocations&maxFeatures=5000&outputFormat=json'
@@ -511,17 +561,32 @@ class LocationPage (Pagebase):
                         survey_record.lastupdatebyid = request.user.id
                         surveyForm.save()
                     else:
-                        for errorsurveyform in damagematrixform:
-                            if errorsurveyform['cell'].prefix == 'damagecell' + str(survey_record.id):
-                                pos = damagematrixform.index(errorsurveyform)
-                                damagematrixform[pos] = {'cell': surveyForm, 'damagelevelid': survey_record.damagelevelid_id, 'inventoryclassid': survey_record.inventoryclassid_id, }
-                        self.page_context['damagematrix'] = damagematrix
+                        for row in damageMatrixFormArr:
+                            for errorsurveyform in row:
+                                if errorsurveyform.prefix == 'damagecell' + str(survey_record.id):
+                                    pos = row.index(errorsurveyform)
+                                    row[pos] = surveyForm
+                        self.page_context['damagematrixformarr'] = damageMatrixFormArr
                         self.page_context['input_errors'] = True
                         return render(request, self.template_name, self.page_context)  # Error - return just the form when there is an error - the template must not try and render anything outside the form because the context data is not present
 
-                # TODO: copy above damagecell code and do for casualtycell
-                # if 'casualtycell' + str(survey_record.id) + '-value' in request.POST:
-                # etc
+                if 'casualtycell' + str(survey_record.id) + '-value' in request.POST:
+                    # we are editing a casualty matrix survey value
+                    surveyForm = self.CasualtyMatrixSurveyForm(request.POST, instance=survey_record , prefix='casualtycell' + str(survey_record.id)) # A form bound to the POST data, prefix allows multiple forms
+                    surveyFormvalid = surveyForm.is_valid()
+                    if surveyFormvalid:
+                        survey_record.lastupdate = datetime.now()
+                        survey_record.lastupdatebyid = request.user.id
+                        surveyForm.save()
+                    else:
+                        for row in casualtyMatrixFormArr:
+                            for errorsurveyform in row:
+                                if errorsurveyform.prefix == 'casualtycell' + str(survey_record.id):
+                                    pos = row.index(errorsurveyform)
+                                    row[pos] = surveyForm
+                        self.page_context['casualtymatrixformarr'] = casualtyMatrixFormArr
+                        self.page_context['input_errors'] = True
+                        return render(request, self.template_name, self.page_context)  # Error - return just the form when there is an error - the template must not try and render anything outside the form because the context data is not present
 
             # the user has used the quick link location dropdown
             if 'panelform-location' in request.POST:

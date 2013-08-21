@@ -290,6 +290,40 @@ div.locationpage table.formview td
 
 /* end of main body of location page */
 
+/* damage and casualty matrixes */
+
+table.matrixdisplay
+{
+    border-collapse: collapse;
+}
+
+table.matrixdisplay th, table.matrixdisplay td
+{
+    vertical-align: middle;
+    border: solid 1px #ccc;
+    padding:0;
+}
+
+div.matrixdisplay th.inventoryclassheader
+{
+    width:300px;
+}
+
+div.matrixdisplay a
+{
+    display:block;
+    padding:5px;
+}
+
+div.matrixdisplay a:hover
+{
+    background-color: #bbb;
+}
+
+
+/* end of damage and casualty matrixes */
+
+
 /* Photo grid on location page */
 
 div.locationpage div.container ul

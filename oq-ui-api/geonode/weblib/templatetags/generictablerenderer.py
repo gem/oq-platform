@@ -80,6 +80,9 @@ def iteratefieldstructure(field_structure, context):
     columnheadingslist = []                     # gets sent to the template
     render_structure = []                       # gets sent to the template
     target_url = field_structure['targeturl']   # gets sent to the template
+    linkprefix = ''                             # used to prefix links derived from foreign keys, so you can look up in the related table
+    if 'foreignkeylinkprefix' in field_structure:
+        linkprefix = field_structure['foreignkeylinkprefix']
 
     for field in field_structure['fields']:
         columnname = str(field[0].keys()[0])
@@ -121,7 +124,7 @@ def iteratefieldstructure(field_structure, context):
             # link to track back through foreign key - try clause is there in case no _meta record
             try:
                 if fieldtype != 'WebLibPhoto' and columnvalue is not None and record._meta.get_field(columnname).get_internal_type() == 'ForeignKey':
-                    columnvalue = '<a href=/' + str(columnvalue._meta.module_name) + '/' + str(columnvalue.id) + '>' + str(columnvalue) + '</a>'
+                    columnvalue = '<a href=' + linkprefix + '/' + str(columnvalue._meta.module_name) + '/' + str(columnvalue.id) + '>' + str(columnvalue) + '</a>'
             except:
                 pass
 
