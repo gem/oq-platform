@@ -29,7 +29,7 @@
     <property name="app.deploy.templname" location="/etc/geonode/templates.apps/oq-platform2/"/>
     <property name="app.deploy.statname" location="/etc/geonode/static.apps/oq-platform2/"/>
     <property name="app.deploy.geoserver" value="/geoserver/"/>
-    
+
     <target name="version">
         <property file="${sdk.home}/version.ini"/>
         <echo message="Suite Client SDK ${suite_version} (${build_revision})"/>
@@ -62,7 +62,7 @@
         </copy>
         <echo message="Created application: ${app.fullpath}"/>
     </target>
-    
+
     <target name="debug" depends="checkpath">
         <fail message="Directory '${app.fullpath}' doesn't exist." unless="app.exists"/>
         <echo file="${sdk.logfile}" append="true" message="Starting debug server for '${app.fullpath}.${line.separator}"/>
@@ -130,7 +130,7 @@
             <fileset dir="${app.fullpath}/src/gxp/theme"/>
         </copy>
         <!-- copy exposure application -->
-        <copy todir="${app.build}/src/exposure">                    
+        <copy todir="${app.build}/src/exposure">
             <fileset dir="${app.fullpath}/src/exposure"/>
         </copy>
         <!-- copy geojson application -->
@@ -141,9 +141,9 @@
         <copy todir="${app.build}/src/geodetic_strain">
             <fileset dir="${app.fullpath}/src/geodetic_strain"/>
         </copy>
-        <!-- copy hazard application -->
-        <copy todir="${app.build}/src/hazard">
-            <fileset dir="${app.fullpath}/src/hazard"/>
+        <!-- copy leaflet explore application -->
+        <copy todir="${app.build}/src/explore">
+            <fileset dir="${app.fullpath}/src/explore"/>
         </copy>
         <!-- copy leaflet explore application -->
         <copy todir="${app.build}/src/explore">
@@ -184,7 +184,7 @@
             <fileset dir="${sdk.build}/${app.name}"/>
         </war>
     </target>
-    
+
     <target name="deploy-orig" depends="package">
         <echo message="Deploying application (disregard message about undeployment failure if this is the first deployment)"/>
         <echo file="${sdk.logfile}" append="true" message="Deploying application archive '${sdk.build}/${app.name}.war'.${line.separator}"/>
@@ -255,5 +255,5 @@
         </copy>
         <delete file="${app.build}/deploy-deps.stamp"/>
     </target>
-    
+
 </project>
