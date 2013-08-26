@@ -144,7 +144,7 @@
         <!-- copy hazard application -->
         <copy todir="${app.build}/src/hazard">
             <fileset dir="${app.fullpath}/src/hazard"/>
-	</copy>
+        </copy>
         <!-- copy leaflet explore application -->
         <copy todir="${app.build}/src/explore">
             <fileset dir="${app.fullpath}/src/explore"/>
