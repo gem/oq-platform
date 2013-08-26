@@ -587,6 +587,9 @@ exit 0"
     # add geodetic-strain to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic_strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic_strain.html'}, name='geodetic_strain'),\n@g" "$GEM_GN_URLS"
 
+    # add the leaflet explore app to urls.py
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/explore.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/explore.html'}, name='explore'),\n@g" "$GEM_GN_URLS"
+
     ##
     # deploy database
     cd /var/lib/geonode/
