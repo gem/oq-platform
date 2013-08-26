@@ -18,12 +18,12 @@ mkreqdir () {
     d="$1"
 
     if [ $to_old -eq 1 ]; then
-        if [ -d "$d" ]; then 
-            if [ -d "${d}.old" ]; then 
+        if [ -d "$d" ]; then
+            if [ -d "${d}.old" ]; then
 	        rm -rf "${d}.old"
-            fi 
+            fi
             mv "${d}" "${d}.old"
-        fi         
+        fi
     fi
 
     if [ ! -d "$d" ]; then
@@ -31,7 +31,7 @@ mkreqdir () {
     fi
 
     if [ ! -d "$d" ]; then
-        echo "ERROR: '$d' dir creation failed" 
+        echo "ERROR: '$d' dir creation failed"
         exit 2
     fi
     return 0
