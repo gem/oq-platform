@@ -498,7 +498,7 @@ psql -f $GEM_POSTGIS_PATH/spatial_ref_sys.sql template_postgis
     fi
 
     ###
-    echo "== Add 'geodetic', 'observations', 'isc_viewer', 'ghec_viewer' and 'gaf_viewer' Django applications =="
+    echo "== Add Django applications =="
 
 sudo su - $norm_user -c "
 cd $norm_dir
@@ -642,7 +642,7 @@ exit 0"
     cd $norm_dir
 
     ##
-    echo "Add 'faultedearth', 'geodetic', 'isc_viewer', 'exposure_country' and 'exposure_grid' client applications"
+    echo "Add client applications"
     sudo su - $norm_user -c "
 cd \"$norm_dir/oq-platform/oq-ui-client\"
 ant init
