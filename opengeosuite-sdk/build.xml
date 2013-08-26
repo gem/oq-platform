@@ -141,9 +141,9 @@
         <copy todir="${app.build}/src/geodetic_strain">
             <fileset dir="${app.fullpath}/src/geodetic_strain"/>
         </copy>
-	    <!-- copy hazard application -->
-        <copy todir="${app.build}/src/hazard">
-            <fileset dir="${app.fullpath}/src/hazard"/>
+        <!-- copy leaflet explore application -->
+        <copy todir="${app.build}/src/explore">
+            <fileset dir="${app.fullpath}/src/explore"/>
         </copy>
 
         <!-- build app js -->
