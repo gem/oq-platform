@@ -557,6 +557,7 @@ exit 0"
     installed_apps_add 'geonode.isc_viewer'
     installed_apps_add 'geonode.ghec_viewer'
     installed_apps_add 'geonode.gaf_viewer'
+    installed_apps_add 'geonode.icebox'
 
     # add exposure when indicated by user
     if [ $GEM_DJANGO_MENU = "y" -o "$GEM_DJANGO_MENU" = "Y" ]; then
@@ -586,6 +587,9 @@ exit 0"
 
     # add geodetic-strain to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic_strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic_strain.html'}, name='geodetic_strain'),\n@g" "$GEM_GN_URLS"
+
+    # add icebox to urls.py
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^icebox/', include('geonode.icebox.urls')),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
