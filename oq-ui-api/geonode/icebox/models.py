@@ -21,14 +21,14 @@ from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 
 
-class Result(models.Model):
+class Artifact(models.Model):
     user = models.ForeignKey(User)
-    result_type = models.TextField(
+    artifact_type = models.TextField(
         help_text=('Indicates the type of artifact ("hazard_curve", '
                    '"loss_map", etc.')
     )
     name = models.TextField(help_text='Name of the artifact')
-    result_data = models.TextField(
+    artifact_data = models.TextField(
         help_text='Raw artifact data, as a text blob'
     )
     content_type = models.TextField(
