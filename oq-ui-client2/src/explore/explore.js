@@ -138,8 +138,10 @@ var startExploreApp = function() {
             }
             else {
                 var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
-                    + selectedLayer 
-                    + '/{z}/{x}/{y}.png',{opacity: 0.8}); 
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                    +selectedLayer
+                    +'.json', opacity: 0.8});
                 layerControl.addOverlay(tileLayer, selectedLayer);
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
