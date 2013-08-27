@@ -116,15 +116,15 @@ def import_artifacts(request):
                     artifact_data=artifact_data,
                     content_type=content_type,
                 )
-            except urllib2.HTTPError, err:
+            except urllib2.HTTPError:
                 # Be forgiving of 404s, since the not all artifacts will be
                 # available in all formats.
                 continue
             else:
-                # if there's no 404 when trying to get the result,
+                # if there's no 404 when trying to get the artifact,
                 # that means we succesfully open the connection
                 # (and probably succssfully imported), so we need
                 # to close the connection
-                result_url.close()
+                artifact_url.close()
 
     return HttpResponse('Import from %s is complete' % import_url)
