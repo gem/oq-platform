@@ -18,14 +18,14 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from icebox.views import list_results
-from icebox.views import get_result
-from icebox.views import import_results
+from icebox.views import list_artifacts
+from icebox.views import get_artifact
+from icebox.views import import_artifacts
 
 
 urlpatterns = patterns(
     'geonode.icebox.views',
-    url(r'^results$', list_results),
-    url(r'^result/(\d+)$', get_result),
-    url(r'^results/import$', import_results),
+    url(r'^artifacts$', list_artifacts),
+    url(r'^artifact/(\d+)$', get_artifact),
+    url(r'^artifacts/import$', import_artifacts),
 )
