@@ -36,6 +36,7 @@ var startExploreApp = function() {
     };
 
     layerControl = L.control.layers(baselayer);
+    layerControl.setPosition('topleft');
 
     /***********
      * The map *
