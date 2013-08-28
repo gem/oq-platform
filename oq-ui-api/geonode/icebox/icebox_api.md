@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Icebox provides a service for importing, browsing, and download various OpenQuake artifacts, intend for use by web clients. Below the supported API methods are described.
+Icebox provides a service for importing, browsing, and download various OpenQuake artifacts, intended for use by web clients. The supported API methods are described below.
 
 All responses are JSON, unless otherwise noted.
 
@@ -36,7 +36,6 @@ Response: The raw content of the artifact (a blob of XML, JSON, GeoJSON, plain t
 #### POST /icebox/artifacts/import
 
 Initiates an import of artifacts from a location which implements the oq-engine-server API. (TODO: Link oq-engine-server API doc.)
-
 
 Parameters:
   * import_url: a URL which implements the `/v1/calc/hazard/:calc_id/results` or `/v1/calc/risk/:calc_id/results` method of the oq-engine-server (TODO: add links to related doc)
