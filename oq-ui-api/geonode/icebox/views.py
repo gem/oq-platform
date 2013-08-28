@@ -164,4 +164,4 @@ def import_artifacts(request):
                 # to close the connection
                 artifact_url.close()
 
-    return HttpResponse('%s items imported from %s.' % (count, import_url))
+    return HttpResponse('%s items imported from %s' % (count, import_url))
