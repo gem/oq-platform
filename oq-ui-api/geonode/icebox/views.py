@@ -19,8 +19,9 @@
 import json
 import urllib
 import urllib2
+import urlparse
 
-from django.contrib.auth.models import User
+from django.contrib.auth import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -31,9 +32,32 @@ from icebox import models as icebox_models
 
 IMPORT_CONTENT_TYPES = ['geojson']  # TODO(LB): Support 'xml' as well.
 
+#: JSON mime type
+JSON = 'application/json'
+#: plain text mime type
+PLAIN_TEXT = 'text/plain'
+
+
+def _get_base_url(request):
+    """
+    Construct a base URL, given a request object.
+
+    This comprises the protocol prefix (http:// or https://) and the host,
+    which can include the port number. For example:
+    http://www.openquake.org or https://www.openquake.org:8000.
+    """
+    if request.is_secure():
+        base_url = 'https://%s'
+    else:
+        base_url = 'http://%s'
+    base_url %= request.META['HTTP_HOST']
+    return base_url
+
 
 @require_http_methods(['GET'])
 def list_artifacts(request):
+    base_url = _get_base_url(request)
+
     artifacts = []
     for artifact in icebox_models.Artifact.objects.all():
         artifacts.append(dict(
@@ -41,13 +65,24 @@ def list_artifacts(request):
             name=artifact.name,
             content_type=artifact.content_type,
             artifact_type=artifact.artifact_type,
+            url=urlparse.urljoin(base_url, 'icebox/artifact/%s' % artifact.id),
         ))
-    return HttpResponse(json.dumps(artifacts))
+    return HttpResponse(json.dumps(artifacts), content_type=JSON)
 
 
 @require_http_methods(['GET'])
 def get_artifact(request, artifact_id):
-    return HttpResponse('TODO: get_artifact %s' % artifact_id)
+    """
+    Get the raw data content of an artifact with a given ``artifact_id``.
+
+    This is pretty much just a simple wrapper around a DB query.
+    """
+    try:
+        art = icebox_models.Artifact.objects.get(id=artifact_id)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound()
+    else:
+        return HttpResponse(art.artifact_data, content_type=PLAIN_TEXT)
 
 
 @csrf_exempt
@@ -76,7 +111,7 @@ def import_artifacts(request):
 
     # Try to find the user the client is referring to.
     try:
-        owner_user = User.objects.get(username=owner)
+        owner_user = models.User.objects.get(username=owner)
     except ObjectDoesNotExist:
         # Invalid user.
         return HttpResponseNotFound(
@@ -88,8 +123,6 @@ def import_artifacts(request):
     try:
         url = urllib2.urlopen(import_url)
         data = json.loads(url.read())
-        if not data:
-            return HttpResponseNotFound()
     except urllib2.HTTPError:
         # Something is the wrong with this url. We can't get anything from it.
         # TODO(LB): Is a 404 appropriate here?
@@ -101,14 +134,17 @@ def import_artifacts(request):
         url.close()
 
     # Iterate over artifacts and attempt to import each.
+    count = 0
     for artifact in data:
         # Get all artifact types available. Currently, xml and geojson.
         for content_type in IMPORT_CONTENT_TYPES:
             try:
                 params = urllib.urlencode(dict(export_type=content_type))
+                # This is a GET request to an oq-engine-server API:
                 artifact_url = urllib2.urlopen('%s?%s'
                                                % (artifact['url'], params))
                 artifact_data = artifact_url.read()
+
                 icebox_models.Artifact.objects.create(
                     user=owner_user,
                     artifact_type=artifact['type'],
@@ -116,6 +152,7 @@ def import_artifacts(request):
                     artifact_data=artifact_data,
                     content_type=content_type,
                 )
+                count += 1
             except urllib2.HTTPError:
                 # Be forgiving of 404s, since the not all artifacts will be
                 # available in all formats.
@@ -127,4 +164,4 @@ def import_artifacts(request):
                 # to close the connection
                 artifact_url.close()
 
-    return HttpResponse('Import from %s is complete' % import_url)
+    return HttpResponse('%s items imported from %s.' % (count, import_url))
