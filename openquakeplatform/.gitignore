@@ -1,0 +1,5 @@
+downloaded/
+geoserver/
+openquakeplatform.egg-info/
+*.pyc
+development.db
