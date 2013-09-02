@@ -405,7 +405,7 @@ OGC_SERVER = {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
-        'PASSWORD' : 'geoserver',
+        'PASSWORD' : 'admin',
         'OPTIONS' : {
             'MAPFISH_PRINT_ENABLED' : True,
             'PRINTNG_ENABLED' : True,
@@ -413,7 +413,7 @@ OGC_SERVER = {
             'GEOGIT_ENABLED' : False,
             'WMST_ENABLED' : False,
             # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': '', #'datastore',
+            'DATASTORE': 'default', #'datastore',
         }
     }
 }
