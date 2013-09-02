@@ -48,18 +48,11 @@ os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 # Defines settings for development
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': "oqplatform",
+        'USER': 'oq_admin',
+        'PASSWORD': 'openquake'
     },
-    # vector datastore for uploads
-    #'datastore' : {
-    #    'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #    'NAME': '',
-    #    'USER' : '',
-    #    'PASSWORD' : '',
-    #    'HOST' : '',
-    #    'PORT' : '',
-    #}
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -212,6 +205,9 @@ INSTALLED_APPS = (
     'geonode.search',
     'geonode.catalogue',
     'geonode.documents',
+
+    # Our apps
+    'isc_viewer',
 )
 
 LOGGING = {
