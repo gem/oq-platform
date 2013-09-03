@@ -651,6 +651,10 @@ rm -rf ./build
     ../opengeosuite-sdk/bin/suite-sdk deploy -b ./build .
     cd "$norm_dir"
 
+    # this part is required because the wax submodule has an occurrency of one of the urls
+    # that we relativize to current scheme
+    sed -i 's@http://dev.virtualearth.net/REST@//dev.virtualearth.net/REST@g'  $(grep -rl 'http://dev.virtualearth.net/REST' /var/www)
+
     service apache2 restart
 
     ###
