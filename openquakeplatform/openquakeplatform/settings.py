@@ -1,24 +1,6 @@
 # -*- coding: utf-8 -*-
-#########################################################################
-#
-# Copyright (C) 2012 OpenPlans
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-#########################################################################
 
-# Django settings for the GeoNode project.
+# Django settings for the Openquake Platform project.
 import os
 import geonode
 
@@ -81,7 +63,6 @@ LANGUAGES = (
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     #('fil', 'Filipino'),
-    
 )
 
 WSGI_APPLICATION = "openquakeplatform.wsgi.application"
@@ -118,7 +99,7 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Note that Django automatically includes the "templates" dir in all the
@@ -150,9 +131,11 @@ LOGOUT_URL = '/account/logout/'
 # Activate the Documents application
 DOCUMENTS_APP = True
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt'
+    'doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif',
+    'tiff', 'png', 'gif', 'txt'
 ]
-MAX_DOCUMENT_SIZE = 2 # MB
+
+MAX_DOCUMENT_SIZE = 2  # MB
 
 
 INSTALLED_APPS = (
@@ -215,10 +198,12 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
         },
         'simple': {
-            'format': '%(message)s',        },
+            'format': '%(message)s',
+        },
     },
     'filters': {
         'require_debug_false': {
@@ -227,12 +212,12 @@ LOGGING = {
     },
     'handlers': {
         'null': {
-            'level':'ERROR',
-            'class':'django.utils.log.NullHandler',
+            'level': 'ERROR',
+            'class': 'django.utils.log.NullHandler',
         },
-        'console':{
-            'level':'ERROR',
-            'class':'logging.StreamHandler',
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
@@ -301,17 +286,18 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # This middleware allows to print private layers for the users that have 
-    # the permissions to view them.
-    # It sets temporary the involved layers as public before restoring the permissions.
-    # Beware that for few seconds the involved layers are public there could be risks.
-    #'geonode.middleware.PrintProxyMiddleware',
+    # This middleware allows to print private layers for the users
+    # that have the permissions to view them. It sets temporary the
+    # involved layers as public before restoring the permissions.
+    # Beware that for few seconds the involved layers are public there
+    # could be risks. 'geonode.middleware.PrintProxyMiddleware',
 )
 
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
+
 
 def get_user_url(u):
     return u.profile.get_absolute_url()
@@ -362,7 +348,7 @@ ACTSTREAM_SETTINGS = {
 SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
-SOUTH_TESTS_MIGRATE=False
+SOUTH_TESTS_MIGRATE = False
 
 # Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'
@@ -381,9 +367,9 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
-      '--nocapture',
-      '--detailed-errors',
-      ]
+    '--nocapture',
+    '--detailed-errors',
+    ]
 
 #
 # GeoNode specific settings
@@ -397,32 +383,32 @@ DEFAULT_TOPICCATEGORY = 'location'
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
 # Search Snippet Cache Time in Seconds
-CACHE_TIME=0
+CACHE_TIME = 0
 
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
-    'default' : {
-        'BACKEND' : 'geonode.geoserver',
-        'LOCATION' : 'http://localhost:8080/geoserver/',
-        'USER' : 'admin',
-        'PASSWORD' : 'geoserver',
-        'OPTIONS' : {
-            'MAPFISH_PRINT_ENABLED' : True,
-            'PRINTNG_ENABLED' : True,
-            'GEONODE_SECURITY_ENABLED' : True,
-            'GEOGIT_ENABLED' : False,
-            'WMST_ENABLED' : False,
+    'default': {
+        'BACKEND': 'geonode.geoserver',
+        'LOCATION': 'http://localhost:8080/geoserver/',
+        'USER': 'admin',
+        'PASSWORD': 'geoserver',
+        'OPTIONS': {
+            'MAPFISH_PRINT_ENABLED': True,
+            'PRINTNG_ENABLED': True,
+            'GEONODE_SECURITY_ENABLED': True,
+            'GEOGIT_ENABLED': False,
+            'WMST_ENABLED': False,
             # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': 'default', #'datastore',
+            'DATASTORE': 'default',   # 'datastore',
         }
     }
 }
 
 # Uploader Settings
 UPLOADER = {
-    'OPTIONS' : {
-        'TIME_ENABLED' : False,
-        'GEOGIT_ENABLED' : False,
+    'OPTIONS': {
+        'TIME_ENABLED': False,
+        'GEOGIT_ENABLED': False,
     }
 }
 
@@ -455,9 +441,10 @@ PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
         'metadata:main': {
-            'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',
-            'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
+            'identification_title': 'OQ Catalogue',
+            'identification_abstract': 'OQ abstract',
+            'identification_keywords': (
+                'sdi,catalogue,discovery,metadata,GeoNode'),
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
             'identification_accessconstraints': 'None',
@@ -475,7 +462,7 @@ PYCSW = {
             'contact_email': 'Email Address',
             'contact_url': 'Contact URL',
             'contact_hours': 'Hours of Service',
-            'contact_instructions': 'During hours of service. Off on weekends.',
+            'contact_instructions': 'openquake-users@google-groups.com',
             'contact_role': 'pointOfContact',
         },
         'metadata:inspire': {
@@ -507,57 +494,55 @@ MAP_BASELAYERS = [{
         "ptype": "gxp_wmscsource",
         "url": OGC_SERVER['default']['LOCATION'] + "wms",
         "restUrl": "/gs/rest"
-     }
-  },{
+        }
+    }, {
     "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer",
-    "args":["No background"],
+    "type": "OpenLayers.Layer",
+    "args": ["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
-  }, {
+    }, {
     "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
+    "type": "OpenLayers.Layer.OSM",
+    "args": ["OpenStreetMap"],
     "visibility": False,
     "fixed": True,
-    "group":"background"
-  }, {
+    "group": "background"
+    }, {
     "source": {"ptype": "gxp_mapquestsource"},
-    "name":"osm",
-    "group":"background",
+    "name": "osm",
+    "group": "background",
     "visibility": True
-  }, {
+    }, {
     "source": {"ptype": "gxp_mapquestsource"},
-    "name":"naip",
-    "group":"background",
+    "name": "naip",
+    "group": "background",
     "visibility": False
-  }, {
+    }, {
     "source": {"ptype": "gxp_bingsource"},
     "name": "AerialWithLabels",
     "fixed": True,
     "visibility": False,
-    "group":"background"
-  },{
+    "group": "background"
+    }, {
     "source": {"ptype": "gxp_mapboxsource"},
-  }, {
+    }, {
     "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
+    "type": "OpenLayers.Layer.WMS",
+    "group": "background",
     "visibility": False,
     "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin": [-20037508.34, -20037508.34]
-      },
-      {"buffer": 0}
+    "args": [
+        "bluemarble",
+        "http://maps.opengeo.org/geowebcache/service/wms",
+        {
+            "layers": ["bluemarble"],
+            "format": "image/png",
+            "tiled": True,
+            "tilesOrigin": [-20037508.34, -20037508.34]
+        }, {"buffer": 0}
     ]
-
 }]
 
 LEAFLET_CONFIG = {
@@ -568,14 +553,16 @@ LEAFLET_CONFIG = {
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False
 
-# Add additional paths (as regular expressions) that don't require authentication.
+# Add additional paths (as regular expressions) that don't require
+# authentication.
 AUTH_EXEMPT_URLS = ()
 
 if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('geonode.security.middleware.LoginRequiredMiddleware',)
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+        'geonode.security.middleware.LoginRequiredMiddleware',)
 
 # Load more settings from a file called local_settings.py if it exists
-try:
-    from local_settings import *
-except ImportError:
-    pass
+# try:
+#     from local_settings import *
+# except ImportError:
+#     pass
