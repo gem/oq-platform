@@ -107,7 +107,7 @@ Ext.onReady(function() {
         sources: {
             local: {
                 ptype: "gxp_wmscsource",
-                url: "http://127.0.0.1:8080/geoserver/wms?",
+                url: "/geoserver/wms",
                 version: "1.1.1"
             },
             osm: {
