@@ -18,7 +18,7 @@
  * you must include the GMaps API (<= v3.6) in your html:
  *
  * (code)
- * <script src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+ * <script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
  * (end)
  */
 OpenLayers.Layer.Google.v3 = {
