@@ -405,7 +405,7 @@ OGC_SERVER = {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
-        'PASSWORD' : 'admin',
+        'PASSWORD' : 'geoserver',
         'OPTIONS' : {
             'MAPFISH_PRINT_ENABLED' : True,
             'PRINTNG_ENABLED' : True,
