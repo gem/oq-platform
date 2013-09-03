@@ -8,4 +8,4 @@
 #
 # $ source /var/lib/geonode/bin/activate
 
-python $(which nosetests) "$@" geonode/exposure/tests.py
+python $(which nosetests) "$@" geonode/exposure/tests.py geonode/icebox/tests.py
