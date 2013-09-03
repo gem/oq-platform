@@ -6,21 +6,24 @@ You should write some docs, it's good for the soul.
 Installation
 ------------
 
-Optional: create a new virtualenv for openquakeplatform.
+Create the virtualenv and install the required dependencies::
 
-Then, install the required dependencies::
-
+    $ mkvirtualenv platform
+    $ cd platform
+    $ git clone https://github.com/gem/oq-platform -b geonode2-integration
+    $ cd oq-platform
     $ pip install -e openquakeplatform
+
+Then, setup Openquakeplatform for usage the first time::
+
+    $ cd openquakeplatform
+    $ paver setup # downloads geoserver
+    
+Create the database, setup geoserver, manage.py updatelayers
 
 
 Usage
 -----
-
-Setup Openquakeplatform for usage the first time::
-
-    $ cd openquakeplatform
-    $ paver setup # downloads geoserver
-
 
 Start the application::
 

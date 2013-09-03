@@ -7,6 +7,7 @@ if [ -d /opt/local/lib/postgresql90/bin ]; then
     export PATH=$PATH:/opt/local/lib/postgresql90
 fi
 
+
 createdb template_postgis
 psql -d postgres -c \"UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';\"
 psql -f $GEM_POSTGIS_PATH/postgis.sql template_postgis
