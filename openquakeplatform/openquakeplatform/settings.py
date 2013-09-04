@@ -207,7 +207,7 @@ INSTALLED_APPS = (
     'geonode.documents',
 
     # Our apps
-    'isc_viewer',
+    'openquakeplatform.isc_viewer',
 )
 
 LOGGING = {
