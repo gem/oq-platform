@@ -3,3 +3,5 @@ geoserver/
 openquakeplatform.egg-info/
 *.pyc
 development.db
+static_root/
+uploaded

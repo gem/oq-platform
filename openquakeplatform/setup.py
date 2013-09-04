@@ -1,8 +1,10 @@
 import os
 from distutils.core import setup
 
+
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 
 setup(
     name="openquakeplatform",
@@ -20,7 +22,7 @@ setup(
     keywords="openquakeplatform geonode django",
     url='https://github.com/openquakeplatform/openquakeplatform',
     packages=['openquakeplatform',],
-    install_requires=["geonode==2.0b52"],
+    install_requires=["geonode==2.0b52", "psycopg2"],
     include_package_data=True,
     zip_safe=False,
 )
