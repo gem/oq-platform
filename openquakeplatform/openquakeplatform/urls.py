@@ -28,6 +28,8 @@ urlpatterns = patterns('',
 
     url(r'^isc_viewer/$', TemplateView.as_view(
         template_name="isc_viewer.html"), name='isc_viewer'),
+    url(r'^faulted_earth/$', TemplateView.as_view(
+        template_name="faulted_earth.html"), name='faulted_earth'),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'site_index.html'}, name='home'),

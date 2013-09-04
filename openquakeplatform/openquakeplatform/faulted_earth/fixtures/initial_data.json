@@ -1,7 +1,7 @@
 [
     {
         "pk": 8,
-        "model": "observations.faultsource",
+        "model": "faulted_earth.faultsource",
         "fields": {
             "rake_pref": null,
             "marker_age": null,
@@ -87,7 +87,7 @@
     },
     {
         "pk": 6, 
-        "model": "observations.faultsource", 
+        "model": "faulted_earth.faultsource", 
         "fields": {
             "mag_min": 5.43623111999222, 
             "mom_max": 1.20625568356542e+25, 
@@ -145,7 +145,7 @@
     }, 
     {
         "pk": 7, 
-        "model": "observations.faultsource", 
+        "model": "faulted_earth.faultsource", 
         "fields": {
             "mag_min": 6.68935107179469, 
             "mom_max": 2.70541182913301e+26, 
@@ -203,7 +203,7 @@
     }, 
     {
         "pk": 1, 
-        "model": "observations.fault", 
+        "model": "faulted_earth.fault", 
         "fields": {
             "dis_max": 33, 
             "length_max": 33, 
@@ -258,7 +258,7 @@
     }, 
     {
         "pk": 2, 
-        "model": "observations.fault", 
+        "model": "faulted_earth.fault", 
         "fields": {
             "dis_max": null, 
             "length_max": 5.0, 
@@ -305,7 +305,7 @@
     }, 
     {
         "pk": 3, 
-        "model": "observations.fault", 
+        "model": "faulted_earth.fault", 
         "fields": {
             "dis_max": null, 
             "length_max": 26.0, 
@@ -352,7 +352,7 @@
     }, 
     {
         "pk": 4, 
-        "model": "observations.fault", 
+        "model": "faulted_earth.fault", 
         "fields": {
             "dis_max": null, 
             "length_max": 57.0, 
@@ -399,7 +399,7 @@
     }, 
     {
         "pk": 1, 
-        "model": "observations.faultsection", 
+        "model": "faulted_earth.faultsection", 
         "fields": {
             "dis_max": null, 
             "length_max": null, 
@@ -448,7 +448,7 @@
     }, 
     {
         "pk": 2, 
-        "model": "observations.faultsection", 
+        "model": "faulted_earth.faultsection", 
         "fields": {
             "dis_max": null, 
             "length_max": 5.0, 
@@ -497,7 +497,7 @@
     }, 
     {
         "pk": 3, 
-        "model": "observations.faultsection", 
+        "model": "faulted_earth.faultsection", 
         "fields": {
             "dis_max": null, 
             "length_max": null, 
@@ -547,7 +547,7 @@
     }, 
     {
         "pk": 4, 
-        "model": "observations.faultsection", 
+        "model": "faulted_earth.faultsection", 
         "fields": {
             "dis_max": null, 
             "length_max": null, 
@@ -596,7 +596,7 @@
     }, 
     {
         "pk": 1, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 0, 
             "notes": "Wellington", 
@@ -608,7 +608,7 @@
     }, 
     {
         "pk": 5, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 0, 
             "notes": "Wellingtion", 
@@ -620,7 +620,7 @@
     }, 
     {
         "pk": 4, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 2500, 
             "notes": "Wellingtion4 -", 
@@ -632,7 +632,7 @@
     }, 
     {
         "pk": 54, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "", 
@@ -644,7 +644,7 @@
     }, 
     {
         "pk": 55, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "", 
@@ -656,7 +656,7 @@
     }, 
     {
         "pk": 56, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "Eroded scarp", 
@@ -668,7 +668,7 @@
     }, 
     {
         "pk": 61, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 545979, 
             "notes": "Eroded scarp", 
@@ -680,7 +680,7 @@
     }, 
     {
         "pk": 62, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 545979, 
             "notes": "Eroded scarp", 
@@ -692,7 +692,7 @@
     }, 
     {
         "pk": 67, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 136494, 
             "notes": "Concealed", 
@@ -704,7 +704,7 @@
     }, 
     {
         "pk": 68, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 136494, 
             "notes": "Eroded scarp", 
@@ -716,7 +716,7 @@
     }, 
     {
         "pk": 69, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "Eroded scarp", 
@@ -728,7 +728,7 @@
     }, 
     {
         "pk": 70, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "Concealed", 
@@ -740,7 +740,7 @@
     }, 
     {
         "pk": 86, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 545979, 
             "notes": "This is a test of a trace on the seaward section of the Hope Fault", 
@@ -752,7 +752,7 @@
     }, 
     {
         "pk": 88, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 545979, 
             "notes": "Test 3, seaward section, Hope Fault", 
@@ -764,7 +764,7 @@
     }, 
     {
         "pk": 87, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 545979, 
             "notes": "Test of a trace on the seaward section, Hope Fault", 
@@ -776,7 +776,7 @@
     }, 
     {
         "pk": 2, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 0, 
             "notes": "Wellingtion3", 
@@ -788,7 +788,7 @@
     }, 
     {
         "pk": 71, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 60000, 
             "notes": "Concealed", 
@@ -800,7 +800,7 @@
     }, 
     {
         "pk": 91, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 34000, 
             "notes": "fake", 
@@ -814,7 +814,7 @@
     }, 
     {
         "pk": 92, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 0, 
             "notes": "", 
@@ -828,7 +828,7 @@
     }, 
     {
         "pk": 93, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 0, 
             "notes": "", 
@@ -842,7 +842,7 @@
     }, 
     {
         "pk": 94, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 0, 
             "notes": "", 
@@ -856,7 +856,7 @@
     }, 
     {
         "pk": 96, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "This is a test", 
@@ -870,7 +870,7 @@
     }, 
     {
         "pk": 98, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "", 
@@ -884,7 +884,7 @@
     }, 
     {
         "pk": 97, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "Test 2", 
@@ -898,7 +898,7 @@
     }, 
     {
         "pk": 100, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "Test", 
@@ -912,7 +912,7 @@
     }, 
     {
         "pk": 101, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "Test", 
@@ -926,7 +926,7 @@
     }, 
     {
         "pk": 102, 
-        "model": "observations.trace", 
+        "model": "faulted_earth.trace", 
         "fields": {
             "scale": 272989, 
             "notes": "", 
@@ -940,7 +940,7 @@
     }, 
     {
         "pk": 1, 
-        "model": "observations.event", 
+        "model": "faulted_earth.event", 
         "fields": {
             "scale": 34123, 
             "notes": "", 

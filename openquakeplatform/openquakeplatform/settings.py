@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'django.contrib.humanize',
+    'django.contrib.gis',
 
     # Third party apps
 
@@ -191,6 +192,7 @@ INSTALLED_APPS = (
 
     # Our apps
     'openquakeplatform.isc_viewer',
+    'openquakeplatform.faulted_earth',
 )
 
 LOGGING = {
