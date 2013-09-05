@@ -8,6 +8,7 @@ from fabric.api import settings
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
+env.shell = '/bin/bash -c '
 
 #: Base dir for postgis extension code
 POSTGIS_DIR = '/usr/share/postgresql/9.1/contrib/postgis-1.5'
@@ -88,7 +89,12 @@ def stop():
 
 
 def _pgsudo(command, **kwargs):
-    return sudo(command, user='postgres', **kwargs)
+    # NOTE(LB): We change the directory here to avoid some login weirdness
+    # with being unable to read the `fab` invoker's home dir.
+    # Without this leading `cd /tmp && `, we get errors like this:
+    # `could not change directory to "/home/lars"`
+    # I observed this only on Linux, but not on OSX.
+    return sudo('cd /tmp && ' + command, user='postgres', **kwargs)
 
 
 def _pgquery(query):
