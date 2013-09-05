@@ -109,7 +109,7 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_faultsource&featureID=observations_faultsource." + this.sessionFids[0] + "&outputFormat=shape-zip");
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=faulted_earth_faultsource&featureID=observations_faultsource." + this.sessionFids[0] + "&outputFormat=shape-zip");
                     },
                     scope: this
                 }]
