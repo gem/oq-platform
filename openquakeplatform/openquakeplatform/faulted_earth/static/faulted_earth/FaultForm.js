@@ -56,7 +56,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     return;
                 }
 		/* fixme: is this check really needed ? */
-                if (featureManager.layerRecord.get("name") == "geonode:observations_fault") {
+                if (featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_fault") {
 		    /* store the fault (for multiple purposes like use
 		     * it for fault source creation) */
                     this.target.fault = e.feature;
@@ -64,7 +64,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
             },
             "featureunselected": function(e) {
 		/* fixme: is this check really needed ? */
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_fault") {
+                if (this.active && featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_fault") {
                     this.target.fault = null;
                 }
             },
@@ -130,7 +130,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
 
                         Ext.Ajax.request({
                             method: "POST",
-                            url: faulted_earth.app_url + '/observations/faultsource/create',
+                            url: faulted_earth.app_url + 'faultsource/create',
                             params: Ext.encode({fault_id: this.target.fault.fid}),
                             success: function(response, opts) {
 				app.tools.faultsource_manager.featureStore.reload();
@@ -162,7 +162,7 @@ faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_fault&featureID=" + this.target.fault.fid + "&outputFormat=shape-zip");
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=faulted_earth_fault&featureID=" + this.target.fault.fid + "&outputFormat=shape-zip");
                     },
                     scope: this
                 }]

@@ -286,7 +286,7 @@ MIDDLEWARE_CLASSES = (
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # This middleware allows to print private layers for the users
     # that have the permissions to view them. It sets temporary the

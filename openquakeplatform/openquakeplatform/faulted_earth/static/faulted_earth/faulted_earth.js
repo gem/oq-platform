@@ -1,49 +1,10 @@
-/**
- *
- * @require widgets/Viewer.js
- * @require plugins/LayerTree.js
- * @require plugins/OLSource.js
- * @require plugins/OSMSource.js
- * @require plugins/WMSCSource.js
- * @require plugins/ZoomToExtent.js
- * @require plugins/LoadingIndicator.js
- * @require plugins/ZoomToSelectedFeatures.js
- * @require plugins/NavigationHistory.js
- * @require plugins/Zoom.js
- * @require widgets/ScaleOverlay.js
- * @require plugins/AddLayers.js
- * @require plugins/RemoveLayer.js
- * @require RowExpander.js
- * @require plugins/LayerProperties.js
- * @require widgets/WMSLayerPanel.js
- * @require plugins/WMSGetFeatureInfo.js
- * @require plugins/GoogleSource.js
- * @require plugins/GoogleGeocoder.js
- * @require plugins/Legend.js
- * @require plugins/Measure.js
- * @require plugins/FeatureManager.js
- * @require plugins/FeatureGrid.js
- * @require plugins/FeatureEditor.js
- * @require plugins/DeleteSelectedFeatures.js
- *
- * @require faulted_earth/models.js
- * @require faulted_earth/validation.js
- * @require faulted_earth/help.js
- * @require faulted_earth/FeatureGrid.js
- * @require faulted_earth/FeatureEditPopup.js
- * @require faulted_earth/ObservationFeatureEditor.js
- * @require faulted_earth/SiteForm.js
- * @require faulted_earth/TraceForm.js
- * @require faulted_earth/SummaryForm.js
- * @require faulted_earth/FaultForm.js
- * @require faulted_earth/SourceForm.js
- */
-
 var app;
 
 OpenLayers.Layer.Google.v3.animationEnabled = false;
 OpenLayers.Layer.WMS.prototype.DEFAULT_PARAMS.transparent = true;
-Ext.BLANK_IMAGE_URL = "theme/app/img/blank.gif";
+
+/* this configuration should go in a common.js file */
+Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
 OpenLayers.ImgPath = "externals/openlayers/img/";
 
 
@@ -51,12 +12,27 @@ Ext.namespace('faulted_earth');
 
 /* expecting the app on port 80/443 if in debug mode, i.e. if a port
  * has been specified in the location */
-faulted_earth.app_url = document.location.protocol + '//' + document.location.hostname;
+faulted_earth.app_url = document.location.href;
 
 
 Ext.onReady(function() {
+// Add csrf token to every ajax request
 
-    app = new gxp.Viewer({
+Ext.Ajax.on('beforerequest', function (conn, options) {
+   if (!(/^http:.*/.test(options.url) || /^https:.*/.test(options.url))) {
+     if (typeof(options.headers) == "undefined") {
+       options.headers = {'X-CSRFToken': Ext.util.Cookies.get('csrftoken')};
+     } else {
+       options.headers.extend({'X-CSRFToken': Ext.util.Cookies.get('csrftoken')});
+     }                        
+   }
+}, this);
+
+    app = new gxp.Viewer(
+      {
+        proxy: "/proxy/?url=",
+        localGeoServerBaseUrl: "http://localhost:8080/geoserver/",
+        authorizedRoles: "ROLE_ADMINISTRATOR",
 
 	/* add a listener for computed fields */
 	listeners: {
@@ -66,7 +42,7 @@ Ext.onReady(function() {
 		    if (fid) {
 			Ext.Ajax.request({
 			    method: "POST",
-			    url: faulted_earth.app_url + '/observations/updatecomputedfields',
+			    url: faulted_earth.app_url + 'updatecomputedfields',
 			    params: Ext.encode({ fid: fid }),
 			    success: function(response, opts) {
 				/* reload the features to get the autocomputed fields */
@@ -77,9 +53,6 @@ Ext.onReady(function() {
 		}
 	    }
 	},
-
-	/* TODO: is the following property still used/useful ? */
-        proxy: "/proxy?url=",
 
         portalConfig: {
             layout: "border",
@@ -127,6 +100,7 @@ Ext.onReady(function() {
 			    id: model.formId,
 			    title: model.formTitle
 			}, defaultFormConfig);
+    
 			west_panel.add(formConfig);
 		    });
 		}
@@ -178,13 +152,18 @@ Ext.onReady(function() {
                 tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel"
-        }, {
+        },
+                /* commented out as gxp_googlegeocoder is not available with
+                 * geonode 2
+
+        {
             ptype: "gxp_googlegeocoder",
             outputTarget: "map.tbar",
             outputConfig: {
                 emptyText: "Search for a location ..."
             }
-        }, {
+        }, */
+        {
             ptype: "gxp_layerproperties",
             actionTarget: {target: "tree.tbar"}
         }, {
@@ -227,26 +206,26 @@ Ext.onReady(function() {
 	    var viewer = this;
 
 	    var defaultManagerConfig = {
-		autoLoadFeatures: true,
-		autoSetLayer: false,
-		paging: false,
-		maxFeatures: 1000
+		    autoLoadFeatures: true,
+		    autoSetLayer: false,
+		    paging: false,
+		    maxFeatures: 1000
 	    };
 
 	    var defaultGridConfig = {
-		alwaysDisplayOnMap: true,
-		selectOnMap: true,
-		displayMode: "selected",
-		controlOptions: {
-		    multiple: true
-		}
+		    alwaysDisplayOnMap: true,
+		    selectOnMap: true,
+		    displayMode: "selected",
+		    controlOptions: {
+		      multiple: true
+		    }
 	    };
 
 	    var defaultEditorConfig = {
-		autoLoadFeature: true,
-		createFeatureActionText: "Draw",
-		editFeatureActionText: "Modify"
-	    }
+		    autoLoadFeature: false,
+		    createFeatureActionText: "Draw",
+		    editFeatureActionText: "Modify"
+	    };
 
 	    var defaultFormConfig = {};
 
@@ -297,7 +276,7 @@ Ext.onReady(function() {
 				source: "local",
 				name: model.sourceName
 			    }]
-			})
+			                                });
 		    }
 		    viewer.initialConfig.tools.push(editorConfig);
 
@@ -316,7 +295,7 @@ Ext.onReady(function() {
 			tooltip: "Delete selected " + model.title
 		    });
 		    /* 
-		       at this point, we do not want this feature
+		       do we really want this feature?
 		       viewer.initialConfig.tools.push(deleteSelectedFeatureConfig);
 		    */
 
@@ -335,7 +314,9 @@ Ext.onReady(function() {
 	    });
 
 	    viewer.map = viewer.mapPanel.map;
-	    viewer.initialConfig.tools.push({ ptype: "gxp_loadingindicator" });
+
+    // loading indicator not present in geonode2
+    //	    viewer.initialConfig.tools.push({ ptype: "gxp_loadingindicator" });
 
 	    gxp.Viewer.prototype.initTools.call(this);
 
@@ -351,14 +332,12 @@ Ext.onReady(function() {
 	    });
 	},
 
-	localGeoServerUrl: '/geoserver/',
-
         // layer sources
         sources: {
             local: {
                 ptype: "gxp_wmscsource",
                 version: "1.1.1",
-		url:  '/geoserver/wms'
+              url: "http://localhost:8080/geoserver/wms"
             },
             osm: {
                 ptype: "gxp_osmsource"
@@ -394,37 +373,39 @@ Ext.onReady(function() {
 	     * from faulted_earth.models */
             {
                 source: "local",
-                name: "geonode:observations_faultsource",
+                name: "oqplatform:faulted_earth_faultsource",
                 title: "Fault Source"
             },{
                 source: "local",
-                name: "geonode:observations_fault",
+                name: "oqplatform:faulted_earth_fault",
                 title: "Neotectonic Fault"
             },{
                 source: "local",
-                name: "geonode:observations_faultsection",
+                name: "oqplatform:faulted_earth_faultsection",
                 title : "Neotectonic Sections"
-            }, {
+            },
+                     {
                 source: "local",
-                name: "geonode:observations_trace",
+                name: "oqplatform:faulted_earth_trace",
                 title: "Traces"
             }, {
                 source: "local",
-                name: "geonode:observations_event",
+                name: "oqplatform:faulted_earth_event",
                 title : "Site Observations - Events"
             } , {
                 source: "local",
-                name: "geonode:observations_displacement",
+                name: "oqplatform:faulted_earth_displacement",
                 title : "Site Observations - Displacement"
             }, {
                 source: "local",
-                name: "geonode:observations_sliprate",
+                name: "oqplatform:faulted_earth_sliprate",
                 title : "Site Observations - Slip Rate"
             }, {
                 source: "local",
-                name: "geonode:observations_faultgeometry",
+                name: "oqplatform:faulted_earth_faultgeometry",
                 title : "Site Observations - Fault Geometry"
-            }],
+            }
+                    ],
             items: [{
                 xtype: "gx_zoomslider",
                 vertical: true,

@@ -21,6 +21,7 @@
 
 Ext.namespace('faulted_earth');
 
+
 faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
     
     ptype: "fe_trace_form",
@@ -61,13 +62,13 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-                if (featureManager.layerRecord.get("name") == "geonode:observations_trace") {
+                if (featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_trace") {
                     this.target.traceId = e.feature.fid;
                     this.sessionTids.push(this.target.traceId);
                 }
             },
             "featureunselected": function(e) {
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_trace") {
+                if (this.active && featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_trace") {
                     this.sessionTids = [];
                     this.target.traceId = null;
                 }
@@ -120,7 +121,7 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_trace&featureID=" + this.target.traceId + "&outputFormat=shape-zip");
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=faulted_earth_trace&featureID=" + this.target.traceId + "&outputFormat=shape-zip");
                     },
                     scope: this
                 }]
@@ -178,7 +179,7 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
 			}
                         Ext.Ajax.request({
                             method: "POST",
-                            url: faulted_earth.app_url + '/observations/traces/join',
+                            url: faulted_earth.app_url + 'traces/join',
                             params: Ext.encode({ 'section_name': this.faultSection.name,
 						 'trace_ids':this.sessionTids }),
                             success: function(response, opts) {

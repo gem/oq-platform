@@ -64,12 +64,12 @@ faulted_earth.SiteForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-                if (featureManager.layerRecord.get("name") == "geonode:observations_" + this.layerRecordName) {
+                if (featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_" + this.layerRecordName) {
                     this.target.summaryId = e.feature.fid;
                 }
             },
             "featureunselected": function(e) {
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_" + this.layerRecordName) {
+                if (this.active && featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_" + this.layerRecordName) {
                     this.target.summaryId = null;
                 }
             },
