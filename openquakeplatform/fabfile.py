@@ -25,6 +25,18 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 GEOSERVER_BASE_URL = 'http://127.0.0.1:8080'
 DB_PASSWORD = 'openquake'
 
+#:
+LOCAL_SETTINGS = """\
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': "%(dbname)s",
+        'USER': '%(dbuser)s',
+        'PASSWORD': '%(dbpassword)s'
+    },
+}
+"""
+
 
 def bootstrap(dbname='oqplatform', dbuser='oqplatform',
               dbpassword=DB_PASSWORD):
@@ -32,6 +44,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     :param str dbpassword:
         Should match the one in settings.py.
     """
+    _write_local_settings(dbname, dbuser)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -95,6 +108,13 @@ def stop():
     local('paver stop')
 
 
+def _write_local_settings(dbname, dbuser):
+    with open('openquakeplatform/local_settings.py', 'w') as fh:
+        fh.write(LOCAL_SETTINGS % dict(dbname=dbname,
+                                       dbuser=dbuser,
+                                       dbpassword=DB_PASSWORD))
+
+
 def _pgsudo(command, **kwargs):
     # NOTE(LB): We change the directory here to avoid some login weirdness
     # with being unable to read the `fab` invoker's home dir.
@@ -125,7 +145,7 @@ def _maybe_createuser(dbuser, dbpassword):
         return False
     else:
         print('Creating user "%(dbuser)s". Please choose a password (it should'
-              'match your settings.py). Recommended: "%(dbpassword)s".'
+              'match your local_settings.py). Recommended: "%(dbpassword)s".'
               % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
         _pgsudo('createuser --superuser --password %(dbuser)s'
                 % dict(dbpassword=dbpassword, dbuser=dbuser))
