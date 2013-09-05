@@ -183,7 +183,7 @@ def _create_isc_viewer_layers(workspace='oqplatform', datastore='oqplatform'):
     url = 'geoserver/rest/workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
     url %= dict(ws=workspace, ds=datastore)
 
-    feature_file = 'isc_viewer/geoserver/features/isc_viewer_measure.xml'
+    feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
     with open(feature_file) as fh:
         content = fh.read()
     _geoserver_api(url, content)
