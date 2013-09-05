@@ -106,76 +106,68 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
      */
     createStore: function() {
         
-        var options = {
+            var options = {
             sphericalMercator: true,
             wrapDateLine: true,
             numZoomLevels: 7
-        };
+        };  
         
-        var configs = [{
-            name: "hazard-map-points-world",
-            numZoomLevels: 7
-        }, {
-            name: "hazard-map-japan-21",
-            numZoomLevels: 8
-        }, {
-            name: "hazard-map-japan-21-land",
-            numZoomLevels: 8
-        }, {
-            name: "hazard-map-japan-21-contour-land",
-            numZoomLevels: 8
-        }, {
-            name: "hazard-map-japan-22",
-            numZoomLevels: 8
-        }, {
-            name: "hazard-map-japan-22-land",
-            numZoomLevels: 8
-        }, {
-            name: "hazard-map-japan-22-contour-land",
-            numZoomLevels: 8
-        }, {
-            name: "gdal-custom-urban",
-            numZoomLevels: 7
-        }, {
-            name: "gdal-custom-rural",
-            numZoomLevels: 7
-        }, {
-            name: "strain",
-            numZoomLevels: 9
-        }];
-        
-        var len = configs.length;
-        var layers = new Array(len);
-        var config;
-        for (var i=0; i<len; ++i) {
-            config = configs[i];
-            layers[i] = new OpenLayers.Layer.XYZ(
-                this[OpenLayers.String.camelize(config.name) + "Title"],
-                [
-                    //connect to the hope tilestream server
-                    "http://tilestream.openquake.org/v2/" + config.name + "/${z}/${x}/${y}.png"
-                ],
-                OpenLayers.Util.applyDefaults({
-                    layername: config.name,
-                    //"abstract": '<div class="thumb-mapbox thumb-mapbox-'+config.name+'"></div>',
-                    numZoomLevels: config.numZoomLevels
-                }, options)
-            );
-        }
-        
-        this.store = new GeoExt.data.LayerStore({
-            layers: layers,
-            fields: [
-                {name: "source", type: "string"},
-                {name: "name", type: "string", mapping: "layername"},
-                //{name: "abstract", type: "string"},
-                {name: "group", type: "string"},
-                {name: "fixed", type: "boolean"},
-                {name: "selected", type: "boolean"}
-            ]
+        var layers = new Array;
+/*
+        var camelizedLayerList = [];
+        $(document).ajaxStop(function() {
+            console.log(camelizedLayerList);
+            console.log("helo");
+            return camelizedLayerList;
         });
-        this.fireEvent("ready", this);
+*/
+        $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
+        function(json) {
+        
+            for (var i=0; i < json.length; i++) {
+                // Get the tile name and zoom level from the tilestream API
+                var tileStreamLayerName = json[i].id;
+                var tileMaxZoom = json[i].maxzoom;
+                var layerConfig = {};
 
+                // Create a camelized list of layers
+                var camelized = jQuery.camelCase(tileStreamLayerName) + ': "' + tileStreamLayerName + '",';
+                //camelizedLayerList.push(camelized);
+//                console.log(camelized);
+                return(camelized);
+                
+                // Build the list of layers
+                layers[i] = new OpenLayers.Layer.XYZ(
+                    this[OpenLayers.String.camelize(tileStreamLayerName) + "Title"],
+                    [
+                        "http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"
+                    ],  
+                OpenLayers.Util.applyDefaults({
+                    layername: tileStreamLayerName,
+                    //"abstract": '<div class="thumb-mapbox thumb-mapbox-'+ tileStreamLayerName +'"></div>',
+                    numZoomLevels: tileMaxZoom
+                }, options)
+            );  
+            }
+            newLayerStore(layers);
+  }); 
+ 
+     var plugin = this;
+
+        var newLayerStore = function(layers) {
+            plugin.store = new GeoExt.data.LayerStore({
+                layers: layers,
+            	fields: [
+                    {name: "source", type: "string"},
+                    {name: "name", type: "string", mapping: "layername"},
+                    //{name: "abstract", type: "string"},
+                    {name: "group", type: "string"},
+                    {name: "fixed", type: "boolean"},
+                    {name: "selected", type: "boolean"}
+                ]
+            });
+        plugin.fireEvent("ready", this);
+	}
     },
     
     /** api: method[createLayerRecord]
@@ -225,4 +217,3 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
 });
 
 Ext.preg(gxp.plugins.TileStreamSource.prototype.ptype, gxp.plugins.TileStreamSource);
-
