@@ -15,7 +15,7 @@
 
 import csv
 from django.core.management.base import BaseCommand, CommandError
-from isc_viewer.models import Measure
+from openquakeplatform.isc_viewer.models import Measure
 
 
 class Command(BaseCommand):

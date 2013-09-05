@@ -1,25 +1,3 @@
-/**
- * Add all your dependencies here.
- *
- * @require widgets/Viewer.js
- * @require plugins/LayerTree.js
- * @require plugins/OLSource.js
- * @require plugins/OSMSource.js
- * @require plugins/WMSCSource.js
- * @require plugins/ZoomToExtent.js
- * @require plugins/NavigationHistory.js
- * @require plugins/Zoom.js
- * @require plugins/AddLayers.js
- * @require plugins/RemoveLayer.js
- * @require RowExpander.js
- * @require plugins/LayerProperties.js
- * @require widgets/WMSLayerPanel.js
- * @require plugins/WMSGetFeatureInfo.js
- * @require plugins/GoogleSource.js
- * @require plugins/GoogleGeocoder.js
- * @require plugins/Legend.js
- * @require plugins/TileStreamSource.js
- */
 
 var app;
 Ext.onReady(function() {
@@ -37,7 +15,12 @@ Ext.onReady(function() {
         });
 
 
-    app = new gxp.Viewer({
+    app = new gxp.Viewer(
+      {
+        proxy: "/proxy/?url=",
+        localGeoServerBaseUrl: "http://localhost:8080/geoserver/",
+        authorizedRoles: "ROLE_ANONYMOUS",
+
         portalConfig: {
             layout: "border",
             region: "center",
@@ -70,12 +53,6 @@ Ext.onReady(function() {
                 tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel"
-        }, {
-            ptype: "gxp_googlegeocoder",
-            outputTarget: "map.tbar",
-            outputConfig: {
-                emptyText: "Search for a location ..."
-            }
         }, {
             ptype: "gxp_layerproperties",
             actionTarget: {target: "tree.tbar"}
@@ -110,11 +87,8 @@ Ext.onReady(function() {
         sources: {
             local: {
                 ptype: "gxp_wmscsource",
-                url: "/geoserver/wms",
+                url: "http://localhost:8080/geoserver/wms",
                 version: "1.1.1"
-            },
-            mapbox: {
-                ptype: "gxp_tilestreamsource"
             },
             osm: {
                 ptype: "gxp_osmsource"
@@ -147,7 +121,7 @@ Ext.onReady(function() {
                 group: "background"
             }, {
                 source: "local",
-                name: "isc_viewer:isc_viewer_measure",
+                name: "oqplatform:isc_viewer_measure",
                 title : "Instrumental Catalog"
             }],
             items: [{
