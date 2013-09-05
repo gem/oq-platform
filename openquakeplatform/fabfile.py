@@ -1,4 +1,5 @@
 import os
+import sys
 from urlparse import urljoin as _urljoin
 
 from fabric.api import env
@@ -8,7 +9,13 @@ from fabric.api import settings
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
-env.shell = '/bin/bash -c '
+
+# NOTE(LB): There are some minor differences with respect to how OSX and Linux
+# shells behave. Thus the following is required:
+if 'linux' in sys.platform:
+    # This script works on OSX with the default shell, but Linux has trouble
+    # with the default `-l` option. So, we drop it.
+    env.shell = '/bin/bash -c'
 
 #: Base dir for postgis extension code
 POSTGIS_DIR = '/usr/share/postgresql/9.1/contrib/postgis-1.5'
