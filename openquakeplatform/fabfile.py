@@ -29,7 +29,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # syncdb (part of `paver setup` below), etc.
     user_created = _maybe_createuser(dbuser, dbpassword)
     # Add database
-    db_created = _maybe_createdb(dbname)
+    _maybe_createdb(dbname)
     # Add postgis
     _maybe_install_postgis(dbname)
     # Install geonode/geoserver and syncdb for oq-platform apps
@@ -203,6 +203,3 @@ def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
     cmd %= dict(username=username, password=password, content=content,
                 url=urljoin(base_url, url), method=method)
     local(cmd)
-
-
-
