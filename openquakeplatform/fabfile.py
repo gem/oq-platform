@@ -66,6 +66,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # Add the isc_viewer app
     _add_isc_viewer()
 
+    local('python manage.py updatelayers')
     # Finally, remove the superuser privileges, but only if this was a user we
     # created:
     if user_created:
@@ -187,7 +188,6 @@ def _create_isc_viewer_layers(workspace='oqplatform', datastore='oqplatform'):
     with open(feature_file) as fh:
         content = fh.read()
     _geoserver_api(url, content)
-    local('python manage.py updatelayers')
 
 
 def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
