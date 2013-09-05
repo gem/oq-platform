@@ -1,5 +1,5 @@
 import os
-from urlparse import _urljoin
+from urlparse import urljoin as _urljoin
 
 from fabric.api import env
 from fabric.api import local
