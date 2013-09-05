@@ -50,7 +50,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': "oqplatform",
-        'USER': 'oq_admin',
+        'USER': 'oqplatform',
         'PASSWORD': 'openquake'
     },
 }
