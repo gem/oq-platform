@@ -3,11 +3,11 @@
 This plugin is based on the MapBoxSource plugin. It was created in order to
 render tiles served from a TileStream server. The key difference to note is
 that this plugin uses OpenLayers.Layer.XYZ while the MapBox plugin uses TMS.
-We are using OpenLayers.Layer.XYZ because TileStream serves its tiles in 
+We are using OpenLayers.Layer.XYZ because TileStream serves its tiles in
 version 2 which is not compatible with TMS.
 
 copyright (c) 2008-2011 The Open Planning Project
- * 
+ *
  * Published under the GPL license.
  * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
  * of the license.
@@ -73,7 +73,7 @@ Ext.ns("gxp.plugins");
  *
  */
 var tilestreamPlugin = {
-    
+
     /** api: ptype = gxp_mapboxsource */
     ptype: "gxp_tilestreamsource",
 
@@ -81,25 +81,25 @@ var tilestreamPlugin = {
      *  ``GeoExt.data.LayerStore``. Will contain records with name field values
      *  matching MapBox layer names.
      */
-    
+
     /** api: config[title]
      *  ``String``
      *  A descriptive title for this layer source (i18n).
      */
     title: "TileStream Layers",
-    
+
     /** api: method[createStore]
      *
      *  Creates a store of layer records.  Fires "ready" when store is loaded.
      */
     createStore: function() {
-        
+
         var options = {
             sphericalMercator: true,
             wrapDateLine: true,
             numZoomLevels: 7
-        };  
-        
+        };
+
         var layers = new Array();
 
         $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
@@ -108,27 +108,27 @@ var tilestreamPlugin = {
                 // Get the tile name and zoom level from the tilestream API
                 var tileStreamLayerName = json[i].id;
                 var tileMaxZoom = json[i].maxzoom;
-                
+
                 // Build the list of layers
-		var newLayer = new OpenLayers.Layer.XYZ(
-		    tileStreamLayerName,
-                    ["http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],  
+                var newLayer = new OpenLayers.Layer.XYZ(
+                    tileStreamLayerName,
+                    ["http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],
                     OpenLayers.Util.applyDefaults({
                         layername: tileStreamLayerName,
                         numZoomLevels: tileMaxZoom
                     }, options)
                 );
-		layers.push(newLayer);
+                layers.push(newLayer);
             }
             newLayerStore(layers);
-        }); 
- 
+        });
+
         var plugin = this;
 
         var newLayerStore = function(layers) {
             plugin.store = new GeoExt.data.LayerStore({
                 layers: layers,
-            	fields: [
+                fields: [
                     {name: "source", type: "string"},
                     {name: "name", type: "string", mapping: "layername"},
                     //{name: "abstract", type: "string"},
@@ -140,7 +140,7 @@ var tilestreamPlugin = {
             plugin.fireEvent("ready", this);
         };
     },
-    
+
     /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
      *  :returns: ``GeoExt.data.LayerRecord``
@@ -154,7 +154,7 @@ var tilestreamPlugin = {
 
             record = this.store.getAt(index).copy(Ext.data.Record.id({}));
             var layer = record.getLayer().clone();
- 
+
             // set layer title from config
             if (config.title) {
                 /**
@@ -171,7 +171,7 @@ var tilestreamPlugin = {
             if ("visibility" in config) {
                 layer.visibility = config.visibility;
             }
-            
+
             record.set("selected", config.selected || false);
             record.set("source", config.source);
             record.set("name", config.name);
