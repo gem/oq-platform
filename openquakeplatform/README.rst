@@ -17,9 +17,8 @@ Install and run the application::
 
     $ mkvirtualenv platform  # or whatever you want to call it
     $ cd oq-platform
-    $ pip install -e openquakeplatform
+    $ pip install -e openquakeplatform  # installs `fabric` to enable `fab` commands (see below)
     $ cd openquakeplatform
-    $ pip install fabric
     $ fab bootstrap  # automatically runs the app
 
 Once this is once is done, you can run several other `fab` commands. See below.
