@@ -1,5 +1,5 @@
 import os
-from urlparse import urljoin
+from urlparse import _urljoin
 
 from fabric.api import env
 from fabric.api import local
@@ -201,5 +201,5 @@ def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
     cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
            "'Content-type:text/xml' -d '%(content)s' %(url)s")
     cmd %= dict(username=username, password=password, content=content,
-                url=urljoin(base_url, url), method=method)
+                url=_urljoin(base_url, url), method=method)
     local(cmd)
