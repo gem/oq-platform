@@ -95,6 +95,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # Add the apps
     _add_isc_viewer()
     _add_faulted_earth()
+    _add_ghec_viewer()
 
     local('python manage.py updatelayers')
     # Finally, remove the superuser privileges, but only if this was a user we
@@ -258,3 +259,12 @@ def _add_faulted_earth():
         with open(ff) as fh:
             content = fh.read()
         _geoserver_api(FEATURETYPES_URL, content)
+
+
+def _add_ghec_viewer():
+    feature_file = 'gs_data/ghec_viewer/features/ghec_viewer_measure.xml'
+    with open(feature_file) as fh:
+        content = fh.read()
+    _geoserver_api(FEATURETYPES_URL, content)
+
+    local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
