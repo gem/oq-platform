@@ -18,9 +18,9 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from icebox.views import list_artifacts
-from icebox.views import get_artifact
-from icebox.views import import_artifacts
+from openquakeplatform.icebox.views import list_artifacts
+from openquakeplatform.icebox.views import get_artifact
+from openquakeplatform.icebox.views import import_artifacts
 
 
 urlpatterns = patterns(

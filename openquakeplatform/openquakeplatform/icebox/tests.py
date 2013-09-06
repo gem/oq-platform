@@ -13,8 +13,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+# You should have received a copy of the GNU Affero General Public
+# License along with this program. If not, see
+# <https://www.gnu.org/licenses/agpl.html>.
 
 import json
 import mock
@@ -22,8 +23,8 @@ import StringIO
 import unittest
 import urllib2
 
-from icebox import views
-from icebox import models
+from openquakeplatform.icebox import views
+from openquakeplatform.icebox import models
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test.client import RequestFactory
@@ -64,7 +65,9 @@ class ListArtifactsTestCase(BaseViewTestCase):
     def test(self):
         req = self.factory.get('icebox/artifacts')
         req.META['HTTP_HOST'] = 'www.openquake.org'
-        with mock.patch('geonode.icebox.models.Artifact.objects.all') as arts:
+        with mock.patch(
+                'openquakeplatform.icebox.models.Artifact.objects.all'
+                ) as arts:
             arts.return_value = [
                 models.Artifact(id=6,
                                 artifact_type='hazard_map',
@@ -102,7 +105,8 @@ class GetArtifactTestCase(BaseViewTestCase):
 
     def test_object_exists(self):
         req = self.factory.get('icebox/artifact/848')
-        with mock.patch('geonode.icebox.models.Artifact.objects.get') as get:
+        with mock.patch(
+                'openquakeplatform.icebox.models.Artifact.objects.get') as get:
             get.return_value = models.Artifact(
                 id=848,
                 artifact_type='whatever',
@@ -122,7 +126,8 @@ class GetArtifactTestCase(BaseViewTestCase):
 
     def test_objects_does_not_exist(self):
         req = self.factory.get('icebox/artifact/848')
-        with mock.patch('geonode.icebox.models.Artifact.objects.get') as get:
+        with mock.patch(
+                'openquakeplatform.icebox.models.Artifact.objects.get') as get:
             get.side_effect = ObjectDoesNotExist
             resp = views.get_artifact(req, 848)
 
@@ -225,7 +230,7 @@ class ImportArtifactsTestCase(BaseViewTestCase):
 
         with mock.patch('django.contrib.auth.models'
                         '.User.objects.get') as user_get:
-            with mock.patch('geonode.icebox.models'
+            with mock.patch('openquakeplatform.icebox.models'
                             '.Artifact.objects.create') as art_create:
                 with mock.patch('urllib2.urlopen') as urlopen:
                     user_get.return_value = fake_user
