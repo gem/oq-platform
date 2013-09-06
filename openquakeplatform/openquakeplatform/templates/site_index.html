@@ -5,17 +5,32 @@
 {% load pagination_tags %}
 {% load staticfiles %}
 {% load url from future %}
-{% comment %}
-This is where you can override the hero area block. You can simply modify the content below or replace it wholesale to meet your own needs. 
-{% endcomment %}
+
+{% block header %}
+{{block.super}}
+  <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container" style="width: 940px;">
+
+    <div class="row nav-box">
+      <div class="span10">
+        <nav class="main-nav">
+          <ul>
+            <li><a href="{% url 'isc_viewer' %}">ISC</a></li>
+            <li><a href="{% url 'ghec_viewer' %}">GHEC</a></li>
+            <li><a href="{% url 'faulted_earth' %}">FE Capture</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+        </div>
+      </div>
+{% endblock %}
+
   {% block hero %}
-
-
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
     <div class="hero-unit-content">
-    <h1><a href="{% url 'isc_viewer' %}">ISC Viewer</a></h1>
-    <h1><a href="{% url 'faulted_earth' %}">Faulted Earth</a></h1>
       <div class="btns">
         <a class="btn btn-large" href="{% url "layer_browse" %}">
           {% trans "Explore Layers" %}
