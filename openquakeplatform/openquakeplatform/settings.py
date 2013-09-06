@@ -564,7 +564,7 @@ if LOCKDOWN_GEONODE:
         'geonode.security.middleware.LoginRequiredMiddleware',)
 
 # Load more settings from a file called local_settings.py if it exists
-# try:
-#     from local_settings import *
-# except ImportError:
-#     pass
+try:
+    from local_settings import *
+except ImportError:
+    pass
