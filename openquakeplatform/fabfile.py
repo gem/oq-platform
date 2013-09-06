@@ -98,6 +98,7 @@ def clean(dbname='oqplatform', dbuser='oqplatform'):
     with settings(warn_only=True):
         _pgsudo('dropdb %s' % dbname)
         _pgsudo('dropuser %s' % dbuser)
+        local('rm -r geoserver')
 
 
 def start():
