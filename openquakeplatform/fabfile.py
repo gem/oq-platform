@@ -129,6 +129,21 @@ def _pgquery(query):
     return _pgsudo('psql -t -c "%s" ' % query)
 
 
+def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
+                   password='geoserver', method='POST'):
+    """
+    Utility for creating various artifacts in geoserver (workspaces, layers,
+    etc.).
+    """
+    # TODO(LB): It would be cleaner to use urllib2 or similar in pure Python,
+    # but it was quicker to make this work just with curl.
+    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
+           "'Content-type:text/xml' -d '%(content)s' %(url)s")
+    cmd %= dict(username=username, password=password, content=content,
+                url=_urljoin(base_url, url), method=method)
+    local(cmd)
+
+
 def _maybe_createuser(dbuser, dbpassword):
     """
     Returns `True` if the specified database user ``dbuser`` is create, `False`
@@ -222,18 +237,3 @@ def _create_isc_viewer_layers(workspace='oqplatform', datastore='oqplatform'):
     with open(feature_file) as fh:
         content = fh.read()
     _geoserver_api(url, content)
-
-
-def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
-                   password='geoserver', method='POST'):
-    """
-    Utility for creating various artifacts in geoserver (workspaces, layers,
-    etc.).
-    """
-    # TODO(LB): It would be cleaner to use urllib2 or similar in pure Python,
-    # but it was quicker to make this work just with curl.
-    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
-           "'Content-type:text/xml' -d '%(content)s' %(url)s")
-    cmd %= dict(username=username, password=password, content=content,
-                url=_urljoin(base_url, url), method=method)
-    local(cmd)
