@@ -23,9 +23,16 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
                  ('postgis.sql', 'spatial_ref_sys.sql')]
 
 GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
+#: GeoServer workspace name
+WS_NAME = 'oqplatform'
+#: GeoServer datastore name
+DS_NAME = 'oqplatform'
+FEATURETYPES_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
+                    % dict(ws=WS_NAME, ds=DS_NAME))
+
 DB_PASSWORD = 'openquake'
 
-#:
+#: Template for local_settings.py
 LOCAL_SETTINGS = """\
 DATABASES = {
     'default': {
@@ -61,12 +68,12 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # GeoServer: create workspace
     _geoserver_api(
         'workspaces.xml',
-        '<workspace><name>oqplatform</name></workspace>'
+        '<workspace><name>%s</name></workspace>' % WS_NAME
     )
     # GeoServer: create store
     store_content = """\
 <dataStore>
-<name>oqplatform</name>
+<name>%(dsname)s</name>
 <connectionParameters>
      <host>localhost</host>
      <port>5432</port>
@@ -77,21 +84,26 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
      <dbtype>postgis</dbtype>
 </connectionParameters>
 </dataStore>"""
-    store_content %= dict(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+    store_content %= dict(dsname=DS_NAME, dbname=dbname, dbuser=dbuser,
+                          dbpassword=dbpassword)
 
     _geoserver_api(
-        'workspaces/oqplatform/datastores.xml',
+        'workspaces/%s/datastores.xml' % WS_NAME,
         store_content
     )
 
-    # Add the isc_viewer app
+    # Add the apps
     _add_isc_viewer()
+    _add_faulted_earth()
 
     local('python manage.py updatelayers')
     # Finally, remove the superuser privileges, but only if this was a user we
     # created:
-    if user_created:
-        _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
+    # TODO: Some apps require that oqplatform db user has SUPERUSER.
+    # We need to deal with this in production. For a dev install,
+    # leave the user with superuser privs.
+    #if user_created:
+    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
 
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
@@ -127,6 +139,21 @@ def _pgsudo(command, **kwargs):
 
 def _pgquery(query):
     return _pgsudo('psql -t -c "%s" ' % query)
+
+
+def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
+                   password='geoserver', method='POST'):
+    """
+    Utility for creating various artifacts in geoserver (workspaces, layers,
+    etc.).
+    """
+    # TODO(LB): It would be cleaner to use urllib2 or similar in pure Python,
+    # but it was quicker to make this work just with curl.
+    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
+           "'Content-type:text/xml' -d '%(content)s' %(url)s")
+    cmd %= dict(username=username, password=password, content=content,
+                url=_urljoin(base_url, url), method=method)
+    local(cmd)
 
 
 def _maybe_createuser(dbuser, dbpassword):
@@ -209,31 +236,25 @@ def _load_isc_viewer_data():
           ' ../oq-ui-api/data/isc_data_app.csv')
 
 
-def _create_isc_viewer_layers(workspace='oqplatform', datastore='oqplatform'):
+def _create_isc_viewer_layers():
     # RAGE: Apparently, you can't actually create layers with the geoserver
     # rest API. If you try to POST to it, you just get a 405. But it's okay,
     # the 405 is well documented. >:(
     # No, instead you need to create a "featuretype", which implicitly creates
     # a layer. The docs fail to mention this.
-    url = 'workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
-    url %= dict(ws=workspace, ds=datastore)
-
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
     with open(feature_file) as fh:
         content = fh.read()
-    _geoserver_api(url, content)
+    _geoserver_api(FEATURETYPES_URL, content)
 
 
-def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
-                   password='geoserver', method='POST'):
-    """
-    Utility for creating various artifacts in geoserver (workspaces, layers,
-    etc.).
-    """
-    # TODO(LB): It would be cleaner to use urllib2 or similar in pure Python,
-    # but it was quicker to make this work just with curl.
-    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
-           "'Content-type:text/xml' -d '%(content)s' %(url)s")
-    cmd %= dict(username=username, password=password, content=content,
-                url=_urljoin(base_url, url), method=method)
-    local(cmd)
+def _add_faulted_earth():
+    # Add faulted_earth features/layers
+    features_dir = 'gs_data/faulted_earth/features'
+    features_files = [x for x in os.listdir(features_dir)
+                      if x.lower().endswith('.xml')]
+    features_files = [os.path.join(features_dir, x) for x in features_files]
+    for ff in features_files:
+        with open(ff) as fh:
+            content = fh.read()
+        _geoserver_api(FEATURETYPES_URL, content)
