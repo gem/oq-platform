@@ -193,6 +193,8 @@ INSTALLED_APPS = (
     # Our apps
     'openquakeplatform.isc_viewer',
     'openquakeplatform.ghec_viewer',
+    'openquakeplatform.gaf_viewer',
+    'openquakeplatform.geodetic',
     'openquakeplatform.faulted_earth',
 )
 

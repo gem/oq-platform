@@ -14,13 +14,13 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
 
-  {% extends "page_layout.html" %}
+  {% extends "site_base.html" %}
   {% load i18n %}
 
   {% block title %} {% trans "Hazard Models" %} - {{ block.super }} {% endblock %}
   {% block indexclass %} class="here" {% endblock %}
           
-  {% block head %}
+  {% block extra_head %}
 
   {{ block.super }}
           
@@ -50,22 +50,8 @@
     
 
   {% endblock %}
-    <!--Google Analytics-->
-    <script type="text/javascript">
 
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-20718690-2']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    </script>
-
-  {% block main %}
+  {% block body_outer %}
  
       <div id="map" style="width: 100%;"></div>
       
