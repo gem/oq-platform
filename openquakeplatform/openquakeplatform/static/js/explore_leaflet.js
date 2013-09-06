@@ -172,7 +172,7 @@ var startExploreApp = function() {
     // Get Geoserver info with GetCapabilities
     $.ajax({
         type: "GET",
-        url: "/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&TILED=true&VERSION=1.1.1",
+             url: "/proxy?url=" + encodeURIComponent("http://localhost:8080/geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&TILED=true&VERSION=1.1.1"),
         dataType: "xml",
         success: function(xmlDoc) {
             var layerNames = $(xmlDoc).find('Layer > Name');
