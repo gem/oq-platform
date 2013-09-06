@@ -86,19 +86,11 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
      *  ``String``
      *  A descriptive title for this layer source (i18n).
      */
-    title: "GEM Tile Layers",
+    title: "TileStream Layers",
     
     /** i18n **/
-    hazardMapPointsWorldTitle: "World Hazard Map PGA_0.1",
-    hazardMapJapan21Title: "Japan Hazard Map - 10% in 50 years",
-    hazardMapJapan21LandTitle: "Japan Hazard Map - 10% in 50 years - Land",
-    hazardMapJapan21ContourLandTitle: "Japan Hazard Map - 10% in 50 years - Contour",
-    hazardMapJapan22Title: "Japan Hazard Map - 2% in 50 years",
-    hazardMapJapan22LandTitle: "Japan Hazard Map - 2% in 50 years - Land",
-    hazardMapJapan22ContourLandTitle: "Japan Hazard Map - 2% in 50 years - Contour",
-    gdalCustomUrbanTitle: "GDAL Urban Population",
-    gdalCustomRuralTitle: "GDAL Rural Population",
-    strainTitle: "Geodetic Strain",   
+    // TODO dynamiclly create a list of layer nmaes e.g :
+    //hazardMapPointsWorldTitle: "World Hazard Map PGA_0.1",
  
     /** api: method[createStore]
      *
@@ -106,35 +98,20 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
      */
     createStore: function() {
         
-            var options = {
+        var options = {
             sphericalMercator: true,
             wrapDateLine: true,
             numZoomLevels: 7
         };  
         
         var layers = new Array;
-/*
-        var camelizedLayerList = [];
-        $(document).ajaxStop(function() {
-            console.log(camelizedLayerList);
-            console.log("helo");
-            return camelizedLayerList;
-        });
-*/
+
         $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
         function(json) {
-        
             for (var i=0; i < json.length; i++) {
                 // Get the tile name and zoom level from the tilestream API
                 var tileStreamLayerName = json[i].id;
                 var tileMaxZoom = json[i].maxzoom;
-                var layerConfig = {};
-
-                // Create a camelized list of layers
-                var camelized = jQuery.camelCase(tileStreamLayerName) + ': "' + tileStreamLayerName + '",';
-                //camelizedLayerList.push(camelized);
-//                console.log(camelized);
-                return(camelized);
                 
                 // Build the list of layers
                 layers[i] = new OpenLayers.Layer.XYZ(
@@ -142,17 +119,16 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
                     [
                         "http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"
                     ],  
-                OpenLayers.Util.applyDefaults({
-                    layername: tileStreamLayerName,
-                    //"abstract": '<div class="thumb-mapbox thumb-mapbox-'+ tileStreamLayerName +'"></div>',
-                    numZoomLevels: tileMaxZoom
-                }, options)
-            );  
+                    OpenLayers.Util.applyDefaults({
+                        layername: tileStreamLayerName,
+                        numZoomLevels: tileMaxZoom
+                    }, options)
+                );  
             }
             newLayerStore(layers);
-  }); 
+        }); 
  
-     var plugin = this;
+        var plugin = this;
 
         var newLayerStore = function(layers) {
             plugin.store = new GeoExt.data.LayerStore({
@@ -166,8 +142,8 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
                     {name: "selected", type: "boolean"}
                 ]
             });
-        plugin.fireEvent("ready", this);
-	}
+            plugin.fireEvent("ready", this);
+        }
     },
     
     /** api: method[createLayerRecord]
