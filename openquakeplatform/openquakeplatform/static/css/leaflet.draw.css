@@ -43,7 +43,7 @@
 }
 
 .leaflet-control-draw-rectangle {
-	background-image: url(images/draw-rectangle.png);
+	background-image: url(/static/img/draw-rectangle.png);
 }
 
 

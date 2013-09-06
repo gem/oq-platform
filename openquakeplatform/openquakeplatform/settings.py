@@ -35,6 +35,14 @@ DATABASES = {
         'USER': 'oqplatform',
         'PASSWORD': 'openquake'
     },
+    "geddb": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "ged",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": ""
+    }
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -195,6 +203,7 @@ INSTALLED_APPS = (
     'openquakeplatform.ghec_viewer',
     'openquakeplatform.gaf_viewer',
     'openquakeplatform.geodetic',
+    'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
 )
 

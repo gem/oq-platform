@@ -22,7 +22,8 @@ setup(
     keywords="openquakeplatform geonode django",
     url='https://github.com/openquakeplatform/openquakeplatform',
     packages=['openquakeplatform'],
-    install_requires=["geonode==2.0b52", "psycopg2", "numpy", "fabric"],
+    install_requires=["geonode==2.0b52", "psycopg2", "numpy", "fabric",
+                      "mock"],
     include_package_data=True,
     zip_safe=False,
 )

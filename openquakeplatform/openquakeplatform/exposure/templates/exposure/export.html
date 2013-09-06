@@ -14,15 +14,14 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
 
-{% extends "page_layout.html" %}
+{% extends "site_base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Exposure Export" %} - {{ block.super }} {% endblock %}
 {% block indexclass %} class="here" {% endblock %}
 
-{% block head %}
-
-{{ block.super }}
+{% block extra_head %}
+{{block.super}}
 
     <script type="text/javascript">
     // URL params, captured and rendered to the template:
@@ -36,6 +35,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"></meta>
 
     <!-- jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 
@@ -43,48 +43,33 @@
 
 
     <!-- leaflet -->
-    <script type="text/javascript" src="src/Leaflet/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="src/Leaflet/dist/leaflet.css" />
+    <script type="text/javascript" src="/static/Leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="/static/Leaflet/dist/leaflet.css" />
 
     <!-- leaflet plug-ins -->
-    <script src="src/Leaflet.draw/dist/leaflet.draw.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/leaflet.draw.css" media="screen" >
-    <script src="src/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="src/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
+    <script src="/static/Leaflet.draw/dist/leaflet.draw.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/leaflet.draw.css" media="screen" >
+    <script src="/static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
 
     <!-- wax -->
-    <script type='text/javascript' src='src/L.Wax/L.Wax.js'></script>
-    <script type="text/javascript" src="src/wax/dist/wax.leaf.min.js"></script>
-    <script type='text/javascript' src='src/wax/ext/modestmaps.min.js'></script>
-    <script type='text/javascript' src='src/wax/dist/wax.mm.js'></script>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/wax-controls.css" media="screen" >
+    <script type='text/javascript' src='/static/L.Wax/L.Wax.js'></script>
+    <script type="text/javascript" src="/static/wax/dist/wax.leaf.min.js"></script>
+    <script type='text/javascript' src='/static/wax/ext/modestmaps.min.js'></script>
+    <script type='text/javascript' src='/static/wax/dist/wax.mm.js'></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/wax-controls.css" media="screen" >
 
     <!-- custom styling for the exposure tool -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-tooltip.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-export.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/exposure-legend.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exposure/exposure-export.css" media="screen" />
 
     <!-- Exposure tool-specifc code -->
-    <script type="text/javascript" src="src/exposure/exposure_export.js"></script>
+    <script type="text/javascript" src="/static/exposure/exposure_export.js"></script>
 
 {% endblock %}
 
-    <!--Google Analytics-->
-    <script type="text/javascript">
-
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-20718690-2']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    </script>
-
-{% block main %}
+{% block body_outer %}
 <div id="sidePanel-leg">
   <div id="panelContent-leg">
     <div class="map-legend-urban">
@@ -249,9 +234,9 @@
       <span>
         <strong>Exposure Export Tool</strong><br />
 <p>Begin by zooming in to an area of interest.</p>
-<p>Activate the selection tool <img src="{{ STATIC_URL }}theme/images/draw-rectangle.png"> and pull a box on the map over the area of interest.</p>
+<p>Activate the selection tool <img src="{{ STATIC_URL }}/Leaflet.draw/dist/images/draw-rectangle.png"> and pull a box on the map over the area of interest.</p>
 <p>Make selections from the following dialog boxes to download data.</p>
-        <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information, first activate one of the dwelling fraction layers from the layer menu.<br><img src="src/Leaflet/dist/images/layers.png"></p>
+        <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information, first activate one of the dwelling fraction layers from the layer menu.<br><img src="/static/Leaflet/dist/images/layers.png"></p>
 <p>Next, hover the mouse over the area of interest and view the pie chart popup.</p>
 <p>Hover the mouse over the side panels to view the dwelling fraction types list & the GRUMP layer legend.</p>
       </span>

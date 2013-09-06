@@ -13,8 +13,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+# You should have received a copy of the GNU Affero General Public
+# License along with this program. If not, see
+# <https://www.gnu.org/licenses/agpl.html>.
 
 from django.db import connections
 from django.http import HttpResponse
@@ -22,8 +23,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import condition
 
-from exposure import forms
-from exposure import util
+from openquakeplatform.exposure import forms
+from openquakeplatform.exposure import util
 
 COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
@@ -118,7 +119,7 @@ def get_exposure_building_form(request):
 
     # if the admin level is okay, display the admin level selection form
     form = forms.BuildingExposureForm(admin_levels=admin_levels)
-    return render_to_response('oq-platform2/exposure_building_form.html',
+    return render_to_response('exposure/building_form.html',
                               {'exposure_form': form,
                                'lat1': lat1,
                                'lng1': lng1,
@@ -143,7 +144,7 @@ def get_exposure_population_form(request):
 
     else:
         form = forms.PopulationExposureForm()
-        return render_to_response('oq-platform2/exposure_population_form.html',
+        return render_to_response('exposure/population_form.html',
                               {'exposure_form': form,
                                'lat1': lat1,
                                'lng1': lng1,
