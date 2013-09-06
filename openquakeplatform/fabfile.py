@@ -23,12 +23,14 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
                  ('postgis.sql', 'spatial_ref_sys.sql')]
 
 GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
-DB_PASSWORD = 'openquake'
-
 #: GeoServer workspace name
 WS_NAME = 'oqplatform'
 #: GeoServer datastore name
 DS_NAME = 'oqplatform'
+FEATURETYPES_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
+                    % dict(ws=WS_NAME, ds=DS_NAME))
+
+DB_PASSWORD = 'openquake'
 
 #: Template for local_settings.py
 LOCAL_SETTINGS = """\
@@ -236,10 +238,7 @@ def _create_isc_viewer_layers():
     # the 405 is well documented. >:(
     # No, instead you need to create a "featuretype", which implicitly creates
     # a layer. The docs fail to mention this.
-    url = 'workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
-    url %= dict(ws=WS_NAME, ds=DS_NAME)
-
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
     with open(feature_file) as fh:
         content = fh.read()
-    _geoserver_api(url, content)
+    _geoserver_api(FEATURETYPES_URL, content)
