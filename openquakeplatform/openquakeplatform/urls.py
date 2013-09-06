@@ -28,6 +28,7 @@ urlpatterns = patterns('',
 
     url(r'^isc_viewer/$', TemplateView.as_view(
         template_name="isc_viewer.html"), name='isc_viewer'),
+    (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'site_index.html'}, name='home'),

@@ -9,8 +9,8 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding model 'FaultSource'
-        db.create_table('observations_faultsource', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_faultsource', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('length_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_pref', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -88,15 +88,15 @@ class Migration(SchemaMigration):
             ('contrib', self.gf('django.db.models.fields.CharField')(default='', max_length=30, null=True, blank=True)),
             ('created', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('all_com', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('fault', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.Fault'])),
+            ('fault', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['faulted_earth.Fault'])),
             ('fault_source_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('geom', self.gf('django.contrib.gis.db.models.fields.PolygonField')(dim=3, null=True, blank=True)),
         ))
-        db.send_create_signal('observations', ['FaultSource'])
+        db.send_create_signal(u'faulted_earth', ['FaultSource'])
 
         # Adding model 'Fault'
-        db.create_table('observations_fault', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_fault', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('length_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_pref', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -168,11 +168,11 @@ class Migration(SchemaMigration):
             ('down_thro', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('simple_geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')(null=True, blank=True)),
         ))
-        db.send_create_signal('observations', ['Fault'])
+        db.send_create_signal(u'faulted_earth', ['Fault'])
 
         # Adding model 'FaultSection'
-        db.create_table('observations_faultsection', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_faultsection', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('length_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('length_pref', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -245,19 +245,19 @@ class Migration(SchemaMigration):
             ('episodic_behaviour', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('down_thro', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
         ))
-        db.send_create_signal('observations', ['FaultSection'])
+        db.send_create_signal(u'faulted_earth', ['FaultSection'])
 
         # Adding M2M table for field fault on 'FaultSection'
-        db.create_table('observations_faultsection_fault', (
+        db.create_table(u'faulted_earth_faultsection_fault', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('faultsection', models.ForeignKey(orm['observations.faultsection'], null=False)),
-            ('fault', models.ForeignKey(orm['observations.fault'], null=False))
+            ('faultsection', models.ForeignKey(orm[u'faulted_earth.faultsection'], null=False)),
+            ('fault', models.ForeignKey(orm[u'faulted_earth.fault'], null=False))
         ))
-        db.create_unique('observations_faultsection_fault', ['faultsection_id', 'fault_id'])
+        db.create_unique(u'faulted_earth_faultsection_fault', ['faultsection_id', 'fault_id'])
 
         # Adding model 'Trace'
-        db.create_table('observations_trace', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_trace', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('scale', self.gf('django.db.models.fields.BigIntegerField')()),
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
             ('notes', self.gf('django.db.models.fields.TextField')()),
@@ -266,19 +266,19 @@ class Migration(SchemaMigration):
             ('geomorphic_expression', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('geom', self.gf('django.contrib.gis.db.models.fields.MultiLineStringField')()),
         ))
-        db.send_create_signal('observations', ['Trace'])
+        db.send_create_signal(u'faulted_earth', ['Trace'])
 
         # Adding M2M table for field fault_section on 'Trace'
-        db.create_table('observations_trace_fault_section', (
+        db.create_table(u'faulted_earth_trace_fault_section', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('trace', models.ForeignKey(orm['observations.trace'], null=False)),
-            ('faultsection', models.ForeignKey(orm['observations.faultsection'], null=False))
+            ('trace', models.ForeignKey(orm[u'faulted_earth.trace'], null=False)),
+            ('faultsection', models.ForeignKey(orm[u'faulted_earth.faultsection'], null=False))
         ))
-        db.create_unique('observations_trace_fault_section', ['trace_id', 'faultsection_id'])
+        db.create_unique(u'faulted_earth_trace_fault_section', ['trace_id', 'faultsection_id'])
 
         # Adding model 'Event'
-        db.create_table('observations_event', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_event', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('re_int_min', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('re_int_max', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('re_int_pref', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
@@ -294,30 +294,30 @@ class Migration(SchemaMigration):
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
             ('notes', self.gf('django.db.models.fields.TextField')()),
             ('geom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
-            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.FaultSection'], null=True, blank=True)),
+            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['faulted_earth.FaultSection'], null=True, blank=True)),
             ('s_feature', self.gf('django.db.models.fields.CharField')(max_length=30)),
         ))
-        db.send_create_signal('observations', ['Event'])
+        db.send_create_signal(u'faulted_earth', ['Event'])
 
         # Adding model 'FaultGeometry'
-        db.create_table('observations_faultgeometry', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_faultgeometry', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('scale', self.gf('django.db.models.fields.BigIntegerField')()),
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
             ('notes', self.gf('django.db.models.fields.TextField')()),
             ('geom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
-            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.FaultSection'], null=True, blank=True)),
+            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['faulted_earth.FaultSection'], null=True, blank=True)),
             ('s_feature', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('dip_dir', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('down_thro', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('strike', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('surface_dip', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
         ))
-        db.send_create_signal('observations', ['FaultGeometry'])
+        db.send_create_signal(u'faulted_earth', ['FaultGeometry'])
 
         # Adding model 'Displacement'
-        db.create_table('observations_displacement', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_displacement', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('dis_total', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('dis_category', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('horizontal_displacement', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -330,14 +330,14 @@ class Migration(SchemaMigration):
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
             ('notes', self.gf('django.db.models.fields.TextField')()),
             ('geom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
-            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.FaultSection'], null=True, blank=True)),
+            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['faulted_earth.FaultSection'], null=True, blank=True)),
             ('s_feature', self.gf('django.db.models.fields.CharField')(max_length=30)),
         ))
-        db.send_create_signal('observations', ['Displacement'])
+        db.send_create_signal(u'faulted_earth', ['Displacement'])
 
         # Adding model 'SlipRate'
-        db.create_table('observations_sliprate', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table(u'faulted_earth_sliprate', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('dip_slip_rate_min', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('dip_slip_rate_max', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('dip_slip_rate_pref', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
@@ -367,47 +367,47 @@ class Migration(SchemaMigration):
             ('accuracy', self.gf('django.db.models.fields.BigIntegerField')()),
             ('notes', self.gf('django.db.models.fields.TextField')()),
             ('geom', self.gf('django.contrib.gis.db.models.fields.PointField')()),
-            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['observations.FaultSection'], null=True, blank=True)),
+            ('fault_section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['faulted_earth.FaultSection'], null=True, blank=True)),
             ('s_feature', self.gf('django.db.models.fields.CharField')(max_length=30)),
         ))
-        db.send_create_signal('observations', ['SlipRate'])
+        db.send_create_signal(u'faulted_earth', ['SlipRate'])
 
 
     def backwards(self, orm):
         
         # Deleting model 'FaultSource'
-        db.delete_table('observations_faultsource')
+        db.delete_table(u'faulted_earth_faultsource')
 
         # Deleting model 'Fault'
-        db.delete_table('observations_fault')
+        db.delete_table(u'faulted_earth_fault')
 
         # Deleting model 'FaultSection'
-        db.delete_table('observations_faultsection')
+        db.delete_table(u'faulted_earth_faultsection')
 
         # Removing M2M table for field fault on 'FaultSection'
-        db.delete_table('observations_faultsection_fault')
+        db.delete_table('faulted_earth_faultsection_fault')
 
         # Deleting model 'Trace'
-        db.delete_table('observations_trace')
+        db.delete_table(u'faulted_earth_trace')
 
         # Removing M2M table for field fault_section on 'Trace'
-        db.delete_table('observations_trace_fault_section')
+        db.delete_table('faulted_earth_trace_fault_section')
 
         # Deleting model 'Event'
-        db.delete_table('observations_event')
+        db.delete_table(u'faulted_earth_event')
 
         # Deleting model 'FaultGeometry'
-        db.delete_table('observations_faultgeometry')
+        db.delete_table(u'faulted_earth_faultgeometry')
 
         # Deleting model 'Displacement'
-        db.delete_table('observations_displacement')
+        db.delete_table(u'faulted_earth_displacement')
 
         # Deleting model 'SlipRate'
-        db.delete_table('observations_sliprate')
+        db.delete_table(u'faulted_earth_sliprate')
 
 
     models = {
-        'observations.displacement': {
+        u'faulted_earth.displacement': {
             'Meta': {'object_name': 'Displacement'},
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
             'dis_category': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
@@ -415,23 +415,23 @@ class Migration(SchemaMigration):
             'dis_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_total': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.FaultSection']", 'null': 'True', 'blank': 'True'}),
+            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['faulted_earth.FaultSection']", 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
             'horizontal_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'net_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
             's_feature': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'scale': ('django.db.models.fields.BigIntegerField', [], {}),
             'vertical_displacement': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.event': {
+        u'faulted_earth.event': {
             'Meta': {'object_name': 'Event'},
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
-            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.FaultSection']", 'null': 'True', 'blank': 'True'}),
+            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['faulted_earth.FaultSection']", 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'marker_age': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mov_category': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'mov_max': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -446,7 +446,7 @@ class Migration(SchemaMigration):
             's_feature': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'scale': ('django.db.models.fields.BigIntegerField', [], {})
         },
-        'observations.fault': {
+        u'faulted_earth.fault': {
             'Meta': {'object_name': 'Fault'},
             'all_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'aseis_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -477,7 +477,7 @@ class Migration(SchemaMigration):
             'hv_ratio_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -520,21 +520,21 @@ class Migration(SchemaMigration):
             'vertical_slip_rate_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'vertical_slip_rate_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.faultgeometry': {
+        u'faulted_earth.faultgeometry': {
             'Meta': {'object_name': 'FaultGeometry'},
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
             'dip_dir': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'down_thro': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.FaultSection']", 'null': 'True', 'blank': 'True'}),
+            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['faulted_earth.FaultSection']", 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
             's_feature': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'scale': ('django.db.models.fields.BigIntegerField', [], {}),
             'strike': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'surface_dip': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.faultsection': {
+        u'faulted_earth.faultsection': {
             'Meta': {'object_name': 'FaultSection'},
             'all_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'aseis_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -558,7 +558,7 @@ class Migration(SchemaMigration):
             'dis_total': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'down_thro': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'episodic_behaviour': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'fault': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.Fault']", 'symmetrical': 'False'}),
+            'fault': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['faulted_earth.Fault']", 'symmetrical': 'False'}),
             'fault_section_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.MultiLineStringField', [], {'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -567,7 +567,7 @@ class Migration(SchemaMigration):
             'hv_ratio_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -610,7 +610,7 @@ class Migration(SchemaMigration):
             'vertical_slip_rate_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'vertical_slip_rate_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.faultsource': {
+        u'faulted_earth.faultsource': {
             'Meta': {'object_name': 'FaultSource'},
             'all_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'area_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -635,7 +635,7 @@ class Migration(SchemaMigration):
             'dis_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dis_total': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'fault': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.Fault']"}),
+            'fault': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['faulted_earth.Fault']"}),
             'fault_source_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'geom': ('django.contrib.gis.db.models.fields.PolygonField', [], {'dim': '3', 'null': 'True', 'blank': 'True'}),
             'historical_earthquake': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -644,7 +644,7 @@ class Migration(SchemaMigration):
             'hv_ratio_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'length_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -694,7 +694,7 @@ class Migration(SchemaMigration):
             'width_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'width_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.sliprate': {
+        u'faulted_earth.sliprate': {
             'Meta': {'object_name': 'SlipRate'},
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
             'aseis_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
@@ -702,13 +702,13 @@ class Migration(SchemaMigration):
             'dip_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dip_slip_rate_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'dip_slip_rate_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['observations.FaultSection']", 'null': 'True', 'blank': 'True'}),
+            'fault_section': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['faulted_earth.FaultSection']", 'null': 'True', 'blank': 'True'}),
             'geom': ('django.contrib.gis.db.models.fields.PointField', [], {}),
             'hv_ratio': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'hv_ratio_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'net_slip_rate_com': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_max': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'net_slip_rate_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
@@ -729,13 +729,13 @@ class Migration(SchemaMigration):
             'vertical_slip_rate_min': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'vertical_slip_rate_pref': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
         },
-        'observations.trace': {
+        u'faulted_earth.trace': {
             'Meta': {'object_name': 'Trace'},
             'accuracy': ('django.db.models.fields.BigIntegerField', [], {}),
-            'fault_section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['observations.FaultSection']", 'symmetrical': 'False'}),
+            'fault_section': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['faulted_earth.FaultSection']", 'symmetrical': 'False'}),
             'geom': ('django.contrib.gis.db.models.fields.MultiLineStringField', [], {}),
             'geomorphic_expression': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'loc_meth': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'notes': ('django.db.models.fields.TextField', [], {}),
             'scale': ('django.db.models.fields.BigIntegerField', [], {}),
@@ -743,4 +743,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['observations']
+    complete_apps = ['faulted_earth']

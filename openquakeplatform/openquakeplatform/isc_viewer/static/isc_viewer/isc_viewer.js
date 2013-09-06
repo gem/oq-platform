@@ -1,4 +1,3 @@
-
 var app;
 Ext.onReady(function() {
         var header = new Ext.Panel({

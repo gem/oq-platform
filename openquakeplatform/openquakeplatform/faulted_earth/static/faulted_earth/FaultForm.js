@@ -14,16 +14,11 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
-
-/**
- * @require FileUploadField.js
- */
-
 Ext.namespace('faulted_earth');
 
-faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
-    
-    ptype: "fe_trace_form",
+faulted_earth.FaultForm = Ext.extend(gxp.plugins.Tool, {
+
+    ptype: "fe_fault_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -45,31 +40,32 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
      */
     temporaryWorkspaceNamespaceUri: "http://geonode.org/temporary",
     
-    /** private: property[sessionTids]
+    /** private: property[sessionFids]
      *  ``Array`` fids of features added/modified in this session
      */
-    sessionTids: [],
+    sessionFids: null,
     
     autoActivate: false,
     
     registerEvents: function(target) {
-        this.sessionTids = [];
-        this.faultSection = {};
+        this.sessionFids = [];
         var featureManager = target.tools[this.featureManager];
         featureManager.featureLayer.events.on({
             "featureselected": function(e) {
                 if (!e.feature.fid) {
                     return;
                 }
-                if (featureManager.layerRecord.get("name") == "geonode:observations_trace") {
-                    this.target.traceId = e.feature.fid;
-                    this.sessionTids.push(this.target.traceId);
+		/* fixme: is this check really needed ? */
+                if (featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_fault") {
+		    /* store the fault (for multiple purposes like use
+		     * it for fault source creation) */
+                    this.target.fault = e.feature;
                 }
             },
             "featureunselected": function(e) {
-                if (this.active && featureManager.layerRecord.get("name") == "geonode:observations_trace") {
-                    this.sessionTids = [];
-                    this.target.traceId = null;
+		/* fixme: is this check really needed ? */
+                if (this.active && featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_fault") {
+                    this.target.fault = null;
                 }
             },
             scope: this
@@ -77,7 +73,7 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     addOutput: function(config) {
-        return faulted_earth.TraceForm.superclass.addOutput.call(this, {
+        return faulted_earth.FaultForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
@@ -86,20 +82,26 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
             items: [{
                 xtype: "textfield",
                 ref: "nameContains",
-                fieldLabel: "Search for key word in notes",
+                fieldLabel: "Search",
                 validationDelay: 500,
                 listeners: {
                     "valid": this.updateFilter,
                     scope: this
                 }
-              }, {
+            }, {
+                xtype: "box",
+                autoEl: {
+                    tag: "p",
+                    cls: "x-form-item"
+                },
+                html: "Select a fault from the grid below, then use the modify button to create a simple geometry that will be used to create a fault source polygon" 
+            }, {
                 xtype: "container",
                 layout: "hbox",
                 cls: "composite-wrap",
-                fieldLabel: "Create or modify a trace",
+                fieldLabel: "Edit a simplified fault geometry",
                 items: [{
-		    /* fixme: remove this hardcoded id */
-                    id: "fe_trace_tooltarget",
+                    id: "fe_fault_tooltarget",
                     xtype: "container",
                     cls: "toolbar-spaced",
                     layout: "toolbar"
@@ -110,7 +112,47 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                     tag: "p",
                     cls: "x-form-item"
                 },
-                html: "Select a Trace from the grid below then click 'Export' to download it."
+                html: "Once a fault has the required attributes, and simplified geometry, select a fault from the grid and use the 'generate' button to calculate a fault source."
+            }, {
+                xtype: "container",
+                layout: "hbox",
+                fieldLabel: "Generate Fault Source",
+                items: [{
+                    xtype: "button",
+                    text: "Generate",
+                    iconCls: "icon-layer-switcher",
+                    handler: function() {
+                        var featureManager = this.target.tools[this.featureManager];
+			if (!this.target.fault) {
+			    alert("To create a fault source, you need to select a fault");
+			    return;
+			}
+
+                        Ext.Ajax.request({
+                            method: "POST",
+                            url: faulted_earth.app_url + 'faultsource/create',
+                            params: Ext.encode({fault_id: this.target.fault.fid}),
+                            success: function(response, opts) {
+				app.tools.faultsource_manager.featureStore.reload();
+                                alert('Fault source generated');
+                            },
+                            failure: function(response, opts){
+                                alert('failed to generate fault source: missing field ' + faulted_earth.modelsHash.faultsource.propertyNames[response.responseText]);
+                            },
+
+                            scope: this
+                        });
+
+                    },
+                    scope: this
+                    }]
+            }, {
+                xtype: "box",
+                autoEl: {
+                    tag: "p",
+                    cls: "x-form-item"
+                },
+                html: "Select a Fault form from the grid below then click 'Export' to download it."
             }, {
                 xtype: "container",
                 layout: "hbox",
@@ -120,81 +162,11 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                     iconCls: "icon-layer-switcher",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_trace&featureID=" + this.target.traceId + "&outputFormat=shape-zip");
+			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=faulted_earth_fault&featureID=" + this.target.fault.fid + "&outputFormat=shape-zip");
                     },
                     scope: this
                 }]
-            }, {
-                xtype: "container",
-                layout: "hbox",
-                cls: "composite-wrap",
-                fieldLabel: "Upload a trace",
-                items: [{
-                    xtype: "button",
-                    text: "Upload",
-                    iconCls: "icon-import",
-                    handler: function() {
-                        var featureManager = this.target.tools[this.featureManager];
-                        featureManager.loadFeatures()
-                        this.showUploadWindow();
-                    },
-                    scope: this
-                }]
-            }, {
-                xtype: "box",
-                autoEl: {
-                    tag: "p",
-                    cls: "x-form-item"
-                },
-                html: "From the table below press either the Shift or ctl to select the Traces you would like to join into a Fault Section"
-            }, {
-                xtype: "textfield",
-                ref: "faultSectionName",
-                fieldLabel: "Neotectonic Section Name",
-                //validationDelay: 500,
-                listeners: {
-                        "valid": this.updateFaultSectionName,
-                        scope: this
-                }
-             }, {
-                xtype: "container",
-                layout: "hbox",
-                fieldLabel: "Join traces",
-                items: [{
-                    xtype: "button",
-                    text: "Join",
-                    iconCls: "icon-layer-switcher",
-                    handler: function() {
-                        var featureManager = this.target.tools[this.featureManager];
-
-			if (!this.faultSection || !this.faultSection.name) {
-			    alert('Please, give a name to the fault section to be generated');
-			    return;
-			}
-
-			if (this.sessionTids.length == 0) {
-			    alert('Please, select at least a trace to create a fault section');
-			    return;
-			}
-                        Ext.Ajax.request({
-                            method: "POST",
-                            url: faulted_earth.app_url + '/observations/traces/join',
-                            params: Ext.encode({ 'section_name': this.faultSection.name,
-						 'trace_ids':this.sessionTids }),
-                            success: function(response, opts) {
-				app.tools.faultsection_manager.featureStore.reload();
-                                alert('Fault Section created');
-                            },
-                            failure: function(response, opts){
-                                alert('Failed to create the Fault Section');
-                            },
-
-                            scope: this
-                        });
-                    },
-                    scope: this
-                    }]
-              }],
+             }],
             listeners: {
                 "added": function(cmp, ct) {
                     ct.on({
@@ -207,35 +179,28 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
             }
         });
     },
-
-    updateFaultSectionName: function() {
-        var form = this.output[0]
-        if (form.faultSectionName.getValue()) {
-                this.faultSection['name'] = form.faultSectionName.getValue()
-        }
-    },
-
+    
     activate: function() {
-        if (faulted_earth.TraceForm.superclass.activate.apply(this, arguments)) {
-            var featureManager = this.target.tools[this.featureManager];
+        if (faulted_earth.FaultForm.superclass.activate.apply(this, arguments)) {
+	    var featureManager = this.target.tools[this.featureManager];
             this.output[0].nameContains.setValue("");
-            featureManager.on("layerchange", function(mgr, layer, attr) {
+            featureManager.on("layerchange", function(mgr, rec) {
                 mgr.featureStore.on({
                     "save": function(store, batch, data) {
                         var fid;
                         for (var action in data) {
                             for (var i=data[action].length-1; i>=0; --i) {
                                 fid = data[action][i].feature.fid;
-                                this.sessionTids.remove(fid);  
+                                this.sessionFids.remove(fid);  
                                 if (action != "destroy") {
-                                    this.sessionTids.push(fid);
+                                    this.sessionFids.push(fid);
                                 }
                             }
                         }
                     },
                     "load": function() {
-                        this.target.traceId && window.setTimeout((function() {
-                            var feature = mgr.featureLayer.getFeatureByFid(this.target.traceId);
+                        this.target.fault && window.setTimeout((function() {
+                            var feature = mgr.featureLayer.getFeatureByFid(this.target.fault);
                             if (feature && feature.layer.selectedFeatures.indexOf(feature) == -1) {
                                 feature.layer.selectedFeatures.push(feature);
                                 feature.layer.events.triggerEvent("featureselected", {feature: feature});
@@ -248,13 +213,14 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
         }
     },
     
+   
     updateFilter: function() {
         var form = this.output[0];
         var filters = [];
         form.nameContains.getValue() && filters.push(
             new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.LIKE,
-                property: "trace_name",
+                property: "fault_name",
                 value: "*" + form.nameContains.getValue() + "*",
                 matchCase: false
             })
@@ -268,8 +234,8 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
                 });
         }
         this.target.tools[this.featureManager].loadFeatures(filter);
-        },
-    
+    },
+
     showUploadWindow: function() {
         var uploadWindow = new Ext.Window({
             title: "Import Faults",
@@ -377,4 +343,4 @@ faulted_earth.TraceForm = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(faulted_earth.TraceForm.prototype.ptype, faulted_earth.TraceForm);
+Ext.preg(faulted_earth.FaultForm.prototype.ptype, faulted_earth.FaultForm);

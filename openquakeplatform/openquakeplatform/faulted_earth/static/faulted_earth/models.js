@@ -39,7 +39,7 @@ faulted_earth.Model = function(prefixId, title, properties, conf) {
 	readOnly: false
     });
 
-    this.sourceName = "geonode:observations_" + this.prefixId;
+    this.sourceName = "oqplatform:faulted_earth_" + this.prefixId;
     this.gridId = this.prefixId + '_grid';
     this.formId = this.prefixId + '_form';
     this.snappingId = this.prefixId + '_snapping';
@@ -110,11 +110,11 @@ function withInterval(fields) {
 	];
     }
     if (!fields.length) {
-	return withIntervalHelper(fields)
+	    return withIntervalHelper(fields);
     } else {
 	var ret = [];
 	Ext.each(fields, function(field) {
-	    ret = ret.concat(withIntervalHelper(field))
+	           ret = ret.concat(withIntervalHelper(field));
 	});
 	return ret;
     }
@@ -250,14 +250,14 @@ faulted_earth.faultSourceProperties = registerProperties(
 
 
 faulted_earth.models = [
-    new faulted_earth.Model("event", 'Observations: Events', faulted_earth.eventProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
-    new faulted_earth.Model("displacement", 'Observations: Displacement', faulted_earth.siteDisplacementProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
-    new faulted_earth.Model("sliprate", 'Observations: Slip Rates', faulted_earth.siteSlipRateProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
-    new faulted_earth.Model("faultgeometry", 'Observations: Fault Geometry', faulted_earth.faultgeometryProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
-    new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties, { modifyOnly: false }),
-    new faulted_earth.Model("faultsection", 'Fault Section Summary', faulted_earth.faultsectionProperties),
-    new faulted_earth.Model("fault", 'Faults', faulted_earth.faultProperties),
-    new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties, { readOnly: false })
+  new faulted_earth.Model("event", 'Observations: Events', faulted_earth.eventProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+  new faulted_earth.Model("displacement", 'Observations: Displacement', faulted_earth.siteDisplacementProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+  new faulted_earth.Model("sliprate", 'Observations: Slip Rates', faulted_earth.siteSlipRateProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+  new faulted_earth.Model("faultgeometry", 'Observations: Fault Geometry', faulted_earth.faultgeometryProperties, { formPtype: 'fe_site_form', modifyOnly: false }),
+  new faulted_earth.Model("trace", 'Traces', faulted_earth.traceProperties, { modifyOnly: false }),
+  new faulted_earth.Model("faultsection", 'Fault Section Summary', faulted_earth.faultsectionProperties),
+  new faulted_earth.Model("fault", 'Faults', faulted_earth.faultProperties),
+  new faulted_earth.Model("faultsource", 'Fault Sources', faulted_earth.faultSourceProperties, { readOnly: false })
 ];
 
 faulted_earth.modelsHash = {};
