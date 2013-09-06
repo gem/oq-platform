@@ -72,7 +72,7 @@ Ext.ns("gxp.plugins");
  *    }
  *
  */
-gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
+var tilestreamPlugin = {
     
     /** api: ptype = gxp_mapboxsource */
     ptype: "gxp_tilestreamsource",
@@ -88,10 +88,6 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
      */
     title: "TileStream Layers",
     
-    /** i18n **/
-    // TODO dynamiclly create a list of layer nmaes e.g :
-    //hazardMapPointsWorldTitle: "World Hazard Map PGA_0.1",
- 
     /** api: method[createStore]
      *
      *  Creates a store of layer records.  Fires "ready" when store is loaded.
@@ -104,7 +100,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
             numZoomLevels: 7
         };  
         
-        var layers = new Array;
+        var layers = new Array();
 
         $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
         function(json) {
@@ -114,16 +110,15 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
                 var tileMaxZoom = json[i].maxzoom;
                 
                 // Build the list of layers
-                layers[i] = new OpenLayers.Layer.XYZ(
-                    this[OpenLayers.String.camelize(tileStreamLayerName) + "Title"],
-                    [
-                        "http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"
-                    ],  
+		var newLayer = new OpenLayers.Layer.XYZ(
+		    tileStreamLayerName,
+                    ["http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],  
                     OpenLayers.Util.applyDefaults({
                         layername: tileStreamLayerName,
                         numZoomLevels: tileMaxZoom
                     }, options)
-                );  
+                );
+		layers.push(newLayer);
             }
             newLayerStore(layers);
         }); 
@@ -143,7 +138,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
                 ]
             });
             plugin.fireEvent("ready", this);
-        }
+        };
     },
     
     /** api: method[createLayerRecord]
@@ -190,6 +185,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
         return record;
     }
 
-});
+};
 
+gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, tilestreamPlugin);
 Ext.preg(gxp.plugins.TileStreamSource.prototype.ptype, gxp.plugins.TileStreamSource);
