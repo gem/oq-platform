@@ -28,7 +28,7 @@ from django.http import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from icebox import models as icebox_models
+from openquakeplatform.icebox import models as icebox_models
 
 IMPORT_CONTENT_TYPES = ['geojson']  # TODO(LB): Support 'xml' as well.
 
