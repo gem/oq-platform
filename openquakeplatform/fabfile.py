@@ -25,7 +25,7 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
 DB_PASSWORD = 'openquake'
 
-#:
+#: Template for local_settings.py
 LOCAL_SETTINGS = """\
 DATABASES = {
     'default': {
