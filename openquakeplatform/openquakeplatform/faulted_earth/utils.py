@@ -17,9 +17,8 @@
 # <http://www.gnu.org/licenses/lgpl-3.0.txt> for a copy of the LGPLv3 License
 #
 
-import math
 
-from geonode.observations import models
+from openquakeplatform.faulted_earth import models
 
 
 def create_faultsource(fault):

@@ -20,7 +20,6 @@ from django.contrib.gis.db import models
 from django.conf import settings
 import math
 import numpy
-import jpype
 from django.contrib.gis.geos import collections
 
 
@@ -435,6 +434,7 @@ class Fault(Observation, WithLength, WithSlipAndDip, WithDisplacement, WithRecur
         GRID_SPACING = 1.0
 
         # FIXME: do not use openpsha to compute the geometry
+        import jpype
         if not jpype.isJVMStarted():
             # start jvm once
             jpype.startJVM(jpype.getDefaultJVMPath(),

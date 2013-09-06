@@ -22,7 +22,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_response_exempt
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.utils import simplejson
 from django.contrib.contenttypes.models import ContentType
-from geonode.observations import models, utils
+from openquakeplatform.faulted_earth import models, utils
 
 
 OK_RESPONSE = HttpResponse('Ok')
@@ -77,10 +77,10 @@ def updatecomputedfields(request):
         fid = json_data['fid']
         layer_name, object_id = fid.split('.')
 
-        # remove "observations_" from layer name
-        model_name = layer_name[len("observations_"):]
+        # remove "faulted_earth_" from layer name
+        model_name = layer_name[len("faulted_earth_"):]
 
-        model_type = ContentType.objects.get(app_label="observations", model=model_name)
+        model_type = ContentType.objects.get(app_label="faulted_earth", model=model_name)
         
         observation = model_type.get_object_for_this_type(pk=object_id)
         if hasattr(observation, 'update_autocomputed_fields'):

@@ -13,15 +13,20 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+#    You should have received a copy of the GNU Affero General Public
+#    License along with this program. If not, see
+#    <https://www.gnu.org/licenses/agpl.html>.
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
+from django.views.generic import TemplateView
 
 
-urlpatterns = patterns('geonode.observations.views',
-                       (r'^traces/join$', 'join_traces'),
-                       (r'^faultsection/join$', 'join_faultsections'),
-                       (r'^faultsource/create$', 'create_faultsource'),
-                       (r'^updatecomputedfields$', 'updatecomputedfields')
-)
+urlpatterns = patterns(
+    'openquakeplatform.faulted_earth.views',
+    url(r'^$', TemplateView.as_view(
+        template_name="faulted_earth.html"), name='faulted_earth'),
+    (r'^traces/join$', 'join_traces'),
+    (r'^faultsection/join$', 'join_faultsections'),
+    (r'^faultsource/create$', 'create_faultsource'),
+    (r'^updatecomputedfields$', 'updatecomputedfields')
+    )

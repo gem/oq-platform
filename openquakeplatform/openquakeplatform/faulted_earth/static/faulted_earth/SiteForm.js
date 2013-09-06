@@ -14,12 +14,16 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. */
 
+/**
+ * @requires FileUploadField.js
+ */
+
 Ext.namespace('faulted_earth');
 
 
-faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
-
-    ptype: "fe_faultsource_form",
+faulted_earth.SiteForm = Ext.extend(gxp.plugins.Tool, {
+    
+    ptype: "fe_site_form",
     
     /** api: config[featureManager]
      *  ``String`` id of the FeatureManager to add uploaded features to
@@ -34,6 +38,10 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
      *  Default is "temp".
      */
     temporaryWorkspace: "temp",
+
+    /** api: config[layerRecordName]
+     *  ``String`` in [event, displacement, slip_rate, fault_geometry]
+     */
 
     /** api: config[temporaryWorkspaceNamespaceUri]
      *  ``String`` namespace uri of the temporary GeoServer workspace for
@@ -56,64 +64,68 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
                 if (!e.feature.fid) {
                     return;
                 }
-                this.sessionFids.push(e.feature.fid.split('.')[1]);
+                if (featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_" + this.layerRecordName) {
+                    this.target.summaryId = e.feature.fid;
+                }
             },
             "featureunselected": function(e) {
-                    this.sessionFids = [];
+                if (this.active && featureManager.layerRecord.get("name") == "oqplatform:faulted_earth_" + this.layerRecordName) {
                     this.target.summaryId = null;
+                }
             },
             scope: this
         });
     },
     
     addOutput: function(config) {
-        return faulted_earth.SourceForm.superclass.addOutput.call(this, {
+	var layerRecordName = this.layerRecordName;
+        return faulted_earth.SiteForm.superclass.addOutput.call(this, {
             xtype: "form",
             labelWidth: 110,
             defaults: {
                 anchor: "100%"
             },
             items: [{
-                xtype: "container",
-                layout: "hbox",
-                cls: "composite-wrap",
-                fieldLabel: "zoom",
-                items: [{
-                    id: "fe_faultsource_tooltarget",
-                    xtype: "container",
-                    cls: "toolbar-spaced",
-                    layout: "toolbar"
-                }]
-            }, {
                 xtype: "textfield",
                 ref: "nameContains",
-                fieldLabel: "Search",
+                fieldLabel: "Search for key word in notes",
                 validationDelay: 500,
                 listeners: {
                     "valid": this.updateFilter,
                     scope: this
                 }
-            }, {
-                xtype: "box",
-                autoEl: {
-                    tag: "p",
-                    cls: "x-form-item"
-                },
-                html: "Select a Fault Source from the grid below then click 'Export' to download it."
+             }, {
+                xtype: "container",
+                layout: "hbox",
+                cls: "composite-wrap",
+                fieldLabel: "Create or modify a site observation",
+                items: [{
+                    id: "fe_" + layerRecordName + "_tooltarget",
+                    xtype: "container",
+                    cls: "toolbar-spaced",
+                    layout: "toolbar"
+                }]
             }, {
                 xtype: "container",
                 layout: "hbox",
+                cls: "composite-wrap",
+                fieldLabel: "Upload a Site Observation",
                 items: [{
                     xtype: "button",
-                    text: "Export",
-                    iconCls: "icon-layer-switcher",
+                    text: "Upload",
+                    iconCls: "icon-import",
                     handler: function() {
                         var featureManager = this.target.tools[this.featureManager];
-			window.open(faulted_earth.app_url + "/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeName=observations_faultsource&featureID=observations_faultsource." + this.sessionFids[0] + "&outputFormat=shape-zip");
+                        if (this.output[0].newFeaturesOnly.getValue()) {
+                            featureManager.on("clearfeatures", this.showUploadWindow, this, {single: true});
+                            featureManager.clearFeatures();
+                        } else {
+                            this.showUploadWindow();
+                        }
                     },
                     scope: this
                 }]
-             }],
+            }],
             listeners: {
                 "added": function(cmp, ct) {
                     ct.on({
@@ -128,10 +140,10 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     },
     
     activate: function() {
-        if (faulted_earth.SourceForm.superclass.activate.apply(this, arguments)) {
+        if (faulted_earth.SiteForm.superclass.activate.apply(this, arguments)) {
             var featureManager = this.target.tools[this.featureManager];
             this.output[0].nameContains.setValue("");
-            featureManager.on("layerchange", function(mgr, layer, attr) {
+            featureManager.on("layerchange", function(mgr, rec) {
                 mgr.featureStore.on({
                     "save": function(store, batch, data) {
                         var fid;
@@ -160,28 +172,28 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
         }
     },
     
-   
     updateFilter: function() {
         var form = this.output[0];
         var filters = [];
         form.nameContains.getValue() && filters.push(
-            new OpenLayers.Filter.Comparison({
-                type: OpenLayers.Filter.Comparison.LIKE,
-                property: "fault_source_name",
-                value: "*" + form.nameContains.getValue() + "*",
-                matchCase: false
-            })
+          new OpenLayers.Filter.Comparison({
+              type: OpenLayers.Filter.Comparison.LIKE,
+              property: "notes",
+              value: "*" + form.nameContains.getValue() + "*",
+              matchCase: false
+          })
         );
         var filter;
         if (filters.length > 0) {
-            filter = filters.length == 1 ? filters[0] :
-                new OpenLayers.Filter.Logical({
-                    type: OpenLayers.Filter.Logical.AND,
-                    filters: filters
-                });
+          filter = filters.length == 1 ? filters[0] :
+              new OpenLayers.Filter.Logical({
+                  type: OpenLayers.Filter.Logical.AND,
+                  filters: filters
+              });
         }
         this.target.tools[this.featureManager].loadFeatures(filter);
-    },
+        },
+    
 
     showUploadWindow: function() {
         var uploadWindow = new Ext.Window({
@@ -290,4 +302,4 @@ faulted_earth.SourceForm = Ext.extend(gxp.plugins.Tool, {
     
 });
 
-Ext.preg(faulted_earth.SourceForm.prototype.ptype, faulted_earth.SourceForm);
+Ext.preg(faulted_earth.SiteForm.prototype.ptype, faulted_earth.SiteForm);
