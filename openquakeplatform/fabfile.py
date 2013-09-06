@@ -99,8 +99,11 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     local('python manage.py updatelayers')
     # Finally, remove the superuser privileges, but only if this was a user we
     # created:
-    if user_created:
-        _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
+    # TODO: Some apps require that oqplatform db user has SUPERUSER.
+    # We need to deal with this in production. For a dev install,
+    # leave the user with superuser privs.
+    #if user_created:
+    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
 
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
