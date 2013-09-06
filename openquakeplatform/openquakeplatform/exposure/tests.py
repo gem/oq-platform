@@ -1,8 +1,8 @@
 import mock
 import unittest
 
-from exposure import util
-from exposure import views
+from openquakeplatform.exposure import util
+from openquakeplatform.exposure import views
 
 from django.http import HttpResponse
 
@@ -51,7 +51,8 @@ class ExportBuildingTestCase(unittest.TestCase):
                              outputType='nrml')
         request = FakeHttpGetRequest(self.get_dict)
 
-        with mock.patch('exposure.views._export_area_valid') as eav:
+        with mock.patch(
+                'openquakeplatform.exposure.views._export_area_valid') as eav:
             eav.return_value = (False, 'Invalid area')
             response = views.export_building(request)
 
@@ -79,7 +80,7 @@ class ExportBuildingTestCase(unittest.TestCase):
         self.get_dict['outputType'] = 'csv'
         request = FakeHttpGetRequest(self.get_dict)
 
-        sbe_path = 'exposure.views._stream_building_exposure'
+        sbe_path = 'openquakeplatform.exposure.views._stream_building_exposure'
         with mock.patch(sbe_path) as sbe_mock:
             response = views.export_building(request)
 
@@ -97,7 +98,7 @@ class ExportBuildingTestCase(unittest.TestCase):
     def test_export_building_calls_nrml(self):
         request = FakeHttpGetRequest(self.get_dict)
 
-        sbe_path = 'exposure.views._stream_building_exposure'
+        sbe_path = 'openquakeplatform.exposure.views._stream_building_exposure'
         with mock.patch(sbe_path) as sbe_mock:
             response = views.export_building(request)
 
@@ -135,7 +136,9 @@ class ExportPopulationTestCase(unittest.TestCase):
         self.assertEqual(expected_error, ar.exception.message)
 
     def test_calls_csv(self):
-        with mock.patch('exposure.views._stream_population_exposure') as spe:
+        with mock.patch(
+                'openquakeplatform.exposure.views._stream_population_exposure'
+                ) as spe:
             response = views.export_population(self.request)
 
             self.assertEqual(1, spe.call_count)
@@ -148,7 +151,9 @@ class ExportPopulationTestCase(unittest.TestCase):
     def test_calls_nrml(self):
         self.request.GET['outputType'] = 'nrml'
 
-        with mock.patch('exposure.views._stream_population_exposure') as spe:
+        with mock.patch(
+                'openquakeplatform.exposure.views._stream_population_exposure'
+                ) as spe:
             response = views.export_population(self.request)
 
             self.assertEqual(1, spe.call_count)
@@ -180,7 +185,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
     def test_invalid_admin_level(self):
         self.request.GET['adminLevel'] = 'admin4'
 
-        with mock.patch('exposure.util._get_subnational_exposure') as gse:
+        with mock.patch('openquakeplatform.exposure.util._get_subnational_exposure') as gse:
             gse.return_value = []
 
             with self.assertRaises(ValueError) as ar:
@@ -209,7 +214,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
         self.request.GET['outputType'] = 'csv'
         self.request.GET['residential'] = 'non-res'
 
-        with mock.patch('exposure.util._get_national_exposure') as gne:
+        with mock.patch('openquakeplatform.exposure.util._get_national_exposure') as gne:
             # Fake query result data
             gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, None, 0.2, None],
                                 [11, 12, 13, 14, 15, 16, 17, 18, 19, 0.4, 0.5,
@@ -236,7 +241,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
         self.request.GET['outputType'] = 'nrml'
         self.request.GET['residential'] = 'non-res'
 
-        with mock.patch('exposure.util._get_national_exposure') as gne:
+        with mock.patch('openquakeplatform.exposure.util._get_national_exposure') as gne:
             # Fake query result data
             gne.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 0.1, None, 0.3],
                                 [11, 12, 13, 14, 15, 16, 17, 18, 19, 0.4, 0.5,
@@ -285,7 +290,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
         self.request.GET['outputType'] = 'csv'
         self.request.GET['residential'] = 'both'
 
-        with mock.patch('exposure.util._get_subnational_exposure') as gse:
+        with mock.patch('openquakeplatform.exposure.util._get_subnational_exposure') as gse:
             gse.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
                                 [10, 11, 12, 13, 14, 15, 16, 17, 18]]
 
@@ -305,7 +310,7 @@ class StreamBuildingExposureTestCase(unittest.TestCase):
         self.request.GET['outputType'] = 'nrml'
         self.request.GET['residential'] = 'both'
 
-        with mock.patch('exposure.util._get_subnational_exposure') as gse:
+        with mock.patch('openquakeplatform.exposure.util._get_subnational_exposure') as gse:
             gse.return_value = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
                                 [10, 11, 12, 13, 14, 15, 16, 17, 18]]
 
@@ -342,7 +347,7 @@ class StreamPopulationExposureTestCase(unittest.TestCase):
         self.request = FakeHttpGetRequest(req_params)
 
     def test_stream_csv(self):
-        with mock.patch('exposure.util._get_population_exposure') as gpe:
+        with mock.patch('openquakeplatform.exposure.util._get_population_exposure') as gpe:
             gpe.return_value = [[1, 2, 3, 4, 5],[6, 7, 8, 9, 10]]
 
             result = list(views._stream_population_exposure(self.request,
@@ -358,7 +363,7 @@ class StreamPopulationExposureTestCase(unittest.TestCase):
     def test_stream_nrml(self):
         self.request.GET['outputType'] = 'nrml'
 
-        with mock.patch('exposure.util._get_population_exposure') as gpe:
+        with mock.patch('openquakeplatform.exposure.util._get_population_exposure') as gpe:
             gpe.return_value = [[1, 2, 3, 4, 5],[6, 7, 8, 9, 10]]
 
             result = list(views._stream_population_exposure(self.request,
