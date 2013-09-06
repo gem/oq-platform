@@ -1,0 +1,9 @@
+.navbar-fixed-top-second {
+   position: fixed;
+   top: 73px;
+   width: 100%;
+}
+
+#header-wrapper {
+   height: 113px;
+}

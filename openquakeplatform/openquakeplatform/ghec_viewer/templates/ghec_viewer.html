@@ -13,10 +13,10 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+{% extends 'site_base.html' %}
 
-<!DOCTYPE html>
-<html>
-    <head>
+{% block extra_head %}
+{{block.super}}
         <title>Global Historical Earthquake Catalogue Viewer</title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -48,13 +48,10 @@
             Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
         </script>
-    </head>
-    <body>
+{% endblock %}        
 
-      <div id="header-wrapper"></div>
-      <div id="footer"></div>
+{% block body_outer %}
+  <span id="showGrid"></span>
+{% endblock %}
 
-        <span id="showGrid"></span>
-</body>
-</html>
 
