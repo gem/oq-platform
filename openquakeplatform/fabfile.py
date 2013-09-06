@@ -92,8 +92,9 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
         store_content
     )
 
-    # Add the isc_viewer app
+    # Add the apps
     _add_isc_viewer()
+    _add_faulted_earth()
 
     local('python manage.py updatelayers')
     # Finally, remove the superuser privileges, but only if this was a user we
@@ -242,3 +243,15 @@ def _create_isc_viewer_layers():
     with open(feature_file) as fh:
         content = fh.read()
     _geoserver_api(FEATURETYPES_URL, content)
+
+
+def _add_faulted_earth():
+    # Add faulted_earth features/layers
+    features_dir = 'gs_data/faulted_earth/features'
+    features_files = [x for x in os.listdir(features_dir)
+                      if x.lower().endswith('.xml')]
+    features_files = [os.path.join(features_dir, x) for x in features_files]
+    for ff in features_files:
+        with open(ff) as fh:
+            content = fh.read()
+        _geoserver_api(FEATURETYPES_URL, content)
