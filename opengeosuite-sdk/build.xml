@@ -137,10 +137,12 @@
         <copy todir="${app.build}/src/geojson">
             <fileset dir="${app.fullpath}/src/geojson"/>
         </copy>
-        <!-- copy geodetic strain application -->
-        <copy todir="${app.build}/src/geodetic_strain">
-            <fileset dir="${app.fullpath}/src/geodetic_strain"/>
-        </copy>
+        <!-- copy geodetic strain application (currently turned off) -->
+        <!--
+            <copy todir="${app.build}/src/geodetic_strain">
+                <fileset dir="${app.fullpath}/src/geodetic_strain"/>
+            </copy>
+        -->
         <!-- copy hazard application -->
         <copy todir="${app.build}/src/hazard">
             <fileset dir="${app.fullpath}/src/hazard"/>
