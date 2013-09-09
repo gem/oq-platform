@@ -1,15 +1,12 @@
 <featureType>
-  <name>isc_viewer_measure</name>
-  <nativeName>isc_viewer_measure</nativeName>
+  <name>faulted_earth_fault</name>
+  <nativeName>faulted_earth_fault</nativeName>
   <namespace>
     <name>oqplatform</name>
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/namespaces/oqplatform.xml" type="application/xml"/>
   </namespace>
-  <title>isc_viewer_measure</title>
-  <keywords>
-    <string>features</string>
-    <string>isc_viewer_measure</string>
-  </keywords>
+  <title>faulted_earth_fault</title>
+  <abstract>No abstract provided</abstract>
   <nativeCRS>GEOGCS[&quot;WGS 84&quot;,
   DATUM[&quot;World Geodetic System 1984&quot;,
     SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],
@@ -31,9 +28,14 @@
     <maxx>180.0</maxx>
     <miny>-90.0</miny>
     <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="advertised">true</entry>
+  </metadata>
   <store class="dataStore">
     <name>oqplatform</name>
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
