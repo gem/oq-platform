@@ -192,6 +192,7 @@ INSTALLED_APPS = (
 
     # Our apps
     'openquakeplatform.isc_viewer',
+    'openquakeplatform.ghec_viewer',
     'openquakeplatform.faulted_earth',
 )
 
@@ -553,7 +554,7 @@ LEAFLET_CONFIG = {
 
 
 # Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = False
+LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
