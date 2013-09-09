@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2010-2013, GEM Foundation.
+ Copyright (c) 2013, GEM Foundation.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -14,12 +14,10 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
 {% extends 'site_base.html' %}
-{% load i18n %}
 
 {% block extra_head %}
 {{block.super}}
-
-        <title>Faulted Earth</title>
+        <title>Global Historical Earthquake Catalogue Viewer</title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="./favicon.ico">
@@ -27,7 +25,6 @@
         <!-- Ext resources -->
         <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/ext-all.css">
         <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/xtheme-gray.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/fileuploadfield.css">
         <script type="text/javascript" src="/static/geoexplorer/externals/ext/adapter/ext/ext-base.js"></script>
         <script type="text/javascript" src="/static/geoexplorer/externals/ext/ext-all.js"></script>
 
@@ -44,26 +41,17 @@
         
 
         <!-- app resources -->
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-        <!-- google stuff -->
-        <script src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
-
-        <script type="text/javascript" src="/static/geoexplorer/script/GeoExplorer-debug.js"></script>
-
-        <script type="text/javascript" src="/static/faulted_earth/models.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/validation.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/help.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/FeatureGrid.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/FeatureEditPopup.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/ObservationFeatureEditor.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/SiteForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/TraceForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/SummaryForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/FaultForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/SourceForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/faulted_earth.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/isc_viewer/style.css">
+        <script type="text/javascript" src="/static/geoexplorer/script/GeoExplorer.js"></script>
+        <script type="text/javascript" src="/static/ghec_viewer/ghec_viewer.js"></script>
+        <script>
+            Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
+            OpenLayers.ImgPath = "externals/openlayers/img/";
+        </script>
 {% endblock %}        
 
 {% block body_outer %}
   <span id="showGrid"></span>
 {% endblock %}
+
+
