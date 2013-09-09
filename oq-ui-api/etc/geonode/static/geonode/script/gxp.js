@@ -953,7 +953,7 @@ gxp.plugins.GoogleSource.loader = new(Ext.extend(Ext.util.Observable, {
                 }]
             })
         }, r = document.createElement("script");
-        r.src = "http://www.google.com/jsapi?" + Ext.urlEncode(n);
+        r.src = "//www.google.com/jsapi?" + Ext.urlEncode(n);
         var i = e.errback || Ext.emptyFn,
             n = e.timeout || gxp.plugins.GoogleSource.prototype.timeout;
         window.setTimeout(function () {
@@ -4404,7 +4404,7 @@ gxp.plugins.GoogleEarth.loader = new(Ext.extend(Ext.util.Observable, {
                 }]
             })
         }, r = document.createElement("script");
-        r.src = "http://www.google.com/jsapi?" + Ext.urlEncode(n);
+        r.src = "//www.google.com/jsapi?" + Ext.urlEncode(n);
         n = e.timeout || gxp.plugins.GoogleSource.prototype.timeout;
         window.setTimeout(function () {
             gxp.plugins.GoogleEarth.loader.ready || (this.fireEvent("failure"), this.unload())
