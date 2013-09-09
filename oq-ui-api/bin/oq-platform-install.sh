@@ -590,6 +590,8 @@ exit 0"
 
     # add icebox to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^icebox/', include('geonode.icebox.urls')),\n@g" "$GEM_GN_URLS"
+    # add the leaflet explore app to urls.py
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/explore.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/explore.html'}, name='explore'),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
