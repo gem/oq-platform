@@ -14,13 +14,12 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
 
-  {% extends "page_layout.html" %}
+  {% extends "site_base.html" %}
   {% load i18n %}
 
   {% block title %} {% trans "Hazard Models" %} - {{ block.super }} {% endblock %}
-  {% block indexclass %} class="here" {% endblock %}
           
-  {% block head %}
+  {% block extra_head %}
 
   {{ block.super }}
           
@@ -31,41 +30,27 @@
     <script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
 
     <!-- leaflet resources -->
-    <link rel="stylesheet" href="src/Leaflet/dist/leaflet.css" />
-    <script type="text/javascript" src="src/Leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="/static/Leaflet/dist/leaflet.css" />
+    <script type="text/javascript" src="/static/Leaflet/dist/leaflet.js"></script>
     
     <!-- wax resources -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/wax-controls.css" media="screen" >
-    <script type='text/javascript' src='src/L.Wax/L.Wax.js'></script>
-    <script type="text/javascript" src="src/wax/dist/wax.leaf.min.js"></script>
-    <script type='text/javascript' src='src/wax/ext/modestmaps.min.js'></script>
-    <script type='text/javascript' src='src/wax/dist/wax.mm.js'></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/wax-controls.css" media="screen" >
+    <script type='text/javascript' src='/static/L.Wax/L.Wax.js'></script>
+    <script type="text/javascript" src="/static/wax/dist/wax.leaf.min.js"></script>
+    <script type='text/javascript' src='/static/wax/ext/modestmaps.min.js'></script>
+    <script type='text/javascript' src='/static/wax/dist/wax.mm.js'></script>
 
     <!-- jquery and other stuff -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/exposure-legend.css" media="screen" />
 
     <!-- Hazard Models application -->
-    <script type="text/javascript" src="src/geodetic_strain/geodetic_strain.js"></script>
+    <script type="text/javascript" src="/static/geodetic/geodetic.js"></script>
     
 
   {% endblock %}
-    <!--Google Analytics-->
-    <script type="text/javascript">
 
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-20718690-2']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    </script>
-
-  {% block main %}
+  {% block body_outer %}
  
       <div id="map" style="width: 100%;"></div>
       

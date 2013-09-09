@@ -30,6 +30,10 @@ urlpatterns = patterns('',
         template_name="isc_viewer.html"), name='isc_viewer'),
     url(r'^ghec_viewer/$', TemplateView.as_view(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
+    url(r'^geodetic/$', TemplateView.as_view(
+        template_name="geodetic.html"), name='geodetic'),
+    url(r'^gaf_viewer/$', TemplateView.as_view(
+        template_name="gaf_viewer.html"), name='gaf_viewer'),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
 
     # Static pages

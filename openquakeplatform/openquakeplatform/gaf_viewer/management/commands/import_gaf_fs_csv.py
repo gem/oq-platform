@@ -15,7 +15,7 @@
 
 import csv
 from django.core.management.base import BaseCommand, CommandError
-from gaf_viewer.models import FaultSource
+from openquakeplatform.gaf_viewer.models import FaultSource
 
 
 class Command(BaseCommand):
