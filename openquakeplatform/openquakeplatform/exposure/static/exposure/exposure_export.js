@@ -9,7 +9,7 @@ var drawControl;
 var MAX_ZOOM_LEVEL = 16;
 var DRAW_TOOL_COLOR = '#FFA54F';
 
-var AJAX_SPINNER = '/static/theme/images/ajax-loader.gif';
+var AJAX_SPINNER = '/static/img/ajax-loader.gif';
 
 var objToUrlParams = function(obj) {
     var url;
@@ -84,12 +84,6 @@ var startExposureApp = function() {
     map.addLayer(drawnItems);
     L.control.layers(baselayer, overlays).addTo(map);
     map.addControl(drawControl);
-    $('div.leaflet-control-draw').css({
-        'position': 'absolute',
-        'left': '45px',
-        'top': '1px',
-        'z-index': '6'
-    });
 
     // Add Wax support
     L.wax(map);

@@ -35,6 +35,7 @@ urlpatterns = patterns('',
     url(r'^gaf_viewer/$', TemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
+    (r'^exposure/', include('openquakeplatform.exposure.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'site_index.html'}, name='home'),

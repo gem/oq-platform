@@ -13,20 +13,25 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+#    You should have received a copy of the GNU Affero General Public
+#    License along with this program. If not, see
+#    <https://www.gnu.org/licenses/agpl.html>.
+
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from exposure.views import export_building
-from exposure.views import export_population
-from exposure.views import get_exposure_building_form
-from exposure.views import get_exposure_population_form
-from exposure.views import validate_export
+from django.views.generic import TemplateView
+from openquakeplatform.exposure.views import export_building
+from openquakeplatform.exposure.views import export_population
+from openquakeplatform.exposure.views import get_exposure_building_form
+from openquakeplatform.exposure.views import get_exposure_population_form
+from openquakeplatform.exposure.views import validate_export
 
 
 urlpatterns = patterns(
     'geonode.exposure.views',
+    url(r'^$', TemplateView.as_view(
+        template_name="exposure/export.html"), name='exposure'),
     url(r'^validate_export', validate_export),
     url(r'^get_exposure_building_form', get_exposure_building_form),
     url(r'^get_exposure_population_form', get_exposure_population_form),
