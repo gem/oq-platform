@@ -1,0 +1,56 @@
+<!--
+ Copyright (c) 2012-2013, GEM Foundation.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+
+{% extends 'site_base.html' %}
+
+{% block extra_head %}
+{{block.super}}
+
+        <title>Global Faults Viewer</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="./favicon.ico">
+        
+        <!-- Ext resources -->
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/ext-all.css">
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/xtheme-gray.css">
+        <script type="text/javascript" src="/static/geoexplorer/externals/ext/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="/static/geoexplorer/externals/ext/ext-all.js"></script>
+
+        <!-- OpenLayers resources -->
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/openlayers/theme/default/style.css">
+
+        <!-- GeoExt resources -->
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/popup.css">
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/layerlegend.css">
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
+
+        <!-- gxp resources -->
+        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/gxp/src/theme/all.css">
+        
+
+        <!-- app resources -->
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <script type="text/javascript" src="/static/geoexplorer/script/GeoExplorer.js"></script>
+        <script type="text/javascript" src="/static/gaf_viewer/gaf_viewer.js"></script>
+        <script>
+            Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
+            OpenLayers.ImgPath = "externals/openlayers/img/";
+        </script>
+{% endblock %}        
+
+{% block body_outer %}
+  <span id="showGrid"></span>
+{% endblock %}

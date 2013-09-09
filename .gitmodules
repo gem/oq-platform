@@ -1,18 +1,9 @@
-[submodule "oq-ui-client/app/static/externals/geoext"]
-	path = oq-ui-client/app/static/externals/geoext
-	url = https://github.com/opengeo/GeoExt.git
-[submodule "oq-ui-client/app/static/externals/gxp"]
-	path = oq-ui-client/app/static/externals/gxp
-	url = https://github.com/opengeo/gxp.git
-[submodule "oq-ui-client/app/static/externals/openlayers"]
-	path = oq-ui-client/app/static/externals/openlayers
-	url = https://github.com/openlayers/openlayers.git
-[submodule "oq-ui-client2/src/Leaflet"]
-	path = oq-ui-client2/src/Leaflet
-	url = https://github.com/Leaflet/Leaflet
-[submodule "oq-ui-client2/src/wax"]
-	path = oq-ui-client2/src/wax
+[submodule "openquakeplatform/openquakeplatform/static/wax"]
+	path = openquakeplatform/openquakeplatform/static/wax
 	url = git://github.com/mapbox/wax.git
-[submodule "oq-ui-client2/src/Leaflet.draw"]
-	path = oq-ui-client2/src/Leaflet.draw
+[submodule "openquakeplatform/openquakeplatform/static/Leaflet.draw"]
+	path = openquakeplatform/openquakeplatform/static/Leaflet.draw
 	url = git://github.com/gem/Leaflet.draw.git
+[submodule "openquakeplatform/openquakeplatform/static/Leaflet"]
+	path = openquakeplatform/openquakeplatform/static/Leaflet
+	url = https://github.com/Leaflet/Leaflet

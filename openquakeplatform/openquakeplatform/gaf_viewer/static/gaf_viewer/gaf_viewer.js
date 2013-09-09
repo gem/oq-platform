@@ -38,6 +38,10 @@ Ext.onReady(function() {
 
 
     app = new gxp.Viewer({
+        proxy: "/proxy/?url=",
+        localGeoServerBaseUrl: "http://localhost:8080/geoserver/",
+        authorizedRoles: "ROLE_ANONYMOUS",
+
         portalConfig: {
             layout: "border",
             region: "center",
@@ -70,12 +74,6 @@ Ext.onReady(function() {
                 tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel"
-        }, {
-            ptype: "gxp_googlegeocoder",
-            outputTarget: "map.tbar",
-            outputConfig: {
-                emptyText: "Search for a location ..."
-            }
         }, {
             ptype: "gxp_layerproperties",
             actionTarget: {target: "tree.tbar"}
@@ -110,11 +108,8 @@ Ext.onReady(function() {
         sources: {
             local: {
                 ptype: "gxp_wmscsource",
-                url: "/geoserver/wms",
+                url: "http://localhost:8080/geoserver/wms",
                 version: "1.1.1"
-            },
-            mapbox: {
-                ptype: "gxp_tilestreamsource"
             },
             osm: {
                 ptype: "gxp_osmsource"
@@ -148,11 +143,11 @@ Ext.onReady(function() {
             },
             {
                 source: "local",
-                name: "gaf_viewer:gaf_viewer_faultsource",
+                name: "oqplatform:gaf_viewer_faultsource",
                 title : "Global Fault Sources"
             }, {
                 source: "local",
-                name: "gaf_viewer:gaf_viewer_faulttrace",
+                name: "oqplatform:gaf_viewer_faulttrace",
                 title : "Global Fault Traces"
             }],
             items: [{
