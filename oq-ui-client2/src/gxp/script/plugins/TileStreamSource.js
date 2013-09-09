@@ -89,11 +89,17 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
     title: "GEM Tile Layers",
     
     /** i18n **/
-    hazardMapPointsWorldTitle: "Hazard Map PGA_0.1",
-    whiteBaseTitle: "GEM Base Map",
+    hazardMapPointsWorldTitle: "World Hazard Map PGA_0.1",
+    hazardMapJapan21Title: "Japan Hazard Map - 10% in 50 years",
+    hazardMapJapan21LandTitle: "Japan Hazard Map - 10% in 50 years - Land",
+    hazardMapJapan21ContourLandTitle: "Japan Hazard Map - 10% in 50 years - Contour",
+    hazardMapJapan22Title: "Japan Hazard Map - 2% in 50 years",
+    hazardMapJapan22LandTitle: "Japan Hazard Map - 2% in 50 years - Land",
+    hazardMapJapan22ContourLandTitle: "Japan Hazard Map - 2% in 50 years - Contour",
     gdalCustomUrbanTitle: "GDAL Urban Population",
     gdalCustomRuralTitle: "GDAL Rural Population",
-    
+    strainTitle: "Geodetic Strain",   
+ 
     /** api: method[createStore]
      *
      *  Creates a store of layer records.  Fires "ready" when store is loaded.
@@ -106,12 +112,37 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
             numZoomLevels: 7
         };
         
-        var configs = [
-            {name: "hazard-map-points-world", numZoomLevels: 7},
-            {name: "white-base", numZoomLevels: 7},
-            {name: "gdal-custom-urban", numZoomLevels: 7},
-            {name: "gdal-custom-rural", numZoomLevels: 7}
-        ];
+        var configs = [{
+            name: "hazard-map-points-world",
+            numZoomLevels: 7
+        }, {
+            name: "hazard-map-japan-21",
+            numZoomLevels: 8
+        }, {
+            name: "hazard-map-japan-21-land",
+            numZoomLevels: 8
+        }, {
+            name: "hazard-map-japan-21-contour-land",
+            numZoomLevels: 8
+        }, {
+            name: "hazard-map-japan-22",
+            numZoomLevels: 8
+        }, {
+            name: "hazard-map-japan-22-land",
+            numZoomLevels: 8
+        }, {
+            name: "hazard-map-japan-22-contour-land",
+            numZoomLevels: 8
+        }, {
+            name: "gdal-custom-urban",
+            numZoomLevels: 7
+        }, {
+            name: "gdal-custom-rural",
+            numZoomLevels: 7
+        }, {
+            name: "strain",
+            numZoomLevels: 9
+        }];
         
         var len = configs.length;
         var layers = new Array(len);
