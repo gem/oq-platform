@@ -205,6 +205,7 @@ INSTALLED_APPS = (
     'openquakeplatform.geodetic',
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
+    'openquakeplatform.icebox',
 )
 
 LOGGING = {

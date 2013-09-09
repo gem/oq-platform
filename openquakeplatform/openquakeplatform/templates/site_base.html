@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block extra_head %}
       <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+      <link rel="shortcut icon" href="/static/img/favicon.ico"/>
 {% endblock %}
 
 
@@ -18,8 +19,10 @@
                 <li><a href="{% url 'ghec_viewer' %}">GHEC</a></li>
                 <li><a href="{% url 'geodetic' %}">Geodetic</a></li>
                 <li><a href="{% url 'gaf_viewer' %}">GAF</a></li>
-                <li><a href="{% url 'faulted_earth' %}">FE Capture</a></li>
+                <li><a href="{% url 'faulted_earth' %}">FE</a></li>
                 <li><a href="{% url 'exposure' %}">Exposure</a></li>
+                <li><a href="{% url 'explore_leaflet' %}">JExplore</a></li>
+                <li><a href="{% url 'hazard_models' %}">Hazard</a></li>
               </ul>
             </nav>
           </div>
