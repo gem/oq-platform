@@ -22,7 +22,7 @@ POSTGIS_DIR = '/usr/share/postgresql/9.1/contrib/postgis-1.5'
 POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
                  ('postgis.sql', 'spatial_ref_sys.sql')]
 
-GEOSERVER_BASE_URL = 'http://127.0.0.1:8080'
+GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
 DB_PASSWORD = 'openquake'
 
 #:
@@ -60,7 +60,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     local('paver start')
     # GeoServer: create workspace
     _geoserver_api(
-        'geoserver/rest/workspaces',
+        'workspaces.xml',
         '<workspace><name>oqplatform</name></workspace>'
     )
     # GeoServer: create store
@@ -80,7 +80,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     store_content %= dict(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
 
     _geoserver_api(
-        'geoserver/rest/workspaces/oqplatform/datastores',
+        'workspaces/oqplatform/datastores.xml',
         store_content
     )
 
@@ -98,6 +98,7 @@ def clean(dbname='oqplatform', dbuser='oqplatform'):
     with settings(warn_only=True):
         _pgsudo('dropdb %s' % dbname)
         _pgsudo('dropuser %s' % dbuser)
+        local('rm -r geoserver')
 
 
 def start():
@@ -214,7 +215,7 @@ def _create_isc_viewer_layers(workspace='oqplatform', datastore='oqplatform'):
     # the 405 is well documented. >:(
     # No, instead you need to create a "featuretype", which implicitly creates
     # a layer. The docs fail to mention this.
-    url = 'geoserver/rest/workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
+    url = 'workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
     url %= dict(ws=workspace, ds=datastore)
 
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
