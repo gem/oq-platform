@@ -4,8 +4,10 @@ from urlparse import urljoin as _urljoin
 
 from fabric.api import env
 from fabric.api import local
-from fabric.api import sudo
+from fabric.api import run
 from fabric.api import settings
+from fabric.api import sudo
+from fabric.context_managers import hide
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
@@ -29,6 +31,9 @@ WS_NAME = 'oqplatform'
 DS_NAME = 'oqplatform'
 FEATURETYPES_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
                     % dict(ws=WS_NAME, ds=DS_NAME))
+
+XML_CONTENT_TYPE = 'text/xml'
+SLD_CONTENT_TYPE = 'application/vnd.ogc.sld+xml'
 
 DB_PASSWORD = 'openquake'
 
@@ -143,18 +148,39 @@ def _pgquery(query):
 
 
 def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
-                   password='geoserver', method='POST'):
+                   password='geoserver', method='POST',
+                   content_type=XML_CONTENT_TYPE, message=None):
     """
     Utility for creating various artifacts in geoserver (workspaces, layers,
     etc.).
     """
+    if message:
+        print('> GeoServer(%(meth)s): %(msg)s'
+              % dict(meth=method, msg=message))
+
     # TODO(LB): It would be cleaner to use urllib2 or similar in pure Python,
     # but it was quicker to make this work just with curl.
     cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
-           "'Content-type:text/xml' -d '%(content)s' %(url)s")
+           "'Content-type:%(content_type)s' -d '%(content)s' %(url)s")
     cmd %= dict(username=username, password=password, content=content,
-                url=_urljoin(base_url, url), method=method)
-    local(cmd)
+                url=_urljoin(base_url, url), method=method,
+                content_type=content_type)
+    with hide('stderr', 'stdout', 'running'):
+        result = run(cmd)
+    http_resp = [x for x in result.split('\n') if '< HTTP' in x]
+    for resp in http_resp:
+        print(resp)
+
+
+def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
+                             username='admin', password='geoserver',
+                             method='POST', content_type=XML_CONTENT_TYPE,
+                             message=None):
+    with open(file_path) as fh:
+        content = fh.read()
+    _geoserver_api(url, content, base_url=base_url, username=username,
+                   password=password, method=method, content_type=content_type,
+                   message=message)
 
 
 def _maybe_createuser(dbuser, dbpassword):
