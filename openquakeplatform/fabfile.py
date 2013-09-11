@@ -347,6 +347,7 @@ def _add_faulted_earth():
             'styles/%s' % sld_basename,
             sld,
             method='PUT',
+            content_type=SLD_CONTENT_TYPE,
             message='Creating faulted_earth SLD...'
         )
 
