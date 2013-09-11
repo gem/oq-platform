@@ -272,6 +272,18 @@ def _maybe_install_postgis(dbname):
         return False
 
 
+def _collect(directory, ext='xml'):
+    """
+    Given a directory, collect all .xml (or whatever type) files in the
+    directory (not recursive) and return as a list of absolute file paths.
+    """
+    ext = ext.lower()
+
+    return [os.path.abspath(os.path.join(directory, x))
+            for x in os.listdir(directory)
+            if x.lower().endswith('.%s' % ext)]
+
+
 def _add_isc_viewer():
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
     _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
@@ -309,14 +321,43 @@ def _add_isc_viewer():
 def _add_faulted_earth():
     # Add faulted_earth features/layers
     features_dir = 'gs_data/faulted_earth/features'
-    features_files = [x for x in os.listdir(features_dir)
-                      if x.lower().endswith('.xml')]
-    features_files = [os.path.join(features_dir, x) for x in features_files]
+    features_files = _collect(features_dir)
     for ff in features_files:
-        with open(ff) as fh:
-            content = fh.read()
-        _geoserver_api(FEATURETYPES_URL, content,
-                       message='Creating faulted_earth layer...')
+        _geoserver_api_from_file(FEATURETYPES_URL, ff,
+                                 message='Creating faulted_earth layer...')
+
+    # Add styles:
+    styles_dir = 'gs_data/faulted_earth/styles'
+    styles_files = _collect(styles_dir)
+    sld_files = _collect(styles_dir, ext='sld')
+    for style, sld in zip(styles_files, sld_files):
+        # XML first:
+        _geoserver_api_from_file(
+            'styles.xml',
+            style,
+            message='Creating faulted_earth style...'
+        )
+
+        # Then update (PUT) the SLD:
+        sld_basename = os.path.basename(sld)
+        _geoserver_api_from_file(
+            'styles/%s' % sld_basename,
+            sld,
+            method='PUT',
+            message='Creating faulted_earth SLD...'
+        )
+
+    # Finally, update the layer with the correct style:
+    layer_files = _collect('gs_data/faulted_earth/layers')
+    for layer in layer_files:
+        layer_basename = os.path.basename(layer)
+        layer_name = os.path.splitext(layer)
+        _geoserver_api_from_file(
+            'layers/%(ws)s:%(layer)s' % dict(ws=WS_NAME, layer=layer_name),
+            layer_basename,
+            method='PUT',
+            message='Updating faulted_earth layer...'
+        )
 
 
 def _add_ghec_viewer():
