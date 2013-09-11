@@ -1,0 +1,9 @@
+<layer>
+  <defaultStyle>
+    <name>isc_viewer_measure</name>
+    <workspace>oqplatform</workspace>
+  </defaultStyle>
+  <enabled>true</enabled>
+  <advertised>true</advertised>
+  <queryable>true</queryable>
+</layer>
