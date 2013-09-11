@@ -289,9 +289,34 @@ def _add_faulted_earth():
 
 
 def _add_ghec_viewer():
+    # Feature:
     feature_file = 'gs_data/ghec_viewer/features/ghec_viewer_measure.xml'
-    with open(feature_file) as fh:
-        content = fh.read()
-    _geoserver_api(FEATURETYPES_URL, content)
+    _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
+                             message='Creating ghec_viewer layer...')
+
+    # Style:
+    style_xml = 'gs_data/ghec_viewer/styles/ghec_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'styles.xml',
+        style_xml,
+        message='Creating ghec_viewer style...'
+    )
+    style_sld = 'gs_data/ghec_viewer/styles/ghec_viewer_measure.sld'
+    _geoserver_api_from_file(
+        'styles/ghec_viewer_measure.sld',
+        style_sld,
+        method='PUT',
+        content_type=SLD_CONTENT_TYPE,
+        message='Creating ghec_viewer SLD...'
+    )
+
+    # Update the layer/feature with the new style.
+    layer_file = 'gs_data/ghec_viewer/layers/ghec_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'layers/%s:ghec_viewer_measure' % WS_NAME,
+        layer_file,
+        method='PUT',
+        message='Updating ghec_viewer layer...'
+    )
 
     local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
