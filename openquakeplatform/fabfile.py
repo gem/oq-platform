@@ -73,7 +73,8 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # GeoServer: create workspace
     _geoserver_api(
         'workspaces.xml',
-        '<workspace><name>%s</name></workspace>' % WS_NAME
+        '<workspace><name>%s</name></workspace>' % WS_NAME,
+        message='Creating workspace...'
     )
     # GeoServer: create store
     store_content = """\
@@ -94,7 +95,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
 
     _geoserver_api(
         'workspaces/%s/datastores.xml' % WS_NAME,
-        store_content
+        store_content, message='Creating workspace...'
     )
 
     # Add the apps
@@ -270,9 +271,8 @@ def _create_isc_viewer_layers():
     # No, instead you need to create a "featuretype", which implicitly creates
     # a layer. The docs fail to mention this.
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
-    with open(feature_file) as fh:
-        content = fh.read()
-    _geoserver_api(FEATURETYPES_URL, content)
+    _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
+                             message='Creating isc_viewer layer...')
 
 
 def _add_faulted_earth():
@@ -284,7 +284,8 @@ def _add_faulted_earth():
     for ff in features_files:
         with open(ff) as fh:
             content = fh.read()
-        _geoserver_api(FEATURETYPES_URL, content)
+        _geoserver_api(FEATURETYPES_URL, content,
+                       message='Creating faulted_earth layer...')
 
 
 def _add_ghec_viewer():
