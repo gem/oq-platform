@@ -181,6 +181,9 @@ def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
                              username='admin', password='geoserver',
                              method='POST', content_type=XML_CONTENT_TYPE,
                              message=None):
+    if message:
+        print('> GeoServer(%(meth)s): %(msg)s'
+              % dict(meth=method, msg=message))
     # Since we are using fabric's `run`, the file path needs to be absolute.
     # `run` performs a login and thus changes the working directory.
     file_path = os.path.abspath(file_path)
