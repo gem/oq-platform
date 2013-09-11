@@ -56,6 +56,18 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     :param str dbpassword:
         Should match the one in settings.py.
     """
+    baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+    apps()
+    # Finally, remove the superuser privileges, but only if this was a user we
+    # created:
+    # TODO: Some apps require that oqplatform db user has SUPERUSER.
+    # We need to deal with this in production. For a dev install,
+    # leave the user with superuser privs.
+    #if user_created:
+    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
+
+
+def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
     _write_local_settings(dbname, dbuser)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
@@ -98,19 +110,14 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
         store_content, message='Creating workspace...'
     )
 
+
+def apps():
     # Add the apps
     _add_isc_viewer()
     _add_faulted_earth()
     _add_ghec_viewer()
 
     local('python manage.py updatelayers')
-    # Finally, remove the superuser privileges, but only if this was a user we
-    # created:
-    # TODO: Some apps require that oqplatform db user has SUPERUSER.
-    # We need to deal with this in production. For a dev install,
-    # leave the user with superuser privs.
-    #if user_created:
-    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
 
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
