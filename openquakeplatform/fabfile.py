@@ -273,24 +273,37 @@ def _maybe_install_postgis(dbname):
 
 
 def _add_isc_viewer():
-    _create_isc_viewer_layers()
-    _load_isc_viewer_data()
-
-
-def _load_isc_viewer_data():
-    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
-          ' ../oq-ui-api/data/isc_data_app.csv')
-
-
-def _create_isc_viewer_layers():
-    # RAGE: Apparently, you can't actually create layers with the geoserver
-    # rest API. If you try to POST to it, you just get a 405. But it's okay,
-    # the 405 is well documented. >:(
-    # No, instead you need to create a "featuretype", which implicitly creates
-    # a layer. The docs fail to mention this.
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
     _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
                              message='Creating isc_viewer layer...')
+
+    # Style:
+    style_xml = 'gs_data/isc_viewer/styles/isc_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'styles.xml',
+        style_xml,
+        message='Creating isc_viewer style...'
+    )
+    style_sld = 'gs_data/isc_viewer/styles/isc_viewer_measure.sld'
+    _geoserver_api_from_file(
+        'styles/isc_viewer_measure.sld',
+        style_sld,
+        method='PUT',
+        content_type=SLD_CONTENT_TYPE,
+        message='Creating isc_viewer SLD...'
+    )
+
+    # Update layer with new style:
+    layer_file = 'gs_data/isc_viewer/layers/isc_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'layers/%s:isc_viewer_measure' % WS_NAME,
+        layer_file,
+        method='PUT',
+        message='Updating isc_viewer layer...'
+    )
+
+    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
+          ' ../oq-ui-api/data/isc_data_app.csv')
 
 
 def _add_faulted_earth():
