@@ -50,11 +50,11 @@ var startHazardModelApp = function() {
     hazard_map_japan_22_contour_land = L.tileLayer('http://tilestream.openquake.org/v2/hazard-map-japan-22-contour-land/{z}/{x}/{y}.png');
       
     hazard_curve_Japan = L.tileLayer('http://tilestream.openquake.org/v2/hazard-curve-japan/{z}/{x}/{y}.png', {
-        wax: 'http://tilestream.openquake.org/v2/hazard-curve-japan.json'
+        wax: '//tilestream.openquake.org/v2/hazard-curve-japan.json'
     });
 
     hazard_curve_Japan_land = L.tileLayer('http://tilestream.openquake.org/v2/hazard-curve-japan-land/{z}/{x}/{y}.png', {
-        wax: 'http://tilestream.openquake.org/v2/hazard-curve-japan-land.json'
+        wax: '//tilestream.openquake.org/v2/hazard-curve-japan-land.json'
     });
 
     hazard_map = L.tileLayer('http://tilestream.openquake.org/v2/hazard-map-points-world/{z}/{x}/{y}.png');
@@ -62,7 +62,7 @@ var startHazardModelApp = function() {
     hazard_contour = L.tileLayer('http://tilestream.openquake.org/v2/hazard-map-contour-4/{z}/{x}/{y}.png');
 
     hazard_curve = L.tileLayer('http://tilestream.openquake.org/v2/hazard-curve-world/{z}/{x}/{y}.png', {
-        wax: 'http://tilestream.openquake.org/v2/hazard-curve-world.json'
+        wax: '//tilestream.openquake.org/v2/hazard-curve-world.json'
     });
 
     grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
