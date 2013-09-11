@@ -353,12 +353,12 @@ def _add_faulted_earth():
 
     # Finally, update the layer with the correct style:
     layer_files = _collect('gs_data/faulted_earth/layers')
-    for layer in layer_files:
-        layer_basename = os.path.basename(layer)
-        layer_name = os.path.splitext(layer)
+    for layer_file in layer_files:
+        layer_basename = os.path.basename(layer_file)
+        layer_name, _ext = os.path.splitext(layer_basename)
         _geoserver_api_from_file(
             'layers/%(ws)s:%(layer)s' % dict(ws=WS_NAME, layer=layer_name),
-            layer_basename,
+            layer_file,
             method='PUT',
             message='Updating faulted_earth layer...'
         )
