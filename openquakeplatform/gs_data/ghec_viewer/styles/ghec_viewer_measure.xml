@@ -1,7 +1,4 @@
 <style>
-  <name>ghec_viewer</name>
-  <sldVersion>
-    <version>1.0.0</version>
-  </sldVersion>
-  <filename>ghec_viewer.sld</filename>
+  <name>ghec_viewer_measure</name>
+  <filename>ghec_viewer_measure.sld</filename>
 </style>

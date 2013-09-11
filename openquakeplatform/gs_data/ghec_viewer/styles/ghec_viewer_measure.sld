@@ -6,7 +6,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NamedLayer>
-    <Name>Attribute-based point</Name>
+    <Name>ghec_viewer_measure</Name>
     <UserStyle>
       <Title>GeoServer SLD Cook Book: Attribute-based point</Title>
       <FeatureTypeStyle>
