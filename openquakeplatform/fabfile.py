@@ -173,22 +173,33 @@ def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
     cmd %= dict(username=username, password=password, content=content,
                 url=_urljoin(base_url, url), method=method,
                 content_type=content_type)
-    with hide('stderr', 'stdout', 'running'):
-        result = run(cmd)
-    http_resp = [x for x in result.split('\n') if '< HTTP' in x]
-    for resp in http_resp:
-        print(resp)
+
+    _do_curl(cmd)
 
 
 def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
                              username='admin', password='geoserver',
                              method='POST', content_type=XML_CONTENT_TYPE,
                              message=None):
-    with open(file_path) as fh:
-        content = fh.read()
-    _geoserver_api(url, content, base_url=base_url, username=username,
-                   password=password, method=method, content_type=content_type,
-                   message=message)
+    # Since we are using fabric's `run`, the file path needs to be absolute.
+    # `run` performs a login and thus changes the working directory.
+    file_path = os.path.abspath(file_path)
+
+    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
+           "'Content-type:%(content_type)s' -d @%(file_path)s %(url)s")
+    cmd %= dict(username=username, password=password, file_path=file_path,
+                url=_urljoin(base_url, url), method=method,
+                content_type=content_type)
+
+    _do_curl(cmd)
+
+
+def _do_curl(cmd):
+    with hide('stderr', 'stdout', 'running'):
+        result = run(cmd)
+    http_resp = [x for x in result.split('\n') if '< HTTP' in x]
+    for resp in http_resp:
+        print(resp)
 
 
 def _maybe_createuser(dbuser, dbpassword):
