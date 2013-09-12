@@ -381,10 +381,9 @@ oq_platform_install () {
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
     fi
 
-    ## Fixes open forward proxy bug https://bugs.launchpad.net/oq-platform/+bug/1224362
+    # this removes the forward proxy from the apache configuration which is causing dangerous security issues. oq-platform requires only the reverse proxy to work
     sed -i 's@\(^ *\)\(</Proxy>\)@\1\2\n\n\1ProxyRequests Off\n\n\1<Location /proxy>\n\1    Order deny,allow\n\1    Deny from all\n\1</Location>@g' /etc/apache2/sites-available/geonode
     sed -i '/^ *<Proxy \*>/,/ *<\/Proxy>/s/^    /    # /g' /etc/apache2/sites-available/geonode
-    ## End lp-bug 1224362
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
     cat /tmp/geonode.$$ | \
