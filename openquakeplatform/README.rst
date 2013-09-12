@@ -42,11 +42,10 @@ To stop the application at any time::
 
     $ fab stop
 
-To start the application::
+To re-start the application::
 
     $ fab start
 
-To clean and re-bootstrap the dev environment::
+To stop, clean, and re-bootstrap the dev environment::
 
-    $ fab clean  # removes the development database and user
-    $ fab bootstrap
+    $ fab stop clean bootstrap  # removes the development database and user
