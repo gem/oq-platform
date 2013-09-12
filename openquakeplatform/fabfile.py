@@ -116,6 +116,7 @@ def apps():
     _add_isc_viewer()
     _add_faulted_earth()
     _add_ghec_viewer()
+    _add_gaf_viewer()
 
     local('python manage.py updatelayers')
 
@@ -361,3 +362,11 @@ def _add_faulted_earth():
 def _add_ghec_viewer():
     _add_app('ghec_viewer')
     local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
+
+
+def _add_gaf_viewer():
+    _add_app('gaf_viewer')
+    local('python manage.py import_gaf_fs_csv '
+          '../oq-ui-api/data/gaf_data_fs.csv')
+    local('python manage.py import_gaf_ft_csv '
+          '../oq-ui-api/data/gaf_data_ft.csv')
