@@ -104,43 +104,23 @@ var startHazardModelApp = function() {
     // Add Wax support
     L.wax(map);
 
-    //resize the main and map div
-    $(document).ready(function() {
-        $(window).resize(function(){
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
-            $('#main').css("height",main_height + "px");
-            $('#map').css("height",map_height + "px");
-        map.invalidateSize(false);
-       });
-    });
+    // Resize the main and map div
+    var mapFit = function() {
+        var main_height = $(window).height()
+                        - $("#header-wrapper").height()
+                        - $("#footer").height();
+       var map_height = $(window).height()
+                        - $("#header-wrapper").height()
+                        - $("#footer").height()
+                        - $("#tooltip").height();
 
-    /*
-     * Sliding side panel animation functions:
-     */
-    var legendSlidingPanel = function() {
-        $('#panelHandle-leg').hover(
-            function() {
-                $('#sidePanel-leg').stop(true, false).animate(
-                    {left: '0px'}, 900
-                );
-            },
-            function() {
-                // Do nothing
-            }
-        );
-
-        $('#sidePanel-leg').hover(
-            function() {
-                // Do nothing
-            },
-            function() {
-                $('#sidePanel-leg').animate(
-                    { left: '-201px' }, 800
-                );
-            }
-        );
+       $('#main').css("height", main_height + "px");
+       $('#map').css("height", map_height + "px");
+       map.invalidateSize(false);
     };
-    $(document).ready(legendSlidingPanel);
+
+    $(document).ready(mapFit);
+    $(window).resize(mapFit);
+
 };
 $(document).ready(startHazardModelApp);
