@@ -78,10 +78,10 @@ def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
     # Add postgis
     _maybe_install_postgis(dbname)
     # Install geonode/geoserver and syncdb for oq-platform apps
-    local('paver setup')
+    setup()
 
     # We need to start geoserver
-    local('paver start')
+    init_start()
     # GeoServer: create workspace
     _geoserver_api(
         'workspaces.xml',
@@ -125,6 +125,14 @@ def clean(dbname='oqplatform', dbuser='oqplatform'):
         _pgsudo('dropdb %s' % dbname)
         _pgsudo('dropuser %s' % dbuser)
         local('rm -r geoserver')
+
+
+def setup():
+    local('paver setup')
+
+
+def init_start():
+    local('paver init_start')
 
 
 def start():
