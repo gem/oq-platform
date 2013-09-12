@@ -120,7 +120,7 @@ def update_static(options):
         sh('npm install')
         sh('bower install')
         sh('grunt production')
-        
+
 
 @task
 @needs([
@@ -159,7 +159,6 @@ def sync(options):
     Run the syncdb and migrate management commands to create and migrate a DB
     """
     sh("python manage.py syncdb --all --noinput")
-    #sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
 
 
@@ -240,6 +239,7 @@ def start():
     """
     info("GeoNode is now available.")
 
+
 @task
 def stop_django():
     """
@@ -284,7 +284,7 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER 
+    from geonode.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
     url = "http://localhost:8080/geoserver/"
