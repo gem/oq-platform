@@ -160,11 +160,17 @@ def upgradedb(options):
 
 
 @task
-def sync(options):
+def sync_all(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
     sh("python manage.py syncdb --all --noinput")
+    sh("python manage.py loaddata sample_admin.json")
+
+
+@task
+def sync(options):
+    sh("python manage.py syncdb --noinput")
     sh("python manage.py loaddata sample_admin.json")
 
 
@@ -229,6 +235,20 @@ def package(options):
 
     # Report the info about the new package.
     info("%s created" % out_pkg_tar.abspath())
+
+
+@task
+@needs(['start_geoserver',
+        'sync_all',
+        'start_django'])
+@cmdopts([
+    ('bind=', 'b', 'Bind server to provided IP address and port number.')
+], share_with=['start_django'])
+def init_start():
+    """
+    Start GeoNode (Django, GeoServer & Client)
+    """
+    info("GeoNode is now available.")
 
 
 @task
