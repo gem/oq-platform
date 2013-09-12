@@ -295,50 +295,19 @@ def _collect(directory, ext='xml'):
             if x.lower().endswith('.%s' % ext)]
 
 
-def _add_isc_viewer():
-    feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
-    _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
-                             message='Creating isc_viewer layer...')
-
-    # Style:
-    style_xml = 'gs_data/isc_viewer/styles/isc_viewer_measure.xml'
-    _geoserver_api_from_file(
-        'styles.xml',
-        style_xml,
-        message='Creating isc_viewer style...'
-    )
-    style_sld = 'gs_data/isc_viewer/styles/isc_viewer_measure.sld'
-    _geoserver_api_from_file(
-        'styles/isc_viewer_measure.sld',
-        style_sld,
-        method='PUT',
-        content_type=SLD_CONTENT_TYPE,
-        message='Creating isc_viewer SLD...'
-    )
-
-    # Update layer with new style:
-    layer_file = 'gs_data/isc_viewer/layers/isc_viewer_measure.xml'
-    _geoserver_api_from_file(
-        'layers/%s:isc_viewer_measure' % WS_NAME,
-        layer_file,
-        method='PUT',
-        message='Updating isc_viewer layer...'
-    )
-
-    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
-          ' ../oq-ui-api/data/isc_data_app.csv')
-
-
-def _add_faulted_earth():
-    # Add faulted_earth features/layers
-    features_dir = 'gs_data/faulted_earth/features'
+def _load_features(app_name):
+    features_dir = 'gs_data/%s/features' % app_name
     features_files = _collect(features_dir)
     for ff in features_files:
-        _geoserver_api_from_file(FEATURETYPES_URL, ff,
-                                 message='Creating faulted_earth layer...')
+        _geoserver_api_from_file(
+            FEATURETYPES_URL, ff,
+            message='Creating %s layer...' % app_name
+        )
 
+
+def _load_styles(app_name):
     # Add styles:
-    styles_dir = 'gs_data/faulted_earth/styles'
+    styles_dir = 'gs_data/%s/styles' % app_name
     styles_files = _collect(styles_dir)
     sld_files = _collect(styles_dir, ext='sld')
     for style, sld in zip(styles_files, sld_files):
@@ -346,7 +315,7 @@ def _add_faulted_earth():
         _geoserver_api_from_file(
             'styles.xml',
             style,
-            message='Creating faulted_earth style...'
+            message='Creating %s style...' % app_name
         )
 
         # Then update (PUT) the SLD:
@@ -356,11 +325,12 @@ def _add_faulted_earth():
             sld,
             method='PUT',
             content_type=SLD_CONTENT_TYPE,
-            message='Creating faulted_earth SLD...'
+            message='Creating %s SLD...' % app_name
         )
 
-    # Finally, update the layer with the correct style:
-    layer_files = _collect('gs_data/faulted_earth/layers')
+
+def _load_layers(app_name):
+    layer_files = _collect('gs_data/%s/layers' % app_name)
     for layer_file in layer_files:
         layer_basename = os.path.basename(layer_file)
         layer_name, _ext = os.path.splitext(layer_basename)
@@ -368,39 +338,26 @@ def _add_faulted_earth():
             'layers/%(ws)s:%(layer)s' % dict(ws=WS_NAME, layer=layer_name),
             layer_file,
             method='PUT',
-            message='Updating faulted_earth layer...'
+            message='Updating %s layer...' % app_name
         )
 
 
+def _add_app(app_name):
+    _load_features(app_name)
+    _load_styles(app_name)
+    _load_layers(app_name)
+
+
+def _add_isc_viewer():
+    _add_app('isc_viewer')
+    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
+          ' ../oq-ui-api/data/isc_data_app.csv')
+
+
+def _add_faulted_earth():
+    _add_app('faulted_earth')
+
+
 def _add_ghec_viewer():
-    # Feature:
-    feature_file = 'gs_data/ghec_viewer/features/ghec_viewer_measure.xml'
-    _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
-                             message='Creating ghec_viewer layer...')
-
-    # Style:
-    style_xml = 'gs_data/ghec_viewer/styles/ghec_viewer_measure.xml'
-    _geoserver_api_from_file(
-        'styles.xml',
-        style_xml,
-        message='Creating ghec_viewer style...'
-    )
-    style_sld = 'gs_data/ghec_viewer/styles/ghec_viewer_measure.sld'
-    _geoserver_api_from_file(
-        'styles/ghec_viewer_measure.sld',
-        style_sld,
-        method='PUT',
-        content_type=SLD_CONTENT_TYPE,
-        message='Creating ghec_viewer SLD...'
-    )
-
-    # Update the layer/feature with the new style.
-    layer_file = 'gs_data/ghec_viewer/layers/ghec_viewer_measure.xml'
-    _geoserver_api_from_file(
-        'layers/%s:ghec_viewer_measure' % WS_NAME,
-        layer_file,
-        method='PUT',
-        message='Updating ghec_viewer layer...'
-    )
-
+    _add_app('ghec_viewer')
     local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
