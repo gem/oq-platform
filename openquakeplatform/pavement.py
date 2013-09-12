@@ -20,7 +20,6 @@
 
 import os
 import re
-import shutil
 import sys
 import time
 import urllib
@@ -52,9 +51,13 @@ def grab(src, dest, name):
     if download:
         urllib.urlretrieve(str(src), str(dest))
 
-GEOSERVER_URL="http://build.geonode.org/geoserver/latest/geoserver.war"
-DATA_DIR_URL="http://build.geonode.org/geoserver/latest/data.zip"
-JETTY_RUNNER_URL="http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
+GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
+DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
+JETTY_RUNNER_URL = (
+    "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/"
+    "8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
+)
+
 
 @task
 @cmdopts([
@@ -62,7 +65,6 @@ JETTY_RUNNER_URL="http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    fast = options.get('fast', False)
     download_dir = path('downloaded')
     if not download_dir.exists():
         download_dir.makedirs()
@@ -105,12 +107,15 @@ def _install_data_dir():
         with zipfile.ZipFile(data_dir_zip, "r") as z:
             z.extractall(geoserver_dir)
 
-        config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
+        config = (
+            geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
+        )
         with open(config) as f:
             xml = f.read()
             m = re.search('baseUrl>([^<]+)', xml)
             xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-        with open(config, 'w') as f: f.write(xml)
+        with open(config, 'w') as f:
+            f.write(xml)
     else:
         print 'data_dir_zip not found, unable to extract and configure'
 
@@ -168,7 +173,6 @@ def package(options):
     """
     Creates a tarball to use for building the system elsewhere
     """
-    import pkg_resources
     import tarfile
     import geonode
 
@@ -299,18 +303,17 @@ def start_geoserver(options):
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
 
-    # @todo - we should not have set workdir to the datadir but a bug in geoserver
-    # prevents geonode security from initializing correctly otherwise
+    # TODO: - we should not have set workdir to the datadir but a bug in
+    # geoserver prevents geonode security from initializing correctly otherwise
     with pushd(data_dir):
-        sh(('java -Xmx512m -XX:MaxPermSize=256m'
-            ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
-            # workaround for JAI sealed jar issue and jetty classloader
-            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
-            ' -jar %(jetty_runner)s'
-            ' --log %(log_file)s'
-            ' --path /geoserver %(web_app)s'
-            ' > /dev/null &' % locals()
-          ))
+        sh('java -Xmx512m -XX:MaxPermSize=256m'
+           ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+           # workaround for JAI sealed jar issue and jetty classloader
+           ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
+           ' -jar %(jetty_runner)s'
+           ' --log %(log_file)s'
+           ' --path /geoserver %(web_app)s'
+           ' > /dev/null &' % locals())
 
     info('Starting GeoServer on %s' % url)
 
@@ -451,12 +454,11 @@ def deb(options):
         # Install requirements
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
-        sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch --release' % (
-            simple_version)))
+        sh('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
+           ' --id-length=6 --ignore-branch --release' % simple_version)
 
         deb_changelog = path('debian') / 'changelog'
-        for line in fileinput.input([deb_changelog], inplace = True):
+        for line in fileinput.input([deb_changelog], inplace=True):
             print line.replace("urgency=low", "urgency=high"),
 
         ## Revert workaround for git-dhc bug
@@ -487,10 +489,7 @@ def publish():
         print "You need to set the GPG_KEY_GEONODE environment variable"
         return
 
-    call_task('deb', options={
-     'key': key,
-     'ppa': 'geonode/testing',
-    })
+    call_task('deb', options={'key': key, 'ppa': 'geonode/testing'})
 
     version, simple_version = versions()
     sh('git tag %s' % version)
@@ -566,7 +565,7 @@ def waitfor(url, timeout=300):
     for a in xrange(timeout):
         try:
             resp = urllib.urlopen(url)
-        except IOError, e:
+        except IOError:
             pass
         else:
             if resp.getcode() == 200:
