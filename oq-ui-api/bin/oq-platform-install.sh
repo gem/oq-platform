@@ -20,7 +20,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="master"
+export GEM_OQ_PLATF_GIT_VERS="fwd-proxy-fix"
 
 export GEM_OQ_PLATF_SUBMODS=""
 
@@ -380,6 +380,10 @@ oq_platform_install () {
     if [ $? -ne 0 ]; then
         sed -i 's@\(^WSGIDaemonProcess.*$\)@\1:/var/lib/geonode/src/GeoNodePy/geonode@g' /etc/apache2/sites-available/geonode
     fi
+
+    # this removes the forward proxy from the apache configuration which is causing dangerous security issues. oq-platform requires only the reverse proxy to work
+    sed -i 's@\(^ *\)\(</Proxy>\)@\1\2\n\n\1ProxyRequests Off\n\n\1<Location /proxy>\n\1    Order deny,allow\n\1    Deny from all\n\1</Location>@g' /etc/apache2/sites-available/geonode
+    sed -i '/^ *<Proxy \*>/,/ *<\/Proxy>/s/^    /    # /g' /etc/apache2/sites-available/geonode
 
     cp /etc/apache2/sites-available/geonode /tmp/geonode.$$
     cat /tmp/geonode.$$ | \
