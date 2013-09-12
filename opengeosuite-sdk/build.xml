@@ -149,10 +149,6 @@
         <copy todir="${app.build}/src/explore">
             <fileset dir="${app.fullpath}/src/explore"/>
         </copy>
-        <!-- copy leaflet explore application -->
-        <copy todir="${app.build}/src/explore">
-            <fileset dir="${app.fullpath}/src/explore"/>
-        </copy>
 
         <!-- build app js -->
         <mkdir dir="${app.build}/lib"/>
