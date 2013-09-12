@@ -572,8 +572,6 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/ghec_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/ghec_viewer.html'}, name='ghec_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/gaf_viewer.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/gaf_viewer.html'}, name='gaf_viewer'),\n@g" "$GEM_GN_URLS"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    # added by geonode-installation.sh script\n    (r'^observations/', include('geonode.observations.urls')),@g" "$GEM_GN_URLS"
-    # add the leaflet explore app to urls.py
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/explore.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/explore.html'}, name='explore'),\n@g" "$GEM_GN_URLS"
 
     # add exposure when indicated by user
     if [ "$GEM_WITH_EXPOSURE" = "y" -o "$GEM_WITH_EXPOSURE" = "Y" ]; then
@@ -592,8 +590,6 @@ exit 0"
 
     # add icebox to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^icebox/', include('geonode.icebox.urls')),\n@g" "$GEM_GN_URLS"
-    # add the leaflet explore app to urls.py
-    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/explore.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/explore.html'}, name='explore'),\n@g" "$GEM_GN_URLS"
 
     ##
     # deploy database
