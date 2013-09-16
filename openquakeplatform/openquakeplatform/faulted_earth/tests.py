@@ -21,7 +21,7 @@ Run this test with manage.py test observations/tests.py
 """
 
 from django.test import TestCase
-from observations import models, utils
+from openquakeplatform.faulted_earth import models, utils
 
 class FaultSourceAutoComputedTest(TestCase):
     def setUp(self):
