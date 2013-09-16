@@ -156,7 +156,8 @@ def stop():
 
 def test():
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
-    local('./run_tests.sh --with-coverage --cover-package=openquakeplatform')
+    local('./run_tests.sh -v --with-coverage '
+          '--cover-package=openquakeplatform')
 
 
 def _write_local_settings(dbname, dbuser):
