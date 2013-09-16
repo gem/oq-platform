@@ -37,6 +37,8 @@ SLD_CONTENT_TYPE = 'application/vnd.ogc.sld+xml'
 
 DB_PASSWORD = 'openquake'
 
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
+
 #: Template for local_settings.py
 LOCAL_SETTINGS = """\
 DATABASES = {
@@ -150,6 +152,11 @@ def start():
 
 def stop():
     local('paver stop')
+
+
+def test():
+    local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
+    local('./run_tests.sh --with-coverage --cover-package=openquakeplatform')
 
 
 def _write_local_settings(dbname, dbuser):
