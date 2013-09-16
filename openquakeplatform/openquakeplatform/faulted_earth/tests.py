@@ -35,8 +35,8 @@ class FaultSourceAutoComputedTest(TestCase):
 
         self.fault_section = models.FaultSection(
             fault_section_name="Test Section",
-            strike_slip_rate_min=10., strike_slip_rate_max=30., strike_slip_rate_pref=20., 
-            dip_slip_rate_min=10., dip_slip_rate_max=30., dip_slip_rate_pref=20., 
+            strike_slip_rate_min=10., strike_slip_rate_max=30., strike_slip_rate_pref=20.,
+            dip_slip_rate_min=10., dip_slip_rate_max=30., dip_slip_rate_pref=20.,
             length_min=10., length_pref=20., length_max=30.,
             low_d_min=1., low_d_pref=2., low_d_max=3.,
             u_sm_d_min=4., u_sm_d_pref=5., u_sm_d_max=6.,
@@ -104,7 +104,7 @@ class FaultSourceAutoComputedTest(TestCase):
         self._join_traces()
         fault = self._populate_fault(self._join_fault_sections())
         ret = utils.create_faultsource(fault)
-        
+
         self.assertEqual('u_sm_d_min', ret)
 
         fault.u_sm_d_min = 10
@@ -114,7 +114,7 @@ class FaultSourceAutoComputedTest(TestCase):
         fault.low_d_min = 100
         fault.low_d_pref = 200
         fault.low_d_max = 300
-        
+
         fault.dip_min = 10
         fault.dip_max = 30
         fault.dip_pref = 20
@@ -126,5 +126,5 @@ class FaultSourceAutoComputedTest(TestCase):
         fault.save()
 
         ret = utils.create_faultsource(fault)
-        
+
         self.assertEqual(None, ret)
