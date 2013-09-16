@@ -35,14 +35,6 @@ DATABASES = {
         'USER': 'oqplatform',
         'PASSWORD': 'openquake'
     },
-    "geddb": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "ged",
-        "USER": "",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": ""
-    }
 }
 
 # Local time zone for this installation. Choices can be found here:
