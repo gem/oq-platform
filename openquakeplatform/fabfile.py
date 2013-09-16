@@ -47,6 +47,14 @@ DATABASES = {
         'PASSWORD': '%(dbpassword)s'
     },
 }
+
+try:
+    from openquakeplatform import ged_settings
+    DATABASES.update(ged_settings.DATABASES)
+except ImportError:
+    import warnings
+    warnings.warn('Global Exposure Database (GED) configuration not found!',
+                  ImportWarning)
 """
 
 
