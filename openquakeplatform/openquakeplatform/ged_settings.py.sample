@@ -1,6 +1,6 @@
 DATABASES = {
     'geddb': {
-        'ENGINE': 'django.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'ged',
         'USER': 'oqplatform',
         'PASSWORD': 'password',
