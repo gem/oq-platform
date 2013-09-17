@@ -40,7 +40,7 @@ class LocationPage (Pagebase):
     class InventoryclassForm (ModelForm):
         class Meta:
             model = Inventoryclass
-            exclude = ('levelorder', 'parentid','parenttype', 'ownerid', 'lastupdatebyid', 'lastupdate', 'llrs_qual','plan_shape','position','nonstrcexw','roof_conn','roofcovmat','roof_shape','floor_conn','foundn_sys','story_bg_q','story_bg_1','story_bg_2','ht_gr_gf_q','ht_gr_gf_1','ht_gr_gf_2','slope',)
+            exclude = ('levelorder', 'parentid','parenttype', 'ownerid', 'lastupdatebyid', 'lastupdate', 'llrs_qual','plan_shape','position','nonstrcexw','roof_conn','roofcovmat','roof_shape','floor_conn','foundn_sys','story_bg_q','story_bg_1','story_bg_2','ht_gr_gf_q','ht_gr_gf_1','ht_gr_gf_2','slope', 'mat_type_t', 'mat_tech_t', 'mas_mort_t', 'mas_rein_t', 'steel_conn_t', 'llrs_duct_t', 'llrs_t', )
 
     class SurveyForm (ModelForm):
         class Meta:
