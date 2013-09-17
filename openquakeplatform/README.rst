@@ -10,6 +10,11 @@ Clone the git repo::
 
     $ git clone https://github.com/gem/oq-platform -b geonode2-integration
 
+Initialize submodules::
+
+    $ git submodule init
+    $ git submodule update
+
 Install PostgreSQL and PostGIS. For best results, stick with PostgreSQL 9.1
 and PostGIS 1.5.
 

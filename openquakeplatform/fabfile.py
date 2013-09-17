@@ -4,8 +4,10 @@ from urlparse import urljoin as _urljoin
 
 from fabric.api import env
 from fabric.api import local
-from fabric.api import sudo
+from fabric.api import run
 from fabric.api import settings
+from fabric.api import sudo
+from fabric.context_managers import hide
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
@@ -30,6 +32,9 @@ DS_NAME = 'oqplatform'
 FEATURETYPES_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
                     % dict(ws=WS_NAME, ds=DS_NAME))
 
+XML_CONTENT_TYPE = 'text/xml'
+SLD_CONTENT_TYPE = 'application/vnd.ogc.sld+xml'
+
 DB_PASSWORD = 'openquake'
 
 #: Template for local_settings.py
@@ -51,6 +56,18 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     :param str dbpassword:
         Should match the one in settings.py.
     """
+    baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+    apps()
+    # Finally, remove the superuser privileges, but only if this was a user we
+    # created:
+    # TODO: Some apps require that oqplatform db user has SUPERUSER.
+    # We need to deal with this in production. For a dev install,
+    # leave the user with superuser privs.
+    #if user_created:
+    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
+
+
+def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
     _write_local_settings(dbname, dbuser)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
@@ -68,7 +85,8 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # GeoServer: create workspace
     _geoserver_api(
         'workspaces.xml',
-        '<workspace><name>%s</name></workspace>' % WS_NAME
+        '<workspace><name>%s</name></workspace>' % WS_NAME,
+        message='Creating workspace...'
     )
     # GeoServer: create store
     store_content = """\
@@ -89,21 +107,17 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
 
     _geoserver_api(
         'workspaces/%s/datastores.xml' % WS_NAME,
-        store_content
+        store_content, message='Creating workspace...'
     )
 
+
+def apps():
     # Add the apps
     _add_isc_viewer()
     _add_faulted_earth()
+    _add_ghec_viewer()
 
     local('python manage.py updatelayers')
-    # Finally, remove the superuser privileges, but only if this was a user we
-    # created:
-    # TODO: Some apps require that oqplatform db user has SUPERUSER.
-    # We need to deal with this in production. For a dev install,
-    # leave the user with superuser privs.
-    #if user_created:
-    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
 
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
@@ -142,18 +156,39 @@ def _pgquery(query):
 
 
 def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
-                   password='geoserver', method='POST'):
+                   password='geoserver', method='POST',
+                   content_type=XML_CONTENT_TYPE, message=None):
     """
     Utility for creating various artifacts in geoserver (workspaces, layers,
     etc.).
     """
+    if message:
+        print('> GeoServer(%(meth)s): %(msg)s'
+              % dict(meth=method, msg=message))
+
     # TODO(LB): It would be cleaner to use urllib2 or similar in pure Python,
     # but it was quicker to make this work just with curl.
     cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
-           "'Content-type:text/xml' -d '%(content)s' %(url)s")
+           "'Content-type:%(content_type)s' -d '%(content)s' %(url)s")
     cmd %= dict(username=username, password=password, content=content,
-                url=_urljoin(base_url, url), method=method)
-    local(cmd)
+                url=_urljoin(base_url, url), method=method,
+                content_type=content_type)
+    with hide('stderr', 'stdout', 'running'):
+        result = run(cmd)
+    http_resp = [x for x in result.split('\n') if '< HTTP' in x]
+    for resp in http_resp:
+        print(resp)
+
+
+def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
+                             username='admin', password='geoserver',
+                             method='POST', content_type=XML_CONTENT_TYPE,
+                             message=None):
+    with open(file_path) as fh:
+        content = fh.read()
+    _geoserver_api(url, content, base_url=base_url, username=username,
+                   password=password, method=method, content_type=content_type,
+                   message=message)
 
 
 def _maybe_createuser(dbuser, dbpassword):
@@ -243,9 +278,8 @@ def _create_isc_viewer_layers():
     # No, instead you need to create a "featuretype", which implicitly creates
     # a layer. The docs fail to mention this.
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
-    with open(feature_file) as fh:
-        content = fh.read()
-    _geoserver_api(FEATURETYPES_URL, content)
+    _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
+                             message='Creating isc_viewer layer...')
 
 
 def _add_faulted_earth():
@@ -257,4 +291,39 @@ def _add_faulted_earth():
     for ff in features_files:
         with open(ff) as fh:
             content = fh.read()
-        _geoserver_api(FEATURETYPES_URL, content)
+        _geoserver_api(FEATURETYPES_URL, content,
+                       message='Creating faulted_earth layer...')
+
+
+def _add_ghec_viewer():
+    # Feature:
+    feature_file = 'gs_data/ghec_viewer/features/ghec_viewer_measure.xml'
+    _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
+                             message='Creating ghec_viewer layer...')
+
+    # Style:
+    style_xml = 'gs_data/ghec_viewer/styles/ghec_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'styles.xml',
+        style_xml,
+        message='Creating ghec_viewer style...'
+    )
+    style_sld = 'gs_data/ghec_viewer/styles/ghec_viewer_measure.sld'
+    _geoserver_api_from_file(
+        'styles/ghec_viewer_measure.sld',
+        style_sld,
+        method='PUT',
+        content_type=SLD_CONTENT_TYPE,
+        message='Creating ghec_viewer SLD...'
+    )
+
+    # Update the layer/feature with the new style.
+    layer_file = 'gs_data/ghec_viewer/layers/ghec_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'layers/%s:ghec_viewer_measure' % WS_NAME,
+        layer_file,
+        method='PUT',
+        message='Updating ghec_viewer layer...'
+    )
+
+    local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')

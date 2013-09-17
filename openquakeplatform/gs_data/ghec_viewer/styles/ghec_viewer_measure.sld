@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<StyledLayerDescriptor version="1.0.0" 
-    xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
-    xmlns="http://www.opengis.net/sld" 
-    xmlns:ogc="http://www.opengis.net/ogc" 
-    xmlns:xlink="http://www.w3.org/1999/xlink" 
+<StyledLayerDescriptor version="1.0.0"
+    xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+    xmlns="http://www.opengis.net/sld"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NamedLayer>
-    <Name>Attribute-based point</Name>
+    <Name>ghec_viewer_measure</Name>
     <UserStyle>
       <Title>GeoServer SLD Cook Book: Attribute-based point</Title>
       <FeatureTypeStyle>
@@ -15,12 +15,12 @@
        <Title> m &lt; 7 AND depth &lt; 70 km</Title>
        <ogc:Filter>
          <ogc:And>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -58,7 +58,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7.5</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -96,7 +96,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.0</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -134,7 +134,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -168,8 +168,8 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
-           
+
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -199,7 +199,7 @@
        <Title> m &lt; 7 AND 70km &lt;= depth</Title>
        <ogc:Filter>
          <ogc:And>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
@@ -208,7 +208,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MaxScaleDenominator>17471330</MaxScaleDenominator>
@@ -246,7 +246,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MaxScaleDenominator>17471330</MaxScaleDenominator>
@@ -284,7 +284,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MaxScaleDenominator>17471330</MaxScaleDenominator>
@@ -322,7 +322,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MaxScaleDenominator>17471330</MaxScaleDenominator>
@@ -352,12 +352,12 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
            <ogc:PropertyIsGreaterThanOrEqualTo>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MaxScaleDenominator>17471330</MaxScaleDenominator>
@@ -386,7 +386,7 @@
              <ogc:PropertyIsNull>
                <ogc:PropertyName>dep</ogc:PropertyName>
              </ogc:PropertyIsNull>
-             
+
              <ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
@@ -531,7 +531,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThan>
-             
+
            </ogc:And>
        </ogc:Filter>
        <MaxScaleDenominator>17471330</MaxScaleDenominator>
@@ -557,12 +557,12 @@
        <Title> m &lt; 7 AND depth &lt; 70 km</Title>
        <ogc:Filter>
          <ogc:And>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -601,7 +601,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7.5</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -640,7 +640,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.0</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -679,7 +679,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -714,8 +714,8 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
-           
+
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -746,7 +746,7 @@
        <Title> m &lt; 7 AND 70km &lt;= depth</Title>
        <ogc:Filter>
          <ogc:And>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
@@ -755,7 +755,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>17471330</MinScaleDenominator>
@@ -794,7 +794,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>17471330</MinScaleDenominator>
@@ -833,7 +833,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>17471330</MinScaleDenominator>
@@ -872,7 +872,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>17471330</MinScaleDenominator>
@@ -903,12 +903,12 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
            <ogc:PropertyIsGreaterThanOrEqualTo>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>17471330</MinScaleDenominator>
@@ -938,7 +938,7 @@
              <ogc:PropertyIsNull>
                <ogc:PropertyName>dep</ogc:PropertyName>
              </ogc:PropertyIsNull>
-             
+
              <ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
@@ -1087,7 +1087,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThan>
-             
+
            </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>17471330</MinScaleDenominator>
@@ -1114,12 +1114,12 @@
        <Title> m &lt; 7 AND depth &lt; 70 km</Title>
        <ogc:Filter>
          <ogc:And>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -1157,7 +1157,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7.5</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -1195,7 +1195,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.0</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -1233,7 +1233,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsLessThan>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -1267,8 +1267,8 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
-           
+
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
@@ -1298,7 +1298,7 @@
        <Title> m &lt; 7 AND 70km &lt;= depth</Title>
        <ogc:Filter>
          <ogc:And>
-           
+
            <ogc:PropertyIsLessThan>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
@@ -1307,7 +1307,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>69885320</MinScaleDenominator>
@@ -1345,7 +1345,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>69885320</MinScaleDenominator>
@@ -1383,7 +1383,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>69885320</MinScaleDenominator>
@@ -1421,7 +1421,7 @@
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>69885320</MinScaleDenominator>
@@ -1451,12 +1451,12 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
            <ogc:PropertyIsGreaterThanOrEqualTo>
                <ogc:PropertyName>dep</ogc:PropertyName>
                <ogc:Literal>70</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
-           
+
          </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>69885320</MinScaleDenominator>
@@ -1485,7 +1485,7 @@
              <ogc:PropertyIsNull>
                <ogc:PropertyName>dep</ogc:PropertyName>
              </ogc:PropertyIsNull>
-             
+
              <ogc:PropertyIsLessThanOrEqualTo>
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>7</ogc:Literal>
@@ -1630,7 +1630,7 @@
                <ogc:PropertyName>m</ogc:PropertyName>
                <ogc:Literal>8.5</ogc:Literal>
                </ogc:PropertyIsGreaterThan>
-             
+
            </ogc:And>
        </ogc:Filter>
        <MinScaleDenominator>69885320</MinScaleDenominator>
