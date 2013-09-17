@@ -394,7 +394,7 @@ class EventOverview (Pagebase):
             self.page_context['page_backlink'] = '<a href="/ecd/eventsmap?&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) +'&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all) +'">&laquo; Back to world map</a>'
             epicentreWKT = event.location.split(' ')
             self.page_context['epicentre'] = {'lat': epicentreWKT[1][:-1], 'lon': epicentreWKT[0][6:]}
-
+            self.page_context['shakemapid'] = str(event.usgsshakemapid)
         except:
             return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 
