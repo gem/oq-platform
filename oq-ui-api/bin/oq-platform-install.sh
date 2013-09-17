@@ -2,7 +2,7 @@
 # set -x
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
-# Version: v1.13.2
+# Version: v1.13.3
 # Guidelines
 #
 #    Configuration file manglings are done only if they not appear already made.
@@ -20,7 +20,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="v1.13.2"
+export GEM_OQ_PLATF_GIT_VERS="v1.13.3"
 
 export GEM_OQ_PLATF_SUBMODS=""
 
