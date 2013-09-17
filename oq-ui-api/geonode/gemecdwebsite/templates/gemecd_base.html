@@ -394,9 +394,13 @@
         {% endblock gemecd_map %}
 <script type="text/javascript">
         var overlays = {
+        {% if maptype == 'location' %}
+            "Epicenter" : epicentre,
+            "5km radial rings": radiusLayer,
+            {% endif %}
             "Points layer" : pointsLayer,
             //"Polygons layer" : polygonsLayer,
-            "Sample shakemap": shakemap,
+            "USGS Shakemap": shakemap,
             "GRUMP Urban" : grump_urban,
             "GRUMP Rural" : grump_rural,
             "OpenStreetMap" : osm,
@@ -425,7 +429,7 @@
             center: [20, 20],
             zoom: 2,
             maxZoom: 18,
-            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, pointsLayer]
+            layers: [{% if user.is_authenticated %}hazard_map,{% endif %} backgroundmap, pointsLayer {% if maptype == 'location' %}, epicentre, radiusLayer {% endif %}]
         });
 
         // add polygon layers
