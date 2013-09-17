@@ -139,8 +139,9 @@ keytool -import -noprompt -alias geonodessl -trustcacerts -keystore /etc/ssl/cer
 grep -q "^<VirtualHost \*:80>$" "$GEM_APACHE_CONF" && sed -i "s@^<VirtualHost \*:80>@<IfModule mod_ssl.c>\n<VirtualHost _default_:443>@g;\
 s@</VirtualHost>@\
     SSLEngine on\n\
-    SSLCertificateFile    /etc/ssl/certs/oq-platform.crt\n\
-    SSLCertificateKeyFile /etc/ssl/private/oq-platform.key\n\
+    SSLCertificateFile      /etc/ssl/certs/${GEM_CERT_CRT}\n\
+    SSLCertificateKeyFile   /etc/ssl/private/${GEM_CERT_KEY}\n\
+    SSLCertificateChainFile /etc/ssl/certs/${GEM_CA_CERT}\n\
     BrowserMatch \"MSIE [2-6]\" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0\n\
     # MSIE 7 and newer should be able to use keepalive\n\
     BrowserMatch \"MSIE [17-9]\" ssl-unclean-shutdown\n\
