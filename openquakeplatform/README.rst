@@ -1,8 +1,6 @@
 Openquake Platform
 ==================
 
-You should write some docs, it's good for the soul.
-
 Development Installation
 ------------------------
 
@@ -24,6 +22,14 @@ Install and run the application::
     $ cd oq-platform
     $ pip install -e openquakeplatform  # installs `fabric` to enable `fab` commands (see below)
     $ cd openquakeplatform
+
+(Optional.) Set Global Exposure Database (GED) settings. Copy the sample config
+file and customize the settings according to your database configuration::
+
+    $ cp openquakeplatform/ged_settings.py.sample openquakeplatform/ged_settings.py
+
+Set create and start dev environment::
+
     $ fab bootstrap  # automatically runs the app
 
 Once this is once is done, you can run several other `fab` commands. See below.
