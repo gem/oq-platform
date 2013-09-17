@@ -55,11 +55,11 @@ var startExposureApp = function() {
     var grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
     var df_admin0 = L.tileLayer(
         'http://tilestream.openquake.org/v2/dwelling-fractions/{z}/{x}/{y}.png',
-        {wax: 'http://tilestream.openquake.org/v2/dwelling-fractions.json'}
+        {wax: '//tilestream.openquake.org/v2/dwelling-fractions.json'}
     );
     var df_port = L.tileLayer(
         'http://tilestream.openquake.org/v2/PRT-dwelling-fractions/{z}/{x}/{y}.png',
-        {wax: 'http://tilestream.openquake.org/v2/PRT-dwelling-fractions.json'}
+        {wax: '//tilestream.openquake.org/v2/PRT-dwelling-fractions.json'}
     );
 
     var overlays = {
