@@ -173,22 +173,33 @@ def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
     cmd %= dict(username=username, password=password, content=content,
                 url=_urljoin(base_url, url), method=method,
                 content_type=content_type)
-    with hide('stderr', 'stdout', 'running'):
-        result = run(cmd)
-    http_resp = [x for x in result.split('\n') if '< HTTP' in x]
-    for resp in http_resp:
-        print(resp)
+
+    _do_curl(cmd)
 
 
 def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
                              username='admin', password='geoserver',
                              method='POST', content_type=XML_CONTENT_TYPE,
                              message=None):
-    with open(file_path) as fh:
-        content = fh.read()
-    _geoserver_api(url, content, base_url=base_url, username=username,
-                   password=password, method=method, content_type=content_type,
-                   message=message)
+    # Since we are using fabric's `run`, the file path needs to be absolute.
+    # `run` performs a login and thus changes the working directory.
+    file_path = os.path.abspath(file_path)
+
+    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
+           "'Content-type:%(content_type)s' -d @%(file_path)s %(url)s")
+    cmd %= dict(username=username, password=password, file_path=file_path,
+                url=_urljoin(base_url, url), method=method,
+                content_type=content_type)
+
+    _do_curl(cmd)
+
+
+def _do_curl(cmd):
+    with hide('stderr', 'stdout', 'running'):
+        result = run(cmd)
+    http_resp = [x for x in result.split('\n') if '< HTTP' in x]
+    for resp in http_resp:
+        print(resp)
 
 
 def _maybe_createuser(dbuser, dbpassword):
@@ -262,24 +273,37 @@ def _maybe_install_postgis(dbname):
 
 
 def _add_isc_viewer():
-    _create_isc_viewer_layers()
-    _load_isc_viewer_data()
-
-
-def _load_isc_viewer_data():
-    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
-          ' ../oq-ui-api/data/isc_data_app.csv')
-
-
-def _create_isc_viewer_layers():
-    # RAGE: Apparently, you can't actually create layers with the geoserver
-    # rest API. If you try to POST to it, you just get a 405. But it's okay,
-    # the 405 is well documented. >:(
-    # No, instead you need to create a "featuretype", which implicitly creates
-    # a layer. The docs fail to mention this.
     feature_file = 'gs_data/isc_viewer/features/isc_viewer_measure.xml'
     _geoserver_api_from_file(FEATURETYPES_URL, feature_file,
                              message='Creating isc_viewer layer...')
+
+    # Style:
+    style_xml = 'gs_data/isc_viewer/styles/isc_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'styles.xml',
+        style_xml,
+        message='Creating isc_viewer style...'
+    )
+    style_sld = 'gs_data/isc_viewer/styles/isc_viewer_measure.sld'
+    _geoserver_api_from_file(
+        'styles/isc_viewer_measure.sld',
+        style_sld,
+        method='PUT',
+        content_type=SLD_CONTENT_TYPE,
+        message='Creating isc_viewer SLD...'
+    )
+
+    # Update layer with new style:
+    layer_file = 'gs_data/isc_viewer/layers/isc_viewer_measure.xml'
+    _geoserver_api_from_file(
+        'layers/%s:isc_viewer_measure' % WS_NAME,
+        layer_file,
+        method='PUT',
+        message='Updating isc_viewer layer...'
+    )
+
+    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
+          ' ../oq-ui-api/data/isc_data_app.csv')
 
 
 def _add_faulted_earth():
