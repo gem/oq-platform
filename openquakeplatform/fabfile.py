@@ -68,6 +68,10 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     """
     baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
     apps()
+
+    # Install the libs needs to `test` and `test_with_xunit`:
+    local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
+
     # Finally, remove the superuser privileges, but only if this was a user we
     # created:
     # TODO: Some apps require that oqplatform db user has SUPERUSER.
@@ -155,9 +159,17 @@ def stop():
 
 
 def test():
-    local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
     local('./run_tests.sh -v --with-coverage '
           '--cover-package=openquakeplatform')
+
+
+def test_with_xunit():
+    """
+    Same as :func:`test`, but outputs test results to a file.
+    """
+    local('./run_tests.sh -v --with-coverage '
+          '--cover-package=openquakeplatform --with-xunit '
+          '--xunit-file=../nosetests.xml')
 
 
 def _write_local_settings(dbname, dbuser):
