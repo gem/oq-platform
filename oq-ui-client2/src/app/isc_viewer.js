@@ -81,7 +81,12 @@ Ext.onReady(function() {
             actionTarget: {target: "tree.tbar"}
         }, {
             ptype: "gxp_legend",
-            actionTarget: "map.tbar"
+            actionTarget: "map.tbar",
+            outputConfig: {
+                width: 360,
+                height: 400,
+                defaults: { autoScroll: !0 }
+            }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "tree.tbar",
