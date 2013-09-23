@@ -1,0 +1,267 @@
+.navbar-fixed-top-second {
+   position: fixed;
+   top: 73px;
+   width: 100%;
+}
+
+#header-wrapper {
+   height: 113px;
+}
+
+.dropdown-backdrop {
+    position: none;
+    top: none;
+    right: none;
+    bottom: none;
+    left: none;
+    z-index: none;
+}
+
+body {
+    color: #000000;
+    padding-top: 0px;
+}
+
+h2 {
+    color: #1B75A7;
+}
+
+.container,
+.navbar-static-top .container,
+.navbar-fixed-top .container,
+.navbar-fixed-bottom .container {
+    with: 100%;
+    min-width: 800px;
+}
+
+.span10 {
+    width: 80%;
+}
+
+.span9 {
+    width: auto;
+    float: right;
+}
+
+.span3 {
+    width: auto;
+}
+
+.navbar-inner {
+    /* Why red? */
+    background-color: red;
+    /* Not sure if this is correct: */
+    background-image: none;
+    border: 1px solid #002029;
+}
+
+.navbar .nav > li > a {
+    color: #1B75A7;
+    text-shadow: none;
+}
+
+.nav-logo {
+    width: 316px;
+    height: 82px;
+    background: url(/static/img/OQ_logo.png) no-repeat;
+    margin-left: -10px;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+.navbar .navbar-inner {
+    background: none;
+    -webkit-box-shadow: none;
+    -mox-box-shadow: none;
+    box-shadow: none;
+    min-width: 900px;
+    background: url(../img/OQ_header_bg.png) no-repeat;
+    border-bottom: 2px solid #1B75A7;
+}
+
+.nav-box {
+    background: none;
+}
+
+/* Hide the default geonode menu */
+nav.main-nav ul li {
+    display: none;
+}
+
+nav.main-nav ul {
+    position: relative;
+}
+
+/* Show the custom OQ Platform menu */
+nav.main-nav ul li.oqp-menu-item {
+    display: inline-block;
+    line-height: 18px;
+}
+
+nav.main-nav li ul {
+    display: none;
+    position: absolute;
+    top: 0;
+}
+
+nav.main-nav ul li a {
+    font-size: 13px;
+}
+
+nav.main-nav li:hover ul, li.over ul {
+    display: block;
+    height: 1.5em;
+}
+
+
+/* submenu */
+
+#submenu {
+    width: 100%;
+    height: 26px;
+    float: left;
+    clear: left;
+    margin: 0px;
+    list-style: none;
+}
+
+#submenu li {
+    float: left;
+    margin-right: 20px;
+    position: relative;
+}
+
+#submenu a {
+    display: block;
+    padding: 4px;
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: #1B75A7;
+    text-transform: capitalize;
+}
+
+#submenu a:hover {
+    font-weight: 700;
+}
+
+#submenu h3 {
+    font-size: 11px;
+    font-weight: bold;
+    color: #FFF;
+    margin-top: 5px;
+}
+
+/*--- DROPDOWN ---*/
+#submenu ul {
+    background: #fff;
+    /* Adding a background makes the dropdown work properly in IE7+.
+       Make this as close to your page's background as possible
+       (i.e. white page == white background).
+    */
+    background:rgba(255,255,255,0);
+    /* But! Let's make the background fully transparent where we can,
+       we don't actually want to see it if we can help it...
+    */
+    list-style:none;
+    position:absolute;
+    /* Hide off-screen when not needed
+       (this is more accessible than display:none;)
+    */
+    left: -9999px;
+    z-index: 80000;
+}
+
+#submenu ul li{
+    padding-top:0px; /* Introducing a padding between the li and the a give the illusion spaced items */
+    float:none;
+    min-width: 200px;
+}
+
+#submenu ul a{
+    white-space:nowrap; /* Stop text wrapping and creating multi-line dropdown items */
+}
+
+#submenu li:hover ul li ul{ /* Display the dropdown on hover */
+    left: -9999px; /* Bring back on-screen when needed */
+}
+
+#submenu li:hover ul{ /* Display the dropdown on hover */
+    left: 1px; /* Bring back on-screen when needed */
+}
+
+#submenu li ul li:hover ul{ /* Display the dropdown on hover */
+    left: 174px; /* Bring back on-screen when needed */
+    top: 0px;
+}
+
+#submenu li:hover a{ /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
+    background: #FFFFFF;
+    background-repeat: repeat-y;
+    text-decoration: none;
+}
+
+#submenu li:hover ul a{ /* The persistent hover state does however create a global style for links even before they're hovered. Here we undo these effects. */
+    text-decoration: none;
+}
+
+#submenu li:hover ul li a:hover {
+ /* Here we define the most explicit hover states--what happens when you hover each individual link. */
+    font-weight: 700;
+}
+
+#submenu ul li .notyet {
+    opacity: 0.5;
+}
+
+#submenu ul li ul li .notyet {
+    opacity: 0.5;
+}
+
+#submenu ul li a .notyet {
+    opacity: 0.5;
+}
+
+#submenu ul li ul li a .notyet {
+    opacity: 0.5;
+}
+
+
+/* second level */
+#submenu ul li ul li {
+    z-index: 80100;
+}
+
+ul.social li a {
+    margin-top: -5px;
+}
+
+ul.social li a.tw {
+    margin-top: -5px;
+}
+
+ul.social li a.gp {
+    margin-top: -5px;
+}
+
+footer.footer {
+    background: #1B75A7;
+    font-size: 12px;
+    position: relative;
+    padding-left: 10%;
+    padding-right: 10%;
+    float: left;
+    width: 80%;
+}
+
+footer.footer form label {
+    color: #FFFFFF;
+}
+
+.hero-unit h1 {
+    color: #1B75A7;
+}
+
+.hero-unit {
+    background-color: #FFFFFF;
+}

@@ -1,38 +1,29 @@
 {% extends "base.html" %}
+
 {% block extra_head %}
-      <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
-      <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/lato_font.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
 {% endblock %}
 
-
-{% block header %}
-<div id="header-wrapper">
-  {{block.super}}
-  <div class="navbar navbar-fixed-top-second">
-    <div class="navbar-inner">
-      <div class="container" style="width: 940px;">
-        <div class="row nav-box">
-          <div class="span10">
-            <nav class="main-nav">
-              <ul>
-                <li><a href="{% url 'isc_viewer' %}">ISC</a></li>
-                <li><a href="{% url 'ghec_viewer' %}">GHEC</a></li>
-                <li><a href="{% url 'geodetic' %}">Geodetic</a></li>
-                <li><a href="{% url 'gaf_viewer' %}">GAF</a></li>
-                <li><a href="{% url 'faulted_earth' %}">FE</a></li>
-                <li><a href="{% url 'exposure' %}">Exposure</a></li>
-                <li><a href="{% url 'explore_leaflet' %}">JExplore</a></li>
-                <li><a href="{% url 'hazard_models' %}">Hazard</a></li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+{% block extra-nav %}
+<li class="oqp-menu-item"><a href="{% url 'home' %}">Home</a></li>
+<li class="oqp-menu-item"><a href="{% url 'isc_viewer' %}">ISC</a></li>
+<li class="oqp-menu-item"><a href="{% url 'ghec_viewer' %}">GHEC</a></li>
+<li class="oqp-menu-item"><a href="{% url 'geodetic' %}">Geodetic</a></li>
+<li class="oqp-menu-item"><a href="{% url 'gaf_viewer' %}">GAF</a></li>
+<li class="oqp-menu-item"><a href="{% url 'faulted_earth' %}">FE</a></li>
+<li class="oqp-menu-item"><a href="{% url 'exposure' %}">Exposure</a></li>
+<li class="oqp-menu-item"><a href="{% url 'explore_leaflet' %}">JExplore</a></li>
+<li class="oqp-menu-item"><a href="{% url 'hazard_models' %}">Hazard</a></li>
 {% endblock %}
 
 {% block footer %}
-  <div id="footer">{{block.super}}</div>
+    <div id="footer">{{block.super}}</div>
+{% endblock %}
+
+{% block extra_script %}
+    <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
+    <!--  TODO: Probably need a bunch more deps here -->
 {% endblock %}
