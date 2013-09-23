@@ -4,6 +4,10 @@
    width: 100%;
 }
 
+div.navbar-fixed-top {
+    position: relative;
+}
+
 #header-wrapper {
    height: 113px;
 }
@@ -18,7 +22,7 @@
 }
 
 body {
-    color: #000000;
+    color: #555555;
     padding-top: 0px;
 }
 
@@ -30,7 +34,7 @@ h2 {
 .navbar-static-top .container,
 .navbar-fixed-top .container,
 .navbar-fixed-bottom .container {
-    with: 100%;
+    width: 100%;
     min-width: 800px;
 }
 
@@ -94,6 +98,9 @@ nav.main-nav ul {
 
 /* Show the custom OQ Platform menu */
 nav.main-nav ul li.oqp-menu-item {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    color: #1B75A7;
     display: inline-block;
     line-height: 18px;
 }
@@ -105,7 +112,9 @@ nav.main-nav li ul {
 }
 
 nav.main-nav ul li a {
-    font-size: 13px;
+    font-size: 16px;
+    color: #1B75A7;
+    text-transform: none;
 }
 
 nav.main-nav li:hover ul, li.over ul {
@@ -260,6 +269,7 @@ footer.footer form label {
 
 .hero-unit h1 {
     color: #1B75A7;
+    font-size: 40px;
 }
 
 .hero-unit {
