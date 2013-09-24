@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block extra_head %}
-    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet"/>
-    <link href="{{ STATIC_URL }}css/lato_font.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
 {% endblock %}
@@ -17,10 +15,6 @@
 <li class="oqp-menu-item"><a href="{% url 'exposure' %}">Exposure</a></li>
 <li class="oqp-menu-item"><a href="{% url 'explore_leaflet' %}">JExplore</a></li>
 <li class="oqp-menu-item"><a href="{% url 'hazard_models' %}">Hazard</a></li>
-{% endblock %}
-
-{% block footer %}
-    <div id="footer">{{block.super}}</div>
 {% endblock %}
 
 {% block extra_script %}
