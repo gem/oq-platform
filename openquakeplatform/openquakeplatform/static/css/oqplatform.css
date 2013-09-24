@@ -87,6 +87,10 @@ h2 {
     background: none;
 }
 
+nav.main-nav {
+    margin-bottom: 0px;
+}
+
 /* Hide the default geonode menu */
 nav.main-nav ul li {
     display: none;
@@ -94,6 +98,7 @@ nav.main-nav ul li {
 
 nav.main-nav ul {
     position: relative;
+    margin-bottom: 0px;
 }
 
 /* Show the custom OQ Platform menu */
