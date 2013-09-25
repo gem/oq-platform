@@ -190,11 +190,11 @@ Ext.onReady(function() {
         }, {
             ptype: "gxp_legend",
             actionTarget: "tree.tbar",
-	    outputTarget: "west",
-	    outputConfig: {
-		title: "Legend",
-		autoScroll: true
-	    }
+            outputConfig: {
+                width: 360,
+                height: 400,
+                defaults: { autoScroll: true }
+            }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "map.tbar",
