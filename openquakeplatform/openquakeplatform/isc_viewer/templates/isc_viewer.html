@@ -13,13 +13,15 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
-{% extends 'oq_base.html' %}
+{% extends 'extjs_base.html' %}
 {% load i18n %}
+
+{% block title %}
+Instrumental Catalogue Viewer - {{block.super}}
+{% endblock title %}
 
 {% block extra_head %}
 {{block.super}}
-
-        <title>Instrumental Catalogue Viewer</title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="./favicon.ico">
@@ -40,7 +42,7 @@
 
         <!-- gxp resources -->
         <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/gxp/src/theme/all.css">
-        
+
 
         <!-- app resources -->
         <link rel="stylesheet" type="text/css" href="/static/isc_viewer/style.css">
@@ -51,8 +53,9 @@
             Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
         </script>
-{% endblock %}        
+{% endblock %}
 
-{% block body_outer %}
+{% block oq_body_content %}
+  {{block.super}}
   <span id="showGrid"></span>
 {% endblock %}
