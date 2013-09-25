@@ -30,8 +30,7 @@ Ext.Ajax.on('beforerequest', function (conn, options) {
 
     app = new gxp.Viewer(
       {
-        proxy: "/proxy/?url=",
-        localGeoServerBaseUrl: "http://localhost:8080/geoserver/",
+        localGeoServerBaseUrl: "/geoserver/",
         authorizedRoles: "ROLE_ADMINISTRATOR",
 
 	/* add a listener for computed fields */
@@ -337,7 +336,7 @@ Ext.Ajax.on('beforerequest', function (conn, options) {
             local: {
                 ptype: "gxp_wmscsource",
                 version: "1.1.1",
-              url: "http://localhost:8080/geoserver/wms"
+              url: "/geoserver/wms"
             },
             osm: {
                 ptype: "gxp_osmsource"

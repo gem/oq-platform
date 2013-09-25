@@ -38,8 +38,7 @@ Ext.onReady(function() {
 
 
     app = new gxp.Viewer({
-        proxy: "/proxy/?url=",
-        localGeoServerBaseUrl: "http://localhost:8080/geoserver/",
+        localGeoServerBaseUrl: "/geoserver/",
         authorizedRoles: "ROLE_ANONYMOUS",
 
         portalConfig: {
@@ -108,7 +107,7 @@ Ext.onReady(function() {
         sources: {
             local: {
                 ptype: "gxp_wmscsource",
-                url: "http://localhost:8080/geoserver/wms",
+                url: "/geoserver/wms",
                 version: "1.1.1"
             },
             osm: {
