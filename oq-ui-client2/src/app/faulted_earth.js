@@ -193,7 +193,7 @@ Ext.onReady(function() {
             outputConfig: {
                 width: 360,
                 height: 400,
-                defaults: { autoScroll: !0 }
+                defaults: { autoScroll: true }
             }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
