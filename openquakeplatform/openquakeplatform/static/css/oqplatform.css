@@ -80,6 +80,7 @@ h2 {
     box-shadow: none;
     min-width: 900px;
     background: url(../img/OQ_header_bg.png) no-repeat;
+    background-size: 100%;
     border-bottom: 2px solid #1B75A7;
 }
 
