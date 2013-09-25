@@ -8,51 +8,50 @@
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
-{% block body_outer %}
-{{block.super}}
-{% block hero %}
-    <div class="hero-unit">
-        <h1>{% trans "Welcome to OpenQuake" %}</h1>
-        <br />
-        <div class="hero-unit-content">
-            <div class="intro">
-                <!-- Main page content goes here -->
-                The OpenQuake Platform brings a great variety of options together for assessing and understanding risk. Many of these need expert knowledge, to be sure that hazard and risk are assessed the right way. But there will also be many results and datasets available that facilitate all of our stakeholders in exploring, understanding and improving decision-making.<br/><br/>
+{% block oq_body_heading %}
+    <h1>{% trans "Welcome to OpenQuake" %}</h1>
+    <br />
+{% endblock oq_body_heading %}
 
-                <h2><img src="static/img/OQ-Suite-Calculate.png" width="120px">Calculate</h2>
-                Powered by the OpenQuake Engine, users will be able to carry out seismic hazard, physical and integrated risk assessment in a variety of ways. This way they can explore hazard and risk under different assumptions.<br/><br/>
+{% block oq_body_content %}
+    <div class="oq-intro">
+        <!-- Main page content goes here -->
+        The OpenQuake Platform brings a great variety of options together for assessing and understanding risk. Many of these need expert knowledge, to be sure that hazard and risk are assessed the right way. But there will also be many results and datasets available that facilitate all of our stakeholders in exploring, understanding and improving decision-making.<br/><br/>
 
-                <h2><img src="static/img/OQ-Suite-View.png" width="120px">View</h2>
-                OpenQuake will facilitate a user in viewing user-developed and uploaded information. At the same time OpenQuake is going to allow a user to dynamically visualise GEM datasets, models and pre-calculated outputs (maps, graphs, etc.).<br/><br/>
+        <h2><img src="static/img/OQ-Suite-Calculate.png" width="120px">Calculate</h2>
+        Powered by the OpenQuake Engine, users will be able to carry out seismic hazard, physical and integrated risk assessment in a variety of ways. This way they can explore hazard and risk under different assumptions.<br/><br/>
 
-                <h2><img src="static/img/OQ-Suite-Explore.png" width="120px">Explore</h2>
-                Users will be able to develop customised risk maps, to use for improved risk awareness, understanding and decision-making.<br/><br/>
+        <h2><img src="static/img/OQ-Suite-View.png" width="120px">View</h2>
+        OpenQuake will facilitate a user in viewing user-developed and uploaded information. At the same time OpenQuake is going to allow a user to dynamically visualise GEM datasets, models and pre-calculated outputs (maps, graphs, etc.).<br/><br/>
 
-                <h2><img src="static/img/OQ-Suite-Model.png" width="120px">Model</h2>
-                Users will be able to prepare data and develop PSHA-input models, exposure models, physical vulnerability models, and composite index models. For state-of-practice hazard model building there are tools for catalogue homogenisation, declustering and completeness analysis, calculation of activity rates, computation of activity rates from geologic information, reconciliation of geological, seismological and geodetic information.<br/><br/>
+        <h2><img src="static/img/OQ-Suite-Explore.png" width="120px">Explore</h2>
+        Users will be able to develop customised risk maps, to use for improved risk awareness, understanding and decision-making.<br/><br/>
 
-                <h2><img src="static/img/OQ-Suite-Capture.png" width="120px">Capture</h2>
-                Users will capture new data both for their own use, as well as for inclusion in the global databases. There will be tools for capturing data on buildings, both from satellite imagery using remote sensing and through building-by-building observation with (mobile) field tools. Geologists can capture data on faults by drawing their features on a map and adding relevant attributes to the database.<br/><br/>
+        <h2><img src="static/img/OQ-Suite-Model.png" width="120px">Model</h2>
+        Users will be able to prepare data and develop PSHA-input models, exposure models, physical vulnerability models, and composite index models. For state-of-practice hazard model building there are tools for catalogue homogenisation, declustering and completeness analysis, calculation of activity rates, computation of activity rates from geologic information, reconciliation of geological, seismological and geodetic information.<br/><br/>
 
-                <br/><br>
-                <img src="static/img/OQ-header-Logo.png">
-                <br/>
-            </div>
-            <div class="btns">
-                <!-- Side bar for maps, layers, and some static maps sample images -->
-                <img src="static/img/OQ-logo-blue.png"><br/><br/>
-                <a class="btn btn-large" href="{% url "layer_browse" %}">
-                    {% trans "Explore Layers" %}
-                </a>
-                <a class="btn btn-large" href="{% url "maps_browse" %}">
-                    {% trans "Explore Maps" %}
-                </a>
-                <img src="static/img/OQ-screens.png" width="195px">
-            </div>
-        </div>
+        <h2><img src="static/img/OQ-Suite-Capture.png" width="120px">Capture</h2>
+        Users will capture new data both for their own use, as well as for inclusion in the global databases. There will be tools for capturing data on buildings, both from satellite imagery using remote sensing and through building-by-building observation with (mobile) field tools. Geologists can capture data on faults by drawing their features on a map and adding relevant attributes to the database.<br/><br/>
+
+        <br/><br>
+        <!-- Nice big OpenQuake logo here -->
+        <!-- calculate, share, explore -->
+        <img src="static/img/OQ-header-Logo.png">
+        <br/>
     </div>
-{% endblock hero %}
-{% endblock body_outer %}
+{% endblock oq_body_content %}
+{% block oq_body_sidebar %}
+    <div class="oq-btns">
+        <img src="static/img/OQ-logo-blue.png"><br/><br/>
+        <a class="btn btn-large" href="{% url "layer_browse" %}">
+            {% trans "Explore Layers" %}
+        </a>
+        <a class="btn btn-large" href="{% url "maps_browse" %}">
+            {% trans "Explore Maps" %}
+        </a>
+        <img src="static/img/OQ-screens.png" width="195px">
+    </div>
+{% endblock oq_body_sidebar %}
 
 {% block extra_script %}
     {{block.super}}

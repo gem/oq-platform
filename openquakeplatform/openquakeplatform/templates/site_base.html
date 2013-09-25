@@ -3,7 +3,7 @@
 {% block extra_head %}
     <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
-{% endblock %}
+{% endblock extra_head %}
 
 {% block extra-nav %}
 <li class="oqp-menu-item"><a href="{% url 'home' %}">Home</a></li>
@@ -15,8 +15,30 @@
 <li class="oqp-menu-item"><a href="{% url 'exposure' %}">Exposure</a></li>
 <li class="oqp-menu-item"><a href="{% url 'explore_leaflet' %}">JExplore</a></li>
 <li class="oqp-menu-item"><a href="{% url 'hazard_models' %}">Hazard</a></li>
-{% endblock %}
+{% endblock extra-nav %}
+
+{% block body_outer %}
+    <div class="oq-body-wrapper">
+        <div class="span12">
+            <div class="hero-unit">
+                <div class="oq-body-heading">
+                    {% block oq_body_heading %}
+                        <!-- If you want a page title/heading, put that here -->
+                    {% endblock oq_body_heading %}
+                </div>
+                <div class="oq-body-content">
+                    {% block oq_body_content %}
+                    {% endblock oq_body_content %}
+                </div>
+                <div class="oq-body-sidebar">
+                    {% block oq_body_sidebar %}
+                    {% endblock oq_body_sidebar %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body_outer %}
 
 {% block extra_script %}
     <!--  TODO: Probably need a bunch more deps here -->
-{% endblock %}
+{% endblock extra_script %}

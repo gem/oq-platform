@@ -272,11 +272,41 @@ footer.footer form label {
     color: #FFFFFF;
 }
 
-.hero-unit h1 {
-    color: #1B75A7;
-    font-size: 40px;
+.oq-btns {
+    margin-left: 25px;
 }
 
-.hero-unit {
-    background-color: #FFFFFF;
+.oq-btns .btn {
+    background: #f7931e;
+}
+
+.oq-btns a.btn-large {
+    font-size: 20px;
+    margin: 0 0 15px;
+    width: 160px;
+}
+
+.oq-body-content {
+    font-size: 18px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 200;
+    line-height: 27px;
+    color: #555555;
+}
+
+.oq-body-heading h1 {
+    color: #1B75A7;
+    font-size: 40px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+div.oq-body-content {
+    float: left;
+    width: 68%;
+}
+
+div.oq-body-sidebar {
+    float: right;
+    width: 30%;
 }
