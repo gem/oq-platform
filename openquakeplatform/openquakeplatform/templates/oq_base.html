@@ -39,6 +39,10 @@
     </div>
 {% endblock body_outer %}
 
+{% block footer %}
+    {{block.super}}
+{% endblock footer %}
+
 {% block extra_script %}
     <!--  TODO: Probably need a bunch more deps here -->
 {% endblock extra_script %}
