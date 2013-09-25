@@ -22,7 +22,8 @@ Ext.onReady(function() {
         portalConfig: {
             layout: "border",
             region: "center",
-            
+            renderTo: "my-central-div",
+
             // by configuring items here, we don't need to configure portalItems
             // and save a wrapping container
             items: [header, {
