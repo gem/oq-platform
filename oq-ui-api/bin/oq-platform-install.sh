@@ -20,7 +20,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="legend-no-scrollbar"
+export GEM_OQ_PLATF_GIT_VERS="master"
 
 export GEM_OQ_PLATF_SUBMODS=""
 
