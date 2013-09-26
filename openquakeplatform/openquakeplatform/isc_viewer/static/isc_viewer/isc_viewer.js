@@ -14,8 +14,7 @@ Ext.onReady(function() {
         });
 
 
-    app = new gxp.Viewer(
-      {
+    app = new gxp.Viewer({
         localGeoServerBaseUrl: "/geoserver/",
         authorizedRoles: "ROLE_ANONYMOUS",
 
@@ -51,7 +50,7 @@ Ext.onReady(function() {
                 // we will add buttons to "tree.bbar" later
                 tbar: [],
                 autoScroll: true,
-            },
+        },
             outputTarget: "westpanel"
         }, {
             ptype: "gxp_layerproperties",
