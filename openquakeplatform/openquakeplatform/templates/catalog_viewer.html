@@ -19,40 +19,21 @@
 
 {% block extra_head %}
 {{block.super}}
-
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="./favicon.ico">
-
-        <!-- Ext resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/ext-all.css">
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/xtheme-gray.css">
-        <script type="text/javascript" src="/static/geoexplorer/externals/ext/adapter/ext/ext-base.js"></script>
-        <script type="text/javascript" src="/static/geoexplorer/externals/ext/ext-all.js"></script>
-
-        <!-- OpenLayers resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/openlayers/theme/default/style.css">
-
-        <!-- GeoExt resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/popup.css">
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/layerlegend.css">
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
-
-        <!-- gxp resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/gxp/src/theme/all.css">
-
-
-        <!-- app resources -->
-        <link rel="stylesheet" type="text/css" href="/static/isc_viewer/style.css">
-
-        <script type="text/javascript" src="/static/geoexplorer/script/GeoExplorer.js"></script>
-        <script type="text/javascript" src="/static/isc_viewer/isc_viewer.js"></script>
-        <script>
-            Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
-            OpenLayers.ImgPath = "externals/openlayers/img/";
-        </script>
-{% endblock %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/ext/resources/css/ext-all.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/ext/resources/css/xtheme-gray.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/popup.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/layerlegend.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css">
+{% endblock extra_head %}
 
 {% block oq_body_content %}
   {{block.super}}
   <span id="showGrid"></span>
 {% endblock oq_body_content %}
+
+<!-- Override the `extra_script` block in child templates
+     to attach more JavaScript -->

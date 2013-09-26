@@ -18,3 +18,14 @@
     {{block.super}}
     <div id="footer"></div>
 {% endblock footer %}
+
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}geoexplorer/externals/ext/adapter/ext/ext-base.js"></script>
+    <script src="{{ STATIC_URL }}geoexplorer/externals/ext/ext-all.js"></script>
+    <script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer.js"></script>
+    <script>
+        Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
+        OpenLayers.ImgPath = "externals/openlayers/img/";
+    </script>
+{% endblock extra_script %}
