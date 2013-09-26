@@ -48,7 +48,7 @@ var startHazardModelApp = function() {
     hazard_map_japan_21_contour_land = L.tileLayer('http://tilestream.openquake.org/v2/hazard-map-japan-21-contour-land/{z}/{x}/{y}.png');
 
     hazard_map_japan_22_contour_land = L.tileLayer('http://tilestream.openquake.org/v2/hazard-map-japan-22-contour-land/{z}/{x}/{y}.png');
-      
+
     hazard_curve_Japan = L.tileLayer('http://tilestream.openquake.org/v2/hazard-curve-japan/{z}/{x}/{y}.png', {
         wax: 'http://tilestream.openquake.org/v2/hazard-curve-japan.json'
     });
@@ -84,7 +84,7 @@ var startHazardModelApp = function() {
         "Japan Hazard Curve - PGA - Land" : hazard_curve_Japan_land,
         "World Hazard Map - 10% in 50 years" : hazard_map,
         "World Hazard Map - 10% in 50 years - Contour" : hazard_contour,
-        "World Hazard Curve - PGA" : hazard_curve, 
+        "World Hazard Curve - PGA" : hazard_curve,
     };
 
     /***********
