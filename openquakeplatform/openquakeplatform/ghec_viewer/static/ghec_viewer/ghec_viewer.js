@@ -10,7 +10,7 @@ Ext.onReady(function() {
 
         var footer = new Ext.Panel({
             region: "south",
-            autoHeight: true,
+            height: 45,
             contentEl: 'footer'
         });
 
@@ -48,7 +48,9 @@ Ext.onReady(function() {
             outputConfig: {
                 id: "tree",
                 border: true,
-                tbar: [] // we will add buttons to "tree.bbar" later
+                // we will add buttons to "tree.bbar" later
+                tbar: [],
+                autoScroll: true,
             },
             outputTarget: "westpanel"
         }, {
