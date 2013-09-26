@@ -1,0 +1,6 @@
+{% extends "oq_base.html" %}
+
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}js/base_leaflet_app.js"></script>
+{% endblock extra_script %}
