@@ -9,7 +9,7 @@ div.navbar-fixed-top {
 }
 
 #header-wrapper {
-   height: 113px;
+    height: 108px;
 }
 
 .dropdown-backdrop {
@@ -225,28 +225,6 @@ nav.main-nav li:hover ul, li.over ul {
     font-weight: 700;
 }
 
-#submenu ul li .notyet {
-    opacity: 0.5;
-}
-
-#submenu ul li ul li .notyet {
-    opacity: 0.5;
-}
-
-#submenu ul li a .notyet {
-    opacity: 0.5;
-}
-
-#submenu ul li ul li a .notyet {
-    opacity: 0.5;
-}
-
-
-/* second level */
-#submenu ul li ul li {
-    z-index: 80100;
-}
-
 ul.social li a {
     margin-top: -5px;
 }
@@ -259,17 +237,26 @@ ul.social li a.gp {
     margin-top: -5px;
 }
 
-footer.footer {
+#oq-page-footer, footer.footer {
     background: #1B75A7;
     font-size: 12px;
-    position: relative;
+    position: fixed;
+    height: 45px;
+    bottom: 0;
+    padding-top: 0px;
     padding-left: 10%;
     padding-right: 10%;
     float: left;
     width: 80%;
 }
 
-footer.footer form label {
+footer.footer div.container {
+    /* Make the footer content align nicely, and not so close to the
+       top of the bar */
+    margin-top: 10px;
+}
+
+#oq-page-footer, footer.footer form label {
     color: #FFFFFF;
 }
 
@@ -310,4 +297,11 @@ div.oq-body-content {
 div.oq-body-sidebar {
     float: right;
     width: 30%;
+}
+
+/* Remove some unneeded padding and margins around
+   the element containing the main application map. */
+#oq-page-middle div.content-wrap {
+    margin-bottom: 0px;
+    padding-top: 0px;
 }
