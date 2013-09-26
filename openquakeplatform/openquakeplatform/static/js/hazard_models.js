@@ -104,16 +104,19 @@ var startHazardModelApp = function() {
     // Add Wax support
     L.wax(map);
 
-    //resize the main and map div
-    $(document).ready(function() {
-        $(window).resize(function(){
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height();
-            $('#main').css("height",main_height + "px");
-            $('#map').css("height",map_height + "px");
+    var mapFit = function() {
+        var headerHeight = $('#oq-page-header').height();
+        var footerHeight = $('#oq-page-footer').height();
+
+        var clientHeight = window.innerHeight;
+
+        // Resize the map so that everything fits on one page:
+        var mapHeight = (clientHeight - headerHeight - footerHeight) - 10;
+        $('#map').css("height", mapHeight + "px");
         map.invalidateSize(false);
-       });
-    });
+    };
+    $(document).ready(mapFit);
+    $(window).resize(mapFit);
 
     /*
      * Sliding side panel animation functions:
