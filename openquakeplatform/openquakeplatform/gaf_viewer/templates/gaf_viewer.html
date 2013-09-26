@@ -13,16 +13,18 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+{% extends 'extjs_base.html' %}
 
-{% extends 'oq_base.html' %}
+{% block title %}
+Global Faults Viewer - {{block.super}}
+{% endblock title %}
 
 {% block extra_head %}
 {{block.super}}
 
-        <title>Global Faults Viewer</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="./favicon.ico">
-        
+
         <!-- Ext resources -->
         <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/ext-all.css">
         <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/xtheme-gray.css">
@@ -39,7 +41,7 @@
 
         <!-- gxp resources -->
         <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/gxp/src/theme/all.css">
-        
+
 
         <!-- app resources -->
         <link rel="stylesheet" type="text/css" href="/static/css/style.css">
@@ -49,8 +51,8 @@
             Ext.BLANK_IMAGE_URL = "/static/img/blank.gif";
             OpenLayers.ImgPath = "externals/openlayers/img/";
         </script>
-{% endblock %}        
-
-{% block body_outer %}
-  <span id="showGrid"></span>
 {% endblock %}
+
+{% block oq_body_content %}
+  <span id="showGrid"></span>
+{% endblock oq_body_content %}
