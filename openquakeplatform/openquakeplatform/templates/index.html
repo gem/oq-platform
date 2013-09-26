@@ -1,12 +1,13 @@
 {% extends "oq_base.html" %}
 {% load i18n %}
-{% load maps_tags %}
-{% load layers_tags %}
-{% load pagination_tags %}
-{% load staticfiles %}
 {% load url from future %}
 
-{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
+
+{% block extra_head %}
+    {{block.super}}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+{% endblock extra_head %}
 
 {% block oq_body_heading %}
     <h1>{% trans "Welcome to OpenQuake" %}</h1>
