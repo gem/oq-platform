@@ -16,6 +16,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 {% extends 'catalog_viewer.html' %}
 
+{% block extra_head %}
+    {{block.super}}
+    <link rel="stylesheet" href="{{ STATIC_URL }}isc_viewer/style.css">
+{% endblock extra_head %}
+
 {% block title %}
 Instrumental Catalogue Viewer - {{block.super}}
 {% endblock title %}
+
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}isc_viewer/isc_viewer.js"></script>
+{% endblock extra_script %}
