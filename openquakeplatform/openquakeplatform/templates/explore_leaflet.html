@@ -1,92 +1,62 @@
-   <!--
-   Copyright (c) 2013, GEM Foundation.
+<!--
+Copyright (c) 2013, GEM Foundation.
 
-      This program is free software: you can redistribute it and/or modify
-      it under the terms of the GNU Affero General Public License as
-      published by the Free Software Foundation, either version 3 of the
-      License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-      This program is distributed in the hope that it will be useful,
-      but WITHOUT ANY WARRANTY; without even the implied warranty of
-      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-      GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-      You should have received a copy of the GNU Affero General Public License
-      along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "leaflet_base.html" %}
 
-  {% extends "oq_base.html" %}
-  {% load i18n %}
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
 
-  {% block title %} {% trans "Hazard Models" %} - {{ block.super }} {% endblock %}
-          
-  {% block extra_head %}
+{% block body_outer %}
+<div id="dialog-layers" title="Layer Options">
+    <form id="tile-form-list">
+        TileStream Layers:
+        <br>
+        <select id="tile-list"></select>
+        <br><br>
+        <input type="button" id="addTileLayer" value="Add Layer">
+        <input type="button" id="removeTileLayer" value="Remove Layer">
 
-  {{ block.super }}
-          
-    <!-- IE 8 Compatibility -->
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    </form>
+    <form>
+        <br>
+        Geoerver Layers:
+        <br>
+        <select id="geoserver-list"></select>
+        <br><br>
+        <input type="button" id="addGeoLayer" value="Add Layer">
+        <input type="button" id="removeGeoLayer" value="Remove Layer">
+    </form>
+</div>
 
-    <!-- jquery -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/exposure-legend.css" media="screen" />
+<div id="layer-selection">
+    <input id="layer-selection" type="button" value="Layers"/>
+</div>
 
-          
-    <!-- Google resources -->
-    <script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
+<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
+    <p>This layer has already been added to the map</p>
+</div>
 
-    <!-- leaflet resources -->
-    <link rel="stylesheet" href="/static/Leaflet/dist/leaflet.css" />
-    <script type="text/javascript" src="/static/Leaflet/dist/leaflet.js"></script>
-    
-    <!-- wax resources -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/wax-controls.css" media="screen" >
-    <script type='text/javascript' src='/static/L.Wax/L.Wax.js'></script>
-    <script type="text/javascript" src="/static/wax/dist/wax.leaf.min.js"></script>
-    <script type='text/javascript' src='/static/wax/ext/modestmaps.min.js'></script>
-    <script type='text/javascript' src='/static/wax/dist/wax.mm.js'></script>
+<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+    <p>This layer in not loaded in the map</p>
+</div>
+{{block.super}}
+{% endblock %}
 
-    <!-- application -->
-    <script type="text/javascript" src="/static/js/explore_leaflet.js"></script>
-
-  {% endblock %}
-
-  {% block body_outer %}
-
-    <div id="dialog-layers" title="Layer Options">
-        <form id="tile-form-list">
-            TileStream Layers:
-            <br>
-            <select id="tile-list"></select>
-            <br><br>
-            <input type="button" id="addTileLayer" value="Add Layer">
-            <input type="button" id="removeTileLayer" value="Remove Layer">
-            
-        </form>
-        <form>
-            <br>
-            Geoerver Layers:
-            <br>
-            <select id="geoserver-list"></select>
-            <br><br>
-            <input type="button" id="addGeoLayer" value="Add Layer">
-            <input type="button" id="removeGeoLayer" value="Remove Layer">
-        </form>
-    </div> 
-
-    <div id="layer-selection">
-        <input id="layer-selection" type="button" value="Layers"/>
-    </div>
-
-    <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
-        <p>This layer has already been added to the map</p>
-    </div> 
-
-    <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
-        <p>This layer in not loaded in the map</p>
-    </div> 
- 
-
-      <div id="map" style="width: 100%;"></div>
-  {% endblock %}
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}js/explore_leaflet.js"></script>
+{% endblock extra_script %}
