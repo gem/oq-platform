@@ -68,11 +68,10 @@ var startCallback = function() {
         "World Hazard Curve - PGA" : hazard_curve,
     };
 
-    app._createMap();
-    L.control.layers(app.baseLayers, overlays).addTo(app.map);
-
-    // Add Wax support
-    L.wax(app.map);
+    // Init the map and add layers and interaction
+    app.createMap();
+    L.control.layers(app.baseLayers, overlays).addTo(map);
+    L.wax(map);
 
     /*
      * Sliding side panel animation functions:
