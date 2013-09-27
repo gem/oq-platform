@@ -304,4 +304,7 @@ div.oq-body-sidebar {
 #oq-page-middle div.content-wrap {
     margin-bottom: 0px;
     padding-top: 0px;
+    margin-left: 32px;
+    margin-right: 32px;
+    width: auto;
 }
