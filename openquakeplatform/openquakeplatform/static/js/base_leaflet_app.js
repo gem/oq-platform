@@ -19,13 +19,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
  * @baseMapUrl - Tilestream url (with any of the s/x/y/z tokens) for the
                  base layer.
  */
+// NOTE: there is global `map` var that needs to be intialized
+// with a Leaflet map. If it's not global, wax interaction won't work.
+
 var OQLeaflet = {
     OQLeafletApp: (function() {
         var OQLeafletApp = function(baseMapUrl) {
             this.MAX_ZOOM_LEVEL = 16;
             this.baseMapUrl = baseMapUrl;
             this.baseLayers = null;
-            this.map = null;
         };
         OQLeafletApp.prototype._mapFit = function() {
             var headerHeight = $('#oq-page-header').height();
@@ -44,7 +46,7 @@ var OQLeaflet = {
                                              {subdomains: ['a', 'b', 'c', 'd'],
                                               noWrap: true})
             };
-            this.map = L.map('map', {
+            map = L.map('map', {
                 center: [20, 20],
                 zoom: 3,
                 maxZoom: this.MAX_ZOOM_LEVEL,
