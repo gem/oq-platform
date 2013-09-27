@@ -31,10 +31,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 {% block extra_script %}
     {{block.super}}
-    <script src="{{ STATIC_URL }}js/base_leaflet_app.js"></script>
     <script src="{{ STATIC_URL }}Leaflet/dist/leaflet.js"></script>
     <script src="{{ STATIC_URL }}L.Wax/L.Wax.js"></script>
     <script src="{{ STATIC_URL }}wax/dist/wax.leaf.min.js"></script>
     <script src="{{ STATIC_URL }}wax/ext/modestmaps.min.js"></script>
     <script src="{{ STATIC_URL }}wax/dist/wax.mm.js"></script>
+    <script src="{{ STATIC_URL }}js/base_leaflet_app.js"></script>
 {% endblock extra_script %}
