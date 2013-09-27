@@ -37,7 +37,7 @@ var OQLeaflet = {
             var clientHeight = window.innerHeight;
 
             // Resize the map so that everything fits on one page:
-            var mapHeight = (clientHeight - headerHeight - footerHeight) - 10;
+            var mapHeight = (clientHeight - headerHeight - footerHeight);
             $('#map').css("height", mapHeight + "px");
             // this.map.invalidateSize(false);
         };
