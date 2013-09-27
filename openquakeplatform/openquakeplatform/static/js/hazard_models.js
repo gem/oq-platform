@@ -20,7 +20,7 @@ var baseMapUrl = (
 );
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
-var startCallback = function() {
+var startApp = function() {
 
     /******************
      * Overlay layers *
@@ -102,4 +102,4 @@ var startCallback = function() {
     $(document).ready(legendSlidingPanel);
 };
 
-app.initialize(startCallback);
+app.initialize(startApp);
