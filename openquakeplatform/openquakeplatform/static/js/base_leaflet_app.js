@@ -15,8 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-// NOTE: there is global `map` var that needs to be intialized
-// with a Leaflet map. If it's not global, wax interaction won't work.
+// NOTE: This `map` var needs to be in global scope
+// for stuff like wax interaction to work.
+var map;
 
 var OQLeaflet = {
     OQLeafletApp: (function() {
