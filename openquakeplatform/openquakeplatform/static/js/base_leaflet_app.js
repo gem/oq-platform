@@ -15,21 +15,21 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-/**
- * @baseMapUrl - Tilestream url (with any of the s/x/y/z tokens) for the
-                 base layer.
- */
 // NOTE: there is global `map` var that needs to be intialized
 // with a Leaflet map. If it's not global, wax interaction won't work.
 
 var OQLeaflet = {
     OQLeafletApp: (function() {
+        /**
+         * @baseMapUrl - Tilestream url (with any of the s/x/y/z tokens) for
+         * the base layer.
+         */
         var OQLeafletApp = function(baseMapUrl) {
             this.MAX_ZOOM_LEVEL = 16;
             this.baseMapUrl = baseMapUrl;
             this.baseLayers = null;
         };
-        OQLeafletApp.prototype._mapFit = function() {
+        OQLeafletApp.prototype.mapFit = function() {
             var headerHeight = $('#oq-page-header').height();
             var footerHeight = $('#oq-page-footer').height();
 
@@ -40,7 +40,7 @@ var OQLeaflet = {
             $('#map').css("height", mapHeight + "px");
             // this.map.invalidateSize(false);
         };
-        OQLeafletApp.prototype._createMap = function() {
+        OQLeafletApp.prototype.createMap = function() {
             this.baseLayers = {
                 'Base Map' : new L.TileLayer(this.baseMapUrl,
                                              {subdomains: ['a', 'b', 'c', 'd'],
@@ -59,8 +59,8 @@ var OQLeaflet = {
 
             // Hook map sizing, so the map and the rest of the UI still looks
             // good if the browser window is resized.
-            $(document).ready(this._mapFit);
-            $(window).resize(this._mapFit);
+            $(document).ready(this.mapFit);
+            $(window).resize(this.mapFit);
 
             // Finally, start the app once the page is fully loaded.
             $(document).ready(startFunc);
