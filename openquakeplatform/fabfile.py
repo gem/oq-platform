@@ -339,7 +339,7 @@ def _load_styles(app_name):
     styles_dir = 'gs_data/%s/styles' % app_name
     styles_files = _collect(styles_dir)
     for style in styles_files:
-        sld = os.path.split(style,"xml")[0]+".sld"
+        sld = os.path.splitext(style)[0]+".sld"
         # XML first:
         _geoserver_api_from_file(
             'styles.xml',
