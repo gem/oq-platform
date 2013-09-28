@@ -83,7 +83,7 @@ def setup_geoserver(options):
         geoserver_dir.makedirs()
 
         webapp_dir = geoserver_dir / 'geoserver'
-        if not webapp_dir:
+        if not webapp_dir.exists():
             webapp_dir.makedirs()
 
         print 'extracting geoserver'
