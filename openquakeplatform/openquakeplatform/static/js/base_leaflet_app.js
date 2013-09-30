@@ -33,11 +33,13 @@ var OQLeaflet = {
         OQLeafletApp.prototype.mapFit = function() {
             var headerHeight = $('#oq-page-header').height();
             var footerHeight = $('#oq-page-footer').height();
+            var ribbonHeight = $('#oq-context-ribbon').height();
 
             var clientHeight = window.innerHeight;
 
             // Resize the map so that everything fits on one page:
-            var mapHeight = (clientHeight - headerHeight - footerHeight);
+            var mapHeight = (clientHeight - headerHeight - footerHeight
+                             - ribbonHeight);
             $('#map').css("height", mapHeight + "px");
             // this.map.invalidateSize(false);
         };
