@@ -52,9 +52,6 @@ h2 {
 }
 
 .navbar-inner {
-    /* Why red? */
-    background-color: red;
-    /* Not sure if this is correct: */
     background-image: none;
     border: 1px solid #002029;
 }
