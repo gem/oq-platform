@@ -69,5 +69,5 @@ var OQLeaflet = {
             $(document).ready(startFunc);
         };
         return OQLeafletApp;
-    })(),
+    })()
 };
