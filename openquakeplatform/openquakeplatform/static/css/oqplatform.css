@@ -271,7 +271,7 @@ footer.footer div.container {
     width: 160px;
 }
 
-.oq-body-content {
+#oq-body-content {
     font-size: 18px;
     font-family: 'Lato', sans-serif;
     font-weight: 200;
@@ -279,19 +279,19 @@ footer.footer div.container {
     color: #555555;
 }
 
-.oq-body-heading h1 {
+#oq-body-heading h1 {
     color: #1B75A7;
     font-size: 40px;
     text-transform: uppercase;
     font-weight: 300;
 }
 
-div.oq-body-content {
+#oq-body-content {
     float: left;
     width: 68%;
 }
 
-div.oq-body-sidebar {
+#oq-body-sidebar {
     float: right;
     width: 30%;
 }
