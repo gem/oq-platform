@@ -15,60 +15,24 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var MAX_ZOOM_LEVEL = 16;
-var map;
 var layerControl;
 // Keep track of the layer names
 var layers;
 
-var startExploreApp = function() {
+var baseMapUrl = (
+    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
+);
+
+var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+
+var startApp = function() {
+
+    app.createMap();
+    L.wax(map);
 
     layers = {};
 
-    /***************
-     * Base layers *
-     ***************/
-    var GEM_base = new L.tileLayer("http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png",
-                                   {subdomains: ['a', 'b', 'c', 'd'], noWrap: true});
-
-    var baselayer = {
-        'Base Map' : GEM_base
-    };
-
-    layerControl = L.control.layers(baselayer);
-
-    /***********
-     * The map *
-     ***********/
-    map = L.map('map', {
-        center: [20, 20],
-        zoom: 3,
-        maxZoom: MAX_ZOOM_LEVEL,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -185), new L.LatLng(90, 185)),
-        layers: [GEM_base],
-        attributionControl: false,
-    });
-
-    // Add Wax support
-    L.wax(map);
-
-    // Resize the main and map div
-    var mapFit = function() {
-        var main_height = $(window).height()
-                        - $("#header-wrapper").height()
-                        - $("#footer").height();
-       var map_height = $(window).height()
-                        - $("#header-wrapper").height()
-                        - $("#footer").height()
-                        - $("#tooltip").height();
- 
-       $('#main').css("height", main_height + "px");
-       $('#map').css("height", map_height + "px");
-       map.invalidateSize(false);
-    };
-
-    $(document).ready(mapFit);
-    $(window).resize(mapFit);
+    layerControl = L.control.layers(app.baseLayers);
 
     // Layer selection dialog
     $("#dialog-layers").dialog({
@@ -134,12 +98,12 @@ var startExploreApp = function() {
             var selectedLayer = e.options[e.selectedIndex].value;
             // Check for duplicae layes
             if (selectedLayer in layers) {
-               showDuplicateMsg(); 
+               showDuplicateMsg();
             }
             else {
-                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
-                    + selectedLayer 
-                    + '/{z}/{x}/{y}.png',{opacity: 0.8}); 
+                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/'
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.png',{opacity: 0.8});
                 layerControl.addOverlay(tileLayer, selectedLayer);
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
@@ -197,8 +161,8 @@ var startExploreApp = function() {
             }
             else {
                 var geoLayer = new L.TileLayer.WMS('/geoserver/wms', {
-                    layers : selectedLayer, 
-                    format: 'image/png', 
+                    layers : selectedLayer,
+                    format: 'image/png',
                     transparent: true
                 });
                 layerControl.addOverlay(geoLayer, selectedLayer);
@@ -221,10 +185,10 @@ var startExploreApp = function() {
                  delete layers[selectedLayer];
              }
              else {
-                 showRemoveMsg();                                                     
+                 showRemoveMsg();
              }
         });
     });
 };
 
-$(document).ready(startExploreApp);
+app.initialize(startApp);

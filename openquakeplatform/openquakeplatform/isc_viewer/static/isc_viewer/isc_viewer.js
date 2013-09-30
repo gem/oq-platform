@@ -9,20 +9,19 @@ Ext.onReady(function() {
 
         var footer = new Ext.Panel({
             region: "south",
-            autoHeight: true,
+            height: 45,
             contentEl: 'footer'
         });
 
 
-    app = new gxp.Viewer(
-      {
+    app = new gxp.Viewer({
         localGeoServerBaseUrl: "/geoserver/",
         authorizedRoles: "ROLE_ANONYMOUS",
 
         portalConfig: {
             layout: "border",
             region: "center",
-            
+
             // by configuring items here, we don't need to configure portalItems
             // and save a wrapping container
             items: [header, {
@@ -41,15 +40,17 @@ Ext.onReady(function() {
             }, footer],
             bbar: {id: "mybbar"}
         },
-        
+
         // configuration of all tool plugins for this application
         tools: [{
             ptype: "gxp_layertree",
             outputConfig: {
                 id: "tree",
                 border: true,
-                tbar: [] // we will add buttons to "tree.bbar" later
-            },
+                // we will add buttons to "tree.bbar" later
+                tbar: [],
+                autoScroll: true,
+        },
             outputTarget: "westpanel"
         }, {
             ptype: "gxp_layerproperties",
@@ -60,7 +61,7 @@ Ext.onReady(function() {
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "tree.tbar",
-            format: "grid", 
+            format: "grid",
             outputConfig: {
                 width: 400
             }
@@ -80,7 +81,7 @@ Ext.onReady(function() {
             ptype: "gxp_navigationhistory",
             actionTarget: "map.tbar"
         }],
-        
+
         // layer sources
         sources: {
             local: {
@@ -95,7 +96,7 @@ Ext.onReady(function() {
                 ptype: "gxp_googlesource"
             }
         },
-        
+
         // map and layers
         map: {
             id: "mymap", // id needed to reference map in portalConfig above
