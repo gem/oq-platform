@@ -43,3 +43,7 @@
     min-width: 192px;
     width: 20%;
 }
+
+.oq-context-control {
+    margin-left: 5px;
+}
