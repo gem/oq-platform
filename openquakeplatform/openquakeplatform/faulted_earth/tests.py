@@ -101,6 +101,9 @@ class FaultSourceAutoComputedTest(TestCase):
         self.assertEqual(2, fault.all_com)
 
     def test_create_faultsource(self):
+        self.skipTest(
+            "because https://bugs.launchpad.net/oq-platform/+bug/1221921"
+        )
         self._join_traces()
         fault = self._populate_fault(self._join_fault_sections())
         ret = utils.create_faultsource(fault)

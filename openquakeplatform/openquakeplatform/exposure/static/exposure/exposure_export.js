@@ -2,11 +2,9 @@
 var latlonTopLeft;
 var latlonBottomRight;
 
-var map;
 var drawnItems;
 var drawControl;
 
-var MAX_ZOOM_LEVEL = 16;
 var DRAW_TOOL_COLOR = '#FFA54F';
 
 var AJAX_SPINNER = '/static/img/ajax-loader.gif';
@@ -22,7 +20,12 @@ var objToUrlParams = function(obj) {
     return url;
 };
 
-var startExposureApp = function() {
+var baseMapUrl = (
+    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
+);
+var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+
+var startApp = function() {
     drawnItems = new L.LayerGroup();
     // draw tool
     drawControl = new L.Control.Draw({
@@ -37,16 +40,6 @@ var startExposureApp = function() {
 
     // Leaflet popup for the map-interactive export function
     var exportPopup;
-
-    /***************
-     * Base layers *
-     ***************/
-    var GEM_base = new L.tileLayer("http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png",
-                                   {subdomains: ['a', 'b', 'c', 'd'], noWrap: true});
-
-    var baselayer = {
-        'Base Map' : GEM_base
-    };
 
     /******************
      * Overlay layers *
@@ -69,20 +62,9 @@ var startExposureApp = function() {
         "GRUMP Rural" : grump_rural,
     };
 
-    /***********
-     * The map *
-     ***********/
-    map = L.map('map', {
-        center: [20, 20],
-        zoom: 3,
-        maxZoom: MAX_ZOOM_LEVEL,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -185), new L.LatLng(90, 185)),
-        layers: [GEM_base],
-        attributionControl: false,
-    });
-
+    app.createMap();
     map.addLayer(drawnItems);
-    L.control.layers(baselayer, overlays).addTo(map);
+    L.control.layers(app.baseLayers, overlays).addTo(map);
     map.addControl(drawControl);
 
     // Add Wax support
@@ -93,21 +75,6 @@ var startExposureApp = function() {
         labelTemplateLng: "Longitude: {x}",
         enableUserInput: false,
     }).addTo(map);
-
-    //resize the main and map div
-    var mapFit = function() {
-        var main_height = $(window).height()
-                          - $("#header-wrapper").height()
-                          - $("#footer").height();
-        var map_height = $(window).height()
-                         - $("#header-wrapper").height()
-                         - $("#footer").height()
-                         - $("#tooltip").height();
-
-        $('#main').css("height", main_height + "px");
-        $('#map').css("height", map_height + "px");
-        map.invalidateSize(false);
-    };
 
     /*
      * Sliding side panel animation functions:
@@ -158,9 +125,6 @@ var startExposureApp = function() {
             }
         );
     };
-
-    $(document).ready(mapFit);
-    $(window).resize(mapFit);
 
     $(document).ready(dwellingFractionSlidingPanel);
     $(document).ready(legendSlidingPanel);
@@ -607,4 +571,4 @@ var startExposureApp = function() {
     }
 };
 
-$(document).ready(startExposureApp);
+app.initialize(startApp);

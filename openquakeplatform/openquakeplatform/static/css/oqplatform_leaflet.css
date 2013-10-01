@@ -1,0 +1,43 @@
+#oq-page-middle {
+    background: #555555;
+}
+
+.navbar .navbar-inner {
+    padding-right: 20px;
+}
+
+#oq-context-ribbon {
+    height: 36px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#oq-page-middle div.content-wrap div.container
+{
+    width: 100%;
+}
+
+#oq-body-wrapper div.span12 {
+    width: 100%;
+    margin-left: 0px;
+}
+
+.hero-unit {
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+
+}
+
+#oq-body-content {
+    float: right;
+    width: 100%;
+}
+
+#oq-body-sidebar {
+    /* Make this visible to add a layer nav tree to the left
+       side of the map */
+    float: left;
+    width: 0%;
+}

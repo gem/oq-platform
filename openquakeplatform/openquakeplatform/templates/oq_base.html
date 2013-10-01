@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% endblock title %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+{% endblock extra_head %}
+
+{% block header %}
+    <div id="oq-page-header">
+    {{block.super}}
+    </div>
+{% endblock header %}
+
+{% block extra-nav %}
+<li class="oqp-menu-item"><a href="{% url 'home' %}">Home</a></li>
+<li class="oqp-menu-item"><a href="{% url 'isc_viewer' %}">ISC</a></li>
+<li class="oqp-menu-item"><a href="{% url 'ghec_viewer' %}">GHEC</a></li>
+<li class="oqp-menu-item"><a href="{% url 'geodetic' %}">Geodetic</a></li>
+<li class="oqp-menu-item"><a href="{% url 'gaf_viewer' %}">GAF</a></li>
+<li class="oqp-menu-item"><a href="{% url 'faulted_earth' %}">FE</a></li>
+<li class="oqp-menu-item"><a href="{% url 'exposure' %}">Exposure</a></li>
+<li class="oqp-menu-item"><a href="{% url 'explore_leaflet' %}">JExplore</a></li>
+<li class="oqp-menu-item"><a href="{% url 'hazard_models' %}">Hazard</a></li>
+{% endblock extra-nav %}
+
+{% block middle %}
+    <div id="oq-page-middle">
+    {{block.super}}
+    </div>
+{% endblock middle %}
+
+{% block body_outer %}
+    <div id="oq-body-wrapper">
+        <div class="span12">
+            <div class="hero-unit">
+                <div id="oq-context-ribbon">
+                    {% block oq_context_ribbon %}
+                        <!-- Subtemplates can add context-sensitive components to the page-->
+                    {% endblock oq_context_ribbon %}
+                </div>
+                <div id="oq-body-heading">
+                    {% block oq_body_heading %}
+                        <!-- If you want a page title/heading, put that here -->
+                    {% endblock oq_body_heading %}
+                </div>
+                <div id="oq-body-content">
+                    {% block oq_body_content %}
+                    {% endblock oq_body_content %}
+                </div>
+                <div id="oq-body-sidebar">
+                    {% block oq_body_sidebar %}
+                    {% endblock oq_body_sidebar %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body_outer %}
+
+{% block footer %}
+    <div id="oq-page-footer">
+    {{block.super}}
+    </div>
+{% endblock footer %}
+
+{% block extra_script %}
+    <!--  Override this in child templates to include additional javascript code -->
+{% endblock extra_script %}

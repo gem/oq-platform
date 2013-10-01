@@ -1,75 +1,37 @@
-  <!--
- Copyright (c) 2010-2013, GEM Foundation.
+<!--
+Copyright (c) 2010-2013, GEM Foundation.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
 
-{% extends "site_base.html" %}
-{% load i18n %}
+{% extends "leaflet_base.html" %}
 
-{% block title %} {% trans "Exposure Export" %} - {{ block.super }} {% endblock %}
-{% block indexclass %} class="here" {% endblock %}
+{% block title %}
+Exposure Export {{ block.super }}
+{% endblock title %}
 
 {% block extra_head %}
-{{block.super}}
-
-    <script type="text/javascript">
-    // URL params, captured and rendered to the template:
-    var URL_PARAMS = {};
-    {% for k, v in request.GET.iteritems %}
-    URL_PARAMS.{{ k }} = "{{ v }}";
-    {% endfor %}
-    </script>
-
-    <!-- IE 8 Compatibility -->
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"></meta>
-
-    <!-- jquery -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-
-    <script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
-
-
-    <!-- leaflet -->
-    <script type="text/javascript" src="/static/Leaflet/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="/static/Leaflet/dist/leaflet.css" />
-
-    <!-- leaflet plug-ins -->
-    <script src="/static/Leaflet.draw/dist/leaflet.draw.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/leaflet.draw.css" media="screen" >
-    <script src="/static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
-
-    <!-- wax -->
-    <script type='text/javascript' src='/static/L.Wax/L.Wax.js'></script>
-    <script type="text/javascript" src="/static/wax/dist/wax.leaf.min.js"></script>
-    <script type='text/javascript' src='/static/wax/ext/modestmaps.min.js'></script>
-    <script type='text/javascript' src='/static/wax/dist/wax.mm.js'></script>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/wax-controls.css" media="screen" >
-
-    <!-- custom styling for the exposure tool -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/exposure-legend.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exposure/exposure-export.css" media="screen" />
-
-    <!-- Exposure tool-specifc code -->
-    <script type="text/javascript" src="/static/exposure/exposure_export.js"></script>
-
-{% endblock %}
+    {{block.super}}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.draw.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
+{% endblock extra_head %}
 
 {% block body_outer %}
+{{block.super}}
 <div id="sidePanel-leg">
   <div id="panelContent-leg">
     <div class="map-legend-urban">
@@ -234,7 +196,7 @@
       <span>
         <strong>Exposure Export Tool</strong><br />
 <p>Begin by zooming in to an area of interest.</p>
-<p>Activate the selection tool <img src="{{ STATIC_URL }}/Leaflet.draw/dist/images/draw-rectangle.png"> and pull a box on the map over the area of interest.</p>
+<p>Activate the selection tool <img src="{{ STATIC_URL }}img/draw-rectangle.png"> and pull a box on the map over the area of interest.</p>
 <p>Make selections from the following dialog boxes to download data.</p>
         <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information, first activate one of the dwelling fraction layers from the layer menu.<br><img src="/static/Leaflet/dist/images/layers.png"></p>
 <p>Next, hover the mouse over the area of interest and view the pie chart popup.</p>
@@ -245,9 +207,20 @@
 
 <!-- Placeholder div for holding/displaying error messages/dialogs -->
 <div id="error-dialog"></div>
+{% endblock body_outer %}
 
-<!-- main map div -->
-<div id="map" style="width: 100%;"></div>
-<span id="showGrid"></span>
-{% endblock %}
 
+{% block extra_script %}
+    {{block.super}}
+    <script>
+    // URL params, captured and rendered to the template:
+    var URL_PARAMS = {};
+    {% for k, v in request.GET.iteritems %}
+    URL_PARAMS.{{ k }} = "{{ v }}";
+    {% endfor %}
+    </script>
+
+    <script src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
+    <script src="/static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
+    <script type="text/javascript" src="/static/exposure/exposure_export.js"></script>
+{% endblock extra_script %}

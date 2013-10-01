@@ -13,57 +13,32 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>. -->
-{% extends 'site_base.html' %}
-{% load i18n %}
+{% extends 'extjs_base.html' %}
+
+{% block title %}
+Faulted Earth - {{block.super}}
+{% endblock title %}
 
 {% block extra_head %}
-{{block.super}}
+    {{block.super}}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/fileuploadfield.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+{% endblock extra_head %}
 
-        <title>Faulted Earth</title>
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer-debug.js"></script>
 
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="shortcut icon" href="./favicon.ico">
-        
-        <!-- Ext resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/ext-all.css">
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/ext/resources/css/xtheme-gray.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/fileuploadfield.css">
-        <script type="text/javascript" src="/static/geoexplorer/externals/ext/adapter/ext/ext-base.js"></script>
-        <script type="text/javascript" src="/static/geoexplorer/externals/ext/ext-all.js"></script>
-
-        <!-- OpenLayers resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/openlayers/theme/default/style.css">
-
-        <!-- GeoExt resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/popup.css">
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/layerlegend.css">
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
-
-        <!-- gxp resources -->
-        <link rel="stylesheet" type="text/css" href="/static/geoexplorer/externals/gxp/src/theme/all.css">
-        
-
-        <!-- app resources -->
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-        <!-- google stuff -->
-        <script src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
-
-        <script type="text/javascript" src="/static/geoexplorer/script/GeoExplorer-debug.js"></script>
-
-        <script type="text/javascript" src="/static/faulted_earth/models.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/validation.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/help.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/FeatureGrid.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/FeatureEditPopup.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/ObservationFeatureEditor.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/SiteForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/TraceForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/SummaryForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/FaultForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/SourceForm.js"></script>
-        <script type="text/javascript" src="/static/faulted_earth/faulted_earth.js"></script>
-{% endblock %}        
-
-{% block body_outer %}
-  <span id="showGrid"></span>
-{% endblock %}
+    <script src="{{ STATIC_URL }}faulted_earth/models.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/validation.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/help.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/FeatureGrid.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/FeatureEditPopup.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/ObservationFeatureEditor.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/SiteForm.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/TraceForm.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/SummaryForm.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/FaultForm.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/SourceForm.js"></script>
+    <script src="{{ STATIC_URL }}faulted_earth/faulted_earth.js"></script>
+{% endblock extra_script %}
