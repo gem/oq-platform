@@ -32,12 +32,31 @@
 
 #oq-body-content {
     float: right;
-    width: 100%;
+    width: 79%;
+    min-width: 648px;
 }
 
 #oq-body-sidebar {
     /* Make this visible to add a layer nav tree to the left
        side of the map */
     float: left;
-    width: 0%;
+    min-width: 192px;
+    width: 20%;
+    border:2px solid #CCCCCC;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+#oq-layer-tree {
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+input.oq-layer-tree-node {
+    margin-top: 0px;
+    margin-right: 5px;
+}
+
+.oq-context-control {
+    margin-left: 5px;
 }

@@ -16,6 +16,7 @@
 
 {% block extra-nav %}
 <li class="oqp-menu-item"><a href="{% url 'home' %}">Home</a></li>
+<li class="oqp-menu-item"><a href="{% url 'calculate' %}">Calculate</a></li>
 <li class="oqp-menu-item"><a href="{% url 'isc_viewer' %}">ISC</a></li>
 <li class="oqp-menu-item"><a href="{% url 'ghec_viewer' %}">GHEC</a></li>
 <li class="oqp-menu-item"><a href="{% url 'geodetic' %}">Geodetic</a></li>
@@ -46,13 +47,13 @@
                         <!-- If you want a page title/heading, put that here -->
                     {% endblock oq_body_heading %}
                 </div>
-                <div id="oq-body-content">
-                    {% block oq_body_content %}
-                    {% endblock oq_body_content %}
-                </div>
                 <div id="oq-body-sidebar">
                     {% block oq_body_sidebar %}
                     {% endblock oq_body_sidebar %}
+                </div>
+                <div id="oq-body-content">
+                    {% block oq_body_content %}
+                    {% endblock oq_body_content %}
                 </div>
             </div>
         </div>

@@ -47,6 +47,8 @@ urlpatterns = patterns(
         template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', TemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
+    url(r'^calculate/$', TemplateView.as_view(
+        template_name="calculate.html"), name="calculate"),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),

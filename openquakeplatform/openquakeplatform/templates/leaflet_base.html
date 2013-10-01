@@ -30,6 +30,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <div id="map"></div>
 {% endblock oq_body_content %}
 
+{% block oq_body_sidebar %}
+    {{block.super}}
+    <div id="oq-layer-tree">
+        <!-- Populate with
+            <input class="oq-layer-tree-node" type="checkbox" />Item name<br />
+        -->
+
+    </div>
+{% endblock oq_body_sidebar %}
+
 {% block extra_script %}
     {{block.super}}
     <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
