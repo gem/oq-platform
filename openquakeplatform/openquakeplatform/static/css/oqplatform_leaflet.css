@@ -42,6 +42,19 @@
     float: left;
     min-width: 192px;
     width: 20%;
+    border:2px solid #CCCCCC;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+#oq-layer-tree {
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+input.oq-layer-tree-node {
+    margin-top: 0px;
+    margin-right: 5px;
 }
 
 .oq-context-control {
