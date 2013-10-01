@@ -15,6 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var BASE_MAP_URL = (
+    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
+);
 // NOTE: This `map` var needs to be in global scope
 // for stuff like wax interaction to work.
 var map;
@@ -31,17 +34,25 @@ var OQLeaflet = {
             this.baseLayers = null;
         };
         OQLeafletApp.prototype.mapFit = function() {
+            // Calculate the height:
             var headerHeight = $('#oq-page-header').height();
             var footerHeight = $('#oq-page-footer').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
-
-            var clientHeight = window.innerHeight;
+            var mapHeight = (window.innerHeight - headerHeight - footerHeight
+                             - ribbonHeight);
 
             // Resize the map so that everything fits on one page:
-            var mapHeight = (clientHeight - headerHeight - footerHeight
+            $('#map').height(mapHeight);
+        };
+        OQLeafletApp.prototype.sidebarFit = function() {
+            // Calculate the height:
+            var headerHeight = $('#oq-page-header').height();
+            var footerHeight = $('#oq-page-footer').height();
+            var ribbonHeight = $('#oq-context-ribbon').height();
+            var barHeight = (window.innerHeight - headerHeight - footerHeight
                              - ribbonHeight);
-            $('#map').css("height", mapHeight + "px");
-            // this.map.invalidateSize(false);
+
+            $('#oq-body-sidebar').height(barHeight);
         };
         OQLeafletApp.prototype.createMap = function() {
             this.baseLayers = {
@@ -60,10 +71,12 @@ var OQLeaflet = {
         };
         OQLeafletApp.prototype.initialize = function(startFunc) {
 
-            // Hook map sizing, so the map and the rest of the UI still looks
-            // good if the browser window is resized.
+            // Hook map and sidebar sizing, so the map and the rest of the UI
+            // still looks good if the browser window is resized.
             $(document).ready(this.mapFit);
             $(window).resize(this.mapFit);
+            $(document).ready(this.sidebarFit);
+            $(window).resize(this.sidebarFit);
 
             // Finally, start the app once the page is fully loaded.
             $(document).ready(startFunc);
