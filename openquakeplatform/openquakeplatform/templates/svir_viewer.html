@@ -22,35 +22,10 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 
-<div id="dialog-layers" title="Layer Selection">
-    <form id="tile-form-list">
-        <br>
-        Category:<br> <select id="layer-category"></select>
-        <br>
-        Indicator:<br> <select id="layer-list"></select>
-        <br>
-        <input type="button" id="addTileLayer" value="Add Layer">
-        <input type="button" id="removeTileLayer" value="Remove Layer">
-    </form>
-</div>
 
-<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
-    <p>This layer has already been added to the map</p>
-</div>
 
-<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
-    <p>This layer in not loaded in the map</p>
-</div>
 
-<div id="dialog-datagrid" style="height: 250px; width: 100%; overflow: scroll;"><table id="svir-table">
-    <thead id="tablehead"><tr><th>Country</th><th>Index Value</th></tr></thead>
-    <tbody id="tableBody">
-        <tr><td>
-        </td></tr>
-    </tbody>
-</table>
-</div>
-
+<div id="click"></div>
 
 {{block.super}}
 {% endblock %}
