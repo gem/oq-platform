@@ -15,10 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var baseMapUrl = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
-);
-var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
 
 var startApp = function() {
     app.createMap();

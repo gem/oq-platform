@@ -20,10 +20,7 @@ var objToUrlParams = function(obj) {
     return url;
 };
 
-var baseMapUrl = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
-);
-var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
 
 var startApp = function() {
     drawnItems = new L.LayerGroup();
