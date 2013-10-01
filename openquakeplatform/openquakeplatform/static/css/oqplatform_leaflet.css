@@ -32,12 +32,14 @@
 
 #oq-body-content {
     float: right;
-    width: 100%;
+    width: 79%;
+    min-width: 648px;
 }
 
 #oq-body-sidebar {
     /* Make this visible to add a layer nav tree to the left
        side of the map */
     float: left;
-    width: 0%;
+    min-width: 192px;
+    width: 20%;
 }
