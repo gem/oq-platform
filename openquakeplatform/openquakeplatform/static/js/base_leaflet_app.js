@@ -39,7 +39,7 @@ var OQLeaflet = {
                              - ribbonHeight);
 
             // Resize the map so that everything fits on one page:
-            $('#map').css('height', mapHeight + 'px');
+            $('#map').height(mapHeight);
         };
         OQLeafletApp.prototype.sidebarFit = function() {
             // Calculate the height:
@@ -49,7 +49,7 @@ var OQLeaflet = {
             var barHeight = (window.innerHeight - headerHeight - footerHeight
                              - ribbonHeight);
 
-            $('#oq-body-sidebar').css('height', barHeight + 'px');
+            $('#oq-body-sidebar').height(barHeight);
         };
         OQLeafletApp.prototype.createMap = function() {
             this.baseLayers = {
