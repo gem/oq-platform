@@ -223,7 +223,7 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -236,7 +236,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": "DEBUG",
         },
         "geonode": {
             "handlers": ["console"],

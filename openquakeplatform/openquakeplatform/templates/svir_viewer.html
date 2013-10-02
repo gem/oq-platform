@@ -22,10 +22,20 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 
+<div id="dialog-datagrid" style="height: 60px; width: 100%; overflow: scroll;"><table id="svir-table">
+    <thead id="tablehead"><tr><th>Country</th><th>Index Value</th><th>Index Value2</th><th>Index Value3</th><th>Index Value4</th></tr></thead>
+    <tbody id="tableBody">
+        <tr><td>
+        </td></tr>
+    </tbody>
+</table>
+</div>
 
-
-
-<div id="click"></div>
+<!--first chart -->
+<div>
+<div id="container" style="width:600px; height:400px; display:inline-block;"></div>
+<div id="container2" style="width:400px; height:400px; display:inline-block;"></div>
+</div>
 
 {{block.super}}
 {% endblock %}
