@@ -185,6 +185,48 @@ var startApp = function() {
              }
         });
     });
+
+
+    // Get layer names from tilestream
+    var IceboxLayer = "";
+    var selIce = document.getElementById('ice-list');
+    $.getJSON('http://127.0.0.1:8000/icebox/artifacts',
+    function(json) {
+        for (var i=0; i < json.length; i++) {
+            var IceboxLayer = json[i].name;
+            var opt = document.createElement('option');
+            opt.innerHTML = IceboxLayer;
+            opt.value = IceboxLayer;
+            selIce.appendChild(opt);
+        }
+    });
+/*
+    // Add layers from the Icebox API
+    $(document).ready(function() {
+        $('#addIceLayer').click(function() {
+            var e = document.getElementById("ice-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+            // Check for duplicae layes
+            if (selectedLayer in layers) {
+               showDuplicateMsg();
+            }
+            else {
+                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/'
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.png',{opacity: 0.8});
+                layerControl.addOverlay(tileLayer, selectedLayer);
+                map.addLayer(tileLayer);
+                // Keep track of layers that have been added
+                layers[selectedLayer] = tileLayer;
+            }
+        });
+    });
+*/
+    $.getJSON("http://127.0.0.1:8000/icebox/artifacts",
+    function(json) {
+         var foo = json;
+        console.log(json[0].url);
+    });
 };
 
 app.initialize(startApp);

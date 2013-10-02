@@ -22,6 +22,16 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 <div id="dialog-layers" title="Layer Options">
+    <form>
+        <br>
+        IceBox Layers:
+        <br>
+        <select id="ice-list"></select>
+        <br><br>
+        <input type="button" id="addIceLayer" value="Add Layer">
+        <input type="button" id="removeIceLayer" value="Remove Layer">
+    </form>
+
     <form id="tile-form-list">
         TileStream Layers:
         <br>
@@ -37,6 +47,7 @@ Explore - {{block.super}}
         <br>
         <select id="geoserver-list"></select>
         <br><br>
+        <input type="button" id="addIceboxLayer" value="Add Layer">
         <input type="button" id="addGeoLayer" value="Add Layer">
         <input type="button" id="removeGeoLayer" value="Remove Layer">
     </form>
