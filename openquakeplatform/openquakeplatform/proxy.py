@@ -23,6 +23,7 @@ def geoserver(request):
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     http = httplib2.Http()
+    http.add_credentials(*(ogc_server_settings.credentials))
     response, content = http.request(
         url, request.method,
         body=request.raw_post_data or None,

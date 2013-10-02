@@ -47,7 +47,7 @@ Ext.onReady(function() {
         rest: "{% url "maps_browse" %}",
         ajaxLoginUrl: "{% url "account_ajax_login" %}",
         homeUrl: "{% url "home" %}",
-        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        localGeoServerBaseUrl: "/geoserver/",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",
         tools: [{ptype: "gxp_getfeedfeatureinfo"}]
