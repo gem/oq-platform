@@ -27,5 +27,6 @@ Instrumental Catalogue Viewer - {{block.super}}
 
 {% block extra_script %}
     {{block.super}}
+    <script src="{{ STATIC_URL }}js/TileStreamSource.js"></script>  
     <script src="{{ STATIC_URL }}isc_viewer/isc_viewer.js"></script>
 {% endblock extra_script %}

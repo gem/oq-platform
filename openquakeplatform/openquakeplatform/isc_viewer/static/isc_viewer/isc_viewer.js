@@ -49,7 +49,7 @@ Ext.onReady(function() {
                 border: true,
                 // we will add buttons to "tree.bbar" later
                 tbar: [],
-                autoScroll: true,
+                autoScroll: true
         },
             outputTarget: "westpanel"
         }, {
@@ -88,6 +88,9 @@ Ext.onReady(function() {
                 ptype: "gxp_wmscsource",
                 url: "/geoserver/wms",
                 version: "1.1.1"
+            },
+            mapbox: {
+                ptype: "gxp_tilestreamsource"
             },
             osm: {
                 ptype: "gxp_osmsource"

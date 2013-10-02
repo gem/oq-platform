@@ -340,6 +340,9 @@ Ext.Ajax.on('beforerequest', function (conn, options) {
                 version: "1.1.1",
               url: "/geoserver/wms"
             },
+            mapbox: {
+                ptype: "gxp_tilestreamsource"
+            },
             osm: {
                 ptype: "gxp_osmsource"
             },

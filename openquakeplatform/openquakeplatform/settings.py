@@ -499,7 +499,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['LOCATION'] + "wms",
+        "url": "/geoserver/wms",
         "restUrl": "/gs/rest"
         }
     }, {
@@ -532,6 +532,8 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "visibility": False,
     "group": "background"
+    }, {
+    "source": {"ptype": "gxp_tilestreamsource" }
     }, {
     "source": {"ptype": "gxp_mapboxsource"},
     }, {
