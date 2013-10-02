@@ -77,6 +77,7 @@ Ext.onReady(function() {
             outputTarget: "westpanel"
         }, {
             ptype: "gxp_googlegeocoder",
+            sensor: "true",
             outputTarget: "map.tbar",
             outputConfig: {
                 emptyText: "Search for a location ..."
