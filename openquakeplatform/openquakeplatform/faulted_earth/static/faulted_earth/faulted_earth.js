@@ -153,18 +153,13 @@ Ext.Ajax.on('beforerequest', function (conn, options) {
                 autoScroll: true,
         },
             outputTarget: "westpanel"
-        },
-                /* commented out as gxp_googlegeocoder is not available with
-                 * geonode 2
-
-        {
+        }, {
             ptype: "gxp_googlegeocoder",
             outputTarget: "map.tbar",
             outputConfig: {
                 emptyText: "Search for a location ..."
             }
-        }, */
-        {
+        }, {
             ptype: "gxp_layerproperties",
             actionTarget: {target: "tree.tbar"}
         }, {
