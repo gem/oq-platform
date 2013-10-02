@@ -207,13 +207,16 @@ var startApp = function() {
             var e = document.getElementById("ice-list");
             var selectedLayer = e.options[e.selectedIndex].value;
             var selectedLayerName = e.options[e.selectedIndex].innerHTML;
-    
+            var myStyle = {color:'red', fillColor:'orange', radius: 4, opacity: 1.0, fillOpacity: 1.0, weight: 2, clickable: false};
+                
             // Check for duplicae layes
             if (selectedLayer in layers) {
                showDuplicateMsg();
             }
             else {
-                var geojsonLayer = L.geoJson.ajax(selectedLayer);
+                var geojsonLayer = L.geoJson.ajax(selectedLayer, {pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, myStyle);
+                }});
                 layerControl.addOverlay(geojsonLayer, selectedLayerName);
                 map.addLayer(geojsonLayer);
                 // Keep track of layers that have been added
