@@ -49,7 +49,7 @@ Ext.onReady(function() {
                 border: true,
                 // we will add buttons to "tree.bbar" later
                 tbar: [],
-                autoScroll: true,
+                autoScroll: true
         },
             outputTarget: "westpanel"
         }, {

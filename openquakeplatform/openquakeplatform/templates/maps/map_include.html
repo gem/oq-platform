@@ -15,7 +15,7 @@ Ext.onReady(function() {
         }],
         useToolbar: true,
         {% if MF_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        printService: "/geoserver/pdf/",
         {% else %}
         printService: "",
         {% endif %}
