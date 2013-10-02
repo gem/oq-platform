@@ -186,8 +186,7 @@ var startApp = function() {
         });
     });
 
-
-    // Get layer names from tilestream
+    // Get layer names from the icebox api
     var IceboxLayer = "";
     var selIce = document.getElementById('ice-list');
     $.getJSON('http://127.0.0.1:8000/icebox/artifacts',
@@ -201,19 +200,43 @@ var startApp = function() {
         }
     });
 
+
     // Add layers from the Icebox API
     $(document).ready(function() {
         $('#addIceLayer').click(function() {
             var e = document.getElementById("ice-list");
             var selectedLayer = e.options[e.selectedIndex].value;
+            var selectedLayerName = e.options[e.selectedIndex].innerHTML;
+    
             // Check for duplicae layes
             if (selectedLayer in layers) {
                showDuplicateMsg();
             }
             else {
                 var geojsonLayer = L.geoJson.ajax(selectedLayer);
+                layerControl.addOverlay(geojsonLayer, selectedLayerName);
                 map.addLayer(geojsonLayer);
+                // Keep track of layers that have been added
+                layers[selectedLayer] =  geojsonLayer;
             }
+        });
+    });
+
+
+    // Remove layers from icebox
+    $(document).ready(function() {
+        $('#removeIceLayer').click(function() {
+            var e = document.getElementById("ice-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+             // Check in the layer is in the map port
+             if (selectedLayer in layers) {
+                 layerControl.removeLayer(layers[selectedLayer]);
+                 map.removeLayer(layers[selectedLayer]);
+                 delete layers[selectedLayer];
+             }
+             else {
+                 showRemoveMsg();
+             }
         });
     });
 
