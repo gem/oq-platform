@@ -76,6 +76,12 @@ Ext.onReady(function() {
         },
             outputTarget: "westpanel"
         }, {
+            ptype: "gxp_googlegeocoder",
+            outputTarget: "map.tbar",
+            outputConfig: {
+                emptyText: "Search for a location ..."
+            }
+        }, {
             ptype: "gxp_layerproperties",
             actionTarget: {target: "tree.tbar"}
         }, {
