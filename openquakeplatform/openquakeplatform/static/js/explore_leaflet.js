@@ -211,16 +211,9 @@ var startApp = function() {
                showDuplicateMsg();
             }
             else {
-                
-                /*
-                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/'
-                    + selectedLayer
-                    + '/{z}/{x}/{y}.png',{opacity: 0.8});
-                layerControl.addOverlay(tileLayer, selectedLayer);
-                map.addLayer(tileLayer);
-                // Keep track of layers that have been added
-                layers[selectedLayer] = tileLayer;
-                */
+                console.log("helloooo");
+                var geojsonLayer = L.geoJson.ajax(selectedLayer);
+                map.addLayer(geojsonLayer);
             }
         });
     });
