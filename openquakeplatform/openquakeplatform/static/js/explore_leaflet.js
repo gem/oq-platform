@@ -211,7 +211,6 @@ var startApp = function() {
                showDuplicateMsg();
             }
             else {
-                console.log("helloooo");
                 var geojsonLayer = L.geoJson.ajax(selectedLayer);
                 map.addLayer(geojsonLayer);
             }
