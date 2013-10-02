@@ -196,11 +196,11 @@ var startApp = function() {
             var IceboxLayer = json[i].name;
             var opt = document.createElement('option');
             opt.innerHTML = IceboxLayer;
-            opt.value = IceboxLayer;
+            opt.value = json[i].url;
             selIce.appendChild(opt);
         }
     });
-/*
+
     // Add layers from the Icebox API
     $(document).ready(function() {
         $('#addIceLayer').click(function() {
@@ -211,6 +211,8 @@ var startApp = function() {
                showDuplicateMsg();
             }
             else {
+                
+                /*
                 var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/'
                     + selectedLayer
                     + '/{z}/{x}/{y}.png',{opacity: 0.8});
@@ -218,15 +220,11 @@ var startApp = function() {
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
+                */
             }
         });
     });
-*/
-    $.getJSON("http://127.0.0.1:8000/icebox/artifacts",
-    function(json) {
-         var foo = json;
-        console.log(json[0].url);
-    });
+
 };
 
 app.initialize(startApp);
