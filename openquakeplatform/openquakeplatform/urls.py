@@ -28,12 +28,18 @@ sitemaps = {
 }
 
 
-class LeafletExploreTemplateView(TemplateView):
-
-    template_name = 'explore_leaflet.html'
+class OQTemplateView(TemplateView):
+    """
+    A view utility which renders templates and allows for injection of
+    additional context variables.
+    """
 
     def get_context_data(self, **kwargs):
-        context = super(LeafletExploreTemplateView, self).get_context_data(**kwargs)
+        context = super(OQTemplateView, self).get_context_data(**kwargs)
+
+        # At the moment, we just need to get the location of the icebox
+        # artifacts. Other icebox URLs may need to be added as well in the
+        # future.
         context['icebox_artifacts_url'] = local_settings.ICEBOX_ARTIFACTS_URL
         return context
 
@@ -52,7 +58,7 @@ urlpatterns = patterns(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
     url(r'^geodetic/$', TemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^explore_leaflet/$', LeafletExploreTemplateView.as_view(
+    url(r'^explore_leaflet/$', OQTemplateView.as_view(
         template_name="explore_leaflet.html"), name='explore_leaflet'),
 
     url(r'^geojson/$', TemplateView.as_view(
