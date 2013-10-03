@@ -144,8 +144,7 @@ class ImportArtifactsTestCase(BaseViewTestCase):
             'icebox/artifacts/import',
             {'import_url': ('http://oqengineserver.openquake.org/'
                             'v1/calc/hazard/1/results'),
-             'owner': 'jdoe',
-            }
+             'owner': 'jdoe'}
         )
 
     def test_missing_required_params(self):
@@ -195,6 +194,9 @@ class ImportArtifactsTestCase(BaseViewTestCase):
         error_404 = urllib2.HTTPError(
             ('%s/v1/calc/hazard/result/77?export_type=geojson' % base_url),
             404, 'NOT FOUND', None, StringIO.StringIO()
+        )
+        calc_summary_url = (
+            'http://oqengineserver.openquake.org/v1/calc/hazard/1'
         )
 
         fake_user = mock.Mock()
