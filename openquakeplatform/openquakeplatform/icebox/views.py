@@ -150,7 +150,6 @@ def import_artifacts(request):
         None,  # query
         None,  # fragment
     ))
-    # TODO: get calculation info
     count = _do_import_artifacts(artifacts, calculation_url, owner_user)
 
     return HttpResponse('%s items imported from %s' % (count, import_url))
