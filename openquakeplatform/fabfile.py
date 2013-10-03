@@ -57,6 +57,8 @@ except ImportError:
     import warnings
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
+
+ICEBOX_ARTIFACTS_URL = 'http://localhost:8000/icebox/artifacts/'
 """
 
 
