@@ -6,6 +6,8 @@ from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 
+from openquakeplatform import local_settings
+
 import geonode.proxy.urls
 
 # Import *_signals.py
@@ -25,6 +27,23 @@ sitemaps = {
     "map": MapSitemap
 }
 
+
+class OQTemplateView(TemplateView):
+    """
+    A view utility which renders templates and allows for injection of
+    additional context variables.
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super(OQTemplateView, self).get_context_data(**kwargs)
+
+        # At the moment, we just need to get the location of the icebox
+        # artifacts. Other icebox URLs may need to be added as well in the
+        # future.
+        context['icebox_artifacts_url'] = local_settings.ICEBOX_ARTIFACTS_URL
+        return context
+
+
 urlpatterns = patterns(
     '',
 
@@ -39,8 +58,9 @@ urlpatterns = patterns(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
     url(r'^geodetic/$', TemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^explore_leaflet/$', TemplateView.as_view(
+    url(r'^explore_leaflet/$', OQTemplateView.as_view(
         template_name="explore_leaflet.html"), name='explore_leaflet'),
+
     url(r'^geojson/$', TemplateView.as_view(
         template_name="geojson.html"), name='geojson'),
     url(r'^hazard_models/$', TemplateView.as_view(

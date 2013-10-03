@@ -25,7 +25,7 @@ from openquakeplatform.icebox.views import import_artifacts
 
 urlpatterns = patterns(
     'geonode.icebox.views',
-    url(r'^artifacts$', list_artifacts),
+    url(r'^artifacts/$', list_artifacts),
     url(r'^artifact/(\d+)$', get_artifact),
     url(r'^artifacts/import$', import_artifacts),
 )
