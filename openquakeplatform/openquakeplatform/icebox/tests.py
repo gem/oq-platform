@@ -230,50 +230,158 @@ class ImportArtifactsTestCase(BaseViewTestCase):
 
         with mock.patch('django.contrib.auth.models'
                         '.User.objects.get') as user_get:
-            with mock.patch('openquakeplatform.icebox.models'
-                            '.Artifact.objects.create') as art_create:
-                with mock.patch('urllib2.urlopen') as urlopen:
+            with mock.patch('urllib2.urlopen') as urlopen:
+                with mock.patch('openquakeplatform.icebox.views'
+                                '._do_import_artifacts') as do_import:
                     user_get.return_value = fake_user
                     urlopen.return_value = fake_url
+                    do_import.return_value = 4  # 1 calc summary, 3 haz maps
 
                     resp = views.import_artifacts(self.req)
 
-        exp_art_create_call_args = [
-            ((), {'artifact_data': '{"fake": "haz_map_1"}',
-                  'artifact_type': u'hazard_map',
-                  'name': u'hazard map 1',
-                  'content_type': 'geojson',
-                  'user': fake_user}),
-            ((), {'artifact_data': '{"fake": "haz_map_2"}',
-                  'artifact_type': u'hazard_map',
-                  'name': u'hazard map 2',
-                  'content_type': 'geojson',
-                  'user': fake_user}),
-        ]
-
         # First, test mocks:
+        self.assertEqual(1, do_import.call_count)
+        self.assertEqual(
+            (fake_oqes_data, calc_summary_url, fake_user),
+            do_import.call_args[0]
+        )
+
         self.assertEqual(1, user_get.call_count)
 
-        self.assertEqual(2, art_create.call_count)
-        self.assertEqual(exp_art_create_call_args, art_create.call_args_list)
-
-        self.assertEqual(4, urlopen.call_count)
+        self.assertEqual(1, urlopen.call_count)
         exp_urlopen_call_args = [
             ((u'%s/v1/calc/hazard/1/results' % base_url, ), {}),
-            ((u'%s/v1/calc/hazard/result/78?export_type=geojson' % base_url, ),
-             {}),
-            ((u'%s/v1/calc/hazard/result/79?export_type=geojson' % base_url, ),
-             {}),
-            ((u'%s/v1/calc/hazard/result/77?export_type=geojson' % base_url, ),
-             {}),
         ]
         self.assertEqual(exp_urlopen_call_args, urlopen.call_args_list)
 
-        self.assertEqual(3, fake_url.close.call_count)
+        self.assertEqual(1, fake_url.close.call_count)
 
         # Then test the actual view response:
         self.assertEqual(200, resp.status_code)
         self.assertEqual(
-            '2 items imported from %s/v1/calc/hazard/1/results' % base_url,
+            '4 items imported from %s/v1/calc/hazard/1/results' % base_url,
             resp.content
+        )
+
+    def test__do_import_artifacts(self):
+        base_url = 'http://oqengineserver.openquake.org'
+        artifacts = [
+            dict(url="%s/v1/calc/hazard/result/78" % base_url,
+                 type="hazard_map", name="hazard map 1", id=78),
+            dict(url="%s/v1/calc/hazard/result/79" % base_url,
+                 type="hazard_map", name="hazard map 2", id=79),
+            dict(url="%s/v1/calc/hazard/result/77" % base_url,
+                 type="hazard_curve", name="hazard curves 1", id=77),
+        ]
+
+        fake_user = mock.Mock()
+
+        fake_map_data = [
+            {'artifact_data': '{"fake": "haz_map_1"}',
+             'artifact_type': u'hazard_map',
+             'name': u'hazard map 1',
+             'content_type': 'geojson',
+             'user': 'fake_user'},
+            {'artifact_data': '{"fake": "haz_map_2"}',
+             'artifact_type': u'hazard_map',
+             'name': u'hazard map 2',
+             'content_type': 'geojson',
+             'user': 'fake_user'},
+            {'artifact_data': '{"fake": "haz_curves_1"}',
+             'artifact_type': u'hazard_curve',
+             'name': u'hazard curves 1',
+             'content_type': 'geojson',
+             'user': 'fake_user'},
+        ]
+
+        calculation_url = (
+            'http://oqengineserver.openquake.org/v1/calc/hazard/1'
+        )
+
+        url_open_vals = iter([
+            '{"description": "Test Calc"}',
+            json.dumps(fake_map_data[0]),
+            json.dumps(fake_map_data[1]),
+            json.dumps(fake_map_data[2]),
+        ])
+
+        fake_url = mock.Mock()
+        read_count = dict(count=0)
+
+        def fake_read():
+            read_count['count'] += 1
+            return url_open_vals.next()
+        fake_url.read = fake_read
+        fake_url.close = mock.Mock()
+
+        fake_ag = mock.Mock()
+        fake_art = mock.Mock()
+
+        with mock.patch('urllib2.urlopen') as urlopen:
+            with mock.patch('openquakeplatform.icebox.models'
+                            '.ArtifactGroup.objects.create') as ag_create:
+                with mock.patch('openquakeplatform.icebox.models'
+                                '.Artifact.objects.create') as art_create:
+                    with mock.patch(
+                            'openquakeplatform.icebox.models'
+                            '.ArtifactGroupLink.objects.create') as agl_create:
+                        urlopen.return_value = fake_url
+                        ag_create.return_value = fake_ag
+                        art_create.return_value = fake_art
+
+                        views._do_import_artifacts(
+                            artifacts, calculation_url, fake_user
+                        )
+
+        self.assertEqual(1, ag_create.call_count)
+        self.assertEqual(4, art_create.call_count)
+        self.assertEqual(4, agl_create.call_count)
+
+        self.assertEqual(
+            dict(user=fake_user, group_type='calculation', name='Test Calc'),
+            ag_create.call_args[1]
+        )
+
+        self.assertEqual(
+            [dict(artifact_group=fake_ag, artifact=fake_art),
+             dict(artifact_group=fake_ag, artifact=fake_art),
+             dict(artifact_group=fake_ag, artifact=fake_art),
+             dict(artifact_group=fake_ag, artifact=fake_art)],
+            [x[1] for x in agl_create.call_args_list]
+        )
+
+        self.assertEqual(
+            [{'artifact_data': '{"description": "Test Calc"}',
+              'artifact_type': 'calculation',
+              'name': u'Test Calc',
+              'content_type': 'application/json',
+              'user': fake_user},
+             {'artifact_data': '{"artifact_data": "{\\"fake\\": '
+                               '\\"haz_map_1\\"}", "artifact_type": '
+                               '"hazard_map", "name": "hazard map 1", '
+                               '"content_type": "geojson", "user": '
+                               '"fake_user"}',
+              'artifact_type': 'hazard_map',
+              'name': 'hazard map 1',
+              'content_type': 'geojson',
+              'user': fake_user},
+             {'artifact_data': '{"artifact_data": "{\\"fake\\": '
+                               '\\"haz_map_2\\"}", "artifact_type": '
+                               '"hazard_map", "name": "hazard map 2", '
+                               '"content_type": "geojson", "user": '
+                               '"fake_user"}',
+              'artifact_type': 'hazard_map',
+              'name': 'hazard map 2',
+              'content_type': 'geojson',
+              'user': fake_user},
+             {'artifact_data': '{"artifact_data": "{\\"fake\\": '
+                               '\\"haz_curves_1\\"}", "artifact_type": '
+                               '"hazard_curve", "name": "hazard curves 1", '
+                               '"content_type": "geojson", "user": '
+                               '"fake_user"}',
+              'artifact_type': 'hazard_curve',
+              'name': 'hazard curves 1',
+              'content_type': 'geojson',
+              'user': fake_user}],
+            [x[1] for x in art_create.call_args_list]
         )
