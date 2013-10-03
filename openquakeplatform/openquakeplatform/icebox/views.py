@@ -23,6 +23,7 @@ import urlparse
 
 from django.contrib.auth import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
@@ -122,7 +123,7 @@ def import_artifacts(request):
     # the oq-engine-server API.
     try:
         url = urllib2.urlopen(import_url)
-        data = json.loads(url.read())
+        artifacts = json.loads(url.read())
     except urllib2.HTTPError:
         # Something is the wrong with this url. We can't get anything from it.
         # TODO(LB): Is a 404 appropriate here?
@@ -133,9 +134,86 @@ def import_artifacts(request):
     else:
         url.close()
 
-    # Iterate over artifacts and attempt to import each.
+    # Attempt to determine the url of the calculation summary from the import
+    # url. This assumes some knowledge of the oq-engine-server API.
+    # For example, if the import url is
+    # "http://openquake.org:11188/v1/calc/hazard/1234/results", we can try to
+    # extract the calculation summary URL by stripping off the "results" part.
+    # TODO(LB): This is a bit hackish, and perhaps we need to redesign
+    # (slightly) the API touchpoints between icebox and oq-engine-server.
+    url_obj = urlparse.urlparse(import_url)
+    calculation_url = urlparse.urlunparse((
+        url_obj.scheme,
+        url_obj.netloc,
+        url_obj.path.rsplit('/', 1)[0],
+        None,  # params
+        None,  # query
+        None,  # fragment
+    ))
+    # TODO: get calculation info
+    count = _do_import_artifacts(artifacts, calculation_url, owner_user)
+
+    return HttpResponse('%s items imported from %s' % (count, import_url))
+
+
+@transaction.commit_on_success
+def _do_import_artifacts(artifacts, calculation_url, owner_user):
+    """
+    :param list artifacts:
+        List of dict objects representing the artifact data read from the
+        oq-engine-server.
+
+        Each dict should have the following keys::
+
+            * type ("hazard_curve", "loss_map", etc.)
+            * name
+            * url (pointing to the full artifact data, which this function will
+              access)
+
+    :param str calculation_url:
+        URL where we can find the JSON-formatted calculation summary (with the
+        name, description, status, calculation geometry, and other parameters).
+    :param owner_user:
+        Django `User` object/record to which newly-imported
+        :class:`openquakeplatform.icebox.models.Artifact` and
+        :class:`openquakeplatform.icebox.models.ArtifactGroup` records will
+        belong.
+    """
     count = 0
-    for artifact in data:
+    # First, try to get the calculation summary and add it as an artifact.
+    try:
+        calc_summary_url = urllib2.urlopen(calculation_url)
+        calc_summary = calc_summary_url.read()
+        calc_summary_dict = json.loads(calc_summary)
+
+        art_group = icebox_models.ArtifactGroup.objects.create(
+            name=calc_summary_dict['description'],
+            group_type='calculation',
+            user=owner_user,
+        )
+
+        icebox_models.ArtifactGroupLink.objects.create(
+            artifact=icebox_models.Artifact.objects.create(
+                user=owner_user,
+                artifact_type='calculation',
+                name=calc_summary_dict['description'],
+                artifact_data=calc_summary,
+                content_type=JSON,
+            ),
+            artifact_group=art_group,
+        )
+        count += 1
+    except urllib2.HTTPError:
+        # TODO(LB): We need to log this
+        return HttpResponse(
+            content='Unable to fetch calc summary from %s' % calculation_url,
+            status_code=500
+        )
+    else:
+        calc_summary_url.close()
+
+    # Then, iterate over artifacts and attempt to import each.
+    for artifact in artifacts:
         # Get all artifact types available. Currently, xml and geojson.
         for content_type in IMPORT_CONTENT_TYPES:
             try:
@@ -145,12 +223,16 @@ def import_artifacts(request):
                                                % (artifact['url'], params))
                 artifact_data = artifact_url.read()
 
-                icebox_models.Artifact.objects.create(
+                art = icebox_models.Artifact.objects.create(
                     user=owner_user,
                     artifact_type=artifact['type'],
                     name=artifact['name'],
                     artifact_data=artifact_data,
                     content_type=content_type,
+                )
+                icebox_models.ArtifactGroupLink.objects.create(
+                    artifact=art,
+                    artifact_group=art_group,
                 )
                 count += 1
             except urllib2.HTTPError:
@@ -163,5 +245,5 @@ def import_artifacts(request):
                 # (and probably succssfully imported), so we need
                 # to close the connection
                 artifact_url.close()
+    return count
 
-    return HttpResponse('%s items imported from %s' % (count, import_url))
