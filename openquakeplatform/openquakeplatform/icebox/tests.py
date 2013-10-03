@@ -385,3 +385,128 @@ class ImportArtifactsTestCase(BaseViewTestCase):
               'user': fake_user}],
             [x[1] for x in art_create.call_args_list]
         )
+
+
+class ListArtifactGroupsTestCase(BaseViewTestCase):
+
+    def setUp(self):
+        self.req = self.factory.get('/icebox/artifact_groups')
+        self.req.META['HTTP_HOST'] = 'www.openquake.org:8080'
+
+        self.group1 = mock.Mock()
+        self.group2 = mock.Mock()
+
+        self.group1.id = 1
+        self.group1.name = 'Sample Calculation'
+        self.group1.group_type = 'calculation'
+
+        self.group2.id = 2
+        self.group2.name = 'Sample Map'
+        self.group2.group_type = 'map'
+
+    def test_list_artifact_groups(self):
+        with mock.patch('openquakeplatform.icebox.models'
+                        '.ArtifactGroup.objects') as ag:
+            ag.all.return_value = [self.group1, self.group2]
+            resp = views.list_artifact_groups(self.req)
+
+        self.assertEqual(200, resp.status_code)
+        expected_content = [
+            {u'group_type': u'calculation',
+             u'id': 1,
+             u'name': u'Sample Calculation',
+             u'url': u'http://www.openquake.org:8080/icebox/artifact_group/1'},
+            {u'group_type': u'map',
+             u'id': 2,
+             u'name': u'Sample Map',
+             u'url': u'http://www.openquake.org:8080/icebox/artifact_group/2'},
+        ]
+        self.assertEqual(expected_content, json.loads(resp.content))
+
+    def test_list_artifact_groups_with_group_type_param(self):
+        req = self.factory.get('/icebox/artifact_groups',
+                               dict(group_type='calculation'))
+        req.META['HTTP_HOST'] = 'www.openquake.org:8080'
+
+        ag_result = mock.Mock()
+        ag_result.filter.return_value = [self.group1]
+
+        with mock.patch('openquakeplatform.icebox.models'
+                        '.ArtifactGroup.objects') as ag:
+            ag.all.return_value = ag_result
+            resp = views.list_artifact_groups(req)
+
+        self.assertEqual(
+            dict(group_type='calculation'),
+            ag_result.filter.call_args[1]
+        )
+        self.assertEqual(200, resp.status_code)
+        expected_content = [
+            {u'group_type': u'calculation',
+             u'id': 1,
+             u'name': u'Sample Calculation',
+             u'url': u'http://www.openquake.org:8080/icebox/artifact_group/1'},
+        ]
+        self.assertEqual(expected_content, json.loads(resp.content))
+
+
+    def test_list_artifact_groups_404(self):
+        with mock.patch('openquakeplatform.icebox.models'
+                        '.ArtifactGroup.objects.all') as ag:
+            ag.return_value = []
+            resp = views.list_artifact_groups(self.req)
+
+        self.assertEqual(404, resp.status_code)
+
+
+class GetArtifactGroupTestCase(BaseViewTestCase):
+
+    def test_get_artifact_group(self):
+        req = self.factory.get('/icebox/artifact_group/666')
+        req.META['HTTP_HOST'] = 'www.openquake.org'
+        art_group = mock.Mock()
+        art_group.id = 666
+        art_group.group_type = 'map'
+        art_group.name = 'Sample Map'
+
+        art1 = mock.Mock()
+        art1.id = 1234
+        art1.name = 'Sample Artifact 1'
+        art1.content_type = 'xml'
+        art1.artifact_type = 'hazard_map'
+
+        art2 = mock.Mock()
+        art2.id = 5678
+        art2.name = 'Sample Artifact 2'
+        art2.content_type = 'xml'
+        art2.artifact_type = 'hazard_curve'
+
+        with mock.patch('openquakeplatform.icebox.models'
+                        '.ArtifactGroup.objects.get') as ag_get:
+            with mock.patch('openquakeplatform.icebox.models'
+                            '.Artifact.objects.filter') as art_filter:
+                ag_get.return_value = art_group
+                art_filter.return_value = [art1, art2]
+
+                resp = views.get_artifact_group(req, 666)
+
+        expected_content = {
+            u'id': 666,
+            u'name': u'Sample Map',
+            u'group_type': u'map',
+            u'artifacts': [
+                {u'artifact_type': u'hazard_map',
+                 u'content_type': u'xml',
+                 u'id': 1234,
+                 u'name': u'Sample Artifact 1',
+                 u'url': u'http://www.openquake.org/icebox/artifact/1234'},
+                {u'artifact_type': u'hazard_curve',
+                 u'content_type': u'xml',
+                 u'id': 5678,
+                 u'name': u'Sample Artifact 2',
+                 u'url': u'http://www.openquake.org/icebox/artifact/5678'},
+            ],
+        }
+
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(expected_content, json.loads(resp.content))
