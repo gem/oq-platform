@@ -189,7 +189,7 @@ var startApp = function() {
     // Get layer names from the icebox api
     var IceboxLayer = "";
     var selIce = document.getElementById('ice-list');
-    $.getJSON('http://127.0.0.1:8000/icebox/artifacts',
+    $.getJSON(ICEBOX_ARTIFACTS_URL,
     function(json) {
         for (var i=0; i < json.length; i++) {
             var IceboxLayer = json[i].name;

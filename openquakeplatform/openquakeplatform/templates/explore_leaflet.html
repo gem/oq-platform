@@ -70,4 +70,7 @@ Explore - {{block.super}}
 {% block extra_script %}
     {{block.super}}
     <script src="{{ STATIC_URL }}js/explore_leaflet.js"></script>
+    <script>
+    var ICEBOX_ARTIFACTS_URL = "{{ icebox_artifacts_url }}";
+    </script>
 {% endblock extra_script %}

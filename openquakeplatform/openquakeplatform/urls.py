@@ -6,6 +6,8 @@ from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 
+from openquakeplatform import local_settings
+
 import geonode.proxy.urls
 
 # Import *_signals.py
@@ -25,6 +27,17 @@ sitemaps = {
     "map": MapSitemap
 }
 
+
+class LeafletExploreTemplateView(TemplateView):
+
+    template_name = 'explore_leaflet.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(LeafletExploreTemplateView, self).get_context_data(**kwargs)
+        context['icebox_artifacts_url'] = local_settings.ICEBOX_ARTIFACTS_URL
+        return context
+
+
 urlpatterns = patterns(
     '',
 
@@ -39,8 +52,9 @@ urlpatterns = patterns(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
     url(r'^geodetic/$', TemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^explore_leaflet/$', TemplateView.as_view(
+    url(r'^explore_leaflet/$', LeafletExploreTemplateView.as_view(
         template_name="explore_leaflet.html"), name='explore_leaflet'),
+
     url(r'^geojson/$', TemplateView.as_view(
         template_name="geojson.html"), name='geojson'),
     url(r'^hazard_models/$', TemplateView.as_view(
