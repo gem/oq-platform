@@ -247,3 +247,74 @@ def _do_import_artifacts(artifacts, calculation_url, owner_user):
                 artifact_url.close()
     return count
 
+
+@require_http_methods(['GET'])
+def list_artifact_groups(request):
+    """
+    Get a summarized list--as JSON--of the artifact groups available.
+
+    A GET request can include an optional parameter `group_type` to specify
+    which type of results to fetch. Typical group types are "map" and
+    "calculation".
+    """
+    base_url = _get_base_url(request)
+
+    group_type = request.GET.get('group_type')
+    art_groups = icebox_models.ArtifactGroup.objects.all()
+    if group_type is not None:
+        art_groups = art_groups.filter(group_type=group_type)
+
+    groups = []
+
+    for group in art_groups:
+        groups.append(dict(
+            id=group.id,
+            name=group.name,
+            group_type=group.group_type,
+            url=urlparse.urljoin(base_url,
+                                 'icebox/artifact_group/%s' % group.id),
+        ))
+
+    if not groups:
+        # No data matches the request parameters.
+        return HttpResponseNotFound()
+
+    return HttpResponse(json.dumps(groups), content_type=JSON)
+
+
+@require_http_methods(['GET'])
+def get_artifact_group(request, art_group_id):
+    """
+    Get an artifact group, as JSON, including a summarized list of the
+    artifacts which belong to the group.
+
+    :param int art_group_id:
+        ID of an :class:`openquakeplatform.icebox.models.ArtifactGroup` record.
+    """
+    base_url = _get_base_url(request)
+
+    art_group = icebox_models.ArtifactGroup.objects.get(id=art_group_id)
+    group = dict(
+        id=art_group.id,
+        group_type=art_group.group_type,
+        name=art_group.name,
+    )
+
+    try:
+        artifacts = []
+        for artifact in icebox_models.Artifact.objects\
+                .filter(artifactgrouplink__artifact_group=art_group_id):
+            artifacts.append(dict(
+                id=artifact.id,
+                name=artifact.name,
+                content_type=artifact.content_type,
+                artifact_type=artifact.artifact_type,
+                url=urlparse.urljoin(base_url,
+                                     'icebox/artifact/%s' % artifact.id),
+            ))
+
+        group['artifacts'] = artifacts
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound()
+    else:
+        return HttpResponse(json.dumps(group), content_type=JSON)
