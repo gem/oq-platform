@@ -66,7 +66,8 @@ def list_artifacts(request):
             name=artifact.name,
             content_type=artifact.content_type,
             artifact_type=artifact.artifact_type,
-            url=urlparse.urljoin(base_url, 'icebox/artifact/%s' % artifact.id),
+            url=urlparse.urljoin(base_url,
+                                 'icebox/artifact/%s/' % artifact.id),
         ))
     return HttpResponse(json.dumps(artifacts), content_type=JSON)
 
@@ -271,7 +272,7 @@ def list_artifact_groups(request):
             name=group.name,
             group_type=group.group_type,
             url=urlparse.urljoin(base_url,
-                                 'icebox/artifact_group/%s' % group.id),
+                                 'icebox/artifact_group/%s/' % group.id),
         ))
 
     if not groups:
@@ -309,7 +310,7 @@ def get_artifact_group(request, art_group_id):
                 content_type=artifact.content_type,
                 artifact_type=artifact.artifact_type,
                 url=urlparse.urljoin(base_url,
-                                     'icebox/artifact/%s' % artifact.id),
+                                     'icebox/artifact/%s/' % artifact.id),
             ))
 
         group['artifacts'] = artifacts
