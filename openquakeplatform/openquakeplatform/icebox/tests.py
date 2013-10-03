@@ -88,10 +88,10 @@ class ListArtifactsTestCase(BaseViewTestCase):
         self.assertEqual(('Content-Type', 'application/json'),
                          resp._headers['content-type'])
         exp_content = [
-            {u'url': u'http://www.openquake.org/icebox/artifact/6',
+            {u'url': u'http://www.openquake.org/icebox/artifact/6/',
              u'artifact_type': u'hazard_map', u'name': u'hazard map 1',
              u'content_type': u'geojson', u'id': 6},
-            {u'url': u'http://www.openquake.org/icebox/artifact/7',
+            {u'url': u'http://www.openquake.org/icebox/artifact/7/',
              u'artifact_type': u'loss_map', u'name': u'loss map 1',
              u'content_type': u'geojson', u'id': 7},
         ]
@@ -417,11 +417,13 @@ class ListArtifactGroupsTestCase(BaseViewTestCase):
             {u'group_type': u'calculation',
              u'id': 1,
              u'name': u'Sample Calculation',
-             u'url': u'http://www.openquake.org:8080/icebox/artifact_group/1'},
+             u'url': \
+                u'http://www.openquake.org:8080/icebox/artifact_group/1/'},
             {u'group_type': u'map',
              u'id': 2,
              u'name': u'Sample Map',
-             u'url': u'http://www.openquake.org:8080/icebox/artifact_group/2'},
+             u'url': \
+                u'http://www.openquake.org:8080/icebox/artifact_group/2/'},
         ]
         self.assertEqual(expected_content, json.loads(resp.content))
 
@@ -447,7 +449,8 @@ class ListArtifactGroupsTestCase(BaseViewTestCase):
             {u'group_type': u'calculation',
              u'id': 1,
              u'name': u'Sample Calculation',
-             u'url': u'http://www.openquake.org:8080/icebox/artifact_group/1'},
+             u'url': \
+                u'http://www.openquake.org:8080/icebox/artifact_group/1/'},
         ]
         self.assertEqual(expected_content, json.loads(resp.content))
 
@@ -501,12 +504,12 @@ class GetArtifactGroupTestCase(BaseViewTestCase):
                  u'content_type': u'xml',
                  u'id': 1234,
                  u'name': u'Sample Artifact 1',
-                 u'url': u'http://www.openquake.org/icebox/artifact/1234'},
+                 u'url': u'http://www.openquake.org/icebox/artifact/1234/'},
                 {u'artifact_type': u'hazard_curve',
                  u'content_type': u'xml',
                  u'id': 5678,
                  u'name': u'Sample Artifact 2',
-                 u'url': u'http://www.openquake.org/icebox/artifact/5678'},
+                 u'url': u'http://www.openquake.org/icebox/artifact/5678/'},
             ],
         }
 
