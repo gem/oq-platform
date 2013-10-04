@@ -25,21 +25,41 @@ var startApp = function() {
 
     app.createMap();
 
-    //var utfGrid = new L.UtfGrid('http://{s}.tiles.mapbox.com/v3/mapbox.geography-class/{z}/{x}/{y}.grid.json?callback={cb}');
+    $(function () {
 
-   var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-test3/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        $('.footable').footable();
 
-    // Build the html table
-    var createTable = function (countryName, foo, bar, bob, tom) {
-        $("#tableBody").html("");
-           // $("#tablehead").html("");
-        $("#svir-table").append("<tr><td>"+countryName+"</td><td>"+foo+"</td><td>"+bar+"</td><td>"+bob+"</td><td>"+tom+"</td></tr>");
-    };
+
+    });
+
+    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-test3/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
     utfGrid.on('click', function (e) {
+        
+        //clearTable();
+
+         // Build the html table
         if (e.data) {
-            //document.getElementById('click').innerHTML = 'click: ' + e.data.gadm_name;
             console.log(e.data);
+
+            var values = [];
+            for (var d in e.data) {
+                values.push(e.data[d]);
+            }
+
+            var keys = Object.keys(e.data);
+
+            var r = new Array(), j = -1;
+            for (var i=0, il=values.length; i<il; i++){
+                html += '<tr><td>'
+                    + keys[i]
+                    +'</td><td>'
+                    + values[i]
+                    +'</td></tr>';
+            }
+        
+            $('#svir-table').append(html);
+
             var countryName = e.data.country_na;
             var foo = e.data.ecoeac092;
             var bar = e.data.ecoeac082;
@@ -47,11 +67,9 @@ var startApp = function() {
             var tom = e.data.ecoeac012;
             console.log(foo);
             console.log(bar);
-            //console.log(e.data.popsnpita);
-
-            createTable(countryName, foo, bar, bob, tom);
 
 
+            // Create the Charts
             var chart = new Highcharts.Chart({
                 chart: {
                     renderTo: 'container',
