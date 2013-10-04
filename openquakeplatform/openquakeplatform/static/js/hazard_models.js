@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
+var app = new OQLeaflet.OQLeafletApp(LEAFLET_BASE_MAP_URL);
 
 var startApp = function() {
 

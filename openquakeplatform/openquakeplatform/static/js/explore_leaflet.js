@@ -19,7 +19,7 @@ var layerControl;
 // Keep track of the layer names
 var layers;
 
-var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
+var app = new OQLeaflet.OQLeafletApp(LEAFLET_BASE_MAP_URL);
 
 var startApp = function() {
 
@@ -208,7 +208,7 @@ var startApp = function() {
             var selectedLayer = e.options[e.selectedIndex].value;
             var selectedLayerName = e.options[e.selectedIndex].innerHTML;
             var myStyle = {color:'red', fillColor:'orange', radius: 4, opacity: 1.0, fillOpacity: 1.0, weight: 2, clickable: false};
-                
+
             // Check for duplicae layes
             if (selectedLayer in layers) {
                showDuplicateMsg();

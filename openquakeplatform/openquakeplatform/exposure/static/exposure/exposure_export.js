@@ -20,7 +20,7 @@ var objToUrlParams = function(obj) {
     return url;
 };
 
-var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
+var app = new OQLeaflet.OQLeafletApp(LEAFLET_BASE_MAP_URL);
 
 var startApp = function() {
     drawnItems = new L.LayerGroup();

@@ -50,4 +50,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}wax/dist/wax.mm.js"></script>
     <script src="{{ STATIC_URL }}js/base_leaflet_app.js"></script>
     <script src="{{ STATIC_URL }}js/leaflet.ajax.min.js"></script>
+    <!-- Constants, rendered here from app configuration through Django templates.
+         This is a simple way to make variables from the backend available to the
+         frontend. -->
+    <script>
+    var ICEBOX_ARTIFACTS_URL = "{{ icebox_artifacts_url }}";
+    var LEAFLET_BASE_MAP_URL = "{{ leaflet_base_map_url }}";
+    </script>
 {% endblock extra_script %}

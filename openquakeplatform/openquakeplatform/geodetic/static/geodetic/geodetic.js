@@ -16,7 +16,7 @@ Copyright (c) 2013, GEM Foundation.
 */
 
 
-var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
+var app = new OQLeaflet.OQLeafletApp(LEAFLET_BASE_MAP_URL);
 
 var startApp = function() {
     /******************
