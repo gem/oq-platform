@@ -185,6 +185,64 @@ var startApp = function() {
              }
         });
     });
+
+    // Get layer names from the icebox api
+    var IceboxLayer = "";
+    var selIce = document.getElementById('ice-list');
+    $.getJSON(ICEBOX_ARTIFACTS_URL,
+    function(json) {
+        for (var i=0; i < json.length; i++) {
+            var IceboxLayer = json[i].name;
+            var opt = document.createElement('option');
+            opt.innerHTML = IceboxLayer;
+            opt.value = json[i].url;
+            selIce.appendChild(opt);
+        }
+    });
+
+
+    // Add layers from the Icebox API
+    $(document).ready(function() {
+        $('#addIceLayer').click(function() {
+            var e = document.getElementById("ice-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+            var selectedLayerName = e.options[e.selectedIndex].innerHTML;
+            var myStyle = {color:'red', fillColor:'orange', radius: 4, opacity: 1.0, fillOpacity: 1.0, weight: 2, clickable: false};
+                
+            // Check for duplicae layes
+            if (selectedLayer in layers) {
+               showDuplicateMsg();
+            }
+            else {
+                var geojsonLayer = L.geoJson.ajax(selectedLayer, {pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, myStyle);
+                }});
+                layerControl.addOverlay(geojsonLayer, selectedLayerName);
+                map.addLayer(geojsonLayer);
+                // Keep track of layers that have been added
+                layers[selectedLayer] =  geojsonLayer;
+            }
+        });
+    });
+
+
+    // Remove layers from icebox
+    $(document).ready(function() {
+        $('#removeIceLayer').click(function() {
+            var e = document.getElementById("ice-list");
+            var selectedLayer = e.options[e.selectedIndex].value;
+             // Check in the layer is in the map port
+             if (selectedLayer in layers) {
+                 layerControl.removeLayer(layers[selectedLayer]);
+                 map.removeLayer(layers[selectedLayer]);
+                 delete layers[selectedLayer];
+             }
+             else {
+                 showRemoveMsg();
+             }
+        });
+    });
+
 };
 
 app.initialize(startApp);
