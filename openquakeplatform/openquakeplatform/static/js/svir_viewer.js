@@ -25,40 +25,37 @@ var startApp = function() {
 
     app.createMap();
 
-    $(function () {
-
-        $('.footable').footable();
-
-
+    // Set up the data table
+    $(document).ready(function() {
+        $('#svir-table').dataTable();
     });
+
+    function BuildDataTable(e) {
+        var values = [];
+        for (var d in e.data) {
+            values.push(e.data[d]);
+        }
+        var keys = Object.keys(e.data);
+        for (var i=0, il=values.length; i<il; i++){
+            $('#svir-table').dataTable().fnAddData( [
+                keys[i],
+                values[i]
+                ]
+            );
+        }
+    };
 
     var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-test3/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
     utfGrid.on('click', function (e) {
-        
-        //clearTable();
+        // When the map is clikced the table needs to be cleared out and recreated 
+        var countryTable = $("#svir-table").dataTable();
+        countryTable.fnClearTable();
 
-         // Build the html table
+        BuildDataTable(e);
+
         if (e.data) {
             console.log(e.data);
-
-            var values = [];
-            for (var d in e.data) {
-                values.push(e.data[d]);
-            }
-
-            var keys = Object.keys(e.data);
-
-            var r = new Array(), j = -1;
-            for (var i=0, il=values.length; i<il; i++){
-                html += '<tr><td>'
-                    + keys[i]
-                    +'</td><td>'
-                    + values[i]
-                    +'</td></tr>';
-            }
-        
-            $('#svir-table').append(html);
 
             var countryName = e.data.country_na;
             var foo = e.data.ecoeac092;
@@ -67,7 +64,6 @@ var startApp = function() {
             var tom = e.data.ecoeac012;
             console.log(foo);
             console.log(bar);
-
 
             // Create the Charts
             var chart = new Highcharts.Chart({

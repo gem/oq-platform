@@ -23,27 +23,16 @@ Explore - {{block.super}}
 {% block body_outer %}
 
 <!--footable-->
-Table Search: <input id="filter" type="text" />
-
-<table class="footable" id="svir-table" data-filter="#filter" data-filter-minimum="3" data-page-size="5">
+<table id="svir-table" >
   <thead id="tablehead">
     <tr>
       <th>Index </th>
-      <th data-class="highlight" data-type="numeric" data-sort-initial="true">Value</th>
+      <th>Value</th>
     </tr>
   </thead>
-  <tbody id="tableBody" >
-    <tr>
-    	<td>
-    		
-    	</td>
-    </tr>
-    <tr>
-    </tr>
-    <div class="pagination pagination-centered hide-if-no-paging"></div>
-  </tbody>
+  
+  
 </table>
-
 <!--
 <div id="dialog-datagrid" style="height: 60px; width: 100%; overflow: scroll;"><table id="svir-table">
     <thead id="tablehead"><tr><th>Country</th><th>Index Value</th><th>Index Value2</th><th>Index Value3</th><th>Index Value4</th></tr></thead>

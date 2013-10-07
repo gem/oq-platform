@@ -24,8 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/wax-controls.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/oqplatform_leaflet.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/footable.core.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/footable.metro.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_table.css" />
 {% endblock extra_head %}
 
 {% block oq_body_content %}
@@ -55,10 +54,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}js/leaflet.utfgrid.js"></script>
     <script src="{{ STATIC_URL }}js/leaflet.ajax.min.js"></script>
     <script src="{{ STATIC_URL }}js/highcharts.js"></script>
-    <script src="{{ STATIC_URL }}js/footable.js"></script>
-    <script src="{{ STATIC_URL }}js/footable.sort.js"></script>
-    <script src="{{ STATIC_URL }}js/footable.filter.js"></script>
-    <script src="{{ STATIC_URL }}js/footable.paginate.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.dataTables.js"></script>
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the
          frontend.
@@ -84,4 +80,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     var CURRENT_USER = "{{request.user}}";
 
     </script>
+
 {% endblock extra_script %}
