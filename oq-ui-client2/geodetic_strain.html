@@ -19,21 +19,21 @@
 
   {% block title %} {% trans "Hazard Models" %} - {{ block.super }} {% endblock %}
   {% block indexclass %} class="here" {% endblock %}
-          
+
   {% block head %}
 
   {{ block.super }}
-          
+
     <!-- IE 8 Compatibility -->
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
-          
+
     <!-- Google resources -->
     <script src="//maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
 
     <!-- leaflet resources -->
     <link rel="stylesheet" href="src/Leaflet/dist/leaflet.css" />
     <script type="text/javascript" src="src/Leaflet/dist/leaflet.js"></script>
-    
+
     <!-- wax resources -->
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/wax-controls.css" media="screen" >
     <script type='text/javascript' src='src/L.Wax/L.Wax.js'></script>
@@ -47,7 +47,7 @@
 
     <!-- Hazard Models application -->
     <script type="text/javascript" src="src/geodetic_strain/geodetic_strain.js"></script>
-    
+
 
   {% endblock %}
     <!--Google Analytics-->
@@ -66,8 +66,8 @@
     </script>
 
   {% block main %}
- 
+
       <div id="map" style="width: 100%;"></div>
-      
+
   {% endblock %}
 
