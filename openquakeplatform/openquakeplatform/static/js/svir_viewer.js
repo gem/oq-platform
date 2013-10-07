@@ -27,7 +27,10 @@ var startApp = function() {
 
     // Set up the data table
     $(document).ready(function() {
-        $('#svir-table').dataTable();
+        $('#svir-table').dataTable({
+            "aaSorting": [ [0,'asc'], [1,'asc'] ]
+        });
+
     });
 
     function BuildDataTable(e) {
