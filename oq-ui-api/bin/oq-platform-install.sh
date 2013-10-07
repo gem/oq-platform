@@ -20,7 +20,7 @@
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="master"
+export GEM_OQ_PLATF_GIT_VERS="plat-regress"
 
 export GEM_OQ_PLATF_SUBMODS=""
 
@@ -590,7 +590,7 @@ exit 0"
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geojson.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geojson.html'}, name='geojson'),\n@g" "$GEM_GN_URLS"
 
     # add geodetic-strain to urls.py (currently turned off)
-    # sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic_strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic_strain.html'}, name='geodetic_strain'),\n@g" "$GEM_GN_URLS"
+    sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    url(r'^oq-platform2/geodetic_strain.html$', 'django.views.generic.simple.direct_to_template',\n    {'template': 'oq-platform2/geodetic_strain.html'}, name='geodetic_strain'),\n@g" "$GEM_GN_URLS"
 
     # add icebox to urls.py
     sed -i "s@urlpatterns *= *patterns('',@urlpatterns = patterns('',\n    (r'^icebox/', include('geonode.icebox.urls')),\n@g" "$GEM_GN_URLS"
