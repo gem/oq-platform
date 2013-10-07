@@ -41,7 +41,7 @@ Ext.onReady(function() {
         portalConfig: {
             layout: "border",
             region: "center",
-            
+
             // by configuring items here, we don't need to configure portalItems
             // and save a wrapping container
             items: [header, {
@@ -60,7 +60,7 @@ Ext.onReady(function() {
             }, footer],
             bbar: {id: "mybbar"}
         },
-        
+
         // configuration of all tool plugins for this application
         tools: [{
             ptype: "gxp_layertree",
@@ -81,11 +81,16 @@ Ext.onReady(function() {
             actionTarget: {target: "tree.tbar"}
         }, {
             ptype: "gxp_legend",
-            actionTarget: "map.tbar"
+            actionTarget: "map.tbar",
+            outputConfig: {
+                width: 360,
+                height: 400,
+                defaults: { autoScroll: true }
+            }
         }, {
             ptype: "gxp_wmsgetfeatureinfo",
             actionTarget: "tree.tbar",
-            format: "grid", 
+            format: "html",
             outputConfig: {
                 width: 400
             }
@@ -105,7 +110,7 @@ Ext.onReady(function() {
             ptype: "gxp_navigationhistory",
             actionTarget: "map.tbar"
         }],
-        
+
         // layer sources
         sources: {
             local: {
@@ -123,7 +128,7 @@ Ext.onReady(function() {
                 ptype: "gxp_googlesource"
             }
         },
-        
+
         // map and layers
         map: {
             id: "mymap", // id needed to reference map in portalConfig above
