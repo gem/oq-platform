@@ -19,7 +19,7 @@ var layerControl;
 // Keep track of the layer names
 var layers;
 
-var app = new OQLeaflet.OQLeafletApp(LEAFLET_BASE_MAP_URL);
+var app = new OQLeaflet.OQLeafletApp(THIRD_PARTY_URLS.leaflet_base_map);
 
 var startApp = function() {
 
@@ -189,7 +189,7 @@ var startApp = function() {
     // Get layer names from the icebox api
     var IceboxLayer = "";
     var selIce = document.getElementById('ice-list');
-    $.getJSON(ICEBOX_ARTIFACTS_URL,
+    $.getJSON(ICEBOX_URLS.artifacts,
     function(json) {
         for (var i=0; i < json.length; i++) {
             var IceboxLayer = json[i].name;

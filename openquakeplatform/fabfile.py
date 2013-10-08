@@ -58,12 +58,20 @@ except ImportError:
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
 
-#: API endpoint where we can get all artifacts from Icebox
-ICEBOX_ARTIFACTS_URL = 'http://localhost:8000/icebox/artifacts/'
-#: General purpose base map for mapping apps which are based on Leaflet
-LEAFLET_BASE_MAP_URL = (
-    'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
-)
+ICEBOX_URLS = {
+    'artifacts': 'http://localhost:8000/icebox/artifacts/',
+    'artifacts_import': 'http://localhost:8000/icebox/artifacts/import/',
+
+}
+OQ_ENGINE_SERVER_URLS = {
+    'run_hazard_calc_form': 'http://localhost:11888/v1/calc/hazard/run',
+    'run_risk_calc_form': 'http://localhost:11888/v1/calc/risk/run',
+}
+THIRD_PARTY_URLS = {
+    'leaflet_base_map': (
+        'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
+    ),
+}
 """
 
 

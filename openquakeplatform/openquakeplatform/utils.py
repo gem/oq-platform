@@ -14,6 +14,7 @@ class OQTemplateView(TemplateView):
         # At the moment, we just need to get the location of the icebox
         # artifacts. Other icebox URLs may need to be added as well in the
         # future.
-        context['icebox_artifacts_url'] = local_settings.ICEBOX_ARTIFACTS_URL
-        context['leaflet_base_map_url'] = local_settings.LEAFLET_BASE_MAP_URL
+        context['icebox_urls'] = local_settings.ICEBOX_URLS
+        context['oq_engine_server_urls'] = local_settings.OQ_ENGINE_SERVER_URLS
+        context['third_party_urls'] = local_settings.THIRD_PARTY_URLS
         return context
