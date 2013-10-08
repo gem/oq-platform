@@ -25,10 +25,15 @@ var startApp = function() {
 
     app.createMap();
 
+    $(function() {
+        $( "#categoryTabs" ).tabs();
+    });
+
     // Set up the data table
     $(document).ready(function() {
         $('#svir-table').dataTable({
-            "aaSorting": [ [0,'asc'], [1,'asc'] ]
+            "aaSorting": [ [0,'asc'], [1,'asc'] ],
+            "sPaginationType": "full_numbers"
         });
 
     });
