@@ -44,11 +44,11 @@ var startApp = function() {
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
-        $("#worning-duplicate").dialog("open");
+        $("#warning-duplicate").dialog("open");
     };
 
     $(document).ready(function() {
-        $("#worning-duplicate").dialog({
+        $("#warning-duplicate").dialog({
             autoOpen: false,
             hieght: 300,
             width: 350,
@@ -58,11 +58,11 @@ var startApp = function() {
 
     // No Layer to remove warnning message
     function showRemoveMsg() {
-        $("#worning-no-layer").dialog("open");
+        $("#warning-no-layer").dialog("open");
     };
 
     $(document).ready(function() {
-        $("#worning-no-layer").dialog({
+        $("#warning-no-layer").dialog({
             autoOpen: false,
             hieght: 300,
             width: 350,
