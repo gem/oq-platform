@@ -119,7 +119,7 @@ ALTER TABLE geoarchiveevents
   OWNER TO postgres;
   
  CREATE OR REPLACE VIEW geoarchiveevents_quick AS 
- SELECT event.name AS event, event.id AS eventid, event.country, event.yearint
+ SELECT DISTINCT event.name AS event, event.id AS eventid, event.country, event.yearint
    FROM event
    JOIN study ON study.parentid = event.id
   WHERE study.studytypecode::text = 'PHOTO'::text OR study.studytypecode::text = 'CRI'::text;
@@ -127,10 +127,7 @@ ALTER TABLE geoarchiveevents
 ALTER TABLE geoarchiveevents_quick
   OWNER TO postgres;
 
- 
 
-  
-  
 CREATE OR REPLACE VIEW geoarchivelocationsforjson AS  
 SELECT event.name AS event, event.country, event.yearint, study.name AS study, location.id AS locationid, location.name AS locationname, 
  count(photologue_photo.id) AS photocount, min(photologue_photo.id) AS samplephotoid, 
@@ -159,9 +156,24 @@ ALTER TABLE geoarchivelocationsforjson
   OWNER TO econduser;
 
   
-  
-CREATE OR REPLACE VIEW geoarchivemasterfull AS 
- SELECT event.name AS event, event.id AS eventid, event.country, event.yearint, event.the_geom AS event_geom, study.name AS study, study.id AS studyid, location.id AS locationid, location.name AS locationname, location.the_geom AS location_geom, location.isaggregated AS locationaggregateflag, photologue_photo.id AS photoid, photologue_photo.qualitycode, photologue_photo.name AS photofilename, photologue_photo.subjectcode, photologue_photo.detailcode, photologue_photo.daysafterevent, photologue_photo.timeofdaycode, photologue_photo.orientationcode, photologue_photo.photographerprofessioncode, inventoryclass.id, inventoryclass.name, inventoryclass.parentid, inventoryclass.parenttype, inventoryclass.mat_type_l, inventoryclass.mat_tech_l, inventoryclass.mas_mort_l, inventoryclass.mas_rein_l, inventoryclass.steel_conn_l, inventoryclass.llrs_l, inventoryclass.llrs_duct_l, inventoryclass.roofsysmat, inventoryclass.roofsystyp, inventoryclass.floor_mat, inventoryclass.floor_type, inventoryclass.story_ag_q, inventoryclass.story_ag_1, inventoryclass.story_ag_2, inventoryclass.yr_built_q, inventoryclass.yr_built_1, inventoryclass.yr_built_2, inventoryclass.str_irreg, inventoryclass.str_hzir_p, inventoryclass.str_veir_p, inventoryclass.occupcy, inventoryclass.occpcy_dt, inventoryclass.designcode, inventoryclass.retrofit, inventoryclass.description, inventoryclass.inventoryclass_c, inventoryclass.ownerid, inventoryclass.lastupdatebyid, inventoryclass.lastupdate, inventoryclass.levelorder, inventoryclass.llrs_qual, inventoryclass.plan_shape, inventoryclass."position", inventoryclass.nonstrcexw, inventoryclass.roof_conn, inventoryclass.roofcovmat, inventoryclass.roof_shape, inventoryclass.floor_conn, inventoryclass.foundn_sys, inventoryclass.story_bg_q, inventoryclass.story_bg_1, inventoryclass.story_bg_2, inventoryclass.ht_gr_gf_q, inventoryclass.ht_gr_gf_1, inventoryclass.ht_gr_gf_2, inventoryclass.slope, inventoryclass.irreg_q, unifieddamagelevel.name AS unifieddamagelevelname, unifieddamagelevel.id AS unifieddamagelevelid, lookupassetclass.name AS assetclass, lookupassetclass.id AS assetclassid, count(surveyvalue.id) AS aggregationtest
+ CREATE OR REPLACE VIEW econd.geoarchivemasterfull AS 
+ SELECT event.name AS event, event.id AS eventid, event.country, event.yearint, event.the_geom AS event_geom, study.name AS study, study.id AS studyid, 
+ location.id AS locationid, location.name AS locationname, location.the_geom AS location_geom, location.isaggregated AS locationaggregateflag, 
+ photologue_photo.id AS photoid, photologue_photo.qualitycode, photologue_photo.name AS photofilename, photologue_photo.subjectcode, 
+ photologue_photo.detailcode, photologue_photo.daysafterevent, photologue_photo.timeofdaycode, photologue_photo.orientationcode, 
+ photologue_photo.photographerprofessioncode, surveyvalue.structuretypecode, surveyvalue.vulnerabilityclasscode,
+ inventoryclass.id, inventoryclass.name, inventoryclass.parentid, inventoryclass.parenttype, 
+ inventoryclass.mat_type_l, inventoryclass.mat_tech_l, inventoryclass.mas_mort_l, inventoryclass.mas_rein_l, inventoryclass.steel_conn_l, 
+ inventoryclass.llrs_l, inventoryclass.llrs_duct_l, inventoryclass.roofsysmat, inventoryclass.roofsystyp, inventoryclass.floor_mat, 
+ inventoryclass.floor_type, inventoryclass.story_ag_q, inventoryclass.story_ag_1, inventoryclass.story_ag_2, inventoryclass.yr_built_q, 
+ inventoryclass.yr_built_1, inventoryclass.yr_built_2, inventoryclass.str_irreg, inventoryclass.str_hzir_p, inventoryclass.str_veir_p, 
+ inventoryclass.occupcy, inventoryclass.occpcy_dt, inventoryclass.designcode, inventoryclass.retrofit, inventoryclass.description, 
+ inventoryclass.inventoryclass_c, inventoryclass.ownerid, inventoryclass.lastupdatebyid, inventoryclass.lastupdate, inventoryclass.levelorder, 
+ inventoryclass.llrs_qual, inventoryclass.plan_shape, inventoryclass."position", inventoryclass.nonstrcexw, inventoryclass.roof_conn, 
+ inventoryclass.roofcovmat, inventoryclass.roof_shape, inventoryclass.floor_conn, inventoryclass.foundn_sys, inventoryclass.story_bg_q, 
+ inventoryclass.story_bg_1, inventoryclass.story_bg_2, inventoryclass.ht_gr_gf_q, inventoryclass.ht_gr_gf_1, inventoryclass.ht_gr_gf_2, 
+ inventoryclass.slope, inventoryclass.irreg_q, unifieddamagelevel.name AS unifieddamagelevelname, unifieddamagelevel.id AS unifieddamagelevelid, 
+ lookupassetclass.name AS assetclass, lookupassetclass.id AS assetclassid, count(surveyvalue.id) AS aggregationtest
    FROM location
    JOIN photologue_photo ON location.id = photologue_photo.parentid
    JOIN study ON study.id = location.parentid
@@ -173,10 +185,16 @@ CREATE OR REPLACE VIEW geoarchivemasterfull AS
    JOIN lookupassetclass ON surveyvalue.assetclasscode::text = lookupassetclass.id::text
    JOIN lookupassettype ON surveyvalue.assettypecode::text = lookupassettype.id::text
   WHERE location.parenttype::text = 'study'::text AND location.isaggregated = 0
-  GROUP BY event.name, event.id, event.country, event.yearint, event.the_geom, study.name, study.id, location.id, location.name, location.the_geom, location.isaggregated, photologue_photo.id, photologue_photo.name, photologue_photo.qualitycode, inventoryclass.name, inventoryclass.id, unifieddamagelevel.name, unifieddamagelevel.id, lookupassetclass.name, lookupassetclass.id;
+  GROUP BY event.name, event.id, event.country, event.yearint, event.the_geom, study.name, study.id, location.id, location.name, 
+  location.the_geom, location.isaggregated, photologue_photo.id, photologue_photo.name, photologue_photo.qualitycode, surveyvalue.structuretypecode, surveyvalue.vulnerabilityclasscode,inventoryclass.name, 
+  inventoryclass.id, unifieddamagelevel.name, unifieddamagelevel.id, lookupassetclass.name, lookupassetclass.id;
 
 ALTER TABLE geoarchivemasterfull
   OWNER TO econduser;
+
+
+ 
+
 
 
 CREATE OR REPLACE VIEW gemecdallevents AS 
@@ -226,15 +244,13 @@ CREATE OR REPLACE VIEW gemecdlocations AS
    FROM location
    JOIN study ON study.id = location.parentid
    JOIN event ON event.id = study.parentid
-   JOIN surveyvalue ON location.id = surveyvalue.parentid
+   LEFT JOIN surveyvalue ON location.id = surveyvalue.parentid
    LEFT JOIN photologue_photo ON location.id = photologue_photo.parentid
   WHERE location.parenttype::text = 'study'::text
   GROUP BY event.name, event.id, event.country, event.yearint, study.name, study.id, location.id, location.name, location.isaggregated;
 
 ALTER TABLE gemecdlocations
   OWNER TO econduser;
-
-
 
 
 CREATE OR REPLACE VIEW gemecdlocationsforjson AS 

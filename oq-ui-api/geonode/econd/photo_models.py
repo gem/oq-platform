@@ -283,6 +283,8 @@ class GeoArchiveOverviewFull (models.Model):
     timeofdaycode = models.ForeignKey(Lookuptimeofdaycode, null=True, db_column='timeofdaycode', blank=True,verbose_name='Time of day',default='0')
     orientationcode = models.ForeignKey(Lookuporientationcode, null=True, db_column='orientationcode', blank=True,verbose_name='Subject orientation',default='0', help_text='What facade of the building is pictured')
     photographerprofessioncode = models.ForeignKey(Lookupphotographerprofessioncode, null=True, db_column='photographerprofessioncode', blank=True,verbose_name='Photographer profession',default='0')
+    structuretypecode = models.CharField(max_length=10, null=False, default='0', verbose_name='Structure type code IMS 2014', )
+    vulnerabilityclasscode = models.CharField(max_length=10, null=False, default='0', verbose_name='Vulnerability class IMS 2014', )
 
     name = models.CharField(max_length=255, blank=True)
     parentid = models.IntegerField(null=True, blank=True)
