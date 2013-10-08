@@ -15,6 +15,15 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var layerControl;
+// Keep track of the layer names
+var layers;
+
+// Make a list of categorys
+var categoryList = [];
+var layersByCat = {};
+var layerNames = {};
+
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
 );
@@ -25,8 +34,214 @@ var startApp = function() {
 
     app.createMap();
 
+    layers = {};
+
+    layerControl = L.control.layers(app.baseLayers);
+
+    // Layer selection dialog
+    $("#dialog-layers").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true
+    });
+
+    // Append the layer-selection to the oq-context-ribbon div
+    //document.getElementById("oq-context-ribbon").appendChild("test");
+    var foo = document.getElementById("oq-body-sidebar");
+    foo.innerHTML = "<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>";
+
+    $("#layer-selection").button().click(function() {
+        $("#dialog-layers").dialog("open");
+    });
+
+    // Duplicate layer warnning message
+    function showDuplicateMsg() {
+        $("#worning-duplicate").dialog("open");
+    };
+
+    $(document).ready(function() {
+        $("#worning-duplicate").dialog({
+            autoOpen: false,
+            hieght: 300,
+            width: 350,
+            modal: true
+        });
+    });
+
+    // No Layer to remove warnning message
+    function showRemoveMsg() {
+        $("#worning-no-layer").dialog("open");
+    };
+
+    $(document).ready(function() {
+        $("#worning-no-layer").dialog({
+            autoOpen: false,
+            hieght: 300,
+            width: 350,
+            modal: true
+        });
+    });
+
+        // Remove layer 
+    var removeLayer = function () {
+            // Clear the contents of the table
+            $("#tableBody").html("");
+            $("#tablehead").html("");
+    
+            var e = document.getElementById("layer-list");
+            var layerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var layerIdArray = layerNames[layerId];
+            var selectedLayer = layerIdArray.toString();
+    
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+    };
+
+     // Get layer names from tilestream
+    var tileStreamLayer = "";
+    var category = "";
+    var selCat = document.getElementById('layer-category');
+    var selLayer = document.getElementById('layer-list');
+
+    // Create a header for the menu drop down
+    var catMenuHeader = document.createElement('option');
+    catMenuHeader.innerHTML = "Category:";
+    selCat.appendChild(catMenuHeader);
+
+    $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
+    function(json) {
+        // Create the category list (build the object)
+        for (var i=0; i < json.length; i++) {
+            var name = json[i].mapped_value;
+            var cat = json[i].category;
+            if (cat != undefined) {
+                categoryList.push(cat);
+                layerNames[name] = [];
+                layersByCat[cat] = [];
+            }
+        }
+
+        // Create the category list (population the object)
+        for (var i=0; i < json.length; i++) {
+            var name = json[i].mapped_value;
+            var cat = json[i].category;
+
+            if (cat != undefined) {
+                layerId = json[i].id;
+                layerTitle = json[i].mapped_value;
+                layerNames[name].push(layerId);
+                layersByCat[cat].push(layerTitle);
+            }
+        }
+
+    // Get unique category names
+    var categoryUnique = categoryList.filter(function(itm,i,categoryList){
+        return i==categoryList.indexOf(itm);
+    });
+
+    for (var i in categoryUnique) {
+        // Append category names to dropdown list
+        var categoryTitle = categoryUnique[i];
+        var opt = document.createElement('option');
+        opt.innerHTML = categoryTitle;
+        opt.value = categoryTitle;
+        selCat.appendChild(opt);
+        // Append layer list to dowpdown
+        var layerOpt = document.createElement('option');
+    }
+
+    });
+
+    // Create dynamic categorized layer dialog
+    $("#layer-category").change(function() {
+        // Remove the layer list element
+        document.getElementById("layer-list").options.length = 0;
+
+       // Create the layer list ibased on the category selected
+        var e = document.getElementById("layer-category");
+        var strUser = e.options[e.selectedIndex].value;
+        var layersArray = layersByCat[strUser];
+        for (var i in layersArray) {
+            var layers = layersArray[i];
+            var opt = document.createElement('option');
+            opt.innerHTML = layers;
+            opt.valuse = layers;
+            selLayer.appendChild(opt);
+        }
+    });
+
+    map.addControl(layerControl.setPosition("topleft"));
+
+    // Add layers form tilestream list
+    $(document).ready(function() {
+        $("#addTileLayer").click(function() {
+            var e = document.getElementById("layer-list");
+            var layerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var layerIdArray = layerNames[layerId];
+            var selectedLayer = layerIdArray.toString();
+
+            // Check for duplicae layes
+            if (selectedLayer in layers) {
+                showDuplicateMsg();
+            }
+            else {
+                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                    +selectedLayer
+                    +'.json'});
+                layerControl.addOverlay(tileLayer, selectedLayer);
+                map.addLayer(tileLayer);
+                // Keep track of layers that have been added
+                layers[selectedLayer] = tileLayer;
+            }
+        });
+    });
+
+    // Remove layers from tilestream
+    $(document).ready(function() {
+        $('#removeTileLayer').click(function() {
+    
+            var e = document.getElementById("layer-list");
+            var layerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var layerIdArray = layerNames[layerId];
+            var selectedLayer = layerIdArray.toString();
+    
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+        });
+    });
+
+    $("#table-selection").button().click(function() {
+        $("#dialog-datagrid").dialog("open");
+    });
+
     $(function() {
-        $( "#categoryTabs" ).tabs();
+        $( "#categoryTabs" ).tabs({
+            collapsible: true
+        });
+
     });
 
     // Set up the data table
