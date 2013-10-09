@@ -38,22 +38,17 @@ var startApp = function() {
 
     layerControl = L.control.layers(app.baseLayers);
 
-    // Layer selection dialog
-    $("#dialog-layers").dialog({
-        autoOpen: false,
-        height: 300,
-        width: 350,
-        modal: true
-    });
+    $("#oq-body-sidebar").append('<form id="tile-form-list"><br>Category:<br> <select id="layer-category"></select><br>Indicator:<br> <select id="layer-list"></select><br><input type="button" id="addTileLayer" value="Add Layer"><input type="button" id="removeTileLayer" value="Remove Layer"></form>');
 
     // Append the layer-selection to the oq-context-ribbon div
     //document.getElementById("oq-context-ribbon").appendChild("test");
-    var foo = document.getElementById("oq-body-sidebar");
-    foo.innerHTML = "<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>";
+    //var foo = document.getElementById("oq-body-sidebar");
+    //foo.innerHTML = "<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>";
+    //$("#oq-body-sidebar").append("<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>");
 
-    $("#layer-selection").button().click(function() {
-        $("#dialog-layers").dialog("open");
-    });
+    //$("#layer-selection").button().click(function() {
+      //  $("#dialog-layers").dialog("open");
+    //});
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -83,7 +78,7 @@ var startApp = function() {
         });
     });
 
-        // Remove layer 
+    // Remove layer 
     var removeLayer = function () {
             // Clear the contents of the table
             $("#tableBody").html("");
@@ -107,7 +102,7 @@ var startApp = function() {
             }
     };
 
-     // Get layer names from tilestream
+    // Get layer names from tilestream
     var tileStreamLayer = "";
     var category = "";
     var selCat = document.getElementById('layer-category');
@@ -248,7 +243,11 @@ var startApp = function() {
     $(document).ready(function() {
         $('#svir-table').dataTable({
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers"
+            "sPaginationType": "full_numbers",
+            //"aoColumnDefs": [
+              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            //],
+
         });
 
     });
@@ -268,7 +267,7 @@ var startApp = function() {
         }
     };
 
-    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-test3/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-all/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
     utfGrid.on('click', function (e) {
         // When the map is clikced the table needs to be cleared out and recreated 
@@ -317,9 +316,60 @@ var startApp = function() {
                     name: 'ecoeac082',
                     data: [bar, tom]
                 }],
+            });
 
-            })
-
+            $('#spiderChart').highcharts({
+                chart: {
+                    polar: true,
+                    type: 'line'
+                },
+                
+                title: {
+                    text: 'foo title',
+                    x: -80
+                },
+                
+                pane: {
+                    size: '80%'
+                },
+                
+                xAxis: {
+                    categories: ['foo', 'bar', 'foobar', 'barfoo', 
+                            'tomcat', 'bob'],
+                    tickmarkPlacement: 'on',
+                    lineWidth: 0
+                },
+                    
+                yAxis: {
+                    gridLineInterpolation: 'polygon',
+                    lineWidth: 0,
+                    min: 0
+                },
+                
+                tooltip: {
+                    shared: true,
+                    pointFormat: '<span style="color:{series.color}">{series.name}: <b>${point.y:,.0f}</b><br/>'
+                },
+                
+                legend: {
+                    align: 'right',
+                    verticalAlign: 'top',
+                    y: 70,
+                    layout: 'vertical'
+                },
+                
+                series: [{
+                    name: 'bob',
+                    data: [43000, 19000, 60000, 35000, 17000, 10000],
+                    pointPlacement: 'on'
+                }, {
+                    name: 'tomcat',
+                    data: [50000, 39000, 42000, 31000, 26000, 14000],
+                    pointPlacement: 'on'
+                }]
+            
+            });
+            /*
             var pieChart = new Highcharts.Chart({
 
                 chart: {
@@ -364,17 +414,8 @@ var startApp = function() {
                         ['bob',    bob],
                     ]
                 }]
-        
-
-
-            })
-
-            
-
-
-         
-
-            
+            });
+*/
         } else {
             document.getElementById('click').innerHTML = 'click: nothing';
         }

@@ -22,18 +22,6 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 
-<div id="dialog-layers" title="Layer Selection">
-    <form id="tile-form-list">
-        <br>
-        Category:<br> <select id="layer-category"></select>
-        <br>
-        Indicator:<br> <select id="layer-list"></select>
-        <br>
-        <input type="button" id="addTileLayer" value="Add Layer">
-        <input type="button" id="removeTileLayer" value="Remove Layer">
-    </form>
-</div>
-
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
 </div>
@@ -45,12 +33,12 @@ Explore - {{block.super}}
 <!-- Category tags-->
 <div id="categoryTabs">
   <ul>
-    <li><a href="#tabs-1">Economy</a></li>
-    <li><a href="#tabs-2">Governance</a></li>
+    <li><a href="#economy">Economy</a></li>
+    <li><a href="#population">Governance</a></li>
     <li><a href="#tabs-3">Population</a></li>
     <li><a href="#tabs-4">Education</a></li>
   </ul>
-  <div id="tabs-1">
+  <div id="economy">
 
     <table id="svir-table" >
       <thead id="tablehead">
@@ -65,13 +53,23 @@ Explore - {{block.super}}
 
     <!--first chart -->
     <div>
-    <div id="container" style="width:600px; height:400px; display:inline-block;"></div>
-    <div id="container2" style="width:400px; height:400px; display:inline-block;"></div>
+    <div id="container" style="width:400px; height:400px; display:inline-block;"></div>
+    <div id="spiderChart" style="width:500px; height:400px; display:inline-block;"></div>
+
+    <form action="">
+      <select name="cars">
+      <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="fiat">Fiat</option>
+      <option value="audi">Audi</option>
+      </select>
+    </form>
+
     </div>
 
   </div>
 
-  <div id="tabs-2">
+  <div id="population">
     <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
   </div>
   <div id="tabs-3">
