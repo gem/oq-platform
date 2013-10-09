@@ -65,3 +65,7 @@ input.oq-layer-tree-node {
     max-height: 200px;
     overflow: scroll;
 }
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
