@@ -7,6 +7,7 @@ from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 
 from openquakeplatform import local_settings
+from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
 
@@ -28,22 +29,6 @@ sitemaps = {
 }
 
 
-class OQTemplateView(TemplateView):
-    """
-    A view utility which renders templates and allows for injection of
-    additional context variables.
-    """
-
-    def get_context_data(self, **kwargs):
-        context = super(OQTemplateView, self).get_context_data(**kwargs)
-
-        # At the moment, we just need to get the location of the icebox
-        # artifacts. Other icebox URLs may need to be added as well in the
-        # future.
-        context['icebox_artifacts_url'] = local_settings.ICEBOX_ARTIFACTS_URL
-        return context
-
-
 urlpatterns = patterns(
     '',
 
@@ -52,22 +37,22 @@ urlpatterns = patterns(
     url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
         name="geoserver"),
 
-    url(r'^isc_viewer/$', TemplateView.as_view(
+    url(r'^isc_viewer/$', OQTemplateView.as_view(
         template_name="isc_viewer.html"), name='isc_viewer'),
-    url(r'^ghec_viewer/$', TemplateView.as_view(
+    url(r'^ghec_viewer/$', OQTemplateView.as_view(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
-    url(r'^geodetic/$', TemplateView.as_view(
+    url(r'^geodetic/$', OQTemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
     url(r'^explore_leaflet/$', OQTemplateView.as_view(
         template_name="explore_leaflet.html"), name='explore_leaflet'),
 
-    url(r'^geojson/$', TemplateView.as_view(
+    url(r'^geojson/$', OQTemplateView.as_view(
         template_name="geojson.html"), name='geojson'),
-    url(r'^hazard_models/$', TemplateView.as_view(
+    url(r'^hazard_models/$', OQTemplateView.as_view(
         template_name="hazard_models.html"), name='hazard_models'),
-    url(r'^gaf_viewer/$', TemplateView.as_view(
+    url(r'^gaf_viewer/$', OQTemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^calculate/$', TemplateView.as_view(
+    url(r'^calculate/$', OQTemplateView.as_view(
         template_name="calculate.html"), name="calculate"),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),

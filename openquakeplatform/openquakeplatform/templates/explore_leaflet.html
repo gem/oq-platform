@@ -57,11 +57,11 @@ Explore - {{block.super}}
     <input id="layer-selection" type="button" value="Layers"/>
 </div>
 
-<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
+<div id="warning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
 </div>
 
-<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+<div id="warning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
 </div>
 {{block.super}}
@@ -70,7 +70,4 @@ Explore - {{block.super}}
 {% block extra_script %}
     {{block.super}}
     <script src="{{ STATIC_URL }}js/explore_leaflet.js"></script>
-    <script>
-    var ICEBOX_ARTIFACTS_URL = "{{ icebox_artifacts_url }}";
-    </script>
 {% endblock extra_script %}
