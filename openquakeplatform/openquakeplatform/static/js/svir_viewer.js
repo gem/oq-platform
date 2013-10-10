@@ -80,26 +80,26 @@ var startApp = function() {
 
     // Remove layer 
     var removeLayer = function () {
-            // Clear the contents of the table
-            $("#tableBody").html("");
-            $("#tablehead").html("");
-    
-            var e = document.getElementById("layer-list");
-            var layerId = e.options[e.selectedIndex].value;
-    
-            // Look up the layer id using the layer name
-            var layerIdArray = layerNames[layerId];
-            var selectedLayer = layerIdArray.toString();
-    
-            // Check in the layer is in the map port
-            if (selectedLayer in layers) {
-                layerControl.removeLayer(layers[selectedLayer]);
-                map.removeLayer(layers[selectedLayer]);
-                delete layers[selectedLayer];
-            }
-            else {
-                showRemoveMsg();
-            }
+        // Clear the contents of the table
+        $("#tableBody").html("");
+        $("#tablehead").html("");
+
+        var e = document.getElementById("layer-list");
+        var layerId = e.options[e.selectedIndex].value;
+
+        // Look up the layer id using the layer name
+        var layerIdArray = layerNames[layerId];
+        var selectedLayer = layerIdArray.toString();
+
+        // Check in the layer is in the map port
+        if (selectedLayer in layers) {
+            layerControl.removeLayer(layers[selectedLayer]);
+            map.removeLayer(layers[selectedLayer]);
+            delete layers[selectedLayer];
+        }
+        else {
+            showRemoveMsg();
+        }
     };
 
     // Get layer names from tilestream
@@ -228,15 +228,22 @@ var startApp = function() {
         });
     });
 
-    $("#table-selection").button().click(function() {
-        $("#dialog-datagrid").dialog("open");
+    // Spider chart variable selection dialog
+    $("#spiderChart-selection").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true
+    });
+
+    $("#spiderChart-open").button().click(function() {
+        $("#spiderChart-selection").dialog("open");
     });
 
     $(function() {
         $( "#categoryTabs" ).tabs({
             collapsible: true
         });
-
     });
 
     // Set up the data table
@@ -277,7 +284,24 @@ var startApp = function() {
         BuildDataTable(e);
 
         if (e.data) {
-            console.log(e.data);
+            //console.log(e.data);
+
+            // Populate a drop down list so the user can select attributes to be used in the spider chart
+            var values = [];
+            for (var d in e.data) {
+                values.push(e.data[d]);
+            }
+            var keys = Object.keys(e.data);
+        
+            for (var i in values) {
+                var value = values[i];
+                //console.log(data);
+
+                var spiderDropDown = '<form><input type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br></form>';
+                //var spiderDropDown = '<p>'+data+'</p>';
+                $('#spider-chart-picker').append(spiderDropDown);
+
+            }
 
             var countryName = e.data.country_na;
             var foo = e.data.ecoeac092;

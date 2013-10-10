@@ -22,6 +22,18 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 
+<div id="spiderChart-selection" title="Layer Options">
+  <!-- spider chart attribute picker-->
+  <div id"spider-chart-picker">
+
+  </div>
+</div>
+
+
+<div>
+    <input id="spiderChart-open" type="button" value="Layers"/>
+</div>
+
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
 </div>
@@ -38,6 +50,9 @@ Explore - {{block.super}}
     <li><a href="#tabs-3">Population</a></li>
     <li><a href="#tabs-4">Education</a></li>
   </ul>
+
+  <br>
+
   <div id="economy">
 
     <table id="svir-table" >
@@ -47,23 +62,12 @@ Explore - {{block.super}}
           <th>Value</th>
         </tr>
       </thead>
-      
     </table>
-
 
     <!--first chart -->
     <div>
-    <div id="container" style="width:400px; height:400px; display:inline-block;"></div>
-    <div id="spiderChart" style="width:500px; height:400px; display:inline-block;"></div>
-
-    <form action="">
-      <select name="cars">
-      <option value="volvo">Volvo</option>
-      <option value="saab">Saab</option>
-      <option value="fiat">Fiat</option>
-      <option value="audi">Audi</option>
-      </select>
-    </form>
+      <div id="container" style="width:400px; height:400px; display:inline-block;"></div>
+      <div id="spiderChart" style="width:500px; height:400px; display:inline-block;"></div>
 
     </div>
 
