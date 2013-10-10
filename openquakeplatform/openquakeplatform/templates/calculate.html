@@ -22,9 +22,16 @@ Calculate - {{block.super}}
 
 {% block oq_context_ribbon %}
     {{block.super}}
-    <button class="oq-context-control" type="button">New</button>
-    <button class="oq-context-control" type="button">Open...</button>
+    <button id="button-new-hazard-calc" class="oq-context-control" type="button">New (Hazard)</button>
+    <button id="button-new-risk-calc" class="oq-context-control" type="button">New (Risk)</button>
+    <button id="button-open-calc" class="oq-context-control" type="button">Open...</button>
 {% endblock oq_context_ribbon %}
+
+{% block body_outer %}
+    {{block.super}}
+    <!-- Placeholder div for jquery-ui dialogs -->
+    <div id="oq-calc-dialog"></div>
+{% endblock body_outer %}
 
 {% block oq_body_sidebar %}
     {{block.super}}
