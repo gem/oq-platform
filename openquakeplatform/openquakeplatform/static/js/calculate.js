@@ -19,6 +19,60 @@ var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
 
 var startApp = function() {
     app.createMap();
+
+    var showDialog = function(divTarget) {
+        var options = {};
+        options.modal = true;
+        options.title = 'Run calculation';
+        options.close = function () {
+            var theForm = $('#calc-form-wrapper');
+            if (theForm.size()) {
+                console.log('removing a calc-form-wrapper');
+                theForm.remove();
+            }
+        };
+        $(divTarget).dialog(options);
+    };
+
+
+    // TODO: hook into the submit button and don't go to another page
+    // on form submission.
+    $('#button-new-hazard-calc').click(function() {
+        /*
+        var theForm = $('#calc-form-wrapper');
+        if (theForm.size()) {
+            console.log('removing a calc-form-wrapper');
+            theForm.remove();
+        }
+        */
+
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:11888/v1/calc/hazard/run',
+            success: function(data, textStatus, jqXHR) {
+                var formDiv = $(data).filter('#calc-form-wrapper')[0];
+                $('#oq-calc-dialog').html(formDiv);
+
+                $('#add-input-model').click(
+                    function() {
+                        var modelCount = $('input[id^="id_model_"]').length;
+                        modelCount++;
+
+                        var newID = 'id_model_' + modelCount;
+                        var modelLabel = '<label for="' + newID
+                            + '">Input model ' + modelCount + '</label>';
+                        var modelField = '<input type="file" name="input_model_'
+                            + modelCount + '" id="' + newID + '" />';
+                        $('#additional-fields').append(
+                            '<p>' + modelLabel + modelField + '</p>'
+                        );
+                    }
+                );
+                showDialog('#calc-form-wrapper');
+            }
+        });
+    });
+
 };
 
 app.initialize(startApp);

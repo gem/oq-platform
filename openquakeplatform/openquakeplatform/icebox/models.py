@@ -34,3 +34,17 @@ class Artifact(models.Model):
     content_type = models.TextField(
         help_text='Content type (xml, geojson, csv, etc.'
     )
+
+
+class ArtifactGroup(models.Model):
+    user = models.ForeignKey(User)
+    group_type = models.TextField(
+        help_text=('Indicates the type of artifact group ("map", '
+                   '"calculation", etc.)')
+    )
+    name = models.TextField(help_text='Name of the artifact group')
+
+
+class ArtifactGroupLink(models.Model):
+    artifact = models.ForeignKey('Artifact')
+    artifact_group = models.ForeignKey('ArtifactGroup')

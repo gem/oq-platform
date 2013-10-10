@@ -563,8 +563,10 @@ LEAFLET_CONFIG = {
 LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
-# authentication.
-AUTH_EXEMPT_URLS = ()
+# authentication. This URL needs to be hit by the oq-engine-server.
+# TODO(LB): This will go away once we implement authorization
+# TODO(LB): See https://bugs.launchpad.net/oq-platform/+bug/1234350
+AUTH_EXEMPT_URLS = ('/icebox/artifacts/import', )
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (

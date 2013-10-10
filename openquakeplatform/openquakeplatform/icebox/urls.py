@@ -18,14 +18,20 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from openquakeplatform.icebox.views import list_artifacts
 from openquakeplatform.icebox.views import get_artifact
+from openquakeplatform.icebox.views import get_artifact_group
 from openquakeplatform.icebox.views import import_artifacts
+from openquakeplatform.icebox.views import list_artifact_groups
+from openquakeplatform.icebox.views import list_artifacts
 
 
 urlpatterns = patterns(
     'geonode.icebox.views',
+    # TODO(LB): Used named urls.
+    # See https://github.com/gem/oq-platform/pull/98#discussion_r6825031
     url(r'^artifacts/$', list_artifacts),
-    url(r'^artifact/(\d+)$', get_artifact),
-    url(r'^artifacts/import$', import_artifacts),
+    url(r'^artifact/(\d+)/$', get_artifact),
+    url(r'^artifacts/import/$', import_artifacts),
+    url(r'^artifact_groups/$', list_artifact_groups),
+    url(r'^artifact_group/(\d+)/$', get_artifact_group),
 )
