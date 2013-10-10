@@ -205,6 +205,10 @@ var startApp = function() {
                         continue;
                     }
                     // TODO(LB): handle 404s with a 'error' callback.
+                    // NOTE(LB): The layer name needs to be wrapped in an
+                    // object in order to create a proper closure of the layer
+                    // name in the callback function below.
+                    // Pay attention to the scope!!!
                     var layerInfo = {
                         name: art.name
                     };
