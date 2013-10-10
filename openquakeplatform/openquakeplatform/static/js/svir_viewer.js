@@ -15,6 +15,14 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var countriesArray = new Array();
+var attrArray = new Array();
+var selectedValue1 = new Array();
+var selectedValue2 = new Array();
+var selectedValue3 = new Array();
+var selectedValue4 = new Array();
+var attrSelection = new Array();
+
 var layerControl;
 // Keep track of the layer names
 var layers;
@@ -254,10 +262,9 @@ var startApp = function() {
             //"aoColumnDefs": [
               //  { "sWidth": "20%", "aTargets": [ 0 ] }
             //],
-
         });
-
     });
+
 
     function BuildDataTable(e) {
         var values = [];
@@ -274,7 +281,67 @@ var startApp = function() {
         }
     };
 
-    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-all/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    function buildMyCharts(countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray){
+
+
+        console.log(selectedValue2);
+
+        //console.log(selectedValues[0]);
+        // Create the Charts
+        $('#areaSpline').highcharts({
+            chart: {
+                type: 'areaspline'
+            },
+            title: {
+                text: 'test foo bar'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                verticalAlign: 'top',
+                x: 150,
+                y: 100,
+                floating: true,
+                borderWidth: 1,
+                backgroundColor: '#FFFFFF'
+            },
+            xAxis: {
+                categories: 
+                    countriesArray,
+                plotBands: [{ // visualize the weekend
+                    from: 4.5,
+                    to: 6.5,
+                    color: 'rgba(68, 170, 213, .2)'
+                }]
+            },
+            yAxis: {
+                title: {
+                    text: 'Foo units'
+                }
+            },
+            tooltip: {
+                shared: true,
+                valueSuffix: ' units'
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                areaspline: {
+                    fillOpacity: 0.5
+                }
+            },
+            series: [{
+                name: attrSelection[0],
+                data: [selectedValue1[0], selectedValue1[1], selectedValue1[2], selectedValue1[3]]
+            }, {
+                name: attrSelection[1],
+                data: [selectedValue2[0], selectedValue2[1], selectedValue2[2], selectedValue2[3]]
+            }]
+        });
+    };
+
+    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-all/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
     utfGrid.on('click', function (e) {
         // When the map is clikced the table needs to be cleared out and recreated 
@@ -284,7 +351,7 @@ var startApp = function() {
         BuildDataTable(e);
 
         if (e.data) {
-            //console.log(e.data);
+            console.log(e.data);
 
             // Populate a drop down list so the user can select attributes to be used in the spider chart
             var values = [];
@@ -297,152 +364,66 @@ var startApp = function() {
                 var value = values[i];
                 //console.log(data);
 
-                var spiderDropDown = '<form><input type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br></form>';
+                var spiderDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
                 //var spiderDropDown = '<p>'+data+'</p>';
-                $('#spider-chart-picker').append(spiderDropDown);
+                $('#spiderChart-selection').append(spiderDropDown);
 
             }
 
-            var countryName = e.data.country_na;
-            var foo = e.data.ecoeac092;
-            var bar = e.data.ecoeac082;
-            var bob = e.data.ecoeac027;
-            var tom = e.data.ecoeac012;
-            console.log(foo);
-            console.log(bar);
+            $('#spiderChart-selection').append('<input id="spiderChartButton" type="button" value="Render"/>');
 
-            // Create the Charts
-            var chart = new Highcharts.Chart({
-                chart: {
-                    renderTo: 'container',
-                    events: {
-                        redraw: function() {
-                            console.log('the chart');
-                        }
-                    },
-                    type: 'bar'
-                },
-                title: {
-                    text: countryName
-                },
-                xAxis: {
-                    categories: ['Test', 'Test2', 'test3']
-                },
-                yAxis: {
-                    title: {
-                        text: 'This is a test'
-                    }
-                },
-                series: [{
-                    name: 'ecoeac092',
-                    data: [foo, bob]
-                }, {
-                    name: 'ecoeac082',
-                    data: [bar, tom]
-                }],
-            });
-
-            $('#spiderChart').highcharts({
-                chart: {
-                    polar: true,
-                    type: 'line'
-                },
-                
-                title: {
-                    text: 'foo title',
-                    x: -80
-                },
-                
-                pane: {
-                    size: '80%'
-                },
-                
-                xAxis: {
-                    categories: ['foo', 'bar', 'foobar', 'barfoo', 
-                            'tomcat', 'bob'],
-                    tickmarkPlacement: 'on',
-                    lineWidth: 0
-                },
-                    
-                yAxis: {
-                    gridLineInterpolation: 'polygon',
-                    lineWidth: 0,
-                    min: 0
-                },
-                
-                tooltip: {
-                    shared: true,
-                    pointFormat: '<span style="color:{series.color}">{series.name}: <b>${point.y:,.0f}</b><br/>'
-                },
-                
-                legend: {
-                    align: 'right',
-                    verticalAlign: 'top',
-                    y: 70,
-                    layout: 'vertical'
-                },
-                
-                series: [{
-                    name: 'bob',
-                    data: [43000, 19000, 60000, 35000, 17000, 10000],
-                    pointPlacement: 'on'
-                }, {
-                    name: 'tomcat',
-                    data: [50000, 39000, 42000, 31000, 26000, 14000],
-                    pointPlacement: 'on'
-                }]
             
-            });
-            /*
-            var pieChart = new Highcharts.Chart({
-
-                chart: {
-                    renderTo: 'container2',
-                    events: {
-                        redraw: function() {
-                            console.log('the chart');
-                        }
-                    },
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false
-                },
-                title: {
-                    text: 'Foo Bar test'
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false
-                        },
-                        showInLegend: true
+            $("#spiderChartButton").click(function(){
+                // Grab the check box values to be used in the chart
+                attrSelection = $('#spiderChart-selection input[class="attributeOption"]:checked')
+                    .map(function(){
+                        return this.name;
+                    });
+                    if (attrSelection > 4) {
+                        attrSelection.pop();
                     }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'temp test',
-                    data: [
-                        ['foo',   foo],
-                        ['bar',       bar],
-                        {
-                            name: 'tom',
-                            y: tom,
-                            sliced: true,
-                            selected: true
-                        },
-                        ['bob',    bob],
-                    ]
-                }]
+
+                //$(attrSelection).map(function(){
+                  //  selectedValues.unshift(e.data[this]);
+                //}); 
             });
-*/
+
+            selectedValue1.unshift(e.data[attrSelection[0]]);
+            if (selectedValue1 > 4) {
+                selectedValue1.pop();
+            }
+            
+            selectedValue2.unshift(e.data[attrSelection[1]]);
+            if (selectedValue2 > 4) {
+                selectedValue2.pop();
+            }
+
+            selectedValue3.unshift(e.data[attrSelection[2]]);
+            if (selectedValue3 > 4) {
+                selectedValue3.pop();
+            }
+
+            selectedValue4.unshift(e.data[attrSelection[3]]);
+            if (selectedValue4 > 4) {
+                selectedValue4.pop();
+            }
+            
+            var countryName = e.data.country_na;           
+
+            countriesArray.unshift(countryName);
+
+            if (countriesArray.length > 4) {
+                countriesArray.pop();
+            }
+            
+            //console.log(countriesArray);
+
+            buildMyCharts(countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
+            
         } else {
             document.getElementById('click').innerHTML = 'click: nothing';
         }
+
     }); 
 
     map.addLayer(utfGrid); 
