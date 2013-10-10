@@ -60,3 +60,12 @@ input.oq-layer-tree-node {
 .oq-context-control {
     margin-left: 5px;
 }
+
+.leaflet-control-layers-expanded {
+    max-height: 200px;
+    overflow: scroll;
+}
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
