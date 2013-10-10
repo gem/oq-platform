@@ -19,7 +19,7 @@ var layerControl;
 // Keep track of the layer names
 var layers;
 
-var app = new OQLeaflet.OQLeafletApp(BASE_MAP_URL);
+var app = new OQLeaflet.OQLeafletApp(THIRD_PARTY_URLS.leaflet_base_map);
 
 var startApp = function() {
 
@@ -44,11 +44,11 @@ var startApp = function() {
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
-        $("#worning-duplicate").dialog("open");
+        $("#warning-duplicate").dialog("open");
     };
 
     $(document).ready(function() {
-        $("#worning-duplicate").dialog({
+        $("#warning-duplicate").dialog({
             autoOpen: false,
             hieght: 300,
             width: 350,
@@ -58,11 +58,11 @@ var startApp = function() {
 
     // No Layer to remove warnning message
     function showRemoveMsg() {
-        $("#worning-no-layer").dialog("open");
+        $("#warning-no-layer").dialog("open");
     };
 
     $(document).ready(function() {
-        $("#worning-no-layer").dialog({
+        $("#warning-no-layer").dialog({
             autoOpen: false,
             hieght: 300,
             width: 350,
@@ -189,7 +189,7 @@ var startApp = function() {
     // Get layer names from the icebox api
     var IceboxLayer = "";
     var selIce = document.getElementById('ice-list');
-    $.getJSON(ICEBOX_ARTIFACTS_URL,
+    $.getJSON(ICEBOX_URLS.artifacts,
     function(json) {
         for (var i=0; i < json.length; i++) {
             var IceboxLayer = json[i].name;
@@ -208,7 +208,7 @@ var startApp = function() {
             var selectedLayer = e.options[e.selectedIndex].value;
             var selectedLayerName = e.options[e.selectedIndex].innerHTML;
             var myStyle = {color:'red', fillColor:'orange', radius: 4, opacity: 1.0, fillOpacity: 1.0, weight: 2, clickable: false};
-                
+
             // Check for duplicae layes
             if (selectedLayer in layers) {
                showDuplicateMsg();

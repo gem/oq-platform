@@ -15,9 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var BASE_MAP_URL = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
-);
 // NOTE: This `map` var needs to be in global scope
 // for stuff like wax interaction to work.
 var map;
