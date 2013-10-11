@@ -256,6 +256,70 @@ var startApp = function() {
         });
     };
 
+
+    var getColor = function(iml, minClip, maxClip) {
+        // clip the iml to the min/max
+        if (iml < minClip) {
+            iml = minIML;
+        }
+        else if (iml > maxClip) {
+            iml = maxIML;
+        }
+        var ratio = iml / maxClip;
+
+        var maxColor = 30.0;
+        var colorRatio = ratio * maxColor;
+
+        // This colormap came from
+        // http://soliton.vm.bytemark.co.uk/pub/cpt-city/jjg/misc/tn/seminf-haxby.png.index.html
+        var colorMap = [
+            [ 0.00, 'rgb( 255, 255, 255)'],
+            [ 1.25, 'rgb( 255, 255, 255)'],
+            [ 2.50, 'rgb( 208, 216, 251)'],
+            [ 3.75, 'rgb( 186, 197, 247)'],
+            [ 5.00, 'rgb( 143, 161, 241)'],
+            [ 6.25, 'rgb(  97, 122, 236)'],
+            [ 7.50, 'rgb(   0,  39, 224)'],
+            [ 8.75, 'rgb(  25, 101, 240)'],
+            [10.00, 'rgb(  12, 129, 248)'],
+            [11.25, 'rgb(  24, 175, 255)'],
+            [12.50, 'rgb(  49, 190, 255)'],
+            [13.75, 'rgb(  67, 202, 255)'],
+            [15.00, 'rgb(  96, 225, 240)'],
+            [16.25, 'rgb( 105, 235, 225)'],
+            [17.50, 'rgb( 123, 235, 200)'],
+            [18.75, 'rgb( 138, 236, 174)'],
+            [20.00, 'rgb( 172, 245, 168)'],
+            [21.25, 'rgb( 205, 255, 162)'],
+            [22.50, 'rgb( 223, 245, 141)'],
+            [23.75, 'rgb( 240, 236, 120)'],
+            [25.00, 'rgb( 247, 215, 103)'],
+            [26.25, 'rgb( 255, 189,  86)'],
+            [27.50, 'rgb( 255, 160,  68)'],
+            [28.75, 'rgb( 244, 116,  74)'],
+            [30.00, 'rgb( 238,  79,  77)']
+        ];
+
+        var selectedColor;
+        for (var i = 1; i < colorMap.length; i++) {
+            var prevVal = colorMap[i - 1][0];
+            var val = colorMap[i][0];
+            var color = colorMap[i][1];
+            if (colorRatio >= prevVal && colorRatio <= val) {
+                selectedColor = color;
+                break;
+            }
+        }
+
+        return selectedColor;
+    };
+
+
+    // TODO(LB): for hazard maps
+    // This is prototype code.
+    var minIML = 0.0;
+    var maxIML = 0.6;
+
     // Create leaflet layer object.
     var createGeoJSONLayer = function(artifactType, geojson) {
         // TODO: do different stuff (styling) for different artifact types
@@ -264,12 +328,20 @@ var startApp = function() {
             // TODO: deal with calculation layers
             return null;
         }
-        var style = {color:'red', fillColor:'orange', radius: 3,
-                     opacity: 0.2, fillOpacity: 0.2, weight: 2,
-                     clickable: false};
+        var style = {
+            color:'white',
+            radius: 3,
+            opacity: 0.2,
+            fillOpacity: 0.7,
+            weight: 2,
+            clickable: false
+        };
 
         var gjLayer = new L.GeoJSON(geojson, {
             pointToLayer: function (data, latlng) {
+                style.fillColor = getColor(
+                    data.properties.iml, minIML, maxIML
+                );
                 return L.circleMarker(latlng, {style: style});
             },
             style: function(feature){
