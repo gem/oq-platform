@@ -16,7 +16,6 @@
 */
 
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia');
-var attrArray = new Array();
 var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0);
 var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18);
 var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189);
@@ -45,6 +44,10 @@ var startApp = function() {
     layers = {};
 
     layerControl = L.control.layers(app.baseLayers);
+
+    //$("#oq-body-content").append('<div id="categoryTabs"><ul><li><a href="#economy">Economy</a></li><li><a href="#population">Governance</a></li><li><a href="#tabs-3">Population</a></li><li><a href="#tabs-4">Education</a></li></ul><br><div id="economy"><table id="svir-table" ><thead id="tablehead"><tr><th>Index </th><th>Value</th></tr></thead></table><!--first chart --><div><div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div></div></div><div id="population"></div><div id="tabs-3"></div><div id="tabs-4"></div></div>');
+
+    $("#oq-body-sidebar").append('<div><input id="spiderChart-open" type="button" value="Select Attributes"/></div>');
 
     $("#oq-body-sidebar").append('<form id="tile-form-list"><br>Category:<br> <select id="layer-category"></select><br>Indicator:<br> <select id="layer-list"></select><br><input type="button" id="addTileLayer" value="Add Layer"><input type="button" id="removeTileLayer" value="Remove Layer"></form>');
 
@@ -240,7 +243,7 @@ var startApp = function() {
     });
 
     // Spider chart variable selection dialog
-    $("#spiderChart-selection").dialog({
+    $("#chartOptions").dialog({
         autoOpen: false,
         height: 300,
         width: 350,
@@ -248,7 +251,7 @@ var startApp = function() {
     });
 
     $("#spiderChart-open").button().click(function() {
-        $("#spiderChart-selection").dialog("open");
+        $("#chartOptions").dialog("open");
     });
 
     $(function() {
@@ -345,9 +348,19 @@ var startApp = function() {
         });
     };
 
-    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-all/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+
+    // TODO change the utfgrid layer when the tabs are clicked
+    //$("#gov a").click(function(){
+      //  map.removeLayer(utfGrid);
+        //utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-pop-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        //map.addLayer(utfGrid); 
+
+    //});
+    
 
     utfGrid.on('click', function (e) {
+        $("#chartOptions").empty();
         // When the map is clikced the table needs to be cleared out and recreated 
         var countryTable = $("#svir-table").dataTable();
         countryTable.fnClearTable();
@@ -355,8 +368,6 @@ var startApp = function() {
         BuildDataTable(e);
 
         if (e.data) {
-            console.log(e.data);
-
             // Populate a drop down list so the user can select attributes to be used in the spider chart
             var values = [];
             for (var d in e.data) {
@@ -366,20 +377,17 @@ var startApp = function() {
         
             for (var i in values) {
                 var value = values[i];
-                //console.log(data);
 
                 var spiderDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
                 //var spiderDropDown = '<p>'+data+'</p>';
-                $('#spiderChart-selection').append(spiderDropDown);
-
+                $('#chartOptions').append(spiderDropDown);
             }
 
-            $('#spiderChart-selection').append('<input id="spiderChartButton" type="button" value="Render"/>');
-
+            $('#chartOptions').append('<input id="spiderChartButton" type="button" value="Render"/>');
             
             $("#spiderChartButton").click(function(){
                 // Grab the check box values to be used in the chart
-                attrSelection = $('#spiderChart-selection input[class="attributeOption"]:checked')
+                attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
                     .map(function(){
                         return this.name;
                     });
@@ -388,13 +396,10 @@ var startApp = function() {
                     } 
             });
 
-            // TODO clean this if up
-            if (typeof attrSelection !== 'undefined' && attrSelection.length > 0) {
-                console.log("attrSelection is not empty");
+            if (attrSelection.length == 0) {
+                attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
             }
-            else {
-                attrSelection.unshift("ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033");
-            }
+    
             selectedValue1.unshift(e.data[attrSelection[0]]);
             if (selectedValue1.length > 4) {
                 selectedValue1.pop();
