@@ -15,12 +15,12 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var countriesArray = new Array();
+var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia');
 var attrArray = new Array();
-var selectedValue1 = new Array();
-var selectedValue2 = new Array();
-var selectedValue3 = new Array();
-var selectedValue4 = new Array();
+var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0);
+var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18);
+var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189);
+var selectedValue4 = new Array(0, 9.374, 4.413, 5.093);
 var attrSelection = new Array();
 
 var layerControl;
@@ -184,7 +184,10 @@ var startApp = function() {
     });
 
     map.addControl(layerControl.setPosition("topleft"));
-
+    // TODO set the map max zoom to 9
+    // The interactivity of the map/charts will not work with a map zoom greater then 9
+    
+    
     // Add layers form tilestream list
     $(document).ready(function() {
         $("#addTileLayer").click(function() {
@@ -283,11 +286,6 @@ var startApp = function() {
 
     function buildMyCharts(countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray){
 
-
-        console.log(selectedValue2);
-
-        //console.log(selectedValues[0]);
-        // Create the Charts
         $('#areaSpline').highcharts({
             chart: {
                 type: 'areaspline'
@@ -337,6 +335,12 @@ var startApp = function() {
             }, {
                 name: attrSelection[1],
                 data: [selectedValue2[0], selectedValue2[1], selectedValue2[2], selectedValue2[3]]
+            }, {
+                name: attrSelection[2],
+                data: [selectedValue3[0], selectedValue3[1], selectedValue3[2], selectedValue3[3]]
+            }, {
+                name: attrSelection[3],
+                data: [selectedValue4[0], selectedValue4[1], selectedValue4[2], selectedValue4[3]]
             }]
         });
     };
@@ -381,30 +385,33 @@ var startApp = function() {
                     });
                     if (attrSelection > 4) {
                         attrSelection.pop();
-                    }
-
-                //$(attrSelection).map(function(){
-                  //  selectedValues.unshift(e.data[this]);
-                //}); 
+                    } 
             });
 
+            // TODO clean this if up
+            if (typeof attrSelection !== 'undefined' && attrSelection.length > 0) {
+                console.log("attrSelection is not empty");
+            }
+            else {
+                attrSelection.unshift("ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033");
+            }
             selectedValue1.unshift(e.data[attrSelection[0]]);
-            if (selectedValue1 > 4) {
+            if (selectedValue1.length > 4) {
                 selectedValue1.pop();
             }
             
             selectedValue2.unshift(e.data[attrSelection[1]]);
-            if (selectedValue2 > 4) {
+            if (selectedValue2.length > 4) {
                 selectedValue2.pop();
             }
 
             selectedValue3.unshift(e.data[attrSelection[2]]);
-            if (selectedValue3 > 4) {
+            if (selectedValue3.length > 4) {
                 selectedValue3.pop();
             }
 
             selectedValue4.unshift(e.data[attrSelection[3]]);
-            if (selectedValue4 > 4) {
+            if (selectedValue4.length > 4) {
                 selectedValue4.pop();
             }
             
@@ -415,8 +422,6 @@ var startApp = function() {
             if (countriesArray.length > 4) {
                 countriesArray.pop();
             }
-            
-            //console.log(countriesArray);
 
             buildMyCharts(countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
             
