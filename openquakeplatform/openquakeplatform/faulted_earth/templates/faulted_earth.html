@@ -27,8 +27,6 @@ Faulted Earth - {{block.super}}
 
 {% block extra_script %}
     {{block.super}}
-    <script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer-debug.js"></script>
-
     <script src="{{ STATIC_URL }}faulted_earth/models.js"></script>
     <script src="{{ STATIC_URL }}faulted_earth/validation.js"></script>
     <script src="{{ STATIC_URL }}faulted_earth/help.js"></script>
@@ -39,7 +37,6 @@ Faulted Earth - {{block.super}}
     <script src="{{ STATIC_URL }}faulted_earth/TraceForm.js"></script>
     <script src="{{ STATIC_URL }}faulted_earth/SummaryForm.js"></script>
     <script src="{{ STATIC_URL }}faulted_earth/FaultForm.js"></script>
-    <script src="{{ STATIC_URL }}faulted_earth/SourceForm.js"></script>
-    <script src="{{ STATIC_URL }}js/TileStreamSource.js"></script>  
+    <script src="{{ STATIC_URL }}faulted_earth/SourceForm.js"></script>  
     <script src="{{ STATIC_URL }}faulted_earth/faulted_earth.js"></script>
 {% endblock extra_script %}
