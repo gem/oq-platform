@@ -1,0 +1,69 @@
+import os
+import geonode
+import openquakeplatform
+
+SITENAME = 'Openquake Platform'
+SITEURL = 'http://%(host)s/'
+
+OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
+GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '%(dbname)s',
+        'USER': '%(dbuser)s',
+        'PASSWORD': '%(dbpass)s',
+    },
+    # vector datastore for uploads
+    'datastore' : {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '%(dbname)s',
+        'USER': '%(dbuser)s',
+        'PASSWORD': '%(dbpass)s',
+        'HOST' : 'localhost',
+        'PORT' : '5432',
+    }
+}
+
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : 'http://localhost:8080/geoserver/',
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'OPTIONS' : {
+            'MAPFISH_PRINT_ENABLED' : True,
+            'PRINTNG_ENABLED' : True,
+            'GEONODE_SECURITY_ENABLED' : True,
+            'GEOGIT_ENABLED' : False,
+            'WMST_ENABLED' : False,
+            # Set to name of database in DATABASES dictionary to enable
+            'DATASTORE': 'geonode-imports', #'datastore',
+        }
+    }
+}
+
+# MEDIA_ROOT = '/var/www/openquake/platform/uploaded'
+MEDIA_ROOT = '%(mediaroot)s'
+# STATIC_ROOT = '/var/www/openquake/platform/static/'
+STATIC_ROOT = '%(staticroot)s'
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    '/etc/openquake/platform/media',
+    os.path.join(OQPLATFORM_ROOT, 'static'),
+    '/etc/geonode/media',
+    os.path.join(GEONODE_ROOT, 'static')
+]
+
+ALLOWED_HOSTS=['%(host)s', 'localhost']
+
+try:
+    from openquakeplatform import ged_settings
+    DATABASES.update(ged_settings.DATABASES)
+except ImportError:
+    import warnings
+    warnings.warn('Global Exposure Database (GED) configuration not found!',
+                  ImportWarning)

@@ -1,0 +1,1 @@
+recursive-include openquakeplatform           local_settings.py.template
