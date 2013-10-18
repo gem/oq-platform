@@ -136,11 +136,15 @@ oq_platform_install () {
 
     # reset and install disabled
     if [ "$GEM_IS_REINSTALL" = "y" ]; then
+        service tomcat7 stop
+        sleep 5
+        pip uninstall -y openquakeplatform
         su - -c "dropdb oqplatform" postgres   || true
         su - -c "dropuser oqplatform" postgres || true
         rm -rf /etc/openquake/platform         || true
         a2dissite geonode || true
         a2dissite oqplatform || true
+        service tomcat7 start
     fi
 
 if [ 0 -eq 1 ]; then
@@ -171,6 +175,10 @@ fi
     db_user_create "$GEM_DB_USER" "$GEM_DB_PASS"
     db_base_create "$GEM_DB_NAME" "$GEM_DB_USER"
     db_gis_create  "$GEM_DB_NAME"
+
+    openquakeplatform syncdb --all --noinput
+    openquakeplatform collectstatic --noinput
+
 
 }
 

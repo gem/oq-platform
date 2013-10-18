@@ -1,1 +1,3 @@
+recursive-include openquakeplatform/templates *
+recursive-include openquakeplatform/static    *
 recursive-include openquakeplatform     apache2/*       bin/*   local_settings.py.template
