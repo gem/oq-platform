@@ -12,7 +12,8 @@ from openquakeplatform.utils import OQTemplateView
 import geonode.proxy.urls
 
 # Import *_signals.py
-import geonode.social_signals
+# NOT WORKS WITH packaged geonode
+# import geonode.social_signals
 
 # Setup Django Admin
 from django.contrib import admin

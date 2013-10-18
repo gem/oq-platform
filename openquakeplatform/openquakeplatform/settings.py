@@ -187,6 +187,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
+    'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
 
@@ -223,7 +224,7 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -236,7 +237,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "ERROR",
         },
         "geonode": {
             "handlers": ["console"],
@@ -499,7 +500,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": "/geoserver/wms",
+        "url": OGC_SERVER['default']['LOCATION'] + "wms",
         "restUrl": "/gs/rest"
         }
     }, {
@@ -533,8 +534,6 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "group": "background"
     }, {
-    "source": {"ptype": "gxp_tilestreamsource" }
-    }, {
     "source": {"ptype": "gxp_mapboxsource"},
     }, {
     "source": {"ptype": "gxp_olsource"},
@@ -563,10 +562,8 @@ LEAFLET_CONFIG = {
 LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
-# authentication. This URL needs to be hit by the oq-engine-server.
-# TODO(LB): This will go away once we implement authorization
-# TODO(LB): See https://bugs.launchpad.net/oq-platform/+bug/1234350
-AUTH_EXEMPT_URLS = ('/icebox/artifacts/import', )
+# authentication.
+AUTH_EXEMPT_URLS = ()
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (

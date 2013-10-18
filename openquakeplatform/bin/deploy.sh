@@ -179,6 +179,11 @@ fi
     openquakeplatform syncdb --all --noinput
     openquakeplatform collectstatic --noinput
 
+    echo "Please insert [the_pass] as password for the user 'the_user'"
+    openquakeplatform createsuperuser --username=the_user --email=the_mail@openquake.org
+
+    service apache2 restart
+
 
 }
 
