@@ -54,6 +54,8 @@ urlpatterns = patterns(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^calculate/$', OQTemplateView.as_view(
         template_name="calculate.html"), name="calculate"),
+    url(r'^svir_viewer/$', TemplateView.as_view(
+        template_name="svir_viewer.html"), name='svir_viewer'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),

@@ -1,0 +1,84 @@
+<!--
+Copyright (c) 2013, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "leaflet_base.html" %}
+
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
+
+{% block body_outer %}
+
+<div id="chartOptions" title="Layer Options">
+  <!-- spider chart attribute picker gets loaded here-->
+</div>
+
+<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
+    <p>This layer has already been added to the map</p>
+</div>
+
+<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+    <p>This layer in not loaded in the map</p>
+</div>
+
+<!-- Category tags-->
+<div id="categoryTabs">
+  <ul>
+    <li id="econ"><a href="#economy">Economy</a></li>
+    <li id="gov"><a href="#governance">Governance</a></li>
+    <li id="pop"><a href="#population">Population</a></li>
+    <li id="ed"><a href="#education">Education</a></li>
+  </ul>
+
+  <br>
+
+  <div id="economy">
+
+    <table id="svir-table" >
+      <thead id="tablehead">
+        <tr>
+          <th>Index </th>
+          <th>Value</th>
+        </tr>
+      </thead>
+    </table>
+
+    <!--first chart -->
+    <div>
+      <div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div>
+    </div>
+
+  </div>
+
+  <div id="governance">
+    <p>Work in progress, stay tuned...</p>
+  </div>
+  <div id="population">
+    <p>Work in progress, stay tuned...</p>
+  </div>
+    <div id="education">
+    <p>Work in progress, stay tuned...</p>
+  </div>
+</div>
+
+
+{{block.super}}
+{% endblock %}
+
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}js/svir_viewer.js"></script>
+{% endblock extra_script %}
