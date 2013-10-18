@@ -68,6 +68,63 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    staticroot='/var/www/openquake/platform/static/'))"
 }
 
+db_user_exists () {
+    local user="$1"
+
+    su - -c "echo \"SELECT rolname FROM pg_roles WHERE rolname = '${user}';\" \
+             | psql -A -t | wc -l" postgres
+}
+
+db_base_exists () {
+    local dbname="$1"
+
+    su - -c "echo \"SELECT datname FROM pg_database WHERE datname = '$dbname';\" | psql -A -t | wc -l" postgres
+}
+
+db_gis_exists () {
+    local dbname="$1"
+
+    su - -c "echo \"SELECT proname FROM pg_proc WHERE proname = 'postgis_full_version';\" | psql -A -t \"$dbname\" | wc -l" postgres
+}
+
+db_user_create () {
+    local user="$1" pass="$2" aex
+
+    aex="$(db_user_exists "$user")"
+    if [ $aex -gt 0 ]; then
+        echo "WARNING: database user [$user] already exists!" >&2
+        return 1
+    fi
+
+    su - -c "echo \"CREATE ROLE ${user} ENCRYPTED PASSWORD '${pass}' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN;\" | psql" postgres
+}
+
+db_base_create () {
+    local dbname="$1" owner="$2" aex
+
+    aex="$(db_base_exists "$dbname")"
+    if [ $aex -gt 0 ]; then
+        echo "WARNING: database [$dbname] already exists!" >&2
+        return 1
+    fi
+
+    su - -c "echo \"CREATE DATABASE ${dbname} OWNER ${owner};\" | psql" postgres
+}
+
+db_gis_create () {
+    local dbname="$1" aex
+
+    aex="$(db_gis_exists "$dbname")"
+    if [ $aex -gt 0 ]; then
+        echo "WARNING: database [$dbname] has already GIS extensions!" >&2
+        return 1
+    fi
+
+    for i in "${POSTGIS_FILES[@]}"; do
+        su - -c "cat "$i" | psql ${dbname}" postgres
+    done
+}
+
 oq_platform_install () {
     local norm_user="$1" norm_dir="$2" gem_host_name="$3" norm_home ret a distdesc rv
     local cur_step
@@ -100,6 +157,20 @@ fi
 
     mkdir -p /etc/openquake/platform
     locset_create "$oqpdir" "$gem_host_name"
+
+    cp "${oqpdir}/apache2/oqplatform" /etc/apache2/sites-available/
+    ln -sf /etc/openquake/platform/local_settings.py "${oqpdir}"
+    a2dissite geonode
+    a2ensite oqplatform
+    mkdir -p "$GEM_WEBDIR"
+    cp "${oqpdir}/wsgi.py"* "$GEM_WEBDIR"
+    cp "${oqpdir}/bin/openquakeplatform" "/usr/sbin/"
+    chmod a+x "/usr/sbin/openquakeplatform"
+    mkdir -p /etc/openquake/platform/media
+
+    db_user_create "$GEM_DB_USER" "$GEM_DB_PASS"
+    db_base_create "$GEM_DB_NAME" "$GEM_DB_USER"
+    db_gis_create  "$GEM_DB_NAME"
 
 }
 
