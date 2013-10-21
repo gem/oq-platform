@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
-{% extends "leaflet_base.html" %}
+{% extends "data_viewer_base.html" %}
 
 {% block title %}
 Explore - {{block.super}}
@@ -34,7 +34,17 @@ Explore - {{block.super}}
     <p>This layer in not loaded in the map</p>
 </div>
 
-<!-- Category tags-->
+
+
+
+{{block.super}}
+
+{% endblock %}
+
+
+{% block extra_script %}
+    {{block.super}}
+    <!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="econ"><a href="#economy">Economy</a></li>
@@ -44,8 +54,19 @@ Explore - {{block.super}}
   </ul>
 
   <br>
+<frameset rows="25%,*,25%">
+  <frame src="frame_a.htm">
+  <frame src="frame_b.htm">
+  <frame src="frame_c.htm">
+</frameset>
 
   <div id="economy">
+    <button type="button" id="chart-options">Chart Options</button> 
+
+    <!--first chart -->
+    <div>
+      <div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div>
+    </div>
 
     <table id="svir-table" >
       <thead id="tablehead">
@@ -56,10 +77,7 @@ Explore - {{block.super}}
       </thead>
     </table>
 
-    <!--first chart -->
-    <div>
-      <div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div>
-    </div>
+
 
   </div>
 
@@ -73,12 +91,5 @@ Explore - {{block.super}}
     <p>Work in progress, stay tuned...</p>
   </div>
 </div>
-
-
-{{block.super}}
-{% endblock %}
-
-{% block extra_script %}
-    {{block.super}}
     <script src="{{ STATIC_URL }}js/svir_viewer.js"></script>
 {% endblock extra_script %}

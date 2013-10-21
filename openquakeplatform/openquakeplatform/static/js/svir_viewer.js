@@ -47,9 +47,9 @@ var startApp = function() {
 
     //$("#oq-body-content").append('<div id="categoryTabs"><ul><li><a href="#economy">Economy</a></li><li><a href="#population">Governance</a></li><li><a href="#tabs-3">Population</a></li><li><a href="#tabs-4">Education</a></li></ul><br><div id="economy"><table id="svir-table" ><thead id="tablehead"><tr><th>Index </th><th>Value</th></tr></thead></table><!--first chart --><div><div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div></div></div><div id="population"></div><div id="tabs-3"></div><div id="tabs-4"></div></div>');
 
-    $("#oq-body-sidebar").append('<div><input id="spiderChart-open" type="button" value="Select Attributes"/></div>');
+    //$("#economy").append('<div><input id="spiderChart-open" type="button" value="Select Attributes"/></div>');
 
-    $("#oq-body-sidebar").append('<form id="tile-form-list"><br>Category:<br> <select id="layer-category"></select><br>Indicator:<br> <select id="layer-list"></select><br><input type="button" id="addTileLayer" value="Add Layer"><input type="button" id="removeTileLayer" value="Remove Layer"></form>');
+    $("#chartOptions").append('<form id="tile-form-list"><br>Category:<br> <select id="layer-category"></select><br>Indicator:<br> <select id="layer-list"></select><br><input type="button" id="addTileLayer" value="Add Layer"><input type="button" id="removeTileLayer" value="Remove Layer"></form>');
 
     // Append the layer-selection to the oq-context-ribbon div
     //document.getElementById("oq-context-ribbon").appendChild("test");
@@ -242,7 +242,7 @@ var startApp = function() {
         });
     });
 
-    // Spider chart variable selection dialog
+    // Chart variable selection dialog
     $("#chartOptions").dialog({
         autoOpen: false,
         height: 300,
@@ -250,7 +250,7 @@ var startApp = function() {
         modal: true
     });
 
-    $("#spiderChart-open").button().click(function() {
+    $("#chart-options").button().click(function() {
         $("#chartOptions").dialog("open");
     });
 
@@ -383,9 +383,10 @@ var startApp = function() {
                 $('#chartOptions').append(spiderDropDown);
             }
 
-            $('#chartOptions').append('<input id="spiderChartButton" type="button" value="Render"/>');
+            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
             
-            $("#spiderChartButton").click(function(){
+            $("#chartOptionsButton").click(function(){
+                $('#chartOptions').dialog('close');
                 // Grab the check box values to be used in the chart
                 attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
                     .map(function(){
