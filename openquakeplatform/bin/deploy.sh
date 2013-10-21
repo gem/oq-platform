@@ -184,6 +184,34 @@ fi
 
     service apache2 restart
 
+    #
+    #  geoserver structure population
+    workspace_name=oqplatform
+    datastore_name=oqplatform
+    rm -rf "$oqpdir/build-gstree"
+    mkdir -p "$oqpdir/build-gs-tree"
+    mkdir -p "$oqpdir/build-gs-tree/styles"
+    mkdir -p "$oqpdir/build-gs-tree/layers"
+    mkdir -p "$oqpdir/build-gs-tree/workspaces"
+    mkdir -p "$oqpdir/build-gs-tree/workspaces/${workspace_name}/styles"
+    mkdir -p "$oqpdir/build-gs-tree/workspaces/${workspace_name}/datastores"
+    cp -rn "$oqpdir/common/gs_data/"* "$oqpdir/build-gs-tree"
+    featuretypes_dir="$oqpdir/build-gs-tree/workspaces/${workspace_name}/datastores/${datastore_name}/featuretypes"
+    mkdir -p "${featuretypes_dir}"
+    for app in "${GEM_APP_LIST[@]}"; do
+        if [ ! -d "${oqpdir}/${app}/gs_data" ]; then
+            continue
+        fi
+        cp -rn "${oqpdir}/${app}/gs_data/layers/"*       "${oqpdir}/build-gs-tree/layers"
+        cp -rn "${oqpdir}/${app}/gs_data/styles/"*       "${oqpdir}/build-gs-tree/workspaces/${workspace_name}/styles"
+        cp -rn "${oqpdir}/${app}/gs_data/featuretypes/"* "${featuretypes_dir}"
+    done
+
+    sed -i "s@#DB_PASS#@$GEM_DB_PASS@g;s@#GS_PROTO#@http@g;s@#GS_HOST#@127.0.0.1@g;s@#GS_PORT#@8080@g" $(find "${oqpdir}/build-gs-tree" -name '*.xml')
+
+    rm -rf output
+    ${oqpdir}/bin/oq-gs-builder.sh drop
+    ${oqpdir}/bin/oq-gs-builder.sh restore "${oqpdir}/build-gs-tree"
 
 }
 
