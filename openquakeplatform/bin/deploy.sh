@@ -220,7 +220,7 @@ fi
     #  geoserver structure population
     geoserver_population "$oqpdir" "$oqpdir" "${oqpdir}/bin"
 
-
+    openquakeplatform updatelayers
 }
 
 
