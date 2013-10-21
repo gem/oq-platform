@@ -2,7 +2,7 @@
   <name>isc_viewer_measure</name>
   <nativeName>isc_viewer_measure</nativeName>
   <namespace>
-    <name>isc_viewer</name>
+    <name>oqplatform</name>
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/namespaces/oqplatform.xml" type="application/xml"/>
   </namespace>
   <title>isc_viewer_measure</title>
@@ -46,7 +46,7 @@
   </metadata>
   <store class="dataStore">
     <name>oqplatform</name>
-    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/isc_viewer.xml" type="application/xml"/>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>

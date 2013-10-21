@@ -1,15 +1,15 @@
 <layer>
-  <name>gaf_viewer_faulttrace</name>
+  <name>ghec_viewer_measure</name>
   <type>VECTOR</type>
   <defaultStyle>
-    <name>gaf_viewer__ns_net_slip_rate</name>
+    <name>ghec_viewer_measure</name>
     <workspace>oqplatform</workspace>
   </defaultStyle>
   <resource class="featureType">
-    <name>gaf_viewer_faulttrace</name>
+    <name>ghec_viewer_measure</name>
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom"
     rel="alternate"
-    href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform/featuretypes/gaf_viewer_faulttrace.xml"
+    href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform/featuretypes/ghec_viewer_measure.xml"
     type="application/xml" />
   </resource>
   <enabled>true</enabled>
