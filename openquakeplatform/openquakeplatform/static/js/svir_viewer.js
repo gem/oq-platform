@@ -45,22 +45,6 @@ var startApp = function() {
 
     layerControl = L.control.layers(app.baseLayers);
 
-    //$("#oq-body-content").append('<div id="categoryTabs"><ul><li><a href="#economy">Economy</a></li><li><a href="#population">Governance</a></li><li><a href="#tabs-3">Population</a></li><li><a href="#tabs-4">Education</a></li></ul><br><div id="economy"><table id="svir-table" ><thead id="tablehead"><tr><th>Index </th><th>Value</th></tr></thead></table><!--first chart --><div><div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div></div></div><div id="population"></div><div id="tabs-3"></div><div id="tabs-4"></div></div>');
-
-    //$("#economy").append('<div><input id="spiderChart-open" type="button" value="Select Attributes"/></div>');
-
-    $("#chartOptions").append('<form id="tile-form-list"><br>Category:<br> <select id="layer-category"></select><br>Indicator:<br> <select id="layer-list"></select><br><input type="button" id="addTileLayer" value="Add Layer"><input type="button" id="removeTileLayer" value="Remove Layer"></form>');
-
-    // Append the layer-selection to the oq-context-ribbon div
-    //document.getElementById("oq-context-ribbon").appendChild("test");
-    //var foo = document.getElementById("oq-body-sidebar");
-    //foo.innerHTML = "<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>";
-    //$("#oq-body-sidebar").append("<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>");
-
-    //$("#layer-selection").button().click(function() {
-      //  $("#dialog-layers").dialog("open");
-    //});
-
     // Duplicate layer warnning message
     function showDuplicateMsg() {
         $("#worning-duplicate").dialog("open");
@@ -250,8 +234,20 @@ var startApp = function() {
         modal: true
     });
 
+    // Map options selection dialog
+    $("#thematicMap").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true
+    });
+
     $("#chart-options").button().click(function() {
         $("#chartOptions").dialog("open");
+    });
+
+    $("#thematic-map").button().click(function() {
+        $("#thematicMap").dialog("open");
     });
 
     $(function() {
@@ -270,7 +266,6 @@ var startApp = function() {
             //],
         });
     });
-
 
     function BuildDataTable(e) {
         var values = [];
@@ -378,9 +373,9 @@ var startApp = function() {
             for (var i in values) {
                 var value = values[i];
 
-                var spiderDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
+                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
                 //var spiderDropDown = '<p>'+data+'</p>';
-                $('#chartOptions').append(spiderDropDown);
+                $('#chartOptions').append(chartDropDown);
             }
 
             $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');

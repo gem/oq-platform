@@ -21,9 +21,22 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+<div id="thematicMap" title="Map Options">
+  <form id="tile-form-list">
+    <br>Category:<br>
+    <select id="layer-category">
+    </select>
+    <br>Indicator:<br>
+    <select id="layer-list">
+    </select><br>
+    <input type="button" id="addTileLayer" value="Add Layer">
+    <input type="button" id="removeTileLayer" value="Remove Layer">
+  </form>
+</div>
 
-<div id="chartOptions" title="Layer Options">
-  <!-- spider chart attribute picker gets loaded here-->
+<div id="chartOptions" title="Chart Options">
+  <p>whoops, first interact with the map to load some data, then you can set the chart options</p>
+  <!-- Chart attribute picker gets loaded here-->
 </div>
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
@@ -62,6 +75,7 @@ Explore - {{block.super}}
 
   <div id="economy">
     <button type="button" id="chart-options">Chart Options</button> 
+    <button type="button" id="thematic-map">Map Options</button> 
 
     <!--first chart -->
     <div>
