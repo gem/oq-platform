@@ -11,8 +11,8 @@
 #
 
 cat <<EOF | patch -p0
---- null	2012-08-07 23:18:57.229832916 +0200
-+++ /var/lib/geonode/src/GeoNodePy/geonode/proxy/views.py	2012-08-07 23:18:06.449830750 +0200
+--- null	2013-09-18 17:20:26.013554830 +0200
++++ /var/lib/geonode/src/GeoNodePy/geonode/proxy/views.py	2013-09-19 09:20:29.255145698 +0200
 @@ -1,9 +1,12 @@
  from django.http import HttpResponse
  from httplib import HTTPConnection
@@ -38,5 +38,14 @@ cat <<EOF | patch -p0
      conn.request(request.method, locator, request.raw_post_data, headers)
      result = conn.getresponse()
      response = HttpResponse(
-EOF
+@@ -50,7 +56,7 @@
+     path = strip_prefix(request.get_full_path(), proxy_path)
+     url = "".join([settings.GEOSERVER_BASE_URL, downstream_path, path])
+ 
+-    http = httplib2.Http()
++    http = httplib2.Http(disable_ssl_certificate_validation=True)
+     http.add_credentials(*settings.GEOSERVER_CREDENTIALS)
+     headers = dict()
+ 
 
+EOF
