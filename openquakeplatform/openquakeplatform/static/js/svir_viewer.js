@@ -363,6 +363,7 @@ var startApp = function() {
     // Change the utfgrid layer when the tabs are clicked
     $("#econ a").click(function(){
         startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
+        attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
         dataCat = "econ-table";
         chartCat = "econ-area-spline";
         map.removeLayer(utfGrid);
@@ -371,10 +372,12 @@ var startApp = function() {
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
     });
 
     $("#pop a").click(function(){
-        startAttr = ["popppsslu", "popppsask", "popppssry", "popppstfr"];
+        startAttr = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
+        attrSelection = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
         dataCat = "pop-table";
         chartCat = "pop-area-spline";
         map.removeLayer(utfGrid);
@@ -383,6 +386,7 @@ var startApp = function() {
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
     });
 
     var utfGridClickEvent = function(dataCat, chartCat) {
@@ -402,8 +406,6 @@ var startApp = function() {
                     values.push(e.data[d]);
                 }
                 var keys = Object.keys(e.data);
-                console.log(values);
-                console.log(keys);
                 for (var i in values) {
                     var value = values[i];
                     var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
@@ -423,7 +425,7 @@ var startApp = function() {
                             attrSelection.pop();
                         } 
                 });
-    
+                
                 if (attrSelection.length == 0) {
                     attrSelection = startAttr;
                 }
@@ -455,7 +457,9 @@ var startApp = function() {
                 if (countriesArray.length > 4) {
                     countriesArray.pop();
                 }
-    
+                console.log(startAttr);
+                console.log(attrSelection);
+                console.log(selectedValue1, selectedValue2);
                 buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
                 
             } else {
