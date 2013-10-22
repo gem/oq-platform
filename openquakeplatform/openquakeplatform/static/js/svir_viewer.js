@@ -283,6 +283,26 @@ var startApp = function() {
         });
     });
 
+    $(document).ready(function() {
+        $('#gov-table').dataTable({
+            "aaSorting": [ [0,'asc'], [1,'asc'] ],
+            "sPaginationType": "full_numbers",
+            //"aoColumnDefs": [
+              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            //],
+        });
+    });
+
+    $(document).ready(function() {
+        $('#edu-table').dataTable({
+            "aaSorting": [ [0,'asc'], [1,'asc'] ],
+            "sPaginationType": "full_numbers",
+            //"aoColumnDefs": [
+              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            //],
+        });
+    });
+
     function BuildDataTable(e, dataCat) {
         var values = [];
         for (var d in e.data) {
@@ -361,7 +381,7 @@ var startApp = function() {
     //var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
     
     // Change the utfgrid layer when the tabs are clicked
-    $("#econ a").click(function(){
+    $("#econ").click(function(){
         startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
         attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
         dataCat = "econ-table";
@@ -375,7 +395,7 @@ var startApp = function() {
         $("#empty").remove();
     });
 
-    $("#pop a").click(function(){
+    $("#pop").click(function(){
         startAttr = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
         attrSelection = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
         dataCat = "pop-table";
@@ -389,10 +409,39 @@ var startApp = function() {
         $("#empty").remove();
     });
 
+    $("#gov").click(function(){
+        startAttr = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
+        attrSelection = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
+        dataCat = "gov-table";
+        chartCat = "gov-area-spline";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-gov-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
+
+    $("#edu").click(function(){
+        startAttr = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
+        attrSelection = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
+        dataCat = "edu-table";
+        chartCat = "edu-area-spline";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-edu-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
+
     var utfGridClickEvent = function(dataCat, chartCat) {
         console.log(startAttr);
         utfGrid.on('click', function (e) {
             $("#chartOptions").empty();
+
             // When the map is clikced the table needs to be cleared out and recreated 
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
@@ -450,7 +499,9 @@ var startApp = function() {
                     selectedValue4.pop();
                 }
                 
-                var countryName = e.data.country_na;           
+                var countryName = e.data.country_na;
+                // Indicate the country name for the table header
+                $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
     
                 countriesArray.unshift(countryName);
     
