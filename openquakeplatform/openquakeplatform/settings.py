@@ -21,7 +21,7 @@ GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 DEBUG = TEMPLATE_DEBUG = True
 
 # Set to True to load non-minified versions of (static) client dependencies
-DEBUG_STATIC = False
+DEBUG_STATIC = True
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
@@ -189,6 +189,7 @@ INSTALLED_APPS = (
     'geonode.search',
     'geonode.catalogue',
     'geonode.documents',
+    'geonode.social',
 
     # Our apps
     'openquakeplatform.isc_viewer',
@@ -386,6 +387,9 @@ SITEURL = "http://localhost:8000/"
 
 # Default TopicCategory to be used for resources. Use the slug field here
 DEFAULT_TOPICCATEGORY = 'location'
+# Topic Categories list should not be modified (they are ISO). In case
+# you absolutely need it set to True this variable
+MODIFY_TOPICCATEGORY = False
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
@@ -397,6 +401,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
         'LOCATION': 'http://localhost:8080/geoserver/',
+        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'OPTIONS': {
@@ -405,6 +410,7 @@ OGC_SERVER = {
             'GEONODE_SECURITY_ENABLED': True,
             'GEOGIT_ENABLED': False,
             'WMST_ENABLED': False,
+            'WPS_ENABLED': True,
             # Set to name of database in DATABASES dictionary to enable
             'DATASTORE': 'default',   # 'datastore',
         }
@@ -413,6 +419,7 @@ OGC_SERVER = {
 
 # Uploader Settings
 UPLOADER = {
+    'BACKEND' : 'geonode.rest',
     'OPTIONS': {
         'TIME_ENABLED': False,
         'GEOGIT_ENABLED': False,
@@ -510,9 +517,9 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "group":"background"
     }, {
-    "source": {"ptype": "gxp_olsource"},
+    "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
-    "args": ["OpenStreetMap"],
+    "name":"mapnik",
     "visibility": False,
     "fixed": True,
     "group": "background"
@@ -571,6 +578,7 @@ AUTH_EXEMPT_URLS = ('/icebox/artifacts/import', )
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
         'geonode.security.middleware.LoginRequiredMiddleware',)
+
 
 # Load more settings from a file called local_settings.py if it exists
 try:
