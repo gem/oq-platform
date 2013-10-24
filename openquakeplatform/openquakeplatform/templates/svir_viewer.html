@@ -14,16 +14,29 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
-{% extends "leaflet_base.html" %}
+{% extends "data_viewer_base.html" %}
 
 {% block title %}
 Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+<div id="thematicMap" title="Map Options">
+  <form id="tile-form-list">
+    <br>Category:<br>
+    <select id="layer-category">
+    </select>
+    <br>Indicator:<br>
+    <select id="layer-list">
+    </select><br>
+    <input type="button" id="addTileLayer" value="Add Layer">
+    <input type="button" id="removeTileLayer" value="Remove Layer">
+  </form>
+</div>
 
-<div id="chartOptions" title="Layer Options">
-  <!-- spider chart attribute picker gets loaded here-->
+<div id="chartOptions" title="Chart Options">
+  <p>whoops, first interact with the map to load some data, then you can set the chart options</p>
+  <!-- Chart attribute picker gets loaded here-->
 </div>
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
@@ -34,20 +47,34 @@ Explore - {{block.super}}
     <p>This layer in not loaded in the map</p>
 </div>
 
-<!-- Category tags-->
+{{block.super}}
+
+{% endblock %}
+
+
+{% block extra_script %}
+    {{block.super}}
+    <!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="econ"><a href="#economy">Economy</a></li>
-    <li id="gov"><a href="#governance">Governance</a></li>
     <li id="pop"><a href="#population">Population</a></li>
-    <li id="ed"><a href="#education">Education</a></li>
+    <li id="gov"><a href="#governance">Governance</a></li>
+    <li id="edu"><a href="#education">Education</a></li>
   </ul>
 
-  <br>
+    <br>
+    <button type="button" id="thematic-map">Map Options</button> 
+    <button type="button" id="chart-options">Chart Options</button> 
 
   <div id="economy">
+    <div>
+      <div id="econ-area-spline" style="width:100%; height:400px; display:inline-block;"></div>
+    </div>
+    <div class="table-header" style="background-color: #dadcff;">
+    </div>
 
-    <table id="svir-table" >
+    <table id="econ-table" >
       <thead id="tablehead">
         <tr>
           <th>Index </th>
@@ -55,30 +82,67 @@ Explore - {{block.super}}
         </tr>
       </thead>
     </table>
+    <br><br>
+  </div>
 
-    <!--first chart -->
+  <div id="population">
     <div>
-      <div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div>
+      <div id="pop-area-spline" style="width:100%; height:400px; display:inline-block;"></div>
+    </div>
+    <div class="table-header">
     </div>
 
+    <table id="pop-table" >
+      <thead id="tablehead">
+        <tr>
+          <th>Index</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+    </table>
+    <br><br>
   </div>
 
   <div id="governance">
-    <p>Work in progress, stay tuned...</p>
+    <div>
+      <div id="gov-area-spline" style="width:100%; height:400px; display:inline-block;"></div>
+    </div>
+    <div class="table-header">
+    </div>
+
+    <table id="gov-table" >
+      <thead id="tablehead">
+        <tr>
+          <th>Index</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+    </table>
+    <br><br>
   </div>
-  <div id="population">
-    <p>Work in progress, stay tuned...</p>
+
+  <div id="education">
+        <div>
+      <div id="edu-area-spline" style="width:100%; height:400px; display:inline-block;"></div>
+    </div>
+    <div class="table-header">
+    </div>
+
+    <table id="edu-table" >
+      <thead id="tablehead">
+        <tr>
+          <th>Index</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+    </table>
+    <br><br>
   </div>
-    <div id="education">
-    <p>Work in progress, stay tuned...</p>
+
+  <!-- TODO fix this-->
+  <div id="empty" style="height:500px;">
   </div>
+
 </div>
-
-
-{{block.super}}
-{% endblock %}
-
-{% block extra_script %}
-    {{block.super}}
     <script src="{{ STATIC_URL }}js/svir_viewer.js"></script>
 {% endblock extra_script %}

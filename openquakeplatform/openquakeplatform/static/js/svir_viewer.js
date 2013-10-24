@@ -14,7 +14,11 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
-
+//var startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
+//var startAttr = ["popppsslu", "popppsask", "popppssry", "popppstfr"];
+var dataCat = "";
+var chartCat = "";
+var utfGrid = new Object;
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia');
 var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0);
 var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18);
@@ -44,22 +48,6 @@ var startApp = function() {
     layers = {};
 
     layerControl = L.control.layers(app.baseLayers);
-
-    //$("#oq-body-content").append('<div id="categoryTabs"><ul><li><a href="#economy">Economy</a></li><li><a href="#population">Governance</a></li><li><a href="#tabs-3">Population</a></li><li><a href="#tabs-4">Education</a></li></ul><br><div id="economy"><table id="svir-table" ><thead id="tablehead"><tr><th>Index </th><th>Value</th></tr></thead></table><!--first chart --><div><div id="areaSpline" style="width:100%; height:400px; display:inline-block;"></div></div></div><div id="population"></div><div id="tabs-3"></div><div id="tabs-4"></div></div>');
-
-    $("#oq-body-sidebar").append('<div><input id="spiderChart-open" type="button" value="Select Attributes"/></div>');
-
-    $("#oq-body-sidebar").append('<form id="tile-form-list"><br>Category:<br> <select id="layer-category"></select><br>Indicator:<br> <select id="layer-list"></select><br><input type="button" id="addTileLayer" value="Add Layer"><input type="button" id="removeTileLayer" value="Remove Layer"></form>');
-
-    // Append the layer-selection to the oq-context-ribbon div
-    //document.getElementById("oq-context-ribbon").appendChild("test");
-    //var foo = document.getElementById("oq-body-sidebar");
-    //foo.innerHTML = "<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>";
-    //$("#oq-body-sidebar").append("<div id='svir-buttons'><input id='layer-selection' type='button' value='Layers'/></div>");
-
-    //$("#layer-selection").button().click(function() {
-      //  $("#dialog-layers").dialog("open");
-    //});
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -242,7 +230,7 @@ var startApp = function() {
         });
     });
 
-    // Spider chart variable selection dialog
+    // Chart variable selection dialog
     $("#chartOptions").dialog({
         autoOpen: false,
         height: 300,
@@ -250,19 +238,33 @@ var startApp = function() {
         modal: true
     });
 
-    $("#spiderChart-open").button().click(function() {
+    // Map options selection dialog
+    $("#thematicMap").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true
+    });
+
+    $("#chart-options").button().click(function() {
         $("#chartOptions").dialog("open");
+    });
+
+    $("#thematic-map").button().click(function() {
+        $("#thematicMap").dialog("open");
     });
 
     $(function() {
         $( "#categoryTabs" ).tabs({
-            collapsible: true
+            collapsible: true,
+            selected: -1,
+            active: false
         });
     });
 
-    // Set up the data table
+    // Set up the data tables
     $(document).ready(function() {
-        $('#svir-table').dataTable({
+        $('#econ-table').dataTable({
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
             "sPaginationType": "full_numbers",
             //"aoColumnDefs": [
@@ -271,15 +273,44 @@ var startApp = function() {
         });
     });
 
+    $(document).ready(function() {
+        $('#pop-table').dataTable({
+            "aaSorting": [ [0,'asc'], [1,'asc'] ],
+            "sPaginationType": "full_numbers",
+            //"aoColumnDefs": [
+              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            //],
+        });
+    });
 
-    function BuildDataTable(e) {
+    $(document).ready(function() {
+        $('#gov-table').dataTable({
+            "aaSorting": [ [0,'asc'], [1,'asc'] ],
+            "sPaginationType": "full_numbers",
+            //"aoColumnDefs": [
+              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            //],
+        });
+    });
+
+    $(document).ready(function() {
+        $('#edu-table').dataTable({
+            "aaSorting": [ [0,'asc'], [1,'asc'] ],
+            "sPaginationType": "full_numbers",
+            //"aoColumnDefs": [
+              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            //],
+        });
+    });
+
+    function BuildDataTable(e, dataCat) {
         var values = [];
         for (var d in e.data) {
             values.push(e.data[d]);
         }
         var keys = Object.keys(e.data);
         for (var i=0, il=values.length; i<il; i++){
-            $('#svir-table').dataTable().fnAddData( [
+            $('#'+dataCat).dataTable().fnAddData( [
                 keys[i],
                 values[i]
                 ]
@@ -287,9 +318,8 @@ var startApp = function() {
         }
     };
 
-    function buildMyCharts(countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray){
-
-        $('#areaSpline').highcharts({
+    function buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray){
+        $('#'+chartCat).highcharts({
             chart: {
                 type: 'areaspline'
             },
@@ -348,95 +378,151 @@ var startApp = function() {
         });
     };
 
-    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-
-    // TODO change the utfgrid layer when the tabs are clicked
-    //$("#gov a").click(function(){
-      //  map.removeLayer(utfGrid);
-        //utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-pop-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        //map.addLayer(utfGrid); 
-
-    //});
+    //var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
     
-
-    utfGrid.on('click', function (e) {
+    // Change the utfgrid layer when the tabs are clicked
+    $("#econ").click(function(){
+        startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
+        attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
+        dataCat = "econ-table";
+        chartCat = "econ-area-spline";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
-        // When the map is clikced the table needs to be cleared out and recreated 
-        var countryTable = $("#svir-table").dataTable();
-        countryTable.fnClearTable();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
 
-        BuildDataTable(e);
+    $("#pop").click(function(){
+        startAttr = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
+        attrSelection = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
+        dataCat = "pop-table";
+        chartCat = "pop-area-spline";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-pop-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
 
-        if (e.data) {
-            // Populate a drop down list so the user can select attributes to be used in the spider chart
-            var values = [];
-            for (var d in e.data) {
-                values.push(e.data[d]);
-            }
-            var keys = Object.keys(e.data);
+    $("#gov").click(function(){
+        startAttr = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
+        attrSelection = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
+        dataCat = "gov-table";
+        chartCat = "gov-area-spline";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-gov-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
+
+    $("#edu").click(function(){
+        startAttr = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
+        attrSelection = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
+        dataCat = "edu-table";
+        chartCat = "edu-area-spline";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-edu-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
+
+    var utfGridClickEvent = function(dataCat, chartCat) {
+        console.log(startAttr);
+        utfGrid.on('click', function (e) {
+            $("#chartOptions").empty();
+
+            // When the map is clikced the table needs to be cleared out and recreated 
+            var countryTable = $("#"+dataCat).dataTable();
+            countryTable.fnClearTable();
+    
+            BuildDataTable(e, dataCat);
+    
+            if (e.data) {
+                // Populate a drop down list so the user can select attributes to be used in the spider chart
+                var values = [];
+                for (var d in e.data) {
+                    values.push(e.data[d]);
+                }
+                var keys = Object.keys(e.data);
+                for (var i in values) {
+                    var value = values[i];
+                    var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
+                    $('#chartOptions').append(chartDropDown);
+                }
+    
+                $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+                
+                $("#chartOptionsButton").click(function(){
+                    $('#chartOptions').dialog('close');
+                    // Grab the check box values to be used in the chart
+                    attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
+                        .map(function(){
+                            return this.name;
+                        });
+                        if (attrSelection > 4) {
+                            attrSelection.pop();
+                        } 
+                });
+                
+                if (attrSelection.length == 0) {
+                    attrSelection = startAttr;
+                }
         
-            for (var i in values) {
-                var value = values[i];
-
-                var spiderDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
-                //var spiderDropDown = '<p>'+data+'</p>';
-                $('#chartOptions').append(spiderDropDown);
-            }
-
-            $('#chartOptions').append('<input id="spiderChartButton" type="button" value="Render"/>');
-            
-            $("#spiderChartButton").click(function(){
-                // Grab the check box values to be used in the chart
-                attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
-                    .map(function(){
-                        return this.name;
-                    });
-                    if (attrSelection > 4) {
-                        attrSelection.pop();
-                    } 
-            });
-
-            if (attrSelection.length == 0) {
-                attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
+                selectedValue1.unshift(e.data[attrSelection[0]]);
+                if (selectedValue1.length > 4) {
+                    selectedValue1.pop();
+                }
+                
+                selectedValue2.unshift(e.data[attrSelection[1]]);
+                if (selectedValue2.length > 4) {
+                    selectedValue2.pop();
+                }
+    
+                selectedValue3.unshift(e.data[attrSelection[2]]);
+                if (selectedValue3.length > 4) {
+                    selectedValue3.pop();
+                }
+    
+                selectedValue4.unshift(e.data[attrSelection[3]]);
+                if (selectedValue4.length > 4) {
+                    selectedValue4.pop();
+                }
+                
+                var countryName = e.data.country_na;
+                // Indicate the country name for the table header
+                $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
+    
+                countriesArray.unshift(countryName);
+    
+                if (countriesArray.length > 4) {
+                    countriesArray.pop();
+                }
+                console.log(startAttr);
+                console.log(attrSelection);
+                console.log(selectedValue1, selectedValue2);
+                buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
+                
+            } else {
+                document.getElementById('click').innerHTML = 'click: nothing';
             }
     
-            selectedValue1.unshift(e.data[attrSelection[0]]);
-            if (selectedValue1.length > 4) {
-                selectedValue1.pop();
-            }
-            
-            selectedValue2.unshift(e.data[attrSelection[1]]);
-            if (selectedValue2.length > 4) {
-                selectedValue2.pop();
-            }
+        });
+    }
 
-            selectedValue3.unshift(e.data[attrSelection[2]]);
-            if (selectedValue3.length > 4) {
-                selectedValue3.pop();
-            }
+    //utfGridClickEvent();
 
-            selectedValue4.unshift(e.data[attrSelection[3]]);
-            if (selectedValue4.length > 4) {
-                selectedValue4.pop();
-            }
-            
-            var countryName = e.data.country_na;           
-
-            countriesArray.unshift(countryName);
-
-            if (countriesArray.length > 4) {
-                countriesArray.pop();
-            }
-
-            buildMyCharts(countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
-            
-        } else {
-            document.getElementById('click').innerHTML = 'click: nothing';
-        }
-
-    }); 
-
-    map.addLayer(utfGrid); 
+    //map.addLayer(utfGrid); 
 
 };
 

@@ -36,6 +36,13 @@
     min-width: 648px;
 }
 
+#oq-data-body-content {
+    float: right;
+    width: 100%;
+    min-width: 648px;
+    height: 300px;
+}
+
 #oq-body-sidebar {
     /* Make this visible to add a layer nav tree to the left
        side of the map */

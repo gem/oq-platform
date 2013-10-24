@@ -1,0 +1,76 @@
+<!--
+Copyright (c) 2013, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "site_base_data.html" %}
+
+{% block extra_head %}
+    {{block.super}}
+    <!-- IE 8 Compatibility -->
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    <link rel="stylesheet" href="{{ STATIC_URL }}lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/wax-controls.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/oqplatform_leaflet.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_table.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_page.css" />
+{% endblock extra_head %}
+
+{% block oq_body_content %}
+    <div id="map"></div>
+{% endblock oq_body_content %}
+
+{% block extra_script %}
+    {{block.super}}
+    <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>
+    <script src="{{ STATIC_URL }}Leaflet/dist/leaflet.js"></script>
+    <script src="{{ STATIC_URL }}L.Wax/L.Wax.js"></script>
+    <script src="{{ STATIC_URL }}wax/dist/wax.leaf.min.js"></script>
+    <script src="{{ STATIC_URL }}wax/ext/modestmaps.min.js"></script>
+    <script src="{{ STATIC_URL }}wax/dist/wax.mm.js"></script>
+    <script src="{{ STATIC_URL }}js/base_data_viewer_app.js"></script>
+    <script src="{{ STATIC_URL }}js/leaflet.utfgrid.js"></script>
+    <script src="{{ STATIC_URL }}js/leaflet.ajax.min.js"></script>
+    <script src="{{ STATIC_URL }}js/highcharts.src.js"></script>
+    <script src="{{ STATIC_URL }}js/highcharts-more.src.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.dataTables.js"></script>
+    <!-- Constants, rendered here from app configuration through Django templates.
+         This is a simple way to make variables from the backend available to the
+         frontend.
+
+         This code is auto-generated.
+    -->
+    <script>
+    var ICEBOX_URLS = {};
+    {% for k, v in icebox_urls.iteritems %}
+    ICEBOX_URLS.{{ k }} = "{{ v }}";
+    {% endfor %}
+
+    var OQ_ENGINE_SERVER_URLS = {};
+    {% for k, v in oq_engine_server_urls.iteritems %}
+    OQ_ENGINE_SERVER_URLS.{{ k }} = "{{ v }}";
+    {% endfor %}
+
+    var THIRD_PARTY_URLS = {};
+    {% for k, v in third_party_urls.iteritems %}
+    THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
+    {% endfor %}
+
+    var CURRENT_USER = "{{request.user}}";
+
+    </script>
+
+{% endblock extra_script %}
