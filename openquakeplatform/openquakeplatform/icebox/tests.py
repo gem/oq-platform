@@ -34,7 +34,6 @@ class BaseViewTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(BaseViewTestCase, cls).setUpClass()
         cls.factory = RequestFactory()
 
 
