@@ -58,12 +58,6 @@ except ImportError:
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
 
-ICEBOX_URLS = {
-    'artifacts': 'http://localhost:8000/icebox/artifacts/',
-    'artifacts_import': 'http://localhost:8000/icebox/artifacts/import/',
-    'artifact_groups': 'http://localhost:8000/icebox/artifact_groups/',
-
-}
 OQ_ENGINE_SERVER_URLS = {
     'run_hazard_calc_form': 'http://localhost:11888/v1/calc/hazard/run',
     'run_risk_calc_form': 'http://localhost:11888/v1/calc/risk/run',
