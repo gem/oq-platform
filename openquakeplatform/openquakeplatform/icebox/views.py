@@ -13,15 +13,18 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+# You should have received a copy of the GNU Affero General Public
+# License along with this program. If not, see
+# <https://www.gnu.org/licenses/agpl.html>.
 
 import json
 import urllib
 import urllib2
 import urlparse
 
+from django.conf import settings
 from django.contrib.auth import models
+from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponse
@@ -151,9 +154,13 @@ def import_artifacts(request):
         None,  # query
         None,  # fragment
     ))
-    count = _do_import_artifacts(artifacts, calculation_url, owner_user)
+    artifact_group = _do_import_artifacts(
+        artifacts, calculation_url, owner_user)
 
-    return HttpResponse('%s items imported from %s' % (count, import_url))
+    _do_send_email(owner_user.email, artifact_group)
+
+    return HttpResponse('%s items imported from %s' % (
+        artifact_group.artifacts.count(), import_url))
 
 
 @transaction.commit_on_success
@@ -178,8 +185,9 @@ def _do_import_artifacts(artifacts, calculation_url, owner_user):
         :class:`openquakeplatform.icebox.models.Artifact` and
         :class:`openquakeplatform.icebox.models.ArtifactGroup` records will
         belong.
+    :returns:
+        a newly created ArtifactGroup (with type `calculation`)
     """
-    count = 0
     # First, try to get the calculation summary and add it as an artifact.
     try:
         calc_summary_url = urllib2.urlopen(calculation_url)
@@ -202,7 +210,6 @@ def _do_import_artifacts(artifacts, calculation_url, owner_user):
             ),
             artifact_group=art_group,
         )
-        count += 1
     except urllib2.HTTPError:
         # TODO(LB): We need to log this
         return HttpResponse(
@@ -234,7 +241,6 @@ def _do_import_artifacts(artifacts, calculation_url, owner_user):
                     artifact=art,
                     artifact_group=art_group,
                 )
-                count += 1
             except urllib2.HTTPError:
                 # Be forgiving of 404s, since the not all artifacts will be
                 # available in all formats.
@@ -245,7 +251,7 @@ def _do_import_artifacts(artifacts, calculation_url, owner_user):
                 # (and probably succssfully imported), so we need
                 # to close the connection
                 artifact_url.close()
-    return count
+    return art_group
 
 
 @require_http_methods(['GET'])
@@ -318,3 +324,16 @@ def get_artifact_group(request, art_group_id):
         return HttpResponseNotFound()
     else:
         return HttpResponse(json.dumps(group), content_type=JSON)
+
+
+def _do_send_email(email, artifact_group):
+    send_mail("A new %s is available" % artifact_group.name,
+              """
+The following new artifacts are available:
+%s
+
+Login into Openquake platform to see them.
+""" % "\n".join([a.name
+                 for a in artifact_group.artifacts.all()]),
+              [settings.THEME_ACCOUNT_CONTACT_EMAIL],
+              [email], fail_silently=False)

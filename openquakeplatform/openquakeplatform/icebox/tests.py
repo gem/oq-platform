@@ -34,6 +34,7 @@ class BaseViewTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super(BaseViewTestCase, cls).setUpClass()
         cls.factory = RequestFactory()
 
 
@@ -235,11 +236,14 @@ class ImportArtifactsTestCase(BaseViewTestCase):
             with mock.patch('urllib2.urlopen') as urlopen:
                 with mock.patch('openquakeplatform.icebox.views'
                                 '._do_import_artifacts') as do_import:
-                    user_get.return_value = fake_user
-                    urlopen.return_value = fake_url
-                    do_import.return_value = 4  # 1 calc summary, 3 haz maps
-
-                    resp = views.import_artifacts(self.req)
+                    with mock.patch('openquakeplatform.icebox.views'
+                                    '._do_send_email'):
+                        user_get.return_value = fake_user
+                        urlopen.return_value = fake_url
+                        art_group = mock.Mock()
+                        art_group.artifacts.count.return_value = 4
+                        do_import.return_value = art_group
+                        resp = views.import_artifacts(self.req)
 
         # First, test mocks:
         self.assertEqual(1, do_import.call_count)

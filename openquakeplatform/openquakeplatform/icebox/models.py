@@ -43,6 +43,7 @@ class ArtifactGroup(models.Model):
                    '"calculation", etc.)')
     )
     name = models.TextField(help_text='Name of the artifact group')
+    artifacts = models.ManyToManyField(Artifact, through='ArtifactGroupLink')
 
 
 class ArtifactGroupLink(models.Model):
