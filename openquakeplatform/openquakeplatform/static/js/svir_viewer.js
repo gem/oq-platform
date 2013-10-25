@@ -321,6 +321,9 @@ var startApp = function() {
     function buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
         // TODO we need to build a html legend to go next to the chart
         // the legend will use the attrSelection variable
+        ////////////////////////////////////////////
+        /////////// Initiate chart /////////////////
+        ////////////////////////////////////////////
         d = [
         [
         {axis: countriesArray[0], value: selectedValue1[0]},
@@ -347,6 +350,56 @@ var startApp = function() {
 
         RadarChart.draw("#"+chartCat, d);
 
+        ////////////////////////////////////////////
+        /////////// Initiate legend ////////////////
+        ////////////////////////////////////////////
+        var LegendOptions = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3]];
+        var colorscale = d3.scale.category10();
+        
+        var svg = d3.select("#"+chartCat)
+            .selectAll('svg')
+            .append('svg')
+            .attr("width", 300)
+            .attr("height", 300);
+        
+        //Create the title for the legend
+        var text = svg.append("text")
+            .attr("class", "title")
+            .attr('transform', 'translate(50,0)') 
+            .attr("x", 0)
+            .attr("y", 15)
+            .attr("font-size", "16px")
+            .attr("fill", "#404040")
+            .text("Chart Legend");
+                
+        //Initiate Legend   
+        var legend = svg.append("g")
+            .attr("class", "legend")
+            .attr('transform', 'translate(50,20)')
+            .style("font-size","12px");
+        
+        //Create colour squares
+        legend.selectAll('rect')
+            .data(LegendOptions)
+            .enter()
+            .append("rect")
+            .attr("x", 15)
+            .attr("y", function(d, i){ return i * 20;})
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function(d, i){ return colorscale(i);});
+    
+        //Create text next to squares
+        legend.selectAll('text')
+            .data(LegendOptions)
+            .enter()
+            .append("text")
+            .attr("x", 30)
+            .attr("y", function(d, i){ return i * 20 + 9;})
+            .attr("font-size", "11px")
+            .attr("fill", "#737373")
+            .text(function(d) { return d; });
+        
     }
 
     // Change the utfgrid layer when the tabs are clicked
