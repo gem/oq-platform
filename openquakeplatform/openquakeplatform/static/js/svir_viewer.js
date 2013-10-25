@@ -318,7 +318,7 @@ var startApp = function() {
         }
     };
 
-    function buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
+    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
         // TODO we need to build a html legend to go next to the chart
         // the legend will use the attrSelection variable
         ////////////////////////////////////////////
@@ -530,8 +530,8 @@ var startApp = function() {
                 if (countriesArray.length > 4) {
                     countriesArray.pop();
                 }
-                //buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
-                buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
+                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
+                
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
