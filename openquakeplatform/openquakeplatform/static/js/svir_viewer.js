@@ -318,74 +318,43 @@ var startApp = function() {
         }
     };
 
-    function buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray){
-        $('#'+chartCat).highcharts({
-            chart: {
-                type: 'areaspline'
-            },
-            title: {
-                text: 'test foo bar'
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'left',
-                verticalAlign: 'top',
-                x: 150,
-                y: 100,
-                floating: true,
-                borderWidth: 1,
-                backgroundColor: '#FFFFFF'
-            },
-            xAxis: {
-                categories: 
-                    countriesArray,
-                plotBands: [{ // visualize the weekend
-                    from: 4.5,
-                    to: 6.5,
-                    color: 'rgba(68, 170, 213, .2)'
-                }]
-            },
-            yAxis: {
-                title: {
-                    text: 'Foo units'
-                }
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' units'
-            },
-            credits: {
-                enabled: false
-            },
-            plotOptions: {
-                areaspline: {
-                    fillOpacity: 0.5
-                }
-            },
-            series: [{
-                name: attrSelection[0],
-                data: [selectedValue1[0], selectedValue1[1], selectedValue1[2], selectedValue1[3]]
-            }, {
-                name: attrSelection[1],
-                data: [selectedValue2[0], selectedValue2[1], selectedValue2[2], selectedValue2[3]]
-            }, {
-                name: attrSelection[2],
-                data: [selectedValue3[0], selectedValue3[1], selectedValue3[2], selectedValue3[3]]
-            }, {
-                name: attrSelection[3],
-                data: [selectedValue4[0], selectedValue4[1], selectedValue4[2], selectedValue4[3]]
-            }]
-        });
-    };
+    function buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
+        // TODO we need to build a html legend to go next to the chart
+        // the legend will use the attrSelection variable
+        d = [
+        [
+        {axis: countriesArray[0], value: selectedValue1[0]},
+        {axis: countriesArray[1], value: selectedValue1[1]},
+        {axis: countriesArray[2], value: selectedValue1[2]},
+        {axis: countriesArray[3], value: selectedValue1[3]}
+        ], [
+        {axis: countriesArray[0], value: selectedValue2[0]},
+        {axis: countriesArray[1], value: selectedValue2[1]},
+        {axis: countriesArray[2], value: selectedValue2[2]},
+        {axis: countriesArray[3], value: selectedValue2[3]}
+        ], [
+        {axis: countriesArray[0], value: selectedValue3[0]},
+        {axis: countriesArray[1], value: selectedValue3[1]},
+        {axis: countriesArray[2], value: selectedValue3[2]},
+        {axis: countriesArray[3], value: selectedValue3[3]}
+        ], [
+        {axis: countriesArray[0], value: selectedValue4[0]},
+        {axis: countriesArray[1], value: selectedValue4[1]},
+        {axis: countriesArray[2], value: selectedValue4[2]},
+        {axis: countriesArray[3], value: selectedValue4[3]}
+        ]
+        ];
 
-    //var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-    
+        RadarChart.draw("#"+chartCat, d);
+
+    }
+
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){
         startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
         attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
         dataCat = "econ-table";
-        chartCat = "econ-area-spline";
+        chartCat = "econ-spider-chart";
         map.removeLayer(utfGrid);
         utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
@@ -399,7 +368,7 @@ var startApp = function() {
         startAttr = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
         attrSelection = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
         dataCat = "pop-table";
-        chartCat = "pop-area-spline";
+        chartCat = "pop-spider-chart";
         map.removeLayer(utfGrid);
         utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-pop-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
@@ -413,7 +382,7 @@ var startApp = function() {
         startAttr = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
         attrSelection = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
         dataCat = "gov-table";
-        chartCat = "gov-area-spline";
+        chartCat = "gov-spider-chart";
         map.removeLayer(utfGrid);
         utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-gov-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
@@ -427,7 +396,7 @@ var startApp = function() {
         startAttr = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
         attrSelection = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
         dataCat = "edu-table";
-        chartCat = "edu-area-spline";
+        chartCat = "edu-spider-chart";
         map.removeLayer(utfGrid);
         utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-edu-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
@@ -508,11 +477,8 @@ var startApp = function() {
                 if (countriesArray.length > 4) {
                     countriesArray.pop();
                 }
-                console.log(startAttr);
-                console.log(attrSelection);
-                console.log(selectedValue1, selectedValue2);
-                buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
-                
+                //buildMyCharts(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
+                buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
