@@ -167,7 +167,7 @@ def init_start():
 
 
 def start():
-    local('paver start')
+    local('paver start -b 0.0.0.0:8000')
 
 
 def stop():
@@ -274,12 +274,9 @@ def _maybe_createuser(dbuser, dbpassword):
         print('Database user "%s" already exists!' % dbuser)
         return False
     else:
-        print('Creating user "%(dbuser)s". Please choose a password (it should'
-              'match your local_settings.py). Recommended: "%(dbpassword)s".'
+        print('Creating user "%(dbuser)s" with password "%(dbpassword)s.'
               % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgsudo('createuser --superuser --password %(dbuser)s'
-                % dict(dbpassword=dbpassword, dbuser=dbuser))
-        _pgquery('ALTER USER %s WITH SUPERUSER' % dbuser)
+        _pgquery("CREATE ROLE %(dbuser)s ENCRYPTED PASSWORD '%(dbpassword)s' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN" % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
         return True
 
 
