@@ -477,7 +477,8 @@ class EventOverview (Pagebase):
                 for urlStrPolygons in urlStrPolygonsList:
                     geoJsonStrPolygons = urllib2.urlopen(urlStrPolygons).read()
 
-                    if 'ServiceExceptionReport' in geoJsonStrPolygons:
+                    # watch out for error in GeoServer response, or for the layer to be empty - in which case dont create the layer because Leaflet cannot handle empty layers
+                    if 'ServiceExceptionReport' in geoJsonStrPolygons or geoJsonStrPolygons == '{"type":"FeatureCollection","features":[]}':
                         geoJsonStrPolygons = ''
                     else:
                         geoJsonStrPolygonsList.append(geoJsonStrPolygons)

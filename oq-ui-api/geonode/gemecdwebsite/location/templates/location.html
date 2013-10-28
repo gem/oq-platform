@@ -293,12 +293,17 @@
             //}
 
             // first fit the bounds to the union of all the layers that are visible (must be done in the document ready function)
-            var bounds = boundsGroup.getBounds();
-            if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
+            try
             {
-                map.fitBounds(bounds);
+                var bounds = boundsGroup.getBounds();
+                if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
+                {
+                    map.fitBounds(bounds);
+                }
             }
-
+            catch(e){
+                alert('unable to zoom the map to the location');
+            }
         });
     </script>
 
@@ -431,7 +436,7 @@
         //L.control.layers(baselayer, overlays).addTo(map);
 
         // Add Wax support
-        L.wax(map);
+        //L.wax(map);
 
     </script>
 
