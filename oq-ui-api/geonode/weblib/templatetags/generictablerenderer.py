@@ -1,6 +1,7 @@
 __author__ = 'Simon Ruffle'
 
 from django.template import Library, Node
+import datetime
 
 register = Library()
 
@@ -75,14 +76,27 @@ def simpleview(context,setup):
 def iteratefieldstructure(field_structure, context):
 
     pageclass = context['pageclass']
+    if field_structure == '':
+        raise Exception ('field_structure is empty in generic table renderer')
     queryset = field_structure['entity']
 
     columnheadingslist = []                     # gets sent to the template
     render_structure = []                       # gets sent to the template
     target_url = field_structure['targeturl']   # gets sent to the template
-    linkprefix = ''                             # used to prefix links derived from foreign keys, so you can look up in the related table
-    if 'foreignkeylinkprefix' in field_structure:
-        linkprefix = field_structure['foreignkeylinkprefix']
+
+    linkprefix = ''  # used to prefix links derived from foreign keys, so you can look up in the related table
+    linksuffix = ''
+    tagclass = 'tag'
+    if 'params' in field_structure:
+
+        if 'foreignkeylinkprefix' in field_structure['params']:
+            linkprefix = field_structure['params']['foreignkeylinkprefix']
+
+        if 'linksuffix' in field_structure['params']:
+            linksuffix = field_structure['params']['linksuffix']
+
+        if 'tagclass' in field_structure['params']:
+            tagclass = field_structure['params']['tagclass']
 
     for field in field_structure['fields']:
         columnname = str(field[0].keys()[0])
@@ -134,6 +148,11 @@ def iteratefieldstructure(field_structure, context):
             html_definition['columnname'] = columnname
 
             if fieldtype in ['DateTimeField']:
+                # not very robust way of detecting when a datetime was used to store just a date, or just a time
+                if columnvalue.time().hour == 0 and columnvalue.time().minute == 0 and columnvalue.time().second == 0 and columnvalue.time().microsecond == 0:
+                    columnvalue = columnvalue.date()
+                if columnvalue.year == 2000 and columnvalue.month == 1 and columnvalue.day == 1:
+                    columnvalue = columnvalue.time()
                 columnvalue = unicode(columnvalue)
 
             if fieldtype in ['DecimalField']:
@@ -182,7 +201,7 @@ def iteratefieldstructure(field_structure, context):
 #        tuple[str(record.id)] = column_list;
 #        record_list.append(tuple)
 
-    return {'render_structure': render_structure, 'columnheadings_list': columnheadingslist, 'target_url': target_url, 'pageclass': pageclass, 'media_url': context['MEDIA_URL'] }
+    return {'render_structure': render_structure, 'columnheadings_list': columnheadingslist, 'target_url': target_url, 'pageclass': pageclass, 'media_url': context['MEDIA_URL'], 'linksuffix': linksuffix, 'tagclass': tagclass}
 
 
 @register.inclusion_tag ('tableview.html', takes_context=True)
@@ -222,5 +241,10 @@ def weblinklist( context, field_structure ):
 
 @register.inclusion_tag ('documentlist.html', takes_context=True)
 def documentlist( context, field_structure ):
+
+    return iteratefieldstructure( field_structure, context)
+
+@register.inclusion_tag ('spanlist.html', takes_context=True)
+def spanlist( context, field_structure ):
 
     return iteratefieldstructure( field_structure, context)

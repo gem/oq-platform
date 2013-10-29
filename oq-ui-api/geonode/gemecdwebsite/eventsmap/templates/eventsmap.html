@@ -1,5 +1,5 @@
 {% extends "gemecd_base.html" %}
-
+{% load generictablerenderer %}
 
 {% block filterbar %}
         <div id="advancedfilterpanel">
@@ -32,11 +32,12 @@
         <div id="ecd-leftpanel">
             <div id="panelcontainer">
                 <h1>{{ paneltitle }}</h1>
-                <form method="post">{% csrf_token %}
-                    {{ panelform.as_p }}
-                    <!--<input type="submit" value=" &raquo; " class="gobutton" title="Quick link to details of event"/>-->
-                </form>
+                <!--<form method="post">{% comment %}{% csrf_token %}{% endcomment %}
+                    {% comment %}{{ panelform.as_p }}{% endcomment %}
+                </form>-->
+               {% spanlist field_structure=eventslist %}
             </div>
+
         </div>
 
 {% endblock leftpanel %}

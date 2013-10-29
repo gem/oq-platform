@@ -15,6 +15,7 @@ class WebLibPhoto(ImageModel):
     id = models.IntegerField(primary_key=True)
     #you cant put title here , it wont save
     #title = models.CharField(max_length=50, unique=True,db_column='name',verbose_name='File name', help_text='Photograph filename, all lowercase, including suffix .jpg/.tif/.gif/.bmp/.png')
+    parentid = models.IntegerField()
     title_slug = models.CharField(max_length=50, unique=True)
     caption = models.CharField(max_length=255,verbose_name='Caption', blank=True, help_text='Caption for the photograph, please keep short')
     date_added = models.DateTimeField(verbose_name='Date added')

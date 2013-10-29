@@ -1,4 +1,5 @@
 {% extends "gemecd_base.html" %}
+{% load generictablerenderer %}
 
 {% block filterbar %}
 
@@ -33,10 +34,14 @@
             <div id="panelcontainer">
                 <div id="backlink">{{ page_backlink|safe }}</div>
                 <h1>{{ paneltitle }}</h1>
+                    <img class="eventicon" width="180px" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
+
                     <form method="post">{% csrf_token %}
-                    {{ panelform.as_p }}
-                    <!--<input type="submit" value=" &raquo; " class="gobutton" title="Quick link to details of event"/>-->
+                        {{ panelform.as_p }}
                     </form>
+                    {% formviewastable field_structure=eventfields %}
+                    <div class="locationslabel">{{ locationslabel }}</div>
+                    {% spanlist field_structure=locationslist %}
             </div>
         </div>
 

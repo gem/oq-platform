@@ -221,7 +221,41 @@ div#ecd-leftpanel select.locationdropdown
     font-size:13px;
 }
 
+div#ecd-leftpanel div.spanlist
+{
+    height:600px;
+    overflow:scroll;
+}
 
+div#ecd-leftpanel div.spanlist ul
+{
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+div#ecd-leftpanel div.spanlist li a
+{
+    text-decoration:none;
+    display:block;
+}
+
+div#ecd-leftpanel div.spanlist li a:hover
+{
+    background-color:#ccc;
+}
+
+div#ecd-leftpanel div.spanlist.eventsmap span.partner
+{
+    font-style: italic;
+}
+
+div#ecd-leftpanel div.locationslabel
+{
+    margin-top:9px;
+    margin-bottom:9px;
+    font-weight:bold;
+}
 
 /* end of left panel beside the map */
 

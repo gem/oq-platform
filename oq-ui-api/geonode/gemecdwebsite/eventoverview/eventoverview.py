@@ -185,6 +185,12 @@ def locationjson (request, *args, **kwargs):
     return JSONResponse(json)
 
 
+class LocationsListForm (ModelForm):
+    class Meta:
+        model = LocationsQuick
+        fields = ('locationname', )
+
+
 class EventOverview (Pagebase):
 
     class FilterBarForm(forms.Form):
@@ -218,24 +224,22 @@ class EventOverview (Pagebase):
         ##socioeconomic.widget.attrs['onchange'] = 'submit()'
         #socioeconomic.widget.attrs['class'] = 'iconbutton'
 
-
-
     class PanelForm(forms.Form):
         study = forms.ChoiceField(label='Study', required=False) #required=False allows field to be disabled
         study.widget.attrs['title'] = "Filter by study"
         study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         study.widget.attrs['class'] = 'studydropdown'
 
-        location = forms.ChoiceField(label='Location', required=False) #required=False allows field to be disabled
-        location.widget.attrs['title'] = "Go to location"
-        location.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
-        location.widget.attrs['class'] = 'locationdropdown'
+        # if we were to want the location dropdown on this page:
+        #location = forms.ChoiceField(label='Location', required=False) #required=False allows field to be disabled
+        #location.widget.attrs['title'] = "Go to location"
+        #location.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
+        #location.widget.attrs['class'] = 'locationdropdown'
 
-        # if we were to want the event dropdown on this page:
-        #event = forms.ChoiceField(label='Event', required=False) #required=False allows field to be disabled
-        #event.widget.attrs['title'] = "Quick link to event details"
-        #event.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
-        #event.widget.attrs['class'] = 'eventdropdown'
+    class EventForm (ModelForm):
+        class Meta:
+            model = Event
+            fields = ('usgsshakemapid', 'eventdate', 'eventtime', 'magnitude', 'depth', )
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -398,6 +402,15 @@ class EventOverview (Pagebase):
         except:
             return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 
+        # left hand panel event info form
+        eventForm = self.EventForm(instance=event, prefix="eventform")
+        eventfieldstructure = self.createFormFieldStructure( eventForm, event, {'foreignkeylinkprefix': '/ecd'} ) # generate field structure to pass to generictablerenderer (createFormFieldStructure is in weblib baseclasses pagebase.py)
+        self.page_context['eventfields'] = eventfieldstructure # for display
+        self.page_context['eventform'] = eventForm # for editing
+
+        # iconic image
+        self.page_context['iconicimage'] = 'event' + str(eventid) + '.jpg'
+
         ###############
         # POST
         ###############
@@ -423,7 +436,7 @@ class EventOverview (Pagebase):
                     #    studyid = panelform.cleaned_data['study']
 
                     # get raw data
-                    locationid = panelform.data['panelform-location']
+                    #locationid = panelform.data['panelform-location']  # not used
                     studyid = panelform.data['panelform-study']
 
                 else:
@@ -499,22 +512,14 @@ class EventOverview (Pagebase):
 
                 self.page_context['filterbarform'] = filterbarform(prefix="filterbarform", label_suffix='')
 
+                # left hand panel dropdowns form
                 panelform = self.PanelForm
 
-                # populate event dropdown
-                #eventlist = [('0','All ECD events')]
-                #events = EventsQuick.objects.all().order_by('-yearint')
-                #for event in events:
-                #    eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
-
-                #panelform.base_fields['event'].choices = eventlist
-                #panelform.base_fields['event'].initial = eventid
-
-                # populate study dropdown
                 studies = Study.objects.filter(parentid=eventid).order_by('name')
                 if studytype is not '':
                     studies = studies.filter(studytypecode=studytype)
 
+                # populate study dropdown
                 if len(studies) > 0:
                     studylist = [('0','All studies')]
                     for study in studies:
@@ -525,7 +530,6 @@ class EventOverview (Pagebase):
                 panelform.base_fields['study'].choices = studylist
                 panelform.base_fields['study'].initial = studyid
 
-                # populate location dropdown
                 locations = LocationsQuick.objects.filter(eventid=eventid).order_by('locationname')
                 if studyid > 0 :
                     locations = locations.filter(studyid=studyid)
@@ -533,19 +537,31 @@ class EventOverview (Pagebase):
                 if studytype is not '':
                     locations = locations.filter(studytypecode=studytype)
 
-                if len(locations) > 0:
-                    locationlist = [('0','All locations')]
-                    for location in locations:
-                        locationlist.append((unicode(location.id), location.locationname))
-                else:
-                    locationlist = [('0','NO LOCATIONS')]
-
-                panelform.base_fields['location'].choices = locationlist
-                #panelform.base_fields['location'].initial = locationid
-
-                # filter settings for the link on the AJAX popup
-                self.page_context['filterstring'] = '?studyid=' + str(studyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
+                # populate location dropdown - commented out
+                #if len(locations) > 0:
+                #    locationlist = [('0','All locations')]
+                #    for location in locations:
+                #        locationlist.append((unicode(location.id), location.locationname))
+                #else:
+                #    locationlist = [('0','NO LOCATIONS')]
+                #panelform.base_fields['location'].choices = locationlist
 
                 self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
+
+                # end of panel and dropdowns
+
+                # filter settings for the links
+                self.page_context['filterstring'] = '?studyid=' + str(studyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
+
+                # left hand panel location list
+                locationsListForm = LocationsListForm()
+                locationslist = self.createListFieldStructure(locationsListForm, locations, '/ecd/location/', {'foreignkeylinkprefix':'ecd', 'tagclass': 'locationslist', 'linksuffix': self.page_context['filterstring']} )
+                self.page_context['locationslist'] = locationslist
+                if len(locations) > 0:
+                    self.page_context['locationslabel'] = 'Locations in studies'
+                else:
+                    self.page_context['locationslabel'] = 'No locations in selected studies'
+
+                self.page_context['pageclass'] = 'eventoverview'
 
             return render(request, template_name, self.page_context)

@@ -13,6 +13,7 @@ class PhotologueWatermark(models.Model):
     opacity = models.FloatField()
     class Meta:
         db_table = u'photologue_watermark'
+        managed=False
 
 class PhotologuePhotoeffect(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -29,6 +30,7 @@ class PhotologuePhotoeffect(models.Model):
     background_color = models.CharField(max_length=7)
     class Meta:
         db_table = u'photologue_photoeffect'
+        managed=False
 
 class PhotologuePhotosize(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -44,6 +46,7 @@ class PhotologuePhotosize(models.Model):
     watermark = models.ForeignKey(PhotologueWatermark, null=True, blank=True)
     class Meta:
         db_table = u'photologue_photosize'
+        managed=False
 
     def __unicode__(self):
         return  self.name + '(' + str(self.width) + 'x' + str(self.height) + ')'
@@ -66,6 +69,7 @@ class PhotologuePhoto(models.Model):
     tags = models.CharField(max_length=255)
     class Meta:
         db_table = u'photologue_photo'
+        managed=False
 
 
 class WebLibPhoto(ImageModel):
@@ -97,10 +101,10 @@ class Pagetype (models.Model):
 
     class Meta:
         db_table = u'weblib_pagetype'
-        managed = False
 
     def __unicode__(self):
         return self.name
+
 
 class Page(models.Model):
     id = models.AutoField(primary_key=True)
@@ -118,9 +122,6 @@ class Page(models.Model):
     lastupdate = models.DateTimeField(null=True, blank=True)
     lastupdatebyid = models.IntegerField(null=True, blank=True)
     ownerid = models.IntegerField(null=True, blank=True)
-
-    class Meta:
-        managed = False
 
     def __unicode__(self):
         return self.name
@@ -142,6 +143,7 @@ class Link(models.Model):
     lastupdate = models.DateTimeField(null=True, blank=True)
     lastupdatebyid = models.IntegerField(null=True, blank=True)
     ownerid = models.IntegerField(null=True, blank=True)
+
     class Meta:
         db_table = u'weblib_link'
 

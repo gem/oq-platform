@@ -36,6 +36,12 @@ class PageFormDisplay (ModelForm):
         exclude = displayfields['exclude']
 
 
+class EventsListForm (ModelForm):
+    class Meta:
+        model = EventsQuick
+        fields = ('yearint', 'eventname', 'country', 'partner' )
+
+
 class EventsMap (Pagebase):
 
     class FilterBarForm(forms.Form):
@@ -284,8 +290,8 @@ class EventsMap (Pagebase):
 
                 self.page_context['filterbarform'] = filterbarform(prefix="filterbarform", label_suffix='')
 
-                # panel form
-                panelform = self.PanelForm
+                # filter settings for links
+                self.page_context['filterstring'] = '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
 
                 # populate event dropdown
                 eventlist = [('0','All events')]
@@ -301,15 +307,18 @@ class EventsMap (Pagebase):
 
                 events = events.distinct('id', 'yearint', 'eventname', 'country', 'partner' )
 
-                for event in events:
-                    eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
+                # list in left hand column
+                eventsListForm = EventsListForm()
+                eventslist = self.createListFieldStructure(eventsListForm, events, '/ecd/eventoverview/', {'foreignkeylinkprefix':'ecd', 'tagclass': 'eventslist', 'linksuffix': '?' + self.page_context['filterstring']} )
+                self.page_context['eventslist'] = eventslist
+                self.page_context['pageclass'] = 'eventsmap'
 
-                panelform.base_fields['event'].choices = eventlist
-                panelform.base_fields['event'].initial = eventid
-
-                # filter settings for the link on the dropdown
-                self.page_context['filterstring'] = '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
-
-                self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
+                # alternative left hand drop down list, currently commented out
+                #panelform = self.PanelForm
+                #for event in events:
+                #    eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
+                #panelform.base_fields['event'].choices = eventlist
+                #panelform.base_fields['event'].initial = eventid
+                #self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
 
             return render(request, template_name, self.page_context)
