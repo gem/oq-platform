@@ -257,12 +257,17 @@ div#ecd-leftpanel div.locationslabel
     font-weight:bold;
 }
 
+div#ecd-leftpanel img
+{
+    width:100%;
+}
+
 /* end of left panel beside the map */
 
-/* left panel on the locations page */
+/* left panel on pages without a big map */
 div#ecd-leftpanelwide
 {
-    width:80%;
+    width:66%;
     float:left;
 }
 
@@ -273,8 +278,9 @@ div#panelcontainerwide
 
 div#panelcontainerwide h1
 {
-    font-size:22px;
+    font-size:28px;
     margin-top:5px;
+    margin-bottom:9px;
 }
 
 div#panelcontainerwide div#studyname
@@ -285,8 +291,7 @@ div#panelcontainerwide div#studyname
 div#panelcontainerwide h3
 {
     font-size:18px;
-    margin-bottom:5px;
-
+    margin-bottom:9px;
 }
 
 div#ecd-leftpanelwide div#backlink a
@@ -297,11 +302,42 @@ div#ecd-leftpanelwide div#backlink a
     color:#555;
 }
 
+div#ecd-leftpanelwide div.infocontainer
+{
+    width:44%;
+    float:left;
+    border:solid 1px #aaa;
+    padding:9px;
+    margin-right:18px;
+    margin-bottom:18px;
+}
 
-/* end of left panel on the locations page */
+div#ecd-leftpanelwide div.infocontainerwide
+{
+    width:93%;
+    float:left;
+    border:solid 1px #aaa;
+    padding:9px;
+    margin-right:18px;
+    margin-bottom:18px;
+}
+/* end of wide left panel */
+
+/* narrow right panel that goes with wide left panel */
+div#ecd-rightpanelnarrow
+{
+    width:33%;
+    float:right;
+}
+
+div#ecd-rightpanelnarrow div#map
+{
+    height:300px;
+}
+/* narrow right panel that goes with wide left panel */
 
 /* main body of locations page */
-div.locationpage table.formview
+/*div.locationpage table.formview
 {
     border-collapse: collapse;
     margin-right:10px;
@@ -321,6 +357,9 @@ div.locationpage table.formview td
     border:solid 1px #ccc;
     color:#555;
 }
+*/
+
+
 
 /* end of main body of location page */
 
@@ -360,20 +399,30 @@ div.matrixdisplay a:hover
 
 /* Photo grid on location page */
 
-div.locationpage div.container ul
-{
-    margin:0;
-}
-
 div#photogrid
 {
-    float:right;
+    float:left;
     margin-top:10px;
 }
 
-div#photogrid div.photomessage
+div#photogrid ul
+{
+    margin:0;
+    list-style:none;
+}
+
+div#photogrid li
 {
     float:left;
+    display:block;
+    margin-right:18px;
+    margin-bottom:9px;
+}
+
+
+div#photogrid img
+{
+
 }
 
 div#photogrid a
@@ -396,7 +445,7 @@ form.quicklinklocation select
     width:200px;
 }
 
-/* The map */
+/* The large map */
 div#map
 {
 

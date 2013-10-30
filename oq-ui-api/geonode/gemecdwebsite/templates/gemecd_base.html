@@ -110,77 +110,8 @@
 
     {% block filterbar %}
 
-    {% endblock filterbar %}
-
-    {% block leftpanel %}
-
-    {% endblock leftpanel %}
-
-    <div id="map" style="width: 80%;">
-
-    </div>
-
-    <!--[if lt IE 8]><div id="ie8message">You are using a version of Internet Explorer that cannot display this page - This page requires at least Internet Explorer 9 - or you can use Firefox, Chrome or Safari</div><![endif]-->
-
-    <script type="text/javascript">
-
-        // needed for AJAX requests so we can get the csrf cookie
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        //resize the main and map div
-        $(document).ready(function() {
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25;
-            $('#main').css("height",main_height + "px");
-            $('#map').css("height",map_height + "px");
-            map.invalidateSize(false);
-        });
-
-        $(document).ready(function() {
-            $(window).resize(function(){
-                var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-                var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height()- $("#ecd-filterbar").height() - 25;
-                $('#main').css("height",main_height + "px");
-                $('#map').css("height",map_height + "px");
-                map.invalidateSize(false);
-            });
-        });
-
+        <script type="text/javascript">
         jQuery(document).ready(function($){
-
-            // first fit the bounds to the locations (must be done in the document ready function)
-            //var bounds = L.geoJson(geojsonFeaturePoints).getBounds();
-            //if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
-            //{
-            //    map.fitBounds(bounds);
-            //}
-
-            // first fit the bounds to the union of all the layers that are visible (must be done in the document ready function)
-            try
-            {
-                var bounds = boundsGroup.getBounds();
-                if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
-                {
-                    map.fitBounds(bounds);
-                }
-            }
-            catch(e){
-                alert('unable to zoom the map to the event');
-            }
 
             // code to impose custom icons over the top of the checkboxes in the filter bar
             var firsttime = true;
@@ -311,6 +242,113 @@
             firsttime = false;
         });
 
+
+        </script>
+
+        <div id="advancedfilterpanel">
+            This is the advanced filter settings panel
+            <a id="closebutton" href="javascript:alert('close');">close</a>
+        </div>
+
+        <div id="ecd-filterbar">
+            <!--start filter bar-->
+            <div id="filterbar">
+                <div class="filterlabel">FILTER</div>
+                <div id="filterbarleft">
+                    <form id="filterform" method="post">{% csrf_token %}
+                        {{ filterbarform.as_p }}
+                        {% comment %}<p><input id="id_filterbarform-submit" type="submit" value="apply"  title="Apply filters"/></p>{% endcomment %}
+                        <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div>
+                    </form>
+                </div>
+
+                <div id="filterbarright">
+
+                </div>
+            </div>
+            <!--end filter bar -->
+        </div>
+
+    {% endblock filterbar %}
+
+    {% block leftpanel %}
+
+    {% endblock leftpanel %}
+
+    {% block rightpanel %}
+
+    <div id="map" style="width: 80%;">
+    </div>
+    <span id="showGrid">
+    </span>
+
+    {% endblock rightpanel %}
+
+    {% block map %}
+
+    <!--[if lt IE 8]><div id="ie8message">You are using a version of Internet Explorer that cannot display this page - This page requires at least Internet Explorer 9 - or you can use Firefox, Chrome or Safari</div><![endif]-->
+
+    <script type="text/javascript">
+
+        // needed for AJAX requests so we can get the csrf cookie
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        //resize the main and map div
+        $(document).ready(function() {
+            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
+            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25;
+            //$('#main').css("height",main_height + "px");
+            $('#map').css("height",map_height + "px");
+            map.invalidateSize(false);
+        });
+
+        //$(document).ready(function() {
+        //    $(window).resize(function(){
+        //        var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
+        //        var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height()- $("#ecd-filterbar").height() - 25;
+        //        $('#main').css("height",main_height + "px");
+        //        $('#map').css("height",map_height + "px");
+        //        map.invalidateSize(false);
+        //    });
+        //});
+
+        jQuery(document).ready(function($){
+
+            // first fit the bounds to the locations (must be done in the document ready function)
+            //var bounds = L.geoJson(geojsonFeaturePoints).getBounds();
+            //if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
+            //{
+            //    map.fitBounds(bounds);
+            //}
+
+            // first fit the bounds to the union of all the layers that are visible (must be done in the document ready function)
+            try
+            {
+                var bounds = boundsGroup.getBounds();
+                if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
+                {
+                    map.fitBounds(bounds);
+                }
+            }
+            catch(e){
+                alert('unable to zoom the map to the event');
+            }
+        });
+
         // sliding panel
         jQuery(function($) {
             $(document).ready(function() {
@@ -405,7 +443,6 @@
             "5km radial rings": radiusLayer,
             {% endif %}
             "Points layer" : pointsLayer,
-            //"Polygons layer" : polygonsLayer,
             "USGS Shakemap": shakemap,
             "GRUMP Urban" : grump_urban,
             "GRUMP Rural" : grump_rural,
@@ -451,7 +488,8 @@
         //L.wax(map);
 
     </script>
-    <span id="showGrid"></span>
+
+    {% endblock map %}
 
     {% endif %}
 

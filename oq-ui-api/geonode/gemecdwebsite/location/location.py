@@ -66,7 +66,7 @@ class LocationPage (Pagebase):
     class PhotoGridForm (ModelForm):
         class Meta:
             model = Photos
-            fields = ( 'thephoto', 'photofilename', 'locationname',   )
+            fields = ( 'thephoto',)
 
     def dispatch(self, request, *args, **kwargs):
 

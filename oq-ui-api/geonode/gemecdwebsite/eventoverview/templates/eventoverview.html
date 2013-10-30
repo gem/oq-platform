@@ -1,40 +1,12 @@
 {% extends "gemecd_base.html" %}
 {% load generictablerenderer %}
 
-{% block filterbar %}
-
-        <div id="advancedfilterpanel">
-            This is the advanced filter settings panel
-            <a id="closebutton" href="javascript:alert('close');">close</a>
-        </div>
-
-        <div id="ecd-filterbar">
-
-        <!--start filter bar-->
-        <div id="filterbar">
-            <div class="filterlabel">FILTER</div>
-            <div id="filterbarleft">
-                <form id="filterform" method="post">{% csrf_token %}
-                    {{ filterbarform.as_p }}
-                    {% comment %}<p><input id="id_filterbarform-submit" type="submit" value="apply"  title="Apply filters"/></p>{% endcomment %}
-                    <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div>
-                </form>
-            </div>
-
-            <div id="filterbarright">
-                <div id="backlink">{{ page_backlink|safe }}</div>
-            </div>
-        </div>
-        <!--end filter bar -->
-    </div>
-{% endblock filterbar %}
-
 {% block leftpanel %}
         <div id="ecd-leftpanel">
             <div id="panelcontainer">
                 <div id="backlink">{{ page_backlink|safe }}</div>
                 <h1>{{ paneltitle }}</h1>
-                    <img class="eventicon" width="180px" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
+                    <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
 
                     <form method="post">{% csrf_token %}
                         {{ panelform.as_p }}
