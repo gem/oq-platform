@@ -8,11 +8,16 @@
                 <h1>{{ paneltitle }}</h1>
                     <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
 
+                    <a class="moredetailslink" href="/ecd/eventdetails/{{ eventid }}{{ filterstring }}">Full event details &raquo;</a>
+
                     <form method="post">{% csrf_token %}
                         {{ panelform.as_p }}
                     </form>
+
+                    <h4>Overview</h4>
                     {% formviewastable field_structure=eventfields %}
-                    <div class="locationslabel">{{ locationslabel }}</div>
+
+                    <h4>{{ locationslabel }}</h4>
                     {% spanlist field_structure=locationslist %}
             </div>
         </div>

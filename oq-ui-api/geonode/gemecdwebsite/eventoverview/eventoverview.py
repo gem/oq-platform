@@ -399,6 +399,7 @@ class EventOverview (Pagebase):
             epicentreWKT = event.location.split(' ')
             self.page_context['epicentre'] = {'lat': epicentreWKT[1][:-1], 'lon': epicentreWKT[0][6:]}
             self.page_context['shakemapid'] = str(event.usgsshakemapid)
+            self.page_context['eventid'] = str(eventid)
         except:
             return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 

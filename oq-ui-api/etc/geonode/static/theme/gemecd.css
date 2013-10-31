@@ -195,9 +195,14 @@ div#panelcontainer
     max-width: 200px;
 }
 
-div#panelcontainer h1
+div#ecd-leftpanel h1
 {
     font-size:18px;
+}
+
+div#ecd-leftpanel h4
+{
+    margin-bottom:5px;
 }
 
 div#ecd-leftpanel select.eventdropdown
@@ -257,10 +262,26 @@ div#ecd-leftpanel div.locationslabel
     font-weight:bold;
 }
 
-div#ecd-leftpanel img
+div#ecd-leftpanel img.eventicon
 {
     width:100%;
+    display:block;
+    margin-bottom: 9px;
 }
+
+div#ecd-leftpanel a.moredetailslink
+{
+    width:100%;
+    display:block;
+    margin-bottom: 9px;
+    text-decoration:none;
+}
+
+div#ecd-leftpanel a.moredetailslink:hover
+{
+    text-decoration:underline;
+}
+
 
 /* end of left panel beside the map */
 
@@ -276,19 +297,35 @@ div#panelcontainerwide
     margin-left:10px;
 }
 
-div#panelcontainerwide h1
+div#ecd-leftpanelwide h1
 {
     font-size:28px;
     margin-top:5px;
     margin-bottom:9px;
+    width:100%;
+    float:left;
 }
 
-div#panelcontainerwide div#studyname
+div#ecd-leftpanelwide div.infocontainerwide div.overview
+{
+    width:47%;
+    float:right;
+}
+
+div#ecd-leftpanelwide div.infocontainerwide img.eventicon
+{
+    width:47%;
+    display:block;
+    margin-bottom: 9px;
+    float:left;
+}
+
+div#ecd-leftpanelwide div.infocontainerwide div#studyname
 {
     font-style:italic;
 }
 
-div#panelcontainerwide h3
+div#ecd-leftpanelwide h3
 {
     font-size:18px;
     margin-bottom:9px;
@@ -309,6 +346,20 @@ div#ecd-leftpanelwide div.infocontainer
     border:solid 1px #aaa;
     padding:9px;
     margin-right:18px;
+    margin-bottom:18px;
+}
+
+div#ecd-leftpanelwide div.foursquare div.infocontainer
+{
+    height:22em;
+}
+
+div#ecd-rightpanelnarrow div.infocontainer
+{
+    width:90%;
+    float:left;
+    border:solid 1px #aaa;
+    padding:9px;
     margin-bottom:18px;
 }
 
@@ -333,6 +384,7 @@ div#ecd-rightpanelnarrow
 div#ecd-rightpanelnarrow div#map
 {
     height:300px;
+    margin-bottom:18px;
 }
 /* narrow right panel that goes with wide left panel */
 
