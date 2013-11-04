@@ -14,7 +14,7 @@ from econd.study_models import *
 
 class Event(models.Model):
       id = models.AutoField(primary_key=True, null=False, help_text='Primary Key: Internal database id for the event', )
-      usgsshakemapid = models.CharField(max_length=50, null=True, blank=True, verbose_name='Event ID', help_text='USGS ID number for the earthquake event, eg 197005312023', )
+      usgsshakemapid = models.CharField(max_length=50, null=True, blank=True, verbose_name='Event ID', help_text='USGS ID number for the earthquake event, eg 197005312023', default='undefined')
       name = models.CharField(max_length=50, null=False, default='untitled', verbose_name='Event name', help_text='The name of the event', )
       country = models.CharField(max_length=50, null=True, blank=True, verbose_name='Country', help_text='The country or countries affected by the event. Separate multiple countries with commas.', )
       region = models.CharField(max_length=50, null=True, blank=True, verbose_name='Region in the country', help_text='The region or regions inside the country or countries affected by the event. Separate multiple countries with commas.', )

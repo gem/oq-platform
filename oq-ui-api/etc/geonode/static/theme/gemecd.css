@@ -171,6 +171,18 @@ div#ecd-filterbar input.iconbutton
 .ui-buildings-checked {
     background-image: url(/static/buildings-on.png)!important;
 }
+.ui-casualty-unchecked {
+    background-image: url(/static/casualty-off.png)!important;
+}
+.ui-casualty-checked {
+    background-image: url(/static/casualty-on.png)!important;
+}
+.ui-cbi-unchecked {
+    background-image: url(/static/cbi-off.png)!important;
+}
+.ui-cbi-checked {
+    background-image: url(/static/cbi-on.png)!important;
+}
 
 div#ecd-filterbar input.highlight
 {
@@ -579,6 +591,35 @@ div#eventpopupcontainer a:hover,div#locationpopupcontainer a:hover
 }
 
 /* end of map popup */
+
+/* XML upload page */
+form.uploadform
+{
+    float:left;
+    width:100%;
+    display:block;
+}
+
+div.uploadstatus
+{
+    float:left;
+    width:100%;
+    margin-top:18px;
+    font-size:12px;
+}
+
+form.uploadform table
+{
+    margin-bottom:18px;
+    margin-top:18px;
+}
+
+form.uploadform table th
+{
+    padding-right:18px;
+}
+
+/* end of XML upload page */
 
 
 /* GEMECD's error page */

@@ -9,6 +9,11 @@
                     {% comment %}{{ panelform.as_p }}{% endcomment %}
                 </form>-->
                {% spanlist field_structure=eventslist %}
+
+                {% if user.is_authenticated %}
+               <h4>Upload</h4>
+               <a href="/ecd/uploadnrml">Upload XML file</a>
+                {% endif %}
             </div>
 
         </div>

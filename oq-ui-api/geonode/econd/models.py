@@ -82,6 +82,7 @@ class Damagelevel(models.Model):
 
     class Meta:
         db_table = u'econd\".\"damagelevel'
+        ordering = ['levelorder']
 
     def __unicode__(self):
         return self.name
@@ -96,10 +97,10 @@ class Location(models.Model):
     boundaryid = models.IntegerField(verbose_name='User defined boundary or administrative area id', help_text='User defined boundary or administrative area id')
     location = models.CharField(max_length=50, blank=True, verbose_name='Geometry (long/lat)', help_text='The location or boundary in WKT GIS format eg POINT (long lat).')
     boundary_c = models.TextField(blank=True, verbose_name='Location precision notes', help_text='A comment on the precision of the location or boundary')
-    originalsurveyreference = models.CharField(max_length=50, blank=True, verbose_name='Original survey reference', help_text='')
-    isaggregated = models.ForeignKey(Lookupyesno, db_column='isaggregated', verbose_name='Is the data aggregated', help_text='This field determines if this location is an aggregation of assets (yes - default) or a single asset (no)')
-    intensityzonecode = models.ForeignKey(Lookupintensityzone, db_column='intensityzonecode', verbose_name='USGS Intensity zone', help_text='Optional. Only use this if the location is an intensity zone: The intensity zone on a standard scale.')
-    soilclasscode = models.ForeignKey(Lookupsoilclass, db_column='soilclasscode', verbose_name='Soil class', help_text='Optional. NEHRP Soil Class.')
+    originalsurveyreference = models.CharField(max_length=60, blank=True, verbose_name='Original survey reference', help_text='')
+    isaggregated = models.ForeignKey(Lookupyesno, db_column='isaggregated', default='0', verbose_name='Is the data aggregated', help_text='This field determines if this location is an aggregation of assets (yes - default) or a single asset (no)')
+    intensityzonecode = models.ForeignKey(Lookupintensityzone, db_column='intensityzonecode', default='0', verbose_name='USGS Intensity zone', help_text='Optional. Only use this if the location is an intensity zone: The intensity zone on a standard scale.')
+    soilclasscode = models.ForeignKey(Lookupsoilclass, db_column='soilclasscode', default='0', verbose_name='Soil class', help_text='Optional. NEHRP Soil Class.')
     generalsoilconditions_c = models.TextField(blank=True, verbose_name='General soil conditions', help_text='')
     location_c = models.TextField(blank=True, verbose_name='Location: comment', help_text='An optional comment on the location and loss at the location')
 
@@ -181,6 +182,7 @@ class Inventoryclass(models.Model):
 
     class Meta:
         db_table = u'econd\".\"inventoryclass'
+        ordering = ['levelorder']
 
     def __unicode__(self):
         return self.name
