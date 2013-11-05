@@ -25,6 +25,10 @@ var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18);
 var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189);
 var selectedValue4 = new Array(0, 9.374, 4.413, 5.093);
 var attrSelection = new Array();
+var svirRankKeys = new Array();
+var svirRankValues = new Array();
+var svirRegionRankKeys = new Array();
+var svirRegionRankValues = new Array();
 
 var layerControl;
 // Keep track of the layer names
@@ -303,7 +307,7 @@ var startApp = function() {
         });
     });
 
-    function BuildDataTable(e, dataCat) {
+    function buildDataTable(e, dataCat) {
         var values = [];
         for (var d in e.data) {
             values.push(e.data[d]);
@@ -322,7 +326,7 @@ var startApp = function() {
         // TODO we need to build a html legend to go next to the chart
         // the legend will use the attrSelection variable
         ////////////////////////////////////////////
-        /////////// Initiate chart /////////////////
+        /////////// Initiate Spider chart //////////
         ////////////////////////////////////////////
         d = [
         [
@@ -402,14 +406,105 @@ var startApp = function() {
         
     }
 
+    ////////////////////////////////////////////
+    ////////////Rank bar chart /////////////////
+    ////////////////////////////////////////////
+
+    function buildD3BarChart(countryName, keys, values) {
+
+        var data = d3.range(m).map(function() { return d3.range(n).map(Math.random); });
+     
+        // make an array from all the _r_ bits of data from keys/values (world rank)
+        for (var i = 0; i < keys.length; i++) {
+            var bar = /_r_/;
+
+            if (bar.test(keys[i])) {
+                svirRankKeys.push(keys[i]);
+                svirRankValues.push(values[i]);            
+            }
+        };
+
+        // make an array from all the _rr_ bits of data from keys/values (regional rank)
+        for (var i = 0; i < keys.length; i++) {
+            var bar = /_rr_/;
+
+            if (bar.test(keys[i])) {
+                svirRegionRankKeys.push(keys[i]);
+                svirRegionRankValues.push(values[i]*10);          
+            }
+        };
+
+        var svirBarArray = [svirRankValues.map(Number), svirRegionRankValues.map(Number)];
+        console.log(svirBarArray);
+
+        var n = svirBarArray[0].length, // number of samples
+        
+        m = 2; // number of series regional and global
+        console.log(n);
+        var margin = {top: 20, right: 30, bottom: 30, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+         
+        var y = d3.scale.linear()
+            .domain([0, 200])
+            .range([height, 0]);
+         
+        var x0 = d3.scale.ordinal()
+            .domain(d3.range(n))
+            .rangeBands([0, width], .2);
+         
+        var x1 = d3.scale.ordinal()
+            .domain(d3.range(m))
+            .rangeBands([0, x0.rangeBand()]);
+         
+        var z = d3.scale.category10();
+         
+        var xAxis = d3.svg.axis()
+            .scale(x0)
+            .orient("bottom");
+         
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+         
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("svg:g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+         
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+         
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+         
+        svg.append("g").selectAll("g")
+            .data(svirBarArray)
+            .enter().append("g")
+            .style("fill", function(d, i) { return z(i); })
+            .attr("transform", function(d, i) { return "translate(" + x1(i) + ",0)"; })
+            .selectAll("rect")
+            .data(function(d) { return d; })
+            .enter().append("rect")
+            .attr("width", x1.rangeBand())
+            .attr("height", y)
+            .attr("x", function(d, i) { return x0(i); })
+            .attr("y", function(d) { return height - y(d); });
+ 
+    }
+
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){
-        startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
-        attrSelection = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
+        startAttr = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
+        attrSelection = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
         dataCat = "econ-table";
         chartCat = "econ-spider-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-econ-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -460,15 +555,15 @@ var startApp = function() {
     });
 
     var utfGridClickEvent = function(dataCat, chartCat) {
-        console.log(startAttr);
         utfGrid.on('click', function (e) {
             $("#chartOptions").empty();
-
+            $("#step-5").empty();
+            console.log(e);
             // When the map is clikced the table needs to be cleared out and recreated 
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
     
-            BuildDataTable(e, dataCat);
+            buildDataTable(e, dataCat);
     
             if (e.data) {
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
@@ -521,7 +616,7 @@ var startApp = function() {
                     selectedValue4.pop();
                 }
                 
-                var countryName = e.data.country_na;
+                var countryName = e.data.bar_country;
                 // Indicate the country name for the table header
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
     
@@ -532,6 +627,9 @@ var startApp = function() {
                 }
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
                 
+                buildD3BarChart(countryName, keys, values);
+
+                //buildD3BarChart(countryName, keys, values);
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
