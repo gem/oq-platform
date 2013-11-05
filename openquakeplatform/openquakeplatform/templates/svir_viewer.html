@@ -59,6 +59,8 @@ Explore - {{block.super}}
   <ul>
     <li id="econ"><a href="#economy">Economy</a></li>
     <li id="pop"><a href="#population">Population</a></li>
+    <li id="health"><a href="#heal">Health</a></li>
+    <li id="infra"><a href="#infrastructure">Infrastructure</a></li>
     <li id="gov"><a href="#governance">Governance</a></li>
     <li id="edu"><a href="#education">Education</a></li>
   </ul>
@@ -88,6 +90,38 @@ Explore - {{block.super}}
     <div class="table-header"></div>
 
     <table id="pop-table" >
+      <thead id="tablehead">
+        <tr>
+          <th>Index</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+    </table>
+    <br><br>
+  </div>
+
+  <div id="heal">
+    <div id="health-chart-spider" ></div>
+    <div style="display:inline-block;" id='health-chart-bar'></div>
+    <div class="table-header"></div>
+
+    <table id="health-table" >
+      <thead id="tablehead">
+        <tr>
+          <th>Index</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+    </table>
+    <br><br>
+  </div>
+
+  <div id="infrastructure">
+    <div id="infra-chart-spider" ></div>
+    <div style="display:inline-block;" id='infra-chart-bar'></div>
+    <div class="table-header"></div>
+
+    <table id="infra-table" >
       <thead id="tablehead">
         <tr>
           <th>Index</th>

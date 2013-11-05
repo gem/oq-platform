@@ -524,6 +524,34 @@ var startApp = function() {
         $("#empty").remove();
     });
 
+    $("#health").click(function(){
+        startAttr = ["bar_birth_rate", "bar_fertility_rate", "bar_infant_mortality_rate", "bar_life_expectancy"];
+        attrSelection = ["bar_birth_rate", "bar_fertility_rate", "bar_infant_mortality_rate", "bar_life_expectancy"];
+        dataCat = "health-table";
+        chartCat = "health-chart";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_health/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
+
+    $("#infra").click(function(){
+        startAttr = ["bar_road_density_per_km2", "bar_motor_vehicles_per_1000_population", "bar_percent_of_population_with_improved_sanitation_facilities_access", "bar_percent_of_population_with_improved_water_source_access"];
+        attrSelection = ["bar_road_density_per_km2", "bar_motor_vehicles_per_1000_population", "bar_percent_of_population_with_improved_sanitation_facilities_access", "bar_percent_of_population_with_improved_water_source_access"];
+        dataCat = "infra-table";
+        chartCat = "infra-chart";
+        map.removeLayer(utfGrid);
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.addLayer(utfGrid);
+        utfGridClickEvent(dataCat, chartCat);
+        $("#chartOptions").empty();
+        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
+        $("#empty").remove();
+    });
+
     $("#gov").click(function(){
         startAttr = ["bar_intentional_homicides_per_100000_people", "bar_asylum_seekers_pending_cases_from_country_of_origin", "bar_corruption_index", "bar_percent_of_population_that_voted_in_last_parliamentary_election"];
         attrSelection = ["bar_intentional_homicides_per_100000_people", "bar_asylum_seekers_pending_cases_from_country_of_origin", "bar_corruption_index", "bar_percent_of_population_that_voted_in_last_parliamentary_election"];
