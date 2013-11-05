@@ -17,7 +17,7 @@
   {% extends "page_layout.html" %}
   {% load i18n %}
 
-  {% block title %} {% trans "Hazard Models" %} - {{ block.super }} {% endblock %}
+  {% block title %} {% trans "GeoJSON Visualizer" %} - {{ block.super }} {% endblock %}
   {% block indexclass %} class="here" {% endblock %}
           
   {% block head %}
@@ -33,20 +33,16 @@
     <!-- leaflet resources -->
     <link rel="stylesheet" href="src/Leaflet/dist/leaflet.css" />
     <script type="text/javascript" src="src/Leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="http://fortawesome.github.com/Font-Awesome/assets/font-awesome/css/font-awesome.min.css" />
+    <script src="src/geojson/leaflet.filelayer.js"></script>
+    <script src="src/geojson/togeojson.js"></script>
     
-    <!-- wax resources -->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/wax-controls.css" media="screen" >
-    <script type='text/javascript' src='src/L.Wax/L.Wax.js'></script>
-    <script type="text/javascript" src="src/wax/dist/wax.leaf.min.js"></script>
-    <script type='text/javascript' src='src/wax/ext/modestmaps.min.js'></script>
-    <script type='text/javascript' src='src/wax/dist/wax.mm.js'></script>
-
     <!-- jquery and other stuff -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
 
-    <!-- Hazard Models application -->
-    <script type="text/javascript" src="src/hazard/hazard_models.js"></script>
+    <!-- GeoJSON application -->
+    <script type="text/javascript" src="src/geojson/geojson.js"></script>
     
 
   {% endblock %}
@@ -68,10 +64,6 @@
   {% block main %}
  
       <div id="map" style="width: 100%;"></div>
-      <script type="text/javascript">
-
-      
-      </script>
-          <span id="showGrid"></span>
+      <span id="showGrid"></span>
   {% endblock %}
 

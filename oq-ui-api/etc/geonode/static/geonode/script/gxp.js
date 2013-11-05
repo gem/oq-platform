@@ -953,7 +953,7 @@ gxp.plugins.GoogleSource.loader = new(Ext.extend(Ext.util.Observable, {
                 }]
             })
         }, r = document.createElement("script");
-        r.src = "http://www.google.com/jsapi?" + Ext.urlEncode(n);
+        r.src = "//www.google.com/jsapi?" + Ext.urlEncode(n);
         var i = e.errback || Ext.emptyFn,
             n = e.timeout || gxp.plugins.GoogleSource.prototype.timeout;
         window.setTimeout(function () {
@@ -1142,7 +1142,7 @@ gxp.plugins.TileStreamSource = Ext.extend(gxp.plugins.LayerSource, {
         var i;
         for (var s = 0; s < n; ++s) {
             i = t[s];
-            r[s] = new OpenLayers.Layer.XYZ(this[OpenLayers.String.camelize(i.name) + "Title"], ["http://193.206.66.82:8000/v2/" + i.name + "/${z}/${x}/${y}.png"], OpenLayers.Util.applyDefaults({
+            r[s] = new OpenLayers.Layer.XYZ(this[OpenLayers.String.camelize(i.name) + "Title"], ["http://tilestream.openquake.org/v2/" + i.name + "/${z}/${x}/${y}.png"], OpenLayers.Util.applyDefaults({
                 layername: i.name,
                 numZoomLevels: i.numZoomLevels
             }, e))
@@ -4404,7 +4404,7 @@ gxp.plugins.GoogleEarth.loader = new(Ext.extend(Ext.util.Observable, {
                 }]
             })
         }, r = document.createElement("script");
-        r.src = "http://www.google.com/jsapi?" + Ext.urlEncode(n);
+        r.src = "//www.google.com/jsapi?" + Ext.urlEncode(n);
         n = e.timeout || gxp.plugins.GoogleSource.prototype.timeout;
         window.setTimeout(function () {
             gxp.plugins.GoogleEarth.loader.ready || (this.fireEvent("failure"), this.unload())

@@ -1,4 +1,4 @@
-    <!--
+   <!--
    Copyright (c) 2013, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,12 @@
           
     <!-- IE 8 Compatibility -->
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+
+    <!-- jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
+
           
     <!-- Google resources -->
     <script src="//maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
@@ -41,13 +47,8 @@
     <script type='text/javascript' src='src/wax/ext/modestmaps.min.js'></script>
     <script type='text/javascript' src='src/wax/dist/wax.mm.js'></script>
 
-    <!-- jquery and other stuff -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}theme/exposure-legend.css" media="screen" />
-
-    <!-- Hazard Models application -->
-    <script type="text/javascript" src="src/hazard/hazard_models.js"></script>
-    
+    <!-- application -->
+    <script type="text/javascript" src="src/explore/explore.js"></script>
 
   {% endblock %}
     <!--Google Analytics-->
@@ -66,12 +67,40 @@
     </script>
 
   {% block main %}
+
+    <div id="dialog-layers" title="Layer Options">
+        <form id="tile-form-list">
+            TileStream Layers:
+            <br>
+            <select id="tile-list"></select>
+            <br><br>
+            <input type="button" id="addTileLayer" value="Add Layer">
+            <input type="button" id="removeTileLayer" value="Remove Layer">
+            
+        </form>
+        <form>
+            <br>
+            Geoerver Layers:
+            <br>
+            <select id="geoserver-list"></select>
+            <br><br>
+            <input type="button" id="addGeoLayer" value="Add Layer">
+            <input type="button" id="removeGeoLayer" value="Remove Layer">
+        </form>
+    </div> 
+
+    <div id="layer-selection">
+        <input id="layer-selection" type="button" value="Layers"/>
+    </div>
+
+    <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
+        <p>This layer has already been added to the map</p>
+    </div> 
+
+    <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+        <p>This layer in not loaded in the map</p>
+    </div> 
  
+
       <div id="map" style="width: 100%;"></div>
-      <script type="text/javascript">
-
-      
-      </script>
-          <span id="showGrid"></span>
   {% endblock %}
-
