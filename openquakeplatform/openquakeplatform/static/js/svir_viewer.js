@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 //var startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
-//var startAttr = ["popppsslu", "popppsask", "popppssry", "popppstfr"];
+//var startAttr = ["bar_population_density_people_per_km2", "bar_human_development_index", "bar_percent_urban_population", "bar_percent_of_population_that_is_an_international_migrant"];
 var dataCat = "";
 var chartCat = "";
 var utfGrid = new Object;
@@ -352,7 +352,7 @@ var startApp = function() {
         ]
         ];
 
-        RadarChart.draw("#"+chartCat, d);
+        RadarChart.draw("#"+chartCat+"-spider", d);
 
         ////////////////////////////////////////////
         /////////// Initiate legend ////////////////
@@ -360,7 +360,7 @@ var startApp = function() {
         var LegendOptions = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3]];
         var colorscale = d3.scale.category10();
         
-        var svg = d3.select("#"+chartCat)
+        var svg = d3.select("#"+chartCat+"-spider")
             .selectAll('svg')
             .append('svg')
             .attr("width", 300)
@@ -410,7 +410,7 @@ var startApp = function() {
     ////////////Rank bar chart /////////////////
     ////////////////////////////////////////////
 
-    function buildD3BarChart(countryName, keys, values) {
+    function buildD3BarChart(chartCat, countryName, keys, values) {
 
         var data = d3.range(m).map(function() { return d3.range(n).map(Math.random); });
      
@@ -435,14 +435,12 @@ var startApp = function() {
         };
 
         var svirBarArray = [svirRankValues.map(Number), svirRegionRankValues.map(Number)];
-        console.log(svirBarArray);
-
         var n = svirBarArray[0].length, // number of samples
         
         m = 2; // number of series regional and global
-        console.log(n);
+
         var margin = {top: 20, right: 30, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
+            width = 560 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
          
         var y = d3.scale.linear()
@@ -467,7 +465,7 @@ var startApp = function() {
             .scale(y)
             .orient("left");
          
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#"+chartCat+"-bar").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("svg:g")
@@ -502,7 +500,7 @@ var startApp = function() {
         startAttr = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
         attrSelection = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
         dataCat = "econ-table";
-        chartCat = "econ-spider-chart";
+        chartCat = "econ-chart";
         map.removeLayer(utfGrid);
         utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
@@ -513,12 +511,12 @@ var startApp = function() {
     });
 
     $("#pop").click(function(){
-        startAttr = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
-        attrSelection = ["popppsask", "popppsslu", "popppssry", "popppstfr"];
+        startAttr = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_urban_population", "bar_percent_of_population_that_is_an_international_migrant"];
+        attrSelection = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_urban_population", "bar_percent_of_population_that_is_an_international_migrant"];
         dataCat = "pop-table";
-        chartCat = "pop-spider-chart";
+        chartCat = "pop-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-pop-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_pop/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -527,12 +525,12 @@ var startApp = function() {
     });
 
     $("#gov").click(function(){
-        startAttr = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
-        attrSelection = ["gicgefedb", "gicgefgef", "gicgefreq", "gicgeftrp"];
+        startAttr = ["bar_intentional_homicides_per_100000_people", "bar_asylum_seekers_pending_cases_from_country_of_origin", "bar_corruption_index", "bar_percent_of_population_that_voted_in_last_parliamentary_election"];
+        attrSelection = ["bar_intentional_homicides_per_100000_people", "bar_asylum_seekers_pending_cases_from_country_of_origin", "bar_corruption_index", "bar_percent_of_population_that_voted_in_last_parliamentary_election"];
         dataCat = "gov-table";
-        chartCat = "gov-spider-chart";
+        chartCat = "gov-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-gov-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -541,12 +539,12 @@ var startApp = function() {
     });
 
     $("#edu").click(function(){
-        startAttr = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
-        attrSelection = ["edueacgrs", "edueacgrt", "edueacepg", "edueacfmp"];
+        startAttr = ["bar_percent_of_population_that_is_literate", "bar_gross_enrollment_ratio_primary_education", "bar_mean_years_of_schooling", "bar_pupil_to_teacher_ratio"];
+        attrSelection = ["bar_percent_of_population_that_is_literate", "bar_gross_enrollment_ratio_primary_education", "bar_mean_years_of_schooling", "bar_pupil_to_teacher_ratio"];
         dataCat = "edu-table";
-        chartCat = "edu-spider-chart";
+        chartCat = "edu-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-edu-sample/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -557,8 +555,12 @@ var startApp = function() {
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
             $("#chartOptions").empty();
-            $("#step-5").empty();
-            console.log(e);
+            $("#"+chartCat+"-bar").empty();
+            svirRankValues = [];
+            svirRankKeys = [];
+            svirRegionRankValues = [];
+            svirRegionRankKeys = [];
+            svirBarArray = [];
             // When the map is clikced the table needs to be cleared out and recreated 
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
@@ -627,7 +629,7 @@ var startApp = function() {
                 }
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
                 
-                buildD3BarChart(countryName, keys, values);
+                buildD3BarChart(chartCat, countryName, keys, values);
 
                 //buildD3BarChart(countryName, keys, values);
             } else {
