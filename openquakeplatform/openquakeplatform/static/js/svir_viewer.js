@@ -322,6 +322,105 @@ var startApp = function() {
         }
     };
 
+
+
+function myData() {
+  var sin = [],
+      cos = [];
+
+  for (var i = 0; i < 100; i++) {
+    sin.push({x: i, y: Math.sin(i/10)});
+    cos.push({x: i, y: .5 * Math.cos(i/10)});
+  }
+
+  return [
+    {
+      values: sin,
+      key: 'Sine Wave',
+      color: '#ff7f0e'
+    },
+    {
+      values: cos,
+      key: 'Cosine Wave',
+      color: '#2ca02c'
+    }
+  ];
+}
+
+function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
+    var array = [];
+    var obj1 = {};
+    var obj2 = {};
+    var array1Child = [];
+    var obj1Child1 = {};
+    var obj1Child2 = {};
+    var obj1Child3 = {};
+    var obj1Child4 = {};
+
+    obj1Child1.x = 0; // this will be labled as countriesArray[0]
+    obj1Child1.y = selectedValue1[0];
+
+    obj1Child2.x = 1; // this will be labled as countriesArray[1]
+    obj1Child2.y = selectedValue1[1];
+
+    obj1Child3.x = 2; // this will be labled as countriesArray[2]
+    obj1Child3.y = selectedValue1[2];
+
+    obj1Child4.x = 3; // this will be labled as countriesArray[3]
+    obj1Child4.y = selectedValue1[3];
+
+    array1Child[0] = obj1Child1;
+    array1Child[1] = obj1Child2;
+    array1Child[2] = obj1Child3;
+    array1Child[3] = obj1Child4;
+
+    obj1.color = "fff";
+    obj1.key = "Global Rank";
+    obj1.values = array1Child;
+
+    obj1.color = "000";
+    obj1.key = "Regional Rank";
+    obj1.values = array1Child;
+
+
+
+    array[0] = obj1;
+    array[1] = obj1; //*****change this back to obj2
+
+
+    console.log(array);
+
+
+
+
+
+    nv.addGraph(function() {
+        var chart = nv.models.lineChart();
+      
+        chart.xAxis
+            .axisLabel('Time (ms)')
+            .tickFormat(d3.format(',r'));
+      
+        chart.yAxis
+            .axisLabel('Voltage (v)')
+            .tickFormat(d3.format('.02f'));
+      
+        d3.select('#chart svg')
+            .datum(array)
+            .transition().duration(500)
+            .call(chart);
+      
+        nv.utils.windowResize(chart.update);
+        console.log(myData());
+      
+        return chart;
+    });
+    
+    function buildD3SpiderChart() {
+    
+    };
+}
+/*
     function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
         // TODO we need to build a html legend to go next to the chart
         // the legend will use the attrSelection variable
@@ -406,9 +505,46 @@ var startApp = function() {
         
     }
 
+*/
+    ////////////////////////////////////////////
+    /////// Horizontal Multi-Bar Chart /////////
+    ////////////////////////////////////////////
+
+    //get the data into json format
+    function buildD3BarChart(chartCat, countryName, keys, values, data) {
+        
+    }
+
+    /*
+
+    d3.json('multiBarHorizontalData.json', function(data) {
+        nv.addGraph(function() {
+            var chart = nv.models.multiBarHorizontalChart()
+                .x(function(d) { return d.label })
+                .y(function(d) { return d.value })
+                .margin({top: 30, right: 20, bottom: 50, left: 175})
+                .showValues(true)
+                .tooltips(false)
+                .showControls(false);
+     
+            chart.yAxis
+                .tickFormat(d3.format(',.2f'));
+     
+            d3.select('#chart1 svg')
+                .datum(data)
+            .transition().duration(500)
+                .call(chart);
+     
+            nv.utils.windowResize(chart.update);
+     
+            return chart;
+        });
+    });
+ */
     ////////////////////////////////////////////
     ////////////Rank bar chart /////////////////
     ////////////////////////////////////////////
+/*
 
     function buildD3BarChart(chartCat, countryName, keys, values) {
 
@@ -494,7 +630,7 @@ var startApp = function() {
             .attr("y", function(d) { return height - y(d); });
  
     }
-
+*/
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){
         startAttr = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
@@ -511,8 +647,8 @@ var startApp = function() {
     });
 
     $("#pop").click(function(){
-        startAttr = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_urban_population", "bar_percent_of_population_that_is_an_international_migrant"];
-        attrSelection = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_urban_population", "bar_percent_of_population_that_is_an_international_migrant"];
+        startAttr = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_of_population_that_is_an_international_migrant"];
+        attrSelection = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_of_population_that_is_an_international_migrant"];
         dataCat = "pop-table";
         chartCat = "pop-chart";
         map.removeLayer(utfGrid);
@@ -594,6 +730,11 @@ var startApp = function() {
             countryTable.fnClearTable();
     
             buildDataTable(e, dataCat);
+
+            var dataFoo = e.data;
+            console.log(dataFoo);
+            var bar = JSON.stringify(dataFoo);
+            console.log(bar);
     
             if (e.data) {
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
@@ -621,27 +762,28 @@ var startApp = function() {
                             attrSelection.pop();
                         } 
                 });
+                console.log(e.data[attrSelection[0]]);
                 
                 if (attrSelection.length == 0) {
                     attrSelection = startAttr;
                 }
-        
-                selectedValue1.unshift(e.data[attrSelection[0]]);
+
+                selectedValue1.unshift(parseFloat(e.data[attrSelection[0]]));
                 if (selectedValue1.length > 4) {
                     selectedValue1.pop();
                 }
                 
-                selectedValue2.unshift(e.data[attrSelection[1]]);
+                selectedValue2.unshift(parseFloat(e.data[attrSelection[1]]));
                 if (selectedValue2.length > 4) {
                     selectedValue2.pop();
                 }
     
-                selectedValue3.unshift(e.data[attrSelection[2]]);
+                selectedValue3.unshift(parseFloat(e.data[attrSelection[2]]));
                 if (selectedValue3.length > 4) {
                     selectedValue3.pop();
                 }
     
-                selectedValue4.unshift(e.data[attrSelection[3]]);
+                selectedValue4.unshift(parseFloat(e.data[attrSelection[3]]));
                 if (selectedValue4.length > 4) {
                     selectedValue4.pop();
                 }
