@@ -348,43 +348,77 @@ function myData() {
 }
 
 function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
+    // Grandpapa array
     var array = [];
+    // Parent objs on for the selected attributes
+    var obj0 = {};
     var obj1 = {};
-    var obj2 = {};
+    // Kid array, one for each obj parent 
+    var array0Child = [];
     var array1Child = [];
+    //grandkids
+    var obj0Child0 = {};
+    var obj0Child1 = {};
+    var obj0Child2 = {};
+    var obj0Child3 = {};
+
+    var obj1Child0 = {};
     var obj1Child1 = {};
     var obj1Child2 = {};
     var obj1Child3 = {};
-    var obj1Child4 = {};
 
-    obj1Child1.x = 0; // this will be labled as countriesArray[0]
-    obj1Child1.y = selectedValue1[0];
+    //it's a big family!
 
-    obj1Child2.x = 1; // this will be labled as countriesArray[1]
-    obj1Child2.y = selectedValue1[1];
+    for (var i = 0; i < selectedValue1.length; i++) {
+        console.log(foo = "obj"+i+"child"+i);
 
-    obj1Child3.x = 2; // this will be labled as countriesArray[2]
-    obj1Child3.y = selectedValue1[2];
+    };
 
-    obj1Child4.x = 3; // this will be labled as countriesArray[3]
-    obj1Child4.y = selectedValue1[3];
+    obj0Child0.x = 0; // this will be labled as countriesArray[0]
+    obj0Child0.y = selectedValue1[0];
 
-    array1Child[0] = obj1Child1;
-    array1Child[1] = obj1Child2;
-    array1Child[2] = obj1Child3;
-    array1Child[3] = obj1Child4;
+    obj0Child1.x = 1; // this will be labled as countriesArray[1]
+    obj0Child1.y = selectedValue1[1];
 
-    obj1.color = "fff";
-    obj1.key = "Global Rank";
+    obj0Child2.x = 2; // this will be labled as countriesArray[2]
+    obj0Child2.y = selectedValue1[2];
+
+    obj0Child3.x = 3; // this will be labled as countriesArray[3]
+    obj0Child3.y = selectedValue1[3];
+
+    obj1Child0.x = 0; // this will be labled as countriesArray[0]
+    obj1Child0.y = selectedValue2[0];
+
+    obj1Child1.x = 1; // this will be labled as countriesArray[1]
+    obj1Child1.y = selectedValue2[1];
+
+    obj1Child2.x = 2; // this will be labled as countriesArray[2]
+    obj1Child2.y = selectedValue2[2];
+
+    obj1Child3.x = 3; // this will be labled as countriesArray[3]
+    obj1Child3.y = selectedValue2[3];
+
+    array0Child[0] = obj0Child0;
+    array0Child[1] = obj0Child1;
+    array0Child[2] = obj0Child2;
+    array0Child[3] = obj0Child3;
+
+    array1Child[0] = obj1Child0;
+    array1Child[1] = obj1Child1;
+    array1Child[2] = obj1Child2;
+    array1Child[3] = obj1Child3;
+
+    obj0.color = "blue";
+    obj0.key = attrSelection[0];
+    obj0.values = array0Child;
+
+    obj1.color = "red";
+    obj1.key = attrSelection[1];
     obj1.values = array1Child;
 
-    obj1.color = "000";
-    obj1.key = "Regional Rank";
-    obj1.values = array1Child;
 
 
-
-    array[0] = obj1;
+    array[0] = obj0;
     array[1] = obj1; //*****change this back to obj2
 
 
@@ -730,11 +764,6 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
             countryTable.fnClearTable();
     
             buildDataTable(e, dataCat);
-
-            var dataFoo = e.data;
-            console.log(dataFoo);
-            var bar = JSON.stringify(dataFoo);
-            console.log(bar);
     
             if (e.data) {
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
