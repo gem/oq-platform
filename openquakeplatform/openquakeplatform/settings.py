@@ -574,7 +574,7 @@ LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
 # authentication. This URL needs to be hit by the oq-engine-server.
-AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)/', )
+AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)', )
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (

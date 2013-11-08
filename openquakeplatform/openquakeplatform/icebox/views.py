@@ -74,7 +74,7 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
 
     def post(self, request, pk=None):
         calculation = self.get_object()
-        if calculation.status == "creating layers":
+        if not request.POST.get('status'):
             calculation.process_layers()
         else:
             calculation.status = request.POST['status']

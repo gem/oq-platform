@@ -18,10 +18,11 @@
 # <https://www.gnu.org/licenses/agpl.html>.
 
 
+import os
 from openquakeplatform.icebox import fields
+from openquakeplatform import geoserver_api as geoserver
 from django.contrib.gis.db import models
 from django.db import connection
-from django.core import exceptions
 from geonode.maps import models as geonode
 
 
@@ -72,7 +73,7 @@ class OutputLayer(models.Model):
 
 
     def create_geonode_layer(self, geoserver_layer):
-        pass
+        raise NotImplementedError
 
 
 class Output(models.Model):
@@ -104,16 +105,29 @@ class Output(models.Model):
         raise NotImplementedError
 
     @classmethod
+    def _xml(cls, request_type):
+        return [os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__), "gs_data/%s_%s.xml" % (
+                    cls.__name__, request_type)))]
+    @classmethod
     def create_featuretype(cls, view_name):
-        raise NotImplementedError
+        geoserver.load_features(
+            cls.__name__,
+            files=cls._xml("featuretype"),
+            substitions=dict(view_name=view_name))
 
     @classmethod
     def create_style(cls, view_name):
-        raise NotImplementedError
+        geoserver.load_styles(
+            cls.__name__, files=cls._xml("style"),
+            substitions=dict(view_name=view_name))
 
     @classmethod
     def create_layer(cls, view_name):
-        raise NotImplementedError
+        geoserver.load_layers(
+            cls.__name__, files=cls._xml("layer"),
+            substitions=dict(view_name=view_name))
 
 
 class HazardMap(Output):
@@ -123,11 +137,6 @@ class HazardMap(Output):
     @classmethod
     def _get_layer_fields(cls):
         return "location, iml"
-
-    @classmethod
-    def create_featuretype(cls, view_name):
-        pass
-                       
 
 
 class HazardCurve(Output):
