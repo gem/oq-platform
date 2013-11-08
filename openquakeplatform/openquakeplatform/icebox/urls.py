@@ -19,18 +19,17 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from openquakeplatform.icebox.views import get_artifact
-from openquakeplatform.icebox.views import get_artifact_group
-from openquakeplatform.icebox.views import import_artifacts
-from openquakeplatform.icebox.views import list_artifact_groups
-from openquakeplatform.icebox.views import list_artifacts
+from openquakeplatform.icebox import views
+# TODO. Use context_processors instead of a custom TemplateView
+from openquakeplatform.utils import OQTemplateView
 
 
 urlpatterns = patterns(
     'geonode.icebox.views',
-    url(r'^artifacts/$', list_artifacts, name="artifacts"),
-    url(r'^artifact/(\d+)/$', get_artifact, name="artifact"),
-    url(r'^artifacts/import/$', import_artifacts, name="artifacts_import"),
-    url(r'^artifact_groups/$', list_artifact_groups, name="artifact_groups"),
-    url(r'^artifact_group/(\d+)/$', get_artifact_group, name="artifact_group"),
+    url(r'^$', OQTemplateView.as_view(template_name="calculate.html"),
+        name="calculate"),
+    url(r'^calculations$', views.CalculationsView.as_view(),
+        name="calculations"),
+    url(r'^calculation/(?P<pk>\d+)$', views.CalculationView.as_view(),
+        name="calculation")
 )

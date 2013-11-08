@@ -243,7 +243,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
-
+        "openquakeplatform": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
         "gsconfig.catalog": {
             "handlers": ["console"],
             "level": "ERROR",
@@ -571,9 +574,7 @@ LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
 # authentication. This URL needs to be hit by the oq-engine-server.
-# TODO(LB): This will go away once we implement authorization
-# TODO(LB): See https://bugs.launchpad.net/oq-platform/+bug/1234350
-AUTH_EXEMPT_URLS = ('/icebox/artifacts/import', )
+AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)/', )
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (

@@ -1,6 +1,9 @@
 import os
 import sys
 from urlparse import urljoin as _urljoin
+import urllib2
+
+from openquakeplatform import formdata
 
 from fabric.api import env
 from fabric.api import local
@@ -235,13 +238,18 @@ def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
     # `run` performs a login and thus changes the working directory.
     file_path = os.path.abspath(file_path)
 
-    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
-           "'Content-type:%(content_type)s' -d @%(file_path)s %(url)s")
-    cmd %= dict(username=username, password=password, file_path=file_path,
-                url=_urljoin(base_url, url), method=method,
-                content_type=content_type)
-
-    _do_curl(cmd)
+    files = {'file': {'filename': os.path.basename(file_path),
+                      'content': file(file_path).read()}}
+    data, headers = formdata.encode_multipart({}, files)
+    authinfo = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    authinfo.add_password(None, base_url, username, password)
+    urllib2.install_opener(
+        urllib2.build_opener(
+            urllib2.HTTPBasicAuthHandler(authinfo)))
+    request = urllib2.Request(_urljoin(base_url, url),
+                              data=data,
+                              headers=headers)
+    print urllib2.urlopen(request).read()
 
 
 def _do_curl(cmd):

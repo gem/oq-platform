@@ -1,0 +1,37 @@
+{% extends "site_base.html" %}
+
+{% block title %}
+Calculate - {{block.super}}
+{% endblock title %}
+
+{% block body %}
+<div id="new_hazcalc_form">
+  <h3>New Hazard Calculation</h3>
+
+  <div id="calc-form-wrapper">
+    <form id="haz-calc-form" enctype="multipart/form-data"
+          action="?calculation_type={{calculation_type}}" method="post">
+
+      <button class="add-input-model">Add input model</button>
+      <p><label for="id_job_config">Job configuration (.ini file):</label> <input id="id_job_config" name="job_config" type="file" /></p>
+
+      <!-- Dynamically add more fields here -->
+      <div class="additional-fields"></div>
+
+      <input type="hidden" name="migration_callback_url" value=""/>
+      <input type="hidden" name="foreign_calculation_id" value=""/>
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+</div>
+
+<div id="new_riskcalc_form" style="display: none">
+  <h3>New Risk Calculation</h3>
+
+</div>
+{% endblock body %}
+
+{% block extra_script %}
+    <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>
+    <script src="{{ STATIC_URL }}icebox/calculate.js"></script>
+{% endblock extra_script %}
