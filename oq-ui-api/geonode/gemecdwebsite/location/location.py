@@ -320,7 +320,7 @@ class LocationPage (Pagebase):
                         casualtyMatrixFormArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = surveyForm
                         surveyfields = self.createFormFieldStructure(surveyForm, survey_record )
                         # note order is [row][column]
-                        casualtyMatrixDisplayArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.damagelevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
+                        casualtyMatrixDisplayArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
                 else:
                     surveyForm = self.SurveyForm(instance=survey_record, prefix='surveyform' + str(survey_record.id))
                     surveyformlist.append(surveyForm)
