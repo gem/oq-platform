@@ -20,10 +20,10 @@ var dataCat = "";
 var chartCat = "";
 var utfGrid = new Object;
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia');
-var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0);
-var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18);
-var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189);
-var selectedValue4 = new Array(0, 9.374, 4.413, 5.093);
+var selectedValue1 = new Array("11.12", "16.591", "9.835", "14.0");
+var selectedValue2 = new Array("33.209", "55.71", "49.38", "50.18");
+var selectedValue3 = new Array("34.32", "72.306", "59.216", "64.189");
+var selectedValue4 = new Array("1", "9.374", "4.413", "5.093");
 var attrSelection = new Array();
 var svirRankKeys = new Array();
 var svirRankValues = new Array();
@@ -38,6 +38,15 @@ var layers;
 var categoryList = [];
 var layersByCat = {};
 var layerNames = {};
+
+        // Grandpapa array
+        var array = [];
+        // Parent objs on for the selected attributes
+        var obj1 = {};
+        var obj2 = {};
+        var obj3 = {};
+        var obj4 = {};
+        var chart;
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -324,6 +333,80 @@ var startApp = function() {
 
 
 
+
+
+
+    ////////////////////////////////////////////
+    /////////// Parallel Coordinates test1 with NVD3  //////////
+    ////////////////////////////////////////////
+
+    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
+        //console.log(data());
+        $('#chart svg').empty();
+        console.log("empty");
+        console.log("selectedValue1:" + selectedValue1);
+        console.log("selectedValue1:" + selectedValue2);
+        console.log("selectedValue1:" + selectedValue3);
+        console.log("selectedValue1:" + selectedValue4);
+
+
+        obj1.name = 1;
+        obj1.attr1 = selectedValue1[0];
+        obj1.attr2 = selectedValue2[0];
+        obj1.attr3 = selectedValue3[0];
+        obj1.attr4 = selectedValue4[0];
+
+        obj2.name = 2;
+        obj2.attr1 = selectedValue1[1];
+        obj2.attr2 = selectedValue2[1];
+        obj2.attr3 = selectedValue3[1];
+        obj2.attr4 = selectedValue4[1];
+
+        obj3.name = 3;
+        obj3.attr1 = selectedValue1[2];
+        obj3.attr2 = selectedValue2[2];
+        obj3.attr3 = selectedValue3[2];
+        obj3.attr4 = selectedValue4[2];
+
+        obj4.name = 4;
+        obj4.attr1 = selectedValue1[3];
+        obj4.attr2 = selectedValue2[3];
+        obj4.attr3 = selectedValue3[3];
+        obj4.attr4 = selectedValue4[3];
+    
+        array[0] = obj1;
+        array[1] = obj2;
+        array[2] = obj3;
+        array[3] = obj4;
+
+        console.log(array);
+    
+        
+        nv.addGraph(function() {
+    
+            chart = nv.models.parallelCoordinates()
+                .dimensions(["name", "attr1", "attr2", "attr3", "attr4"]);
+    
+            d3.select('#chart svg')
+                .datum(array)
+                .call(chart);
+    
+            chart.dispatch.on('brush', function(e) {
+                nv.log(e);
+            });
+    
+            nv.utils.windowResize(chart.update);
+
+            
+            return chart;
+    
+        });
+    
+    }
+
+   
+/*  
+
 function myData() {
   var sin = [],
       cos = [];
@@ -351,92 +434,51 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     // Grandpapa array
     var array = [];
     // Parent objs on for the selected attributes
-    var obj0 = {};
     var obj1 = {};
+    var obj2 = {};
+    var obj3 = {};
+    var obj4 = {};
     // Kid array, one for each obj parent 
-    var array0Child = [];
     var array1Child = [];
-    //grandkids
-    var obj0Child0 = {};
-    var obj0Child1 = {};
-    var obj0Child2 = {};
-    var obj0Child3 = {};
+    var array2Child = [];
+    var array3Child = [];
+    var array4Child = [];
 
-    var obj1Child0 = {};
-    var obj1Child1 = {};
-    var obj1Child2 = {};
-    var obj1Child3 = {};
+    array1Child = $.map(selectedValue1, function(el, j) { return { x:  j, y: el } });
+    array2Child = $.map(selectedValue2, function(el, j) { return { x:  j, y: el } });
+    array3Child = $.map(selectedValue3, function(el, j) { return { x:  j, y: el } });
+    array4Child = $.map(selectedValue4, function(el, j) { return { x:  j, y: el } });
 
-    //it's a big family!
-
-    for (var i = 0; i < selectedValue1.length; i++) {
-        console.log(foo = "obj"+i+"child"+i);
-
-    };
-
-    obj0Child0.x = 0; // this will be labled as countriesArray[0]
-    obj0Child0.y = selectedValue1[0];
-
-    obj0Child1.x = 1; // this will be labled as countriesArray[1]
-    obj0Child1.y = selectedValue1[1];
-
-    obj0Child2.x = 2; // this will be labled as countriesArray[2]
-    obj0Child2.y = selectedValue1[2];
-
-    obj0Child3.x = 3; // this will be labled as countriesArray[3]
-    obj0Child3.y = selectedValue1[3];
-
-    obj1Child0.x = 0; // this will be labled as countriesArray[0]
-    obj1Child0.y = selectedValue2[0];
-
-    obj1Child1.x = 1; // this will be labled as countriesArray[1]
-    obj1Child1.y = selectedValue2[1];
-
-    obj1Child2.x = 2; // this will be labled as countriesArray[2]
-    obj1Child2.y = selectedValue2[2];
-
-    obj1Child3.x = 3; // this will be labled as countriesArray[3]
-    obj1Child3.y = selectedValue2[3];
-
-    array0Child[0] = obj0Child0;
-    array0Child[1] = obj0Child1;
-    array0Child[2] = obj0Child2;
-    array0Child[3] = obj0Child3;
-
-    array1Child[0] = obj1Child0;
-    array1Child[1] = obj1Child1;
-    array1Child[2] = obj1Child2;
-    array1Child[3] = obj1Child3;
-
-    obj0.color = "blue";
-    obj0.key = attrSelection[0];
-    obj0.values = array0Child;
-
-    obj1.color = "red";
-    obj1.key = attrSelection[1];
+    obj1.color = "blue";
+    obj1.key = attrSelection[0];
     obj1.values = array1Child;
 
+    obj2.color = "red";
+    obj2.key = attrSelection[1];
+    obj2.values = array2Child;
 
+    obj3.color = "green";
+    obj3.key = attrSelection[2];
+    obj3.values = array3Child;
 
-    array[0] = obj0;
-    array[1] = obj1; //*****change this back to obj2
+    obj4.color = "orange";
+    obj4.key = attrSelection[3];
+    obj4.values = array4Child;
 
-
-    console.log(array);
-
-
-
-
+    array[0] = obj1;
+    array[1] = obj2;
+    array[2] = obj3;
+    array[3] = obj4;
 
     nv.addGraph(function() {
         var chart = nv.models.lineChart();
       
         chart.xAxis
-            .axisLabel('Time (ms)')
+            .axisLabel('Counties')
             .tickFormat(d3.format(',r'));
       
         chart.yAxis
-            .axisLabel('Voltage (v)')
+            .axisLabel('Atributes')
             .tickFormat(d3.format('.02f'));
       
         d3.select('#chart svg')
@@ -454,6 +496,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     
     };
 }
+
+*/
 /*
     function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
         // TODO we need to build a html legend to go next to the chart
@@ -544,10 +588,7 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     /////// Horizontal Multi-Bar Chart /////////
     ////////////////////////////////////////////
 
-    //get the data into json format
-    function buildD3BarChart(chartCat, countryName, keys, values, data) {
-        
-    }
+
 
     /*
 
@@ -578,7 +619,12 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     ////////////////////////////////////////////
     ////////////Rank bar chart /////////////////
     ////////////////////////////////////////////
-/*
+
+
+
+
+    /*
+
 
     function buildD3BarChart(chartCat, countryName, keys, values) {
 
@@ -666,9 +712,9 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     }
 */
     // Change the utfgrid layer when the tabs are clicked
-    $("#econ").click(function(){
-        startAttr = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
-        attrSelection = ["bar_r_gdp_per_capita", "bar_r_percent_female_labor_force_participation", "bar_r_percent_of_gdp_agriculture", "bar_r_percent_of_gdp_exports_of_goods_and_services"];
+    $("#econ").click(function(){ 
+        startAttr = ["bar_gni_per_capita", "bar_gdp_per_capita", "bar_percent_of_gdp_remittances", "bar_percent_of_gdp_agriculture"];
+        attrSelection = ["bar_gni_per_capita", "bar_gdp_per_capita", "bar_percent_of_gdp_remittances", "bar_percent_of_gdp_agriculture"];
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
@@ -797,22 +843,22 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
                     attrSelection = startAttr;
                 }
 
-                selectedValue1.unshift(parseFloat(e.data[attrSelection[0]]));
+                selectedValue1.unshift(e.data[attrSelection[0]]);
                 if (selectedValue1.length > 4) {
                     selectedValue1.pop();
                 }
                 
-                selectedValue2.unshift(parseFloat(e.data[attrSelection[1]]));
+                selectedValue2.unshift(e.data[attrSelection[1]]);
                 if (selectedValue2.length > 4) {
                     selectedValue2.pop();
                 }
     
-                selectedValue3.unshift(parseFloat(e.data[attrSelection[2]]));
+                selectedValue3.unshift(e.data[attrSelection[2]]);
                 if (selectedValue3.length > 4) {
                     selectedValue3.pop();
                 }
     
-                selectedValue4.unshift(parseFloat(e.data[attrSelection[3]]));
+                selectedValue4.unshift(e.data[attrSelection[3]]);
                 if (selectedValue4.length > 4) {
                     selectedValue4.pop();
                 }
@@ -828,7 +874,7 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
                 }
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
                 
-                buildD3BarChart(chartCat, countryName, keys, values);
+                //buildD3BarChart(chartCat, countryName, keys, values);
 
                 //buildD3BarChart(countryName, keys, values);
             } else {
