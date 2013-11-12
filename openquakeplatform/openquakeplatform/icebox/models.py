@@ -73,7 +73,15 @@ class Calculation(models.Model):
         """
         map = geonode.Map()
         map.create_from_layer_list(
-            self.user, layers, self.description, "Powered by Openquake")
+            self.user,
+            [l.typename for l in layers],
+            self.description, "Powered by Openquake")
+
+        # hide all the results by default
+        for maplayer in map.layers:
+            maplayer.visibility = False
+            maplayer.save()
+
         self.map = map
         self.save()
 
