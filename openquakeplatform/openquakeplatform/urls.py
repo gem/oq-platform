@@ -33,7 +33,7 @@ urlpatterns = patterns(
     '',
 
     # disable open proxy provided by geonode
-    url(r'^proxy/$', lambda _r: HttpResponseBadRequest("Proxy disabled")),
+    #    url(r'^proxy/$', 'openquakeplatform.proxy.fake_proxy',),
     url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
         name="geoserver"),
 

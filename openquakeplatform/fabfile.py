@@ -33,7 +33,7 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage', 'devserver']
 
 #: Template for local_settings.py
 LOCAL_SETTINGS = """\

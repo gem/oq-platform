@@ -66,19 +66,38 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         """
         return redirect(
             'calculation', pk=icebox.Calculation.objects.create(
-            calculation_type=request.POST['calculation_type']).pk)
+                user=request.user,
+                calculation_type=request.POST['calculation_type']).pk)
 
 
 class CalculationView(JSONResponseMixin, generic.detail.DetailView):
     model = icebox.Calculation
 
     def post(self, request, pk=None):
+        """
+        Update a calculation object.
+
+        A post without the status argument signals that the results
+        are ready to be imported.
+        """
+        assert pk is not None, "No multiple updates"
+
         calculation = self.get_object()
-        if not request.POST.get('status'):
-            calculation.process_layers()
-        else:
+        if request.POST.get('description'):
+            calculation.description = request.POST['description']
+            calculation.save()
+
+        if request.POST.get('engine_id'):
+            calculation.engine_id = request.POST['engine_id']
+            calculation.save()
+
+        if request.POST.get('status'):
             calculation.status = request.POST['status']
             calculation.save()
+
+            if calculation.status == "creating layers":
+                calculation.process_layers()
+
         return redirect('calculation', pk=pk)
 
 

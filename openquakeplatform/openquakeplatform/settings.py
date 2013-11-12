@@ -163,6 +163,9 @@ INSTALLED_APPS = (
     'geoexplorer',
     'django_extensions',
 
+    # Development
+    # 'devserver',
+
     # Theme
     "pinax_theme_bootstrap_account",
     "pinax_theme_bootstrap",
@@ -237,7 +240,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "WARN",
         },
         "geonode": {
             "handlers": ["console"],
@@ -407,6 +410,7 @@ OGC_SERVER = {
         'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
+        'DATASTORE': 'default',   # 'datastore',
         'OPTIONS': {
             'MAPFISH_PRINT_ENABLED': True,
             'PRINTNG_ENABLED': True,
@@ -415,7 +419,6 @@ OGC_SERVER = {
             'WMST_ENABLED': False,
             'WPS_ENABLED': True,
             # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': 'default',   # 'datastore',
         }
     }
 }
@@ -574,7 +577,7 @@ LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
 # authentication. This URL needs to be hit by the oq-engine-server.
-AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)', )
+AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)', '/geoserver/')
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
