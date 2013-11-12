@@ -17,6 +17,7 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+from django.core.urlresolvers import reverse
 import json
 from django.shortcuts import redirect
 from django.http import HttpResponse
@@ -97,18 +98,28 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
 
             if calculation.status == "creating layers":
                 calculation.process_layers()
+                self._send_email(calculation)
 
         return redirect('calculation', pk=pk)
 
+    def _send_email(self, calculation):
+        subject = ("The calculation %s you have launched has run succesfully" %
+                   (calculation.description))
 
-def _do_send_email(email, artifact_group):
-    send_mail("A new %s is available" % artifact_group.name,
-              """
-The following new artifacts are available:
+        message = """
+The following new outputs are available:
 %s
 
 Login into Openquake platform to see them.
-""" % "\n".join([a.name
-                 for a in artifact_group.artifacts.all()]),
-              [settings.THEME_ACCOUNT_CONTACT_EMAIL],
-              [email], fail_silently=False)
+"""
+
+        outputs = "\n".join(
+            ["<a href=\"%s%s\">%s</a>" % (
+                settings.SITEURL,
+                reverse('layer_detail', args=(output_layer.layer.name,)),
+                output_layer.display_name)
+             for output_layer in calculation.outputlayer_set.all()])
+
+        send_mail(subject, message % outputs,
+                  [settings.THEME_ACCOUNT_CONTACT_EMAIL],
+                  [calculation.user.email], fail_silently=False)

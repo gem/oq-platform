@@ -36,8 +36,13 @@ Create a calculation.
 Response: OK.
 
 
-#### PUT /icebox/calculations/:calculation_id/
+#### POST /icebox/calculation/:calculation_id/
 
-Signal calculation completion. Start post-processing.
+Update calculation status
 
-Response: OK.
+Parameters:
+
+1) status. the new status
+2) description. the calculation description
+
+Response: redirect to /icebox/calculations/:calculation_id/
