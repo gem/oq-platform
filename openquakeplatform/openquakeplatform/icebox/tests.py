@@ -17,16 +17,3 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
-import json
-import mock
-import StringIO
-import unittest
-import urllib2
-
-from openquakeplatform.icebox import views
-from openquakeplatform.icebox import models
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.test.client import RequestFactory
-
-
