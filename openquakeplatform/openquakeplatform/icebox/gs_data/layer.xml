@@ -1,0 +1,9 @@
+<layer>
+  <defaultStyle>
+    <name>point</name>
+    <workspace></workspace>
+  </defaultStyle>
+  <enabled>true</enabled>
+  <advertised>true</advertised>
+  <queryable>true</queryable>
+</layer>
