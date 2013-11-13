@@ -15,42 +15,134 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-
-
-$(document).ready(
-  function() {
-    /* TODO(lp): refactor this to use javascript templates */
-    var addInputModel = function(e) {
-      e.preventDefault();
-      var modelCount = $('input[id^="id_model_"]').length;
-      modelCount++;
-
-      var newID = 'id_model_' + modelCount;
-      var modelLabel = '<label for="' + newID
-        + '">Input model ' + modelCount + '</label>';
-      var modelField = '<input type="file" name="input_model_'
-        + modelCount + '" id="' + newID + '" />';
-      $('.additional-fields', $(this).parent()).append(
-        '<p>' + modelLabel + modelField + '</p>'
-      );
+(function($, Backbone, _, OQ_ENGINE_SERVER_URLS) {
+   var dialog = (function () {
+    var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
+    return {
+        showPleaseWait: function() {
+            pleaseWaitDiv.modal();
+        },
+        hidePleaseWait: function () {
+            pleaseWaitDiv.modal('hide');
+        }
     };
+})();
 
-    /* TODO (lp) avoid hardcoding urls */
-    $('#haz-calc-form').submit(
-      function(e) {
-        e.preventDefault();
-        var form = this;
-        $.post('/icebox/calculations', {calculation_type: 'hazard'}).success(
-          function(data) {
-            $("input[name=migration_callback_url]", form).val(
-              'http://localhost:8000/icebox/calculation/' + data.id);
-            $("input[name=foreign_calculation_id]", form).val(data.id);
-            $(form).ajaxSubmit(
-              {url: OQ_ENGINE_SERVER_URLS.run_hazard_calc_form});
-          }).error(function() {
-                       alert("Openquake Engine Server Failed. Please contact the website administrator");
-                       console.log(arguments);
-                     });
-      });
-    $('.add-input-model').click(addInputModel);
-});
+   var CalculationTable = Backbone.View.extend(
+     {
+       el: $('#tab3'),
+
+       initialize: function(options) {
+         _.bindAll(this, 'render');
+         this.calculations = options.calculations;
+         this.calculations.bind('reset', this.render);
+         this.calculations.bind('add', this.render);
+         this.calculations.bind('remove', this.render);
+         this.render();
+       },
+
+       events: {
+         "click .btn-danger": "remove_calculation"
+       },
+
+       remove_calculation: function(e) {
+         var calc_id = $(e.target).attr('data-calc-id');
+         var view = this;
+         dialog.showPleaseWait();
+         $.post('/icebox/remove_calculation/' + calc_id).success(
+           function(response) {
+             view.calculations.remove([view.calculations.get(calc_id)]);
+           }).error(
+             function() { alert("Can't not remove calculation") }).always(
+               function() { dialog.hidePleaseWait(); });
+       },
+
+       render: function() {
+         this.$el.html(_.template($('#calculation-table-template').html(),
+                                    { calculations: this.calculations.models }));
+       }
+     });
+
+    var Calculation = Backbone.Model.extend({
+        defaults: {
+          map: null,
+          layers: []
+        }
+    });
+
+   var Calculations = Backbone.Collection.extend(
+     { 
+       model: Calculation,
+       url: '/icebox/calculations'
+     });
+   var calculations = new Calculations();
+
+
+   var OutputTable = Backbone.View.extend(
+     {
+       el: $('#tab4'),
+
+       initialize: function(options) {
+         _.bindAll(this, 'render');
+         this.outputs = options.outputs;
+         this.outputs.bind('reset', this.render);
+         this.outputs.bind('add', this.render);
+         this.render();
+       },
+
+       render: function() {
+         this.$el.html(_.template($('#output-table-template').html(),
+                                    { outputs: this.outputs.models }));
+       }
+     });
+
+   var Output = Backbone.Model.extend(
+     {
+       calc: function() {
+         return calculations.get(this.get('calculation'));
+       }
+     });
+
+   var Outputs = Backbone.Collection.extend(
+     { 
+       model: Output,
+       url: '/icebox/outputs'
+     });
+   var outputs = new Outputs();
+
+
+   /* classic event management */   
+
+   $(document).ready(
+     function() {
+       var calculation_table = new CalculationTable({ calculations: calculations });
+       calculations.fetch({reset: true});
+       setInterval(function() { calculations.fetch({reset: true}) }, 5000);
+
+       var output_table = new OutputTable({ outputs: outputs });
+       outputs.fetch({reset: true});
+
+       /* TODO. output collection should observe the calculation one */
+       setInterval(function() { outputs.fetch({reset: true}) }, 10000);
+
+       /* TODO (lp) avoid hardcoding urls */
+       $('.calc-form').submit(
+         function(e) {
+           e.preventDefault();
+           dialog.showPleaseWait();
+           var form = this;
+           $.post('/icebox/calculations', {calculation_type: 'hazard'}).success(
+             function(data) {
+               dialog.hidePleaseWait();
+               $('a[href=#tab3]').tab('show');
+               calculations.add(new Calculation({id: data.id }));
+               $("input[name=callback_url]", form).val(
+                 'http://localhost:8000/icebox/calculation/' + data.id);
+               $("input[name=foreign_calculation_id]", form).val(data.id);
+               $(form).ajaxSubmit();
+             }).error(function() {
+                        alert("Openquake Engine Server Failed. Please contact the website administrator");
+                      });
+         });
+     });
+ })($, Backbone, _, OQ_ENGINE_SERVER_URLS);

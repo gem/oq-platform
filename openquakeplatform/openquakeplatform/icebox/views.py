@@ -49,12 +49,11 @@ class JSONResponseMixin(object):
         response_kwargs['content_type'] = 'application/json'
         return self.response_class(
             self.convert_context_to_json(context),
-            **response_kwargs
-        )
+            **response_kwargs)
 
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
-        return json.dumps(model_to_dict(context['object']))
+        raise NotImplementedError
 
 
 class CalculationsView(JSONResponseMixin, generic.list.ListView):
@@ -69,6 +68,20 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
             'calculation', pk=icebox.Calculation.objects.create(
                 user=request.user,
                 calculation_type=request.POST['calculation_type']).pk)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        return json.dumps([
+            model_to_dict(obj) for obj in context['object_list']])
+
+
+class OutputsView(JSONResponseMixin, generic.list.ListView):
+    model = icebox.OutputLayer
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        return json.dumps([
+            model_to_dict(obj) for obj in context['object_list']])
 
 
 class CalculationView(JSONResponseMixin, generic.detail.DetailView):
@@ -97,10 +110,21 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
             calculation.save()
 
             if calculation.status == "creating layers":
-                calculation.process_layers()
+                try:
+                    calculation.process_layers()
+                except Exception as e:
+                    calculation.status = "failed"
+                    calculation.save()
+                    raise e
+                else:
+                    calculation.status = "complete"
                 self._send_email(calculation)
 
         return redirect('calculation', pk=pk)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        return json.dumps(model_to_dict(context['object']))
 
     def _send_email(self, calculation):
         subject = ("The calculation %s you have launched has run succesfully" %
@@ -123,3 +147,9 @@ Login into Openquake platform to see them.
         send_mail(subject, message % outputs,
                   [settings.THEME_ACCOUNT_CONTACT_EMAIL],
                   [calculation.user.email], fail_silently=False)
+
+
+def remove_calculation(request, pk):
+    if request.method == "POST":
+        icebox.Calculation.objects.get(pk=pk).delete()
+    return HttpResponse("OK")

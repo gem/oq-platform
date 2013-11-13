@@ -30,6 +30,9 @@ urlpatterns = patterns(
         name="calculate"),
     url(r'^calculations$', views.CalculationsView.as_view(),
         name="calculations"),
+    url(r'^outputs$', views.OutputsView.as_view(), name="outputs"),
     url(r'^calculation/(?P<pk>\d+)$', views.CalculationView.as_view(),
-        name="calculation")
+        name="calculation"),
+    url(r'^remove_calculation/(?P<pk>\d+)$', views.remove_calculation,
+        name="remove_calculation")
 )
