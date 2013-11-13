@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 //var startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
-//var startAttr = ["bar_population_density_people_per_km2", "bar_human_development_index", "bar_percent_urban_population", "bar_percent_of_population_that_is_an_international_migrant"];
+//var startAttr = ["population_density_people_per_km2", "human_development_index", "percent_urban_population", "percent_of_population_that_is_an_international_migrant"];
 var dataCat = "";
 var chartCat = "";
 var utfGrid = new Object;
@@ -454,8 +454,10 @@ var startApp = function() {
                 .attr("class", "axis")
                 .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
                 .append("svg:text")
-                .attr("text-anchor", "middle")
-                .attr("y", -9)
+                .attr("id", "attrLable")
+                .attr("text-anchor", "left")
+                .attr("y", 160)
+                .attr("x", 160)
                 .text(String);
           
             // Add a brush for each axis.
@@ -885,8 +887,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
 */
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){ 
-        startAttr = ["bar_gni_per_capita", "bar_gdp_per_capita", "bar_percent_of_gdp_remittances", "bar_percent_of_gdp_agriculture"];
-        attrSelection = ["bar_gni_per_capita", "bar_gdp_per_capita", "bar_percent_of_gdp_remittances", "bar_percent_of_gdp_agriculture"];
+        startAttr = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture"];
+        attrSelection = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture"];
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
@@ -899,8 +901,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     });
 
     $("#pop").click(function(){
-        startAttr = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_of_population_that_is_an_international_migrant"];
-        attrSelection = ["bar_human_development_index", "bar_population_density_people_per_km2", "bar_percent_of_population_that_is_an_international_migrant"];
+        startAttr = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant"];
+        attrSelection = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant"];
         dataCat = "pop-table";
         chartCat = "pop-chart";
         map.removeLayer(utfGrid);
@@ -913,8 +915,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     });
 
     $("#health").click(function(){
-        startAttr = ["bar_birth_rate", "bar_fertility_rate", "bar_infant_mortality_rate", "bar_life_expectancy"];
-        attrSelection = ["bar_birth_rate", "bar_fertility_rate", "bar_infant_mortality_rate", "bar_life_expectancy"];
+        startAttr = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy"];
+        attrSelection = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy"];
         dataCat = "health-table";
         chartCat = "health-chart";
         map.removeLayer(utfGrid);
@@ -927,8 +929,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     });
 
     $("#infra").click(function(){
-        startAttr = ["bar_road_density_per_km2", "bar_motor_vehicles_per_1000_population", "bar_percent_of_population_with_improved_sanitation_facilities_access", "bar_percent_of_population_with_improved_water_source_access"];
-        attrSelection = ["bar_road_density_per_km2", "bar_motor_vehicles_per_1000_population", "bar_percent_of_population_with_improved_sanitation_facilities_access", "bar_percent_of_population_with_improved_water_source_access"];
+        startAttr = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access"];
+        attrSelection = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access"];
         dataCat = "infra-table";
         chartCat = "infra-chart";
         map.removeLayer(utfGrid);
@@ -941,8 +943,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     });
 
     $("#gov").click(function(){
-        startAttr = ["bar_intentional_homicides_per_100000_people", "bar_asylum_seekers_pending_cases_from_country_of_origin", "bar_corruption_index", "bar_percent_of_population_that_voted_in_last_parliamentary_election"];
-        attrSelection = ["bar_intentional_homicides_per_100000_people", "bar_asylum_seekers_pending_cases_from_country_of_origin", "bar_corruption_index", "bar_percent_of_population_that_voted_in_last_parliamentary_election"];
+        startAttr = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election"];
+        attrSelection = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election"];
         dataCat = "gov-table";
         chartCat = "gov-chart";
         map.removeLayer(utfGrid);
@@ -955,8 +957,8 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
     });
 
     $("#edu").click(function(){
-        startAttr = ["bar_percent_of_population_that_is_literate", "bar_gross_enrollment_ratio_primary_education", "bar_mean_years_of_schooling", "bar_pupil_to_teacher_ratio"];
-        attrSelection = ["bar_percent_of_population_that_is_literate", "bar_gross_enrollment_ratio_primary_education", "bar_mean_years_of_schooling", "bar_pupil_to_teacher_ratio"];
+        startAttr = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio"];
+        attrSelection = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio"];
         dataCat = "edu-table";
         chartCat = "edu-chart";
         map.removeLayer(utfGrid);
@@ -1034,7 +1036,7 @@ function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1
                     selectedValue4.pop();
                 }
                 
-                var countryName = e.data.bar_country;
+                var countryName = e.data.country;
                 // Indicate the country name for the table header
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
     
