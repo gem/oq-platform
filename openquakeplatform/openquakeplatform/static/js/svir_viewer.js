@@ -15,15 +15,17 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 //var startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
-//var startAttr = ["population_density_people_per_km2", "human_development_index", "percent_urban_population", "percent_of_population_that_is_an_international_migrant"];
+//var startAttr = ["population_density_people_per_km2", "human_development_index", "percent_urban_population", "percent_of_population_that_is_an_international_migrant", "median_age", "percent_population_aged_0_14"];
 var dataCat = "";
 var chartCat = "";
 var utfGrid = new Object;
-var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia');
-var selectedValue1 = new Array("11.12", "16.591", "9.835", "14.0");
-var selectedValue2 = new Array("33.209", "55.71", "49.38", "50.18");
-var selectedValue3 = new Array("34.32", "72.306", "59.216", "64.189");
-var selectedValue4 = new Array("1", "9.374", "4.413", "5.093");
+var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia', 'foo', 'bar');
+var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0, 1, 1);
+var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18, 1, 1);
+var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189, 1, 1);
+var selectedValue4 = new Array(1, 9.374, 4.413, 5.093, 1, 1); //TODO fix these demo numbers
+var selectedValue5 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
+var selectedValue6 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
 var attrSelection = new Array();
 var svirRankKeys = new Array();
 var svirRankValues = new Array();
@@ -39,14 +41,16 @@ var categoryList = [];
 var layersByCat = {};
 var layerNames = {};
 
-        // Grandpapa array
-        var array = [];
-        // Parent objs on for the selected attributes
-        var obj1 = {};
-        var obj2 = {};
-        var obj3 = {};
-        var obj4 = {};
-        var chart;
+// Grandpapa array
+var array = [];
+// Parent objs on for the selected attributes
+var obj1 = {};
+var obj2 = {};
+var obj3 = {};
+var obj4 = {};
+var obj5 = {};
+var obj6 = {};
+var chart;
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -336,45 +340,66 @@ var startApp = function() {
     //////// Parallel Coordinates  /////////////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray) {
-    
-        console.log("attrSelection[0]:" + attrSelection[0]);
-
+    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
 
         obj1.country = countriesArray[0];
         obj1[attrSelection[0]] = selectedValue1[0];
         obj1[attrSelection[1]] = selectedValue2[0];
         obj1[attrSelection[2]] = selectedValue3[0];
         obj1[attrSelection[3]] = selectedValue4[0];
+        obj1[attrSelection[4]] = selectedValue5[0];
+        obj1[attrSelection[5]] = selectedValue6[0];
 
         obj2.country = countriesArray[1];
         obj2[attrSelection[0]] = selectedValue1[1];
         obj2[attrSelection[1]] = selectedValue2[1];
         obj2[attrSelection[2]] = selectedValue3[1];
         obj2[attrSelection[3]] = selectedValue4[1];
+        obj2[attrSelection[4]] = selectedValue5[1];
+        obj2[attrSelection[5]] = selectedValue6[1];
 
         obj3.country = countriesArray[2];
         obj3[attrSelection[0]] = selectedValue1[2];
         obj3[attrSelection[1]] = selectedValue2[2];
         obj3[attrSelection[2]] = selectedValue3[2];
         obj3[attrSelection[3]] = selectedValue4[2];
+        obj3[attrSelection[4]] = selectedValue5[2];
+        obj3[attrSelection[5]] = selectedValue6[2];
 
         obj4.country = countriesArray[3];
         obj4[attrSelection[0]] = selectedValue1[3];
         obj4[attrSelection[1]] = selectedValue2[3];
         obj4[attrSelection[2]] = selectedValue3[3];
         obj4[attrSelection[3]] = selectedValue4[3];
+        obj4[attrSelection[4]] = selectedValue5[3];
+        obj4[attrSelection[5]] = selectedValue6[3];
+
+        obj5.country = countriesArray[4];
+        obj5[attrSelection[0]] = selectedValue1[4];
+        obj5[attrSelection[1]] = selectedValue2[4];
+        obj5[attrSelection[2]] = selectedValue3[4];
+        obj5[attrSelection[3]] = selectedValue4[4];
+        obj5[attrSelection[4]] = selectedValue5[4];
+        obj5[attrSelection[5]] = selectedValue6[4];
+
+        obj6.country = countriesArray[5];
+        obj6[attrSelection[0]] = selectedValue1[5];
+        obj6[attrSelection[1]] = selectedValue2[5];
+        obj6[attrSelection[2]] = selectedValue3[5];
+        obj6[attrSelection[3]] = selectedValue4[5];
+        obj6[attrSelection[4]] = selectedValue5[5];
+        obj6[attrSelection[5]] = selectedValue6[5];
     
         array[0] = obj1;
         array[1] = obj2;
         array[2] = obj3;
         array[3] = obj4;
+        array[4] = obj5;
+        array[5] = obj6;
 
-        console.log(array);
+        var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
+            traits = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
 
-        var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3]],
-            traits = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3]];
-        
         var m = [80, 160, 200, 160],
             w = 880 - m[1] - m[3],
             h = 500 - m[0] - m[2];
@@ -385,8 +410,6 @@ var startApp = function() {
         var line = d3.svg.line(),
             axis = d3.svg.axis().orient("left"),
             foreground;
-
-            console.log(chartCat)
 
         $("#"+chartCat+"-spider").empty();
 
@@ -420,11 +443,11 @@ var startApp = function() {
                 .attr("class", String)
                 .attr("x2", -28)
                 .attr("y2", 0)
-                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + -75) + ")"; });
+                .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
           
             legend.append("svg:text")
-                .attr("x", 12)
-                .attr("y", -660)
+                .attr("x", -125)
+                .attr("y", -510)
                 .attr("dy", ".31em")
                 .text(function(d) { return d; })
                 .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
@@ -436,7 +459,7 @@ var startApp = function() {
                 .data(array)
                 .enter().append("svg:path")
                 .attr("d", path)
-                .attr("class", function(d) { console.log(d.country); return d.country; });
+                .attr("class", function(d) { return d.country; });
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
@@ -492,6 +515,8 @@ var startApp = function() {
             $("."+countriesArray[1]).css('stroke', 'blue');
             $("."+countriesArray[2]).css('stroke', 'green');
             $("."+countriesArray[3]).css('stroke', 'orange');
+            $("."+countriesArray[4]).css('stroke', 'purple');
+            $("."+countriesArray[5]).css('stroke', 'black');
         //});
         
         // Returns the path for a given data point.
@@ -513,8 +538,8 @@ var startApp = function() {
 
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){ 
-        startAttr = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture"];
-        attrSelection = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture"];
+        startAttr = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture", "percent_of_gdp_industry", "percent_of_gdp_service_sector"];
+        attrSelection = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture", "percent_of_gdp_industry", "percent_of_gdp_service_sector"];
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
@@ -527,8 +552,8 @@ var startApp = function() {
     });
 
     $("#pop").click(function(){
-        startAttr = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant"];
-        attrSelection = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant"];
+        startAttr = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant", "median_age", "percent_population_aged_0_14"];
+        attrSelection = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant", "median_age", "percent_population_aged_0_14"];
         dataCat = "pop-table";
         chartCat = "pop-chart";
         map.removeLayer(utfGrid);
@@ -541,8 +566,8 @@ var startApp = function() {
     });
 
     $("#health").click(function(){
-        startAttr = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy"];
-        attrSelection = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy"];
+        startAttr = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy", "mortality_rate_adult_female", "mortality_rate_adult_male"];
+        attrSelection = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy", "mortality_rate_adult_female", "mortality_rate_adult_male"];
         dataCat = "health-table";
         chartCat = "health-chart";
         map.removeLayer(utfGrid);
@@ -555,8 +580,8 @@ var startApp = function() {
     });
 
     $("#infra").click(function(){
-        startAttr = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access"];
-        attrSelection = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access"];
+        startAttr = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access", "Mobile Cellular Subscriptions per 1000 population", "r_road_density"];
+        attrSelection = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access", "Mobile Cellular Subscriptions per 1000 population", "r_road_density"];
         dataCat = "infra-table";
         chartCat = "infra-chart";
         map.removeLayer(utfGrid);
@@ -569,8 +594,8 @@ var startApp = function() {
     });
 
     $("#gov").click(function(){
-        startAttr = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election"];
-        attrSelection = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election"];
+        startAttr = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election", "percent_of_seats_held_by_women_in_national_parliaments", "r_intentional_homicides_per_100000_people"];
+        attrSelection = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election", "percent_of_seats_held_by_women_in_national_parliaments", "r_intentional_homicides_per_100000_people"];
         dataCat = "gov-table";
         chartCat = "gov-chart";
         map.removeLayer(utfGrid);
@@ -583,8 +608,8 @@ var startApp = function() {
     });
 
     $("#edu").click(function(){
-        startAttr = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio"];
-        attrSelection = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio"];
+        startAttr = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio", "education_expenditures_as_percent_of_gdp", "r_percent_of_population_that_is_literate"];
+        attrSelection = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio", "education_expenditures_as_percent_of_gdp", "r_percent_of_population_that_is_literate"];
         dataCat = "edu-table";
         chartCat = "edu-chart";
         map.removeLayer(utfGrid);
@@ -633,7 +658,7 @@ var startApp = function() {
                         .map(function(){
                             return this.name;
                         });
-                        if (attrSelection > 4) {
+                        if (attrSelection > 6) {
                             attrSelection.pop();
                         } 
                 });
@@ -643,23 +668,33 @@ var startApp = function() {
                 }
 
                 selectedValue1.unshift(parseFloat(e.data[attrSelection[0]]));
-                if (selectedValue1.length > 4) {
+                if (selectedValue1.length > 6) {
                     selectedValue1.pop();
                 }
                 
                 selectedValue2.unshift(parseFloat(e.data[attrSelection[1]]));
-                if (selectedValue2.length > 4) {
+                if (selectedValue2.length > 6) {
                     selectedValue2.pop();
                 }
     
                 selectedValue3.unshift(parseFloat(e.data[attrSelection[2]]));
-                if (selectedValue3.length > 4) {
+                if (selectedValue3.length > 6) {
                     selectedValue3.pop();
                 }
     
                 selectedValue4.unshift(parseFloat(e.data[attrSelection[3]]));
-                if (selectedValue4.length > 4) {
+                if (selectedValue4.length > 6) {
                     selectedValue4.pop();
+                }
+
+                selectedValue5.unshift(parseFloat(e.data[attrSelection[4]]));
+                if (selectedValue5.length > 6) {
+                    selectedValue5.pop();
+                }
+
+                selectedValue6.unshift(parseFloat(e.data[attrSelection[5]]));
+                if (selectedValue6.length > 6) {
+                    selectedValue6.pop();
                 }
                 
                 var countryName = e.data.country;
@@ -668,10 +703,10 @@ var startApp = function() {
     
                 countriesArray.unshift(countryName);
     
-                if (countriesArray.length > 4) {
+                if (countriesArray.length > 6) {
                     countriesArray.pop();
                 }
-                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, countriesArray);
+                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
                 
                 //buildD3BarChart(chartCat, countryName, keys, values);
 
