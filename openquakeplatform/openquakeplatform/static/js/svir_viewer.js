@@ -415,18 +415,19 @@ var startApp = function() {
                 .data(country)
                 .enter().append("svg:g")
                 .attr("class", "legend")
-                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
           
             legend.append("svg:line")
                 .attr("class", String)
-                .attr("x2", 8);
+                .attr("x2", -28)
+                .attr("y2", 0)
+                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + -75) + ")"; });
           
             legend.append("svg:text")
                 .attr("x", 12)
+                .attr("y", -660)
                 .attr("dy", ".31em")
-                .text(function(d) { return "Iris " + d; });
-
-
+                .text(function(d) { return d; })
+                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
           
             // Add foreground lines.
             foreground = svg.append("svg:g")
