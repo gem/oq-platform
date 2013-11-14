@@ -707,19 +707,12 @@ var startApp = function() {
                 }
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
                 
-                //buildD3BarChart(chartCat, countryName, keys, values);
-
-                //buildD3BarChart(countryName, keys, values);
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
     
         });
     }
-
-    //utfGridClickEvent();
-
-    //map.addLayer(utfGrid); 
 
 };
 
