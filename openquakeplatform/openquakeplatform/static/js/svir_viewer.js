@@ -14,8 +14,7 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
-//var startAttr = ["ecoeac006", "ecoeac012", "ecoeac027", "ecoeac033"];
-//var startAttr = ["population_density_people_per_km2", "human_development_index", "percent_urban_population", "percent_of_population_that_is_an_international_migrant", "median_age", "percent_population_aged_0_14"];
+
 var dataCat = "";
 var chartCat = "";
 var utfGrid = new Object;
@@ -31,8 +30,8 @@ var svirRankKeys = new Array();
 var svirRankValues = new Array();
 var svirRegionRankKeys = new Array();
 var svirRegionRankValues = new Array();
-
 var layerControl;
+
 // Keep track of the layer names
 var layers;
 
@@ -43,6 +42,7 @@ var layerNames = {};
 
 // Grandpapa array
 var array = [];
+
 // Parent objs on for the selected attributes
 var obj1 = {};
 var obj2 = {};
@@ -275,7 +275,7 @@ var startApp = function() {
         $( "#categoryTabs" ).tabs({
             collapsible: true,
             selected: -1,
-            active: false
+            active: false
         });
     });
 
@@ -337,7 +337,7 @@ var startApp = function() {
 
 
     ////////////////////////////////////////////
-    //////// Parallel Coordinates  /////////////
+    //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
 
     function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
@@ -398,13 +398,13 @@ var startApp = function() {
         array[5] = obj6;
 
         var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
-            traits = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
+            attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
 
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
-        var x = d3.scale.ordinal().domain(traits).rangePoints([0, w]),
+        var x = d3.scale.ordinal().domain(attributes).rangePoints([0, w]),
             y = {};
         
         var line = d3.svg.line(),
@@ -420,7 +420,7 @@ var startApp = function() {
             .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
         
             // Create a scale and brush for each trait.
-            traits.forEach(function(d) {
+            attributes.forEach(function(d) {
                 // Coerce values to numbers.
                 array.forEach(function(p) { p[d] = +p[d]; });
 
@@ -463,7 +463,7 @@ var startApp = function() {
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
-                .data(traits)
+                .data(attributes)
                 .enter().append("svg:g")
                 .attr("class", "trait")
                 .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
@@ -493,18 +493,18 @@ var startApp = function() {
                 .attr("width", 16);
           
             function dragstart(d) {
-                i = traits.indexOf(d);
+                i = attributes.indexOf(d);
             }
           
             function drag(d) {
                 x.range()[i] = d3.event.x;
-                traits.sort(function(a, b) { return x(a) - x(b); });
+                attributes.sort(function(a, b) { return x(a) - x(b); });
                 g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 foreground.attr("d", path);
             }
           
             function dragend(d) {
-                x.domain(traits).rangePoints([0, w]);
+                x.domain(attributes).rangePoints([0, w]);
                 var t = d3.transition().duration(500);
                 t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 t.selectAll(".foreground path").attr("d", path);
@@ -520,12 +520,12 @@ var startApp = function() {
         
         // Returns the path for a given data point.
         function path(d) {
-            return line(traits.map(function(p) { return [x(p), y[p](d[p])]; }));
+            return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
         
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
-            var actives = traits.filter(function(p) { return !y[p].brush.empty(); }),
+            var actives = attributes.filter(function(p) { return !y[p].brush.empty(); }),
                 extents = actives.map(function(p) { return y[p].brush.extent(); });
             foreground.classed("fade", function(d) {
                 return !actives.every(function(p, i) {
@@ -622,6 +622,9 @@ var startApp = function() {
 
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
+
+            // TODO allow the user to control the number of countries/attributes to interrogate
+
             $("#chartOptions").empty();
             $("#"+chartCat+"-bar").empty();
             svirRankValues = [];
@@ -705,15 +708,15 @@ var startApp = function() {
                 if (countriesArray.length > 6) {
                     countriesArray.pop();
                 }
+
+                // TODO: use a 2d array instead of several selectedValue<x> arrays
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
                 
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
-    
-        });
-    }
-
+        }); // End utfGrid click
+    } // End utfGridClickEvent
 };
 
 app.initialize(startApp);
