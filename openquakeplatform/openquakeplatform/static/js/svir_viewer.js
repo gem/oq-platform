@@ -401,7 +401,7 @@ var startApp = function() {
             traits = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
 
         var m = [80, 160, 200, 160],
-            w = 880 - m[1] - m[3],
+            w = 1280 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
         var x = d3.scale.ordinal().domain(traits).rangePoints([0, w]),
@@ -510,14 +510,13 @@ var startApp = function() {
                 t.selectAll(".foreground path").attr("d", path);
             }
 
-            // Create the stoke for the given atriburte
-            $("."+countriesArray[0]).css('stroke', 'red');
-            $("."+countriesArray[1]).css('stroke', 'blue');
-            $("."+countriesArray[2]).css('stroke', 'green');
-            $("."+countriesArray[3]).css('stroke', 'orange');
-            $("."+countriesArray[4]).css('stroke', 'purple');
-            $("."+countriesArray[5]).css('stroke', 'black');
-        //});
+        // Update the css for each country
+        $("."+countriesArray[0]).css('stroke', 'red');
+        $("."+countriesArray[1]).css('stroke', 'blue');
+        $("."+countriesArray[2]).css('stroke', 'green');
+        $("."+countriesArray[3]).css('stroke', 'orange');
+        $("."+countriesArray[4]).css('stroke', 'purple');
+        $("."+countriesArray[5]).css('stroke', 'black');
         
         // Returns the path for a given data point.
         function path(d) {
