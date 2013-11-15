@@ -32,6 +32,9 @@ var svirRegionRankKeys = new Array();
 var svirRegionRankValues = new Array();
 var layerControl;
 
+// An object of all attributes and values to be used for the checkbox selection
+var dataFormated = {};
+
 // Keep track of the layer names
 var layers;
 
@@ -251,7 +254,7 @@ var startApp = function() {
     $("#chartOptions").dialog({
         autoOpen: false,
         height: 300,
-        width: 350,
+        width: 500,
         modal: true
     });
 
@@ -397,6 +400,12 @@ var startApp = function() {
         array[4] = obj5;
         array[5] = obj6;
 
+        console.log(selectedValue1);
+
+        console.log(obj1);
+
+        console.log(array);
+
         var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
             attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
 
@@ -417,7 +426,7 @@ var startApp = function() {
             .attr("width", w + m[1] + m[3])
             .attr("height", h + m[0] + m[2])
             .append("svg:g")
-            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+            .attr("transform", "translate(" + m[3] + ",5)");
         
             // Create a scale and brush for each trait.
             attributes.forEach(function(d) {
@@ -444,7 +453,13 @@ var startApp = function() {
                 .attr("x2", -28)
                 .attr("y2", 0)
                 .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
-          
+
+            legend.append("svg:text")
+                .attr("x", -125)
+                .attr("y", -510)
+                .attr("dy", ".31em")
+                .text("test");
+
             legend.append("svg:text")
                 .attr("x", -125)
                 .attr("y", -510)
@@ -537,8 +552,6 @@ var startApp = function() {
 
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){ 
-        startAttr = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture", "percent_of_gdp_industry", "percent_of_gdp_service_sector"];
-        attrSelection = ["gni_per_capita", "gdp_per_capita", "percent_of_gdp_remittances", "percent_of_gdp_agriculture", "percent_of_gdp_industry", "percent_of_gdp_service_sector"];
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
@@ -551,8 +564,6 @@ var startApp = function() {
     });
 
     $("#pop").click(function(){
-        startAttr = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant", "median_age", "percent_population_aged_0_14"];
-        attrSelection = ["human_development_index", "population_density_people_per_km2", "percent_of_population_that_is_an_international_migrant", "median_age", "percent_population_aged_0_14"];
         dataCat = "pop-table";
         chartCat = "pop-chart";
         map.removeLayer(utfGrid);
@@ -565,8 +576,6 @@ var startApp = function() {
     });
 
     $("#health").click(function(){
-        startAttr = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy", "mortality_rate_adult_female", "mortality_rate_adult_male"];
-        attrSelection = ["birth_rate", "fertility_rate", "infant_mortality_rate", "life_expectancy", "mortality_rate_adult_female", "mortality_rate_adult_male"];
         dataCat = "health-table";
         chartCat = "health-chart";
         map.removeLayer(utfGrid);
@@ -579,8 +588,6 @@ var startApp = function() {
     });
 
     $("#infra").click(function(){
-        startAttr = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access", "Mobile Cellular Subscriptions per 1000 population", "r_road_density"];
-        attrSelection = ["road_density_per_km2", "motor_vehicles_per_1000_population", "percent_of_population_with_improved_sanitation_facilities_access", "percent_of_population_with_improved_water_source_access", "Mobile Cellular Subscriptions per 1000 population", "r_road_density"];
         dataCat = "infra-table";
         chartCat = "infra-chart";
         map.removeLayer(utfGrid);
@@ -593,8 +600,6 @@ var startApp = function() {
     });
 
     $("#gov").click(function(){
-        startAttr = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election", "percent_of_seats_held_by_women_in_national_parliaments", "r_intentional_homicides_per_100000_people"];
-        attrSelection = ["intentional_homicides_per_100000_people", "asylum_seekers_pending_cases_from_country_of_origin", "corruption_index", "percent_of_population_that_voted_in_last_parliamentary_election", "percent_of_seats_held_by_women_in_national_parliaments", "r_intentional_homicides_per_100000_people"];
         dataCat = "gov-table";
         chartCat = "gov-chart";
         map.removeLayer(utfGrid);
@@ -607,8 +612,6 @@ var startApp = function() {
     });
 
     $("#edu").click(function(){
-        startAttr = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio", "education_expenditures_as_percent_of_gdp", "r_percent_of_population_that_is_literate"];
-        attrSelection = ["percent_of_population_that_is_literate", "gross_enrollment_ratio_primary_education", "mean_years_of_schooling", "pupil_to_teacher_ratio", "education_expenditures_as_percent_of_gdp", "r_percent_of_population_that_is_literate"];
         dataCat = "edu-table";
         chartCat = "edu-chart";
         map.removeLayer(utfGrid);
@@ -639,18 +642,35 @@ var startApp = function() {
             buildDataTable(e, dataCat);
     
             if (e.data) {
+
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
                 var values = [];
                 for (var d in e.data) {
                     values.push(e.data[d]);
                 }
                 var keys = Object.keys(e.data);
+                //console.log(keys);
+
+
                 for (var i in values) {
-                    var value = values[i];
-                    var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+keys[i]+'" value="'+value[i]+'">'+keys[i]+'<br>';
-                    $('#chartOptions').append(chartDropDown);
+                    if (keys[i] != "country" && keys[i] != "region") {
+
+                        var a = keys[i].replace(/rr_/g, "Regional Rank ");
+                        var b = a.replace(/r_/g, "Rank ");
+                        var c = b.replace(/_/g, " ");
+                        
+                        var value = values[i];
+
+                        dataFormated[c] = values[i];
+
+                        var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
+                        $('#chartOptions').append(chartDropDown);
+
+                    };
+
                 }
-    
+
+                $('.attributeOption:lt(6)').prop('checked', true);  
                 $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
                 
                 $("#chartOptionsButton").click(function(){
@@ -664,37 +684,38 @@ var startApp = function() {
                             attrSelection.pop();
                         } 
                 });
-                
-                if (attrSelection.length == 0) {
-                    attrSelection = startAttr;
-                }
 
-                selectedValue1.unshift(parseFloat(e.data[attrSelection[0]]));
+                attrSelectionArray = $('.attributeOption:checkbox:checked');
+                for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
+                    attrSelection[i] = attrSelectionArray[i].name;
+                };
+
+                selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {
                     selectedValue1.pop();
                 }
                 
-                selectedValue2.unshift(parseFloat(e.data[attrSelection[1]]));
+                selectedValue2.unshift(parseFloat(dataFormated[attrSelection[1]]));
                 if (selectedValue2.length > 6) {
                     selectedValue2.pop();
                 }
     
-                selectedValue3.unshift(parseFloat(e.data[attrSelection[2]]));
+                selectedValue3.unshift(parseFloat(dataFormated[attrSelection[2]]));
                 if (selectedValue3.length > 6) {
                     selectedValue3.pop();
                 }
     
-                selectedValue4.unshift(parseFloat(e.data[attrSelection[3]]));
+                selectedValue4.unshift(parseFloat(dataFormated[attrSelection[3]]));
                 if (selectedValue4.length > 6) {
                     selectedValue4.pop();
                 }
 
-                selectedValue5.unshift(parseFloat(e.data[attrSelection[4]]));
+                selectedValue5.unshift(parseFloat(dataFormated[attrSelection[4]]));
                 if (selectedValue5.length > 6) {
                     selectedValue5.pop();
                 }
 
-                selectedValue6.unshift(parseFloat(e.data[attrSelection[5]]));
+                selectedValue6.unshift(parseFloat(dataFormated[attrSelection[5]]));
                 if (selectedValue6.length > 6) {
                     selectedValue6.pop();
                 }
