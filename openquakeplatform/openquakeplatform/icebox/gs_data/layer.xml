@@ -1,7 +1,7 @@
 <layer>
   <defaultStyle>
     <name>%(class_name)s</name>
-    <workspace>oqplatform</workspace>
+    <workspace></workspace>
   </defaultStyle>
   <enabled>true</enabled>
   <advertised>true</advertised>
