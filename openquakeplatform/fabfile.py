@@ -137,6 +137,7 @@ def apps():
     _add_faulted_earth()
     _add_ghec_viewer()
     _add_gaf_viewer()
+    _add_icebox()
 
     local('python manage.py updatelayers')
 
@@ -308,6 +309,10 @@ def _add_isc_viewer():
     _add_app('isc_viewer')
     local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
           ' ../oq-ui-api/data/isc_data_app.csv')
+
+
+def _add_icebox():
+    _add_app('icebox')
 
 
 def _add_faulted_earth():

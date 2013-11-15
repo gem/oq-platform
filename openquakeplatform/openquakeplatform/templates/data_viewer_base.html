@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
-{% extends "site_base.html" %}
+{% extends "site_base_data.html" %}
 
 {% block extra_head %}
     {{block.super}}
@@ -24,21 +24,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/wax-controls.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/oqplatform_leaflet.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_table.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_page.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.parcoords.css" />
+
 {% endblock extra_head %}
 
 {% block oq_body_content %}
     <div id="map"></div>
 {% endblock oq_body_content %}
-
-{% block oq_body_sidebar %}
-    {{block.super}}
-    <div id="oq-layer-tree">
-        <!-- Populate with
-            <input class="oq-layer-tree-node" type="checkbox" />Item name<br />
-        -->
-
-    </div>
-{% endblock oq_body_sidebar %}
 
 {% block extra_script %}
     {{block.super}}
@@ -49,7 +43,36 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}wax/dist/wax.leaf.min.js"></script>
     <script src="{{ STATIC_URL }}wax/ext/modestmaps.min.js"></script>
     <script src="{{ STATIC_URL }}wax/dist/wax.mm.js"></script>
-    <script src="{{ STATIC_URL }}js/base_leaflet_app.js"></script>
+    <script src="{{ STATIC_URL }}js/base_data_viewer_app.js"></script>
     <script src="{{ STATIC_URL }}js/leaflet.utfgrid.js"></script>
     <script src="{{ STATIC_URL }}js/leaflet.ajax.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.dataTables.js"></script>
+    <script src="{{ STATIC_URL }}js/d3.js"></script>
+
+    <!-- Constants, rendered here from app configuration through Django templates.
+         This is a simple way to make variables from the backend available to the
+         frontend.
+
+         This code is auto-generated.
+    -->
+    <script>
+    var ICEBOX_URLS = {};
+    {% for k, v in icebox_urls.iteritems %}
+    ICEBOX_URLS.{{ k }} = "{{ v }}";
+    {% endfor %}
+
+    var OQ_ENGINE_SERVER_URLS = {};
+    {% for k, v in oq_engine_server_urls.iteritems %}
+    OQ_ENGINE_SERVER_URLS.{{ k }} = "{{ v }}";
+    {% endfor %}
+
+    var THIRD_PARTY_URLS = {};
+    {% for k, v in third_party_urls.iteritems %}
+    THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
+    {% endfor %}
+
+    var CURRENT_USER = "{{request.user}}";
+
+    </script>
+
 {% endblock extra_script %}
