@@ -1,7 +1,7 @@
 <layer>
   <defaultStyle>
-    <name>point</name>
-    <workspace></workspace>
+    <name>%(class_name)s</name>
+    <workspace>oqplatform</workspace>
   </defaultStyle>
   <enabled>true</enabled>
   <advertised>true</advertised>

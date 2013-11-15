@@ -127,6 +127,12 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
         return json.dumps(model_to_dict(context['object']))
 
     def _send_email(self, calculation):
+        """
+        Send an email to inform the user that the calculation is
+        complete. If the email can not be sent (e.g. because no smtp
+        server has been configured), it catches the error and just
+        logs the exception.
+        """
         subject = ("The calculation %s you have launched has run succesfully" %
                    (calculation.description))
 
@@ -144,9 +150,13 @@ Login into Openquake platform to see them.
                 output_layer.display_name)
              for output_layer in calculation.outputlayer_set.all()])
 
-        send_mail(subject, message % outputs,
-                  [settings.THEME_ACCOUNT_CONTACT_EMAIL],
-                  [calculation.user.email], fail_silently=False)
+        try:
+            send_mail(subject, message % outputs,
+                      [settings.THEME_ACCOUNT_CONTACT_EMAIL],
+                      [calculation.user.email], fail_silently=False)
+        # TODO. Avoid catching a so general exception
+        except Exception as e:
+            logger.warn("Failed to send mail to %s: %s" % (calculation.user.email, e))
 
 
 def remove_calculation(request, pk):

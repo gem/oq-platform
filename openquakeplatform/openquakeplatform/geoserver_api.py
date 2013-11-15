@@ -2,7 +2,16 @@ import os
 import urllib2
 from urlparse import urljoin as _urljoin
 
-GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
+# try to guess the geoserver base url from the settings. If settings
+# can not be imported (this module can be used also by the
+# installation script), then guess a reasonable default for a
+# development environment
+try:
+    from django.conf import settings
+    GEOSERVER_BASE_URL = "%srest/" % settings.OGC_SERVER['default']['LOCATION']
+except:
+    GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
+
 #: GeoServer workspace name
 WS_NAME = 'oqplatform'
 #: GeoServer datastore name

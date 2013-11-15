@@ -25,7 +25,8 @@ Calculate - {{block.super}}
     <div class="tab-pane active" id="tab1">
       <div class="well">
         <form class="calc-form" enctype="multipart/form-data"
-              method="post" action="{{OQ_ENGINE_SERVER_URLS.run_hazard_calc_form}}">
+              data-calc-type="hazard"
+              method="post" action="{{oq_engine_server_urls.run_hazard_calc_form}}">
           <fieldset>
             <legend>Load input files</legend>
             
@@ -49,7 +50,8 @@ Calculate - {{block.super}}
     <div class="tab-pane" id="tab2">
       <div class="well">
         <form class="calc-form" enctype="multipart/form-data"
-              method="post" action="{{OQ_ENGINE_SERVER_URLS.run_risk_calc_form}}">
+              data-calc-type="risk"
+              method="post" action="{{oq_engine_server_urls.run_risk_calc_form}}">
           <fieldset>
             <legend>Load input files</legend>
             
@@ -103,7 +105,7 @@ Calculate - {{block.super}}
     <tbody>
       <% _.each(calculations, function(calc) { %>
       <tr class="<%= calc.get('status') == 'complete' ? 'success' : 'warning' %>">
-        <td><%= calc.get('engine_id') || 'Loading...' %></td>
+        <td><%= calc.get('engine_id') || 'New' %></td>
         <td><%= calc.get('calculation_type') %></td>
         <td><%= calc.get('description') %></td>
         <td><%= calc.get('status') %></td>
@@ -115,8 +117,10 @@ Calculate - {{block.super}}
               <a href="#" class="btn btn-primary">Run Risk</a>
             <% } %>
           <% } %>
-
+          
+          <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed') { %>
           <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-danger">Remove</a>
+          <% } %>
         </td>
       </tr>
       <% }); %>

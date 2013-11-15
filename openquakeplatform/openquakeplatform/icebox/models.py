@@ -191,7 +191,7 @@ class OutputLayer(models.Model):
             geoserver.FEATURETYPE_URL % view_name, method='DELETE',
             raise_errors=False)
 
-        self.create_featuretype(view_name)
+        self.update_layer(self.create_featuretype(view_name))
 
         return view_name
 
@@ -210,6 +210,8 @@ class OutputLayer(models.Model):
     def create_featuretype(self, view_name):
         """
         Create a featuretype for the given database view `view_name`
+
+        :returns: the name of the featuretype created
         """
         geoserver.load_features(
             self.output_type.__name__,
@@ -219,10 +221,11 @@ class OutputLayer(models.Model):
                 attributes=self.xml_attributes(),
                 title=self.display_name,
                 class_name=self.output_type.__name__))
+        return view_name
 
     def update_layer(self, layer_name):
         """
-        Create a layer named `layer_name`
+        Update the layer named `layer_name`
         """
         geoserver.geoserver_rest(
             geoserver.LAYER_URL % layer_name,
@@ -293,7 +296,8 @@ class HazardMap(Output):
 
     @classmethod
     def attributes(cls):
-        return [cls.Attribute("location", "com.vividsolutions.jts.geom.Geometry"),
+        return [cls.Attribute("location",
+                              "com.vividsolutions.jts.geom.Geometry"),
                 cls.Attribute("iml", "java.lang.Double")]
 
 
@@ -310,7 +314,8 @@ class HazardCurve(Output):
 
     @classmethod
     def attributes(cls):
-        return [cls.Attribute("location", "com.vividsolutions.jts.geom.Geometry"),
+        return [cls.Attribute("location",
+                              "com.vividsolutions.jts.geom.Geometry"),
                 cls.Attribute("imls", "java.lang.String"),
                 cls.Attribute("poes", "java.lang.String")]
 
@@ -326,7 +331,8 @@ class GMF(Output):
 
     @classmethod
     def attributes(cls):
-        return [cls.Attribute("location", "com.vividsolutions.jts.geom.Geometry"),
+        return [cls.Attribute("location",
+                              "com.vividsolutions.jts.geom.Geometry"),
                 cls.Attribute("iml", "java.lang.Double"),
                 cls.Attribute("rupture_tag", "java.lang.String")]
 
@@ -343,7 +349,8 @@ class SES(Output):
     @classmethod
     def attributes(cls):
         return [
-            cls.Attribute("hypocenter", "com.vividsolutions.jts.geom.Geometry"),
+            cls.Attribute("hypocenter",
+                          "com.vividsolutions.jts.geom.Geometry"),
             cls.Attribute("magnitude", "java.lang.Double"),
             cls.Attribute("rupture_tag", "java.lang.String")]
 

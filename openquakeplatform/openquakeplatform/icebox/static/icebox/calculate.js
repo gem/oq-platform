@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-(function($, Backbone, _, OQ_ENGINE_SERVER_URLS) {
+(function($, Backbone, _) {
    var dialog = (function () {
     var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
     return {
@@ -131,7 +131,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
            e.preventDefault();
            dialog.showPleaseWait();
            var form = this;
-           $.post('/icebox/calculations', {calculation_type: 'hazard'}).success(
+           $.post('/icebox/calculations', {calculation_type: $(form).attr('data-calc-type')}).success(
              function(data) {
                dialog.hidePleaseWait();
                $('a[href=#tab3]').tab('show');
@@ -145,4 +145,4 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                       });
          });
      });
- })($, Backbone, _, OQ_ENGINE_SERVER_URLS);
+ })($, Backbone, _);
