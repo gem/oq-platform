@@ -312,7 +312,7 @@ def _add_isc_viewer():
 
 
 def _add_icebox():
-    _add_app('icebox')
+    load_styles('icebox')
 
 
 def _add_faulted_earth():

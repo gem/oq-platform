@@ -451,7 +451,6 @@ class DamageDistributionPerAsset(Output):
     def sql_attributes(cls):
         return ["location", "asset_ref", "damage_state", "mean", "stddev"]
 
-
     @classmethod
     def attributes(cls):
         return [
