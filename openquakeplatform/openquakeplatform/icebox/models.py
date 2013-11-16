@@ -285,6 +285,26 @@ class Output(models.Model):
 
         raise NotImplementedError
 
+    @staticmethod
+    def remove_layer(_sender, instance, _using, **_kwargs):
+        """
+        Remove the geonode layer as well
+        """
+        instance.layer.delete()
+
+    @staticmethod
+    def drop_view(_sender, instance, _using, **_kwargs):
+        cursor = connection.cursor()
+        view_name = "icebox_output_%s_%s" % (
+            instance.__class__.__name__, instance.output_layer_id)
+        view_name = view_name.lower()
+        cursor.execute("DROP VIEW IF EXISTS %s view_name")
+        cursor.connection.commit()
+
+
+models.signals.post_delete.connect(Output.remove_layer, sender=Output)
+models.signals.post_delete.connect(Output.drop_view, sender=Output)
+
 
 class HazardMap(Output):
     location = models.PointField(srid=4326, dim=2)

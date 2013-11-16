@@ -22,8 +22,16 @@
                   <CssParameter name="fill">
                     <ogc:Function name="Interpolate">
                       <ogc:PropertyName>iml</ogc:PropertyName>
-                      <ogc:Literal>0</ogc:Literal> <ogc:Literal>#000000</ogc:Literal>
-                      <ogc:Literal>10</ogc:Literal> <ogc:Literal>#ff0000</ogc:Literal>
+                      <ogc:Literal>0</ogc:Literal> <ogc:Literal>#ffffff</ogc:Literal>
+                      <ogc:Literal>5</ogc:Literal> <ogc:Literal>#ff0000</ogc:Literal>
+                      <ogc:Literal>color</ogc:Literal>
+                    </ogc:Function>
+                  </CssParameter>
+                  <CssParameter name="fill-opacity">
+                    <ogc:Function name="Interpolate">
+                      <ogc:PropertyName>iml</ogc:PropertyName>
+                      <ogc:Literal>0</ogc:Literal> <ogc:Literal>0</ogc:Literal>
+                      <ogc:Literal>0.3</ogc:Literal> <ogc:Literal>1</ogc:Literal>
                       <ogc:Literal>color</ogc:Literal>
                     </ogc:Function>
                   </CssParameter>
