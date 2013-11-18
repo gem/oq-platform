@@ -108,17 +108,25 @@ class Calculation(models.Model):
                              ptype=baselayer["source"]["ptype"]))))
 
         for i, layer in enumerate(layers):
+            if layer.outputlayer.output_type in [HazardCurve,
+                                                 LossCurve,
+                                                 AggregateLossCurve]:
+                info_format = "text/html"
+            else:
+                info_format = "application/vnc.ogc.gml"
+
             map.layer_set.add(
                 maps.MapLayer.objects.create(
                     map=map,
                     stack_order=i + len(baselayers),
                     name=layer.typename,
                     format="image/png",
-            # FIXME. the following breaks on js side
-            #                    group=layer.outputlayer.output_type.__name__,
+            # The following commented line makes GeoExplorer break
+            # group=layer.outputlayer.output_type.__name__,
                     visibility=(i == 0),
                     transparent=True,
                     ows_url=ogc_server_settings.public_url + "wms",
+                    layer_params=json.dumps({"infoFormat": info_format}),
                     local=True))
         map.set_bounds_from_layers(map.local_layers)
         map.set_default_permissions()
@@ -129,7 +137,7 @@ class Calculation(models.Model):
         self.save()
 
     @staticmethod
-    def remove_map(sender, instance, using, **kwargs):
+    def remove_map(_sender, instance, _using, **_kwargs):
         if instance.map_id:
             instance.map.delete()
 
@@ -523,10 +531,12 @@ class CollapseMap(Output):
             cls.Attribute("stddev", "java.lang.Double")]
 
 
+# FIXME. It would be better to group such features by asset and show a
+# histogram with all the damage state mean and stddevs
 class DamageDistributionPerAsset(Output):
     damage_state = models.TextField()
-    mean = models.FloatField()
-    stddev = models.FloatField()
+    mean = models.TextField()
+    stddev = models.TextField()
     asset_ref = models.TextField()
     location = models.PointField(srid=4326, dim=2)
 
@@ -544,6 +554,7 @@ class DamageDistributionPerAsset(Output):
             cls.Attribute("stddev", "java.lang.Double")]
 
 
+# FIXME (same as for DamageDistributionPerAsset)
 class DamageDistributionPerTaxonomy(Output):
     damage_state = models.TextField()
     mean = models.FloatField()
@@ -565,6 +576,7 @@ class DamageDistributionPerTaxonomy(Output):
             cls.Attribute("stddev", "java.lang.Double")]
 
 
+# FIXME (same as for DamageDistributionPerAsset)
 class TotalDamageDistribution(Output):
     damage_state = models.TextField()
     mean = models.FloatField()

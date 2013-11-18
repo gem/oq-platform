@@ -314,6 +314,9 @@ def _add_isc_viewer():
 def _add_icebox():
     load_styles('icebox')
 
+    local('cp ./gs_data/icebox/content.ftl '
+          './geoserver/geoserver/data/templates/')
+
 
 def _add_faulted_earth():
     _add_app('faulted_earth')

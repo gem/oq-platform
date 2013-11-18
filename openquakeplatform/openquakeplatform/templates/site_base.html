@@ -89,9 +89,11 @@
 {% endblock footer %}
 
 {% block extra_script %}
+    <!--  Override this in child templates to include additional javascript code -->
+
+
     <style>
-<style>
-			/* tell the SVG path to be a thin blue line without any area fill */
+		  /* SVG styling used in GetFeatureInfoTemplate */
 			path {
 				stroke: steelblue;
 				stroke-width: 1;
@@ -102,27 +104,18 @@
 			  shape-rendering: crispEdges;
 			}
 
-			.x.axis line {
+			.axis line {
 			  stroke: lightgrey;
 			}
 
-			.x.axis .minor {
+			.axis .minor {
 			  stroke-opacity: .5;
 			}
 
-			.x.axis path {
+			.axis path {
 			  display: none;
 			}
-
-			.y.axis line, .y.axis path {
-			  fill: none;
-			  stroke: #000;
-			}
-		</style>
     </style>
-
-
-    <!--  Override this in child templates to include additional javascript code -->
 
     <script src="{{ STATIC_URL }}js/d3.js"></script>
 
@@ -134,27 +127,30 @@
       var originalAddOutput = gxp.plugins.WMSGetFeatureInfo.prototype.addOutput;
       Ext.override(gxp.plugins.WMSGetFeatureInfo, {
         addOutput: function(config) {
+          var width = 300, height = 150, margin = 20;
+          config['width'] = width + 2 * margin;
+          config['scroll'] = true;
           config['listeners'] = {
             afterlayout: function() {
-              jQuery('.hazard_curve.to_draw').map(function(i, el) {
+              jQuery('.curve.to_draw').map(function(i, el) {
                 var $el = $(el);
 
-                var imls = $el.attr('data-imls').split(',');
-                var poes = $el.attr('data-poes').split(',');
+                var x_values = $el.attr('data-x').split(',');
+                var poes = $el.attr('data-y').split(',');
 
                 var canvas = d3.select(el).append('svg:svg')
-                                            .attr("width", 100)
-                                            .attr("height", 100)
-                                            .append("svg:g");
-                var x = d3.scale.linear().domain([0, d3.max(imls)]).range([0, 100]);
-                var y = d3.scale.linear().domain([0, 1]).range([0, 100]);
-                var line = d3.svg.line().x(function(d, i) { console.log(d); return x(i) }).y(function(d, i) { return y(i) });
-                var xAxis = d3.svg.axis().scale(x).ticks(4);
-                canvas.append("svg:g").attr("class", "x axis").attr("transform", "translate(0, 100").call(xAxis);
-                var yAxis = d3.svg.axis().scale(y).ticks(4).orient("left");
-                canvas.append("svg:g").attr("class", "y axis").attr("transform", "translate(-25, 0").call(yAxis);
+                                            .attr("width", width + 2 * margin)
+                                            .attr("height", height + 2 * margin)
+                                            .append("svg:g")
+                                            .attr("transform", "translate(" + margin + "," + margin + ")");
+                var x = d3.scale.linear().domain([0, d3.max(x_values)]).range([0, width]);
+                var y = d3.scale.linear().domain([0, 1]).range([height, 0]);
+                var line = d3.svg.line().x(function(d, i) { return x(i) }).y(function(d, i) { return y(d) });
+                var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
+                canvas.append("svg:g").attr("class", "axis").attr("transform", "translate(0, " + height  + ")").call(xAxis);
+                var yAxis = d3.svg.axis().scale(y).tickSize(width).tickSubdivide(true).orient("left");
+                canvas.append("svg:g").attr("class", "axis").attr("transform", "translate(" + width + " , 0)").call(yAxis);
                 canvas.append("svg:path").attr("d", line(poes));
-                console.log('drawing ' + imls + ' vs ' + poes);
                 $el.removeClass('to_draw');
                 $el.show();
              });
