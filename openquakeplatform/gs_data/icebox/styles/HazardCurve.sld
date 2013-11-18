@@ -17,6 +17,9 @@
             <Graphic>
               <Mark>
                 <WellKnownName>x</WellKnownName>
+<Fill>
+                <CssParameter name="fill">#666666</CssParameter>
+</Fill>
               </Mark>
               <Size>5</Size>
             </Graphic>

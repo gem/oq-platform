@@ -30,7 +30,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
    var CalculationTable = Backbone.View.extend(
      {
-       el: $('#tab3'),
+       el: $('#my-calculations'),
 
        initialize: function(options) {
          _.bindAll(this, 'render');
@@ -38,14 +38,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
          this.calculations.bind('reset', this.render);
          this.calculations.bind('add', this.render);
          this.calculations.bind('remove', this.render);
+
+         /* if false, it prevents the table to be refreshed */
+         this.can_be_rendered = true;
+
          this.render();
        },
 
        events: {
-         "click .btn-danger": "remove_calculation"
+         "click .btn-danger": "remove_calculation",
+         "click .btn-file": "on_run_risk_clicked",
+         "change .btn-file input": "on_run_risk_queued"
+       },
+
+       on_run_risk_clicked: function(e) {
+         /* if a file input dialog has been opened do not refresh the calc table */
+         this.can_be_rendered = false;
+       },
+
+       on_run_risk_queued: function(e) {
+         this.can_be_rendered = true;
        },
 
        remove_calculation: function(e) {
+         e.preventDefault();
          var calc_id = $(e.target).attr('data-calc-id');
          var view = this;
          dialog.showPleaseWait();
@@ -58,6 +74,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
        },
 
        render: function() {
+         if (!this.can_be_rendered) {
+           return;
+         };
          this.$el.html(_.template($('#calculation-table-template').html(),
                                     { calculations: this.calculations.models }));
        }
@@ -80,7 +99,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
    var OutputTable = Backbone.View.extend(
      {
-       el: $('#tab4'),
+       el: $('#tab2'),
 
        initialize: function(options) {
          _.bindAll(this, 'render');
@@ -99,7 +118,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
    var Output = Backbone.Model.extend(
      {
        calc: function() {
-         return calculations.get(this.get('calculation'));
+         return calculations.get(this.get('calculation')) || new Output({ 'calculation_type': undefined });
        }
      });
 
@@ -125,22 +144,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
        /* TODO. output collection should observe the calculation one */
        setInterval(function() { outputs.fetch({reset: true}) }, 10000);
 
+       /* XXX. Reset the input file value to ensure the change event
+               will be always triggered */
+       $(document).on("click", 'input[name=job_config]',
+                      function(e) { this.value = null; });
        /* TODO (lp) avoid hardcoding urls */
-       $('.calc-form').submit(
+       $(document).on("change", 'input[name=job_config]',
          function(e) {
-           e.preventDefault();
            dialog.showPleaseWait();
-           var form = this;
+           var input = $(e.target);
+           var form = input.parents('form')[0];
            $.post('/icebox/calculations', {calculation_type: $(form).attr('data-calc-type')}).success(
              function(data) {
                dialog.hidePleaseWait();
-               $('a[href=#tab3]').tab('show');
-               calculations.add(new Calculation({id: data.id }));
+               calculations.add(new Calculation(
+                                  { id: data.id,
+                                    description: "...loading description...",
+                                    status: "queued" }));
                $("input[name=callback_url]", form).val(
-                 'http://localhost:8000/icebox/calculation/' + data.id);
+                 document.location.origin + '/icebox/calculation/' + data.id);
                $("input[name=foreign_calculation_id]", form).val(data.id);
                $(form).ajaxSubmit();
              }).error(function() {
+                        dialog.hidePleaseWait();
                         alert("Openquake Engine Server Failed. Please contact the website administrator");
                       });
          });

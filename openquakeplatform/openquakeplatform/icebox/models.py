@@ -17,19 +17,25 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+import json
+import uuid
 import collections
 import os
-from openquakeplatform.icebox import fields
-from openquakeplatform import geoserver_api as geoserver
-from geonode.geoserver.helpers import gs_slurp
+import logging
+
+from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.auth import models as auth_models
 from django.db import connection
-from geonode.maps import models as geonode
+
+from geonode.geoserver.helpers import gs_slurp
+from geonode.maps import models as maps
+from geonode.maps.signals import map_changed_signal
 from geonode.layers.models import set_attributes
+from geonode.utils import http_client, ogc_server_settings
 
-
-import logging
+from openquakeplatform.icebox import fields
+from openquakeplatform import geoserver_api as geoserver
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +46,7 @@ class Calculation(models.Model):
     status = models.TextField(default="queued")
     engine_id = models.TextField(null=True)
     description = models.TextField(null=True)
-    map = models.ForeignKey(geonode.Map, null=True)
+    map = models.ForeignKey(maps.Map, null=True)
     user = models.ForeignKey(auth_models.User)
 
     def process_layers(self):
@@ -71,19 +77,61 @@ class Calculation(models.Model):
         :param list layers:
            the :class:`geonode.maps.Layer` instances representing the results
         """
-        map = geonode.Map()
-        map.create_from_layer_list(
-            self.user,
-            [l.typename for l in layers],
-            self.description, "Powered by Openquake")
+        map = maps.Map.objects.create(
+            owner=self.user,
+            title=self.description,
+            abstract="",
+            zoom=0,
+            center_x=0, center_y=0,
+            projection="EPSG:900913",
+            uuid=str(uuid.uuid1()))
 
-        # hide all the results by default
-        for maplayer in map.layers:
-            maplayer.visibility = False
-            maplayer.save()
+        baselayers = [l for l in settings.MAP_BASELAYERS
+                      if l.get("group") == "background"]
+
+        for i, baselayer in enumerate(baselayers):
+            name = baselayer.get(
+                "name", baselayer.get("args", [baselayer.get("type")])[0])
+            map.layer_set.add(
+                maps.MapLayer.objects.create(
+                    map=map,
+                    stack_order=i,
+                    name=name,
+                    group=baselayer["group"],
+                    visibility=name == "osm",
+                    layer_params=json.dumps(
+                        dict(title=name, selected=name == "osm",
+                             type=baselayer.get("type"))),
+                    source_params=json.dumps(
+                        dict(id=str(i),
+                             args=baselayer.get("args", []),
+                             ptype=baselayer["source"]["ptype"]))))
+
+        for i, layer in enumerate(layers):
+            map.layer_set.add(
+                maps.MapLayer.objects.create(
+                    map=map,
+                    stack_order=i + len(baselayers),
+                    name=layer.typename,
+                    format="image/png",
+            # FIXME. the following breaks on js side
+            #                    group=layer.outputlayer.output_type.__name__,
+                    visibility=(i == 0),
+                    transparent=True,
+                    ows_url=ogc_server_settings.public_url + "wms",
+                    local=True))
+        map.set_bounds_from_layers(map.local_layers)
+        map.set_default_permissions()
+        map.save()
+        map_changed_signal.send_robust(sender=map, what_changed='layers')
 
         self.map = map
         self.save()
+
+    @staticmethod
+    def remove_map(sender, instance, using, **kwargs):
+        if instance.map_id:
+            instance.map.delete()
 
     def __unicode__(self):
         return u"Calculation: %s" % self.description
@@ -97,8 +145,8 @@ class OutputLayer(models.Model):
     calculation = models.ForeignKey(
         Calculation,
         help_text="the calculation this output belongs to")
-    layer = models.ForeignKey(
-        geonode.Layer, null=True,
+    layer = models.OneToOneField(
+        maps.Layer, null=True,
         help_text="the geonode layer associated with this calculation output")
     # FIXME. Use an output uuid instead of an database id (as the
     # engine database is a temporary storage)
@@ -120,7 +168,7 @@ class OutputLayer(models.Model):
         """
         gs_slurp(workspace=geoserver.WS_NAME, store=geoserver.DS_NAME,
                  filter=geoserver_layer)
-        layer = geonode.Layer.objects.get(name=geoserver_layer)
+        layer = maps.Layer.objects.get(name=geoserver_layer)
         self.layer = layer
         self.save()
 
@@ -128,6 +176,7 @@ class OutputLayer(models.Model):
         self.layer.save()
 
         set_attributes(self.layer)
+        self.layer.set_default_permissions()
         return self.layer
 
     @property
@@ -184,16 +233,19 @@ class OutputLayer(models.Model):
 
         :returns: the name of the published layer
         """
+        # During development, it might be handy to uncomment this
+        # self.delete_layer(view_name)
+        self.update_layer(self.create_featuretype(view_name))
+
+        return view_name
+
+    def delete_layer(self, view_name):
         geoserver.geoserver_rest(
             geoserver.LAYER_URL % view_name, method='DELETE',
             raise_errors=False)
         geoserver.geoserver_rest(
             geoserver.FEATURETYPE_URL % view_name, method='DELETE',
             raise_errors=False)
-
-        self.update_layer(self.create_featuretype(view_name))
-
-        return view_name
 
     @staticmethod
     def _xml(request_type):
@@ -213,14 +265,16 @@ class OutputLayer(models.Model):
 
         :returns: the name of the featuretype created
         """
+        substitutions = dict(
+            view_name=view_name,
+            attributes=self.xml_attributes(),
+            title=self.display_name,
+            class_name=self.output_type.__name__)
+        substitutions.update(self.output_type.bbox_for_output(self))
         geoserver.load_features(
             self.output_type.__name__,
             files=[self._xml("featuretype")],
-            substitutions=dict(
-                view_name=view_name,
-                attributes=self.xml_attributes(),
-                title=self.display_name,
-                class_name=self.output_type.__name__))
+            substitutions=substitutions)
         return view_name
 
     def update_layer(self, layer_name):
@@ -260,6 +314,8 @@ class Output(models.Model):
     Attribute = collections.namedtuple("Attribute", "name binding")
 
     output_layer = models.ForeignKey(OutputLayer, null=True)
+
+    objects = models.GeoManager()
 
     class Meta:
         abstract = True
@@ -301,7 +357,14 @@ class Output(models.Model):
         cursor.execute("DROP VIEW IF EXISTS %s view_name")
         cursor.connection.commit()
 
+    @classmethod
+    def bbox_for_output(cls, output_layer):
+        return dict(
+            zip(["minx", "maxx", "miny", "maxy"],
+                cls.objects.filter(output_layer=output_layer).extent()))
 
+
+models.signals.post_delete.connect(Calculation.remove_map, sender=Calculation)
 models.signals.post_delete.connect(Output.remove_layer, sender=Output)
 models.signals.post_delete.connect(Output.drop_view, sender=Output)
 

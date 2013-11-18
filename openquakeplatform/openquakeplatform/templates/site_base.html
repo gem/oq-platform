@@ -89,5 +89,78 @@
 {% endblock footer %}
 
 {% block extra_script %}
+    <style>
+<style>
+			/* tell the SVG path to be a thin blue line without any area fill */
+			path {
+				stroke: steelblue;
+				stroke-width: 1;
+				fill: none;
+			}
+			
+			.axis {
+			  shape-rendering: crispEdges;
+			}
+
+			.x.axis line {
+			  stroke: lightgrey;
+			}
+
+			.x.axis .minor {
+			  stroke-opacity: .5;
+			}
+
+			.x.axis path {
+			  display: none;
+			}
+
+			.y.axis line, .y.axis path {
+			  fill: none;
+			  stroke: #000;
+			}
+		</style>
+    </style>
+
+
     <!--  Override this in child templates to include additional javascript code -->
+
+    <script src="{{ STATIC_URL }}js/d3.js"></script>
+
+    <script type="text/javascript">
+      /* Override addOutput for the getfeatureinfo tool in order to
+      parse eventual GetFeatureInfo templates and run javascript
+      against them */
+
+      var originalAddOutput = gxp.plugins.WMSGetFeatureInfo.prototype.addOutput;
+      Ext.override(gxp.plugins.WMSGetFeatureInfo, {
+        addOutput: function(config) {
+          config['listeners'] = {
+            afterlayout: function() {
+              jQuery('.hazard_curve.to_draw').map(function(i, el) {
+                var $el = $(el);
+
+                var imls = $el.attr('data-imls').split(',');
+                var poes = $el.attr('data-poes').split(',');
+
+                var canvas = d3.select(el).append('svg:svg')
+                                            .attr("width", 100)
+                                            .attr("height", 100)
+                                            .append("svg:g");
+                var x = d3.scale.linear().domain([0, d3.max(imls)]).range([0, 100]);
+                var y = d3.scale.linear().domain([0, 1]).range([0, 100]);
+                var line = d3.svg.line().x(function(d, i) { console.log(d); return x(i) }).y(function(d, i) { return y(i) });
+                var xAxis = d3.svg.axis().scale(x).ticks(4);
+                canvas.append("svg:g").attr("class", "x axis").attr("transform", "translate(0, 100").call(xAxis);
+                var yAxis = d3.svg.axis().scale(y).ticks(4).orient("left");
+                canvas.append("svg:g").attr("class", "y axis").attr("transform", "translate(-25, 0").call(yAxis);
+                canvas.append("svg:path").attr("d", line(poes));
+                console.log('drawing ' + imls + ' vs ' + poes);
+                $el.removeClass('to_draw');
+                $el.show();
+             });
+            }
+          };
+          return originalAddOutput.apply(this, [config]);
+        }});
+    </script>
 {% endblock extra_script %}

@@ -112,10 +112,10 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
             if calculation.status == "creating layers":
                 try:
                     calculation.process_layers()
-                except Exception as e:
+                except:
                     calculation.status = "failed"
                     calculation.save()
-                    raise e
+                    raise
                 else:
                     calculation.status = "complete"
                 self._send_email(calculation)
@@ -148,7 +148,8 @@ Login into Openquake platform to see them.
                 settings.SITEURL,
                 reverse('layer_detail', args=(output_layer.layer.name,)),
                 output_layer.display_name)
-             for output_layer in calculation.outputlayer_set.all()])
+             for output_layer in calculation.outputlayer_set.all()
+             if output_layer.layer])
 
         try:
             send_mail(subject, message % outputs,

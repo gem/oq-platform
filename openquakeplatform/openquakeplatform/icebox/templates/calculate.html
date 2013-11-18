@@ -15,71 +15,34 @@ Calculate - {{block.super}}
 {% block body %}
 <div class="tabbable well-large">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#tab1" data-toggle="tab">Hazard</a></li>
-    <li><a href="#tab2" data-toggle="tab">Risk</a></li>
-    <li><a href="#tab3" data-toggle="tab">My Calculations</a></li>
-    <li><a href="#tab4" data-toggle="tab">My Outputs</a></li>
+    <li class="active"><a href="#tab1" data-toggle="tab">My Calculations</a></li>
+    <li><a href="#tab2" data-toggle="tab">My Outputs</a></li>
   </ul>
 
   <div class="tab-content">
     <div class="tab-pane active" id="tab1">
-      <div class="well">
-        <form class="calc-form" enctype="multipart/form-data"
+        <form class="calc-form form-horizontal"
+              enctype="multipart/form-data"
               data-calc-type="hazard"
               method="post" action="{{oq_engine_server_urls.run_hazard_calc_form}}">
-          <fieldset>
-            <legend>Run a Hazard Calculation</legend>
+          <div class="control-group">
+            <label style="width: auto" class="control-label" for="job_config">
+              Run a Hazard Calculation
+            </label>
             
-            <div class="fileinput fileinput-new" data-provides="fileinput">
-              <span class="btn btn-default btn-file"><span class="fileinput-new">Select Input Files</span><span class="fileinput-exists">Change</span><input multiple type="file" name="job_config"/></span>
-              <span class="fileinput-filename"></span>
-              <a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>
+            <div class="controls">
+              <div class="fileinput fileinput-new" data-provides="fileinput">
+                <span class="btn btn-default btn-file"><span class="fileinput-new">Select Job Directory</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="job_config"/></span>
+              </div>
             </div>
-
+          </div>
             <input type="hidden" name="callback_url" value=""/>
             <input type="hidden" name="foreign_calculation_id" value=""/>
-
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-          </fieldset>
         </form>
-      </div>
+
+      <div id="my-calculations" class="well"></div>
     </div>
-
-    <div class="tab-pane" id="tab2">
-      <div class="well">
-        <form class="calc-form" enctype="multipart/form-data"
-              data-calc-type="risk"
-              method="post" action="{{oq_engine_server_urls.run_risk_calc_form}}">
-          <fieldset>
-            <legend>Run a Risk Calculation</legend>
-            
-            <div class="fileinput fileinput-new" data-provides="fileinput">
-              <span class="btn btn-default btn-file"><span class="fileinput-new">Select Input Files</span><span class="fileinput-exists">Change</span><input multiple type="file" name="job_config"/></span>
-              <span class="fileinput-filename"></span>
-              <a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>
-            </div>
-
-            <label>Hazard Calculation ID</label>
-            <input type="text" name="hazard_calculation_id"/>
-
-            <label>Hazard Output ID</label>
-            <input type="text" name="hazard_output_id"/>
-
-            <input type="hidden" name="callback_url" value=""/>
-            <input type="hidden" name="foreign_calculation_id" value=""/>
-
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-    </div>
-
-    <div class="tab-pane well" id="tab3"></div>
-    <div class="tab-pane well" id="tab4"></div>
+    <div class="tab-pane well" id="tab2"></div>
   </div>
 </div>
 
@@ -93,11 +56,12 @@ Calculate - {{block.super}}
 
 <script type="text/template" id="calculation-table-template">
   <table id="calculation_table" class="table table-hover">
+    <caption>My Calculations</caption>
     <thead>
       <tr>
         <th>ID</th>
         <th>Type</th>
-        <th>Description</th>
+        <th  width="40%">Description</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
@@ -111,11 +75,20 @@ Calculate - {{block.super}}
         <td><%= calc.get('status') %></td>
         <td>
           <% if(calc.get('map')) { %>
-            <a href="/maps/<%= calc.get('map') %>" class="btn btn-success">Open</a>
-
             <% if(calc.get('calculation_type') == 'hazard') { %>
-              <a href="#" class="btn btn-primary">Run Risk</a>
+        <form class="calc-form" enctype="multipart/form-data"
+              data-calc-type="risk"
+              style="margin: 0; display: inline-block"
+              method="post" action="{{oq_engine_server_urls.run_risk_calc_form}}">
+            <div class="fileinput-new" data-provides="fileinput" style="margin: 0 2px 0 0">
+              <span class="btn btn-default btn-file"><span class="fileinput-new">Run Risk</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="job_config"/></span>
+            </div>
+            <input type="hidden" name="callback_url" value=""/>
+            <input type="hidden" name="foreign_calculation_id" value=""/>
+            <input type="hidden" name="hazard_calculation_id" value="<%= calc.get('engine_id') %>"/>
+        </form>
             <% } %>
+            <a href="/maps/<%= calc.get('map') %>" class="btn btn-success">Open</a>
           <% } %>
           
           <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed') { %>
