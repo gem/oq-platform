@@ -295,4 +295,18 @@ ALTER TABLE gemecdlocationsforjsonaggregated
 
 ALTER TABLE gemecdphotos
   OWNER TO econduser;
+  
+
+CREATE OR REPLACE VIEW gemecdlocations_quick AS 
+ SELECT event.name AS event, event.id AS eventid, event.country, event.yearint, study.name AS study, study.id AS studyid, study.studytypecode, location.id AS locationid, location.name AS locationname, location.isaggregated AS locationaggregateflag, count(surveyvalue.id) AS numberofsurveyvalues
+   FROM location
+   JOIN study ON study.id = location.parentid
+   JOIN event ON event.id = study.parentid
+   JOIN surveyvalue ON location.id = surveyvalue.parentid
+  WHERE location.parenttype::text = 'study'::text
+  GROUP BY event.name, event.id, event.country, event.yearint, study.name, study.id, location.id, location.name, location.isaggregated;
+
+ALTER TABLE gemecdlocations_quick
+  OWNER TO econduser;
+
 
