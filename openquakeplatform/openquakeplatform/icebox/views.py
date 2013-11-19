@@ -80,8 +80,13 @@ class OutputsView(JSONResponseMixin, generic.list.ListView):
 
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
-        return json.dumps([
-            model_to_dict(obj) for obj in context['object_list']])
+        outputs = []
+        for obj in context['object_list']:
+            output = model_to_dict(obj) 
+            if obj.layer:
+                output['layername'] = obj.layer.typename
+            outputs.append(output)
+        return json.dumps(outputs)
 
 
 class CalculationView(JSONResponseMixin, generic.detail.DetailView):
@@ -118,7 +123,7 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
                     raise
                 else:
                     calculation.status = "complete"
-                self._send_email(calculation)
+                #self._send_email(calculation)
 
         return redirect('calculation', pk=pk)
 

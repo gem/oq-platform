@@ -120,7 +120,7 @@ Calculate - {{block.super}}
         <td><%= out.get('display_name') || 'Loading...' %></td>
         <td>
           <% if(out.get('layer')) { %>
-            <a href="/layers/<%= out.get('layer') %>" class="btn btn-success">Open</a>
+            <a href="/layers/<%= out.get('layername') %>" class="btn btn-success">Open</a>
           <% } %>
           <% if(out.calc().get('calculation_type') == 'hazard') { %>
           <a href="#" class="btn btn-primary">Run Risk</a>

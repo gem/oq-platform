@@ -54,6 +54,8 @@ except ImportError:
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
 
+SITEURL = 'http://localhost:8000'
+
 OQ_ENGINE_SERVER_URLS = {
     'run_hazard_calc_form': 'http://localhost:11888/v1/calc/hazard/run',
     'run_risk_calc_form': 'http://localhost:11888/v1/calc/risk/run',
@@ -137,7 +139,7 @@ def apps():
     _add_faulted_earth()
     _add_ghec_viewer()
     _add_gaf_viewer()
-    _add_icebox()
+    add_icebox()
 
     local('python manage.py updatelayers')
 
@@ -311,11 +313,10 @@ def _add_isc_viewer():
           ' ../oq-ui-api/data/isc_data_app.csv')
 
 
-def _add_icebox():
+def add_icebox():
     load_styles('icebox')
 
-    local('cp ./gs_data/icebox/content.ftl '
-          './geoserver/geoserver/data/templates/')
+    local('cp ./gs_data/icebox/content.ftl ./geoserver/data/templates/')
 
 
 def _add_faulted_earth():

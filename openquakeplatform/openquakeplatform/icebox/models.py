@@ -49,6 +49,9 @@ class Calculation(models.Model):
     map = models.ForeignKey(maps.Map, null=True)
     user = models.ForeignKey(auth_models.User)
 
+    class Meta:
+        ordering = ('-pk',)
+
     def process_layers(self):
         """
         Create geoserver and geonode layers (for each calculation
@@ -113,7 +116,7 @@ class Calculation(models.Model):
                                                  AggregateLossCurve]:
                 info_format = "text/html"
             else:
-                info_format = "application/vnc.ogc.gml"
+                info_format = "application/vnd.ogc.gml"
 
             map.layer_set.add(
                 maps.MapLayer.objects.create(
@@ -137,7 +140,7 @@ class Calculation(models.Model):
         self.save()
 
     @staticmethod
-    def remove_map(_sender, instance, _using, **_kwargs):
+    def remove_map(sender, instance, using, **_kwargs):
         if instance.map_id:
             instance.map.delete()
 

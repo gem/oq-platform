@@ -402,26 +402,6 @@ MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
 
-# OGC (WMS/WFS/WCS) Server Settings
-OGC_SERVER = {
-    'default': {
-        'BACKEND': 'geonode.geoserver',
-        'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
-        'USER': 'admin',
-        'PASSWORD': 'geoserver',
-        'DATASTORE': 'default',   # 'datastore',
-        'OPTIONS': {
-            'MAPFISH_PRINT_ENABLED': True,
-            'PRINTNG_ENABLED': True,
-            'GEONODE_SECURITY_ENABLED': True,
-            'GEOGIT_ENABLED': False,
-            'WMST_ENABLED': False,
-            'WPS_ENABLED': True,
-            # Set to name of database in DATABASES dictionary to enable
-        }
-    }
-}
 
 # Uploader Settings
 UPLOADER = {
@@ -429,73 +409,6 @@ UPLOADER = {
     'OPTIONS': {
         'TIME_ENABLED': False,
         'GEOGIT_ENABLED': False,
-    }
-}
-
-# CSW settings
-CATALOGUE = {
-    'default': {
-        # The underlying CSW implementation
-        # default is pycsw in local mode (tied directly to GeoNode Django DB)
-        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-        # pycsw in non-local mode
-        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
-        # GeoNetwork opensource
-        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
-        # deegree and others
-        #'ENGINE': 'geonode.catalogue.backends.generic',
-
-        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': '%scatalogue/csw' % SITEURL,
-        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-
-        # login credentials (for GeoNetwork)
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-    }
-}
-
-# pycsw settings
-PYCSW = {
-    # pycsw configuration
-    'CONFIGURATION': {
-        'metadata:main': {
-            'identification_title': 'OQ Catalogue',
-            'identification_abstract': 'OQ abstract',
-            'identification_keywords': (
-                'sdi,catalogue,discovery,metadata,GeoNode'),
-            'identification_keywords_type': 'theme',
-            'identification_fees': 'None',
-            'identification_accessconstraints': 'None',
-            'provider_name': 'Organization Name',
-            'provider_url': SITEURL,
-            'contact_name': 'Lastname, Firstname',
-            'contact_position': 'Position Title',
-            'contact_address': 'Mailing Address',
-            'contact_city': 'City',
-            'contact_stateorprovince': 'Administrative Area',
-            'contact_postalcode': 'Zip or Postal Code',
-            'contact_country': 'Country',
-            'contact_phone': '+xx-xxx-xxx-xxxx',
-            'contact_fax': '+xx-xxx-xxx-xxxx',
-            'contact_email': 'Email Address',
-            'contact_url': 'Contact URL',
-            'contact_hours': 'Hours of Service',
-            'contact_instructions': 'openquake-users@google-groups.com',
-            'contact_role': 'pointOfContact',
-        },
-        'metadata:inspire': {
-            'enabled': 'true',
-            'languages_supported': 'eng,gre',
-            'default_language': 'eng',
-            'date': 'YYYY-MM-DD',
-            'gemet_keywords': 'Utility and governmental services',
-            'conformity_service': 'notEvaluated',
-            'contact_name': 'Organization Name',
-            'contact_email': 'Email Address',
-            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
-        }
     }
 }
 
