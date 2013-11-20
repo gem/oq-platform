@@ -1,5 +1,6 @@
 __author__ = 'Simon Ruffle'
 
+
 from django.template import Library, Node
 import datetime
 
