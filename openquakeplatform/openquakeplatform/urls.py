@@ -7,6 +7,8 @@ from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 
 from openquakeplatform import local_settings
+
+# TODO. Use context_processors instead of a custom TemplateView
 from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
@@ -31,7 +33,7 @@ urlpatterns = patterns(
     '',
 
     # disable open proxy provided by geonode
-    url(r'^proxy/$', lambda _r: HttpResponseBadRequest("Proxy disabled")),
+    #    url(r'^proxy/$', 'openquakeplatform.proxy.fake_proxy',),
     url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
         name="geoserver"),
 
@@ -50,12 +52,11 @@ urlpatterns = patterns(
         template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', OQTemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^calculate/$', OQTemplateView.as_view(
-        template_name="calculate.html"), name="calculate"),
     url(r'^svir_viewer/$', TemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
+    (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
 
