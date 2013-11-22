@@ -43,7 +43,9 @@ var startApp = function() {
     var showDialog = function(divTarget, title, content, options) {
         $(divTarget).empty();
         if (options === undefined) {
-            options = {};
+            options = {
+                dialogClass: ''
+            };
         }
         options.modal = true;
         options.title = title;
