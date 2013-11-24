@@ -17,10 +17,12 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+import smtplib
+import requests
 from django.core.urlresolvers import reverse
 import json
 from django.shortcuts import redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.conf import settings
 from django.core.mail import send_mail
 from django.views import generic
@@ -64,10 +66,49 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         Create a new calculation object, and submit synchronously a
         request to the oq-engine-server.
         """
-        return redirect(
-            'calculation', pk=icebox.Calculation.objects.create(
-                user=request.user,
-                calculation_type=request.POST['calculation_type']).pk)
+        calculation_type = request.POST['calculation_type']
+
+        calculation = self.model.objects.create(
+            user=request.user,
+            calculation_type=calculation_type)
+
+        if calculation_type == "hazard":
+            url = settings.OQ_ENGINE_SERVER_URLS['run_hazard_calc_form']
+        elif calculation_type == "risk":
+            url = settings.OQ_ENGINE_SERVER_URLS['run_risk_calc_form']
+        else:
+            raise RuntimeError(
+                "Unknown calculation_type %s" % calculation_type)
+
+        try:
+            requests.post(
+                url,
+                data=dict(
+                    database=settings.OQ_ENGINE_SERVER_DATABASE,
+                    callback_url="%s%s" % (
+                        settings.SITEURL[:-1], reverse(
+                        "calculation", args=(calculation.pk,))),
+                    foreign_calculation_id=calculation.pk,
+                    # Risk only
+                    hazard_output_id=request.POST.get('hazard_output_id'),
+                    hazard_calculation_id=request.POST.get(
+                        'hazard_calculation_id')),
+                files=dict(
+                    [("job_config_%d" % i, filepath)
+                     for i, filepath
+                     in enumerate(request.FILES.getlist('calc_config'))]))
+        except requests.exceptions.RequestException as e:
+            logger.error(
+                "POST to engine server (url=%s) failed: %s" % (url, e))
+            return HttpResponseServerError(
+                "An error has occurred while queing your calculation")
+
+        return self.response_class(
+            json.dumps(dict(id=calculation.id,
+                            calculation_type=calculation.calculation_type,
+                            engine_id="New",
+                            status=calculation.status)),
+            content_type='application/json')
 
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
@@ -82,7 +123,7 @@ class OutputsView(JSONResponseMixin, generic.list.ListView):
         "Convert the context dictionary into a JSON object"
         outputs = []
         for obj in context['object_list']:
-            output = model_to_dict(obj) 
+            output = model_to_dict(obj)
             if obj.layer:
                 output['layername'] = obj.layer.typename
             outputs.append(output)
@@ -160,9 +201,9 @@ Login into Openquake platform to see them.
             send_mail(subject, message % outputs,
                       [settings.THEME_ACCOUNT_CONTACT_EMAIL],
                       [calculation.user.email], fail_silently=False)
-        # TODO. Avoid catching a so general exception
-        except Exception as e:
-            logger.warn("Failed to send mail to %s: %s" % (calculation.user.email, e))
+        except smtplib.SMTPException as e:
+            logger.warn(
+                "Failed to send mail to %s: %s" % (calculation.user.email, e))
 
 
 def remove_calculation(request, pk):

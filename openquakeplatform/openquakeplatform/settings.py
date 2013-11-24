@@ -576,6 +576,9 @@ LEAFLET_CONFIG = {
 }
 
 
+OQ_ENGINE_SERVER_DATABASE = "platform"
+
+
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = True
 
