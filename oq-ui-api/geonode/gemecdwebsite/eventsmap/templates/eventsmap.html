@@ -24,15 +24,24 @@
     <script type="text/javascript">
         // GEM ECD specific mapping
 
-        shakemap = new L.TileLayer.WMS("http://gemecd.org:8080/geoserver/wms",
+        // Use gemecd.org = it has full set of shakemaps
+        //shakemap = new L.TileLayer.WMS("http://gemecd.org:8080/geoserver/wms",
+        //    {
+        //       layers: 'gemecd:shakemapquery',
+        //        format: 'image/png',
+        //        transparent: true,
+        //        tiled: true,
+        //        opacity: 0.5
+        //    });
+
+        // Use ecd-dev.openquake,org it has only shakemap for L'Aquila, usgs id =  "200904060132"
+        shakemap = new L.TileLayer.WMS("http://ecd-dev.openquake.org/geoserver/geonode/wms",
             {
-               layers: 'gemecd:shakemapquery',
+               layers: 'geonode:shakemapquery',
                 format: 'image/png',
                 transparent: true,
                 tiled: true,
-                opacity: 0.5,
-                viewparams:'shakemapid:200904060132'
-                //viewparams:'shakemapid:200805120628'
+                opacity: 0.5
             });
 
         var customIcon = L.icon({
