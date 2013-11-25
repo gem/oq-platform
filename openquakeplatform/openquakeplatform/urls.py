@@ -54,6 +54,8 @@ urlpatterns = patterns(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^svir_viewer/$', TemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
+    url(r'^building_fractions/$', TemplateView.as_view(
+        template_name="building_fractions.html"), name='building_fractions'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
