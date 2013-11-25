@@ -63,6 +63,7 @@ urlpatterns = patterns(
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
     url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
+    url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
