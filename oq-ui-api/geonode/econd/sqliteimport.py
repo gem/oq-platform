@@ -68,7 +68,7 @@ class SQLiteImporter:
         f.close()
 
     def process(self, sqlitecursor):
-        sqlitecursor.execute('SELECT ' + self.columnsStr + '  from GEM_OBJECT;')
+        sqlitecursor.execute('select ' + self.columnsStr + '  from GEM_OBJECT;')
 
         # make another list of column names
         quickCols = self.columnsStr.split(',')
@@ -82,10 +82,21 @@ class SQLiteImporter:
                 for idx, columnvalue in enumerate(self.columnsList):
                     columns[quickCols[idx]] = columnvalue
 
-                # First check if the parent study exists, if
+                # First check if the parent study exists, if not create one
                 parentstudyid = 0
                 parenteventid = 190 # reserved event for IDCT uploads
-                studyname = columns['PROJ_UID']
+
+                # get the study, which is a 'project' in IDCT
+                studyuid = columns['PROJ_UID']
+                sqlitecursor.execute("select PROJ_NAME, PROJ_SUMRY from GEM_PROJECT where PROJ_UID='" + studyuid + "';")
+                project = sqlitecursor.fetchone()
+                if project:
+                    studyname = project[0]
+                    studycomment = project[1]
+                else:
+                    studyname = studyuid
+                    studycomment = ''
+                
                 authors = 'IDCT Direct Observation Tools'
                 partner = 'IDCT'
                 parentstudylist = Study.objects.filter(parentid=parenteventid,name=studyname)
@@ -95,6 +106,7 @@ class SQLiteImporter:
                     study = Study()
                     study.name = studyname
                     study.authors = authors
+                    study.studynarrative = studycomment
                     study.parentid_id = parenteventid
                     study.studydate = datetime.now()
                     study.partner = partner
