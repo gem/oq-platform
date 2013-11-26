@@ -232,20 +232,6 @@ class LocationPage (Pagebase):
         except:
             self.page_context['nonaggoverviewfields'] = ''
 
-        ##########################################################################
-        # Set up inventory class record for input and display - non aggregate only
-        ##########################################################################
-
-        try:
-            inventoryclassid = nonaggoverview_record.inventoryclassid
-            inventoryclass_record = Inventoryclass.objects.get(pk=inventoryclassid)
-            inventoryclassForm = self.InventoryclassForm(instance=inventoryclass_record, prefix='inventoryclassform')
-            inventoryclassfields = self.createFormFieldStructure( inventoryclassForm, inventoryclass_record, {'foreignkeylinkprefix': '/ecd'})
-            self.page_context['inventoryclassfields'] = inventoryclassfields # for display
-            self.page_context['inventoryclassform'] = inventoryclassForm # for editing
-        except:
-            self.page_context['inventoryclassfields'] = ''
-            self.page_context['inventoryclassform'] = ''
 
         ##################################################
         # Set up survey value record(s) for input and display
@@ -260,7 +246,7 @@ class LocationPage (Pagebase):
             surveyformlist = []
 
             from collections import OrderedDict
-            inventoryClassesDict = OrderedDict()
+            inventoryclass_recordesDict = OrderedDict()
             damageLevelsDict = OrderedDict()
             casualtyLevelsDict = OrderedDict()
 
@@ -271,11 +257,11 @@ class LocationPage (Pagebase):
 
             if isAggregated:
                 # start to build the rows and columns of the matrix
-                inventoryClasses = Inventoryclass.objects.filter(parentid=studyid).order_by('levelorder','name')
-                inventoryClassesCount = len(inventoryClasses)
-                for inv in inventoryClasses:
-                    inventoryClassesDict[inv.id] = inv.name
-                inventoryClassesList = list(inventoryClassesDict) # make a list of keys from the dictionary so we can find the index value of the item
+                inventoryclass_recordes = Inventoryclass.objects.filter(parentid=studyid).order_by('levelorder','name')
+                inventoryclass_recordesCount = len(inventoryclass_recordes)
+                for inv in inventoryclass_recordes:
+                    inventoryclass_recordesDict[inv.id] = inv.name
+                inventoryclass_recordesList = list(inventoryclass_recordesDict) # make a list of keys from the dictionary so we can find the index value of the item
 
                 damageLevels = Damagelevel.objects.filter(parentid=studyid).order_by('levelorder','name')
                 damageLevelsCount = len(damageLevels)
@@ -290,10 +276,10 @@ class LocationPage (Pagebase):
                 casualtyLevelsList = list(casualtyLevelsDict) # make a list of keys from the dictionary so we can find the index value of the item
 
                 # build empty 2D arrays for the damage and casualty matrices - this is pythons 'elegant' way of defining a 2d array
-                damageMatrixDisplayArr = [['-']*damageLevelsCount for i in range(inventoryClassesCount)]
-                casualtyMatrixDisplayArr = [['-']*casualtyLevelsCount for i in range(inventoryClassesCount)]
-                damageMatrixFormArr = [['-']*damageLevelsCount for i in range(inventoryClassesCount)]
-                casualtyMatrixFormArr = [['-']*casualtyLevelsCount for i in range(inventoryClassesCount)]
+                damageMatrixDisplayArr = [['-']*damageLevelsCount for i in range(inventoryclass_recordesCount)]
+                casualtyMatrixDisplayArr = [['-']*casualtyLevelsCount for i in range(inventoryclass_recordesCount)]
+                damageMatrixFormArr = [['-']*damageLevelsCount for i in range(inventoryclass_recordesCount)]
+                casualtyMatrixFormArr = [['-']*casualtyLevelsCount for i in range(inventoryclass_recordesCount)]
 
             for survey_record in survey_record_list:
 
@@ -310,17 +296,17 @@ class LocationPage (Pagebase):
                     if isInDamageMatrix:
                         surveyForm = self.DamageMatrixSurveyForm(instance=survey_record, prefix='damagecell' + str(survey_record.id))
                         # note order is [row][column]
-                        damageMatrixFormArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][damageLevelsList.index(survey_record.damagelevelid_id)] = surveyForm
+                        damageMatrixFormArr[inventoryclass_recordesList.index(survey_record.inventoryclassid_id)][damageLevelsList.index(survey_record.damagelevelid_id)] = surveyForm
                         surveyfields = self.createFormFieldStructure(surveyForm, survey_record )
                         # note order is [row][column]
-                        damageMatrixDisplayArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][damageLevelsList.index(survey_record.damagelevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
+                        damageMatrixDisplayArr[inventoryclass_recordesList.index(survey_record.inventoryclassid_id)][damageLevelsList.index(survey_record.damagelevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
                     if isInCasualtyMatrix:
                         surveyForm = self.CasualtyMatrixSurveyForm(instance=survey_record, prefix='casualtycell' + str(survey_record.id))
                         # note order is [row][column]
-                        casualtyMatrixFormArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = surveyForm
+                        casualtyMatrixFormArr[inventoryclass_recordesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = surveyForm
                         surveyfields = self.createFormFieldStructure(surveyForm, survey_record )
                         # note order is [row][column]
-                        casualtyMatrixDisplayArr[inventoryClassesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
+                        casualtyMatrixDisplayArr[inventoryclass_recordesList.index(survey_record.inventoryclassid_id)][casualtyLevelsList.index(survey_record.casualtylevelid_id)] = {'cell':surveyfields, 'id': survey_record.id }
                 else:
                     surveyForm = self.SurveyForm(instance=survey_record, prefix='surveyform' + str(survey_record.id))
                     surveyformlist.append(surveyForm)
@@ -329,7 +315,121 @@ class LocationPage (Pagebase):
                     self.page_context['surveyformlist'] = surveyformlist
                     self.page_context['surveyfieldlist'] = surveyfieldlist
 
-            self.page_context['inventoryclassesdict'] = inventoryClassesDict
+            ##########################################################################
+            # Set up inventory class record for input and display - non aggregate only
+            ##########################################################################
+
+            if not isAggregated:
+                inventoryclassid = survey_record.inventoryclassid_id
+                inventoryclass_record = Inventoryclass.objects.get(pk=inventoryclassid)
+                inventoryclassForm = self.InventoryclassForm(instance=inventoryclass_record, prefix='inventoryclassform')
+                inventoryclassfields = self.createFormFieldStructure( inventoryclassForm, inventoryclass_record, {'foreignkeylinkprefix': '/ecd'})
+                self.page_context['inventoryclassfields'] = inventoryclassfields # for display
+                self.page_context['inventoryclassform'] = inventoryclassForm # for editing
+
+                # Create taxonomy string - note this is a copy of the same code as inventoryclass.py
+                
+                # STRUCTURAL SYSTEM GROUP
+        
+                structsys = '' 
+                
+                if inventoryclass_record.mat_type_l_id != '0':
+                    structsys += inventoryclass_record.mat_type_l_id
+                
+                if inventoryclass_record.mas_rein_l_id != '0':
+                    structsys += '+' + inventoryclass_record.mas_rein_l_id
+        
+                if inventoryclass_record.mat_tech_l_id != '0':
+                    structsys += '+' + inventoryclass_record.mat_tech_l_id
+         
+                if inventoryclass_record.mas_mort_l_id != '0':
+                    structsys += '+' + inventoryclass_record.mas_mort_l_id
+                    
+                if inventoryclass_record.steel_conn_l_id != '0':
+                    structsys += '+' + inventoryclass_record.steel_conn_l_id
+                    
+                if inventoryclass_record.llrs_l_id != '0':
+                    structsys += '/' + inventoryclass_record.llrs_l_id
+        
+                if inventoryclass_record.llrs_duct_l_id != '0':
+                    structsys += '+' + inventoryclass_record.llrs_duct_l_id
+        
+                                    
+                structsys = 'DX/' + structsys + '/DY/' + structsys;
+                
+                # HEIGHT
+                
+                height = ''
+                if inventoryclass_record.story_ag_q_id != '0':
+                    height += inventoryclass_record.story_ag_q_id + ':'
+                    
+                if inventoryclass_record.story_ag_1 is not None:
+                    height += str(inventoryclass_record.story_ag_1)
+        
+                if inventoryclass_record.story_ag_2 is not None:
+                    height += ',' + str(inventoryclass_record.story_ag_2)
+        
+                
+                # DATE
+                
+                date = '';
+                if inventoryclass_record.yr_built_q_id != '0':
+                    date +=  inventoryclass_record.yr_built_q_id + ':'
+        
+                if inventoryclass_record.yr_built_1 is not None:
+                    date +=  str(inventoryclass_record.yr_built_1)
+        
+                if inventoryclass_record.yr_built_2 is not None:
+                    date +=  ',' + str(inventoryclass_record.yr_built_2)
+                
+                
+                # OCCUPANCY
+                occupancy='';
+                if inventoryclass_record.occupcy_id != '0':
+                    occupancy +=  inventoryclass_record.occupcy_id
+        
+                if inventoryclass_record.occpcy_dt_id != '0':
+                    occupancy +=   '+' + inventoryclass_record.occpcy_dt_id
+        
+                
+                # ROOF
+                roof='';
+                if inventoryclass_record.roofsysmat_id != '0':
+                    roof +=  inventoryclass_record.roofsysmat_id
+        
+                if inventoryclass_record.roofsystyp_id != '0':
+                    roof +=   '+' + inventoryclass_record.roofsystyp_id
+        
+                
+                # FLOOR
+                floor='';
+                if inventoryclass_record.floor_mat_id != '0':
+                    floor += inventoryclass_record.floor_mat_id
+        
+                if inventoryclass_record.floor_type_id != '0':
+                    floor += '+' + inventoryclass_record.floor_type_id
+        
+
+                # IRREGULARITY
+                irregularity = ''
+                if inventoryclass_record.str_irreg_id != '0':
+                    irregularity += inventoryclass_record.str_irreg_id
+        
+                if inventoryclass_record.str_hzir_p_id != '0':
+                    irregularity += '+IRPP:' + inventoryclass_record.str_hzir_p_id
+        
+                if inventoryclass_record.str_veir_p_id != '0':
+                    irregularity += '+IRVP:' + inventoryclass_record.str_veir_p_id
+        
+                taxonomy_string = structsys + '/' + height + '/' + date + '/' + occupancy + '/' + roof + '/' + floor + '/' + irregularity
+        
+                self.page_context['taxonomy_string'] = taxonomy_string
+                
+            else:
+                self.page_context['inventoryclassfields'] = ''
+                self.page_context['inventoryclassform'] = ''
+
+            self.page_context['inventoryclassesdict'] = inventoryclass_recordesDict
             self.page_context['damagelevelsdict'] = damageLevelsDict
             self.page_context['casualtylevelsdict'] = casualtyLevelsDict
 

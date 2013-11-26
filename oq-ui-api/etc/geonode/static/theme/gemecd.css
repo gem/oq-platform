@@ -427,6 +427,14 @@ div.locationpage table.formview td
 
 /* end of main body of location page */
 
+div.narrowtaxonomystring
+{
+    word-wrap: break-word;
+    border: solid 1px #ccc;
+    padding:2px;
+    margin-bottom:9px;
+}
+
 /* damage and casualty matrixes */
 
 table.matrixdisplay

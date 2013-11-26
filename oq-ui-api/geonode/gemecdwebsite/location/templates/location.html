@@ -145,6 +145,8 @@
                 {% if inventoryclassfields != '' %}
                     <div class="infocontainer">
                     <h4>Inventory Class details</h4>
+                    Taxonomy string
+                    <div class="narrowtaxonomystring">{{ taxonomy_string }}</div>
                     {% formviewastable field_structure=inventoryclassfields %}
                     </div>
                 {% endif %}
