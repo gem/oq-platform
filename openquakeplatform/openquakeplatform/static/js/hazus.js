@@ -30,7 +30,7 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     $(function() {
-        $( "#dialog" ).dialog({position: {my: "right top", at: "right bottom", of: button}});
+        $( "#dialog" ).dialog({height: 300, position: {at: "right bottom"}});
     });
 
     app.createMap();
@@ -58,13 +58,16 @@ var startApp = function() {
  
     var utfGridClickEvent = function() {
         utfGrid.on('mouseover', function (e) {
-            console.log(e);
+            
             if (e.data) {
-                document.getElementById('dialog').innerHTML = e.data.bf_json;
+                var b = e.data.bf_json;
+                var bfClean = b.replace(/[\{\}\/"]/g, "");
+                console.log(bfClean);
+
+                document.getElementById('dialog').innerHTML = "<b>" + e.data.name + " </b><br>"+ bfClean;
             } else {
                 document.getElementById('dialog').innerHTML = 'hover: nothing';
             }
-            console.log('mouseover: ' + e.data.bf_json);
         });
         utfGrid.on('mouseout', function (e) {
             //console.log('mouseout: ' + e.data);
