@@ -371,7 +371,7 @@ class Output(models.Model):
     @classmethod
     def bbox_for_output(cls, output_layer):
         return dict(
-            zip(["minx", "maxx", "miny", "maxy"],
+            zip(["minx", "miny", "maxx", "maxy"],
                 cls.objects.filter(output_layer=output_layer).extent()))
 
 
