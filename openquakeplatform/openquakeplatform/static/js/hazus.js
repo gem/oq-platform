@@ -68,12 +68,27 @@ var startApp = function() {
             inner = 70,
             color = d3.scale.category20c();
         
-        data = [{"label":keys[0], "value":values[0]}, 
+        foo = [{"label":keys[0], "value":values[0]}, 
                 {"label":keys[1], "value":values[1]}, 
                 {"label":keys[2], "value":values[2]},
                 {"label":keys[3], "value":values[3]},
                 {"label":keys[4], "value":values[4]},
-                {"label":keys[5], "value":values[5]}];
+                {"label":keys[5], "value":values[5]},
+                {"label":keys[6], "value":values[6]},
+                {"label":keys[7], "value":values[7]},
+                {"label":keys[8], "value":values[8]},
+                {"label":keys[9], "value":values[9]},
+                {"label":keys[10], "value":values[10]}];
+
+                console.log(foo);
+
+        data = [];
+
+        for (var i = 0; i < values.length; i++) {
+           data[i] = {"label":keys[i], "values":values[i]}; 
+        };
+
+        console.log(data);
         
         var total = d3.sum(data, function(d) {
             return d3.sum(d3.values(d));
