@@ -140,7 +140,7 @@ var startApp = function() {
                         
                         textTop.text( "TOTAL" )
                             .attr("y", -10);
-                        textBottom.text(total.toFixed(2) + "m");
+                        textBottom.text(total.toFixed(2));
                     });
 
         
