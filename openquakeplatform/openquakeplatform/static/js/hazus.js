@@ -30,7 +30,7 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     $(function() {
-        $( "#dialog" ).dialog({height: 350, width: 350, position: {at: "right bottom"}});
+        $( "#dialog" ).dialog({height: 600, width: 420, position: {at: "right bottom"}});
     });
 
     app.createMap();
@@ -62,80 +62,104 @@ var startApp = function() {
 
     function buildD3PieChart(keys, values) {
 
-        var width = 300,
-        height = 300,
-        radius = Math.min(width, height) / 2 - 10;
-    
-        //var data = d3.range(10).map(Math.random).sort(d3.descending);
-        //console.log(data);
+        var w = 400,
+            h = 400,
+            r = 180,
+            inner = 70,
+            color = d3.scale.category20c();
         
-        var color = d3.scale.category20();
+        data = [{"label":keys[0], "value":values[0]}, 
+                {"label":keys[1], "value":values[1]}, 
+                {"label":keys[2], "value":values[2]},
+                {"label":keys[3], "value":values[3]},
+                {"label":keys[4], "value":values[4]},
+                {"label":keys[5], "value":values[5]}];
+        
+        var total = d3.sum(data, function(d) {
+            return d3.sum(d3.values(d));
+        });
+        
+        var vis = d3.select("#dialog")
+            .append("svg:svg")
+            .data([data])
+            .attr("width", w)
+            .attr("height", h)
+            .append("svg:g")
+            .attr("transform", "translate(" + r * 1.1 + "," + r * 1.1 + ")")
+        
+        var textTop = vis.append("text")
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle")
+            .attr("class", "textTop")
+            .text( "TOTAL" )
+            .attr("y", -10),
+        
+        textBottom = vis.append("text")
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle")
+            .attr("class", "textBottom")
+            .text(total.toFixed(2))
+            .attr("y", 10);
         
         var arc = d3.svg.arc()
-            .outerRadius(radius);
+            .innerRadius(inner)
+            .outerRadius(r);
         
-        var pie = d3.layout.pie();
-        
-        var svg = d3.select("#dialog").append("svg")
-            .datum(values)
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        
-        var arcs = svg.selectAll("g.arc")
+        var arcOver = d3.svg.arc()
+            .innerRadius(inner + 5)
+            .outerRadius(r + 5);
+         
+        var pie = d3.layout.pie()
+            .value(function(d) { return d.value; });
+         
+        var arcs = vis.selectAll("g.slice")
             .data(pie)
-            .enter().append("g")
-            .attr("class", "arc");
-
-         // Add a legend.
-        var legend = svg.selectAll("g.legend")
-            .data(keys)
-            .enter().append("svg:g")
+            .enter()
+                .append("svg:g")
+                    .attr("class", "slice")
+                    .on("mouseover", function(d) {
+                        d3.select(this).select("path").transition()
+                            .duration(200)
+                            .attr("d", arcOver)
+                        
+                        textTop.text(d3.select(this).datum().data.label)
+                            .attr("y", -10);
+                        textBottom.text(d3.select(this).datum().data.value.toFixed(2))
+                            .attr("y", 10);
+                    })
+                    .on("mouseout", function(d) {
+                        d3.select(this).select("path").transition()
+                            .duration(100)
+                            .attr("d", arc);
+                        
+                        textTop.text( "TOTAL" )
+                            .attr("y", -10);
+                        textBottom.text(total.toFixed(2) + "m");
+                    });
+        
+        arcs.append("svg:path")
+            .attr("fill", function(d, i) { return color(i); } )
+            .attr("d", arc);
+        
+        var legend = d3.select("#dialog").append("svg")
             .attr("class", "legend")
-
-        legend.append("svg:line")
-            .attr("class", String)
-            .attr("x2", -28)
-            .attr("y2", 0)
-            .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
+            .attr("width", r)
+            .attr("height", r * 2)
+            .selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
         
-        legend.append("svg:text")
-            .attr("x", -125)
-            .attr("y", -510)
-            .attr("dy", ".31em")
-            .text("test");
-
-        legend.append("svg:text")
-            .attr("x", -125)
-            .attr("y", -510)
-            .attr("dy", ".31em")
-            .text(function(d) { return d; })
-            .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
+        legend.append("rect")
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", function(d, i) { return color(i); });
         
-        arcs.append("path")
-            .attr("fill", function(d, i) { return color(i); })
-            .transition()
-            //.ease("bounce")
-            //.duration(2000)
-            .attrTween("d", tweenPie)
-            .transition()
-            //.ease("elastic")
-            //.delay(function(d, i) { return 2000 + i * 50; })
-            //.duration(750)
-            .attrTween("d", tweenDonut);
-        
-        function tweenPie(b) {
-          b.innerRadius = 0;
-          var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
-          return function(t) { return arc(i(t)); };
-        }
-        
-        function tweenDonut(b) {
-          b.innerRadius = radius * .6;
-          var i = d3.interpolate({innerRadius: 0}, b);
-          return function(t) { return arc(i(t)); };
-        }
+        legend.append("text")
+            .attr("x", 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .text(function(d) { return d.label; });
     }
 
     var utfGridClickEvent = function() {
