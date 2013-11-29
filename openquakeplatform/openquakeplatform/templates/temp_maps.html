@@ -1,3 +1,12 @@
+<!--********
+  *********
+  *********
+  This is a temporary pages TODO remove it when the customizable 
+  categories can be implemented
+  *********
+  *********
+-->
+
 {% extends "site_base.html" %}
 {% load i18n %}
 {% load url from future %}
@@ -19,7 +28,7 @@
       </div>
       <div id="oq-body-heading">
         {% block oq_body_heading %}
-          <h1>{% trans "OpenQuake Tools" %}</h1>
+          <h1>{% trans "OpenQuake Maps" %}</h1>
           <br />
         {% endblock oq_body_heading %}
       </div>
@@ -27,51 +36,13 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
-            The OpenQuake Platform Tools are ...<br/><br/>
 
-            <h2><img src="../static/img/OQ-Suite-View.png" width="120px">SVIR</h2>
-            <a href="{% url 'svir_viewer' %}">SVIR Viewer</a></li> <br/>
-            In additon there are offline QGIS tools...
+            <a href="{% url 'hazard_models' %}">Hazard Models</a></li> <br/>
             <br/><br/>
 
-            <h2><img src="../static/img/OQ-Suite-Capture.png" width="120px">Faulted Earth upload tool</h2>
-            <a href="{% url 'faulted_earth' %}">Faulted Earth</a></li> <br/> Some description of the faulted Earth tool...   <br/><br/>
-
-            <h2><img src="../static/img/OQ-Suite-Explore.png" width="120px">Exposure Export</h2>
-            <a href="{% url 'exposure' %}">Exposure Export</a></li> <br/>
-
-            Some description...<br/><br/>
-
-            <h2><img src="../static/img/OQ-Suite-Calculate.png" width="120px">Calculate</h2>
-            <a href="{% url 'calculate' %}">Calculate</a></li> <br/>
-
-            Powered by the OpenQuake Engine, users are be able to carry out seismic hazard, physical and integrated risk assessment in a variety of ways.
+            <a href="{% url 'explore_leaflet' %}">Explore GEM Layers</a></li> <br/>
             <br/><br/>
 
-            <h2><img src="../static/img/OQ-Suite-Capture.png" width="120px">Consequences</h2>
-
-            A link... </br>
-            
-            Some description...<br/><br/>
-
-            <br/><br>
-            <h2><img src="../static/img/OQ-Suite-Capture.png" width="120px">Download software tools</h2>
-
-            <a href="{% url 'tools' %}">oq-engine</a></li> <br/>
-            <a href="{% url 'tools' %}">oq- for desktop</a></li> <br/>
-            <a href="{% url 'tools' %}">IDCT 4 Win, SIDD</a></li> <br/>
-            <a href="{% url 'tools' %}">TAXT</a></li> <br/>
-            <a href="{% url 'tools' %}">oq-platform</a></li> <br/>
-            <a href="{% url 'tools' %}">Link to Google Play for IDCT Android</a></li> <br/>
-            <a href="{% url 'tools' %}">Links/Instructions for installing QGIS plugins: BREC, SVIR, Exposure...</a></li> <br/>
-
-          <br/><br/>
-
-            <br/><br>
-            <!-- Nice big OpenQuake logo here -->
-            <!-- calculate, share, explore -->
-            <img src="../static/img/OQ-header-Logo.png">
-            <br/>
           </div>
         {% endblock oq_body_content %}
       </div>
