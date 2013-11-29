@@ -149,13 +149,13 @@ var startApp = function() {
             .attr("d", arc);
         
         var legend = d3.select("#dialog").append("svg")
-            .attr("class", "legend")
+            .attr("class", "legend-hazus")
             .attr("width", 400)
             .attr("height", 40)
             .selectAll("g")
             .data(data)
             .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(" + i * 30 + ",0)"; });
+            .attr("transform", function(d, i) { return "translate(" + i * 27 + ",0)"; });
         
         legend.append("rect")
             .attr("width", 18)
