@@ -656,9 +656,7 @@ var startApp = function() {
                 for (var i in values) {
                     if (keys[i] != "country" && keys[i] != "region") {
 
-                        var a = keys[i].replace(/rr_/, "Regional Rank ");
-                        var b = a.replace(/r_/, "Rank ");
-                        var c = b.replace(/_/g, " ");
+                        var c = keys[i].replace(/_/g, " ");
                         
                         var value = values[i];
 
@@ -686,12 +684,12 @@ var startApp = function() {
                         } 
                 });
 
-                console.log(dataFormated);
-
-                attrSelectionArray = $('.attributeOption:checkbox:checked');
-                for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
-                    attrSelection[i] = attrSelectionArray[i].name;
-                };
+                if(attrSelection.length == 0) {
+                    attrSelectionArray = $('.attributeOption:checkbox:checked');
+                    for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
+                        attrSelection[i] = attrSelectionArray[i].name;
+                    };
+                }
 
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {
