@@ -8,9 +8,9 @@ from django.db import models
 
 
 class Lookupassetclass(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, unique=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupassetclass'
         ordering = ['weight']
@@ -19,9 +19,9 @@ class Lookupassetclass(models.Model):
 
 
 class Lookupmagnitudeunit(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupmagnitudeunit'
         ordering = ['weight']
@@ -30,9 +30,9 @@ class Lookupmagnitudeunit(models.Model):
 
 
 class Lookupqualitymetric(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupqualitymetric'
         ordering = ['weight']
@@ -41,9 +41,9 @@ class Lookupqualitymetric(models.Model):
 
 
 class Lookupregion(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupregion'
         ordering = ['weight']
@@ -52,9 +52,9 @@ class Lookupregion(models.Model):
 
 
 class Lookupstatus(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupstatus'
         ordering = ['weight']
@@ -63,9 +63,9 @@ class Lookupstatus(models.Model):
 
 
 class Lookupstudytype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupstudytype'
         ordering = ['weight']
@@ -74,9 +74,9 @@ class Lookupstudytype(models.Model):
 
 
 class Lookupunit(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupunit'
         ordering = ['weight']
@@ -85,10 +85,10 @@ class Lookupunit(models.Model):
 
 
 class Lookupassettype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
-    parentid = models.ForeignKey(Lookupassetclass, db_column='parentid')
+    id = models.CharField(max_length=10, primary_key=True, unique=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
+    parentid = models.ForeignKey(Lookupassetclass, db_column='parentid', null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupassettype'
         ordering = ['weight']
@@ -97,10 +97,10 @@ class Lookupassettype(models.Model):
 
 
 class Lookupassetsubtype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
-    parentid = models.ForeignKey(Lookupassettype, db_column='parentid')
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
+    parentid = models.ForeignKey(Lookupassettype, db_column='parentid', null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupassetsubtype'
         ordering = ['weight']
@@ -109,10 +109,10 @@ class Lookupassetsubtype(models.Model):
 
 
 class Lookupassetconstruction(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
-    parentid = models.ForeignKey(Lookupassetsubtype, db_column='parentid')
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
+    parentid = models.ForeignKey(Lookupassetsubtype, db_column='parentid', null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupassetconstruction'
         ordering = ['weight']
@@ -121,9 +121,9 @@ class Lookupassetconstruction(models.Model):
 
 
 class Lookupintensityzone(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupintensityzone'
         ordering = ['weight']
@@ -132,9 +132,9 @@ class Lookupintensityzone(models.Model):
 
 
 class Lookupmetric(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupmetric'
         ordering = ['weight']
@@ -143,9 +143,9 @@ class Lookupmetric(models.Model):
 
 
 class Lookupsoilclass(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupsoilclass'
         ordering = ['weight']
@@ -154,9 +154,9 @@ class Lookupsoilclass(models.Model):
 
 
 class Lookuptypeofdamage(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuptypeofdamage'
         ordering = ['weight']
@@ -165,9 +165,9 @@ class Lookuptypeofdamage(models.Model):
 
 
 class Lookupyesno(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True, blank=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupyesno'
         ordering = ['weight']
@@ -235,9 +235,9 @@ class Lookupcityscalecode(models.Model):
 
 # this table ultimately to be removed as it has been superceded
 class Lookupdetailcode(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=100, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupdetailcode'
         ordering = ['weight']
@@ -246,9 +246,9 @@ class Lookupdetailcode(models.Model):
 
 
 class Lookuporientationcode(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuporientationcode'
         ordering = ['weight']
@@ -257,9 +257,9 @@ class Lookuporientationcode(models.Model):
 
 
 class Lookupphotoqualitycode(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupphotoqualitycode'
         ordering = ['weight']
@@ -268,9 +268,9 @@ class Lookupphotoqualitycode(models.Model):
 
 
 class Lookuptimeofdaycode(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuptimeofdaycode'
         ordering = ['weight']
@@ -279,9 +279,9 @@ class Lookuptimeofdaycode(models.Model):
 
 
 class Lookupphotographerprofessioncode(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=10, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupphotographerprofessioncode'
         ordering = ['weight']
@@ -293,9 +293,9 @@ class Lookupphotographerprofessioncode(models.Model):
 # end of photo related lookup tables
 
 class Lookupmaterialtype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupmaterialtype'
         ordering = ['weight']
@@ -304,9 +304,9 @@ class Lookupmaterialtype(models.Model):
 
 
 class Lookupmaterialtechnology(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupmaterialtechnology'
         ordering = ['weight']
@@ -315,9 +315,9 @@ class Lookupmaterialtechnology(models.Model):
 
 
 class Lookupmasonrymortartype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupmasonrymortartype'
         ordering = ['weight']
@@ -326,9 +326,9 @@ class Lookupmasonrymortartype(models.Model):
 
 
 class Lookupmasonryreinforcement(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupmasonryreinforcement'
         ordering = ['weight']
@@ -337,9 +337,9 @@ class Lookupmasonryreinforcement(models.Model):
 
 
 class Lookupsteelconnectiontype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupsteelconnectiontype'
         ordering = ['weight']
@@ -348,9 +348,9 @@ class Lookupsteelconnectiontype(models.Model):
 
 
 class Lookuploadresistingsystem(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuploadresistingsystem'
         ordering = ['weight']
@@ -359,9 +359,9 @@ class Lookuploadresistingsystem(models.Model):
 
 
 class Lookupductility(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupductility'
         ordering = ['weight']
@@ -369,9 +369,9 @@ class Lookupductility(models.Model):
         return  self.name
 
 class Lookuproofmaterial(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuproofmaterial'
         ordering = ['weight']
@@ -380,9 +380,9 @@ class Lookuproofmaterial(models.Model):
 
 
 class Lookuprooftype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuprooftype'
         ordering = ['weight']
@@ -391,9 +391,9 @@ class Lookuprooftype(models.Model):
 
 
 class Lookupfloormaterial(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupfloormaterial'
         ordering = ['weight']
@@ -402,9 +402,9 @@ class Lookupfloormaterial(models.Model):
 
 
 class Lookupfloortype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupfloortype'
         ordering = ['weight']
@@ -413,9 +413,9 @@ class Lookupfloortype(models.Model):
 
 
 class Lookupheight(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupheight'
         ordering = ['weight']
@@ -424,9 +424,9 @@ class Lookupheight(models.Model):
 
 
 class Lookupdateofconstruction(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupdateofconstruction'
         ordering = ['weight']
@@ -435,9 +435,9 @@ class Lookupdateofconstruction(models.Model):
 
 
 class Lookupirregularityqualifier(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupirregularityqualifier'
         ordering = ['weight']
@@ -446,9 +446,9 @@ class Lookupirregularityqualifier(models.Model):
 
 
 class Lookupirregularitytype(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupirregularitytype'
         ordering = ['weight']
@@ -457,9 +457,9 @@ class Lookupirregularitytype(models.Model):
 
 
 class Lookuphorizontalirregularity(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookuphorizontalirregularity'
         ordering = ['weight']
@@ -468,9 +468,9 @@ class Lookuphorizontalirregularity(models.Model):
 
 
 class Lookupverticalirregularity(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupverticalirregularity'
         ordering = ['weight']
@@ -479,9 +479,9 @@ class Lookupverticalirregularity(models.Model):
 
 
 class Lookupoccupancy(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupoccupancy'
         ordering = ['weight']
@@ -490,9 +490,9 @@ class Lookupoccupancy(models.Model):
 
 
 class Lookupoccupancydetail(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
+    id = models.CharField(max_length=20, primary_key=True, )
+    name = models.CharField(max_length=255, blank=True, )
+    weight = models.IntegerField(null=True, blank=True, )
     class Meta:
         db_table = u'econd\".\"lookupoccupancydetail'
         ordering = ['weight']
