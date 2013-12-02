@@ -44,15 +44,15 @@ var layersByCat = {};
 var layerNames = {};
 
 // Grandpapa array
-var array = [];
+var chartArray = [];
 
 // Parent objs on for the selected attributes
+var obj0 = {};
 var obj1 = {};
 var obj2 = {};
 var obj3 = {};
 var obj4 = {};
 var obj5 = {};
-var obj6 = {};
 var chart;
 
 var baseMapUrl = (
@@ -345,69 +345,70 @@ var startApp = function() {
 
     function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
 
-        obj1.country = countriesArray[0];
-        obj1[attrSelection[0]] = selectedValue1[0];
-        obj1[attrSelection[1]] = selectedValue2[0];
-        obj1[attrSelection[2]] = selectedValue3[0];
-        obj1[attrSelection[3]] = selectedValue4[0];
-        obj1[attrSelection[4]] = selectedValue5[0];
-        obj1[attrSelection[5]] = selectedValue6[0];
+        var numberOfCountries = $("#chart-var-numb option:selected").val();
 
-        obj2.country = countriesArray[1];
-        obj2[attrSelection[0]] = selectedValue1[1];
-        obj2[attrSelection[1]] = selectedValue2[1];
-        obj2[attrSelection[2]] = selectedValue3[1];
-        obj2[attrSelection[3]] = selectedValue4[1];
-        obj2[attrSelection[4]] = selectedValue5[1];
-        obj2[attrSelection[5]] = selectedValue6[1];
+        obj0.country = countriesArray[0];
+        obj0[attrSelection[0]] = selectedValue1[0];
+        obj0[attrSelection[1]] = selectedValue2[0];
+        obj0[attrSelection[2]] = selectedValue3[0];
+        obj0[attrSelection[3]] = selectedValue4[0];
+        obj0[attrSelection[4]] = selectedValue5[0];
+        obj0[attrSelection[5]] = selectedValue6[0];
 
-        obj3.country = countriesArray[2];
-        obj3[attrSelection[0]] = selectedValue1[2];
-        obj3[attrSelection[1]] = selectedValue2[2];
-        obj3[attrSelection[2]] = selectedValue3[2];
-        obj3[attrSelection[3]] = selectedValue4[2];
-        obj3[attrSelection[4]] = selectedValue5[2];
-        obj3[attrSelection[5]] = selectedValue6[2];
 
-        obj4.country = countriesArray[3];
-        obj4[attrSelection[0]] = selectedValue1[3];
-        obj4[attrSelection[1]] = selectedValue2[3];
-        obj4[attrSelection[2]] = selectedValue3[3];
-        obj4[attrSelection[3]] = selectedValue4[3];
-        obj4[attrSelection[4]] = selectedValue5[3];
-        obj4[attrSelection[5]] = selectedValue6[3];
+        obj1.country = countriesArray[1];
+        obj1[attrSelection[0]] = selectedValue1[1];
+        obj1[attrSelection[1]] = selectedValue2[1];
+        obj1[attrSelection[2]] = selectedValue3[1];
+        obj1[attrSelection[3]] = selectedValue4[1];
+        obj1[attrSelection[4]] = selectedValue5[1];
+        obj1[attrSelection[5]] = selectedValue6[1];
 
-        obj5.country = countriesArray[4];
-        obj5[attrSelection[0]] = selectedValue1[4];
-        obj5[attrSelection[1]] = selectedValue2[4];
-        obj5[attrSelection[2]] = selectedValue3[4];
-        obj5[attrSelection[3]] = selectedValue4[4];
-        obj5[attrSelection[4]] = selectedValue5[4];
-        obj5[attrSelection[5]] = selectedValue6[4];
+        obj2.country = countriesArray[2];
+        obj2[attrSelection[0]] = selectedValue1[2];
+        obj2[attrSelection[1]] = selectedValue2[2];
+        obj2[attrSelection[2]] = selectedValue3[2];
+        obj2[attrSelection[3]] = selectedValue4[2];
+        obj2[attrSelection[4]] = selectedValue5[2];
+        obj2[attrSelection[5]] = selectedValue6[2];
 
-        obj6.country = countriesArray[5];
-        obj6[attrSelection[0]] = selectedValue1[5];
-        obj6[attrSelection[1]] = selectedValue2[5];
-        obj6[attrSelection[2]] = selectedValue3[5];
-        obj6[attrSelection[3]] = selectedValue4[5];
-        obj6[attrSelection[4]] = selectedValue5[5];
-        obj6[attrSelection[5]] = selectedValue6[5];
-    
-        array[0] = obj1;
-        array[1] = obj2;
-        array[2] = obj3;
-        array[3] = obj4;
-        array[4] = obj5;
-        array[5] = obj6;
+        obj3.country = countriesArray[3];
+        obj3[attrSelection[0]] = selectedValue1[3];
+        obj3[attrSelection[1]] = selectedValue2[3];
+        obj3[attrSelection[2]] = selectedValue3[3];
+        obj3[attrSelection[3]] = selectedValue4[3];
+        obj3[attrSelection[4]] = selectedValue5[3];
+        obj3[attrSelection[5]] = selectedValue6[3];
 
-        console.log(selectedValue1);
+        obj4.country = countriesArray[4];
+        obj4[attrSelection[0]] = selectedValue1[4];
+        obj4[attrSelection[1]] = selectedValue2[4];
+        obj4[attrSelection[2]] = selectedValue3[4];
+        obj4[attrSelection[3]] = selectedValue4[4];
+        obj4[attrSelection[4]] = selectedValue5[4];
+        obj4[attrSelection[5]] = selectedValue6[4];
 
-        console.log(obj1);
+        obj5.country = countriesArray[5];
 
-        console.log(array);
+        obj5[attrSelection[0]] = selectedValue1[5];
+        obj5[attrSelection[1]] = selectedValue2[5];
+        obj5[attrSelection[2]] = selectedValue3[5];
+        obj5[attrSelection[3]] = selectedValue4[5];
+        obj5[attrSelection[4]] = selectedValue5[5];
+        obj5[attrSelection[5]] = selectedValue6[5];
+
+        chartArray.splice(0,10);        
+
+        for (var i=0; i<numberOfCountries; i++) {
+            chartArray[i] = window["obj" + i];
+        }
 
         var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
             attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
+ 
+        for (var i=0; i<numberOfCountries; i++) {
+            country.splice(numberOfCountries,10);
+        }
 
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],
@@ -431,10 +432,10 @@ var startApp = function() {
             // Create a scale and brush for each trait.
             attributes.forEach(function(d) {
                 // Coerce values to numbers.
-                array.forEach(function(p) { p[d] = +p[d]; });
+                chartArray.forEach(function(p) { p[d] = +p[d]; });
 
                 y[d] = d3.scale.linear()
-                    .domain(d3.extent(array, function(p) { return p[d]; }))
+                    .domain(d3.extent(chartArray, function(p) { return p[d]; }))
                     .range([h, 0]);
           
                 y[d].brush = d3.svg.brush()
@@ -471,7 +472,7 @@ var startApp = function() {
             foreground = svg.append("svg:g")
                 .attr("class", "foreground")
                 .selectAll("path")
-                .data(array)
+                .data(chartArray)
                 .enter().append("svg:path")
                 .attr("d", path)
                 .attr("class", function(d) { return d.country; });
