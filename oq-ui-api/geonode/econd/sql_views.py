@@ -8,13 +8,13 @@ from django.db import models
 
 
 class EventsQuick ( models.Model ):
-    id = models.IntegerField(primary_key=True,db_column='eventid') # impersonate a primary key from the event id
-    eventname = models.CharField(max_length=255)
-    yearint = models.IntegerField()
-    country = models.CharField(max_length=255)
-    partner = models.CharField(max_length=255)
-    studyname = models.CharField(max_length=255)
-    studytypecode = models.CharField(max_length=10)
+    id = models.IntegerField(primary_key=True, db_column='eventid', null=True, blank=True, ) # impersonate a primary key from the event id
+    eventname = models.CharField(max_length=50, blank=True, )
+    yearint = models.IntegerField(null=True, blank=True, )
+    country = models.CharField(max_length=50, blank=True, )
+    partner = models.CharField(max_length=255, blank=True, )
+    studyname = models.CharField(max_length=255, blank=True, )
+    studytypecode = models.CharField(max_length=10, blank=True, )
 
     class Meta:
         db_table = u'econd\".\"gemecdevents_quick'     #note this is a VIEW
@@ -26,21 +26,21 @@ class EventsQuick ( models.Model ):
 
 
 class LocationsForJSON ( models.Model ):
-    id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
-    locationname = models.CharField(max_length=255)
-    photocount= models.IntegerField()
-    samplephotoid = models.ForeignKey( 'WebLibPhoto', db_column='samplephotoid',null=True, blank=True)  # returns the photo with the lowest id number to use as a sample iconic image
-    event = models.CharField(max_length=255)
-    country = models.CharField(max_length=255)
-    yearint = models.IntegerField()
-    study = models.CharField(max_length=255)
-    inventoryclassname = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-    unifieddamagelevelname = models.CharField(max_length=255)
-    assetclass = models.CharField(max_length=255)
-    assettype = models.CharField(max_length=255)
-    assetsubtype = models.CharField(max_length=255)
-    designcode = models.CharField(max_length=300)
+    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=10, blank=True, ) # impersonate a primary key from the location id
+    locationname = models.CharField(max_length=255, blank=True, )
+    photocount= models.IntegerField(null=True, blank=True, )
+    samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
+    event = models.CharField(max_length=50, blank=True, )
+    country = models.CharField(max_length=50, blank=True, )
+    yearint = models.IntegerField(null=True, blank=True, )
+    study = models.CharField(max_length=255, blank=True, )
+    inventoryclassname = models.CharField(max_length=255, blank=True, )
+    description = models.CharField(max_length=255, blank=True, )
+    unifieddamagelevelname = models.CharField(max_length=255, blank=True, )
+    assetclass = models.CharField(max_length=255, blank=True, )
+    assettype = models.CharField(max_length=255, blank=True, )
+    assetsubtype = models.CharField(max_length=255, blank=True, )
+    designcode = models.CharField(max_length=300, blank=True, )
 
     class Meta:
         db_table = u'econd\".\"gemecdlocationsforjson'     #note this is a VIEW
@@ -51,14 +51,14 @@ class LocationsForJSON ( models.Model ):
 
 
 class LocationsForJSONAggregated ( models.Model ):
-    id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
-    locationname = models.CharField(max_length=255)
-    photocount= models.IntegerField()
-    samplephotoid = models.ForeignKey( 'WebLibPhoto', db_column='samplephotoid',null=True, blank=True)  # returns the photo with the lowest id number to use as a sample iconic image
-    event = models.CharField(max_length=255)
-    country = models.CharField(max_length=255)
-    yearint = models.IntegerField()
-    study = models.CharField(max_length=255)
+    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=300, blank=True, ) # impersonate a primary key from the location id
+    locationname = models.CharField(max_length=255, blank=True, )
+    photocount= models.IntegerField(null=True, blank=True, )
+    samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
+    event = models.CharField(max_length=50, blank=True, )
+    country = models.CharField(max_length=50, blank=True, )
+    yearint = models.IntegerField(null=True, blank=True, )
+    study = models.CharField(max_length=255, blank=True, )
 
     class Meta:
         db_table = u'econd\".\"gemecdlocationsforjsonaggregated'     #note this is a VIEW
@@ -69,18 +69,18 @@ class LocationsForJSONAggregated ( models.Model ):
 
 
 class Locations ( models.Model ):
-    id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
-    locationname = models.CharField(max_length=255)
-    event = models.CharField(max_length=255)
-    eventid = models.IntegerField()
-    country = models.CharField(max_length=255)
-    yearint = models.IntegerField()
-    study = models.CharField(max_length=255)
-    studyid = models.IntegerField()
-    studytypecode = models.CharField(max_length=10)
-    locationaggregateflag = models.IntegerField()
-    numberofsurveyvalues = models.IntegerField()
-    photocount = models.IntegerField()
+    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=255, blank=True, ) # impersonate a primary key from the location id
+    locationname = models.CharField(max_length=255, blank=True, )
+    event = models.CharField(max_length=50, blank=True, )
+    eventid = models.IntegerField(null=True, blank=True, )
+    country = models.CharField(max_length=50, blank=True, )
+    yearint = models.IntegerField(null=True, blank=True, )
+    study = models.CharField(max_length=255, blank=True, )
+    studyid = models.IntegerField(null=True, blank=True, )
+    studytypecode = models.CharField(max_length=10, blank=True, )
+    locationaggregateflag = models.IntegerField(null=True, blank=True, )
+    numberofsurveyvalues = models.IntegerField(null=True, blank=True, )
+    photocount = models.IntegerField(null=True, blank=True, )
 
     class Meta:
         db_table = u'econd\".\"gemecdlocations'     #note this is a VIEW
@@ -91,17 +91,17 @@ class Locations ( models.Model ):
 
 
 class LocationsQuick ( models.Model ):
-    id = models.IntegerField(primary_key=True,db_column='locationid') # impersonate a primary key from the location id
-    locationname = models.CharField(max_length=255)
-    event = models.CharField(max_length=255)
-    eventid = models.IntegerField()
-    country = models.CharField(max_length=255)
-    yearint = models.IntegerField()
-    study = models.CharField(max_length=255)
-    studytypecode = models.CharField(max_length=10)
-    studyid = models.IntegerField()
-    locationaggregateflag = models.IntegerField() # 0 if a single; 1 if aggregated
-    numberofsurveyvalues = models.IntegerField() # number of survey values. If locationaggregateflag=0 this shoud be 1
+    id = models.IntegerField(primary_key=True, db_column='locationid', null=True, blank=True, ) # impersonate a primary key from the location id
+    locationname = models.CharField(max_length=255, blank=True, )
+    event = models.CharField(max_length=50, blank=True, )
+    eventid = models.IntegerField(null=True, blank=True, )
+    country = models.CharField(max_length=50, blank=True, )
+    yearint = models.IntegerField(null=True, blank=True, )
+    study = models.CharField(max_length=255, blank=True, )
+    studytypecode = models.CharField(max_length=10, blank=True, )
+    studyid = models.IntegerField(null=True, blank=True, )
+    locationaggregateflag = models.IntegerField(null=True, blank=True, ) # 0 if a single; 1 if aggregated
+    numberofsurveyvalues = models.IntegerField(null=True, blank=True, ) # number of survey values. If locationaggregateflag=0 this shoud be 1
 
     class Meta:
         db_table = u'econd\".\"gemecdlocations_quick'     #note this is a VIEW
