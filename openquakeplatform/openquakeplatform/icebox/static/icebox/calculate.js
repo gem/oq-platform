@@ -36,9 +36,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
    var CalculationTable = Backbone.View.extend(
      {
+       /* the html element where the table is rendered */
        el: $('#my-calculations'),
 
        initialize: function(options) {
+
+         /* whatever happens to any calculation, re-render the table */
          _.bindAll(this, 'render');
          this.calculations = options.calculations;
          this.calculations.bind('reset', this.render);
@@ -57,6 +60,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
          "change .btn-file input": "on_run_risk_queued"
        },
 
+       /* When an input dialog is opened, it is very important to not re-render the table */
        on_run_risk_clicked: function(e) {
          /* if a file input dialog has been opened do not refresh the calc table */
          this.can_be_rendered = false;

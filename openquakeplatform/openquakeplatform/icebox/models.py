@@ -17,6 +17,11 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+# FIXME. This module contains both the django model definition and the
+# workflow logic (e.g. process_layers, create_geoserver_layers, etc.).
+# We should move them to a separate file
+
+
 import json
 import uuid
 import collections
@@ -38,6 +43,7 @@ from openquakeplatform.icebox import fields
 from openquakeplatform import geoserver_api as geoserver
 
 logger = logging.getLogger(__name__)
+
 
 
 class Calculation(models.Model):
@@ -126,6 +132,8 @@ class Calculation(models.Model):
                     format="image/png",
             # The following commented line makes GeoExplorer break
             # group=layer.outputlayer.output_type.__name__,
+
+            # show only the first output layer
                     visibility=(i == 0),
                     transparent=True,
                     ows_url=ogc_server_settings.public_url + "wms",
@@ -250,6 +258,8 @@ class OutputLayer(models.Model):
 
         return view_name
 
+    # FIXME: this function is not called. Geoserver layers survive
+    # when a calculation is deleted!
     def delete_layer(self, view_name):
         geoserver.geoserver_rest(
             geoserver.LAYER_URL % view_name, method='DELETE',
@@ -348,6 +358,9 @@ class Output(models.Model):
         :returns: a list of `Attribute` instances holding the
         geoserver attributes of the vector layer associated with
         output of `cls`.
+
+        This is used to build the layer configuration to be pushed on
+        geoserver
         """
 
         raise NotImplementedError
