@@ -684,6 +684,15 @@ var startApp = function() {
                         } 
                 });
 
+                $(function() {
+                    var max = 6;
+                    var checkboxes = $('input[type="checkbox"]');
+                    checkboxes.change(function() {
+                        var current = checkboxes.filter(':checked').length;
+                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+                    });
+                });
+
                 if(attrSelection.length == 0) {
                     attrSelectionArray = $('.attributeOption:checkbox:checked');
                     for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
