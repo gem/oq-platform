@@ -1,0 +1,14 @@
+<!-- gridview tag start -->
+<div class="gridview {{ pageclass }} {{ tagclass }}" >
+    <div class="container">
+    {% for record in render_structure %}
+    {% for key,value in record.items  %}
+    <div class="cell"><a href="{{ target_url }}{{ key }}{{ linksuffix }}">
+    {% for html_definition in value %}
+        <div class="field">
+            <{{ html_definition.tag }}{% for key,value in html_definition.attributes.items %} {{ key }}="{{ value }}"{% endfor %}>{{ html_definition.value }}</{{ html_definition.tag }}>
+        </div>{% endfor %}
+    </a></div>{% endfor %}{% endfor %}
+    </div>
+</div>
+<!-- gridview tag end -->

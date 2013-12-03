@@ -1,0 +1,104 @@
+{% extends "gemecd_base.html" %}
+{% load generictablerenderer %}
+
+{% block leftpanel %}
+        <div id="ecd-leftpanel">
+            <div id="panelcontainer">
+                <h1>{{ paneltitle }}</h1>
+                <!--<form method="post">{% comment %}{% csrf_token %}{% endcomment %}
+                    {% comment %}{{ panelform.as_p }}{% endcomment %}
+                </form>-->
+               {% spanlist field_structure=eventslist %}
+
+                {% if user.is_authenticated %}
+               <h4>Upload</h4>
+               <a href="/ecd/uploadnrml">Upload XML file</a>
+               <a href="/ecd/uploadsqlite">Upload SQLite file</a>
+                {% endif %}
+            </div>
+
+        </div>
+
+{% endblock leftpanel %}
+
+{% block gemecd_map %}
+    <script type="text/javascript">
+        // GEM ECD specific mapping
+
+        // Use gemecd.org = it has full set of shakemaps
+        //shakemap = new L.TileLayer.WMS("http://gemecd.org:8080/geoserver/wms",
+        //    {
+        //       layers: 'gemecd:shakemapquery',
+        //        format: 'image/png',
+        //        transparent: true,
+        //        tiled: true,
+        //        opacity: 0.5
+        //    });
+
+        // Use ecd-dev.openquake,org it has only shakemap for L'Aquila, usgs id =  "200904060132"
+        shakemap = new L.TileLayer.WMS("http://ecd-dev.openquake.org/geoserver/geonode/wms",
+            {
+               layers: 'geonode:shakemapquery',
+                format: 'image/png',
+                transparent: true,
+                tiled: true,
+                opacity: 0.5
+            });
+
+        var customIcon = L.icon({
+            iconUrl: '{{ STATIC_URL }}marker-icon.png',
+            shadowUrl: '{{ STATIC_URL }}marker-shadow.png',
+            iconSize:     [12, 20], // size of the icon
+            shadowSize:   [20, 20], // size of the shadow
+            iconAnchor:   [6, 20], // point of the icon which will correspond to marker's location
+            shadowAnchor: [6, 20],  // the same for the shadow
+            popupAnchor:  [0, -20] // point from which the popup should open relative to the iconAnchor
+        });
+
+        var geojsonFeaturePoints = {{ geojson|safe }}
+
+        var polygonsLayer = new L.geoJson('',{}) // create null geoJson polygon layer
+        var polygonLayersList = [];  // need this variable even if there are no polygon layers
+        var polyCount = 0;
+
+        var pointsLayer = L.geoJson(geojsonFeaturePoints,
+                        {
+                            pointToLayer: function (feature, latlng)
+                            {
+                                {% if maptype == 'event' %}
+                                    year = parseInt(feature.properties.y);
+                                    if (year < 1900)
+                                    {
+                                        year = year + 100;
+                                    }
+                                    var mkr =  L.marker(latlng, {icon:customIcon, title:year + " " + feature.properties.n + " " + feature.properties.c });
+                                {% endif %}
+
+                                mkr.featureID = feature.properties.i;
+                                return mkr;
+                            },
+                            onEachFeature:function (feature, layer)
+                            {
+                                {% if maptype == 'event' %}
+                                    year = parseInt(feature.properties.y);
+                                    if (year < 1900)
+                                    {
+                                        year = year + 100;
+                                    }
+                                    html = '<span id="eventdate">' + year + '</span><span id="eventname">' + feature.properties.n + '</span><span id="eventcountry">' + feature.properties.c + '</span>';
+                                    html = html + '<span id="photocount">' + feature.properties.s + ' study(s)</span>'
+                                    html = html + '<a href=/ecd/eventoverview/' + feature.properties.i + '?{{ eventquerystring }}&zoomtoextent=True{{ filterstring }}>Locations on map &raquo;</a>';
+                                    //html = html + '<a href=/overview?{{ eventquerystring }}&zoomtoextent=True&eventid=' + feature.properties.i + '&tab=photos>Photos &raquo;</a>';
+                                    html = '<div id="eventpopupcontainer">\n' + html + '</div>\n'
+                                    layer.bindPopup( html );
+                                {% endif %}
+
+                            }
+                        }
+                );
+        // set up the bounds group which defines how the map is fitted
+        var boundsGroup = new L.FeatureGroup([pointsLayer]);
+
+        //end of GEM ECD mapping
+    </script>
+{% endblock gemecd_map %}
