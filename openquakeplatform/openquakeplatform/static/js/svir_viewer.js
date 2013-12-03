@@ -655,8 +655,8 @@ var startApp = function() {
                 for (var i in values) {
                     if (keys[i] != "country" && keys[i] != "region") {
 
-                        var a = keys[i].replace(/rr_/g, "Regional Rank ");
-                        var b = a.replace(/r_/g, "Rank ");
+                        var a = keys[i].replace(/rr_/, "Regional Rank ");
+                        var b = a.replace(/r_/, "Rank ");
                         var c = b.replace(/_/g, " ");
                         
                         var value = values[i];
@@ -684,6 +684,8 @@ var startApp = function() {
                             attrSelection.pop();
                         } 
                 });
+
+                console.log(dataFormated);
 
                 attrSelectionArray = $('.attributeOption:checkbox:checked');
                 for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
