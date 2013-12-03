@@ -5,43 +5,43 @@ import platform
 # Models that support basic content management. Stored in the public schema along with admin related tables
 
 class PhotologueWatermark(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True, )
+    id = models.IntegerField(primary_key=True, )
     name = models.CharField(max_length=30, unique=True, )
-    description = models.TextField(max_length=30, unique=True, )
-    image = models.CharField(max_length=100, unique=True, )
-    style = models.CharField(max_length=5, unique=True, )
-    opacity = models.FloatField(max_length=5, unique=True, )
+    description = models.TextField()
+    image = models.CharField(max_length=100, )
+    style = models.CharField(max_length=5, )
+    opacity = models.FloatField()
     class Meta:
         db_table = u'photologue_watermark'
         managed=False
 
 class PhotologuePhotoeffect(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True, )
+    id = models.IntegerField(primary_key=True, )
     name = models.CharField(max_length=30, unique=True, )
-    description = models.TextField(max_length=30, unique=True, )
-    transpose_method = models.CharField(max_length=15, unique=True, )
-    color = models.FloatField(max_length=15, unique=True, )
-    brightness = models.FloatField(max_length=15, unique=True, )
-    contrast = models.FloatField(max_length=15, unique=True, )
-    sharpness = models.FloatField(max_length=15, unique=True, )
-    filters = models.CharField(max_length=200, unique=True, )
-    reflection_size = models.FloatField(max_length=200, unique=True, )
-    reflection_strength = models.FloatField(max_length=200, unique=True, )
-    background_color = models.CharField(max_length=7, unique=True, )
+    description = models.TextField()
+    transpose_method = models.CharField(max_length=15, )
+    color = models.FloatField()
+    brightness = models.FloatField()
+    contrast = models.FloatField()
+    sharpness = models.FloatField()
+    filters = models.CharField(max_length=200, )
+    reflection_size = models.FloatField()
+    reflection_strength = models.FloatField()
+    background_color = models.CharField(max_length=7, )
     class Meta:
         db_table = u'photologue_photoeffect'
         managed=False
 
 class PhotologuePhotosize(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True, )
+    id = models.IntegerField(primary_key=True, )
     name = models.CharField(max_length=40, unique=True, )
-    width = models.IntegerField(max_length=40, unique=True, )
-    height = models.IntegerField(max_length=40, unique=True, )
-    quality = models.IntegerField(max_length=40, unique=True, )
-    upscale = models.BooleanField(max_length=40, unique=True, )
-    crop = models.BooleanField(max_length=40, unique=True, )
-    pre_cache = models.BooleanField(max_length=40, unique=True, )
-    increment_count = models.BooleanField(max_length=40, unique=True, )
+    width = models.IntegerField()
+    height = models.IntegerField()
+    quality = models.IntegerField()
+    upscale = models.BooleanField()
+    crop = models.BooleanField()
+    pre_cache = models.BooleanField()
+    increment_count = models.BooleanField()
     effect = models.ForeignKey(PhotologuePhotoeffect, null=True, blank=True, )
     watermark = models.ForeignKey(PhotologueWatermark, null=True, blank=True, )
     class Meta:
@@ -55,31 +55,31 @@ class PhotologuePhotosize(models.Model):
         return  self.name
 
 class PhotologuePhoto(models.Model):
-    id = models.IntegerField(primary_key=True, null=True, blank=True, )
-    image = models.CharField(max_length=100, primary_key=True, null=True, blank=True, )
-    date_taken = models.DateTimeField(null=True, blank=True, primary_key=True, )
-    view_count = models.IntegerField(primary_key=True, null=True, blank=True, )
-    crop_from = models.CharField(max_length=10, null=True, blank=True, )
+    id = models.IntegerField(primary_key=True, )
+    image = models.CharField(max_length=100, )
+    date_taken = models.DateTimeField(null=True, blank=True, )
+    view_count = models.IntegerField()
+    crop_from = models.CharField(max_length=10, )
     effect = models.ForeignKey(PhotologuePhotoeffect, null=True, blank=True, )
-    title = models.CharField(max_length=255, unique=True, null=True, blank=True, )
-    title_slug = models.CharField(max_length=50, unique=True, null=True, blank=True, )
-    caption = models.TextField(max_length=255, blank=True, blank=True, )
-    date_added = models.DateTimeField(null=True, blank=True, blank=True, )
-    is_public = models.BooleanField(null=True, blank=True, blank=True, )
-    tags = models.CharField(max_length=255, blank=True, blank=True, )
+    title = models.CharField(max_length=255, unique=True, )
+    title_slug = models.CharField(max_length=50, unique=True, )
+    caption = models.TextField(max_length=255, blank=True, )
+    date_added = models.DateTimeField(null=True, blank=True, )
+    is_public = models.BooleanField()
+    tags = models.CharField(max_length=255, blank=True, )
     class Meta:
         db_table = u'photologue_photo'
         managed=False
 
 
 class WebLibPhoto(ImageModel):
-    id = models.IntegerField(primary_key=True, blank=True, blank=True, )
-    title = models.CharField(max_length=255, unique=True, blank=True, blank=True, )
-    title_slug = models.CharField(max_length=50, unique=True, blank=True, blank=True, )
-    caption = models.TextField(max_length=255, blank=True, blank=True, )
-    date_added = models.DateTimeField(null=True, blank=True, blank=True, )
-    is_public = models.BooleanField(null=True, blank=True, blank=True, )
-    tags = models.CharField(max_length=255, blank=True, blank=True, )
+    id = models.IntegerField(primary_key=True, )
+    title = models.CharField(max_length=255, unique=True, )
+    title_slug = models.CharField(max_length=50, unique=True, )
+    caption = models.TextField(max_length=255, blank=True, )
+    date_added = models.DateTimeField(null=True, blank=True, )
+    is_public = models.BooleanField()
+    tags = models.CharField(max_length=255, blank=True, )
 
     class Meta:
         db_table = u'photologue_photo'
@@ -127,10 +127,10 @@ class Page(models.Model):
         return self.name
 
 class Link(models.Model):
-    id = models.AutoField(primary_key=True, blank=True, blank=True, )
-    parentid = models.IntegerField(null=True, blank=True, blank=True, )
-    parenttype = models.CharField(max_length=25, blank=True, blank=True, )
-    name = models.CharField(max_length=255, blank=True, blank=True, )
+    id = models.AutoField(primary_key=True, )
+    parentid = models.IntegerField(null=True, blank=True, )
+    parenttype = models.CharField(max_length=25, blank=True, )
+    name = models.CharField(max_length=255, )
     subtitle = models.CharField(max_length=255, blank=True, )
     url = models.CharField(max_length=600, blank=True, )
     year = models.IntegerField(null=True, blank=True, )

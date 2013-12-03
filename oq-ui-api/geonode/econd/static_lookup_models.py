@@ -88,7 +88,7 @@ class Lookupassettype(models.Model):
     id = models.CharField(max_length=10, primary_key=True, unique=True, )
     name = models.CharField(max_length=255, blank=True, )
     weight = models.IntegerField(null=True, blank=True, )
-    parentid = models.ForeignKey(Lookupassetclass, db_column='parentid', null=True, blank=True, )
+    parentid = models.ForeignKey(Lookupassetclass, db_column='parentid', )
     class Meta:
         db_table = u'econd\".\"lookupassettype'
         ordering = ['weight']
@@ -100,7 +100,7 @@ class Lookupassetsubtype(models.Model):
     id = models.CharField(max_length=10, primary_key=True, )
     name = models.CharField(max_length=255, blank=True, )
     weight = models.IntegerField(null=True, blank=True, )
-    parentid = models.ForeignKey(Lookupassettype, db_column='parentid', null=True, blank=True, )
+    parentid = models.ForeignKey(Lookupassettype, db_column='parentid', )
     class Meta:
         db_table = u'econd\".\"lookupassetsubtype'
         ordering = ['weight']
@@ -112,7 +112,7 @@ class Lookupassetconstruction(models.Model):
     id = models.CharField(max_length=10, primary_key=True, )
     name = models.CharField(max_length=255, blank=True, )
     weight = models.IntegerField(null=True, blank=True, )
-    parentid = models.ForeignKey(Lookupassetsubtype, db_column='parentid', null=True, blank=True, )
+    parentid = models.ForeignKey(Lookupassetsubtype, db_column='parentid', )
     class Meta:
         db_table = u'econd\".\"lookupassetconstruction'
         ordering = ['weight']
@@ -165,7 +165,7 @@ class Lookuptypeofdamage(models.Model):
 
 
 class Lookupyesno(models.Model):
-    id = models.IntegerField(primary_key=True, blank=True, )
+    id = models.IntegerField(primary_key=True, )
     name = models.CharField(max_length=255, blank=True, )
     weight = models.IntegerField(null=True, blank=True, )
     class Meta:

@@ -8,7 +8,7 @@ from django.db import models
 
 
 class EventsQuick ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='eventid', null=True, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='eventid', ) # impersonate a primary key from the event id
     eventname = models.CharField(max_length=50, blank=True, )
     yearint = models.IntegerField(null=True, blank=True, )
     country = models.CharField(max_length=50, blank=True, )
@@ -26,7 +26,7 @@ class EventsQuick ( models.Model ):
 
 
 class LocationsForJSON ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=10, blank=True, ) # impersonate a primary key from the location id
+    id = models.IntegerField(primary_key=True, db_column='locationid', ) # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255, blank=True, )
     photocount= models.IntegerField(null=True, blank=True, )
     samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
@@ -51,7 +51,7 @@ class LocationsForJSON ( models.Model ):
 
 
 class LocationsForJSONAggregated ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=300, blank=True, ) # impersonate a primary key from the location id
+    id = models.IntegerField(primary_key=True, db_column='locationid', ) # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255, blank=True, )
     photocount= models.IntegerField(null=True, blank=True, )
     samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
@@ -69,7 +69,7 @@ class LocationsForJSONAggregated ( models.Model ):
 
 
 class Locations ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=255, blank=True, ) # impersonate a primary key from the location id
+    id = models.IntegerField(primary_key=True, db_column='locationid', ) # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255, blank=True, )
     event = models.CharField(max_length=50, blank=True, )
     eventid = models.IntegerField(null=True, blank=True, )
@@ -91,7 +91,7 @@ class Locations ( models.Model ):
 
 
 class LocationsQuick ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='locationid', null=True, blank=True, ) # impersonate a primary key from the location id
+    id = models.IntegerField(primary_key=True, db_column='locationid', ) # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255, blank=True, )
     event = models.CharField(max_length=50, blank=True, )
     eventid = models.IntegerField(null=True, blank=True, )

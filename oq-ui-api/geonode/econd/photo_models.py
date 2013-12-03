@@ -12,24 +12,24 @@ from econd.static_lookup_models import *
 
 
 class WebLibPhoto(ImageModel):
-    id = models.IntegerField(primary_key=True, blank=True, )
+    id = models.IntegerField(primary_key=True, )
     #you cant put title here , it wont save
     #title = models.CharField(max_length=50, unique=True,db_column='name',verbose_name='File name', help_text='Photograph filename, all lowercase, including suffix .jpg/.tif/.gif/.bmp/.png')
-    parentid = models.IntegerField(primary_key=True, blank=True, )
-    title_slug = models.CharField(max_length=50, unique=True, blank=True, )
+    parentid = models.IntegerField()
+    title_slug = models.CharField(max_length=50, unique=True, )
     caption = models.CharField(max_length=255, verbose_name='Caption', blank=True, help_text='Caption for the photograph, please keep short', )
     date_added = models.DateTimeField(verbose_name='Date added', null=True, blank=True, )
-    is_public = models.BooleanField(null=True, blank=True, )
+    is_public = models.BooleanField()
     tags = models.CharField(max_length=255, blank=True, )
     photographername = models.CharField(null=True, blank=True, max_length=255, verbose_name='Photographer name', )
     photographerorganisation = models.CharField(null=True, blank=True, max_length=255, verbose_name='Photographer organisation', )
-    photographerprofessioncode = models.ForeignKey(Lookupphotographerprofessioncode, null=True, db_column='photographerprofessioncode', blank=True, verbose_name='Photographer profession', default='0', max_length=255, )
+    photographerprofessioncode = models.ForeignKey(Lookupphotographerprofessioncode, null=True, db_column='photographerprofessioncode', blank=True, verbose_name='Photographer profession', default='0', )
     copyright_c = models.TextField(null=True, blank=True, verbose_name='Copyright message', help_text='Information about the copyright of the photograph', )
     description_c = models.TextField(null=True, blank=True, verbose_name='Photo description', )
     daysafterevent = models.FloatField(null=True, blank=True, verbose_name='Days after event', help_text='Approximate number of days after event that photo was taken', )
     timeofdaystring = models.CharField(null=True, blank=True, max_length=20, verbose_name='Time of day taken', )
-    timeofdaycode = models.ForeignKey(Lookuptimeofdaycode, null=True, db_column='timeofdaycode', blank=True, verbose_name='AM/PM', default='0', max_length=20, )
-    qualitycode = models.ForeignKey(Lookupphotoqualitycode, null=True, db_column='qualitycode', blank=True, verbose_name='Image quality code', default='0', max_length=20, )
+    timeofdaycode = models.ForeignKey(Lookuptimeofdaycode, null=True, db_column='timeofdaycode', blank=True, verbose_name='AM/PM', default='0', )
+    qualitycode = models.ForeignKey(Lookupphotoqualitycode, null=True, db_column='qualitycode', blank=True, verbose_name='Image quality code', default='0', )
     # these two columns to be removed from database table
     #subjectcode = models.CharField(null=True, blank=True, max_length=50,verbose_name='Subject code', help_text='Describes the main subject matter of the photograph as a coded string. Not a lookup field at present')
     #detailcode = models.ForeignKey(Lookupdetailcode, null=True, db_column='detailcode', blank=True,verbose_name='Detail code',default='0')
@@ -40,11 +40,11 @@ class WebLibPhoto(ImageModel):
     subjectsubcode = models.ForeignKey(Lookupsubjectsubcode, null=True, db_column='subjectsubcode', blank=True, verbose_name='Subject sub-code', default='0', )
     typeofstructurecode = models.ForeignKey(Lookuptypeofstructurecode, null=True, db_column='typeofstructurecode', blank=True, verbose_name='Type of structure', default='0', )
     cityscalecode = models.ForeignKey(Lookupcityscalecode, null=True, db_column='cityscalecode', blank=True, verbose_name='City scale', default='0', )
-    isdetail = models.ForeignKey(Lookupyesnonull, db_column='isdetail', verbose_name='Is the photograph of a detail?', default=0, related_name='+', null=True, blank=True, )
-    hasscaleindication = models.ForeignKey(Lookupyesnonull, db_column='hasscaleindication', verbose_name='Does it have an indication of scale?', default=0, related_name='+', null=True, blank=True, )
-    isinternal = models.ForeignKey(Lookupyesnonull, db_column='isinternal', verbose_name='Is it internal?', default=0, related_name='+', null=True, blank=True, )
-    hasowner = models.ForeignKey(Lookupyesnonull, db_column='hasowner', verbose_name='Does the photograph have the owner in?', default=0, related_name='+', null=True, blank=True, )
-    haspeople = models.ForeignKey(Lookupyesnonull, db_column='haspeople', verbose_name='Does the photograph have people in?', default=0, related_name='+', null=True, blank=True, )
+    isdetail = models.ForeignKey(Lookupyesnonull, db_column='isdetail', verbose_name='Is the photograph of a detail?', default=0, related_name='+', )
+    hasscaleindication = models.ForeignKey(Lookupyesnonull, db_column='hasscaleindication', verbose_name='Does it have an indication of scale?', default=0, related_name='+', )
+    isinternal = models.ForeignKey(Lookupyesnonull, db_column='isinternal', verbose_name='Is it internal?', default=0, related_name='+', )
+    hasowner = models.ForeignKey(Lookupyesnonull, db_column='hasowner', verbose_name='Does the photograph have the owner in?', default=0, related_name='+', )
+    haspeople = models.ForeignKey(Lookupyesnonull, db_column='haspeople', verbose_name='Does the photograph have people in?', default=0, related_name='+', )
 
     ownerid = models.IntegerField()
     lastupdatebyid = models.IntegerField()
@@ -72,13 +72,13 @@ class WebLibPhoto(ImageModel):
 
 
 class Photos (models.Model):
-    id = models.IntegerField(primary_key=True, db_column='photoid', verbose_name='Photo id', null=True, blank=True, ) # impersonate a primary key from the photon id
+    id = models.IntegerField(primary_key=True, db_column='photoid', verbose_name='Photo id', ) # impersonate a primary key from the photon id
     photofilename = models.CharField(max_length=255, verbose_name='Photo filename', blank=True, )
     locationname = models.CharField(max_length=255, verbose_name='Location name', blank=True, )
     locationid = models.IntegerField(null=True, blank=True, )
     locationaggregateflag = models.IntegerField(null=True, blank=True, )
     qualitycode = models.CharField(max_length=10, verbose_name='Quality code', blank=True, )
-    thephoto = models.ForeignKey('WebLibPhoto', db_column='photoid', null=True, blank=True, max_length=10, )
+    thephoto = models.ForeignKey('WebLibPhoto', db_column='photoid', null=True, blank=True, )
 
     class Meta:
         db_table = u'econd\".\"gemecdphotos'     #note this is a VIEW
@@ -89,8 +89,8 @@ class Photos (models.Model):
 
 
 class GeoArchiveMasterOverview (models.Model):
-    id = models.IntegerField(primary_key=True, db_column='photoid', max_length=10, blank=True, )  # impersonate a primary key from the photo id
-    thephoto = models.ForeignKey('WebLibPhoto', db_column='photoid', null=True, blank=True, max_length=10, )
+    id = models.IntegerField(primary_key=True, db_column='photoid', )  # impersonate a primary key from the photo id
+    thephoto = models.ForeignKey('WebLibPhoto', db_column='photoid', null=True, blank=True, )
     photofilename = models.CharField(max_length=255, unique=True, blank=True, )
     locationname = models.CharField(max_length=255, blank=True, )
     locationid = models.IntegerField(null=True, blank=True, )
@@ -120,7 +120,7 @@ class GeoArchiveMasterOverview (models.Model):
 
 
 class GeoArchiveLocations ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='locationid', verbose_name='Location id', null=True, blank=True, ) # impersonate a primary key from the location id
+    id = models.IntegerField(primary_key=True, db_column='locationid', verbose_name='Location id', ) # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255, verbose_name='Location name', blank=True, )
     event = models.CharField(max_length=50, verbose_name='Event name', blank=True, )
     yearint = models.IntegerField(verbose_name='Year', null=True, blank=True, )
@@ -129,7 +129,7 @@ class GeoArchiveLocations ( models.Model ):
     inventoryclassname = models.CharField(max_length=255, verbose_name='Inventory class', blank=True, )
     unifieddamagelevelname = models.CharField(max_length=255, verbose_name='Unified damage level', blank=True, )
     assetclass = models.CharField(max_length=255, verbose_name='Asset class', blank=True, )
-    samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, max_length=255, )  # returns the photo with the lowest id number to use as a sample iconic image
+    samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
     eventid = models.IntegerField(null=True, blank=True, )
     study = models.CharField(max_length=255, blank=True, )
     studyid = models.IntegerField(null=True, blank=True, )
@@ -146,7 +146,7 @@ class GeoArchiveLocations ( models.Model ):
 
 
 class GeoArchiveLocationsForJSON ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='locationid', max_length=10, blank=True, ) # impersonate a primary key from the location id
+    id = models.IntegerField(primary_key=True, db_column='locationid', ) # impersonate a primary key from the location id
     locationname = models.CharField(max_length=255, blank=True, )
     photocount= models.IntegerField(null=True, blank=True, )
     samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
@@ -171,7 +171,7 @@ class GeoArchiveLocationsForJSON ( models.Model ):
 
 
 class GeoArchiveEvents ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='eventid', max_length=300, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='eventid', ) # impersonate a primary key from the event id
     event = models.CharField(max_length=50, blank=True, )
     yearint = models.IntegerField(null=True, blank=True, )
     country = models.CharField(max_length=50, blank=True, )
@@ -185,7 +185,7 @@ class GeoArchiveEvents ( models.Model ):
 
 
 class GeoArchiveEventsQuick ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='eventid', max_length=50, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='eventid', ) # impersonate a primary key from the event id
     event = models.CharField(max_length=50, blank=True, )
     yearint = models.IntegerField(null=True, blank=True, )
     country = models.CharField(max_length=50, blank=True, )
@@ -200,7 +200,7 @@ class GeoArchiveEventsQuick ( models.Model ):
 
 
 class GeoArchiveDamageLevels ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='damagelevelid', max_length=50, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='damagelevelid', ) # impersonate a primary key from the event id
     damagelevelname = models.CharField(max_length=255, blank=True, )
 
     class Meta:
@@ -212,7 +212,7 @@ class GeoArchiveDamageLevels ( models.Model ):
 
 
 class GeoArchiveDamageLevelsQuick ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='damagelevelid', max_length=255, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='damagelevelid', ) # impersonate a primary key from the event id
     damagelevelname = models.CharField(max_length=255, blank=True, )
 
     class Meta:
@@ -224,7 +224,7 @@ class GeoArchiveDamageLevelsQuick ( models.Model ):
 
 
 class GeoArchiveInventoryClasses ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='inventoryclassid', max_length=255, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='inventoryclassid', ) # impersonate a primary key from the event id
     inventoryclassname = models.CharField(max_length=255, blank=True, )
 
     class Meta:
@@ -236,7 +236,7 @@ class GeoArchiveInventoryClasses ( models.Model ):
 
 
 class GeoArchiveAssetClasses ( models.Model ):
-    id = models.IntegerField(primary_key=True, db_column='assetclassid', max_length=255, blank=True, ) # impersonate a primary key from the event id
+    id = models.IntegerField(primary_key=True, db_column='assetclassid', ) # impersonate a primary key from the event id
     assetclass = models.CharField(max_length=255, blank=True, )
 
     class Meta:
@@ -248,7 +248,7 @@ class GeoArchiveAssetClasses ( models.Model ):
 
 
 class GeoArchiveAssetClassesQuick ( models.Model ):
-    id = models.CharField(max_length=255, primary_key=True, db_column='assetclassid', blank=True, ) # impersonate a primary key from the event id
+    id = models.CharField(max_length=10, primary_key=True, db_column='assetclassid', ) # impersonate a primary key from the event id
     assetclass = models.CharField(max_length=255, blank=True, )
 
     class Meta:
@@ -261,9 +261,9 @@ class GeoArchiveAssetClassesQuick ( models.Model ):
 
 # used to underpin the search page
 class GeoArchiveOverviewFull (models.Model):
-    id = models.IntegerField(primary_key=True, db_column='photoid', max_length=255, blank=True, )  # impersonate a primary key from the photo id
+    id = models.IntegerField(primary_key=True, db_column='photoid', )  # impersonate a primary key from the photo id
     event = models.CharField(max_length=50, blank=True, )
-    eventid = models.ForeignKey(GeoArchiveEventsQuick, null=True, db_column='eventid', blank=True, verbose_name='Event', default='0', max_length=50, )
+    eventid = models.ForeignKey(GeoArchiveEventsQuick, null=True, db_column='eventid', blank=True, verbose_name='Event', default='0', )
     country = models.CharField(max_length=50, blank=True, )
     yearint = models.IntegerField(null=True, blank=True, )
     event_geom = models.TextField(blank=True, null=True, ) # This field type is a guess.
