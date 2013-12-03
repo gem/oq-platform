@@ -529,87 +529,83 @@ class BCRDistribution(Output):
 
 
 class CollapseMap(Output):
-    mean = models.FloatField()
-    stddev = models.FloatField()
-    asset_ref = models.TextField()
+    means = models.FloatField()
+    stddevs = models.FloatField()
+    asset_refs = models.TextField()
     location = models.PointField(srid=4326, dim=2)
 
     @classmethod
     def sql_attributes(cls):
-        return ["location", "mean", "stddev", "asset_ref"]
+        return ["location", "means", "stddevs", "asset_refs"]
 
     @classmethod
     def attributes(cls):
         return [
             cls.Attribute("location", "com.vividsolutions.jts.geom.Geometry"),
-            cls.Attribute("asset_ref", "java.lang.String"),
-            cls.Attribute("mean", "java.lang.Double"),
-            cls.Attribute("stddev", "java.lang.Double")]
+            cls.Attribute("asset_refs", "java.lang.String"),
+            cls.Attribute("means", "java.lang.String"),
+            cls.Attribute("stddevs", "java.lang.String")]
 
 
-# FIXME. It would be better to group such features by asset and show a
-# histogram with all the damage state mean and stddevs
 class DamageDistributionPerAsset(Output):
-    damage_state = models.TextField()
-    mean = models.TextField()
-    stddev = models.TextField()
+    damage_states = models.TextField()
+    means = models.TextField()
+    stddevs = models.TextField()
     asset_ref = models.TextField()
     location = models.PointField(srid=4326, dim=2)
 
     @classmethod
     def sql_attributes(cls):
-        return ["location", "asset_ref", "damage_state", "mean", "stddev"]
+        return ["location", "asset_refs", "damage_states", "means", "stddevs"]
 
     @classmethod
     def attributes(cls):
         return [
             cls.Attribute("location", "com.vividsolutions.jts.geom.Geometry"),
-            cls.Attribute("asset_ref", "java.lang.String"),
-            cls.Attribute("damage_state", "java.lang.String"),
-            cls.Attribute("mean", "java.lang.Double"),
-            cls.Attribute("stddev", "java.lang.Double")]
+            cls.Attribute("asset_refs", "java.lang.String"),
+            cls.Attribute("damage_states", "java.lang.String"),
+            cls.Attribute("means", "java.lang.String"),
+            cls.Attribute("stddevs", "java.lang.String")]
 
 
-# FIXME (same as for DamageDistributionPerAsset)
 class DamageDistributionPerTaxonomy(Output):
-    damage_state = models.TextField()
-    mean = models.FloatField()
-    stddev = models.FloatField()
-    taxonomy = models.TextField()
+    damage_states = models.TextField()
+    means = models.FloatField()
+    stddevs = models.FloatField()
+    taxonomies = models.TextField()
     region = models.PolygonField(srid=4326, dim=2)
 
     @classmethod
     def sql_attributes(cls):
-        return ["region", "taxonomy", "damage_state", "mean", "stddev"]
+        return ["region", "taxonomies", "damage_states", "means", "stddevs"]
 
     @classmethod
     def attributes(cls):
         return [
             cls.Attribute("region", "com.vividsolutions.jts.geom.Polygon"),
-            cls.Attribute("taxonomy", "java.lang.String"),
-            cls.Attribute("damage_state", "java.lang.String"),
-            cls.Attribute("mean", "java.lang.Double"),
-            cls.Attribute("stddev", "java.lang.Double")]
+            cls.Attribute("taxonomies", "java.lang.String"),
+            cls.Attribute("damage_states", "java.lang.String"),
+            cls.Attribute("means", "java.lang.String"),
+            cls.Attribute("stddevs", "java.lang.String")]
 
 
-# FIXME (same as for DamageDistributionPerAsset)
 class TotalDamageDistribution(Output):
-    damage_state = models.TextField()
-    mean = models.FloatField()
-    stddev = models.FloatField()
+    damage_states = models.TextField()
+    means = models.FloatField()
+    stddevs = models.FloatField()
     region = models.PolygonField(srid=4326, dim=2)
 
     @classmethod
     def sql_attributes(cls):
-        return ["region", "damage_state", "mean", "stddev"]
+        return ["region", "damage_states", "means", "stddevs"]
 
     @classmethod
     def attributes(cls):
         return [
             cls.Attribute("region", "com.vividsolutions.jts.geom.Polygon"),
-            cls.Attribute("damage_state", "java.lang.String"),
-            cls.Attribute("mean", "java.lang.Double"),
-            cls.Attribute("stddev", "java.lang.Double")]
+            cls.Attribute("damage_states", "java.lang.String"),
+            cls.Attribute("means", "java.lang.String"),
+            cls.Attribute("stddevs", "java.lang.String")]
 
 
 class LossCurve(Output):

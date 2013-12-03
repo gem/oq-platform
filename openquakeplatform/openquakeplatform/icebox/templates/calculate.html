@@ -23,16 +23,16 @@ Calculate - {{block.super}}
     <div class="tab-pane active" id="tab1">
         <form class="calc-form form-horizontal"
               enctype="multipart/form-data"
-              data-calc-type="hazard"
-              method="post" action="{{oq_engine_server_urls.run_hazard_calc_form}}">
+              method="post" action="{% url "calculations" %}">
+          <input type="hidden" name="calculation_type" value="hazard"/>
           <div class="control-group">
-            <label style="width: auto" class="control-label" for="job_config">
+            <label style="width: auto" class="control-label" for="calc_config">
               Run a Hazard Calculation
             </label>
             
             <div class="controls">
               <div class="fileinput fileinput-new" data-provides="fileinput">
-                <span class="btn btn-default btn-file"><span class="fileinput-new">Select Job Directory</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="job_config"/></span>
+                <span class="btn btn-default btn-file"><span class="fileinput-new">Select Job Directory</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="calc_config"/></span>
               </div>
             </div>
           </div>
@@ -77,11 +77,11 @@ Calculate - {{block.super}}
           <% if(calc.get('map')) { %>
             <% if(calc.get('calculation_type') == 'hazard') { %>
         <form class="calc-form" enctype="multipart/form-data"
-              data-calc-type="risk"
               style="margin: 0; display: inline-block"
-              method="post" action="{{oq_engine_server_urls.run_risk_calc_form}}">
+              method="post" action="{% url "calculations" %}">
+          <input type="hidden" name="calculation_type" value="risk"/>
             <div class="fileinput-new" data-provides="fileinput" style="margin: 0 2px 0 0">
-              <span class="btn btn-default btn-file"><span class="fileinput-new">Run Risk</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="job_config"/></span>
+              <span class="btn btn-default btn-file"><span class="fileinput-new">Run Risk</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="calc_config"/></span>
             </div>
             <input type="hidden" name="callback_url" value=""/>
             <input type="hidden" name="foreign_calculation_id" value=""/>
@@ -90,7 +90,7 @@ Calculate - {{block.super}}
             <% } %>
             <a href="/maps/<%= calc.get('map') %>" class="btn btn-success">Open</a>
           <% } %>
-          
+
           <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed') { %>
           <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-danger">Remove</a>
           <% } %>
