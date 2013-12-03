@@ -25,6 +25,11 @@ var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189, 1, 1);
 var selectedValue4 = new Array(1, 9.374, 4.413, 5.093, 1, 1); //TODO fix these demo numbers
 var selectedValue5 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
 var selectedValue6 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
+var selectedValue7 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
+var selectedValue8 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
+var selectedValue9 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
+var selectedValue10 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
+
 var attrSelection = new Array();
 var svirRankKeys = new Array();
 var svirRankValues = new Array();
@@ -343,7 +348,7 @@ var startApp = function() {
     //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
+    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, selectedValue7, selectedValue8, selectedValue9, selectedValue10, countriesArray) {
 
         var numberOfCountries = $("#chart-var-numb option:selected").val();
 
@@ -354,6 +359,10 @@ var startApp = function() {
         obj0[attrSelection[3]] = selectedValue4[0];
         obj0[attrSelection[4]] = selectedValue5[0];
         obj0[attrSelection[5]] = selectedValue6[0];
+        obj0[attrSelection[6]] = selectedValue7[0];
+        obj0[attrSelection[7]] = selectedValue8[0];
+        obj0[attrSelection[8]] = selectedValue9[0];
+        obj0[attrSelection[9]] = selectedValue10[0];
 
 
         obj1.country = countriesArray[1];
@@ -363,6 +372,10 @@ var startApp = function() {
         obj1[attrSelection[3]] = selectedValue4[1];
         obj1[attrSelection[4]] = selectedValue5[1];
         obj1[attrSelection[5]] = selectedValue6[1];
+        obj1[attrSelection[6]] = selectedValue7[1];
+        obj1[attrSelection[7]] = selectedValue8[1];
+        obj1[attrSelection[8]] = selectedValue9[1];
+        obj1[attrSelection[9]] = selectedValue10[1];
 
         obj2.country = countriesArray[2];
         obj2[attrSelection[0]] = selectedValue1[2];
@@ -371,6 +384,10 @@ var startApp = function() {
         obj2[attrSelection[3]] = selectedValue4[2];
         obj2[attrSelection[4]] = selectedValue5[2];
         obj2[attrSelection[5]] = selectedValue6[2];
+        obj2[attrSelection[6]] = selectedValue7[2];
+        obj2[attrSelection[7]] = selectedValue8[2];
+        obj2[attrSelection[8]] = selectedValue9[2];
+        obj2[attrSelection[9]] = selectedValue10[2];
 
         obj3.country = countriesArray[3];
         obj3[attrSelection[0]] = selectedValue1[3];
@@ -379,6 +396,10 @@ var startApp = function() {
         obj3[attrSelection[3]] = selectedValue4[3];
         obj3[attrSelection[4]] = selectedValue5[3];
         obj3[attrSelection[5]] = selectedValue6[3];
+        obj3[attrSelection[6]] = selectedValue7[3];
+        obj3[attrSelection[7]] = selectedValue8[3];
+        obj3[attrSelection[8]] = selectedValue9[3];
+        obj3[attrSelection[9]] = selectedValue10[3];
 
         obj4.country = countriesArray[4];
         obj4[attrSelection[0]] = selectedValue1[4];
@@ -387,15 +408,25 @@ var startApp = function() {
         obj4[attrSelection[3]] = selectedValue4[4];
         obj4[attrSelection[4]] = selectedValue5[4];
         obj4[attrSelection[5]] = selectedValue6[4];
+        obj4[attrSelection[6]] = selectedValue7[4];
+        obj4[attrSelection[7]] = selectedValue8[4];
+        obj4[attrSelection[8]] = selectedValue9[4];
+        obj4[attrSelection[9]] = selectedValue10[4];
 
         obj5.country = countriesArray[5];
-
         obj5[attrSelection[0]] = selectedValue1[5];
         obj5[attrSelection[1]] = selectedValue2[5];
         obj5[attrSelection[2]] = selectedValue3[5];
         obj5[attrSelection[3]] = selectedValue4[5];
         obj5[attrSelection[4]] = selectedValue5[5];
         obj5[attrSelection[5]] = selectedValue6[5];
+        obj5[attrSelection[6]] = selectedValue7[5];
+        obj5[attrSelection[7]] = selectedValue8[5];
+        obj5[attrSelection[8]] = selectedValue9[5];
+        obj5[attrSelection[9]] = selectedValue10[5];
+
+        console.log(selectedValue7);
+        console.log(obj0);
 
         chartArray.splice(0,10);        
 
@@ -679,13 +710,13 @@ var startApp = function() {
                         .map(function(){
                             return this.name;
                         });
-                        if (attrSelection > 6) {
+                        if (attrSelection > 10) {
                             attrSelection.pop();
                         } 
                 });
 
                 $(function() {
-                    var max = 6;
+                    var max = 10;
                     var checkboxes = $('input[type="checkbox"]');
                     checkboxes.change(function() {
                         var current = checkboxes.filter(':checked').length;
@@ -700,48 +731,71 @@ var startApp = function() {
                     };
                 }
 
+                console.log(attrSelection);
+
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
-                if (selectedValue1.length > 6) {
+                if (selectedValue1.length > 10) {
                     selectedValue1.pop();
                 }
                 
                 selectedValue2.unshift(parseFloat(dataFormated[attrSelection[1]]));
-                if (selectedValue2.length > 6) {
+                if (selectedValue2.length > 10) {
                     selectedValue2.pop();
                 }
     
                 selectedValue3.unshift(parseFloat(dataFormated[attrSelection[2]]));
-                if (selectedValue3.length > 6) {
+                if (selectedValue3.length > 10) {
                     selectedValue3.pop();
                 }
     
                 selectedValue4.unshift(parseFloat(dataFormated[attrSelection[3]]));
-                if (selectedValue4.length > 6) {
+                if (selectedValue4.length > 10) {
                     selectedValue4.pop();
                 }
 
                 selectedValue5.unshift(parseFloat(dataFormated[attrSelection[4]]));
-                if (selectedValue5.length > 6) {
+                if (selectedValue5.length > 10) {
                     selectedValue5.pop();
                 }
 
                 selectedValue6.unshift(parseFloat(dataFormated[attrSelection[5]]));
-                if (selectedValue6.length > 6) {
+                if (selectedValue6.length > 10) {
                     selectedValue6.pop();
                 }
+                
+                selectedValue7.unshift(parseFloat(dataFormated[attrSelection[6]]));
+                if (selectedValue7.length > 10) {
+                    selectedValue7.pop();
+                }
+
+                selectedValue8.unshift(parseFloat(dataFormated[attrSelection[7]]));
+                if (selectedValue8.length > 10) {
+                    selectedValue8.pop();
+                }
+
+                selectedValue9.unshift(parseFloat(dataFormated[attrSelection[8]]));
+                if (selectedValue9.length > 10) {
+                    selectedValue9.pop();
+                }
+
+                selectedValue10.unshift(parseFloat(dataFormated[attrSelection[9]]));
+                if (selectedValue10.length > 10) {
+                    selectedValue10.pop();
+                }
+
+                console.log(selectedValue7);
+                console.log(selectedValue6);
                 
                 var countryName = e.data.country;
                 // Indicate the country name for the table header
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
     
-                countriesArray.unshift(countryName);
-    
-                if (countriesArray.length > 6) {
+                if (countriesArray.length > 10) {
                     countriesArray.pop();
                 }
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
-                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
+                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, selectedValue7, selectedValue8, selectedValue9, selectedValue10, countriesArray);
                 
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
