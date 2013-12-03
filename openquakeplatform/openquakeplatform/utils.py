@@ -8,9 +8,10 @@ class OQTemplateView(TemplateView):
     additional context variables.
     """
 
+    # FIXME(lp). In order to avoid duplication in view code, use a
+    # custom django context processor
     def get_context_data(self, **kwargs):
         context = super(OQTemplateView, self).get_context_data(**kwargs)
 
-        context['oq_engine_server_urls'] = settings.OQ_ENGINE_SERVER_URLS
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
         return context

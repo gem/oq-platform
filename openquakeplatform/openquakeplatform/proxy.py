@@ -26,7 +26,6 @@ def _make_request(request, url):
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
-    print url
     http = httplib2.Http()
     http.add_credentials(*(ogc_server_settings.credentials))
     response, content = http.request(

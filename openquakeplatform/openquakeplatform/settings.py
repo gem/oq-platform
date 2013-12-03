@@ -389,6 +389,8 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 
+# If you override this settings in local_settings, please remember to
+# also update the settings below which depends on SITEURL
 SITEURL = "http://localhost:8000/"
 
 # OGC (WMS/WFS/WCS) Server Settings
@@ -572,6 +574,9 @@ MAP_BASELAYERS = [{
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
+
+
+OQ_ENGINE_SERVER_DATABASE = "platform"
 
 
 # Require users to authenticate before using Geonode
