@@ -12,6 +12,7 @@ from django.forms import ModelForm
 from django.db.models import get_model
 from econd.event_models import Event
 from econd.models import Study, Location, Locations, Inventoryclass, Surveyvalue, Damagelevel, Casualtylevel
+from econd.shakemap_models import ShakeMap
 from econd.sql_views import LocationsQuick
 from econd.photo_models import Photos, GeoArchiveLocations
 
@@ -36,6 +37,11 @@ class LocationPage (Pagebase):
         class Meta:
             model = Location
             exclude = ('id', 'parentid','parenttype','guid', 'location_q', 'ownerid', 'lastupdatebyid', 'lastupdate', )
+
+    class ShakeMapForm (ModelForm):
+        class Meta:
+            model = ShakeMap
+            exclude = ('id', 'ownerid', 'lastupdatebyid', 'lastupdate', 'the_geom', )
 
     class InventoryclassForm (ModelForm):
         class Meta:
@@ -198,7 +204,6 @@ class LocationPage (Pagebase):
                                              + str(filter_socioeconomic) + '&all=' + str(filter_all) + '">&laquo; Back to Event Overview</a>'
 
         isAggregated = str(location_record.isaggregated) == 'Yes'
-
 
         ########################
         # Data displays
@@ -437,6 +442,36 @@ class LocationPage (Pagebase):
             self.page_context['damagematrixformarray'] = damageMatrixFormArr # for edit
             self.page_context['casualtymatrixdisplayarray'] = casualtyMatrixDisplayArr # for display
             self.page_context['casualtymatrixformarray'] = casualtyMatrixFormArr # for edit
+
+        ###########################
+        # Shake map data
+        ###########################
+
+        if location_record.location is not None:
+            locationWKT = location_record.location.split(' ')
+            # get location's lat and long
+            lat = locationWKT[1][:-1]
+            lon = locationWKT[0][6:]
+
+            # run a PostGIS spatial query to get nearby cells in shakemap
+            from django.db import connection
+            cursor = connection.cursor()
+
+            # find the ids of the shakemaps cells near to the location
+            cursor.execute("SELECT shakemaps.shakemap.id FROM econd.location INNER JOIN shakemaps.shakemap ON ST_DWithin(location.the_geom, shakemap.the_geom, 0.0065) WHERE location.id=" + str(locationid) + " ")
+            shakemapcell = cursor.fetchone()  # get the first row returned - could do an average here
+            if shakemapcell:
+                shakemapid = shakemapcell[0]
+                shakemap_record = ShakeMap.objects.get(pk=shakemapid)
+                shakemapForm = self.ShakeMapForm(instance=shakemap_record, prefix='shakemapform')
+                shakemapfields = self.createFormFieldStructure(shakemapForm, shakemap_record)
+                self.page_context['shakemapfields'] = shakemapfields
+            else:
+                # nothing found nearby
+                self.page_context['shakemapfields'] = ''
+        else:
+            # the location WKT field is empty (it might be a GeoBased polygonal location)
+            self.page_context['shakemapfields'] = ''
 
         # fudge for dealing with different locations of the "src" static directory on the development system
         self.page_context['src_folder'] = '/oq-platform2/'

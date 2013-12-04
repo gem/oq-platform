@@ -151,6 +151,13 @@
                     </div>
                 {% endif %}
 
+                {% if shakemapfields != '' %}
+                    <div class="infocontainer">
+                    <h4>USGS Shake Map details</h4>
+                    {% formviewastable field_structure=shakemapfields %}
+                    </div>
+                {% endif %}
+
                 {% for surveyfields in surveyfieldlist %}
                     <div class="infocontainer">
                     <h4>Survey details</h4>
