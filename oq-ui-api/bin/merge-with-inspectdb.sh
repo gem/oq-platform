@@ -267,7 +267,7 @@ IFS='
                         test "$DBG" && echo "RELINE: [$reline] RELINE_ARGS: [$reline_args]" >&2
 
                         kvname_cur="kv_reli"
-                        unset "$kvname_cur"; declare -A "$kvname_cur"
+                        unset "${kvname_cur}_k"  "${kvname_cur}_v"; declare -a "${kvname_cur}_k" "${kvname_cur}_v"
                         pars2kv "$kvname_cur" "$reline_args"
 
                         # for i in $(seq 0 $(( ${#kv_reli_k[@]} - 1)) ); do
