@@ -77,7 +77,7 @@ var startApp = function() {
         "NERA Level 0" : nera0,
         "GA Level 2" : gedga2,
         "HAZUS Level 1 Building Counts" : hazus1,
-        "hazus_US_building_fractions" : hazus_bf,
+        "HAZUS Level 1 Building Fractions" : hazus_bf,
         "UN Habitat Level 1 Building Counts" : unh1
     };
 
