@@ -26,6 +26,7 @@ var startApp = function() {
     drawnItems = new L.LayerGroup();
     // draw tool
     drawControl = new L.Control.Draw({
+        position: 'topleft',
         rectangle: {
         title: 'Selection Tool',
             allowIntersection: false,
@@ -61,8 +62,9 @@ var startApp = function() {
 
     app.createMap();
     map.addLayer(drawnItems);
-    L.control.layers(app.baseLayers, overlays).addTo(map);
+
     map.addControl(drawControl);
+    L.control.layers(app.baseLayers, overlays).addTo(map).setPosition("topleft");
 
     // Add Wax support
     L.wax(map);
