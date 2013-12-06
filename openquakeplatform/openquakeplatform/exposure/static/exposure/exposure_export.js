@@ -36,6 +36,13 @@ var startApp = function() {
         }
     });
 
+    // TODO remove this hack. This hack has been implemented in order to 
+    // temporarily remove the left side panel and should be remove once 
+    // the left side panel is completed 
+    $("#oq-body-sidebar").remove();
+    var width = $(window).width();
+    $("#oq-body-content").width(width - 30);
+
     // Leaflet popup for the map-interactive export function
     var exportPopup;
 
