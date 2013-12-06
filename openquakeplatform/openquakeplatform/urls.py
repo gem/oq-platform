@@ -54,6 +54,8 @@ urlpatterns = patterns(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^svir_viewer/$', TemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
+    url(r'^hazus/$', TemplateView.as_view(
+        template_name="hazus.html"), name='hazus'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
@@ -63,6 +65,12 @@ urlpatterns = patterns(
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
     url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
+    url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
+
+    # Temporary pages TODO remove these when the customizable categories can be implemented
+    url(r'^temp_maps/$', TemplateView.as_view(template_name='temp_maps.html'), name='temp_maps'),
+    url(r'^temp_data/$', TemplateView.as_view(template_name='temp_data.html'), name='temp_data'),
+
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
