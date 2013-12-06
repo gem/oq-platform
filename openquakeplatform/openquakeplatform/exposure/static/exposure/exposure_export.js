@@ -42,6 +42,14 @@ var startApp = function() {
     /******************
      * Overlay layers *
      ******************/
+
+    var IMPRO0 = L.tileLayer('http://tilestream.openquake.org/v2/impro-level0-bc/{z}/{x}/{y}.png');
+    var nera0 = L.tileLayer('http://tilestream.openquake.org/v2/nera-level0-bc/{z}/{x}/{y}.png');
+    var gedga2 = L.tileLayer('http://tilestream.openquake.org/v2/ged-ga-level2/{z}/{x}/{y}.png');
+    var hazus1 = L.tileLayer('http://tilestream.openquake.org/v2/ged-hazus-level1/{z}/{x}/{y}.png');
+    var hazus_bf = L.tileLayer('http://tilestream.openquake.org/v2/hazus_US_building_fractions/{z}/{x}/{y}.png');
+    var unh1 = L.tileLayer('http://tilestream.openquake.org/v2/ph-unh1-bc-ge10-z10/{z}/{x}/{y}.png');
+
     var grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
     var grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
     var df_admin0 = L.tileLayer(
@@ -58,6 +66,12 @@ var startApp = function() {
         "Dwelling Fractions Portugal" : df_port,
         "GRUMP Urban" : grump_urban,
         "GRUMP Rural" : grump_rural,
+        "IMPRO Level 0" : IMPRO0,
+        "NERA Level 0" : nera0,
+        "GA Level 2" : gedga2,
+        "HAZUS Level 1 Building Counts" : hazus1,
+        "hazus_US_building_fractions" : hazus_bf,
+        "UN Habitat Level 1 Building Counts" : unh1
     };
 
     app.createMap();
