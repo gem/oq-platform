@@ -50,7 +50,7 @@ var startApp = function() {
      * Overlay layers *
      ******************/
 
-    var IMPRO0 = L.tileLayer('http://tilestream.openquake.org/v2/impro-level0-bc/{z}/{x}/{y}.png');
+    var impro0 = L.tileLayer('http://tilestream.openquake.org/v2/impro-level0-bc/{z}/{x}/{y}.png');
     var nera0 = L.tileLayer('http://tilestream.openquake.org/v2/nera-level0-bc/{z}/{x}/{y}.png');
     var gedga2 = L.tileLayer('http://tilestream.openquake.org/v2/ged-ga-level2/{z}/{x}/{y}.png');
     var hazus1 = L.tileLayer('http://tilestream.openquake.org/v2/ged-hazus-level1/{z}/{x}/{y}.png');
@@ -73,7 +73,7 @@ var startApp = function() {
         "Dwelling Fractions Portugal" : df_port,
         "GRUMP Urban" : grump_urban,
         "GRUMP Rural" : grump_rural,
-        "IMPRO Level 0" : IMPRO0,
+        "IMPRO Level 0" : impro0,
         "NERA Level 0" : nera0,
         "GA Level 2" : gedga2,
         "HAZUS Level 1 Building Counts" : hazus1,
