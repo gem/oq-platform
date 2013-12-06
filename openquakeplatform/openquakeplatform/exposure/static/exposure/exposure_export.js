@@ -54,7 +54,7 @@ var startApp = function() {
     var nera0 = L.tileLayer('http://tilestream.openquake.org/v2/nera-level0-bc/{z}/{x}/{y}.png');
     var gedga2 = L.tileLayer('http://tilestream.openquake.org/v2/ged-ga-level2/{z}/{x}/{y}.png');
     var hazus1 = L.tileLayer('http://tilestream.openquake.org/v2/ged-hazus-level1/{z}/{x}/{y}.png');
-    var hazus_bf = L.tileLayer('http://tilestream.openquake.org/v2/hazus_US_building_fractions/{z}/{x}/{y}.png');
+    var hazus_bf = L.tileLayer('http://tilestream.openquake.org/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
     var unh1 = L.tileLayer('http://tilestream.openquake.org/v2/ph-unh1-bc-ge10-z10/{z}/{x}/{y}.png');
 
     var grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
