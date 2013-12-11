@@ -316,6 +316,7 @@ def _add_isc_viewer():
 def add_icebox():
     load_styles('icebox')
 
+    local('mkdir -p ./geoserver/data/templates/')
     local('cp ./gs_data/icebox/content.ftl ./geoserver/data/templates/')
 
 
