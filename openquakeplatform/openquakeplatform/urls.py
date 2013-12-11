@@ -54,6 +54,8 @@ urlpatterns = patterns(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^svir_viewer/$', TemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
+    url(r'^svir_viewer_sub/$', TemplateView.as_view(
+        template_name="svir_viewer_sub.html"), name='svir_viewer_sub'),
     url(r'^hazus/$', TemplateView.as_view(
         template_name="hazus.html"), name='hazus'),
 
