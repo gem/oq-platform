@@ -250,7 +250,7 @@ def _maybe_createuser(dbuser, dbpassword):
         print('Creating user "%(dbuser)s". Please choose a password (it should'
               'match your local_settings.py). Recommended: "%(dbpassword)s".'
               % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgsudo('createuser --superuser --password %(dbuser)s'
+        _pgsudo('createuser --superuser --pwprompt %(dbuser)s'
                 % dict(dbpassword=dbpassword, dbuser=dbuser))
         _pgquery('ALTER USER %s WITH SUPERUSER' % dbuser)
         return True
