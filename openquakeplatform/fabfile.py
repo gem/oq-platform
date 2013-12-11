@@ -165,7 +165,6 @@ def start():
 
 def stop():
     local('paver stop')
-mkdir -p
 
 def test():
     local('./run_tests.sh -v --with-coverage '
