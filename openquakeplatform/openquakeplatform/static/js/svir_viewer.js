@@ -655,18 +655,12 @@ var startApp = function() {
 
                 for (var i in values) {
                     if (keys[i] != "country" && keys[i] != "region") {
-
                         var c = keys[i].replace(/_/g, " ");
-                        
                         var value = values[i];
-
                         dataFormated[c] = values[i];
-
                         var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
                         $('#chartOptions').append(chartDropDown);
-
                     };
-
                 }
 
                 $('.attributeOption:lt(6)').prop('checked', true);  
@@ -683,6 +677,7 @@ var startApp = function() {
                             attrSelection.pop();
                         } 
                 });
+                
 
                 $(function() {
                     var max = 6;
@@ -698,7 +693,13 @@ var startApp = function() {
                     for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
                         attrSelection[i] = attrSelectionArray[i].name;
                     };
-                }
+                } else {
+                    attrSelection = attrSelection = $('#chartOptions input[class="attributeOption"]:checked').map(function(){
+                            return this.name;
+                        });
+                };
+
+                console.log(attrSelection);
 
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {
