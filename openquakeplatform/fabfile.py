@@ -33,7 +33,7 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage', 'devserver']
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
 
 #: Template for local_settings.py
 LOCAL_SETTINGS = """\
@@ -250,7 +250,7 @@ def _maybe_createuser(dbuser, dbpassword):
         print('Creating user "%(dbuser)s". Please choose a password (it should'
               'match your local_settings.py). Recommended: "%(dbpassword)s".'
               % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgsudo('createuser --superuser --password %(dbuser)s'
+        _pgsudo('createuser --superuser --pwprompt %(dbuser)s'
                 % dict(dbpassword=dbpassword, dbuser=dbuser))
         _pgquery('ALTER USER %s WITH SUPERUSER' % dbuser)
         return True
@@ -316,6 +316,7 @@ def _add_isc_viewer():
 def add_icebox():
     load_styles('icebox')
 
+    local('mkdir -p ./geoserver/data/templates/')
     local('cp ./gs_data/icebox/content.ftl ./geoserver/data/templates/')
 
 
