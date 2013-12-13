@@ -53,6 +53,7 @@ var obj2 = {};
 var obj3 = {};
 var obj4 = {};
 var obj5 = {};
+var obj6 = {};
 var chart;
 
 var baseMapUrl = (
@@ -68,6 +69,8 @@ var startApp = function() {
     layers = {};
 
     layerControl = L.control.layers(app.baseLayers);
+    map.panTo(new L.LatLng(39.399, -8.22));
+    map.setZoom(6);
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -343,72 +346,82 @@ var startApp = function() {
     //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
-
-        var numberOfCountries = $("#chart-var-numb option:selected").val();
-
-        obj0.country = countriesArray[0];
-        obj0[attrSelection[0]] = selectedValue1[0];
-        obj0[attrSelection[1]] = selectedValue2[0];
-        obj0[attrSelection[2]] = selectedValue3[0];
-        obj0[attrSelection[3]] = selectedValue4[0];
-        obj0[attrSelection[4]] = selectedValue5[0];
-        obj0[attrSelection[5]] = selectedValue6[0];
+    function buildD3SpiderChart(keys, chartCat, distName, econ, edu, gov, health, infra, social, distAttr, municipo) {
 
 
-        obj1.country = countriesArray[1];
-        obj1[attrSelection[0]] = selectedValue1[1];
-        obj1[attrSelection[1]] = selectedValue2[1];
-        obj1[attrSelection[2]] = selectedValue3[1];
-        obj1[attrSelection[3]] = selectedValue4[1];
-        obj1[attrSelection[4]] = selectedValue5[1];
-        obj1[attrSelection[5]] = selectedValue6[1];
 
-        obj2.country = countriesArray[2];
-        obj2[attrSelection[0]] = selectedValue1[2];
-        obj2[attrSelection[1]] = selectedValue2[2];
-        obj2[attrSelection[2]] = selectedValue3[2];
-        obj2[attrSelection[3]] = selectedValue4[2];
-        obj2[attrSelection[4]] = selectedValue5[2];
-        obj2[attrSelection[5]] = selectedValue6[2];
+        //var numberOfCountries = $("#chart-var-numb option:selected").val();
 
-        obj3.country = countriesArray[3];
-        obj3[attrSelection[0]] = selectedValue1[3];
-        obj3[attrSelection[1]] = selectedValue2[3];
-        obj3[attrSelection[2]] = selectedValue3[3];
-        obj3[attrSelection[3]] = selectedValue4[3];
-        obj3[attrSelection[4]] = selectedValue5[3];
-        obj3[attrSelection[5]] = selectedValue6[3];
 
-        obj4.country = countriesArray[4];
-        obj4[attrSelection[0]] = selectedValue1[4];
-        obj4[attrSelection[1]] = selectedValue2[4];
-        obj4[attrSelection[2]] = selectedValue3[4];
-        obj4[attrSelection[3]] = selectedValue4[4];
-        obj4[attrSelection[4]] = selectedValue5[4];
-        obj4[attrSelection[5]] = selectedValue6[4];
+        console.log(municipo);
 
-        obj5.country = countriesArray[5];
+        //obj0.dist = distAttr[0];
+        obj0[municipo[0]] = econ[0];
+        obj0[municipo[1]] = edu[0];
+        obj0[municipo[2]] = gov[0];
+        obj0[municipo[3]] = health[0];
+        obj0[municipo[4]] = infra[0];
+        obj0[municipo[5]] = social[0];
 
-        obj5[attrSelection[0]] = selectedValue1[5];
-        obj5[attrSelection[1]] = selectedValue2[5];
-        obj5[attrSelection[2]] = selectedValue3[5];
-        obj5[attrSelection[3]] = selectedValue4[5];
-        obj5[attrSelection[4]] = selectedValue5[5];
-        obj5[attrSelection[5]] = selectedValue6[5];
+        //obj1.dist = distAttr[1];
+        obj1[municipo[0]] = econ[1];
+        obj1[municipo[1]] = edu[1];
+        obj1[municipo[2]] = gov[1];
+        obj1[municipo[3]] = health[1];
+        obj1[municipo[4]] = infra[1];
+        obj1[municipo[5]] = social[1];
 
-        chartArray.splice(0,10);        
+        //obj2.dist = distAttr[2];
+        obj2[municipo[0]] = econ[2];
+        obj2[municipo[1]] = edu[2];
+        obj2[municipo[2]] = gov[2];
+        obj2[municipo[3]] = health[2];
+        obj2[municipo[4]] = infra[2];
+        obj2[municipo[5]] = social[2];
 
-        for (var i=0; i<numberOfCountries; i++) {
-            chartArray[i] = window["obj" + i];
-        }
+        //obj3.dist = distAttr[3];
+        obj3[municipo[0]] = econ[3];
+        obj3[municipo[1]] = edu[3];
+        obj3[municipo[2]] = gov[3];
+        obj3[municipo[3]] = health[3];
+        obj3[municipo[4]] = infra[3];
+        obj3[municipo[5]] = social[3];
 
-        var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
-            attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
- 
-        for (var i=0; i<numberOfCountries; i++) {
-            country.splice(numberOfCountries,10);
-        }
+        //obj4.dist = distAttr[4];
+        obj4[municipo[0]] = econ[4];
+        obj4[municipo[1]] = edu[4];
+        obj4[municipo[2]] = gov[4];
+        obj4[municipo[3]] = health[4];
+        obj4[municipo[4]] = infra[4];
+        obj4[municipo[5]] = social[4];
+
+        //obj5.dist = distAttr[5];
+        obj5[municipo[0]] = econ[5];
+        obj5[municipo[1]] = edu[5];
+        obj5[municipo[2]] = gov[5];
+        obj5[municipo[3]] = health[5];
+        obj5[municipo[4]] = infra[5];
+        obj5[municipo[5]] = social[5];
+
+        chartArray[0] = obj0;
+        chartArray[1] = obj1;
+        chartArray[2] = obj2;
+        chartArray[3] = obj3;
+        chartArray[4] = obj4;
+        chartArray[5] = obj5;
+
+        console.log(chartArray);
+          
+        //  attributes = [attrSelec.ion[0] attrSeinfratrSelection[2], attrSelection[3], attrSelection[4], attrSelsocial        
+        //attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde"];
+        var country = keys;
+
+
+        //var attributes = distAttr;
+        var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde"];
+        //var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde", " Moimenta da Beira", " Mortágua", " Nelas", " Oliveira de Frades", " Penalva do Castelo", " Penedono", " Resende", " Santa Comba Dão", " Sernancelhe", " Sátão", " São João da Pesqueira", " São Pedro do Sul", " Tabua", "foo", "bar", "foo", "foo", "foo"]
+        console.log(attributes);
+        console.log(keys);
 
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],
@@ -429,6 +442,7 @@ var startApp = function() {
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
         
+        
             // Create a scale and brush for each trait.
             attributes.forEach(function(d) {
                 // Coerce values to numbers.
@@ -442,6 +456,7 @@ var startApp = function() {
                     .y(y[d])
                     .on("brush", brush);
             });
+
 
             // Add a legend.
             var legend = svg.selectAll("g.legend")
@@ -527,18 +542,19 @@ var startApp = function() {
             }
 
         // Update the css for each country
-        $("."+countriesArray[0]).css('stroke', 'red');
-        $("."+countriesArray[1]).css('stroke', 'blue');
-        $("."+countriesArray[2]).css('stroke', 'green');
-        $("."+countriesArray[3]).css('stroke', 'orange');
-        $("."+countriesArray[4]).css('stroke', 'purple');
-        $("."+countriesArray[5]).css('stroke', 'black');
-        
+        $("."+keys[0]).css('stroke', 'red');
+        $("."+keys[1]).css('stroke', 'blue');
+        $("."+keys[2]).css('stroke', 'green');
+        $("."+keys[3]).css('stroke', 'orange');
+        $("."+keys[4]).css('stroke', 'purple');
+        $("."+keys[5]).css('stroke', 'black');
+
         // Returns the path for a given data point.
+        
         function path(d) {
             return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
-        
+
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
             var actives = attributes.filter(function(p) { return !y[p].brush.empty(); }),
@@ -690,55 +706,81 @@ var startApp = function() {
                         attrSelection[i] = attrSelectionArray[i].name;
                     };
                 }
+                var m = e.data.municipo;
+                var municipo = m.split(",");
+                console.log(municipo);
 
-                selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
-                if (selectedValue1.length > 6) {
-                    selectedValue1.pop();
-                }
+                var distName = e.data.DISTRICT;
+                var ec = (e.data.economic).split(",");
+                var ed = (e.data.education).split(",");
+                var g = (e.data.gov).split(",");
+                var h = (e.data.health).split(",");
+                var inf = (e.data.infrastruc).split(",");
+                var s = (e.data.social).split(",");
+
+                var econ = [];
+                for (var i = 0; i < ec.length; i++) {
+                    econ[i] = parseFloat(ec[i]);
+                };
                 
-                selectedValue2.unshift(parseFloat(dataFormated[attrSelection[1]]));
-                if (selectedValue2.length > 6) {
-                    selectedValue2.pop();
-                }
-    
-                selectedValue3.unshift(parseFloat(dataFormated[attrSelection[2]]));
-                if (selectedValue3.length > 6) {
-                    selectedValue3.pop();
-                }
-    
-                selectedValue4.unshift(parseFloat(dataFormated[attrSelection[3]]));
-                if (selectedValue4.length > 6) {
-                    selectedValue4.pop();
-                }
+                var edu = [];
+                for (var i = 0; i < ed.length; i++) {
+                    edu[i] = parseFloat(ed[i]);
+                };
+                var gov = [];
+                for (var i = 0; i < ed.length; i++) {
+                    gov[i] = parseFloat(ed[i]);
+                };
+                var health = [];
+                for (var i = 0; i < h.length; i++) {
+                    health[i] = parseFloat(h[i]);
+                };
+                var infra = [];
+                for (var i = 0; i < inf.length; i++) {
+                    infra[i] = parseFloat(inf[i]);
+                };
+                var social = [];
+                for (var i = 0; i < s.length; i++) {
+                    social[i] = parseFloat(s[i]);
+                };
+                /*
+                var edu = ed.split(",");
+                var gov = g.split(",");
+                var health = h.split(",");
+                var infra = i.split(",");
+                var social = s.split(",");
+*/
+                console.log(ec);
+                console.log(econ);
 
-                selectedValue5.unshift(parseFloat(dataFormated[attrSelection[4]]));
-                if (selectedValue5.length > 6) {
-                    selectedValue5.pop();
-                }
 
-                selectedValue6.unshift(parseFloat(dataFormated[attrSelection[5]]));
-                if (selectedValue6.length > 6) {
-                    selectedValue6.pop();
-                }
-                
-                var countryName = e.data.country;
-                // Indicate the country name for the table header
-                $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
-    
-                countriesArray.unshift(countryName);
-    
-                if (countriesArray.length > 6) {
-                    countriesArray.pop();
-                }
+
+                var keys = Object.keys(e.data);
+                keys.shift();
+                keys.splice(5, 2);
+
+                var distAttrString = e.data.municipo;
+                var distAttr = distAttrString.split(",");
+
+
+                console.log(dataFormated[attrSelection[0]]);
+              
+                console.log(distAttr);
+                console.log(keys);
+
+  
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
-                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
+                buildD3SpiderChart(keys, chartCat, distName, econ, edu, gov, health, infra, social, distAttr, municipo);
                 
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
     } // End utfGridClickEvent
+    
 };
+
+
 
 app.initialize(startApp);

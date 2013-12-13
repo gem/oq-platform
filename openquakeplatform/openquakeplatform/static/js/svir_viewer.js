@@ -405,7 +405,9 @@ var startApp = function() {
 
         var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
             attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
- 
+        console.log(chartArray);
+        console.log(attributes);
+
         for (var i=0; i<numberOfCountries; i++) {
             country.splice(numberOfCountries,10);
         }
@@ -533,6 +535,8 @@ var startApp = function() {
         $("."+countriesArray[3]).css('stroke', 'orange');
         $("."+countriesArray[4]).css('stroke', 'purple');
         $("."+countriesArray[5]).css('stroke', 'black');
+
+        console.log(countriesArray);
         
         // Returns the path for a given data point.
         function path(d) {
@@ -735,6 +739,8 @@ var startApp = function() {
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
     
                 countriesArray.unshift(countryName);
+
+                console.log(selectedValue1);
     
                 if (countriesArray.length > 6) {
                     countriesArray.pop();
