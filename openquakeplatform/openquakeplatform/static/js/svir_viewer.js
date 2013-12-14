@@ -347,6 +347,11 @@ var startApp = function() {
 
         var numberOfCountries = $("#chart-var-numb option:selected").val();
 
+        console.log(attrSelection[0]);
+        console.log(selectedValue1[0]);
+        console.log(attrSelection[1]);
+        console.log(selectedValue2[0]);
+
         obj0.country = countriesArray[0];
         obj0[attrSelection[0]] = selectedValue1[0];
         obj0[attrSelection[1]] = selectedValue2[0];
@@ -397,6 +402,9 @@ var startApp = function() {
         obj5[attrSelection[4]] = selectedValue5[5];
         obj5[attrSelection[5]] = selectedValue6[5];
 
+        console.log(attrSelection[0]);
+        console.log(selectedValue1[5]);
+
         chartArray.splice(0,10);        
 
         for (var i=0; i<numberOfCountries; i++) {
@@ -411,6 +419,8 @@ var startApp = function() {
         for (var i=0; i<numberOfCountries; i++) {
             country.splice(numberOfCountries,10);
         }
+
+        console.log(chartArray);
 
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],

@@ -253,13 +253,7 @@ var startApp = function() {
         });
     });
 
-    // Chart variable selection dialog
-    $("#chartOptions").dialog({
-        autoOpen: false,
-        height: 300,
-        width: 500,
-        modal: true
-    });
+
 
     // Map options selection dialog
     $("#thematicMap").dialog({
@@ -269,9 +263,6 @@ var startApp = function() {
         modal: true
     });
 
-    $("#chart-options").button().click(function() {
-        $("#chartOptions").dialog("open");
-    });
 
     $("#thematic-map").button().click(function() {
         $("#thematicMap").dialog("open");
@@ -347,61 +338,130 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3SpiderChart(keys, chartCat, distName, econ, edu, gov, health, infra, social, distAttr, municipo) {
+console.log(keys);
+/*
+        var number = 19;
+
+        for (var i = 0; i < distAttr.length; i++) 
+        {
+            var arr = [];
+        
+            for (var j = 0; j < distAttr.length; j++) {
+                arr[municipo[j]] = econ[j];
+            };
+        
+            chartArray[i] = arr;
+        }
+*/
+        
+
+/*
+        for (var i = 0; i < distAttr.length; i++) {
+            //chartArray["obj"+i] = {};
+            //eval('var obj'+i+' = {};');
+            window['obj'+i ] = {};
+        };
+        var number = distName.length;
+
+        for (var j = 0; i < distName.length; j++) {
+            //"obj"+i+.foo = "foo";
+            //console.log([obj+i]);
+            //window['obj'+i ][municipo[j]] = econ[i];
+            //console.log(municipo[number]);
+        };
+        */
+/*
+        // Set up some variables and the field values you will use:
+        var j,
+            obj,
+                ec = municipo[0],
+                ed = municipo[1],
+                go = municipo[2],
+                he = municipo[3],
+                inf = municipo[4],
+                so = municipo[5];
+        
+        // Loop through the array.
+        for (i = 0; i < keys.length; i++) {
+            console.log(econ[i]);
+            // Create an object with a country field. 
+            obj = { country: keys[i] };
+            // Populate the other fields.
+            obj[municipo[0]] = econ[i];
+            obj[municipo[1]] = econ[i+1];
+            obj[municipo[2]] = econ[i+2];
+            obj[municipo[3]] = econ[i+3];
+            obj[municipo[4]] = econ[i+4];
+            obj[municipo[5]] = econ[i+5];
+            
+            // Set the array index to contain the object
+            // (and if you need it then create a global object `objx`
+            //  - not sure if you need it though.)
+            chartArray[i] = window['obj'+i] = obj;
+        };
+        console.log(obj1);
+*/
+        var attributes = distAttr;
+        //var attributes = ["Armamar", "CarregaldoSal", "CastroDaire", "Cinfães", "Lamego", "Mangualde"];
+        //var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde", " Moimenta da Beira", " Mortágua", " Nelas", " Oliveira de Frades", " Penalva do Castelo", " Penedono", " Resende", " Santa Comba Dão", " Sernancelhe", " Sátão", " São João da Pesqueira", " São Pedro do Sul", " Tabua", "foo", "bar", "foo", "foo", "foo"]
+        console.log(attributes[1]);
+
+        var replaceInArray = function(str){
+            return str.replace(/\s+/g, "")
+        }
+        
+        var attrClean = attributes.map(replaceInArray);
+
+        console.log(attrClean);
 
 
+        obj0.country = attrClean[0];
+        obj0[attrClean[0]] = econ[0];
+        obj0[attrClean[1]] = econ[1];
+        obj0[attrClean[2]] = econ[2];
+        obj0[attrClean[3]] = econ[3];
+        obj0[attrClean[4]] = econ[4];
+        obj0[attrClean[5]] = econ[5];
 
-        //var numberOfCountries = $("#chart-var-numb option:selected").val();
+        obj1.country = attrClean[1];
+        obj1[attrClean[0]] = edu[0];
+        obj1[attrClean[1]] = edu[1];
+        obj1[attrClean[2]] = edu[2];
+        obj1[attrClean[3]] = edu[3];
+        obj1[attrClean[4]] = edu[4];
+        obj1[attrClean[5]] = edu[5];
 
+        obj2.country = attrClean[2];
+        obj2[attrClean[0]] = gov[0];
+        obj2[attrClean[1]] = gov[1];
+        obj2[attrClean[2]] = gov[2];
+        obj2[attrClean[3]] = gov[3];
+        obj2[attrClean[4]] = gov[4];
+        obj2[attrClean[5]] = gov[5];
 
-        console.log(municipo);
+        obj3.country = attrClean[3];
+        obj3[attrClean[0]] = health[0];
+        obj3[attrClean[1]] = health[1];
+        obj3[attrClean[2]] = health[2];
+        obj3[attrClean[3]] = health[3];
+        obj3[attrClean[4]] = health[4];
+        obj3[attrClean[5]] = health[5];
 
-        //obj0.dist = distAttr[0];
-        obj0[municipo[0]] = econ[0];
-        obj0[municipo[1]] = edu[0];
-        obj0[municipo[2]] = gov[0];
-        obj0[municipo[3]] = health[0];
-        obj0[municipo[4]] = infra[0];
-        obj0[municipo[5]] = social[0];
+        obj4.country = attrClean[4];
+        obj4[attrClean[0]] = infra[0];
+        obj4[attrClean[1]] = infra[1];
+        obj4[attrClean[2]] = infra[2];
+        obj4[attrClean[3]] = infra[3];
+        obj4[attrClean[4]] = infra[4];
+        obj4[attrClean[5]] = infra[5];
 
-        //obj1.dist = distAttr[1];
-        obj1[municipo[0]] = econ[1];
-        obj1[municipo[1]] = edu[1];
-        obj1[municipo[2]] = gov[1];
-        obj1[municipo[3]] = health[1];
-        obj1[municipo[4]] = infra[1];
-        obj1[municipo[5]] = social[1];
-
-        //obj2.dist = distAttr[2];
-        obj2[municipo[0]] = econ[2];
-        obj2[municipo[1]] = edu[2];
-        obj2[municipo[2]] = gov[2];
-        obj2[municipo[3]] = health[2];
-        obj2[municipo[4]] = infra[2];
-        obj2[municipo[5]] = social[2];
-
-        //obj3.dist = distAttr[3];
-        obj3[municipo[0]] = econ[3];
-        obj3[municipo[1]] = edu[3];
-        obj3[municipo[2]] = gov[3];
-        obj3[municipo[3]] = health[3];
-        obj3[municipo[4]] = infra[3];
-        obj3[municipo[5]] = social[3];
-
-        //obj4.dist = distAttr[4];
-        obj4[municipo[0]] = econ[4];
-        obj4[municipo[1]] = edu[4];
-        obj4[municipo[2]] = gov[4];
-        obj4[municipo[3]] = health[4];
-        obj4[municipo[4]] = infra[4];
-        obj4[municipo[5]] = social[4];
-
-        //obj5.dist = distAttr[5];
-        obj5[municipo[0]] = econ[5];
-        obj5[municipo[1]] = edu[5];
-        obj5[municipo[2]] = gov[5];
-        obj5[municipo[3]] = health[5];
-        obj5[municipo[4]] = infra[5];
-        obj5[municipo[5]] = social[5];
+        obj5.country = attrClean[5];
+        obj5[attrClean[0]] = social[0];
+        obj5[attrClean[1]] = social[1];
+        obj5[attrClean[2]] = social[2];
+        obj5[attrClean[3]] = social[3];
+        obj5[attrClean[4]] = social[4];
+        obj5[attrClean[5]] = social[5];
 
         chartArray[0] = obj0;
         chartArray[1] = obj1;
@@ -409,25 +469,20 @@ var startApp = function() {
         chartArray[3] = obj3;
         chartArray[4] = obj4;
         chartArray[5] = obj5;
+        
 
+        //console.log(obj0);
         console.log(chartArray);
-          
+        
         //  attributes = [attrSelec.ion[0] attrSeinfratrSelection[2], attrSelection[3], attrSelection[4], attrSelsocial        
         //attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde"];
         var country = keys;
-
-
-        //var attributes = distAttr;
-        var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde"];
-        //var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde", " Moimenta da Beira", " Mortágua", " Nelas", " Oliveira de Frades", " Penalva do Castelo", " Penedono", " Resende", " Santa Comba Dão", " Sernancelhe", " Sátão", " São João da Pesqueira", " São Pedro do Sul", " Tabua", "foo", "bar", "foo", "foo", "foo"]
-        console.log(attributes);
-        console.log(keys);
 
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
-        var x = d3.scale.ordinal().domain(attributes).rangePoints([0, w]),
+        var x = d3.scale.ordinal().domain(attrClean).rangePoints([0, w]),
             y = {};
         
         var line = d3.svg.line(),
@@ -444,7 +499,7 @@ var startApp = function() {
         
         
             // Create a scale and brush for each trait.
-            attributes.forEach(function(d) {
+            attrClean.forEach(function(d) {
                 // Coerce values to numbers.
                 chartArray.forEach(function(p) { p[d] = +p[d]; });
 
@@ -456,7 +511,6 @@ var startApp = function() {
                     .y(y[d])
                     .on("brush", brush);
             });
-
 
             // Add a legend.
             var legend = svg.selectAll("g.legend")
@@ -494,7 +548,7 @@ var startApp = function() {
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
-                .data(attributes)
+                .data(attrClean)
                 .enter().append("svg:g")
                 .attr("class", "trait")
                 .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
@@ -524,40 +578,40 @@ var startApp = function() {
                 .attr("width", 16);
           
             function dragstart(d) {
-                i = attributes.indexOf(d);
+                i = attrClean.indexOf(d);
             }
           
             function drag(d) {
                 x.range()[i] = d3.event.x;
-                attributes.sort(function(a, b) { return x(a) - x(b); });
+                attrClean.sort(function(a, b) { return x(a) - x(b); });
                 g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 foreground.attr("d", path);
             }
           
             function dragend(d) {
-                x.domain(attributes).rangePoints([0, w]);
+                x.domain(attrClean).rangePoints([0, w]);
                 var t = d3.transition().duration(500);
                 t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 t.selectAll(".foreground path").attr("d", path);
             }
 
         // Update the css for each country
-        $("."+keys[0]).css('stroke', 'red');
-        $("."+keys[1]).css('stroke', 'blue');
-        $("."+keys[2]).css('stroke', 'green');
-        $("."+keys[3]).css('stroke', 'orange');
-        $("."+keys[4]).css('stroke', 'purple');
-        $("."+keys[5]).css('stroke', 'black');
+        $("."+attrClean[0]).css('stroke', 'red');
+        $("."+attrClean[1]).css('stroke', 'blue');
+        $("."+attrClean[2]).css('stroke', 'green');
+        $("."+attrClean[3]).css('stroke', 'orange');
+        $("."+attrClean[4]).css('stroke', 'purple');
+        $("."+attrClean[5]).css('stroke', 'black');
 
         // Returns the path for a given data point.
         
         function path(d) {
-            return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
+            return line(attrClean.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
 
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
-            var actives = attributes.filter(function(p) { return !y[p].brush.empty(); }),
+            var actives = attrClean.filter(function(p) { return !y[p].brush.empty(); }),
                 extents = actives.map(function(p) { return y[p].brush.extent(); });
             foreground.classed("fade", function(d) {
                 return !actives.every(function(p, i) {
@@ -632,11 +686,9 @@ var startApp = function() {
 
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
-            console.log(e.data);
 
             // TODO allow the user to control the number of countries/attributes to interrogate
 
-            $("#chartOptions").empty();
             $("#"+chartCat+"-bar").empty();
             svirRankValues = [];
             svirRankKeys = [];
@@ -648,6 +700,8 @@ var startApp = function() {
             countryTable.fnClearTable();
     
             buildDataTable(e, dataCat);
+
+            console.log(e.data);
     
             if (e.data) {
 
@@ -659,37 +713,6 @@ var startApp = function() {
                 var keys = Object.keys(e.data);
                 //console.log(keys);
 
-
-                for (var i in values) {
-                    if (keys[i] != "country" && keys[i] != "region") {
-
-                        var c = keys[i].replace(/_/g, " ");
-                        
-                        var value = values[i];
-
-                        dataFormated[c] = values[i];
-
-                        var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
-                        $('#chartOptions').append(chartDropDown);
-
-                    };
-
-                }
-
-                $('.attributeOption:lt(6)').prop('checked', true);  
-                $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
-                
-                $("#chartOptionsButton").click(function(){
-                    $('#chartOptions').dialog('close');
-                    // Grab the check box values to be used in the chart
-                    attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
-                        .map(function(){
-                            return this.name;
-                        });
-                        if (attrSelection > 6) {
-                            attrSelection.pop();
-                        } 
-                });
 
                 $(function() {
                     var max = 6;
@@ -708,7 +731,6 @@ var startApp = function() {
                 }
                 var m = e.data.municipo;
                 var municipo = m.split(",");
-                console.log(municipo);
 
                 var distName = e.data.DISTRICT;
                 var ec = (e.data.economic).split(",");
@@ -750,9 +772,6 @@ var startApp = function() {
                 var infra = i.split(",");
                 var social = s.split(",");
 */
-                console.log(ec);
-                console.log(econ);
-
 
 
                 var keys = Object.keys(e.data);
@@ -761,14 +780,6 @@ var startApp = function() {
 
                 var distAttrString = e.data.municipo;
                 var distAttr = distAttrString.split(",");
-
-
-                console.log(dataFormated[attrSelection[0]]);
-              
-                console.log(distAttr);
-                console.log(keys);
-
-  
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
                 buildD3SpiderChart(keys, chartCat, distName, econ, edu, gov, health, infra, social, distAttr, municipo);
