@@ -404,16 +404,12 @@ console.log(keys);
         var attributes = distAttr;
         //var attributes = ["Armamar", "CarregaldoSal", "CastroDaire", "Cinfães", "Lamego", "Mangualde"];
         //var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde", " Moimenta da Beira", " Mortágua", " Nelas", " Oliveira de Frades", " Penalva do Castelo", " Penedono", " Resende", " Santa Comba Dão", " Sernancelhe", " Sátão", " São João da Pesqueira", " São Pedro do Sul", " Tabua", "foo", "bar", "foo", "foo", "foo"]
-        console.log(attributes[1]);
 
         var replaceInArray = function(str){
             return str.replace(/\s+/g, "")
         }
         
         var attrClean = attributes.map(replaceInArray);
-
-        console.log(attrClean);
-
 
         obj0.country = attrClean[0];
         obj0[attrClean[0]] = econ[0];
@@ -422,6 +418,19 @@ console.log(keys);
         obj0[attrClean[3]] = econ[3];
         obj0[attrClean[4]] = econ[4];
         obj0[attrClean[5]] = econ[5];
+        obj0[attrClean[5]] = econ[6];
+        obj0[attrClean[5]] = econ[7];
+        obj0[attrClean[5]] = econ[8];
+        obj0[attrClean[5]] = econ[9];
+        obj0[attrClean[5]] = econ[10];
+        obj0[attrClean[5]] = econ[11];
+        obj0[attrClean[5]] = econ[12];
+        obj0[attrClean[5]] = econ[13];
+        obj0[attrClean[5]] = econ[14];
+        obj0[attrClean[5]] = econ[15];
+        obj0[attrClean[5]] = econ[16];
+        obj0[attrClean[5]] = econ[17];
+        obj0[attrClean[5]] = econ[18];
 
         obj1.country = attrClean[1];
         obj1[attrClean[0]] = edu[0];
@@ -430,6 +439,19 @@ console.log(keys);
         obj1[attrClean[3]] = edu[3];
         obj1[attrClean[4]] = edu[4];
         obj1[attrClean[5]] = edu[5];
+        obj1[attrClean[6]] = edu[6];
+        obj1[attrClean[7]] = edu[7];
+        obj1[attrClean[8]] = edu[8];
+        obj1[attrClean[9]] = edu[9];
+        obj1[attrClean[10]] = edu[10];
+        obj1[attrClean[11]] = edu[11];
+        obj1[attrClean[12]] = edu[12];
+        obj1[attrClean[13]] = edu[13];
+        obj1[attrClean[14]] = edu[14];
+        obj1[attrClean[15]] = edu[15];
+        obj1[attrClean[16]] = edu[16];
+        obj1[attrClean[17]] = edu[17];
+        obj1[attrClean[18]] = edu[18];
 
         obj2.country = attrClean[2];
         obj2[attrClean[0]] = gov[0];
@@ -438,6 +460,19 @@ console.log(keys);
         obj2[attrClean[3]] = gov[3];
         obj2[attrClean[4]] = gov[4];
         obj2[attrClean[5]] = gov[5];
+        obj2[attrClean[6]] = gov[6];
+        obj2[attrClean[7]] = gov[7];
+        obj2[attrClean[8]] = gov[8];
+        obj2[attrClean[9]] = gov[9];
+        obj2[attrClean[10]] = gov[10];
+        obj2[attrClean[11]] = gov[11];
+        obj2[attrClean[12]] = gov[12];
+        obj2[attrClean[13]] = gov[13];
+        obj2[attrClean[14]] = gov[14];
+        obj2[attrClean[15]] = gov[15];
+        obj2[attrClean[16]] = gov[16];
+        obj2[attrClean[17]] = gov[17];
+        obj2[attrClean[18]] = gov[18];
 
         obj3.country = attrClean[3];
         obj3[attrClean[0]] = health[0];
@@ -446,6 +481,19 @@ console.log(keys);
         obj3[attrClean[3]] = health[3];
         obj3[attrClean[4]] = health[4];
         obj3[attrClean[5]] = health[5];
+        obj3[attrClean[6]] = health[6];
+        obj3[attrClean[7]] = health[7];
+        obj3[attrClean[8]] = health[8];
+        obj3[attrClean[9]] = health[9];
+        obj3[attrClean[10]] = health[10];
+        obj3[attrClean[11]] = health[11];
+        obj3[attrClean[12]] = health[12];
+        obj3[attrClean[13]] = health[13];
+        obj3[attrClean[14]] = health[14];
+        obj3[attrClean[15]] = health[15];
+        obj3[attrClean[16]] = health[16];
+        obj3[attrClean[17]] = health[17];
+        obj3[attrClean[18]] = health[18];
 
         obj4.country = attrClean[4];
         obj4[attrClean[0]] = infra[0];
@@ -454,6 +502,19 @@ console.log(keys);
         obj4[attrClean[3]] = infra[3];
         obj4[attrClean[4]] = infra[4];
         obj4[attrClean[5]] = infra[5];
+        obj4[attrClean[6]] = infra[6];
+        obj4[attrClean[7]] = infra[7];
+        obj4[attrClean[8]] = infra[8];
+        obj4[attrClean[9]] = infra[9];
+        obj4[attrClean[10]] = infra[10];
+        obj4[attrClean[11]] = infra[11];
+        obj4[attrClean[12]] = infra[12];
+        obj4[attrClean[13]] = infra[13];
+        obj4[attrClean[14]] = infra[14];
+        obj4[attrClean[15]] = infra[15];
+        obj4[attrClean[16]] = infra[16];
+        obj4[attrClean[17]] = infra[17];
+        obj4[attrClean[18]] = infra[18];
 
         obj5.country = attrClean[5];
         obj5[attrClean[0]] = social[0];
@@ -462,6 +523,19 @@ console.log(keys);
         obj5[attrClean[3]] = social[3];
         obj5[attrClean[4]] = social[4];
         obj5[attrClean[5]] = social[5];
+        obj5[attrClean[6]] = social[6];
+        obj5[attrClean[7]] = social[7];
+        obj5[attrClean[8]] = social[8];
+        obj5[attrClean[9]] = social[9];
+        obj5[attrClean[10]] = social[10];
+        obj5[attrClean[11]] = social[11];
+        obj5[attrClean[12]] = social[12];
+        obj5[attrClean[13]] = social[13];
+        obj5[attrClean[14]] = social[14];
+        obj5[attrClean[15]] = social[15];
+        obj5[attrClean[16]] = social[16];
+        obj5[attrClean[17]] = social[17];
+        obj5[attrClean[18]] = social[18];
 
         chartArray[0] = obj0;
         chartArray[1] = obj1;
@@ -470,16 +544,11 @@ console.log(keys);
         chartArray[4] = obj4;
         chartArray[5] = obj5;
         
-
-        //console.log(obj0);
         console.log(chartArray);
         
-        //  attributes = [attrSelec.ion[0] attrSeinfratrSelection[2], attrSelection[3], attrSelection[4], attrSelsocial        
-        //attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde"];
         var country = keys;
-
         var m = [80, 160, 200, 160],
-            w = 1280 - m[1] - m[3],
+            w = 1480 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
         var x = d3.scale.ordinal().domain(attrClean).rangePoints([0, w]),
