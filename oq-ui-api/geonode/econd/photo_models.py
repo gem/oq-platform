@@ -45,6 +45,7 @@ class WebLibPhoto(ImageModel):
     isinternal = models.ForeignKey(Lookupyesnonull, db_column='isinternal', verbose_name='Is it internal?', default=0, related_name='+', )
     hasowner = models.ForeignKey(Lookupyesnonull, db_column='hasowner', verbose_name='Does the photograph have the owner in?', default=0, related_name='+', )
     haspeople = models.ForeignKey(Lookupyesnonull, db_column='haspeople', verbose_name='Does the photograph have people in?', default=0, related_name='+', )
+    copyflag = models.CharField(max_length=1, verbose_name='Copy flag', help_text='Flag used to determine if photo has been copied as part of bulk image processing', blank=True, null=True)
 
     ownerid = models.IntegerField()
     lastupdatebyid = models.IntegerField()
@@ -92,6 +93,7 @@ class GeoArchiveMasterOverview (models.Model):
     id = models.IntegerField(primary_key=True, db_column='photoid', )  # impersonate a primary key from the photo id
     thephoto = models.ForeignKey('WebLibPhoto', db_column='photoid', null=True, blank=True, )
     photofilename = models.CharField(max_length=255, unique=True, blank=True, )
+    photoid = models.IntegerField(null=True, blank=True, )
     locationname = models.CharField(max_length=255, blank=True, )
     locationid = models.IntegerField(null=True, blank=True, )
     event = models.CharField(max_length=50, blank=True, )
