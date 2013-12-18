@@ -99,6 +99,21 @@ var startApp = function() {
         });
     });
 
+    // Slider
+    $(function() {
+        $( "#slider-vertical" ).slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 16.666,
+            slide: function( event, ui ) {
+                $( "#econ-weight" ).val( ui.value );
+            }
+        });
+        $( "#econ-weight" ).val( $( "#slider-vertical" ).slider( "value" ) );
+    });
+
     // No Layer to remove warnning message
     function showRemoveMsg() {
         $("#worning-no-layer").dialog("open");
@@ -357,9 +372,6 @@ var startApp = function() {
             return str.replace(/\s+/g, "-")
         }
 
-        //switch these two...
-        console.log(attributes);
-
         var attrClean = attributes.map(replaceInArray);
 
         // Set up some variables and the field values you will use:
@@ -374,7 +386,6 @@ var startApp = function() {
         
         // Loop through the array.
         for (i = 0; i < attrClean.length; i++) {
-            console.log(econ[i]);
             // Create an object with a country field. 
             obj = { country: attrClean[i] };
             // Populate the other fields.
@@ -532,8 +543,6 @@ var startApp = function() {
         $("."+attrClean[17]).css('stroke', 'MidnightBlue');
         $("."+attrClean[18]).css('stroke', 'Maroon');
 
-        console.log(attrClean);
-
         // Returns the path for a given data point.
         
         function path(d) {
@@ -617,7 +626,6 @@ var startApp = function() {
 
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
-
             // TODO allow the user to control the number of countries/attributes to interrogate
 
             $("#"+chartCat+"-bar").empty();
@@ -629,11 +637,8 @@ var startApp = function() {
             // When the map is clikced the table needs to be cleared out and recreated 
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
-    
             buildDataTable(e, dataCat);
 
-            console.log(e.data);
-    
             if (e.data) {
 
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
@@ -673,7 +678,6 @@ var startApp = function() {
                 for (var i = 0; i < ec.length; i++) {
                     econ[i] = parseFloat(ec[i]);
                 };
-                
                 var edu = [];
                 for (var i = 0; i < ed.length; i++) {
                     edu[i] = parseFloat(ed[i]);
@@ -695,11 +699,34 @@ var startApp = function() {
                     social[i] = parseFloat(s[i]);
                 };
 
+                // give weight to the categories
+                var svirData = e.data;
+                var econWeight = ($( "#econ-weight" ).val() / 100);
+                //console.log(econWeight);
+                console.log(econ);
+
+                //var a = econ.map(function(x) x * 5);
+
+                var a = econ.map(function(x) { return x * econWeight; });
+                var b = edu.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var c = gov.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var d = health.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var f = infra.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var g = social.map(function(x) { return x * ((1 - econWeight) / 5)});
+
+                console.log(b);
+                console.log(a);
+                econ = a;
+                edu = b;
+                gov = c;
+                health = d;
+                infra = f;
+                social = g;
+                    
                 var keys = Object.keys(e.data);
                 keys.shift();
                 keys.splice(5, 2);
 
-                console.log(values);
 
                 var distAttrString = e.data.municipo;
                 var distAttr = distAttrString.split(",");
