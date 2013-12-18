@@ -54,6 +54,19 @@ var obj3 = {};
 var obj4 = {};
 var obj5 = {};
 var obj6 = {};
+var obj7 = {};
+var obj8 = {};
+var obj9 = {};
+var obj10 = {};
+var obj11 = {};
+var obj12 = {};
+var obj13 = {};
+var obj14 = {};
+var obj15 = {};
+var obj16 = {};
+var obj17 = {};
+var obj18 = {};
+
 var chart;
 
 var baseMapUrl = (
@@ -337,221 +350,55 @@ var startApp = function() {
     //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(keys, chartCat, distName, econ, edu, gov, health, infra, social, distAttr, municipo) {
-console.log(keys);
-/*
-        var number = 19;
+    function buildD3SpiderChart(keys, distName, econ, edu, gov, health, infra, social, distAttr) {
 
-        for (var i = 0; i < distAttr.length; i++) 
-        {
-            var arr = [];
-        
-            for (var j = 0; j < distAttr.length; j++) {
-                arr[municipo[j]] = econ[j];
-            };
-        
-            chartArray[i] = arr;
+        var attributes = distAttr;
+        var replaceInArray = function(str){
+            return str.replace(/\s+/g, "-")
         }
-*/
-        
 
-/*
-        for (var i = 0; i < distAttr.length; i++) {
-            //chartArray["obj"+i] = {};
-            //eval('var obj'+i+' = {};');
-            window['obj'+i ] = {};
-        };
-        var number = distName.length;
+        //switch these two...
+        console.log(attributes);
 
-        for (var j = 0; i < distName.length; j++) {
-            //"obj"+i+.foo = "foo";
-            //console.log([obj+i]);
-            //window['obj'+i ][municipo[j]] = econ[i];
-            //console.log(municipo[number]);
-        };
-        */
-/*
+        var attrClean = attributes.map(replaceInArray);
+
         // Set up some variables and the field values you will use:
         var j,
             obj,
-                ec = municipo[0],
-                ed = municipo[1],
-                go = municipo[2],
-                he = municipo[3],
-                inf = municipo[4],
-                so = municipo[5];
+                a = econ[0],
+                b = edu[1],
+                c = infra[2],
+                d = health[3],
+                e = gov[4],
+                f = social[5];
         
         // Loop through the array.
-        for (i = 0; i < keys.length; i++) {
+        for (i = 0; i < attrClean.length; i++) {
             console.log(econ[i]);
             // Create an object with a country field. 
-            obj = { country: keys[i] };
+            obj = { country: attrClean[i] };
             // Populate the other fields.
-            obj[municipo[0]] = econ[i];
-            obj[municipo[1]] = econ[i+1];
-            obj[municipo[2]] = econ[i+2];
-            obj[municipo[3]] = econ[i+3];
-            obj[municipo[4]] = econ[i+4];
-            obj[municipo[5]] = econ[i+5];
+            obj[keys[0]] = econ[i];
+            obj[keys[1]] = edu[i];
+            obj[keys[2]] = infra[i];
+            obj[keys[3]] = health[i];
+            obj[keys[4]] = gov[i];
+            obj[keys[5]] = social[i];
             
             // Set the array index to contain the object
             // (and if you need it then create a global object `objx`
             //  - not sure if you need it though.)
             chartArray[i] = window['obj'+i] = obj;
         };
-        console.log(obj1);
-*/
-        var attributes = distAttr;
-        //var attributes = ["Armamar", "CarregaldoSal", "CastroDaire", "Cinfães", "Lamego", "Mangualde"];
-        //var attributes = ["Armamar", " Carregal do Sal", " Castro Daire", " Cinfães", " Lamego", " Mangualde", " Moimenta da Beira", " Mortágua", " Nelas", " Oliveira de Frades", " Penalva do Castelo", " Penedono", " Resende", " Santa Comba Dão", " Sernancelhe", " Sátão", " São João da Pesqueira", " São Pedro do Sul", " Tabua", "foo", "bar", "foo", "foo", "foo"]
 
-        var replaceInArray = function(str){
-            return str.replace(/\s+/g, "")
-        }
-        
-        var attrClean = attributes.map(replaceInArray);
-
-        obj0.country = attrClean[0];
-        obj0[attrClean[0]] = econ[0];
-        obj0[attrClean[1]] = econ[1];
-        obj0[attrClean[2]] = econ[2];
-        obj0[attrClean[3]] = econ[3];
-        obj0[attrClean[4]] = econ[4];
-        obj0[attrClean[5]] = econ[5];
-        obj0[attrClean[5]] = econ[6];
-        obj0[attrClean[5]] = econ[7];
-        obj0[attrClean[5]] = econ[8];
-        obj0[attrClean[5]] = econ[9];
-        obj0[attrClean[5]] = econ[10];
-        obj0[attrClean[5]] = econ[11];
-        obj0[attrClean[5]] = econ[12];
-        obj0[attrClean[5]] = econ[13];
-        obj0[attrClean[5]] = econ[14];
-        obj0[attrClean[5]] = econ[15];
-        obj0[attrClean[5]] = econ[16];
-        obj0[attrClean[5]] = econ[17];
-        obj0[attrClean[5]] = econ[18];
-
-        obj1.country = attrClean[1];
-        obj1[attrClean[0]] = edu[0];
-        obj1[attrClean[1]] = edu[1];
-        obj1[attrClean[2]] = edu[2];
-        obj1[attrClean[3]] = edu[3];
-        obj1[attrClean[4]] = edu[4];
-        obj1[attrClean[5]] = edu[5];
-        obj1[attrClean[6]] = edu[6];
-        obj1[attrClean[7]] = edu[7];
-        obj1[attrClean[8]] = edu[8];
-        obj1[attrClean[9]] = edu[9];
-        obj1[attrClean[10]] = edu[10];
-        obj1[attrClean[11]] = edu[11];
-        obj1[attrClean[12]] = edu[12];
-        obj1[attrClean[13]] = edu[13];
-        obj1[attrClean[14]] = edu[14];
-        obj1[attrClean[15]] = edu[15];
-        obj1[attrClean[16]] = edu[16];
-        obj1[attrClean[17]] = edu[17];
-        obj1[attrClean[18]] = edu[18];
-
-        obj2.country = attrClean[2];
-        obj2[attrClean[0]] = gov[0];
-        obj2[attrClean[1]] = gov[1];
-        obj2[attrClean[2]] = gov[2];
-        obj2[attrClean[3]] = gov[3];
-        obj2[attrClean[4]] = gov[4];
-        obj2[attrClean[5]] = gov[5];
-        obj2[attrClean[6]] = gov[6];
-        obj2[attrClean[7]] = gov[7];
-        obj2[attrClean[8]] = gov[8];
-        obj2[attrClean[9]] = gov[9];
-        obj2[attrClean[10]] = gov[10];
-        obj2[attrClean[11]] = gov[11];
-        obj2[attrClean[12]] = gov[12];
-        obj2[attrClean[13]] = gov[13];
-        obj2[attrClean[14]] = gov[14];
-        obj2[attrClean[15]] = gov[15];
-        obj2[attrClean[16]] = gov[16];
-        obj2[attrClean[17]] = gov[17];
-        obj2[attrClean[18]] = gov[18];
-
-        obj3.country = attrClean[3];
-        obj3[attrClean[0]] = health[0];
-        obj3[attrClean[1]] = health[1];
-        obj3[attrClean[2]] = health[2];
-        obj3[attrClean[3]] = health[3];
-        obj3[attrClean[4]] = health[4];
-        obj3[attrClean[5]] = health[5];
-        obj3[attrClean[6]] = health[6];
-        obj3[attrClean[7]] = health[7];
-        obj3[attrClean[8]] = health[8];
-        obj3[attrClean[9]] = health[9];
-        obj3[attrClean[10]] = health[10];
-        obj3[attrClean[11]] = health[11];
-        obj3[attrClean[12]] = health[12];
-        obj3[attrClean[13]] = health[13];
-        obj3[attrClean[14]] = health[14];
-        obj3[attrClean[15]] = health[15];
-        obj3[attrClean[16]] = health[16];
-        obj3[attrClean[17]] = health[17];
-        obj3[attrClean[18]] = health[18];
-
-        obj4.country = attrClean[4];
-        obj4[attrClean[0]] = infra[0];
-        obj4[attrClean[1]] = infra[1];
-        obj4[attrClean[2]] = infra[2];
-        obj4[attrClean[3]] = infra[3];
-        obj4[attrClean[4]] = infra[4];
-        obj4[attrClean[5]] = infra[5];
-        obj4[attrClean[6]] = infra[6];
-        obj4[attrClean[7]] = infra[7];
-        obj4[attrClean[8]] = infra[8];
-        obj4[attrClean[9]] = infra[9];
-        obj4[attrClean[10]] = infra[10];
-        obj4[attrClean[11]] = infra[11];
-        obj4[attrClean[12]] = infra[12];
-        obj4[attrClean[13]] = infra[13];
-        obj4[attrClean[14]] = infra[14];
-        obj4[attrClean[15]] = infra[15];
-        obj4[attrClean[16]] = infra[16];
-        obj4[attrClean[17]] = infra[17];
-        obj4[attrClean[18]] = infra[18];
-
-        obj5.country = attrClean[5];
-        obj5[attrClean[0]] = social[0];
-        obj5[attrClean[1]] = social[1];
-        obj5[attrClean[2]] = social[2];
-        obj5[attrClean[3]] = social[3];
-        obj5[attrClean[4]] = social[4];
-        obj5[attrClean[5]] = social[5];
-        obj5[attrClean[6]] = social[6];
-        obj5[attrClean[7]] = social[7];
-        obj5[attrClean[8]] = social[8];
-        obj5[attrClean[9]] = social[9];
-        obj5[attrClean[10]] = social[10];
-        obj5[attrClean[11]] = social[11];
-        obj5[attrClean[12]] = social[12];
-        obj5[attrClean[13]] = social[13];
-        obj5[attrClean[14]] = social[14];
-        obj5[attrClean[15]] = social[15];
-        obj5[attrClean[16]] = social[16];
-        obj5[attrClean[17]] = social[17];
-        obj5[attrClean[18]] = social[18];
-
-        chartArray[0] = obj0;
-        chartArray[1] = obj1;
-        chartArray[2] = obj2;
-        chartArray[3] = obj3;
-        chartArray[4] = obj4;
-        chartArray[5] = obj5;
-        
         console.log(chartArray);
         
-        var country = keys;
+        var country = attrClean;
         var m = [80, 160, 200, 160],
             w = 1480 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
-        var x = d3.scale.ordinal().domain(attrClean).rangePoints([0, w]),
+        var x = d3.scale.ordinal().domain(keys).rangePoints([0, w]),
             y = {};
         
         var line = d3.svg.line(),
@@ -568,7 +415,7 @@ console.log(keys);
         
         
             // Create a scale and brush for each trait.
-            attrClean.forEach(function(d) {
+            keys.forEach(function(d) {
                 // Coerce values to numbers.
                 chartArray.forEach(function(p) { p[d] = +p[d]; });
 
@@ -617,7 +464,7 @@ console.log(keys);
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
-                .data(attrClean)
+                .data(keys)
                 .enter().append("svg:g")
                 .attr("class", "trait")
                 .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
@@ -647,18 +494,18 @@ console.log(keys);
                 .attr("width", 16);
           
             function dragstart(d) {
-                i = attrClean.indexOf(d);
+                i = keys.indexOf(d);
             }
           
             function drag(d) {
                 x.range()[i] = d3.event.x;
-                attrClean.sort(function(a, b) { return x(a) - x(b); });
+                keys.sort(function(a, b) { return x(a) - x(b); });
                 g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 foreground.attr("d", path);
             }
           
             function dragend(d) {
-                x.domain(attrClean).rangePoints([0, w]);
+                x.domain(keys).rangePoints([0, w]);
                 var t = d3.transition().duration(500);
                 t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 t.selectAll(".foreground path").attr("d", path);
@@ -671,16 +518,31 @@ console.log(keys);
         $("."+attrClean[3]).css('stroke', 'orange');
         $("."+attrClean[4]).css('stroke', 'purple');
         $("."+attrClean[5]).css('stroke', 'black');
+        $("."+attrClean[6]).css('stroke', 'gray');
+        $("."+attrClean[7]).css('stroke', 'pink');
+        $("."+attrClean[8]).css('stroke', 'teal');
+        $("."+attrClean[9]).css('stroke', 'DarkBlue');
+        $("."+attrClean[10]).css('stroke', 'DarkCyan');
+        $("."+attrClean[11]).css('stroke', 'Crimson');
+        $("."+attrClean[12]).css('stroke', 'Coral');
+        $("."+attrClean[13]).css('stroke', 'DarkGoldenRod');
+        $("."+attrClean[14]).css('stroke', 'MediumPurple');
+        $("."+attrClean[15]).css('stroke', 'MediumSlateBlue');
+        $("."+attrClean[16]).css('stroke', 'MediumSeaGreen');
+        $("."+attrClean[17]).css('stroke', 'MidnightBlue');
+        $("."+attrClean[18]).css('stroke', 'Maroon');
+
+        console.log(attrClean);
 
         // Returns the path for a given data point.
         
         function path(d) {
-            return line(attrClean.map(function(p) { return [x(p), y[p](d[p])]; }));
+            return line(keys.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
 
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
-            var actives = attrClean.filter(function(p) { return !y[p].brush.empty(); }),
+            var actives = keys.filter(function(p) { return !y[p].brush.empty(); }),
                 extents = actives.map(function(p) { return y[p].brush.extent(); });
             foreground.classed("fade", function(d) {
                 return !actives.every(function(p, i) {
@@ -798,9 +660,7 @@ console.log(keys);
                         attrSelection[i] = attrSelectionArray[i].name;
                     };
                 }
-                var m = e.data.municipo;
-                var municipo = m.split(",");
-
+    
                 var distName = e.data.DISTRICT;
                 var ec = (e.data.economic).split(",");
                 var ed = (e.data.education).split(",");
@@ -834,24 +694,18 @@ console.log(keys);
                 for (var i = 0; i < s.length; i++) {
                     social[i] = parseFloat(s[i]);
                 };
-                /*
-                var edu = ed.split(",");
-                var gov = g.split(",");
-                var health = h.split(",");
-                var infra = i.split(",");
-                var social = s.split(",");
-*/
-
 
                 var keys = Object.keys(e.data);
                 keys.shift();
                 keys.splice(5, 2);
 
+                console.log(values);
+
                 var distAttrString = e.data.municipo;
                 var distAttr = distAttrString.split(",");
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
-                buildD3SpiderChart(keys, chartCat, distName, econ, edu, gov, health, infra, social, distAttr, municipo);
+                buildD3SpiderChart(keys, distName, econ, edu, gov, health, infra, social, distAttr);
                 
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
