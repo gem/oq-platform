@@ -55,146 +55,15 @@ Explore - {{block.super}}
 {% block extra_script %}
     {{block.super}}
     <!-- Category tags-->
-<div id="categoryTabs">
-  <ul>
-    <li id="econ"><a href="#economy">Economy</a></li>
-    <li id="pop"><a href="#population">Population</a></li>
-    <li id="health"><a href="#heal">Health</a></li>
-    <li id="infra"><a href="#infrastructure">Infrastructure</a></li>
-    <li id="gov"><a href="#governance">Governance</a></li>
-    <li id="edu"><a href="#education">Education</a></li>
-  </ul>
+
 
     <br>
     <button type="button" id="thematic-map">Map Options</button> 
-    <button type="button" id="chart-options">Chart Options</button>
-    <select id="chart-var-numb">
-      <option value=1>1 countries</option>
-      <option value=2>2 countries</option>
-      <option value=3 selected>3 countries</option>
-      <option value=4>4 countries</option>
-      <option value=5>5 countries</option>
-      <option value=6>6 countries</option>
-    </select>
-
-  <div id="economy">
- 
-    <div id="econ-chart-spider" style="display:inline-block;" >
-      <svg></svg>
-    </div>
-  
-    <div style="display:inline-block;" id='econ-chart-bar'></div>
- <!--
-    <div id="example" class="parcoords" style="width:960px;height:200px;"></div>
-      -->
-    <table id="econ-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index </th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-
-  <div id="population">
-    <div id="pop-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='pop-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="pop-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="heal">
-    <div id="health-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='health-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="health-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="infrastructure">
-    <div id="infra-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='infra-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="infra-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="governance">
-    <div id="gov-chart-spider">
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='gov-chart-bar'></div>
-
-    <div class="table-header"></div>
-
-    <table id="gov-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="education">
-    <div id="edu-chart-spider">
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='edu-chart-bar'></div>
-
-    <div class="table-header"></div>
-
-    <table id="edu-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
 
   <!-- TODO fix this-->
   <div id="empty" style="height:500px;">
   </div>
 
-</div>
-    <script src="{{ STATIC_URL }}js/svir_viewer.js"></script>
+
+    <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
 {% endblock extra_script %}

@@ -138,7 +138,8 @@ var startApp = function() {
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-            if (cat != undefined) {
+            var type = json[i].type;
+            if (cat != undefined && type == "svir") {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
@@ -149,8 +150,8 @@ var startApp = function() {
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-
-            if (cat != undefined) {
+            var type = json[i].type;
+            if (cat != undefined && type == "svir") {
                 layerId = json[i].id;
                 layerTitle = json[i].mapped_value;
                 layerNames[name].push(layerId);

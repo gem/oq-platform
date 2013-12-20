@@ -53,6 +53,20 @@ var obj2 = {};
 var obj3 = {};
 var obj4 = {};
 var obj5 = {};
+var obj6 = {};
+var obj7 = {};
+var obj8 = {};
+var obj9 = {};
+var obj10 = {};
+var obj11 = {};
+var obj12 = {};
+var obj13 = {};
+var obj14 = {};
+var obj15 = {};
+var obj16 = {};
+var obj17 = {};
+var obj18 = {};
+
 var chart;
 
 var baseMapUrl = (
@@ -68,6 +82,8 @@ var startApp = function() {
     layers = {};
 
     layerControl = L.control.layers(app.baseLayers);
+    map.panTo(new L.LatLng(10, 10));
+    map.setZoom(2);
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -81,6 +97,21 @@ var startApp = function() {
             width: 350,
             modal: true
         });
+    });
+
+    // Slider
+    $(function() {
+        $( "#slider-vertical" ).slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 16.666,
+            slide: function( event, ui ) {
+                $( "#econ-weight" ).val( ui.value );
+            }
+        });
+        $( "#econ-weight" ).val( $( "#slider-vertical" ).slider( "value" ) );
     });
 
     // No Layer to remove warnning message
@@ -134,14 +165,19 @@ var startApp = function() {
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
+
+            
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-            if (cat != undefined) {
+            var type = json[i].type;
+            if (cat != undefined && type == "hazard") {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
+                //console.log(name);
+                //console.log(cat);
             }
         }
 
@@ -149,9 +185,12 @@ var startApp = function() {
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-
-            if (cat != undefined) {
+            var type = json[i].type;
+            if (cat != undefined && type == "hazard") {
                 layerId = json[i].id;
+                console.log(layerId);
+                console.log(layerNames);
+                console.log(name);
                 layerTitle = json[i].mapped_value;
                 layerNames[name].push(layerId);
                 layersByCat[cat].push(layerTitle);
@@ -250,13 +289,7 @@ var startApp = function() {
         });
     });
 
-    // Chart variable selection dialog
-    $("#chartOptions").dialog({
-        autoOpen: false,
-        height: 300,
-        width: 500,
-        modal: true
-    });
+
 
     // Map options selection dialog
     $("#thematicMap").dialog({
@@ -266,9 +299,6 @@ var startApp = function() {
         modal: true
     });
 
-    $("#chart-options").button().click(function() {
-        $("#chartOptions").dialog("open");
-    });
 
     $("#thematic-map").button().click(function() {
         $("#thematicMap").dialog("open");
@@ -343,78 +373,51 @@ var startApp = function() {
     //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
+    function buildD3SpiderChart(keys, distName, econ, edu, gov, health, infra, social, distAttr) {
 
-        var numberOfCountries = $("#chart-var-numb option:selected").val();
-
-        obj0.country = countriesArray[0];
-        obj0[attrSelection[0]] = selectedValue1[0];
-        obj0[attrSelection[1]] = selectedValue2[0];
-        obj0[attrSelection[2]] = selectedValue3[0];
-        obj0[attrSelection[3]] = selectedValue4[0];
-        obj0[attrSelection[4]] = selectedValue5[0];
-        obj0[attrSelection[5]] = selectedValue6[0];
-
-
-        obj1.country = countriesArray[1];
-        obj1[attrSelection[0]] = selectedValue1[1];
-        obj1[attrSelection[1]] = selectedValue2[1];
-        obj1[attrSelection[2]] = selectedValue3[1];
-        obj1[attrSelection[3]] = selectedValue4[1];
-        obj1[attrSelection[4]] = selectedValue5[1];
-        obj1[attrSelection[5]] = selectedValue6[1];
-
-        obj2.country = countriesArray[2];
-        obj2[attrSelection[0]] = selectedValue1[2];
-        obj2[attrSelection[1]] = selectedValue2[2];
-        obj2[attrSelection[2]] = selectedValue3[2];
-        obj2[attrSelection[3]] = selectedValue4[2];
-        obj2[attrSelection[4]] = selectedValue5[2];
-        obj2[attrSelection[5]] = selectedValue6[2];
-
-        obj3.country = countriesArray[3];
-        obj3[attrSelection[0]] = selectedValue1[3];
-        obj3[attrSelection[1]] = selectedValue2[3];
-        obj3[attrSelection[2]] = selectedValue3[3];
-        obj3[attrSelection[3]] = selectedValue4[3];
-        obj3[attrSelection[4]] = selectedValue5[3];
-        obj3[attrSelection[5]] = selectedValue6[3];
-
-        obj4.country = countriesArray[4];
-        obj4[attrSelection[0]] = selectedValue1[4];
-        obj4[attrSelection[1]] = selectedValue2[4];
-        obj4[attrSelection[2]] = selectedValue3[4];
-        obj4[attrSelection[3]] = selectedValue4[4];
-        obj4[attrSelection[4]] = selectedValue5[4];
-        obj4[attrSelection[5]] = selectedValue6[4];
-
-        obj5.country = countriesArray[5];
-
-        obj5[attrSelection[0]] = selectedValue1[5];
-        obj5[attrSelection[1]] = selectedValue2[5];
-        obj5[attrSelection[2]] = selectedValue3[5];
-        obj5[attrSelection[3]] = selectedValue4[5];
-        obj5[attrSelection[4]] = selectedValue5[5];
-        obj5[attrSelection[5]] = selectedValue6[5];
-
-        chartArray.splice(0,10);        
-
-        for (var i=0; i<numberOfCountries; i++) {
-            chartArray[i] = window["obj" + i];
+        var attributes = distAttr;
+        var replaceInArray = function(str){
+            return str.replace(/\s+/g, "-")
         }
 
-        var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
-            attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
- 
-        for (var i=0; i<numberOfCountries; i++) {
-            country.splice(numberOfCountries,10);
-        }
+        var attrClean = attributes.map(replaceInArray);
 
+        // Set up some variables and the field values you will use:
+        var j,
+            obj,
+                a = econ[0],
+                b = edu[1],
+                c = infra[2],
+                d = health[3],
+                e = gov[4],
+                f = social[5];
+        
+        // Loop through the array.
+        for (i = 0; i < attrClean.length; i++) {
+            // Create an object with a country field. 
+            obj = { country: attrClean[i] };
+            // Populate the other fields.
+            obj[keys[0]] = econ[i];
+            obj[keys[1]] = edu[i];
+            obj[keys[2]] = infra[i];
+            obj[keys[3]] = health[i];
+            obj[keys[4]] = gov[i];
+            obj[keys[5]] = social[i];
+            
+            // Set the array index to contain the object
+            // (and if you need it then create a global object `objx`
+            //  - not sure if you need it though.)
+            chartArray[i] = window['obj'+i] = obj;
+        };
+
+        console.log(chartArray);
+        
+        var country = attrClean;
         var m = [80, 160, 200, 160],
-            w = 1280 - m[1] - m[3],
+            w = 1480 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
-        var x = d3.scale.ordinal().domain(attributes).rangePoints([0, w]),
+        var x = d3.scale.ordinal().domain(keys).rangePoints([0, w]),
             y = {};
         
         var line = d3.svg.line(),
@@ -429,8 +432,9 @@ var startApp = function() {
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
         
+        
             // Create a scale and brush for each trait.
-            attributes.forEach(function(d) {
+            keys.forEach(function(d) {
                 // Coerce values to numbers.
                 chartArray.forEach(function(p) { p[d] = +p[d]; });
 
@@ -479,7 +483,7 @@ var startApp = function() {
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
-                .data(attributes)
+                .data(keys)
                 .enter().append("svg:g")
                 .attr("class", "trait")
                 .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
@@ -509,39 +513,53 @@ var startApp = function() {
                 .attr("width", 16);
           
             function dragstart(d) {
-                i = attributes.indexOf(d);
+                i = keys.indexOf(d);
             }
           
             function drag(d) {
                 x.range()[i] = d3.event.x;
-                attributes.sort(function(a, b) { return x(a) - x(b); });
+                keys.sort(function(a, b) { return x(a) - x(b); });
                 g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 foreground.attr("d", path);
             }
           
             function dragend(d) {
-                x.domain(attributes).rangePoints([0, w]);
+                x.domain(keys).rangePoints([0, w]);
                 var t = d3.transition().duration(500);
                 t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 t.selectAll(".foreground path").attr("d", path);
             }
 
         // Update the css for each country
-        $("."+countriesArray[0]).css('stroke', 'red');
-        $("."+countriesArray[1]).css('stroke', 'blue');
-        $("."+countriesArray[2]).css('stroke', 'green');
-        $("."+countriesArray[3]).css('stroke', 'orange');
-        $("."+countriesArray[4]).css('stroke', 'purple');
-        $("."+countriesArray[5]).css('stroke', 'black');
-        
+        $("."+attrClean[0]).css('stroke', 'red');
+        $("."+attrClean[1]).css('stroke', 'blue');
+        $("."+attrClean[2]).css('stroke', 'green');
+        $("."+attrClean[3]).css('stroke', 'orange');
+        $("."+attrClean[4]).css('stroke', 'purple');
+        $("."+attrClean[5]).css('stroke', 'black');
+        $("."+attrClean[6]).css('stroke', 'gray');
+        $("."+attrClean[7]).css('stroke', 'pink');
+        $("."+attrClean[8]).css('stroke', 'teal');
+        $("."+attrClean[9]).css('stroke', 'DarkBlue');
+        $("."+attrClean[10]).css('stroke', 'DarkCyan');
+        $("."+attrClean[11]).css('stroke', 'Crimson');
+        $("."+attrClean[12]).css('stroke', 'Coral');
+        $("."+attrClean[13]).css('stroke', 'DarkGoldenRod');
+        $("."+attrClean[14]).css('stroke', 'MediumPurple');
+        $("."+attrClean[15]).css('stroke', 'MediumSlateBlue');
+        $("."+attrClean[16]).css('stroke', 'MediumSeaGreen');
+        $("."+attrClean[17]).css('stroke', 'MidnightBlue');
+        $("."+attrClean[18]).css('stroke', 'Maroon');
+
         // Returns the path for a given data point.
-        function path(d) {
-            return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
-        }
         
+        function path(d) {
+            return line(keys.map(function(p) { return [x(p), y[p](d[p])]; }));
+        }
+
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
-            var actives = attributes.filter(function(p) { return !y[p].brush.empty(); }),
+            var actives = keys.filter(function(p) { return !y[p].brush.empty(); }),
                 extents = actives.map(function(p) { return y[p].brush.extent(); });
             foreground.classed("fade", function(d) {
                 return !actives.every(function(p, i) {
@@ -555,9 +573,6 @@ var startApp = function() {
     $("#econ").click(function(){ 
         dataCat = "econ-table";
         chartCat = "econ-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -567,9 +582,6 @@ var startApp = function() {
     $("#pop").click(function(){
         dataCat = "pop-table";
         chartCat = "pop-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_pop/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -579,9 +591,6 @@ var startApp = function() {
     $("#health").click(function(){
         dataCat = "health-table";
         chartCat = "health-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_health/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -591,9 +600,6 @@ var startApp = function() {
     $("#infra").click(function(){
         dataCat = "infra-table";
         chartCat = "infra-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -603,9 +609,6 @@ var startApp = function() {
     $("#gov").click(function(){
         dataCat = "gov-table";
         chartCat = "gov-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -615,21 +618,25 @@ var startApp = function() {
     $("#edu").click(function(){
         dataCat = "edu-table";
         chartCat = "edu-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
         $("#empty").remove();
     });
 
+
+    // This layer is used for the visual representation of the data
+    //var hazard_map = L.tileLayer('http://tilestream.openquake.org/v2/hazard-map-points-world/{z}/{x}/{y}.png');
+    //layerControl.addOverlay(hazard_map, "World Hazard Map - 10% in 50 years");
+    //map.addLayer(hazard_map);
+
+    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    map.addLayer(utfGrid);
+
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
-
             // TODO allow the user to control the number of countries/attributes to interrogate
 
-            $("#chartOptions").empty();
             $("#"+chartCat+"-bar").empty();
             svirRankValues = [];
             svirRankKeys = [];
@@ -639,9 +646,8 @@ var startApp = function() {
             // When the map is clikced the table needs to be cleared out and recreated 
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
-    
             buildDataTable(e, dataCat);
-    
+
             if (e.data) {
 
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
@@ -652,32 +658,6 @@ var startApp = function() {
                 var keys = Object.keys(e.data);
                 //console.log(keys);
 
-
-                for (var i in values) {
-                    if (keys[i] != "country" && keys[i] != "region") {
-                        var c = keys[i].replace(/_/g, " ");
-                        var value = values[i];
-                        dataFormated[c] = values[i];
-                        var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
-                        $('#chartOptions').append(chartDropDown);
-                    };
-                }
-
-                $('.attributeOption:lt(6)').prop('checked', true);  
-                $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
-                
-                $("#chartOptionsButton").click(function(){
-                    $('#chartOptions').dialog('close');
-                    // Grab the check box values to be used in the chart
-                    attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
-                        .map(function(){
-                            return this.name;
-                        });
-                        if (attrSelection > 6) {
-                            attrSelection.pop();
-                        } 
-                });
-                
 
                 $(function() {
                     var max = 6;
@@ -693,62 +673,84 @@ var startApp = function() {
                     for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
                         attrSelection[i] = attrSelectionArray[i].name;
                     };
-                } else {
-                    attrSelection = attrSelection = $('#chartOptions input[class="attributeOption"]:checked').map(function(){
-                            return this.name;
-                        });
+                }
+    
+                var distName = e.data.DISTRICT;
+                var ec = (e.data.economic).split(",");
+                var ed = (e.data.education).split(",");
+                var g = (e.data.gov).split(",");
+                var h = (e.data.health).split(",");
+                var inf = (e.data.infrastruc).split(",");
+                var s = (e.data.social).split(",");
+
+                var econ = [];
+                for (var i = 0; i < ec.length; i++) {
+                    econ[i] = parseFloat(ec[i]);
+                };
+                var edu = [];
+                for (var i = 0; i < ed.length; i++) {
+                    edu[i] = parseFloat(ed[i]);
+                };
+                var gov = [];
+                for (var i = 0; i < ed.length; i++) {
+                    gov[i] = parseFloat(ed[i]);
+                };
+                var health = [];
+                for (var i = 0; i < h.length; i++) {
+                    health[i] = parseFloat(h[i]);
+                };
+                var infra = [];
+                for (var i = 0; i < inf.length; i++) {
+                    infra[i] = parseFloat(inf[i]);
+                };
+                var social = [];
+                for (var i = 0; i < s.length; i++) {
+                    social[i] = parseFloat(s[i]);
                 };
 
-                console.log(attrSelection);
+                // give weight to the categories
+                var svirData = e.data;
+                var econWeight = ($( "#econ-weight" ).val() / 100);
+                //console.log(econWeight);
+                console.log(econ);
 
-                selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
-                if (selectedValue1.length > 6) {
-                    selectedValue1.pop();
-                }
-                
-                selectedValue2.unshift(parseFloat(dataFormated[attrSelection[1]]));
-                if (selectedValue2.length > 6) {
-                    selectedValue2.pop();
-                }
-    
-                selectedValue3.unshift(parseFloat(dataFormated[attrSelection[2]]));
-                if (selectedValue3.length > 6) {
-                    selectedValue3.pop();
-                }
-    
-                selectedValue4.unshift(parseFloat(dataFormated[attrSelection[3]]));
-                if (selectedValue4.length > 6) {
-                    selectedValue4.pop();
-                }
+                //var a = econ.map(function(x) x * 5);
 
-                selectedValue5.unshift(parseFloat(dataFormated[attrSelection[4]]));
-                if (selectedValue5.length > 6) {
-                    selectedValue5.pop();
-                }
+                var a = econ.map(function(x) { return x * econWeight; });
+                var b = edu.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var c = gov.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var d = health.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var f = infra.map(function(x) { return x * ((1 - econWeight) / 5)});
+                var g = social.map(function(x) { return x * ((1 - econWeight) / 5)});
 
-                selectedValue6.unshift(parseFloat(dataFormated[attrSelection[5]]));
-                if (selectedValue6.length > 6) {
-                    selectedValue6.pop();
-                }
-                
-                var countryName = e.data.country;
-                // Indicate the country name for the table header
-                $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
-    
-                countriesArray.unshift(countryName);
-    
-                if (countriesArray.length > 6) {
-                    countriesArray.pop();
-                }
+                console.log(b);
+                console.log(a);
+                econ = a;
+                edu = b;
+                gov = c;
+                health = d;
+                infra = f;
+                social = g;
+                    
+                var keys = Object.keys(e.data);
+                keys.shift();
+                keys.splice(5, 2);
+
+
+                var distAttrString = e.data.municipo;
+                var distAttr = distAttrString.split(",");
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
-                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
+                buildD3SpiderChart(keys, distName, econ, edu, gov, health, infra, social, distAttr);
                 
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
     } // End utfGridClickEvent
+    
 };
+
+
 
 app.initialize(startApp);
