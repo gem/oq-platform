@@ -40,8 +40,10 @@ var layers;
 
 // Make a list of categorys
 var categoryList = [];
+var layerGrids = [];
 var layersByCat = {};
 var layerNames = {};
+var layerGrid = {};
 
 // Grandpapa array
 var chartArray = [];
@@ -166,19 +168,25 @@ var startApp = function() {
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
 
-            
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
             var type = json[i].type;
+            var grids = json[i].grids;
             if (cat != undefined && type == "hazard") {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
-                //console.log(name);
-                //console.log(cat);
+                if (grids != undefined) {
+                    var grid = grids.toString();
+                    var gridName = grid.split("/")[4];
+                    layerGrids.push(gridName);
+                };
             }
+            if (grids != undefined) {
+                layerNames[grids] = [];
+            };
         }
 
         // Create the category list (population the object)
@@ -186,11 +194,9 @@ var startApp = function() {
             var name = json[i].mapped_value;
             var cat = json[i].category;
             var type = json[i].type;
+            var grids = json[i].grids;
             if (cat != undefined && type == "hazard") {
                 layerId = json[i].id;
-                console.log(layerId);
-                console.log(layerNames);
-                console.log(name);
                 layerTitle = json[i].mapped_value;
                 layerNames[name].push(layerId);
                 layersByCat[cat].push(layerTitle);
@@ -262,6 +268,14 @@ var startApp = function() {
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
+                var found = $.inArray(selectedLayer, layerGrids) > -1;
+                if (found == true) {
+                    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
+                        + selectedLayer
+                        + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                    map.addLayer(utfGrid);
+                    //TODO render D3 chart for hazard curves
+                };
             }
         });
     });
@@ -289,8 +303,6 @@ var startApp = function() {
         });
     });
 
-
-
     // Map options selection dialog
     $("#thematicMap").dialog({
         autoOpen: false,
@@ -298,7 +310,6 @@ var startApp = function() {
         width: 350,
         modal: true
     });
-
 
     $("#thematic-map").button().click(function() {
         $("#thematicMap").dialog("open");
@@ -658,7 +669,6 @@ var startApp = function() {
                 var keys = Object.keys(e.data);
                 //console.log(keys);
 
-
                 $(function() {
                     var max = 6;
                     var checkboxes = $('input[type="checkbox"]');
@@ -711,8 +721,6 @@ var startApp = function() {
                 // give weight to the categories
                 var svirData = e.data;
                 var econWeight = ($( "#econ-weight" ).val() / 100);
-                //console.log(econWeight);
-                console.log(econ);
 
                 //var a = econ.map(function(x) x * 5);
 
@@ -723,8 +731,6 @@ var startApp = function() {
                 var f = infra.map(function(x) { return x * ((1 - econWeight) / 5)});
                 var g = social.map(function(x) { return x * ((1 - econWeight) / 5)});
 
-                console.log(b);
-                console.log(a);
                 econ = a;
                 edu = b;
                 gov = c;
