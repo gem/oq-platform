@@ -43,7 +43,7 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     $(function() {
-        $( "#dialog" ).dialog({height: 520, width: 430, position: {at: "right bottom"}});
+        $( "#dialog" ).dialog({autoOpen: false, height: 520, width: 430, position: {at: "right bottom"}});
     });
 
     app.createMap();
@@ -315,7 +315,7 @@ var startApp = function() {
     });
 
     $("#hazard-dialog").button().click(function() {
-        $("#dialog").toggle();
+        $("#dialog").dialog("open");
     });
 
     $(function() {
