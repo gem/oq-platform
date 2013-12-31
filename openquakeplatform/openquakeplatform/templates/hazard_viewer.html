@@ -21,6 +21,9 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+<button type="button" id="thematic-map">Layers</button>
+<button type="button" id="hazard-dialog">Hazard Curve Dialog</button>
+
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -38,6 +41,10 @@ Explore - {{block.super}}
     <p>This layer has already been added to the map</p>
 </div>
 
+<div id="worning-duplicate-grid" title="Woops!" class="ui-helper-hidden">
+    <p>You can only load one layer that has interactivity at a time</p>
+</div>
+
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
 </div>
@@ -51,12 +58,8 @@ Explore - {{block.super}}
     {{block.super}}
     <!-- Category tags-->
 
-
-    <br>
-    <button type="button" id="thematic-map">Map Options</button> 
-
-  <!-- TODO fix this-->
-  <div id="empty" style="height:500px;">
+  <div id="dialog" title="Hazard Curves">
+     
   </div>
 
 
