@@ -43,7 +43,13 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     $(function() {
-        $( "#dialog" ).dialog({autoOpen: false, height: 520, width: 430, position: {at: "right bottom"}});
+        $( "#dialog" ).dialog({
+            autoOpen: false,
+            height: 480,
+            width: 430,
+            closeOnEscape: true,
+            position: {at: "right bottom"}
+        });
     });
 
     app.createMap();
@@ -328,7 +334,7 @@ var startApp = function() {
 
 
     ////////////////////////////////////////////
-    //////// Parallel Coordinates Chart ////////
+    ////////////// Line Chart //////////////////
     ////////////////////////////////////////////
 
 
@@ -337,6 +343,7 @@ var startApp = function() {
         var m = [80, 80, 80, 80]; // margins
         var w = 400 - m[1] - m[3]; // width
         var h = 400 - m[0] - m[2]; // height
+        console.log(h);
 
         // create a simple data[0] array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
         //var data = [ [iml], [prob]];
@@ -359,41 +366,41 @@ var startApp = function() {
             .style("opacity", 0);
 
         var line = d3.svg.line()
-        .x(function (d, i) {
-            return x(i);
-        })
-        .y(function (d) {
-            return y(d);
+            .x(function (d, i) {
+                return x(i);
+            })
+            .y(function (d) {
+                return y(d);
         });
 
         // Add an SVG element with the desired dimensions and margin.
         var graph = d3.select("#dialog").append("svg:svg")
-        .attr("width", w + m[1] + m[3])
-        .attr("height", h + m[0] + m[2])
-        .append("svg:g")
-        .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+            .attr("width", w + m[1] + m[3])
+            .attr("height", h + m[0] + m[2])
+            .append("svg:g")
+            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
         // create yAxis
         var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
         // Add the x-axis.
         graph.append("svg:g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + h + ")")
-        .call(xAxis);
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(xAxis);
 
         // create left yAxis
         var yAxisLeft = d3.svg.axis().scale(y).ticks(4).orient("left");
         // Add the y-axis to the left
         graph.append("svg:g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(-25,0)")
-        .call(yAxisLeft);
+            .attr("class", "y axis")
+            .attr("transform", "translate(-25,0)")
+            .call(yAxisLeft);
 
         // Add the line by appending an svg:path element with the data[0] line we created above
         // do this AFTER the axes above so that the line is above the tick-lines
-        graph.append("path").attr("d", line(data[0])).style("stroke", "black").style("stroke-width", 2)
-        .on("mouseover", function (d, i) {
-            div.transition()
+        graph.append("path").attr("d", line(data[0])).style("stroke", "black").style("fill", "none").style("stroke-width", 2)
+            .on("mouseover", function (d, i) {
+                div.transition()
             .duration(200)
             .style("opacity", 0.9);
             //div.html("n = " +  Math.ceil(toolTipScale( d3.event.pageY)) )
@@ -407,9 +414,17 @@ var startApp = function() {
         })
         .on("mouseout", function (d) {
             div.transition()
-            .duration(500)
-            .style("opacity", 0);
+                .duration(500)
+                .style("opacity", 0);
         });
+
+        var legend = d3.select("#dialog").append("svg");
+
+        legend.append("text")
+            .attr("x", 20)
+            .attr("y", 7)
+            .attr("dy", ".35em")
+            .text("Location (Lon/Lat): "+lng+", "+lat);
     }
 
     var utfGridClickEvent = function(utfGrid) {
