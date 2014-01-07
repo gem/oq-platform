@@ -46,7 +46,7 @@ var startApp = function() {
         $( "#dialog" ).dialog({
             autoOpen: false,
             height: 480,
-            width: 430,
+            width: 500,
             closeOnEscape: true,
             position: {at: "right bottom"}
         });
@@ -337,96 +337,87 @@ var startApp = function() {
     ////////////// Line Chart //////////////////
     ////////////////////////////////////////////
 
-
-    //function buildD3Chart(prob, lat, lng) {
     function buildD3Chart(probArray, imlArray, lat, lng) {
-        var m = [80, 80, 80, 80]; // margins
-        var w = 400 - m[1] - m[3]; // width
-        var h = 400 - m[0] - m[2]; // height
-        console.log(h);
+        function log(n) {
+          return Math.log(n) / Math.LN10;
+        }
 
-        // create a simple data[0] array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
-        //var data = [ [iml], [prob]];
-        var data = [probArray, imlArray];
-
-        var max_value = d3.max(data[0]);
+        console.log(probArray);
+        console.log(imlArray);
+        var data = [];
+        for(i=0; i<probArray.length; i++) {
+            //array[i] = [probArray[i], imlArray[i]];
+            //dataArray.push(array[i]);
+            data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
         
-        // X scale will fit all values from data[] within pixels 0-w
-        var x = d3.scale.linear().domain([0, data[0].length - 1]).range([0, w]);
+            // log valuse:
+            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+        }
+        console.log(data);
 
-        // Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
-        var y = d3.scale.linear().domain([0, max_value]).range([h, 0]);
+        var margin = {top: 20, right: 20, bottom: 50, left: 50},
+        width = 400 - margin.left - margin.right,
+        height = 320 - margin.top - margin.bottom;
 
-        var toolTipScale = d3.scale.linear().domain([h + 80, 80]).range([0, max_value]);
-        var iScale = d3.scale.linear().domain([w + 80, 80]).range([data[0].length, 0]);
-
-        var div = d3.select("dialog")
-            .append("svg:svg")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+        var x = d3.time.scale().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+        var xAxis = d3.svg.axis().scale(x).orient("bottom");
+        var yAxis = d3.svg.axis().scale(y).orient("left");
 
         var line = d3.svg.line()
-            .x(function (d, i) {
-                return x(i);
-            })
-            .y(function (d) {
-                return y(d);
-        });
+            .x(function(d) { return x(d.x); })
+            .y(function(d) { return y(d.y); });
 
-        // Add an SVG element with the desired dimensions and margin.
-        var graph = d3.select("#dialog").append("svg:svg")
-            .attr("width", w + m[1] + m[3])
-            .attr("height", h + m[0] + m[2])
-            .append("svg:g")
-            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+        var svg = d3.select("#dialog").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // create yAxis
-        var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
-        // Add the x-axis.
-        graph.append("svg:g")
+        var dataCallback = function(d) {
+            d.x = +d[0];
+            d.y = +d[1];
+        };
+
+        data.forEach(dataCallback);
+        x.domain(d3.extent(data, function(d) { return d.x; }));
+        y.domain([0, d3.max(data, function(d) { return d.y; })]);
+        svg.append("path")
+            .data([data])
+            .attr("class", "line")
+            .attr("d", line);
+        svg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + h + ")")
-            .call(xAxis);
-
-        // create left yAxis
-        var yAxisLeft = d3.svg.axis().scale(y).ticks(4).orient("left");
-        // Add the y-axis to the left
-        graph.append("svg:g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("x", 50)
+            .attr("y", 30)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Intensity measure type");
+        svg.append("g")
             .attr("class", "y axis")
-            .attr("transform", "translate(-25,0)")
-            .call(yAxisLeft);
-
-        // Add the line by appending an svg:path element with the data[0] line we created above
-        // do this AFTER the axes above so that the line is above the tick-lines
-        graph.append("path").attr("d", line(data[0])).style("stroke", "black").style("fill", "none").style("stroke-width", 2)
-            .on("mouseover", function (d, i) {
-                div.transition()
-            .duration(200)
-            .style("opacity", 0.9);
-            //div.html("n = " +  Math.ceil(toolTipScale( d3.event.pageY)) )
-            div.html("n = " +  data[1][Math.floor(iScale( d3.event.pageX))] )
-            .style("left", (d3.event.pageX) + "px")
-            .style("top", (d3.event.pageY - 28) + "px");
-
-            console.log('This is: ' + d3.event.pageY);
-           //console.log(d);
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -50)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Probabability of exceedance in # years");
             
-        })
-        .on("mouseout", function (d) {
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
+        d3.select('#chart').on("click", function() {
+                data.splice(0,1);
+                data.push([5,5]);
+                dataCallback(data[data.length - 1]);
+          
+        x.domain(d3.extent(data, function(d) { return d.x; }));
+        y.domain([0, d3.max(data, function(d) { return d.y; })]);
+          svg.selectAll("path").data([data])
+              .attr("d", line);
         });
-
-        var legend = d3.select("#dialog").append("svg");
-
-        legend.append("text")
-            .attr("x", 20)
-            .attr("y", 7)
-            .attr("dy", ".35em")
-            .text("Location (Lon/Lat): "+lng+", "+lat);
     }
-
+    
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $("#dialog").empty();
