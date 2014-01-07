@@ -343,11 +343,10 @@ var startApp = function() {
         }
         var data = [];
         for(i=0; i<probArray.length; i++) {
-            //array[i] = [probArray[i], imlArray[i]];
-            //dataArray.push(array[i]);
+            // without log values...
             //data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
         
-            // log valuse:
+            // with log valuse...
             data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
         }
         console.log(data);
@@ -356,7 +355,7 @@ var startApp = function() {
         width = 400 - margin.left - margin.right,
         height = 320 - margin.top - margin.bottom;
 
-        var x = d3.time.scale().range([0, width]);
+        var x = d3.scale.linear().range([0, width]);
         var y = d3.scale.linear().range([height, 0]);
         var xAxis = d3.svg.axis().scale(x).orient("bottom");
         var yAxis = d3.svg.axis().scale(y).orient("left");
@@ -378,7 +377,7 @@ var startApp = function() {
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
-        y.domain([0, d3.max(data, function(d) { return d.y; })]);
+        y.domain(d3.extent(data, function(d) { return d.y; }));
         svg.append("path")
             .data([data])
             .attr("class", "line")
