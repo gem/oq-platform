@@ -45,8 +45,8 @@ var startApp = function() {
     $(function() {
         $( "#dialog" ).dialog({
             autoOpen: false,
-            height: 480,
-            width: 500,
+            height: 400,
+            width: 440,
             closeOnEscape: true,
             position: {at: "right bottom"}
         });
@@ -337,21 +337,18 @@ var startApp = function() {
     ////////////// Line Chart //////////////////
     ////////////////////////////////////////////
 
-    function buildD3Chart(probArray, imlArray, lat, lng) {
+    function buildD3Chart(probArray, imlArray, lat, lng, invest_time) {
         function log(n) {
           return Math.log(n) / Math.LN10;
         }
-
-        console.log(probArray);
-        console.log(imlArray);
         var data = [];
         for(i=0; i<probArray.length; i++) {
             //array[i] = [probArray[i], imlArray[i]];
             //dataArray.push(array[i]);
-            data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
+            //data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
         
             // log valuse:
-            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+            data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
         }
         console.log(data);
 
@@ -391,7 +388,7 @@ var startApp = function() {
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
             .append("text")
-            .attr("x", 50)
+            .attr("x", 160)
             .attr("y", 30)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
@@ -404,7 +401,15 @@ var startApp = function() {
             .attr("y", -50)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Probabability of exceedance in # years");
+            .text("Probabability of exceedance in "+invest_time+" years");
+
+        var legend = d3.select("#dialog").append("svg");
+
+        legend.append("text")
+            .attr("x", 20)
+            .attr("y", 7)
+            .attr("dy", ".35em")
+            .text("Location (Lon/Lat): "+lng+", "+lat);
             
         d3.select('#chart').on("click", function() {
                 data.splice(0,1);
@@ -416,8 +421,10 @@ var startApp = function() {
           svg.selectAll("path").data([data])
               .attr("d", line);
         });
+
+
     }
-    
+
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $("#dialog").empty();
@@ -427,16 +434,23 @@ var startApp = function() {
             var imlArray = [];
             var lat;
             var lng;
+            var invest_time;
 
             if (e.data) {
                 prob = e.data.prob;
                 probArray = prob.split(',');
                 iml = e.data.iml;
                 imlArray = iml.split(',');
-                lat = e.data.YCOORD;
-                lng = e.data.XCOORD;
-                buildD3Chart(probArray, imlArray, lat, lng);
-                
+                lat = e.data.lat;
+                lng = e.data.lon;
+                if (lat == undefined) {
+                    lat = e.data.YCOORD;
+                    lng = e.data.XCOORD;
+                }
+                invest_time = e.data.invest_tim;
+                buildD3Chart(probArray, imlArray, lat, lng, invest_time);
+                console.log(imlArray);
+                console.log(probArray);
             } else {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
