@@ -338,6 +338,21 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
+
+        function make_x_axis() {        
+            return d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(5)
+        }
+
+        function make_y_axis() {        
+            return d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .ticks(5)
+        }
+
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // without log values...
@@ -353,13 +368,15 @@ var startApp = function() {
 
         var x = d3.scale.log().range([0, width]);
         var y = d3.scale.log().range([height, 0]);
+
         var xAxis = d3.svg.axis()
             .scale(x)
             .ticks(4)
+            .tickFormat(function (d) { return d; })
             .orient("bottom");
         var yAxis = d3.svg.axis()
             .scale(y)
-            //.ticks(8)
+
             .orient("left");
 
         var line = d3.svg.line()
@@ -371,6 +388,22 @@ var startApp = function() {
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // grid lines
+        svg.append("g")         
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .call(make_x_axis()
+                .tickSize(-height, 0, 0)
+                .tickFormat("")
+            );
+    
+        svg.append("g")         
+            .attr("class", "grid")
+            .call(make_y_axis()
+                .tickSize(-width, 0, 0)
+                .tickFormat("")
+            );
 
         var dataCallback = function(d) {
             d.x = +d[0];
