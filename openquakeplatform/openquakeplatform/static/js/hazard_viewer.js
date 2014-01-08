@@ -45,7 +45,7 @@ var startApp = function() {
     $(function() {
         $( "#dialog" ).dialog({
             autoOpen: false,
-            height: 400,
+            height: 460,
             width: 440,
             closeOnEscape: true,
             position: {at: "right bottom"}
@@ -347,9 +347,9 @@ var startApp = function() {
             //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
         }
 
-        var margin = {top: 20, right: 20, bottom: 50, left: 60},
+        var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
-        height = 320 - margin.top - margin.bottom;
+        height = 380 - margin.top - margin.bottom;
 
         var x = d3.scale.log().range([0, width]);
         var y = d3.scale.log().range([height, 0]);
@@ -393,27 +393,62 @@ var startApp = function() {
             .attr("y", 30)
             .attr("dy", ".71em")
             .attr("text-anchor", "middle")
-            .style("font-size","10px")
-            .text("Intensity measure type: "+ imt);
+            .style("font-size","12px")
+            .text(imt);
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", -60)
-            .attr("x", -60)
+            .attr("x", -20)
             .attr("dy", ".71em")
-            .style("font-size","10px")
+            .style("font-size","12px")
             .style("text-anchor", "end")
             .text("Probabability of exceedance in "+invest_time+" years");
 
         var legend = d3.select("#dialog").append("svg");
 
+        svg.selectAll("circle.line") 
+            .data(data) 
+        .enter().append("circle") 
+            .attr("class", "line") 
+            .attr("cx", function(d) { return x(d.x); }) 
+            .attr("cy", function(d) { return y(d.y); }) 
+            .attr("r", 3.5)
+            .style("fill", "white")
+            .on("mouseover", function() {
+                d3.select(this)
+                    .attr('r', 6)
+                    .text(circleX + ", " + circleY)
+                    .style("fill", "red");
+                var circleX = d3.select(this.__data__.x);
+                circleX = circleX.toString();
+                circleX = circleX.split(","[0]);
+
+                var circleY = d3.select(this.__data__.y);
+                circleY = circleY.toString();
+                circleY = circleY.split(","[0]);
+
+                textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
+
+            }).on("mouseout", function() {
+                d3.select(this)
+                    .attr('r', 3.5)
+                    .style("fill", "white");
+            });
+
         legend.append("text")
-            .attr("x", 20)
+            .attr("x", 60)
             .attr("y", 7)
             .attr("dy", ".35em")
             .text("Location (Lon/Lat): "+lng+", "+lat);
+
+        textBottom = svg.append("text")
+            .attr("x", 0)
+            .attr("y", 340)
+            .attr("dy", ".35em")
+            .text("");
     }
 
     var utfGridClickEvent = function(utfGrid) {
