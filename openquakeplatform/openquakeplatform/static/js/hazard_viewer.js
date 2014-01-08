@@ -337,28 +337,30 @@ var startApp = function() {
     ////////////// Line Chart //////////////////
     ////////////////////////////////////////////
 
-    function buildD3Chart(probArray, imlArray, lat, lng, invest_time) {
-        function log(n) {
-          return Math.log(n) / Math.LN10;
-        }
+    function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // without log values...
-            //data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
+            data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
         
             // with log valuse...
-            data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
         }
-        console.log(data);
 
-        var margin = {top: 20, right: 20, bottom: 50, left: 50},
+        var margin = {top: 20, right: 20, bottom: 50, left: 60},
         width = 400 - margin.left - margin.right,
         height = 320 - margin.top - margin.bottom;
 
-        var x = d3.scale.linear().range([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
-        var xAxis = d3.svg.axis().scale(x).orient("bottom");
-        var yAxis = d3.svg.axis().scale(y).orient("left");
+        var x = d3.scale.log().range([0, width]);
+        var y = d3.scale.log().range([height, 0]);
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .ticks(4)
+            .orient("bottom");
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            //.ticks(8)
+            .orient("left");
 
         var line = d3.svg.line()
             .x(function(d) { return x(d.x); })
@@ -390,15 +392,18 @@ var startApp = function() {
             .attr("x", 160)
             .attr("y", 30)
             .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Intensity measure type");
+            .attr("text-anchor", "middle")
+            .style("font-size","10px")
+            .text("Intensity measure type: "+ imt);
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", -50)
+            .attr("y", -60)
+            .attr("x", -60)
             .attr("dy", ".71em")
+            .style("font-size","10px")
             .style("text-anchor", "end")
             .text("Probabability of exceedance in "+invest_time+" years");
 
@@ -409,19 +414,6 @@ var startApp = function() {
             .attr("y", 7)
             .attr("dy", ".35em")
             .text("Location (Lon/Lat): "+lng+", "+lat);
-            
-        d3.select('#chart').on("click", function() {
-                data.splice(0,1);
-                data.push([5,5]);
-                dataCallback(data[data.length - 1]);
-          
-        x.domain(d3.extent(data, function(d) { return d.x; }));
-        y.domain([0, d3.max(data, function(d) { return d.y; })]);
-          svg.selectAll("path").data([data])
-              .attr("d", line);
-        });
-
-
     }
 
     var utfGridClickEvent = function(utfGrid) {
@@ -434,12 +426,24 @@ var startApp = function() {
             var lat;
             var lng;
             var invest_time;
+            var imt;
 
             if (e.data) {
                 prob = e.data.prob;
                 probArray = prob.split(',');
                 iml = e.data.iml;
                 imlArray = iml.split(',');
+                imt = e.data.imt;
+                if(imt == "PGA") {
+                    imt = "Peak Ground Acceleration (g)";
+                } else if (imt == "PGV") {
+                    imt = "Peak Ground Velocity (cm/s)";
+                } else if (imt == "PGD") {
+                    imt = "Peak Ground Displacement (cm)";
+                } else if (imt == "SA") {
+                    imt = "Spectral Acceleration (g)";
+                }
+                console.log(e.data);
                 lat = e.data.lat;
                 lng = e.data.lon;
                 if (lat == undefined) {
@@ -447,9 +451,7 @@ var startApp = function() {
                     lng = e.data.XCOORD;
                 }
                 invest_time = e.data.invest_tim;
-                buildD3Chart(probArray, imlArray, lat, lng, invest_time);
-                console.log(imlArray);
-                console.log(probArray);
+                buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
             } else {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
