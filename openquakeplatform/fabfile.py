@@ -41,6 +41,13 @@ PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
 
 #: Template for local_settings.py
 LOCAL_SETTINGS = """\
+import os
+import geonode
+import openquakeplatform
+
+GEONODE_ROOT = os.path.dirname(geonode.__file__)
+OQP_ROOT = os.path.dirname(openquakeplatform.__file__)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -57,6 +64,24 @@ except ImportError:
     import warnings
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    '/etc/geonode/static.apps',
+    '/etc/geonode/static',
+    '/etc/geonode/media',
+    os.path.join(GEONODE_ROOT, 'static'),
+    os.path.join(OQP_ROOT, 'static'),
+]
+
+TEMPLATE_DIRS = (
+    '/etc/geonode/templates.apps',
+    '/etc/geonode/templates',
+    os.path.join(GEONODE_ROOT, 'templates'),
+    os.path.join(OQP_ROOT, 'templates'),
+    os.path.join(OQP_ROOT, 'gemecdwebsite'),
+    os.path.join(OQP_ROOT, 'gemecdwebsite/templates'),
+)
 
 ICEBOX_URLS = {
     'artifacts': 'http://localhost:8000/icebox/artifacts/',
@@ -83,6 +108,8 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
         Should match the one in settings.py.
     """
     baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+    # fix it in a proper way
+    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -U oqplatform oqplatform')
     apps()
 
     # Install the libs needs to `test` and `test_with_xunit`:
@@ -95,7 +122,6 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # leave the user with superuser privs.
     #if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
-
 
 def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
     _write_local_settings(dbname, dbuser)
@@ -112,6 +138,11 @@ def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
 
     # We need to start geoserver
     init_start()
+
+    geoserver_init(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+
+
+def geoserver_init(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
     # GeoServer: create workspace
     _geoserver_api(
         'workspaces.xml',
@@ -147,7 +178,12 @@ def apps():
     _add_faulted_earth()
     _add_ghec_viewer()
     _add_gaf_viewer()
+    _add_econd()
+    _add_weblib()
+    _add_gemecdwebsite()
 
+    local('openquakeplatform/bin/oq-gs-builder.sh drop')
+    local('openquakeplatform/bin/oq-gs-builder.sh restore gs_data')
     local('python manage.py updatelayers')
 
 
@@ -384,30 +420,31 @@ def _load_layers(app_name):
         )
 
 
-def _add_app(app_name):
-    _load_features(app_name)
-    _load_styles(app_name)
-    _load_layers(app_name)
-
 
 def _add_isc_viewer():
-    _add_app('isc_viewer')
     local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
           ' ../oq-ui-api/data/isc_data_app.csv')
 
 
 def _add_faulted_earth():
-    _add_app('faulted_earth')
-
+    pass
 
 def _add_ghec_viewer():
-    _add_app('ghec_viewer')
     local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
 
 
 def _add_gaf_viewer():
-    _add_app('gaf_viewer')
     local('python manage.py import_gaf_fs_csv '
           '../oq-ui-api/data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '
           '../oq-ui-api/data/gaf_data_ft.csv')
+
+def _add_econd():
+    pass
+
+def _add_weblib():
+    pass
+
+def _add_gemecdwebsite():
+    pass
+

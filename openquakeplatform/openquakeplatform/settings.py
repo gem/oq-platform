@@ -35,6 +35,12 @@ DATABASES = {
         'USER': 'oqplatform',
         'PASSWORD': 'openquake'
     },
+    'geonode': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': "geonode",
+        'USER': 'oqplatform',
+        'PASSWORD': 'openquake'
+    },
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -153,6 +159,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
 
     # Third party apps
+    'photologue',
 
     # Utility
     'pagination',
@@ -199,6 +206,11 @@ INSTALLED_APPS = (
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
     'openquakeplatform.icebox',
+
+    # gemecd
+    'openquakeplatform.weblib',
+    'openquakeplatform.econd',
+    'openquakeplatform.gemecdwebsite',
 )
 
 LOGGING = {
