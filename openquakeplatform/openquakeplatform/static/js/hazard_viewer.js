@@ -30,7 +30,8 @@ var gridList;
 // Make a list of categorys
 var mapCategoryList = [];
 var curveCategoryList = [];
-var layerGrids = [];
+var mapLayerGrids = [];
+var curveLayerGrids = [];
 var mapLayersByCat = {};
 var curveLayersByCat = {};
 var mapLayerNames = {};
@@ -178,14 +179,16 @@ var startApp = function() {
             var grids = json[i].grids;
             var invest = json[i].investigationTime;
 
-            if (invest == "mixed") {
+            if (type == "hazard-curve") {
                 curveCategoryList.push(cat);
                 layersByInvestMixed[name] = [];
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
-            } else if (invest != undefined && invest != "mixed") {
-                layersByInvestSingle[name] = [];
-            }
+                var grid = grids.toString();
+                var gridName = grid.split("/")[4];
+                curveLayerGrids.push(gridName);
+                console.log(curveLayerGrids);
+            } 
 
             if (invest == undefined && cat != undefined && type == "hazard") {
                 mapCategoryList.push(cat);
@@ -194,12 +197,12 @@ var startApp = function() {
                 if (grids != undefined) {
                     var grid = grids.toString();
                     var gridName = grid.split("/")[4];
-                    layerGrids.push(gridName);
-                };
+                    mapLayerGrids.push(gridName);
+                }
             }
             if (grids != undefined) {
                 mapLayerNames[grids] = [];
-            };
+            }
         }
 
         // Create the category list (population the object)
@@ -210,14 +213,13 @@ var startApp = function() {
             var grids = json[i].grids;
             var invest = json[i].investigationTime;
 
-            if (invest == "mixed") {
-                curveLayerId = json[i].id;
+            if (type == "hazard-curve") {
+                var curveLayerId = json[i].id;
+                console.log(curveLayerId);
                 curveLayerTitle = json[i].mapped_value;
                 layersByInvestMixed[name].push(invest);
-                curveLayersByCat[cat].push(curveLayerTitle);
                 curveLayerNames[name].push(curveLayerId);
-            } else if (invest != undefined && invest != "mixed") {
-                layersByInvestSingle[name].push(invest);
+                curveLayersByCat[cat].push(curveLayerTitle);
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -290,7 +292,7 @@ var startApp = function() {
         var e = document.getElementById("curve-category");
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = curveLayersByCat[strUser];
-        console.log(layersArray);
+        console.log(curveLayersByCat);
         for (var i in layersArray) {
             var layers = layersArray[i];
             var curveOpt = document.createElement('option');
@@ -318,7 +320,7 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var mapLayerIdArray = mapLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, layerGrids) > -1;
+            var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 
             // Check for duplicae layes
             if (selectedLayer in layers) {
@@ -365,7 +367,8 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var curveLayerIdArray = curveLayerNames[curveLayerId];
             var selectedLayer = curveLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, layerGrids) > -1;
+            console.log(selectedLayer);
+            var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
 
             // Check for duplicae layes
             if (selectedLayer in layers) {
@@ -384,6 +387,7 @@ var startApp = function() {
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
+                console.log(hasGrid);
                 
                 if (hasGrid == true) {
                     gridList = 1;
@@ -391,6 +395,8 @@ var startApp = function() {
                         + selectedLayer
                         + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                     map.addLayer(utfGrid);
+
+                    //TODO create a seperate function to handle curves with invest type mixed
                     utfGridClickEvent(utfGrid);
                     
                     //TODO render D3 chart for hazard curves
