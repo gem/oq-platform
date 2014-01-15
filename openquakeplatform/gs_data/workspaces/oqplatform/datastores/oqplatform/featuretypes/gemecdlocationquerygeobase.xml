@@ -78,7 +78,7 @@
         </geometry>
         <parameter>
           <name>jointable</name>
-          <defaultValue>econd__geobase_aigion_damage_zones2</defaultValue>
+          <defaultValue></defaultValue>
           <regexpValidator>^[\w\d\s]+$</regexpValidator>
         </parameter>
         <parameter>
