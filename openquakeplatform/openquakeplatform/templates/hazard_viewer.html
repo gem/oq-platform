@@ -21,21 +21,9 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<button type="button" id="thematic-map">Layers</button>
-<button type="button" id="hazard-dialog">Hazard Curve Dialog</button>
-
-<div id="thematicMap" title="Map Options">
-  <form id="tile-form-list">
-    <br>Category:<br>
-    <select id="layer-category">
-    </select>
-    <br>Indicator:<br>
-    <select id="layer-list">
-    </select><br>
-    <input type="button" id="addTileLayer" value="Add Layer">
-    <input type="button" id="removeTileLayer" value="Remove Layer">
-  </form>
-</div>
+<button type="button" id="thematic-map">Maps</button>
+<button type="button" id="hazard-curve">Hazard Curves</button>
+<button type="button" id="hazard-dialog">Chart Dialog</button>
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
@@ -58,8 +46,33 @@ Explore - {{block.super}}
     {{block.super}}
     <!-- Category tags-->
 
-  <div id="dialog" title="Hazard Curve" style="overflow: hidden;">
-     
+  <div id="thematicMap" title="Map Options">
+    <form id="tile-form-list">
+      <br>Category:<br>
+      <select id="layer-category">
+      </select>
+      <br>Map Layer:<br>
+      <select id="layer-list">
+      </select><br>
+      <input type="button" id="addTileLayer" value="Add Layer">
+      <input type="button" id="removeTileLayer" value="Remove Layer">
+    </form>
+  </div>
+
+  <div id="chartDialog" title="Hazard Curve" style="overflow: hidden;">
+  </div>
+
+  <div id="hazardCurveDialog" title="Hazard Curve Options" style="overflow: hidden;">
+    <form id="tile-form-list-curves">
+      <br>Category:<br>
+      <select id="curve-category">
+      </select>
+      <br>Curve Layer:<br>
+      <select id="curve-list">
+      </select><br>
+      <input type="button" id="addTileCurve" value="Add Layer">
+      <input type="button" id="removeTileCurve" value="Remove Layer">
+    </form>
   </div>
 
 

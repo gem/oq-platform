@@ -28,11 +28,16 @@ var layers;
 var gridList;
 
 // Make a list of categorys
-var categoryList = [];
+var mapCategoryList = [];
+var curveCategoryList = [];
 var layerGrids = [];
-var layersByCat = {};
-var layerNames = {};
+var mapLayersByCat = {};
+var curveLayersByCat = {};
+var mapLayerNames = {};
+var curveLayerNames = {};
 var layerGrid = {};
+var layersByInvestMixed = {};
+var layersByInvestSingle = {};
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -43,7 +48,7 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     $(function() {
-        $( "#dialog" ).dialog({
+        $( "#chartDialog" ).dialog({
             autoOpen: false,
             height: 460,
             width: 440,
@@ -126,11 +131,11 @@ var startApp = function() {
         $("#tablehead").html("");
 
         var e = document.getElementById("layer-list");
-        var layerId = e.options[e.selectedIndex].value;
+        var mapLayerId = e.options[e.selectedIndex].value;
 
         // Look up the layer id using the layer name
-        var layerIdArray = layerNames[layerId];
-        var selectedLayer = layerIdArray.toString();
+        var mapLayerIdArray = mapLayerNames[mapLayerId];
+        var selectedLayer = mapLayerIdArray.toString();
 
         // Check in the layer is in the map port
         if (selectedLayer in layers) {
@@ -149,10 +154,18 @@ var startApp = function() {
     var selCat = document.getElementById('layer-category');
     var selLayer = document.getElementById('layer-list');
 
-    // Create a header for the menu drop down
+    var selCurveCat = document.getElementById('curve-category');
+    var selCurve = document.getElementById('curve-list');
+
+    // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
     catMenuHeader.innerHTML = "Category:";
     selCat.appendChild(catMenuHeader);
+
+    // Create a header for the menu curve drop down
+    var catCurveMenuHeader = document.createElement('option');
+    catCurveMenuHeader.innerHTML = "Category:";
+    selCurveCat.appendChild(catCurveMenuHeader);
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
@@ -163,10 +176,21 @@ var startApp = function() {
             var cat = json[i].category;
             var type = json[i].type;
             var grids = json[i].grids;
-            if (cat != undefined && type == "hazard") {
-                categoryList.push(cat);
-                layerNames[name] = [];
-                layersByCat[cat] = [];
+            var invest = json[i].investigationTime;
+
+            if (invest == "mixed") {
+                curveCategoryList.push(cat);
+                layersByInvestMixed[name] = [];
+                curveLayersByCat[cat] = [];
+                curveLayerNames[name] = [];
+            } else if (invest != undefined && invest != "mixed") {
+                layersByInvestSingle[name] = [];
+            }
+
+            if (invest == undefined && cat != undefined && type == "hazard") {
+                mapCategoryList.push(cat);
+                mapLayerNames[name] = [];
+                mapLayersByCat[cat] = [];
                 if (grids != undefined) {
                     var grid = grids.toString();
                     var gridName = grid.split("/")[4];
@@ -174,7 +198,7 @@ var startApp = function() {
                 };
             }
             if (grids != undefined) {
-                layerNames[grids] = [];
+                mapLayerNames[grids] = [];
             };
         }
 
@@ -184,41 +208,70 @@ var startApp = function() {
             var cat = json[i].category;
             var type = json[i].type;
             var grids = json[i].grids;
-            if (cat != undefined && type == "hazard") {
-                layerId = json[i].id;
-                layerTitle = json[i].mapped_value;
-                layerNames[name].push(layerId);
-                layersByCat[cat].push(layerTitle);
+            var invest = json[i].investigationTime;
+
+            if (invest == "mixed") {
+                curveLayerId = json[i].id;
+                curveLayerTitle = json[i].mapped_value;
+                layersByInvestMixed[name].push(invest);
+                curveLayersByCat[cat].push(curveLayerTitle);
+                curveLayerNames[name].push(curveLayerId);
+            } else if (invest != undefined && invest != "mixed") {
+                layersByInvestSingle[name].push(invest);
+            }
+
+            if (invest == undefined && cat != undefined && type == "hazard") {
+                mapLayerId = json[i].id;
+                mapLayerTitle = json[i].mapped_value;
+                layerInvest = json[i].investigationTime;
+                mapLayerNames[name].push(mapLayerId);
+                mapLayersByCat[cat].push(mapLayerTitle);
             }
         }
 
-    // Get unique category names
-    var categoryUnique = categoryList.filter(function(itm,i,categoryList){
-        return i==categoryList.indexOf(itm);
-    });
+        // Get unique category names
+        var mapCategoryUnique = mapCategoryList.filter(function(itm,i,mapCategoryList){
+            return i==mapCategoryList.indexOf(itm);
+        });
+    
+        var curveCategoryUnique = curveCategoryList.filter(function(itm,i,curveCategoryList){
+            return i==curveCategoryList.indexOf(itm);
+        });
 
-    for (var i in categoryUnique) {
-        // Append category names to dropdown list
-        var categoryTitle = categoryUnique[i];
-        var opt = document.createElement('option');
-        opt.innerHTML = categoryTitle;
-        opt.value = categoryTitle;
-        selCat.appendChild(opt);
-        // Append layer list to dowpdown
-        var layerOpt = document.createElement('option');
-    }
+        for (var i in mapCategoryUnique) {
+            // Append category names to map dropdown list
+            var mapCategoryTitle = mapCategoryUnique[i];
+            var opt = document.createElement('option');
+            opt.innerHTML = mapCategoryTitle;
+            opt.value = mapCategoryTitle;
+            selCat.appendChild(opt);
+            // Append layer list to dowpdown
+            var layerOpt = document.createElement('option');
+        }
 
-    });
+        for (var i in curveCategoryUnique) {
+            // Append category names to curve dropdown list
+            var curveCategoryTitle = curveCategoryUnique[i];
+            var curveOpt = document.createElement('option');
+            curveOpt.innerHTML = curveCategoryTitle;
+            curveOpt.value = curveCategoryTitle;
+            selCurveCat.appendChild(curveOpt);
+            // Append layer list to dowpdown
+            var layerCurveOpt = document.createElement('option');
+        }
 
-    // Create dynamic categorized layer dialog
+    }); //end getjson
+
+    // Create dynamic categorized map layer dialog
     $("#layer-category").change(function() {
         // Remove the layer list element
         document.getElementById("layer-list").options.length = 0;
 
-       // Create the layer list ibased on the category selected
+       // Create the layer list based on the category selected
         var e = document.getElementById("layer-category");
         var strUser = e.options[e.selectedIndex].value;
-        var layersArray = layersByCat[strUser];
+        var layersArray = mapLayersByCat[strUser];
+        console.log(layersArray);
         for (var i in layersArray) {
             var layers = layersArray[i];
             var opt = document.createElement('option');
@@ -228,12 +281,31 @@ var startApp = function() {
         }
     });
 
+    // Create dynamic categorized curve layer dialog
+    $("#curve-category").change(function() {
+        // Remove the layer list element
+        document.getElementById("curve-list").options.length = 0;
+
+       // Create the layer list based on the category selected
+        var e = document.getElementById("curve-category");
+        var strUser = e.options[e.selectedIndex].value;
+        var layersArray = curveLayersByCat[strUser];
+        console.log(layersArray);
+        for (var i in layersArray) {
+            var layers = layersArray[i];
+            var curveOpt = document.createElement('option');
+            curveOpt.innerHTML = layers;
+            curveOpt.valuse = layers;
+            selCurve.appendChild(curveOpt);
+        }
+    });
+
     map.addControl(layerControl.setPosition("topleft"));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
     
     
-    // Add layers form tilestream list
+    // Add map layers form tilestream list
     $(document).ready(function() {
         $("#addTileLayer").click(function() {
             // Remove any existing UtfGrid layers in order to avoid conflict
@@ -241,11 +313,11 @@ var startApp = function() {
             utfGrid = {};
 
             var e = document.getElementById("layer-list");
-            var layerId = e.options[e.selectedIndex].value;
+            var mapLayerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
-            var layerIdArray = layerNames[layerId];
-            var selectedLayer = layerIdArray.toString();
+            var mapLayerIdArray = mapLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, layerGrids) > -1;
 
             // Check for duplicae layes
@@ -280,7 +352,54 @@ var startApp = function() {
         });
     });
 
-    // Remove layers from tilestream
+    // Add curve layers form tilestream list
+    $(document).ready(function() {
+        $("#addTileCurve").click(function() {
+            // Remove any existing UtfGrid layers in order to avoid conflict
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+
+            var e = document.getElementById("curve-list");
+            var curveLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var curveLayerIdArray = curveLayerNames[curveLayerId];
+            var selectedLayer = curveLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, layerGrids) > -1;
+
+            // Check for duplicae layes
+            if (selectedLayer in layers) {
+                showDuplicateMsg();
+            }
+            else if (hasGrid == true && gridList > 0) {
+                showDuplicateGridMsg();
+            }
+            else {
+                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                    +selectedLayer
+                    +'.json'});
+                layerControl.addOverlay(tileLayer, selectedLayer);
+                map.addLayer(tileLayer);
+                // Keep track of layers that have been added
+                layers[selectedLayer] = tileLayer;
+                
+                if (hasGrid == true) {
+                    gridList = 1;
+                    utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
+                        + selectedLayer
+                        + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                    map.addLayer(utfGrid);
+                    utfGridClickEvent(utfGrid);
+                    
+                    //TODO render D3 chart for hazard curves
+                };
+            }
+        });
+    });
+
+    // Remove map layers from tilestream
     $(document).ready(function() {
         $('#removeTileLayer').click(function() {
             gridList = 0;
@@ -290,11 +409,39 @@ var startApp = function() {
             map.addLayer(utfGrid);
             utfGridClickEvent(utfGrid);
             var e = document.getElementById("layer-list");
-            var layerId = e.options[e.selectedIndex].value;
+            var mapLayerId = e.options[e.selectedIndex].value;
     
             // Look up the layer id using the layer name
-            var layerIdArray = layerNames[layerId];
-            var selectedLayer = layerIdArray.toString();
+            var mapLayerIdArray = curveLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
+    
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+        });
+    });
+
+    // Remove curve layers from tilestream
+    $(document).ready(function() {
+        $('#removeTileCurve').click(function() {
+            gridList = 0;
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            utfGridClickEvent(utfGrid);
+            var e = document.getElementById("curve-list");
+            var mapLayerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var mapLayerIdArray = curveLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
     
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
@@ -316,12 +463,24 @@ var startApp = function() {
         modal: true
     });
 
+    // Map options selection dialog
+    $("#hazardCurveDialog").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true
+    });
+
     $("#thematic-map").button().click(function() {
         $("#thematicMap").dialog("open");
     });
 
+    $("#hazard-curve").button().click(function() {
+        $("#hazardCurveDialog").dialog("open");
+    });
+
     $("#hazard-dialog").button().click(function() {
-        $("#dialog").dialog("open");
+        $("#chartDialog").dialog("open");
     });
 
     $(function() {
@@ -338,7 +497,7 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
-
+        // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
                 .scale(x)
@@ -371,7 +530,7 @@ var startApp = function() {
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .ticks(4)
+            //.ticks(4)
             .tickFormat(function (d) { return d; })
             .orient("bottom");
         var yAxis = d3.svg.axis()
@@ -383,7 +542,7 @@ var startApp = function() {
             .x(function(d) { return x(d.x); })
             .y(function(d) { return y(d.y); });
 
-        var svg = d3.select("#dialog").append("svg")
+        var svg = d3.select("#chartDialog").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -440,19 +599,20 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text("Probabability of exceedance in "+invest_time+" years");
 
-        var legend = d3.select("#dialog").append("svg");
+        var legend = d3.select("#chartDialog").append("svg");
 
+        // points along the line
         svg.selectAll("circle.line") 
             .data(data) 
         .enter().append("circle") 
             .attr("class", "line") 
             .attr("cx", function(d) { return x(d.x); }) 
             .attr("cy", function(d) { return y(d.y); }) 
-            .attr("r", 3.5)
-            .style("fill", "white")
+            .attr("r", 4.5)
+            .style("fill", "gray")
             .on("mouseover", function() {
                 d3.select(this)
-                    .attr('r', 6)
+                    .attr('r', 6.6)
                     .text(circleX + ", " + circleY)
                     .style("fill", "red");
                 var circleX = d3.select(this.__data__.x);
@@ -467,8 +627,8 @@ var startApp = function() {
 
             }).on("mouseout", function() {
                 d3.select(this)
-                    .attr('r', 3.5)
-                    .style("fill", "white");
+                    .attr('r', 4.5)
+                    .style("fill", "gray");
             });
 
         legend.append("text")
@@ -485,8 +645,11 @@ var startApp = function() {
     }
 
     var utfGridClickEvent = function(utfGrid) {
+
+        console.log(layersByInvestSingle);
+        console.log(layersByInvestMixed);
         utfGrid.on('click', function (e) {
-            $("#dialog").empty();
+            $("#chartDialog").empty();
             var prob;
             var iml;
             var probArray = [];
