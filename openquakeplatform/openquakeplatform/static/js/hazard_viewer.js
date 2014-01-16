@@ -37,7 +37,7 @@ var curveLayersByCat = {};
 var mapLayerNames = {};
 var curveLayerNames = {};
 var layerGrid = {};
-var layersByInvestMixed = {};
+var layersByInvestMixed = new Object();
 var layersByInvestSingle = {};
 
 var baseMapUrl = (
@@ -181,14 +181,16 @@ var startApp = function() {
 
             if (type == "hazard-curve") {
                 curveCategoryList.push(cat);
-                layersByInvestMixed[name] = [];
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
                 var grid = grids.toString();
                 var gridName = grid.split("/")[4];
                 curveLayerGrids.push(gridName);
-                console.log(curveLayerGrids);
-            } 
+            }
+
+            if (type == "hazard-curve" && invest == "mixed") {
+                //layersByInvestMixed.
+            }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
                 mapCategoryList.push(cat);
@@ -205,6 +207,7 @@ var startApp = function() {
             }
         }
 
+
         // Create the category list (population the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
@@ -215,11 +218,13 @@ var startApp = function() {
 
             if (type == "hazard-curve") {
                 var curveLayerId = json[i].id;
-                console.log(curveLayerId);
                 curveLayerTitle = json[i].mapped_value;
-                layersByInvestMixed[name].push(invest);
                 curveLayerNames[name].push(curveLayerId);
                 curveLayersByCat[cat].push(curveLayerTitle);
+            }
+
+            if (type == "hazard-curve" && invest == "mixed") {
+                layersByInvestMixed.name=name;
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -229,6 +234,16 @@ var startApp = function() {
                 mapLayerNames[name].push(mapLayerId);
                 mapLayersByCat[cat].push(mapLayerTitle);
             }
+            $("#addTileCurve").click(function() {
+                var e = document.getElementById("curve-list");
+                var option = e.options[e.selectedIndex].value;
+                console.log(option);
+                console.log(layersByInvestMixed);
+
+                if ("California Hazard Curve - mixed" in layersByInvestMixed) {
+                    console.log("mixed");
+                }
+            });
         }
 
         // Get unique category names
@@ -355,13 +370,14 @@ var startApp = function() {
     });
 
     // Add curve layers form tilestream list
-    $(document).ready(function() {
+    function singleCurve() {
         $("#addTileCurve").click(function() {
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
             utfGrid = {};
 
             var e = document.getElementById("curve-list");
+            console.log(e);
             var curveLayerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
@@ -397,13 +413,14 @@ var startApp = function() {
                     map.addLayer(utfGrid);
 
                     //TODO create a seperate function to handle curves with invest type mixed
+                    //if ()
                     utfGridClickEvent(utfGrid);
                     
                     //TODO render D3 chart for hazard curves
                 };
             }
         });
-    });
+    }
 
     // Remove map layers from tilestream
     $(document).ready(function() {
@@ -651,9 +668,6 @@ var startApp = function() {
     }
 
     var utfGridClickEvent = function(utfGrid) {
-
-        console.log(layersByInvestSingle);
-        console.log(layersByInvestMixed);
         utfGrid.on('click', function (e) {
             $("#chartDialog").empty();
             var prob;
