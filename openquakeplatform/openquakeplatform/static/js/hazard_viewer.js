@@ -528,6 +528,4 @@ var startApp = function() {
     
 };
 
-
-
 app.initialize(startApp);
