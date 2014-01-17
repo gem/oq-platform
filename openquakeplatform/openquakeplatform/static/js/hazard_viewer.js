@@ -38,6 +38,7 @@ var mapLayerNames = {};
 var curveLayerNames = {};
 var layerGrid = {};
 var layersByInvestMixed = {};
+var curvesAvailable = {};
 var layersByInvestSingle = {};
 
 var baseMapUrl = (
@@ -203,7 +204,6 @@ var startApp = function() {
             }
         }
 
-
         // Create the category list (population the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
@@ -211,6 +211,13 @@ var startApp = function() {
             var type = json[i].type;
             var grids = json[i].grids;
             var invest = json[i].investigationTime;
+            var template = json[i].template;
+            // Crazy clean up
+            template = template.replace(/{{#__location__}}{{/, "");
+            template = template.replace('/', "");
+            template = template.replace(/__location__}}{{#__teaser__}}/, "");
+            template = template.replace(/{{{/g, "").replace(/}}}/g, "");
+            template = template.substring(0, template.indexOf('{{'));
 
             if (type == "hazard-curve") {
                 var curveLayerId = json[i].id;
@@ -220,7 +227,8 @@ var startApp = function() {
             }
 
             if (type == "hazard-curve" && invest == "mixed") {
-                layersByInvestMixed[i]=name;
+                layersByInvestMixed[i] = name;
+                curvesAvailable[i] = template;
             }
 
             if (type == "hazard-curve" && invest != "mixed") {
@@ -234,7 +242,6 @@ var startApp = function() {
                 mapLayerNames[name].push(mapLayerId);
                 mapLayersByCat[cat].push(mapLayerTitle);
             }
-
         }
 
         // Get unique category names
@@ -267,41 +274,67 @@ var startApp = function() {
             // Append layer list to dowpdown
             var layerCurveOpt = document.createElement('option');
         }
-
     }); //end getjson
-
 
     $("#addTileCurve").click(function() {
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
-        if (investType == "mixed") {
+        if (investType.indexOf("mixed") ) {
             mixedCurve();
-        } else if (investType == "single") {
+            console.log(option);
+            // Use investType to find the key in layersByInvestMixed
+            var layerKey = investType.shift();
+            // Use that key to look up available curves in curvesAvailable
+            var curvesList = curvesAvailable[layerKey].split(" ");
+            // Remove ilm becasue it is not an option
+            var index = curvesList.indexOf("iml");
+            if (index > -1) {
+                curvesList.splice(index, 1);
+            }
+            // Provide the user with the curves that are available in the dialog
+            $('#hazardCurveDialog').append('<b>Select the curves to be ploted in the chart: </b><br>');
+            for (var i = 0; i < curvesList.length; i++) {
+                var checkbox = '<input type="checkbox" name="curve-list" value=" '
+                    + curvesList[i]
+                    + '">'
+                    + curvesList[i]
+                    + '<br>';
+                console.log(checkbox);
+
+                $('#hazardCurveDialog').append(checkbox);
+            };
+
+        } else if (investType.indexOf("single") ) {
             singleCurve();
         } else {
             alert("Whoops, there is an issue with the curve you are trying to load,"
-                +" It could be that it is missing some metadata that is required by this app");
+                +" One thing I can think of is some metadata that is required by this app is missing");
         }
-        console.log(investType);
+
+        
     });
 
     // Check to see if the curve has an investigation time 'mixed'
     function checkCurveType(layersByInvestMixed, layersByInvestSingle, option) {
             console.log(option);
             console.log(layersByInvestMixed);
+            console.log(curvesAvailable);
             console.log(layersByInvestSingle);
 
         for (key in layersByInvestMixed) {
             if (!layersByInvestMixed.hasOwnProperty(key)) continue;
             if (layersByInvestMixed[key] === option) {
-                return "mixed"
+                var key  = key;
+                var mixed = "mixed";
+                return [key, mixed];
             }
         }
         for (key in layersByInvestSingle) {
             if (!layersByInvestSingle.hasOwnProperty(key)) continue;
             if (layersByInvestSingle[key] === option) {
-                return "single"
+                var single = "single";
+                return [single];
             }
         }
     }
@@ -449,6 +482,7 @@ var startApp = function() {
         // Remove any existing UtfGrid layers in order to avoid conflict
         map.removeLayer(utfGrid);
         utfGrid = {};
+
         var e = document.getElementById("curve-list");
         console.log(e);
         var curveLayerId = e.options[e.selectedIndex].value;
@@ -484,7 +518,7 @@ var startApp = function() {
                 map.addLayer(utfGrid);
                 //TODO create a seperate function to handle curves with invest type mixed
                 //if ()
-                utfGridClickEvent(utfGrid);
+                utfGridClickEventMixed(utfGrid);
                 
                 //TODO render D3 chart for hazard curves
             };
@@ -778,8 +812,47 @@ var startApp = function() {
         }); // End utfGrid click
     } // End utfGridClickEvent
     
-};
+    var utfGridClickEventMixed = function(utfGrid) {
+        utfGrid.on('click', function (e) {
+            $("#chartDialog").empty();
+            var prob;
+            var iml;
+            var probArray = [];
+            var imlArray = [];
+            var lat;
+            var lng;
+            var invest_time;
+            var imt;
 
-
+            if (e.data) {
+                prob = e.data.prob;
+                probArray = prob.split(',');
+                iml = e.data.iml;
+                imlArray = iml.split(',');
+                imt = e.data.imt;
+                if(imt == "PGA") {
+                    imt = "Peak Ground Acceleration (g)";
+                } else if (imt == "PGV") {
+                    imt = "Peak Ground Velocity (cm/s)";
+                } else if (imt == "PGD") {
+                    imt = "Peak Ground Displacement (cm)";
+                } else if (imt == "SA") {
+                    imt = "Spectral Acceleration (g)";
+                }
+                console.log(e.data);
+                lat = e.data.lat;
+                lng = e.data.lon;
+                if (lat == undefined) {
+                    lat = e.data.YCOORD;
+                    lng = e.data.XCOORD;
+                }
+                invest_time = e.data.invest_tim;
+                buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
+            } else {
+                //document.getElementById('click').innerHTML = 'click: nothing';
+            }
+        }); // End utfGrid click
+    } // End utfGridClickEventMixed
+}; // End startApp
 
 app.initialize(startApp);
