@@ -37,7 +37,7 @@ var curveLayersByCat = {};
 var mapLayerNames = {};
 var curveLayerNames = {};
 var layerGrid = {};
-var layersByInvestMixed = new Object();
+var layersByInvestMixed = {};
 var layersByInvestSingle = {};
 
 var baseMapUrl = (
@@ -188,10 +188,6 @@ var startApp = function() {
                 curveLayerGrids.push(gridName);
             }
 
-            if (type == "hazard-curve" && invest == "mixed") {
-                //layersByInvestMixed.
-            }
-
             if (invest == undefined && cat != undefined && type == "hazard") {
                 mapCategoryList.push(cat);
                 mapLayerNames[name] = [];
@@ -224,7 +220,11 @@ var startApp = function() {
             }
 
             if (type == "hazard-curve" && invest == "mixed") {
-                layersByInvestMixed.name=name;
+                layersByInvestMixed[i]=name;
+            }
+
+            if (type == "hazard-curve" && invest != "mixed") {
+                layersByInvestSingle[i]=name;
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -234,16 +234,7 @@ var startApp = function() {
                 mapLayerNames[name].push(mapLayerId);
                 mapLayersByCat[cat].push(mapLayerTitle);
             }
-            $("#addTileCurve").click(function() {
-                var e = document.getElementById("curve-list");
-                var option = e.options[e.selectedIndex].value;
-                console.log(option);
-                console.log(layersByInvestMixed);
 
-                if ("California Hazard Curve - mixed" in layersByInvestMixed) {
-                    console.log("mixed");
-                }
-            });
         }
 
         // Get unique category names
@@ -279,6 +270,42 @@ var startApp = function() {
 
     }); //end getjson
 
+
+    $("#addTileCurve").click(function() {
+        var e = document.getElementById("curve-list");
+        var option = e.options[e.selectedIndex].value;
+        var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
+        if (investType == "mixed") {
+            mixedCurve();
+        } else if (investType == "single") {
+            singleCurve();
+        } else {
+            alert("Whoops, there is an issue with the curve you are trying to load,"
+                +" It could be that it is missing some metadata that is required by this app");
+        }
+        console.log(investType);
+    });
+
+    // Check to see if the curve has an investigation time 'mixed'
+    function checkCurveType(layersByInvestMixed, layersByInvestSingle, option) {
+            console.log(option);
+            console.log(layersByInvestMixed);
+            console.log(layersByInvestSingle);
+
+        for (key in layersByInvestMixed) {
+            if (!layersByInvestMixed.hasOwnProperty(key)) continue;
+            if (layersByInvestMixed[key] === option) {
+                return "mixed"
+            }
+        }
+        for (key in layersByInvestSingle) {
+            if (!layersByInvestSingle.hasOwnProperty(key)) continue;
+            if (layersByInvestSingle[key] === option) {
+                return "single"
+            }
+        }
+    }
+
     // Create dynamic categorized map layer dialog
     $("#layer-category").change(function() {
         // Remove the layer list element
@@ -297,6 +324,7 @@ var startApp = function() {
             selLayer.appendChild(opt);
         }
     });
+
 
     // Create dynamic categorized curve layer dialog
     $("#curve-category").change(function() {
@@ -369,57 +397,98 @@ var startApp = function() {
         });
     });
 
-    // Add curve layers form tilestream list
+    // Add single curve layers form tilestream list
     function singleCurve() {
-        $("#addTileCurve").click(function() {
-            // Remove any existing UtfGrid layers in order to avoid conflict
-            map.removeLayer(utfGrid);
-            utfGrid = {};
-
-            var e = document.getElementById("curve-list");
-            console.log(e);
-            var curveLayerId = e.options[e.selectedIndex].value;
-
-            // Look up the layer id using the layer name
-            var curveLayerIdArray = curveLayerNames[curveLayerId];
-            var selectedLayer = curveLayerIdArray.toString();
-            console.log(selectedLayer);
-            var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
-
-            // Check for duplicae layes
-            if (selectedLayer in layers) {
-                showDuplicateMsg();
-            }
-            else if (hasGrid == true && gridList > 0) {
-                showDuplicateGridMsg();
-            }
-            else {
-                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+        // Remove any existing UtfGrid layers in order to avoid conflict
+        map.removeLayer(utfGrid);
+        utfGrid = {};
+        var e = document.getElementById("curve-list");
+        console.log(e);
+        var curveLayerId = e.options[e.selectedIndex].value;
+        // Look up the layer id using the layer name
+        var curveLayerIdArray = curveLayerNames[curveLayerId];
+        var selectedLayer = curveLayerIdArray.toString();
+        console.log(selectedLayer);
+        var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+        // Check for duplicae layes
+        if (selectedLayer in layers) {
+            showDuplicateMsg();
+        }
+        else if (hasGrid == true && gridList > 0) {
+            showDuplicateGridMsg();
+        }
+        else {
+            var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+                + selectedLayer
+                + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                +selectedLayer
+                +'.json'});
+            layerControl.addOverlay(tileLayer, selectedLayer);
+            map.addLayer(tileLayer);
+            // Keep track of layers that have been added
+            layers[selectedLayer] = tileLayer;
+            console.log(hasGrid);
+            
+            if (hasGrid == true) {
+                gridList = 1;
+                utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
                     + selectedLayer
-                    + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
-                    +selectedLayer
-                    +'.json'});
-                layerControl.addOverlay(tileLayer, selectedLayer);
-                map.addLayer(tileLayer);
-                // Keep track of layers that have been added
-                layers[selectedLayer] = tileLayer;
-                console.log(hasGrid);
+                    + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                map.addLayer(utfGrid);
+                //TODO create a seperate function to handle curves with invest type mixed
+                //if ()
+                utfGridClickEvent(utfGrid);
                 
-                if (hasGrid == true) {
-                    gridList = 1;
-                    utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
-                        + selectedLayer
-                        + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                    map.addLayer(utfGrid);
+                //TODO render D3 chart for hazard curves
+            };
+        }
+    }
 
-                    //TODO create a seperate function to handle curves with invest type mixed
-                    //if ()
-                    utfGridClickEvent(utfGrid);
-                    
-                    //TODO render D3 chart for hazard curves
-                };
-            }
-        });
+    // Add mixed curve layers form tilestream list
+    function mixedCurve() {
+        // Remove any existing UtfGrid layers in order to avoid conflict
+        map.removeLayer(utfGrid);
+        utfGrid = {};
+        var e = document.getElementById("curve-list");
+        console.log(e);
+        var curveLayerId = e.options[e.selectedIndex].value;
+        // Look up the layer id using the layer name
+        var curveLayerIdArray = curveLayerNames[curveLayerId];
+        var selectedLayer = curveLayerIdArray.toString();
+        console.log(selectedLayer);
+        var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+        // Check for duplicae layes
+        if (selectedLayer in layers) {
+            showDuplicateMsg();
+        }
+        else if (hasGrid == true && gridList > 0) {
+            showDuplicateGridMsg();
+        }
+        else {
+            var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+                + selectedLayer
+                + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                +selectedLayer
+                +'.json'});
+            layerControl.addOverlay(tileLayer, selectedLayer);
+            map.addLayer(tileLayer);
+            // Keep track of layers that have been added
+            layers[selectedLayer] = tileLayer;
+            console.log(hasGrid);
+            
+            if (hasGrid == true) {
+                gridList = 1;
+                utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                map.addLayer(utfGrid);
+                //TODO create a seperate function to handle curves with invest type mixed
+                //if ()
+                utfGridClickEvent(utfGrid);
+                
+                //TODO render D3 chart for hazard curves
+            };
+        }
     }
 
     // Remove map layers from tilestream
