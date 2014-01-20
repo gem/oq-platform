@@ -440,7 +440,7 @@ def _add_gaf_viewer():
           '../oq-ui-api/data/gaf_data_ft.csv')
 
 def _add_econd():
-    pass
+    local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
 
 def _add_weblib():
     pass
