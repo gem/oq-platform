@@ -2,14 +2,15 @@
 # set -x
 IFS='
 '
+inputlist="$1"
 rm -f missing.csv
 rm -rf GeoArchive/*
 mkdir -p GeoArchive/cache
 rm -f imageslist.txt
-for i in $(cat "$1" ); do
+for i in $(cat "$inputlist" ); do
     if [ -f "../GeoArchive/GeoArchive/$i" ]; then
         cp "../GeoArchive/GeoArchive/$i" ./GeoArchive/
-        sz="$(identify "../GeoArchive/GeoArchive/$i" | cut -d ' ' -f 3)"
+        sz="$(identify -format "%[fx:w]x%[fx:h]" "../GeoArchive/GeoArchive/$i")"
         bname="$(basename "../GeoArchive/GeoArchive/$i" .jpg)"
         echo "GeoArchive/${bname}.jpg|$sz" >> imageslist.txt
 
@@ -22,7 +23,7 @@ for i in $(cat "$1" ); do
             fi
             if [ -f "../GeoArchive/GeoArchive/cache/${bname}${ext}.jpg" ]; then
                 cp "../GeoArchive/GeoArchive/cache/${bname}${ext}.jpg" "GeoArchive/cache/${bname}${ext}.jpg"
-                sz="$(identify "../GeoArchive/GeoArchive/cache/${bname}${ext}.jpg" | cut -d ' ' -f 3)"
+                sz="$(identify -format "%[fx:w]x%[fx:h]" "../GeoArchive/GeoArchive/cache/${bname}${ext}.jpg")"
                 echo "GeoArchive/cache/${bname}${ext}.jpg|$sz" >> imageslist.txt
             fi
         done
