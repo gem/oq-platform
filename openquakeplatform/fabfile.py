@@ -109,7 +109,6 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     """
     baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
     # fix it in a proper way
-    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -U oqplatform oqplatform')
     apps()
 
     # Install the libs needs to `test` and `test_with_xunit`:
@@ -440,6 +439,7 @@ def _add_gaf_viewer():
           '../oq-ui-api/data/gaf_data_ft.csv')
 
 def _add_econd():
+    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
     local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
 
 def _add_weblib():
