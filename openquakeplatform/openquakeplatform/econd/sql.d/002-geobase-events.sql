@@ -18,8 +18,8 @@ SET default_with_oids = false;
 -- Name: geobase_laquila; Type: TABLE; Schema: public; Owner: oqplatform; Tablespace: 
 --
 
-DROP TABLE geobase_laquila;
-DROP TABLE geobase_yogyakarta;
+DROP TABLE IF EXISTS geobase_laquila;
+DROP TABLE IF EXISTS geobase_yogyakarta;
 
 CREATE TABLE geobase_laquila (
     gid integer NOT NULL,
