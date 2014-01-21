@@ -78,7 +78,7 @@
         </geometry>
         <parameter>
           <name>jointable</name>
-          <defaultValue></defaultValue>
+          <defaultValue>geobase_laquila</defaultValue>
           <regexpValidator>^[\w\d\s]+$</regexpValidator>
         </parameter>
         <parameter>
