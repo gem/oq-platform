@@ -40,6 +40,7 @@ var layerGrid = {};
 var layersByInvestMixed = {};
 var curvesAvailable = {};
 var layersByInvestSingle = {};
+var selectedCurves = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -280,48 +281,49 @@ var startApp = function() {
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
-        if (investType.indexOf("mixed") ) {
-            mixedCurve();
-            console.log(option);
+        console.log(investType.indexOf("mixed"));
+        if (investType.indexOf("mixed") == 1 ) {
             // Use investType to find the key in layersByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available curves in curvesAvailable
             var curvesList = curvesAvailable[layerKey].split(" ");
-            // Remove ilm becasue it is not an option
+            // Remove ilm and lat long becasue they are not an option
             var index = curvesList.indexOf("iml");
+            if (index > -1) {
+                curvesList.splice(index, 1);
+            }
+            index = curvesList.indexOf("lat");
+            if (index > -1) {
+                curvesList.splice(index, 1);
+            }
+            index = curvesList.indexOf("lon");
             if (index > -1) {
                 curvesList.splice(index, 1);
             }
             // Provide the user with the curves that are available in the dialog
             $('#hazardCurveDialog').append('<b>Select the curves to be ploted in the chart: </b><br>');
             for (var i = 0; i < curvesList.length; i++) {
-                var checkbox = '<input type="checkbox" name="curve-list" value=" '
+                var checkbox = '<input type="checkbox" id="'+curvesList[i]+'" class="curve-list" value=" '
                     + curvesList[i]
                     + '">'
                     + curvesList[i]
                     + '<br>';
-                console.log(checkbox);
 
                 $('#hazardCurveDialog').append(checkbox);
             };
+            $('.curve-list').prop('checked', true);
+            mixedCurve();
 
-        } else if (investType.indexOf("single") ) {
+        } else if (investType.indexOf("single") == 0 ) {
             singleCurve();
         } else {
             alert("Whoops, there is an issue with the curve you are trying to load,"
                 +" One thing I can think of is some metadata that is required by this app is missing");
         }
-
-        
     });
 
     // Check to see if the curve has an investigation time 'mixed'
     function checkCurveType(layersByInvestMixed, layersByInvestSingle, option) {
-            console.log(option);
-            console.log(layersByInvestMixed);
-            console.log(curvesAvailable);
-            console.log(layersByInvestSingle);
-
         for (key in layersByInvestMixed) {
             if (!layersByInvestMixed.hasOwnProperty(key)) continue;
             if (layersByInvestMixed[key] === option) {
@@ -348,7 +350,6 @@ var startApp = function() {
         var e = document.getElementById("layer-category");
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = mapLayersByCat[strUser];
-        console.log(layersArray);
         for (var i in layersArray) {
             var layers = layersArray[i];
             var opt = document.createElement('option');
@@ -368,7 +369,6 @@ var startApp = function() {
         var e = document.getElementById("curve-category");
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = curveLayersByCat[strUser];
-        console.log(curveLayersByCat);
         for (var i in layersArray) {
             var layers = layersArray[i];
             var curveOpt = document.createElement('option');
@@ -436,12 +436,10 @@ var startApp = function() {
         map.removeLayer(utfGrid);
         utfGrid = {};
         var e = document.getElementById("curve-list");
-        console.log(e);
         var curveLayerId = e.options[e.selectedIndex].value;
         // Look up the layer id using the layer name
         var curveLayerIdArray = curveLayerNames[curveLayerId];
         var selectedLayer = curveLayerIdArray.toString();
-        console.log(selectedLayer);
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
         // Check for duplicae layes
         if (selectedLayer in layers) {
@@ -460,7 +458,6 @@ var startApp = function() {
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
-            console.log(hasGrid);
             
             if (hasGrid == true) {
                 gridList = 1;
@@ -482,15 +479,14 @@ var startApp = function() {
         // Remove any existing UtfGrid layers in order to avoid conflict
         map.removeLayer(utfGrid);
         utfGrid = {};
-
         var e = document.getElementById("curve-list");
-        console.log(e);
         var curveLayerId = e.options[e.selectedIndex].value;
+
         // Look up the layer id using the layer name
         var curveLayerIdArray = curveLayerNames[curveLayerId];
         var selectedLayer = curveLayerIdArray.toString();
-        console.log(selectedLayer);
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+
         // Check for duplicae layes
         if (selectedLayer in layers) {
             showDuplicateMsg();
@@ -508,7 +504,6 @@ var startApp = function() {
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
-            console.log(hasGrid);
             
             if (hasGrid == true) {
                 gridList = 1;
@@ -617,12 +612,79 @@ var startApp = function() {
         });
     });
 
+    var utfGridClickEvent = function(utfGrid) {
+        utfGrid.on('click', function (e) {
+            $("#chartDialog").empty();
+            var prob;
+            var iml;
+            var probArray = [];
+            var imlArray = [];
+            var lat;
+            var lng;
+            var invest_time;
+            var imt;
+
+            if (e.data) {
+                prob = e.data.prob;
+                probArray = prob.split(',');
+                iml = e.data.iml;
+                imlArray = iml.split(',');
+                imt = e.data.imt;
+                if(imt == "PGA") {
+                    imt = "Peak Ground Acceleration (g)";
+                } else if (imt == "PGV") {
+                    imt = "Peak Ground Velocity (cm/s)";
+                } else if (imt == "PGD") {
+                    imt = "Peak Ground Displacement (cm)";
+                } else if (imt == "SA") {
+                    imt = "Spectral Acceleration (g)";
+                }
+                lat = e.data.lat;
+                lng = e.data.lon;
+                if (lat == undefined) {
+                    lat = e.data.YCOORD;
+                    lng = e.data.XCOORD;
+                }
+                invest_time = e.data.invest_tim;
+                buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
+            } else {
+                //document.getElementById('click').innerHTML = 'click: nothing';
+            }
+        }); // End utfGrid click
+    } // End utfGridClickEvent
+    
+    var utfGridClickEventMixed = function(utfGrid) {
+        utfGrid.on('click', function (e) {
+            // Get the selected curves
+            selectedCurves = [];
+            var sc = $('.curve-list:checkbox:checked');
+            for (var i = 0; i < sc.length; i++) {
+                selectedCurves.push(sc[i].defaultValue);
+            };
+
+            for (i=0; i < selectedCurves.length; i++)
+                selectedCurves[i] = selectedCurves[i].trim();
+
+            $("#chartDialog").empty();
+
+            if (e.data) {
+                var chartData = e.data;
+                //invest_time = e.data.invest_tim
+                selectedCurves.push("iml");
+                buildMixedD3Chart(chartData, selectedCurves);
+            } else {
+                //document.getElementById('click').innerHTML = 'click: nothing';
+            }
+        }); // End utfGrid click
+    } // End utfGridClickEventMixed
+
 
     ////////////////////////////////////////////
     ////////////// Line Chart //////////////////
     ////////////////////////////////////////////
 
     function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
+        console.log(probArray);
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
@@ -694,6 +756,7 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
+        console.log(data);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -768,91 +831,267 @@ var startApp = function() {
             .attr("y", 340)
             .attr("dy", ".35em")
             .text("");
-    }
+    } // End Chart
 
-    var utfGridClickEvent = function(utfGrid) {
-        utfGrid.on('click', function (e) {
-            $("#chartDialog").empty();
-            var prob;
-            var iml;
-            var probArray = [];
-            var imlArray = [];
-            var lat;
-            var lng;
-            var invest_time;
-            var imt;
 
-            if (e.data) {
-                prob = e.data.prob;
-                probArray = prob.split(',');
-                iml = e.data.iml;
-                imlArray = iml.split(',');
-                imt = e.data.imt;
-                if(imt == "PGA") {
-                    imt = "Peak Ground Acceleration (g)";
-                } else if (imt == "PGV") {
-                    imt = "Peak Ground Velocity (cm/s)";
-                } else if (imt == "PGD") {
-                    imt = "Peak Ground Displacement (cm)";
-                } else if (imt == "SA") {
-                    imt = "Spectral Acceleration (g)";
-                }
-                console.log(e.data);
-                lat = e.data.lat;
-                lng = e.data.lon;
-                if (lat == undefined) {
-                    lat = e.data.YCOORD;
-                    lng = e.data.XCOORD;
-                }
-                invest_time = e.data.invest_tim;
-                buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
-            } else {
-                //document.getElementById('click').innerHTML = 'click: nothing';
-            }
-        }); // End utfGrid click
-    } // End utfGridClickEvent
+    ////////////////////////////////////////////
+    ////////////// Line Chart //////////////////
+    ////////////////////////////////////////////
+
+    function buildMixedD3Chart(chartData, selectedCurves) {
+
+
+        for (i in chartData) {
+            window[i] = chartData[i];
+            //console.log(window[i]);
+        }
+
+        for (i in selectedCurves) {
+            window[selectedCurves[i]] = chartData[selectedCurves[i]].split(",");
+        }
+        console.log("iml: " + iml);
+
+        iml = iml.split(" ");
+
+        console.log("hazard_c_5 : " +hazard_c_5);
+
+        var data = [];
+        
+
+        //I want to use selectedCurves[i] instread of "pga_mean[i] etc.."
+        for(i=0; i<pga_mean.length; i++) {
+            // without log values...
+            data.push([parseFloat(iml[i]), parseFloat(pga_mean[i]), parseFloat(hazard_c_6[i])]);
+        
+            // with log valuse...
+            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+        }
+        
+
+        //console.log(hazard_c_6);
+        //var prob = [];
+        //prob = chartData.hazard_c_5.split(",");
+
+        //var prob2 = [];
+        //prob2 = chartData.pga_mean.split(",");
+
+        //var iml = [];
+        //iml = chartData.iml.split(" ");
+
+        //prob = ["0.999891299371", "0.999180055851", "0.995277898116"];
+        //prob2 = ["0.89", "0.85", "0.5277"];
+        //iml = ["0.005", "0.007", "0.0098"];
+        
+/*
+        if(imt == "pga_maen") {
+            imt = "Mean Peak Ground Acceleration (g)";
+        } else if (imt == "PGV") {
+            imt = "Peak Ground Velocity (cm/s)";
+        } else if (imt == "PGD") {
+            imt = "Peak Ground Displacement (cm)";
+        } else if (imt == "SA") {
+            imt = "Spectral Acceleration (g)";
+        }
+        */
+
+        
+
+        /*
+        for (i in selectedCurves) {
+            data.push([
+                parseFloat(iml[i]),
+                parseFloat(selectedCurves[i])
+            ]);
+        }
+*/
+
+        // grid line functions
+        function make_x_axis() {        
+            return d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(5)
+        }
+
+        function make_y_axis() {        
+            return d3.svg.axis()
+                .scale(y1)
+                .orient("left")
+                .ticks(5)
+        }
+
+        var margin = {top: 20, right: 20, bottom: 80, left: 60},
+        width = 400 - margin.left - margin.right,
+        height = 380 - margin.top - margin.bottom;
+
+        var x = d3.scale.log().range([0, width]);
+        var y1 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
+        var y2 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            //.ticks(4)
+            .tickFormat(function (d) { return d; })
+            .orient("bottom");
+        var yAxis = d3.svg.axis()
+            .scale(y1)
+            .orient("left");
+
+        var line1 = d3.svg.line()
+            .x(function(d,i) { 
+                return x(d.x); 
+            })
+            .y(function(d) { 
+                return y1(d.y1); 
+            });
+
+        var line2 = d3.svg.line()
+            .x(function(d,i) {
+                return x(d.x); 
+            })
+            .y(function(d) {
+                return y2(d.y2); 
+            });
+
+        var svg = d3.select("#chartDialog").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // grid lines
+        svg.append("g")         
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .call(make_x_axis()
+                .tickSize(-height, 0, 0)
+                .tickFormat("")
+            );
     
-    var utfGridClickEventMixed = function(utfGrid) {
-        utfGrid.on('click', function (e) {
-            $("#chartDialog").empty();
-            var prob;
-            var iml;
-            var probArray = [];
-            var imlArray = [];
-            var lat;
-            var lng;
-            var invest_time;
-            var imt;
+        svg.append("g")         
+            .attr("class", "grid")
+            .call(make_y_axis()
+                .tickSize(-width, 0, 0)
+                .tickFormat("")
+            );
 
-            if (e.data) {
-                prob = e.data.prob;
-                probArray = prob.split(',');
-                iml = e.data.iml;
-                imlArray = iml.split(',');
-                imt = e.data.imt;
-                if(imt == "PGA") {
-                    imt = "Peak Ground Acceleration (g)";
-                } else if (imt == "PGV") {
-                    imt = "Peak Ground Velocity (cm/s)";
-                } else if (imt == "PGD") {
-                    imt = "Peak Ground Displacement (cm)";
-                } else if (imt == "SA") {
-                    imt = "Spectral Acceleration (g)";
-                }
-                console.log(e.data);
-                lat = e.data.lat;
-                lng = e.data.lon;
-                if (lat == undefined) {
-                    lat = e.data.YCOORD;
-                    lng = e.data.XCOORD;
-                }
-                invest_time = e.data.invest_tim;
-                buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
-            } else {
-                //document.getElementById('click').innerHTML = 'click: nothing';
-            }
-        }); // End utfGrid click
-    } // End utfGridClickEventMixed
+        var dataCallback = function(d) {
+            d.x = +d[0];
+            d.y1 = +d[1];
+            d.y2 = +d[2];
+        };
+        
+        console.log(data);
+        data.forEach(dataCallback);
+        x.domain(d3.extent(data, function(d) { return d.x; }));
+        y1.domain(d3.extent(data, function(d) { return d.y1; }));
+        y2.domain(d3.extent(data, function(d) { return d.y2; }));
+
+        svg.append("path")
+            .data([data])
+            .attr("class", "line")
+            .attr("d", line1);
+        svg.append("path")
+            .data([data])
+            .attr("class", "line2")
+            .attr("d", line2);
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("x", 160)
+            .attr("y", 30)
+            .attr("dy", ".71em")
+            .attr("text-anchor", "middle")
+            .style("font-size","12px")
+            .text("imt place holder");
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -60)
+            .attr("x", -20)
+            .attr("dy", ".71em")
+            .style("font-size","12px")
+            .style("text-anchor", "end")
+            .text("Probabability of exceedance in invest_time years");
+
+        var legend = d3.select("#chartDialog").append("svg");
+
+        // points along the line
+        svg.selectAll("circle.line") 
+            .data(data) 
+            .enter().append("circle") 
+            .attr("class", "line") 
+            .attr("cx", function(d) { return x(d.x); }) 
+            .attr("cy", function(d) { return y1(d.y1); })
+            .attr("r", 4.5)
+            .style("fill", "gray")
+            .on("mouseover", function() {
+                d3.select(this)
+                    .attr('r', 6.6)
+                    .text(circleX + ", " + circleY)
+                    .style("fill", "red");
+                var circleX = d3.select(this.__data__.x);
+                circleX = circleX.toString();
+                circleX = circleX.split(","[0]);
+
+                var circleY = d3.select(this.__data__.y1);
+                circleY = circleY.toString();
+                circleY = circleY.split(","[0]);
+
+                textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
+
+            }).on("mouseout", function() {
+                d3.select(this)
+                    .attr('r', 4.5)
+                    .style("fill", "gray");
+            });
+
+        // points along the line
+        svg.selectAll("circle.line2") 
+            .data(data) 
+            .enter().append("circle") 
+            .attr("class", "line2") 
+            .attr("cx", function(d) { return x(d.x); }) 
+            .attr("cy", function(d) { return y2(d.y2); })
+            .attr("r", 4.5)
+            .style("fill", "gray")
+            .on("mouseover", function() {
+                d3.select(this)
+                    .attr('r', 6.6)
+                    .text(circleX + ", " + circleY)
+                    .style("fill", "red");
+                var circleX = d3.select(this.__data__.x);
+                circleX = circleX.toString();
+                circleX = circleX.split(","[0]);
+
+                var circleY = d3.select(this.__data__.y2);
+                circleY = circleY.toString();
+                circleY = circleY.split(","[0]);
+
+                textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
+
+            }).on("mouseout", function() {
+                d3.select(this)
+                    .attr('r', 4.5)
+                    .style("fill", "gray");
+            });
+
+        legend.append("text")
+            .attr("x", 60)
+            .attr("y", 7)
+            .attr("dy", ".35em")
+            .text("Location (Lon/Lat): "+lon+", "+lat);
+
+        textBottom = svg.append("text")
+            .attr("x", 0)
+            .attr("y", 340)
+            .attr("dy", ".35em")
+            .text("");
+    } //End chart
 }; // End startApp
 
 app.initialize(startApp);
