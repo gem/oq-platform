@@ -8,6 +8,9 @@ for i in ph_originalsurveyreference timeofdaystring photographerorganisation pho
 done
 echo "UPDATE econd.photologue_photo SET title = concat(title, '_', id) WHERE title = 'untitled';" | psql $PSQLARGS $MACHINE
 echo "UPDATE econd.photologue_photo SET title_slug = concat(title_slug, '_', id) WHERE title_slug = 'untitled';" | psql $PSQLARGS $MACHINE
+# the next to lines are to move from custom photologue to standard photologue library
+echo "ALTER TABLE photologue_photo RENAME COLUMN name TO image;" | psql $PSQLARGS $MACHINE
+echo "ALTER TABLE photologue_photo RENAME COLUMN datetaken TO date_taken;" | psql $PSQLARGS $MACHINE
 
 echo "--                                  x                                                  x 
 update econd.photologue_photo SET title = 'Izmit,xcr.in infill pan.s ofLat.wall(D''Ayala).jpg' where id = 11641;

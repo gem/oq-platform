@@ -37,7 +37,7 @@ SLD_CONTENT_TYPE = 'application/vnd.ogc.sld+xml'
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage', 'django-photologue==2.6.1' ]
 
 #: Template for local_settings.py
 LOCAL_SETTINGS = """\

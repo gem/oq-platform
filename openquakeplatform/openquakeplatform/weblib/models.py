@@ -20,7 +20,7 @@ class PhotologuePhotoSize(PhotoSize):
 
 # From photologue.ImageModel
  #   image = models.CharField(max_length=255, blank=True)
- #   date_taken = models.DateTimeField(null=True, blank=True)
+ #   datetaken = models.DateTimeField(null=True, blank=True) # was date_taken
  #   view_count = models.IntegerField()
  #   crop_from = models.CharField(max_length=10)
  #   effect = models.ForeignKey('PhotologuePhotoeffect', null=True, blank=True)

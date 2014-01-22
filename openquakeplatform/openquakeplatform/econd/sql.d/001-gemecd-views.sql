@@ -4,7 +4,7 @@ CREATE OR REPLACE VIEW geoarchivemasteroverview AS
  SELECT event.name AS event, event.id AS eventid, event.country, event.yearint, event.the_geom AS event_geom, study.name AS study, 
  study.id AS studyid, location.id AS locationid, location.name AS locationname, location.the_geom AS location_geom, 
  location.isaggregated AS locationaggregateflag, photologue_photo.id AS photoid, weblib_weblibphoto.qualitycode, 
- photologue_photo.name AS photofilename, weblib_weblibphoto.photographername, inventoryclass.id AS inventoryclassid, inventoryclass.name AS inventoryclassname, 
+ photologue_photo.image AS photofilename, weblib_weblibphoto.photographername, inventoryclass.id AS inventoryclassid, inventoryclass.name AS inventoryclassname, 
  unifieddamagelevel.name AS unifieddamagelevelname, unifieddamagelevel.id AS unifieddamagelevelid, lookupassetclass.name AS assetclass, 
  lookupassetclass.id AS assetclassid, count(surveyvalue.id) AS aggregationtest, study.copyrightmessage
    FROM econd__location AS location
@@ -20,7 +20,7 @@ CREATE OR REPLACE VIEW geoarchivemasteroverview AS
    JOIN econd__lookupassettype AS lookupassettype ON surveyvalue.assettypecode::text = lookupassettype.id::text
   WHERE location.parenttype::text = 'study'::text AND location.isaggregated = 0
   GROUP BY event.name, event.id, event.country, event.yearint, event.the_geom, study.name, study.id, location.id, 
-  location.name, location.the_geom, location.isaggregated, photologue_photo.id, photologue_photo.name, weblib_weblibphoto.photographername, weblib_weblibphoto.qualitycode, 
+  location.name, location.the_geom, location.isaggregated, photologue_photo.id, photologue_photo.image, weblib_weblibphoto.photographername, weblib_weblibphoto.qualitycode, 
   inventoryclass.name, inventoryclass.id, unifieddamagelevel.name, unifieddamagelevel.id, lookupassetclass.name, lookupassetclass.id,  study.copyrightmessage;
 ALTER TABLE geoarchivemasteroverview
  OWNER TO oqplatform;
@@ -161,7 +161,7 @@ ALTER TABLE geoarchivelocationsforjson
  CREATE OR REPLACE VIEW geoarchivemasterfull AS 
  SELECT event.name AS event, event.id AS eventid, event.country, event.yearint, event.the_geom AS event_geom, study.name AS study, study.id AS studyid, 
  location.id AS locationid, location.name AS locationname, location.the_geom AS location_geom, location.isaggregated AS locationaggregateflag, 
- photologue_photo.id AS photoid, weblib_weblibphoto.qualitycode, photologue_photo.name AS photofilename, weblib_weblibphoto.subjectcode, 
+ photologue_photo.id AS photoid, weblib_weblibphoto.qualitycode, photologue_photo.image AS photofilename, weblib_weblibphoto.subjectcode, 
  weblib_weblibphoto.detailcode, weblib_weblibphoto.daysafterevent, weblib_weblibphoto.timeofdaycode, weblib_weblibphoto.orientationcode, 
  weblib_weblibphoto.photographerprofessioncode, surveyvalue.structuretypecode, surveyvalue.vulnerabilityclasscode,
  inventoryclass.id, inventoryclass.name, inventoryclass.parentid, inventoryclass.parenttype, 
@@ -192,7 +192,7 @@ ALTER TABLE geoarchivelocationsforjson
   location.the_geom, location.isaggregated, photologue_photo.id,
   weblib_weblibphoto.subjectcode, weblib_weblibphoto.detailcode, weblib_weblibphoto.daysafterevent, weblib_weblibphoto.timeofdaycode,
   weblib_weblibphoto.orientationcode, weblib_weblibphoto.photographerprofessioncode,
-  photologue_photo.name, weblib_weblibphoto.qualitycode, surveyvalue.structuretypecode, surveyvalue.vulnerabilityclasscode,
+  photologue_photo.image, weblib_weblibphoto.qualitycode, surveyvalue.structuretypecode, surveyvalue.vulnerabilityclasscode,
   inventoryclass.name, inventoryclass.id, unifieddamagelevel.name, unifieddamagelevel.id, lookupassetclass.name, lookupassetclass.id;
 
 ALTER TABLE geoarchivemasterfull
@@ -303,7 +303,7 @@ ALTER TABLE gemecdlocationsforjsonaggregated
  SELECT location.id AS locationid, location.name AS locationname, location.isaggregated AS locationaggregateflag, photo.id AS photoid, photo.qualitycode, photo.name AS photofilename
    FROM econd__location AS location
    JOIN (SELECT weblib_weblibphoto.parentid AS parentid, photologue_photo.id AS id,
-                weblib_weblibphoto.qualitycode AS qualitycode, photologue_photo.name AS name FROM weblib_weblibphoto
+                weblib_weblibphoto.qualitycode AS qualitycode, photologue_photo.image AS name FROM weblib_weblibphoto
          JOIN photologue_photo ON photologue_photo.id = weblib_weblibphoto.photo_ptr_id) AS photo
    ON location.id = photo.parentid
   GROUP BY location.id, location.name, location.the_geom, location.isaggregated, photo.id, photo.name, photo.qualitycode;
