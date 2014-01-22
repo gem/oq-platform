@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "gemecd_base.html" %}
 {% load generictablerenderer %}
 {% load i18n %}
 
@@ -14,6 +14,20 @@
 {% endblock head %}
 
 {% block main %}
+
+{% block filterbar %}
+    <!-- this kind of page does not have a filter bar - just keep the space free -->
+    <div id="ecd-filterbar">
+
+        <!--start filter bar-->
+        <div id="filterbar">
+            <div id="filterbarright">
+                <div id="backlink">{{ page_backlink|safe }}</div>
+            </div>
+        </div>
+        <!--end filter bar -->
+    </div>
+{% endblock filterbar %}
 
 {% block leftpanel %}
         <div id="ecd-leftpanelwide">
