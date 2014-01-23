@@ -657,6 +657,7 @@ var startApp = function() {
         utfGrid.on('click', function (e) {
             // Get the selected curves
             selectedCurves = [];
+            selectedCurves.push("iml");
             var sc = $('.curve-list:checkbox:checked');
             for (var i = 0; i < sc.length; i++) {
                 selectedCurves.push(sc[i].defaultValue);
@@ -670,7 +671,6 @@ var startApp = function() {
             if (e.data) {
                 var chartData = e.data;
                 //invest_time = e.data.invest_tim
-                selectedCurves.push("iml");
                 buildMixedD3Chart(chartData, selectedCurves);
             } else {
                 //document.getElementById('click').innerHTML = 'click: nothing';
@@ -849,22 +849,21 @@ var startApp = function() {
         for (i in selectedCurves) {
             window[selectedCurves[i]] = chartData[selectedCurves[i]].split(",");
         }
-        console.log("iml: " + iml);
 
-        iml = iml.split(" ");
-
-        console.log("hazard_c_5 : " +hazard_c_5);
+        console.log(selectedCurves);
 
         var data = [];
         
 
         //I want to use selectedCurves[i] instread of "pga_mean[i] etc.."
-        for(i=0; i<pga_mean.length; i++) {
-            // without log values...
-            data.push([parseFloat(iml[i]), parseFloat(pga_mean[i]), parseFloat(hazard_c_6[i])]);
-        
-            // with log valuse...
-            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+        for(i=0; i<window[selectedCurves[1]].length; i++) {
+
+            var subarr = [];
+
+            for (var e=0; e < selectedCurves.length; e++) {
+                subarr.push(parseFloat(window[selectedCurves[e]][i]));
+            }
+            data.push(subarr);
         }
         
 
@@ -906,16 +905,17 @@ var startApp = function() {
 */
 
         // grid line functions
-        function make_x_axis() {        
+        function make_x_axis() {
             return d3.svg.axis()
                 .scale(x)
                 .orient("bottom")
                 .ticks(5)
         }
 
-        function make_y_axis() {        
+        function make_y_axis() {
             return d3.svg.axis()
-                .scale(y1)
+                // TODO the scale should be set to the max y values
+                .scale(mydata[selectedCurves[0]])
                 .orient("left")
                 .ticks(5)
         }
@@ -925,17 +925,25 @@ var startApp = function() {
         height = 380 - margin.top - margin.bottom;
 
         var x = d3.scale.log().range([0, width]);
-        var y1 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
-        var y2 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
+
+        mydata = [];
+        for (var i = 0; i < (selectedCurves.length -1); i++) {            
+            mydata[selectedCurves[i]] = d3.scale.log().domain([i, d3.max(data)]).range([height, 0]);
+        };
+        //var y1 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
+        //var y2 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
             //.ticks(4)
             .tickFormat(function (d) { return d; })
             .orient("bottom");
+
         var yAxis = d3.svg.axis()
-            .scale(y1)
+            .scale(mydata[selectedCurves[0]])
             .orient("left");
+
+
 
         var line1 = d3.svg.line()
             .x(function(d,i) { 
@@ -977,15 +985,35 @@ var startApp = function() {
 
         var dataCallback = function(d) {
             d.x = +d[0];
-            d.y1 = +d[1];
-            d.y2 = +d[2];
+
+            for (var i = 0; i < (selectedCurves.length -1); i++) {
+                for (k in mydata[selectedCurves[0]]) {
+                    d.k = +d[i];
+                }
+            };
+
+            //d.y1 = +d[1];
+            //d.y2 = +d[2];
         };
         
         console.log(data);
         data.forEach(dataCallback);
-        x.domain(d3.extent(data, function(d) { return d.x; }));
-        y1.domain(d3.extent(data, function(d) { return d.y1; }));
-        y2.domain(d3.extent(data, function(d) { return d.y2; }));
+
+          /*
+         x.domain(d3.extent(data, function(d) { return d.x; }));
+       
+         for (var i = 0; i < (selectedCurves.length -1); i++) {
+             for (k in mydata[selectedCurves[0]]) {
+                 console.log(k);
+                 k.domain(d3.extent(data, function(d) { return d.k; }));       
+             }
+         };
+        */
+
+        //domain();
+
+        //y1.domain(d3.extent(data, function(d) { return d.y1; }));
+        //y2.domain(d3.extent(data, function(d) { return d.y2; }));
 
         svg.append("path")
             .data([data])
