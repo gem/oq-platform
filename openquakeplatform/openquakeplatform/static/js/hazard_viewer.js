@@ -727,8 +727,14 @@ var startApp = function() {
             .orient("left");
 
         var line = d3.svg.line()
-            .x(function(d) { return x(d.x); })
-            .y(function(d) { return y(d.y); });
+            .x(function(d) {
+                console.log("d :"+ d);
+                console.log(x(d.x));
+                return x(d.x); 
+            })
+            .y(function(d) { 
+                return y(d.y); 
+            });
 
         var svg = d3.select("#chartDialog").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -761,6 +767,7 @@ var startApp = function() {
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
         y.domain(d3.extent(data, function(d) { return d.y; }));
+        console.log(data);
         svg.append("path")
             .data([data])
             .attr("class", "line")
@@ -839,83 +846,59 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves) {
+        var lat, lon, curve_vals, curve_coup, curve_name, max_value = -1, max_value_k = "";
 
+        /* associative array of arrays of values */
+        curve_vals = [];
+        /* associative array of arrays [ x, y ] to describe the curve on the plane */
+        curve_coup = [];
 
-        for (i in chartData) {
-            window[i] = chartData[i];
-            //console.log(window[i]);
-        }
+        /* associative array of curves produced with d3.line */
 
-        for (i in selectedCurves) {
-            window[selectedCurves[i]] = chartData[selectedCurves[i]].split(",");
-        }
+        lat = chartData["lat"];
+        lon = chartData["lon"];
+        for (var k in selectedCurves) {
+            curve_name = selectedCurves[k];
 
-        console.log(selectedCurves);
+            //console.log(chartData[curve_name]);
 
-        var data = [];
-        
+            curve_vals[curve_name] = chartData[curve_name].split(",");
 
-        //I want to use selectedCurves[i] instread of "pga_mean[i] etc.."
-        for(i=0; i<window[selectedCurves[1]].length; i++) {
-
-            var subarr = [];
-
-            for (var e=0; e < selectedCurves.length; e++) {
-                subarr.push(parseFloat(window[selectedCurves[e]][i]));
+            if (curve_name == "iml")
+                continue
+            curve_coup[curve_name] = [];
+            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
+                curve_coup[curve_name].push([parseFloat(curve_vals['iml'][i]), parseFloat(curve_vals[curve_name][i]) ]);
+                
+                //console.log(curve_coup[curve_name]);
             }
-            data.push(subarr);
         }
-        
 
-        //console.log(hazard_c_6);
-        //var prob = [];
-        //prob = chartData.hazard_c_5.split(",");
+       console.log(curve_coup[curve_name]);
 
-        //var prob2 = [];
-        //prob2 = chartData.pga_mean.split(",");
+        for (var k in selectedCurves) {
+            var curve_name = selectedCurves[k];
 
-        //var iml = [];
-        //iml = chartData.iml.split(" ");
+            if (curve_name == "iml")
+                continue
 
-        //prob = ["0.999891299371", "0.999180055851", "0.995277898116"];
-        //prob2 = ["0.89", "0.85", "0.5277"];
-        //iml = ["0.005", "0.007", "0.0098"];
-        
-/*
-        if(imt == "pga_maen") {
-            imt = "Mean Peak Ground Acceleration (g)";
-        } else if (imt == "PGV") {
-            imt = "Peak Ground Velocity (cm/s)";
-        } else if (imt == "PGD") {
-            imt = "Peak Ground Displacement (cm)";
-        } else if (imt == "SA") {
-            imt = "Spectral Acceleration (g)";
+            if (max_value < d3.max(curve_vals[curve_name])) {
+                max_value = d3.max(curve_vals[curve_name]);
+                max_value_k = curve_name;
+            }
         }
-        */
-
-        
-
-        /*
-        for (i in selectedCurves) {
-            data.push([
-                parseFloat(iml[i]),
-                parseFloat(selectedCurves[i])
-            ]);
-        }
-*/
 
         // grid line functions
         function make_x_axis() {
             return d3.svg.axis()
-                .scale(x)
+                .scale(x_scale)
                 .orient("bottom")
                 .ticks(5)
         }
 
         function make_y_axis() {
             return d3.svg.axis()
-                // TODO the scale should be set to the max y values
-                .scale(mydata[selectedCurves[0]])
+                .scale(y_scale)
                 .orient("left")
                 .ticks(5)
         }
@@ -924,42 +907,32 @@ var startApp = function() {
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
-        var x = d3.scale.log().range([0, width]);
+        //var x_scale = d3.scale.log().range([0, width]).domain([0, d3.max(curve_vals['iml'])]);
+        //var y_scale = d3.scale.log().range([0, height]).domain([0, max_value]);
 
-        mydata = [];
-        for (var i = 0; i < (selectedCurves.length -1); i++) {            
-            mydata[selectedCurves[i]] = d3.scale.log().domain([i, d3.max(data)]).range([height, 0]);
-        };
-        //var y1 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
-        //var y2 = d3.scale.log().domain([0, d3.max(data)]).range([height, 0]);
+        //var x_scale = d3.scale.linear().range([0, width]).domain([0, d3.max(curve_vals["iml"])]);
+        //var y_scale = d3.scale.linear().range([0, height]).domain([0, max_value]);
+
+        var x_scale = d3.scale.log().range([0, width]);
+        var y_scale = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
-            .scale(x)
+            .scale(x_scale)
             //.ticks(4)
             .tickFormat(function (d) { return d; })
             .orient("bottom");
 
         var yAxis = d3.svg.axis()
-            .scale(mydata[selectedCurves[0]])
+            .scale(y_scale)
             .orient("left");
 
-
-
-        var line1 = d3.svg.line()
-            .x(function(d,i) { 
-                return x(d.x); 
-            })
-            .y(function(d) { 
-                return y1(d.y1); 
-            });
-
-        var line2 = d3.svg.line()
-            .x(function(d,i) {
-                return x(d.x); 
+        var line = d3.svg.line()
+            .x(function(d) {
+                return x_scale(d[0]);
             })
             .y(function(d) {
-                return y2(d.y2); 
-            });
+                return y_scale(d[1]);
+            })
 
         var svg = d3.select("#chartDialog").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -983,46 +956,31 @@ var startApp = function() {
                 .tickFormat("")
             );
 
-        var dataCallback = function(d) {
-            d.x = +d[0];
+        for (k in selectedCurves) {
 
-            for (var i = 0; i < (selectedCurves.length -1); i++) {
-                for (k in mydata[selectedCurves[0]]) {
-                    d.k = +d[i];
-                }
-            };
+            var curve_name = selectedCurves[k];
+            console.log(curve_coup);
+            //console.log("curve_coup[curve_name] : " + curve_coup["pga_mean"]);
+            //console.log(curve_name);
 
-            //d.y1 = +d[1];
-            //d.y2 = +d[2];
-        };
-        
-        console.log(data);
-        data.forEach(dataCallback);
+            if(curve_name == "iml")
+                continue;
 
-          /*
-         x.domain(d3.extent(data, function(d) { return d.x; }));
-       
-         for (var i = 0; i < (selectedCurves.length -1); i++) {
-             for (k in mydata[selectedCurves[0]]) {
-                 console.log(k);
-                 k.domain(d3.extent(data, function(d) { return d.k; }));       
-             }
-         };
-        */
+            //console.log("in loop curve_coup[curve_name] : " + curve_coup[curve_name]);
+            var foo = curve_coup[curve_name];
+            console.log(foo);
 
-        //domain();
+            x_scale.domain(d3.extent(foo, function(d) { return d[0]; }));
+            y_scale.domain(d3.extent(foo, function(d) { return d[1]; }));
 
-        //y1.domain(d3.extent(data, function(d) { return d.y1; }));
-        //y2.domain(d3.extent(data, function(d) { return d.y2; }));
 
-        svg.append("path")
-            .data([data])
-            .attr("class", "line")
-            .attr("d", line1);
-        svg.append("path")
-            .data([data])
-            .attr("class", "line2")
-            .attr("d", line2);
+            svg.append("path")
+                .data([foo])
+                .attr("class", "line")
+                .attr("d", line);
+
+        }
+
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
@@ -1047,66 +1005,6 @@ var startApp = function() {
             .text("Probabability of exceedance in invest_time years");
 
         var legend = d3.select("#chartDialog").append("svg");
-
-        // points along the line
-        svg.selectAll("circle.line") 
-            .data(data) 
-            .enter().append("circle") 
-            .attr("class", "line") 
-            .attr("cx", function(d) { return x(d.x); }) 
-            .attr("cy", function(d) { return y1(d.y1); })
-            .attr("r", 4.5)
-            .style("fill", "gray")
-            .on("mouseover", function() {
-                d3.select(this)
-                    .attr('r', 6.6)
-                    .text(circleX + ", " + circleY)
-                    .style("fill", "red");
-                var circleX = d3.select(this.__data__.x);
-                circleX = circleX.toString();
-                circleX = circleX.split(","[0]);
-
-                var circleY = d3.select(this.__data__.y1);
-                circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
-
-                textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
-
-            }).on("mouseout", function() {
-                d3.select(this)
-                    .attr('r', 4.5)
-                    .style("fill", "gray");
-            });
-
-        // points along the line
-        svg.selectAll("circle.line2") 
-            .data(data) 
-            .enter().append("circle") 
-            .attr("class", "line2") 
-            .attr("cx", function(d) { return x(d.x); }) 
-            .attr("cy", function(d) { return y2(d.y2); })
-            .attr("r", 4.5)
-            .style("fill", "gray")
-            .on("mouseover", function() {
-                d3.select(this)
-                    .attr('r', 6.6)
-                    .text(circleX + ", " + circleY)
-                    .style("fill", "red");
-                var circleX = d3.select(this.__data__.x);
-                circleX = circleX.toString();
-                circleX = circleX.split(","[0]);
-
-                var circleY = d3.select(this.__data__.y2);
-                circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
-
-                textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
-
-            }).on("mouseout", function() {
-                d3.select(this)
-                    .attr('r', 4.5)
-                    .style("fill", "gray");
-            });
 
         legend.append("text")
             .attr("x", 60)
