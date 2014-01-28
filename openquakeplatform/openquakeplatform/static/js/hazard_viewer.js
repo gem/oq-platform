@@ -719,7 +719,7 @@ var startApp = function() {
         var xAxis = d3.svg.axis()
             .scale(x)
             //.ticks(4)
-            .tickFormat(function (d) { return d; })
+            .tickFormat(function (d) { console.log(d); return d; })
             .orient("bottom");
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -728,8 +728,8 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d) {
-                console.log("d :"+ d);
-                console.log(x(d.x));
+                //console.log("d :"+ d);
+                //console.log(x(d.x));
                 return x(d.x); 
             })
             .y(function(d) { 
@@ -869,12 +869,8 @@ var startApp = function() {
             curve_coup[curve_name] = [];
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
                 curve_coup[curve_name].push([parseFloat(curve_vals['iml'][i]), parseFloat(curve_vals[curve_name][i]) ]);
-                
-                //console.log(curve_coup[curve_name]);
             }
         }
-
-       console.log(curve_coup[curve_name]);
 
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
@@ -893,44 +889,76 @@ var startApp = function() {
             return d3.svg.axis()
                 .scale(x_scale)
                 .orient("bottom")
-                .ticks(5)
+                //.ticks(2)
         }
 
         function make_y_axis() {
             return d3.svg.axis()
                 .scale(y_scale)
                 .orient("left")
-                .ticks(5)
+                //.ticks(5)
+        }
+
+        function makeCircles(foo, k) {
+            // Points along the line
+            svg.selectAll("circle.line") 
+                .data(foo) 
+                .enter().append("circle") 
+                .attr("class", "line"+k) 
+                .attr("cx", function(d) { return x_scale(d[0]); }) 
+                .attr("cy", function(d) { return y_scale(d[1]); }) 
+                .attr("r", 4.5)
+                .style("fill", "gray")
+                .on("mouseover", function() {
+                    d3.select(this)
+                        .attr('r', 6.6)
+                        .text(circleX + ", " + circleY)
+                        .style("fill", "red");
+                    var circleX = d3.select(this.__data__[0]);
+                    circleX = circleX.toString();
+                    circleX = circleX.split(","[0]);
+    
+                    var circleY = d3.select(this.__data__[1]);
+                    circleY = circleY.toString();
+                    circleY = circleY.split(","[0]);
+    
+                    textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
+    
+                }).on("mouseout", function() {
+                    d3.select(this)
+                        .attr('r', 4.5)
+                        .style("fill", "none");
+                });
         }
 
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
-        //var x_scale = d3.scale.log().range([0, width]).domain([0, d3.max(curve_vals['iml'])]);
-        //var y_scale = d3.scale.log().range([0, height]).domain([0, max_value]);
-
-        //var x_scale = d3.scale.linear().range([0, width]).domain([0, d3.max(curve_vals["iml"])]);
-        //var y_scale = d3.scale.linear().range([0, height]).domain([0, max_value]);
-
         var x_scale = d3.scale.log().range([0, width]);
         var y_scale = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x_scale)
-            //.ticks(4)
-            .tickFormat(function (d) { return d; })
-            .orient("bottom");
+            .tickFormat(function (d) { console.log(d); return Math.round(d*100)/100; })
+            .orient("bottom")
+            .ticks(8);
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
+            //.ticks(6)
             .orient("left");
 
         var line = d3.svg.line()
             .x(function(d) {
+                //console.log("d[0]: "+d[0]);
+                //console.log("x_scale(d[0]): " +x_scale(d[0]));
                 return x_scale(d[0]);
             })
             .y(function(d) {
+                //console.log("d[1]: "+d[1]);
+                //console.log(d[1]);
+                //console.log("y_scale(d[1]): " +y_scale(d[1]));
                 return y_scale(d[1]);
             })
 
@@ -959,26 +987,26 @@ var startApp = function() {
         for (k in selectedCurves) {
 
             var curve_name = selectedCurves[k];
-            console.log(curve_coup);
-            //console.log("curve_coup[curve_name] : " + curve_coup["pga_mean"]);
-            //console.log(curve_name);
-
+            console.log(curve_coup[curve_name]);
             if(curve_name == "iml")
                 continue;
 
-            //console.log("in loop curve_coup[curve_name] : " + curve_coup[curve_name]);
             var foo = curve_coup[curve_name];
             console.log(foo);
 
             x_scale.domain(d3.extent(foo, function(d) { return d[0]; }));
             y_scale.domain(d3.extent(foo, function(d) { return d[1]; }));
 
-
             svg.append("path")
                 .data([foo])
-                .attr("class", "line")
+                .attr("class", "line"+k)
                 .attr("d", line);
 
+            makeCircles(foo, k);
+
+            // Update the css for each line
+            var bar = ["fdbf6f","a6cee3","b2df8a","33a02c","e31a1c","1f78b4","ff7f00","cab2d6","6a3d9a"];
+            $(".line"+k).css({'fill':'none','stroke':bar[k]});
         }
 
         svg.append("g")
