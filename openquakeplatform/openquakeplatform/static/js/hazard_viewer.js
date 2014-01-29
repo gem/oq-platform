@@ -53,7 +53,7 @@ var startApp = function() {
     $(function() {
         $( "#chartDialog" ).dialog({
             autoOpen: false,
-            height: 460,
+            height: 520,
             width: 440,
             closeOnEscape: true,
             position: {at: "right bottom"}
@@ -685,6 +685,8 @@ var startApp = function() {
 
     function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
         console.log(probArray);
+        console.log("imt"+imt);
+        console.log("invest time: "+ invest_time);
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
@@ -939,10 +941,10 @@ var startApp = function() {
         var y_scale = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
+            .ticks(5)
             .scale(x_scale)
-            .tickFormat(function (d) { console.log(d); return Math.round(d*100)/100; })
-            .orient("bottom")
-            .ticks(8);
+            //.tickFormat(d3.format( function (d) { return d; }))
+            .orient("bottom");
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
@@ -984,6 +986,8 @@ var startApp = function() {
                 .tickFormat("")
             );
 
+        var legend = d3.select("#chartDialog").append("svg");
+
         for (k in selectedCurves) {
 
             var curve_name = selectedCurves[k];
@@ -1007,19 +1011,24 @@ var startApp = function() {
             // Update the css for each line
             var bar = ["fdbf6f","a6cee3","b2df8a","33a02c","e31a1c","1f78b4","ff7f00","cab2d6","6a3d9a"];
             $(".line"+k).css({'fill':'none','stroke':bar[k]});
+
+            legend.append("text")
+                .attr("x", 60)
+                .attr("y", 20*(k))
+                .attr("dy", ".35em")
+                .text(selectedCurves[k]);
+
+            function legendLines(k) { return "translate(170," + (k * 20) + ")"; }
+
+            legend.append("svg:line")
+                .attr("class", selectedCurves[k])
+                .attr("x2", 50)
+                .attr("y2", 0)
+                .attr("transform", legendLines(k));
+
+            $("."+selectedCurves[k]).css({'stroke':bar[k]});
         }
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("x", 160)
-            .attr("y", 30)
-            .attr("dy", ".71em")
-            .attr("text-anchor", "middle")
-            .style("font-size","12px")
-            .text("imt place holder");
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
@@ -1032,11 +1041,9 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text("Probabability of exceedance in invest_time years");
 
-        var legend = d3.select("#chartDialog").append("svg");
-
         legend.append("text")
             .attr("x", 60)
-            .attr("y", 7)
+            .attr("y", 6)
             .attr("dy", ".35em")
             .text("Location (Lon/Lat): "+lon+", "+lat);
 
