@@ -281,7 +281,7 @@ var startApp = function() {
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
-        console.log(investType.indexOf("mixed"));
+
         if (investType.indexOf("mixed") == 1 ) {
             // Use investType to find the key in layersByInvestMixed
             var layerKey = investType.shift();
@@ -684,9 +684,6 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
-        console.log(probArray);
-        console.log("imt"+imt);
-        console.log("invest time: "+ invest_time);
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
@@ -721,7 +718,7 @@ var startApp = function() {
         var xAxis = d3.svg.axis()
             .scale(x)
             //.ticks(4)
-            .tickFormat(function (d) { console.log(d); return d; })
+            .tickFormat(function (d) {return d; })
             .orient("bottom");
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -730,8 +727,6 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d) {
-                //console.log("d :"+ d);
-                //console.log(x(d.x));
                 return x(d.x); 
             })
             .y(function(d) { 
@@ -764,12 +759,10 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
-        console.log(data);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
         y.domain(d3.extent(data, function(d) { return d.y; }));
-        console.log(data);
         svg.append("path")
             .data([data])
             .attr("class", "line")
@@ -862,8 +855,6 @@ var startApp = function() {
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
 
-            //console.log(chartData[curve_name]);
-
             curve_vals[curve_name] = chartData[curve_name].split(",");
 
             if (curve_name == "iml")
@@ -924,7 +915,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
     
-                    textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
+                    textTop.text("Point value (x/y): " + circleX + ", " + circleY);
     
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -933,7 +924,7 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 20, right: 20, bottom: 80, left: 60},
+        var margin = {top: 40, right: 20, bottom: 20, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
@@ -941,7 +932,7 @@ var startApp = function() {
         var y_scale = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
-            .ticks(5)
+            .ticks(6)
             .scale(x_scale)
             //.tickFormat(d3.format( function (d) { return d; }))
             .orient("bottom");
@@ -953,14 +944,14 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d) {
-                //console.log("d[0]: "+d[0]);
-                //console.log("x_scale(d[0]): " +x_scale(d[0]));
+                console.log("d[0]: "+d[0]);
+                console.log("x_scale(d[0]): " +x_scale(d[0]));
                 return x_scale(d[0]);
             })
             .y(function(d) {
-                //console.log("d[1]: "+d[1]);
-                //console.log(d[1]);
-                //console.log("y_scale(d[1]): " +y_scale(d[1]));
+                console.log("d[1]: "+d[1]);
+                console.log(d[1]);
+                console.log("y_scale(d[1]): " +y_scale(d[1]));
                 return y_scale(d[1]);
             })
 
@@ -991,34 +982,32 @@ var startApp = function() {
         for (k in selectedCurves) {
 
             var curve_name = selectedCurves[k];
-            console.log(curve_coup[curve_name]);
             if(curve_name == "iml")
                 continue;
 
-            var foo = curve_coup[curve_name];
-            console.log(foo);
+            var data = curve_coup[curve_name];
 
-            x_scale.domain(d3.extent(foo, function(d) { return d[0]; }));
-            y_scale.domain(d3.extent(foo, function(d) { return d[1]; }));
+            x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
+            y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
 
             svg.append("path")
-                .data([foo])
+                .data([data])
                 .attr("class", "line"+k)
                 .attr("d", line);
 
-            makeCircles(foo, k);
+            makeCircles(data, k);
 
             // Update the css for each line
-            var bar = ["fdbf6f","a6cee3","b2df8a","33a02c","e31a1c","1f78b4","ff7f00","cab2d6","6a3d9a"];
-            $(".line"+k).css({'fill':'none','stroke':bar[k]});
+            var colors = ["EB6841","CC333F","542437", "53777A", "CD5664", "80363E", "CCAFA7", "806E69", "333333"];
+            $(".line"+k).css({'fill':'none','stroke':colors[k]});
 
             legend.append("text")
-                .attr("x", 60)
+                .attr("x", 90)
                 .attr("y", 20*(k))
                 .attr("dy", ".35em")
                 .text(selectedCurves[k]);
 
-            function legendLines(k) { return "translate(170," + (k * 20) + ")"; }
+            function legendLines(k) { return "translate(190," + (k * 20) + ")"; }
 
             legend.append("svg:line")
                 .attr("class", selectedCurves[k])
@@ -1026,9 +1015,20 @@ var startApp = function() {
                 .attr("y2", 0)
                 .attr("transform", legendLines(k));
 
-            $("."+selectedCurves[k]).css({'stroke':bar[k]});
+            $("."+selectedCurves[k]).css({'stroke':colors[k]});
         }
 
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("x", 160)
+            .attr("y", 30)
+            .attr("dy", ".71em")
+            .attr("text-anchor", "middle")
+            .style("font-size","12px")
+            //.text("imt place holder");
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
@@ -1042,14 +1042,20 @@ var startApp = function() {
             .text("Probabability of exceedance in invest_time years");
 
         legend.append("text")
-            .attr("x", 60)
+            .attr("x", 70)
             .attr("y", 6)
+            .attr("dy", ".35em")
+            .text("IML plotted in this chart:");
+
+        textTopLonLat = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -32)
             .attr("dy", ".35em")
             .text("Location (Lon/Lat): "+lon+", "+lat);
 
-        textBottom = svg.append("text")
+        textTop = svg.append("text")
             .attr("x", 0)
-            .attr("y", 340)
+            .attr("y", -15)
             .attr("dy", ".35em")
             .text("");
     } //End chart
