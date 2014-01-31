@@ -287,7 +287,7 @@ var startApp = function() {
             var layerKey = investType.shift();
             // Use that key to look up available curves in curvesAvailable
             var curvesList = curvesAvailable[layerKey].split(" ");
-            // Remove ilm and lat long becasue they are not an option
+            // Remove items that curves
             var index = curvesList.indexOf("iml");
             if (index > -1) {
                 curvesList.splice(index, 1);
@@ -300,8 +300,17 @@ var startApp = function() {
             if (index > -1) {
                 curvesList.splice(index, 1);
             }
+            index = curvesList.indexOf("imt");
+            if (index > -1) {
+                curvesList.splice(index, 1);
+            }
+            index = curvesList.indexOf("invest_time");
+            if (index > -1) {
+                curvesList.splice(index, 1);
+            }
+            var curvesList = curvesList.filter(function(v){return v!==''});
             // Provide the user with the curves that are available in the dialog
-            $('#hazardCurveDialog').append('<b>Select the curves to be ploted in the chart: </b><br>');
+            $('#hazardCurveDialog').append('<b>Select curves to be ploted in the chart: </b><br>');
             for (var i = 0; i < curvesList.length; i++) {
                 var checkbox = '<input type="checkbox" id="'+curvesList[i]+'" class="curve-list" value=" '
                     + curvesList[i]
@@ -662,7 +671,6 @@ var startApp = function() {
             for (var i = 0; i < sc.length; i++) {
                 selectedCurves.push(sc[i].defaultValue);
             };
-
             for (i=0; i < selectedCurves.length; i++)
                 selectedCurves[i] = selectedCurves[i].trim();
 
@@ -845,6 +853,7 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves) {
+        console.log("selectedCurves: " +selectedCurves);
         var lat, lon, iml, curve_vals, curve_coup, curve_name;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
@@ -857,8 +866,29 @@ var startApp = function() {
 
         lat = chartData["lat"];
         lon = chartData["lon"];
+        invest_time = chartData["invest_time"];
 
         imt = chartData["imt"];
+        if ((imt.indexOf("SA") > -1) == true ){
+            var saValue = imt.substring(imt.indexOf("-") + 1);
+            console.log(saValue);
+            imt = "Spectral Acceleration (" + saValue + " s)";
+        }
+        if ((imt.indexOf("PGA") > -1) == true ){
+            var saValue = imt.substring(imt.indexOf("-") + 1);
+            console.log(saValue);
+            imt = "Peak Ground Acceleration (" + saValue + " s)";
+        }
+        if ((imt.indexOf("PGV") > -1) == true ){
+            var saValue = imt.substring(imt.indexOf("-") + 1);
+            console.log(saValue);
+            imt = "Peak Ground Velocity (" + saValue + " s)";
+        }
+        if ((imt.indexOf("PGD") > -1) == true ){
+            var saValue = imt.substring(imt.indexOf("-") + 1);
+            console.log(saValue);
+            imt = "Peak Ground Displacement (" + saValue + " s)";
+        }
         if(imt == "PGA") {
                 imt = "Peak Ground Acceleration (g)";
             } else if (imt == "PGV") {
@@ -928,8 +958,6 @@ var startApp = function() {
 
             if (curve_name == "iml")
                 continue;
-            if (curve_name == "imt")
-                continue;
 
             console.log("MAX: " + max_value + "MAX_VALS ["+curve_name+"]: "+d3.max(curve_vals[curve_name]));
             if (max_value < d3.max(curve_vals[curve_name])) {
@@ -946,6 +974,7 @@ var startApp = function() {
         function x_grid() {
             return d3.svg.axis()
                 .scale(x_scale)
+                //.attr('opacity', 0.1)
                 .orient("bottom")
                 .ticks(5)
         }
@@ -953,6 +982,7 @@ var startApp = function() {
         function y_grid() {
             return d3.svg.axis()
                 .scale(y_scale)
+                //.attr('opacity', 0.1)
                 .orient("left")
                 .ticks(5)
         }
@@ -969,9 +999,9 @@ var startApp = function() {
                 .style("fill", color)
                 .on("mouseover", function() {
                     d3.select(this)
-                        .attr('r', 5.2)
+                        .attr('r', 6)
                         .text(circleX + ", " + circleY)
-                        .style("fill", "black");
+                        .style("fill", "gray");
                     var circleX = d3.select(this.__data__[0]);
                     circleX = circleX.toString();
                     circleX = circleX.split(","[0]);
@@ -1081,8 +1111,6 @@ var startApp = function() {
 
             if(curve_name == "iml")
                 continue;
-            if(curve_name == "imt")
-                continue;
 
             var data = curve_coup[curve_name];
 
@@ -1149,13 +1177,7 @@ var startApp = function() {
             .attr("dy", ".71em")
             .style("font-size","12px")
             .style("text-anchor", "end")
-            .text("Probabability of exceedance values");
-
-        legend.append("text")
-            .attr("x", 70)
-            .attr("y", 6)
-            .attr("dy", ".35em")
-            .text("Probabability of exceedance values:");
+            .text("Probabability of exceedance in "+invest_time+" years");
 
         textTopLonLat = svg.append("text")
             .attr("x", 0)
