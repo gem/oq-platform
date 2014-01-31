@@ -281,7 +281,7 @@ var startApp = function() {
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
-        console.log(investType.indexOf("mixed"));
+
         if (investType.indexOf("mixed") == 1 ) {
             // Use investType to find the key in layersByInvestMixed
             var layerKey = investType.shift();
@@ -692,7 +692,6 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
-        console.log(probArray);
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
@@ -736,7 +735,6 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d) {
-                console.log("d :"+ d);
                 return x(d.x); 
             })
             .y(function(d) { 
@@ -769,12 +767,11 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
-        console.log(data);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
         y.domain(d3.extent(data, function(d) { return d.y; }));
-        console.log(data);
+
         svg.append("path")
             .data([data])
             .attr("class", "line")
@@ -853,7 +850,6 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves) {
-        console.log("selectedCurves: " +selectedCurves);
         var lat, lon, iml, curve_vals, curve_coup, curve_name;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
@@ -871,22 +867,18 @@ var startApp = function() {
         imt = chartData["imt"];
         if ((imt.indexOf("SA") > -1) == true ){
             var saValue = imt.substring(imt.indexOf("-") + 1);
-            console.log(saValue);
             imt = "Spectral Acceleration (" + saValue + " s)";
         }
         if ((imt.indexOf("PGA") > -1) == true ){
             var saValue = imt.substring(imt.indexOf("-") + 1);
-            console.log(saValue);
             imt = "Peak Ground Acceleration (" + saValue + " s)";
         }
         if ((imt.indexOf("PGV") > -1) == true ){
             var saValue = imt.substring(imt.indexOf("-") + 1);
-            console.log(saValue);
             imt = "Peak Ground Velocity (" + saValue + " s)";
         }
         if ((imt.indexOf("PGD") > -1) == true ){
             var saValue = imt.substring(imt.indexOf("-") + 1);
-            console.log(saValue);
             imt = "Peak Ground Displacement (" + saValue + " s)";
         }
         if(imt == "PGA") {
@@ -901,9 +893,6 @@ var startApp = function() {
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
-
-            console.log("chartData["+curve_name+"]: " + chartData[curve_name]);
-
             curve_vals[curve_name] = chartData[curve_name].split(",");
         }
 
@@ -914,9 +903,6 @@ var startApp = function() {
             for (i = 0 ; i < curve_vals[curve_name].length ; i++) {
                 curve_vals[curve_name][i] = parseFloat(curve_vals[curve_name][i]);
             }
-
-            console.log("CURVE_VALS["+curve_name+"]");
-            console.log(curve_vals[curve_name]);
         }
 
         var old_value = -100;
@@ -929,24 +915,16 @@ var startApp = function() {
                 old_value = curve_vals["iml"][i];
             }
         }
-        console.log("CURVE_VALS[iml]");
-        for (i = 0 ; i < curve_vals["iml"].length ; i++) {
-            console.log(curve_vals["iml"][i]);
-        }
 
-        console.log("VALUES ");
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
 
             if (curve_name == "iml")
                 continue;
 
-            console.log("CURVE: "+curve_name);
-
             curve_coup[curve_name] = [];
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
                 if (curve_vals['iml'][i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
-                    console.log("added");
                     curve_coup[curve_name].push([ curve_vals['iml'][i], curve_vals[curve_name][i] ]);
                 }
             }
@@ -959,7 +937,6 @@ var startApp = function() {
             if (curve_name == "iml")
                 continue;
 
-            console.log("MAX: " + max_value + "MAX_VALS ["+curve_name+"]: "+d3.max(curve_vals[curve_name]));
             if (max_value < d3.max(curve_vals[curve_name])) {
                 max_value = d3.max(curve_vals[curve_name]);
                 max_value_k = curve_name;
@@ -1027,7 +1004,6 @@ var startApp = function() {
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        console.log("W: "+ width + "  H: "+ height + "  Max_iml: " + d3.max(curve_vals["iml"]) + "  Max_value: " + max_value);
         var x_scale = d3.scale.log().range([0, width]).domain([d3.min(curve_vals["iml"]), d3.max(curve_vals["iml"])]);
         var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
 
@@ -1059,8 +1035,6 @@ var startApp = function() {
             }
 
         }
-        console.log("xAxis_vals:");
-        console.log(xAxis_vals);
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
@@ -1073,12 +1047,6 @@ var startApp = function() {
             .y(function(d) {
                 return y_scale(d[1]);
             })
-//            .interpolate("linear");
-
-        console.log("chartDialog");
-        console.log("width", width + margin.left + margin.right);
-        console.log("height", height + margin.top + margin.bottom);
-        console.log("translate(" + margin.left + "," + margin.top + ")");
         
         var svg = d3.select("#chartDialog").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -1113,9 +1081,6 @@ var startApp = function() {
                 continue;
 
             var data = curve_coup[curve_name];
-
-            console.log("IN PATH LOOP ["+curve_name+"]");
-            console.log(curve_coup[curve_name]);
 
             svg.append("path")
                 .data([curve_coup[curve_name]])
