@@ -865,16 +865,16 @@ var startApp = function() {
         // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
         // SA-0.1 = Spectral Acceleration (0.1 s)
         imt = chartData["imt"];
-        if (imt.indexOf("SA") > -1) {
+        if (imt.indexOf("SA-") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Spectral Acceleration (" + imtValue + " s)";
-        } else if (imt.indexOf("PGA") > -1) {
+        } else if (imt.indexOf("PGA-") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Peak Ground Acceleration (" + imtValue + " s)";
-        } else if (imt.indexOf("PGV") > -1) {
+        } else if (imt.indexOf("PGV-") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Peak Ground Velocity (" + imtValue + " s)";
-        } else if (imt.indexOf("PGD") > -1) {
+        } else if (imt.indexOf("PGD-") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Peak Ground Displacement (" + imtValue + " s)";
         }
