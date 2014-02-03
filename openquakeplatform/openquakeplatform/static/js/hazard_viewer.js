@@ -284,11 +284,6 @@ var startApp = function() {
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
 
-        console.log(e);
-        console.log(option);
-        console.log(investType);
-        console.log(gridList);
-
         if (investType.indexOf("mixed") == 1 ) {
             // Use investType to find the key in layersByInvestMixed
             var layerKey = investType.shift();
@@ -948,7 +943,6 @@ var startApp = function() {
                 min_value_k = curve_name;
             }
         }
-        // console.log("min_value: " + min_value + "  max_value: " + max_value);
 
         // grid line functions
         function x_grid() {
@@ -1073,7 +1067,6 @@ var startApp = function() {
             );
 
         legend = d3.select("#chartDialog").append("svg");
-        console.log(legend);
 
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
