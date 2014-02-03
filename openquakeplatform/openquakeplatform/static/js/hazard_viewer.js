@@ -722,7 +722,7 @@ var startApp = function() {
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
-        
+
         var x = d3.scale.log().range([0, width]);
         var y = d3.scale.log().range([height, 0]);
 
