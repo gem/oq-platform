@@ -284,12 +284,17 @@ var startApp = function() {
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
 
+        console.log(e);
+        console.log(option);
+        console.log(investType);
+        console.log(gridList);
+
         if (investType.indexOf("mixed") == 1 ) {
             // Use investType to find the key in layersByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available curves in curvesAvailable
             var curvesList = curvesAvailable[layerKey].split(" ");
-            // Remove items that curves
+            // Remove items that are not curves
             var index = curvesList.indexOf("iml");
             if (index > -1) {
                 curvesList.splice(index, 1);
@@ -312,7 +317,7 @@ var startApp = function() {
             }
             var curvesList = curvesList.filter(function(v){return v!==''});
             // Provide the user with the curves that are available in the dialog
-            $('#hazardCurveDialog').append('<b>Select curves to be ploted in the chart: </b><br>');
+            $('#hazardCurveDialog').append('<div id="curve-check-box" Select curves to be ploted in the chart:<br></div>');
             for (var i = 0; i < curvesList.length; i++) {
                 var checkbox = '<input type="checkbox" id="'+curvesList[i]+'" class="curve-list" value=" '
                     + curvesList[i]
@@ -320,7 +325,7 @@ var startApp = function() {
                     + curvesList[i]
                     + '<br>';
 
-                $('#hazardCurveDialog').append(checkbox);
+                $('#curve-check-box').append(checkbox);
             };
             $('.curve-list').prop('checked', true);
             mixedCurve();
@@ -398,13 +403,6 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $("#addTileLayer").click(function() {
-            // Remove any existing UtfGrid layers in order to avoid conflict
-            map.removeLayer(utfGrid);
-            utfGrid = {};
-
-            var e = document.getElementById("layer-list");
-            var mapLayerId = e.options[e.selectedIndex].value;
-
             // Look up the layer id using the layer name
             var mapLayerIdArray = mapLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
@@ -418,6 +416,13 @@ var startApp = function() {
                 showDuplicateGridMsg();
             }
             else {
+                // Remove any existing UtfGrid layers in order to avoid conflict
+                map.removeLayer(utfGrid);
+                utfGrid = {};
+
+                var e = document.getElementById("layer-list");
+                var mapLayerId = e.options[e.selectedIndex].value;
+
                 var tileLayer = L.tileLayer(TILESTREAM_URL 
                     + selectedLayer
                     + '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL
@@ -435,8 +440,6 @@ var startApp = function() {
                         + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                     map.addLayer(utfGrid);
                     utfGridClickEvent(utfGrid);
-                    
-                    //TODO render D3 chart for hazard curves
                 };
             }
         });
@@ -489,8 +492,6 @@ var startApp = function() {
     // Add mixed curve layers form tilestream list
     function mixedCurve() {
         // Remove any existing UtfGrid layers in order to avoid conflict
-        map.removeLayer(utfGrid);
-        utfGrid = {};
         var e = document.getElementById("curve-list");
         var curveLayerId = e.options[e.selectedIndex].value;
 
@@ -507,6 +508,8 @@ var startApp = function() {
             showDuplicateGridMsg();
         }
         else {
+            map.removeLayer(utfGrid);
+            utfGrid = {};
             var tileLayer = L.tileLayer(TILESTREAM_URL 
                 + selectedLayer
                 + '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL
@@ -523,11 +526,7 @@ var startApp = function() {
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
-                //TODO create a seperate function to handle curves with invest type mixed
-                //if ()
                 utfGridClickEventMixed(utfGrid);
-                
-                //TODO render D3 chart for hazard curves
             };
         }
     }
@@ -563,6 +562,7 @@ var startApp = function() {
     // Remove curve layers from tilestream
     $(document).ready(function() {
         $('#removeTileCurve').click(function() {
+            $("#curve-check-box").remove();
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
@@ -853,7 +853,7 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves) {
-        var lat, lon, iml, curve_vals, curve_coup, curve_name;
+        var lat, lon, iml, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
         /* associative array of arrays of values */
@@ -870,31 +870,19 @@ var startApp = function() {
         // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
         // SA-0.1 = Spectral Acceleration (0.1 s)
         imt = chartData["imt"];
-        if ((imt.indexOf("SA") > -1) == true ){
+        if (imt.indexOf("SA") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Spectral Acceleration (" + imtValue + " s)";
-        } else if ((imt.indexOf("PGA") > -1) == true ){
+        } else if (imt.indexOf("PGA") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Peak Ground Acceleration (" + imtValue + " s)";
-        } else if ((imt.indexOf("PGV") > -1) == true ){
+        } else if (imt.indexOf("PGV") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Peak Ground Velocity (" + imtValue + " s)";
-        } else if ((imt.indexOf("PGD") > -1) == true ){
+        } else if (imt.indexOf("PGD") > -1) {
             var imtValue = imt.substring(imt.indexOf("-") + 1);
             imt = "Peak Ground Displacement (" + imtValue + " s)";
         }
-
-        // In some cases the imt varaible will not include a value
-        // and then needs to be handeled in this way:
-        if (imt == "PGA") {
-                imt = "Peak Ground Acceleration (g)";
-            } else if (imt == "PGV") {
-                imt = "Peak Ground Velocity (cm/s)";
-            } else if (imt == "PGD") {
-                imt = "Peak Ground Displacement (cm)";
-            } else if (imt == "SA") {
-                imt = "Spectral Acceleration (g)";
-            }
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
@@ -903,9 +891,9 @@ var startApp = function() {
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
-            
+            var i;
             for (i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                var i;
+                
                 curve_vals[curve_name][i] = parseFloat(curve_vals[curve_name][i]);
             }
         }
@@ -937,16 +925,26 @@ var startApp = function() {
 
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
+            var min_cur = 1000.0, max_cur = -1;
 
             if (curve_name == "iml")
                 continue;
 
-            if (max_value < d3.max(curve_vals[curve_name])) {
-                max_value = d3.max(curve_vals[curve_name]);
+            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
+                if (curve_vals[curve_name][i] == 0)
+                    continue;
+
+                if (min_cur > curve_vals[curve_name][i])
+                    min_cur = curve_vals[curve_name][i];
+                if (max_cur < curve_vals[curve_name][i])
+                    max_cur = curve_vals[curve_name][i];
+            }
+            if (max_value < max_cur) {
+                max_value = max_cur;
                 max_value_k = curve_name;
             }
-            if (min_value > d3.min(curve_vals[curve_name])) {
-                min_value = d3.min(curve_vals[curve_name]);
+            if (min_value > min_cur) {
+                min_value = min_cur;
                 min_value_k = curve_name;
             }
         }
@@ -1073,7 +1071,8 @@ var startApp = function() {
                 .tickFormat("")
             );
 
-        var legend = d3.select("#chartDialog").append("svg");
+        legend = d3.select("#chartDialog").append("svg");
+        console.log(legend);
 
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
@@ -1089,11 +1088,23 @@ var startApp = function() {
                 .attr("d", line);
 
             // Update the css for each line
-            var colors = ["black","blue","green", "orange", "red", "yellow", "gray"];
+            colors = [
+                "darkred", 
+                "blue",
+                "green", 
+                "orange", 
+                "red", 
+                "sandybrown", 
+                "yellowgreen", 
+                "darksalmon", 
+                "lightseagreen",
+                "skyblue"
+            ];
+
             var gray = "A0A0A0";
             $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
 
-            var color = colors[k];
+            var color = colors[k % colors.length];
 
             makeCircles(data, k, color);
 
