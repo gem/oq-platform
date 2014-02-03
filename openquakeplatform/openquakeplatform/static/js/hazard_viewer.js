@@ -853,6 +853,8 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves) {
+        // console.log(chartData);
+        // console.log(selectedCurves);
         var lat, lon, iml, curve_vals, curve_coup, curve_name;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
@@ -937,19 +939,30 @@ var startApp = function() {
 
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
+            var min_cur = 1000.0, max_cur = -1;
 
             if (curve_name == "iml")
                 continue;
 
-            if (max_value < d3.max(curve_vals[curve_name])) {
-                max_value = d3.max(curve_vals[curve_name]);
+            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
+                if (curve_vals[curve_name][i] == 0)
+                    continue;
+
+                if (min_cur > curve_vals[curve_name][i])
+                    min_cur = curve_vals[curve_name][i];
+                if (max_cur < curve_vals[curve_name][i])
+                    max_cur = curve_vals[curve_name][i];
+            }
+            if (max_value < max_cur) {
+                max_value = max_cur;
                 max_value_k = curve_name;
             }
-            if (min_value > d3.min(curve_vals[curve_name])) {
-                min_value = d3.min(curve_vals[curve_name]);
+            if (min_value > min_cur) {
+                min_value = min_cur;
                 min_value_k = curve_name;
             }
         }
+        // console.log("min_value: " + min_value + "  max_value: " + max_value);
 
         // grid line functions
         function x_grid() {
