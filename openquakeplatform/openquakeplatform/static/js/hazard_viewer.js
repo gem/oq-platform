@@ -27,7 +27,7 @@ var layers;
 // Keep track of grids
 var gridList;
 
-// Make a list of categorys
+// Make a list of categories
 var mapCategoryList = [];
 var curveCategoryList = [];
 var mapLayerGrids = [];
@@ -45,6 +45,8 @@ var selectedCurves = [];
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
 );
+
+var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -206,7 +208,7 @@ var startApp = function() {
         }
 
         // Create the category list (population the object)
-        for (var i=0; i < json.length; i++) {
+        for (var i = 0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
             var type = json[i].type;
@@ -233,7 +235,7 @@ var startApp = function() {
             }
 
             if (type == "hazard-curve" && invest != "mixed") {
-                layersByInvestSingle[i]=name;
+                layersByInvestSingle[i] = name;
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -247,11 +249,11 @@ var startApp = function() {
 
         // Get unique category names
         var mapCategoryUnique = mapCategoryList.filter(function(itm,i,mapCategoryList){
-            return i==mapCategoryList.indexOf(itm);
+            return i == mapCategoryList.indexOf(itm);
         });
     
         var curveCategoryUnique = curveCategoryList.filter(function(itm,i,curveCategoryList){
-            return i==curveCategoryList.indexOf(itm);
+            return i == curveCategoryList.indexOf(itm);
         });
 
         for (var i in mapCategoryUnique) {
@@ -334,7 +336,8 @@ var startApp = function() {
     // Check to see if the curve has an investigation time 'mixed'
     function checkCurveType(layersByInvestMixed, layersByInvestSingle, option) {
         for (key in layersByInvestMixed) {
-            if (!layersByInvestMixed.hasOwnProperty(key)) continue;
+            if (!layersByInvestMixed.hasOwnProperty(key)) 
+                continue;
             if (layersByInvestMixed[key] === option) {
                 var key  = key;
                 var mixed = "mixed";
@@ -342,7 +345,8 @@ var startApp = function() {
             }
         }
         for (key in layersByInvestSingle) {
-            if (!layersByInvestSingle.hasOwnProperty(key)) continue;
+            if (!layersByInvestSingle.hasOwnProperty(key)) 
+                continue;
             if (layersByInvestSingle[key] === option) {
                 var single = "single";
                 return [single];
@@ -367,7 +371,6 @@ var startApp = function() {
             selLayer.appendChild(opt);
         }
     });
-
 
     // Create dynamic categorized curve layer dialog
     $("#curve-category").change(function() {
@@ -415,9 +418,9 @@ var startApp = function() {
                 showDuplicateGridMsg();
             }
             else {
-                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+                var tileLayer = L.tileLayer(TILESTREAM_URL 
                     + selectedLayer
-                    + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                    + '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL
                     +selectedLayer
                     +'.json'});
                 layerControl.addOverlay(tileLayer, selectedLayer);
@@ -427,7 +430,7 @@ var startApp = function() {
                 
                 if (hasGrid == true) {
                     gridList = 1;
-                    utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
+                    utfGrid = new L.UtfGrid(TILESTREAM_URL
                         + selectedLayer
                         + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                     map.addLayer(utfGrid);
@@ -458,9 +461,9 @@ var startApp = function() {
             showDuplicateGridMsg();
         }
         else {
-            var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+            var tileLayer = L.tileLayer(TILESTREAM_URL 
                 + selectedLayer
-                + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                + '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL
                 +selectedLayer
                 +'.json'});
             layerControl.addOverlay(tileLayer, selectedLayer);
@@ -470,7 +473,7 @@ var startApp = function() {
             
             if (hasGrid == true) {
                 gridList = 1;
-                utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
+                utfGrid = new L.UtfGrid(TILESTREAM_URL
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
@@ -504,9 +507,9 @@ var startApp = function() {
             showDuplicateGridMsg();
         }
         else {
-            var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
+            var tileLayer = L.tileLayer(TILESTREAM_URL 
                 + selectedLayer
-                + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
+                + '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL
                 +selectedLayer
                 +'.json'});
             layerControl.addOverlay(tileLayer, selectedLayer);
@@ -516,7 +519,7 @@ var startApp = function() {
             
             if (hasGrid == true) {
                 gridList = 1;
-                utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/'
+                utfGrid = new L.UtfGrid(TILESTREAM_URL
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
@@ -864,24 +867,26 @@ var startApp = function() {
         lon = chartData["lon"];
         invest_time = chartData["invest_time"];
 
+        // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
+        // SA-0.1 = Spectral Acceleration (0.1 s)
         imt = chartData["imt"];
         if ((imt.indexOf("SA") > -1) == true ){
-            var saValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Spectral Acceleration (" + saValue + " s)";
+            var imtValue = imt.substring(imt.indexOf("-") + 1);
+            imt = "Spectral Acceleration (" + imtValue + " s)";
+        } else if ((imt.indexOf("PGA") > -1) == true ){
+            var imtValue = imt.substring(imt.indexOf("-") + 1);
+            imt = "Peak Ground Acceleration (" + imtValue + " s)";
+        } else if ((imt.indexOf("PGV") > -1) == true ){
+            var imtValue = imt.substring(imt.indexOf("-") + 1);
+            imt = "Peak Ground Velocity (" + imtValue + " s)";
+        } else if ((imt.indexOf("PGD") > -1) == true ){
+            var imtValue = imt.substring(imt.indexOf("-") + 1);
+            imt = "Peak Ground Displacement (" + imtValue + " s)";
         }
-        if ((imt.indexOf("PGA") > -1) == true ){
-            var saValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Acceleration (" + saValue + " s)";
-        }
-        if ((imt.indexOf("PGV") > -1) == true ){
-            var saValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Velocity (" + saValue + " s)";
-        }
-        if ((imt.indexOf("PGD") > -1) == true ){
-            var saValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Displacement (" + saValue + " s)";
-        }
-        if(imt == "PGA") {
+
+        // In some cases the imt varaible will not include a value
+        // and then needs to be handeled in this way:
+        if (imt == "PGA") {
                 imt = "Peak Ground Acceleration (g)";
             } else if (imt == "PGV") {
                 imt = "Peak Ground Velocity (cm/s)";
@@ -897,10 +902,10 @@ var startApp = function() {
         }
 
         for (var k in selectedCurves) {
-            var i;
             curve_name = selectedCurves[k];
             
             for (i = 0 ; i < curve_vals[curve_name].length ; i++) {
+                var i;
                 curve_vals[curve_name][i] = parseFloat(curve_vals[curve_name][i]);
             }
         }
@@ -930,7 +935,6 @@ var startApp = function() {
             }
         }
 
-
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
 
@@ -951,7 +955,6 @@ var startApp = function() {
         function x_grid() {
             return d3.svg.axis()
                 .scale(x_scale)
-                //.attr('opacity', 0.1)
                 .orient("bottom")
                 .ticks(5)
         }
@@ -959,7 +962,6 @@ var startApp = function() {
         function y_grid() {
             return d3.svg.axis()
                 .scale(y_scale)
-                //.attr('opacity', 0.1)
                 .orient("left")
                 .ticks(5)
         }
@@ -1021,7 +1023,6 @@ var startApp = function() {
             }
             xAxis[i] = d3.svg.axis()
                 .scale(x_scale)
-            //.ticks(4)
                 .ticks(4)
                 .innerTickSize(i == 0 ? 8 : 4)
                 .outerTickSize(0)
