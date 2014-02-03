@@ -86,7 +86,7 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
                 data=dict(
                     database=settings.OQ_ENGINE_SERVER_DATABASE,
                     callback_url="%s%s" % (
-                        settings.SITEURL[:-1], reverse(
+                        settings.SITEURL.rstrip("/"), reverse(
                         "calculation", args=(calculation.pk,))),
                     foreign_calculation_id=calculation.pk,
                     # Risk only
