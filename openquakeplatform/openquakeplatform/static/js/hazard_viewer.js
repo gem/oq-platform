@@ -80,7 +80,7 @@ var startApp = function() {
     $(document).ready(function() {
         $("#worning-duplicate").dialog({
             autoOpen: false,
-            hieght: 300,
+            height: 300,
             width: 350,
             modal: true
         });
@@ -94,7 +94,7 @@ var startApp = function() {
     $(document).ready(function() {
         $("#worning-duplicate-grid").dialog({
             autoOpen: false,
-            hieght: 300,
+            height: 300,
             width: 350,
             modal: true
         });
@@ -123,7 +123,7 @@ var startApp = function() {
     $(document).ready(function() {
         $("#worning-no-layer").dialog({
             autoOpen: false,
-            hieght: 300,
+            height: 300,
             width: 350,
             modal: true
         });
@@ -322,6 +322,7 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             };
+            hazardCurveDialog.dialog("option", "height", (300 + (selectedCurves.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve();
 
@@ -592,9 +593,9 @@ var startApp = function() {
     });
 
     // Map options selection dialog
-    $("#hazardCurveDialog").dialog({
+    var hazardCurveDialog = $("#hazardCurveDialog").dialog({
         autoOpen: false,
-        height: 300,
+        height: 220,
         width: 350,
         modal: true
     });
@@ -1065,7 +1066,8 @@ var startApp = function() {
                 .tickFormat("")
             );
 
-        legend = d3.select("#chartDialog").append("svg");
+        legend = d3.select("#chartDialog").append("svg")
+            .attr("height", 25*(selectedCurves.length - 1));
 
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
