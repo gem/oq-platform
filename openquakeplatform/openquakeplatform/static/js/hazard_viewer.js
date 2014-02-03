@@ -948,6 +948,7 @@ var startApp = function() {
                 min_value_k = curve_name;
             }
         }
+        // console.log("min_value: " + min_value + "  max_value: " + max_value);
 
         // grid line functions
         function x_grid() {
