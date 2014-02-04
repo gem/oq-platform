@@ -399,6 +399,9 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $("#addTileLayer").click(function() {
+            var e = document.getElementById("layer-list");
+            var mapLayerId = e.options[e.selectedIndex].value;
+
             // Look up the layer id using the layer name
             var mapLayerIdArray = mapLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
@@ -415,9 +418,6 @@ var startApp = function() {
                 // Remove any existing UtfGrid layers in order to avoid conflict
                 map.removeLayer(utfGrid);
                 utfGrid = {};
-
-                var e = document.getElementById("layer-list");
-                var mapLayerId = e.options[e.selectedIndex].value;
 
                 var tileLayer = L.tileLayer(TILESTREAM_URL 
                     + selectedLayer
@@ -1052,7 +1052,7 @@ var startApp = function() {
         svg.append("g")         
             .attr("class", "grid")
             .attr("transform", "translate(0," + height + ")")
-            .attr('opacity', 0.1)
+            .attr('opacity', 0.6)
             .call(x_grid()
                 .tickSize(-height, 0, 0)
                 .tickFormat("")
@@ -1060,7 +1060,7 @@ var startApp = function() {
     
         svg.append("g")         
             .attr("class", "grid")
-            .attr('opacity', 0.1)
+            .attr('opacity', 0.6)
             .call(y_grid()
                 .tickSize(-width, 0, 0)
                 .tickFormat("")

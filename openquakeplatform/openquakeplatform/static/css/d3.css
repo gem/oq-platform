@@ -101,7 +101,7 @@ font: 1em 'QuicksandBold', Arial, sans-serif;
 }
 
 .grid .tick {
-    stroke: black;
+    stroke: lightgray;
 }
 .grid path {
       stroke-width: 0;
