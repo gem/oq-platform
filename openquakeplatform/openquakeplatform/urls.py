@@ -70,7 +70,7 @@ urlpatterns = patterns(
     url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
 
     # Temporary pages TODO remove these when the customizable categories can be implemented
-    url(r'^temp_maps/$', TemplateView.as_view(template_name='temp_maps.html'), name='temp_maps'),
+    url(r'^temp_models/$', TemplateView.as_view(template_name='temp_models.html'), name='temp_models'),
     url(r'^temp_data/$', TemplateView.as_view(template_name='temp_data.html'), name='temp_data'),
 
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
