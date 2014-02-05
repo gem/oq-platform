@@ -165,6 +165,9 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
                 else:
                     calculation.status = "complete"
                 #self._send_email(calculation)
+        if request.POST.get('einfo'):
+            calculation.einfo = request.POST['einfo']
+            calculation.save()
 
         return redirect('calculation', pk=pk)
 
