@@ -156,11 +156,11 @@ def setup():
 
 
 def init_start():
-    local('paver init_start')
+    local('paver init_start -b 0.0.0.0:8000')
 
 
 def start():
-    local('paver start')
+    local('paver start -b 0.0.0.0:8000')
 
 
 def stop():
