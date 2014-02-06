@@ -134,7 +134,7 @@ def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
 
 
 def apps():
-    local(' python manage.py loaddata openquakeplatform/fixtures/isc_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/fixtures/isc_map_layer.json')
     # Add the apps
     _add_isc_viewer()
     _add_faulted_earth()
