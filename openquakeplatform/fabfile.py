@@ -4,8 +4,7 @@ from urlparse import urljoin as _urljoin
 
 from openquakeplatform.geoserver_api import (
     GEOSERVER_BASE_URL, WS_NAME, DS_NAME, FEATURETYPES_URL,
-    WS_NAME, DS_NAME, XML_CONTENT_TYPE, SLD_CONTENT_TYPE,
-    load_features, load_styles, load_layers)
+    WS_NAME, DS_NAME, XML_CONTENT_TYPE, SLD_CONTENT_TYPE)
 
 
 from fabric.api import env
