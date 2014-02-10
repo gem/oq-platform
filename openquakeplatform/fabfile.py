@@ -4,8 +4,7 @@ from urlparse import urljoin as _urljoin
 
 from openquakeplatform.geoserver_api import (
     GEOSERVER_BASE_URL, WS_NAME, DS_NAME, FEATURETYPES_URL,
-    WS_NAME, DS_NAME, XML_CONTENT_TYPE, SLD_CONTENT_TYPE,
-    load_features, load_styles, load_layers)
+    WS_NAME, DS_NAME, XML_CONTENT_TYPE, SLD_CONTENT_TYPE)
 
 
 from fabric.api import env
@@ -49,6 +48,9 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     :param str dbpassword:
         Should match the one in settings.py.
     """
+    # check for xmlstarlet installation
+    local("which xmlstarlet")
+
     baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword,
             siteurl=siteurl, hazard_calc_addr=hazard_calc_addr,
             risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key)
@@ -290,6 +292,7 @@ def _maybe_install_postgis(dbname):
               % dbname)
         return False
 
+
 def _add_isc_viewer():
     local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
           ' ../oq-ui-api/data/isc_data_app.csv')
@@ -302,6 +305,7 @@ def add_icebox():
 
 def _add_faulted_earth():
     pass
+
 
 def _add_ghec_viewer():
     local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
