@@ -107,8 +107,8 @@ Calculate - {{block.super}}
 
 <script>
   function popup_error_traceback(traceback) {
-    var w = window.open('', 'Traceback', 'width=800, height=600, resizable, scrollbars');
-    w.document.write(traceback)
+    var w = window.open('', 'Traceback', 'width=1000, height=600, resizable, scrollbars');
+    w.document.write('<pre>' + traceback + '</pre>')
     w.document.close();
   }
 </script>
