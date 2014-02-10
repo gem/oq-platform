@@ -1,12 +1,12 @@
 
    
-CREATE OR REPLACE VIEW geoarchivemasteroverview AS 
+CREATE OR REPLACE VIEW econd.geoarchivemasteroverview AS 
  SELECT event.name AS event, event.id AS eventid, event.country, event.yearint, event.the_geom AS event_geom, study.name AS study, 
- study.id AS studyid, location.id AS locationid, location.name AS locationname, location.the_geom AS location_geom, 
- location.isaggregated AS locationaggregateflag, photologue_photo.id AS photoid, photologue_photo.qualitycode, 
- photologue_photo.name AS photofilename, photologue_photo.photographername, inventoryclass.id AS inventoryclassid, inventoryclass.name AS inventoryclassname, 
- unifieddamagelevel.name AS unifieddamagelevelname, unifieddamagelevel.id AS unifieddamagelevelid, lookupassetclass.name AS assetclass, 
- lookupassetclass.id AS assetclassid, count(surveyvalue.id) AS aggregationtest, study.copyrightmessage
+ study.id AS studyid, location.id AS locationid, location.name AS locationname, location.the_geom AS location_geom, location.isaggregated AS locationaggregateflag, 
+ photologue_photo.id AS photoid, photologue_photo.qualitycode, photologue_photo.name AS photofilename, photologue_photo.photographername, inventoryclass.id AS inventoryclassid, 
+ inventoryclass.name AS inventoryclassname, unifieddamagelevel.name AS unifieddamagelevelname, unifieddamagelevel.id AS unifieddamagelevelid, lookupassetclass.name AS assetclass, 
+ lookupassetclass.id AS assetclassid, lookupassettype.name AS assettype, 
+ lookupassettype.id AS assettypeid, structuretypecode, count(surveyvalue.id) AS aggregationtest, study.copyrightmessage
    FROM location
    JOIN photologue_photo ON location.id = photologue_photo.parentid
    JOIN study ON study.id = location.parentid
@@ -18,32 +18,27 @@ CREATE OR REPLACE VIEW geoarchivemasteroverview AS
    JOIN lookupassetclass ON surveyvalue.assetclasscode::text = lookupassetclass.id::text
    JOIN lookupassettype ON surveyvalue.assettypecode::text = lookupassettype.id::text
   WHERE location.parenttype::text = 'study'::text AND location.isaggregated = 0
-  GROUP BY event.name, event.id, event.country, event.yearint, event.the_geom, study.name, study.id, location.id, 
-  location.name, location.the_geom, location.isaggregated, photologue_photo.id, photologue_photo.name, photologue_photo.photographername, photologue_photo.qualitycode, 
-  inventoryclass.name, inventoryclass.id, unifieddamagelevel.name, unifieddamagelevel.id, lookupassetclass.name, lookupassetclass.id,  study.copyrightmessage;
-ALTER TABLE geoarchivemasteroverview
- OWNER TO econduser;
+  GROUP BY event.name, event.id, event.country, event.yearint, event.the_geom, study.name, study.id, location.id, location.name, 
+  location.the_geom, location.isaggregated, photologue_photo.id, photologue_photo.name, photologue_photo.photographername, photologue_photo.qualitycode, 
+  inventoryclass.name, inventoryclass.id, unifieddamagelevel.name, unifieddamagelevel.id, lookupassetclass.name, lookupassetclass.id, lookupassettype.name, lookupassettype.id, structuretypecode, study.copyrightmessage;
+
+ALTER TABLE econd.geoarchivemasteroverview
+  OWNER TO econduser;
 
   
   
-CREATE OR REPLACE VIEW geoarchivelocations AS 
-
- SELECT geoarchivemasteroverview.event, geoarchivemasteroverview.eventid, geoarchivemasteroverview.country, 
- geoarchivemasteroverview.yearint, geoarchivemasteroverview.study, geoarchivemasteroverview.studyid, 
- geoarchivemasteroverview.locationid, geoarchivemasteroverview.locationname, geoarchivemasteroverview.location_geom, 
- min(photoid) AS samplephotoid, count(geoarchivemasteroverview.photoid) AS photocount, 
- geoarchivemasteroverview.inventoryclassid, geoarchivemasteroverview.inventoryclassname, 
- geoarchivemasteroverview.unifieddamagelevelid, geoarchivemasteroverview.unifieddamagelevelname,
- geoarchivemasteroverview.assetclass, geoarchivemasteroverview.assetclassid
+CREATE OR REPLACE VIEW econd.geoarchivelocations AS 
+ SELECT geoarchivemasteroverview.event, geoarchivemasteroverview.eventid, geoarchivemasteroverview.country, geoarchivemasteroverview.yearint, 
+ geoarchivemasteroverview.study, geoarchivemasteroverview.studyid, geoarchivemasteroverview.locationid, geoarchivemasteroverview.locationname, 
+ geoarchivemasteroverview.location_geom, min(geoarchivemasteroverview.photoid) AS samplephotoid, count(geoarchivemasteroverview.photoid) AS photocount, 
+ geoarchivemasteroverview.inventoryclassid, geoarchivemasteroverview.inventoryclassname, geoarchivemasteroverview.unifieddamagelevelid, 
+ geoarchivemasteroverview.unifieddamagelevelname, geoarchivemasteroverview.assetclass, geoarchivemasteroverview.assetclassid, geoarchivemasteroverview.assettype, geoarchivemasteroverview.assettypeid, structuretypecode
    FROM geoarchivemasteroverview
   WHERE geoarchivemasteroverview.aggregationtest = 1
-  GROUP BY geoarchivemasteroverview.event, geoarchivemasteroverview.eventid, geoarchivemasteroverview.country, 
-  geoarchivemasteroverview.yearint, geoarchivemasteroverview.study, geoarchivemasteroverview.studyid, geoarchivemasteroverview.locationid, 
-  geoarchivemasteroverview.locationname, geoarchivemasteroverview.location_geom, geoarchivemasteroverview.inventoryclassid, 
-  geoarchivemasteroverview.inventoryclassname, geoarchivemasteroverview.unifieddamagelevelid, geoarchivemasteroverview.unifieddamagelevelname,
-  geoarchivemasteroverview.assetclass, geoarchivemasteroverview.assetclassid;
+  GROUP BY geoarchivemasteroverview.event, geoarchivemasteroverview.eventid, geoarchivemasteroverview.country, geoarchivemasteroverview.yearint, geoarchivemasteroverview.study, geoarchivemasteroverview.studyid, geoarchivemasteroverview.locationid, geoarchivemasteroverview.locationname, geoarchivemasteroverview.location_geom, geoarchivemasteroverview.inventoryclassid, geoarchivemasteroverview.inventoryclassname, geoarchivemasteroverview.unifieddamagelevelid, geoarchivemasteroverview.unifieddamagelevelname, 
+  geoarchivemasteroverview.assetclass, geoarchivemasteroverview.assetclassid, geoarchivemasteroverview.assettype, geoarchivemasteroverview.assettypeid, structuretypecode ;
 
-ALTER TABLE geoarchivelocations
+ALTER TABLE econd.geoarchivelocations
   OWNER TO econduser;
 
   

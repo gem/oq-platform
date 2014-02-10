@@ -131,6 +131,7 @@ class GeoArchiveLocations ( models.Model ):
     inventoryclassname = models.CharField(max_length=255, verbose_name='Inventory class', blank=True, )
     unifieddamagelevelname = models.CharField(max_length=255, verbose_name='Unified damage level', blank=True, )
     assetclass = models.CharField(max_length=255, verbose_name='Asset class', blank=True, )
+    assettype = models.CharField(max_length=255, verbose_name='Asset type', blank=True, )
     samplephotoid = models.ForeignKey('WebLibPhoto', db_column='samplephotoid', null=True, blank=True, )  # returns the photo with the lowest id number to use as a sample iconic image
     eventid = models.IntegerField(null=True, blank=True, )
     study = models.CharField(max_length=255, blank=True, )
@@ -138,6 +139,8 @@ class GeoArchiveLocations ( models.Model ):
     inventoryclassid = models.IntegerField(null=True, blank=True, )
     unifieddamagelevelid = models.IntegerField(null=True, blank=True, )
     assetclassid = models.CharField(max_length=10, blank=True, )
+    assettypeid = models.CharField(max_length=10, blank=True, )
+    structuretypecode = models.CharField(max_length=10, blank=True, verbose_name = 'Structure type code')
 
     class Meta:
         db_table = u'econd\".\"geoarchivelocations'     #note this is a VIEW
