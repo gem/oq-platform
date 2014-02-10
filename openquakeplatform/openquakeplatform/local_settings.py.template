@@ -1,0 +1,121 @@
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '%(dbname)s',
+        'USER': '%(dbuser)s',
+        'PASSWORD': '%(dbpassword)s'
+    },
+}
+
+try:
+    from openquakeplatform import ged_settings
+    DATABASES.update(ged_settings.DATABASES)
+except ImportError:
+    import warnings
+    warnings.warn('Global Exposure Database (GED) configuration not found!',
+                  ImportWarning)
+
+SITEURL = '%(siteurl)s'
+
+OQ_ENGINE_SERVER_URLS = {
+    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/hazard/run',  # i.e. : 'http://oq-platform:8800'
+    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/risk/run',        # i.e. : 'http://oq-platform:8800'
+}
+THIRD_PARTY_URLS = {
+    'leaflet_base_map': (
+        'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
+    ),
+}
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default': {
+        'BACKEND': 'geonode.geoserver',
+    # Do not change the internal channel
+        'LOCATION': 'http://localhost:8080/geoserver/',
+        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
+        'USER': 'admin',
+        'PASSWORD': 'geoserver',
+        'DATASTORE': 'default',   # 'datastore',
+        'OPTIONS': {
+            'MAPFISH_PRINT_ENABLED': True,
+            'PRINTNG_ENABLED': True,
+            'GEONODE_SECURITY_ENABLED': True,
+            'GEOGIT_ENABLED': False,
+            'WMST_ENABLED': False,
+            'WPS_ENABLED': True,
+            # Set to name of database in DATABASES dictionary to enable
+        }
+    }
+}
+
+# CSW settings
+CATALOGUE = {
+    'default': {
+        # The underlying CSW implementation
+        # default is pycsw in local mode (tied directly to GeoNode Django DB)
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # pycsw in non-local mode
+        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # GeoNetwork opensource
+        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        # deegree and others
+        #'ENGINE': 'geonode.catalogue.backends.generic',
+
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'URL': '%%scatalogue/csw' %% SITEURL,
+        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
+        # login credentials (for GeoNetwork)
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+    }
+}
+
+# pycsw settings
+PYCSW = {
+    # pycsw configuration
+    'CONFIGURATION': {
+        'metadata:main': {
+            'identification_title': 'OQ Catalogue',
+            'identification_abstract': 'OQ abstract',
+            'identification_keywords': (
+                'sdi,catalogue,discovery,metadata,GeoNode'),
+            'identification_keywords_type': 'theme',
+            'identification_fees': 'None',
+            'identification_accessconstraints': 'None',
+            'provider_name': 'Organization Name',
+            'provider_url': SITEURL,
+            'contact_name': 'Lastname, Firstname',
+            'contact_position': 'Position Title',
+            'contact_address': 'Mailing Address',
+            'contact_city': 'City',
+            'contact_stateorprovince': 'Administrative Area',
+            'contact_postalcode': 'Zip or Postal Code',
+            'contact_country': 'Country',
+            'contact_phone': '+xx-xxx-xxx-xxxx',
+            'contact_fax': '+xx-xxx-xxx-xxxx',
+            'contact_email': 'Email Address',
+            'contact_url': 'Contact URL',
+            'contact_hours': 'Hours of Service',
+            'contact_instructions': 'openquake-users@google-groups.com',
+            'contact_role': 'pointOfContact',
+        },
+        'metadata:inspire': {
+            'enabled': 'true',
+            'languages_supported': 'eng,gre',
+            'default_language': 'eng',
+            'date': 'YYYY-MM-DD',
+            'gemet_keywords': 'Utility and governmental services',
+            'conformity_service': 'notEvaluated',
+            'contact_name': 'Organization Name',
+            'contact_email': 'Email Address',
+            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
+        }
+    }
+}
+
+# this value must be the same of oq-engine-server key settings
+
+## Array key in ENGINE SERVER local_settings.py
+OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"

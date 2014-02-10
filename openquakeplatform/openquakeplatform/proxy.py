@@ -1,5 +1,5 @@
 import httplib2
-
+from urllib import urlparse
 from django.conf import settings
 from django.http import HttpResponse
 
@@ -11,9 +11,13 @@ def geoserver(request):
     Simple proxy to access geoserver and avoid Same-domain Access
     Control Policy restrictions
     """
+    return _make_request(request, request.get_full_path())
+
+
+def _make_request(request, url):
     url = "".join([
         ogc_server_settings.LOCATION,
-        request.get_full_path()[len("/geoserver/"):]])
+        url[len("/geoserver/"):]])
 
     headers = {}
     if settings.SESSION_COOKIE_NAME in request.COOKIES:
@@ -21,6 +25,8 @@ def geoserver(request):
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
+
+    headers["Host"] = request.META["HTTP_HOST"]
 
     http = httplib2.Http()
     http.add_credentials(*(ogc_server_settings.credentials))
@@ -33,3 +39,9 @@ def geoserver(request):
         content=content,
         status=response.status,
         mimetype=response.get("content-type", "text/plain"))
+
+
+def fake_proxy(request):
+    url = request.GET['url']
+    url = url[url.index("/"):]
+    return _make_request(request, url)

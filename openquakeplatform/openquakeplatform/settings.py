@@ -170,6 +170,9 @@ INSTALLED_APPS = (
     'geoexplorer',
     'django_extensions',
 
+    # Development
+    # 'devserver',
+
     # Theme
     "pinax_theme_bootstrap_account",
     "pinax_theme_bootstrap",
@@ -249,13 +252,16 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "WARN",
         },
         "geonode": {
             "handlers": ["console"],
             "level": "ERROR",
         },
-
+        "openquakeplatform": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
         "gsconfig.catalog": {
             "handlers": ["console"],
             "level": "ERROR",
@@ -357,7 +363,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': True,
     'USE_JSONFIELD': True,
@@ -395,18 +401,9 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 
+# If you override this settings in local_settings, please remember to
+# also update the settings below which depends on SITEURL
 SITEURL = "http://localhost:8000/"
-
-# Default TopicCategory to be used for resources. Use the slug field here
-DEFAULT_TOPICCATEGORY = 'location'
-# Topic Categories list should not be modified (they are ISO). In case
-# you absolutely need it set to True this variable
-MODIFY_TOPICCATEGORY = False
-
-MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-
-# Search Snippet Cache Time in Seconds
-CACHE_TIME = 0
 
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
@@ -416,6 +413,7 @@ OGC_SERVER = {
         'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
+        'DATASTORE': 'default',   # 'datastore',
         'OPTIONS': {
             'MAPFISH_PRINT_ENABLED': True,
             'PRINTNG_ENABLED': True,
@@ -424,17 +422,7 @@ OGC_SERVER = {
             'WMST_ENABLED': False,
             'WPS_ENABLED': True,
             # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': 'default',   # 'datastore',
         }
-    }
-}
-
-# Uploader Settings
-UPLOADER = {
-    'BACKEND' : 'geonode.rest',
-    'OPTIONS': {
-        'TIME_ENABLED': False,
-        'GEOGIT_ENABLED': False,
     }
 }
 
@@ -502,6 +490,28 @@ PYCSW = {
             'contact_email': 'Email Address',
             'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
         }
+    }
+}
+
+
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location'
+# Topic Categories list should not be modified (they are ISO). In case
+# you absolutely need it set to True this variable
+MODIFY_TOPICCATEGORY = False
+
+MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+
+# Search Snippet Cache Time in Seconds
+CACHE_TIME = 0
+
+
+# Uploader Settings
+UPLOADER = {
+    'BACKEND' : 'geonode.rest',
+    'OPTIONS': {
+        'TIME_ENABLED': False,
+        'GEOGIT_ENABLED': False,
     }
 }
 
@@ -578,14 +588,15 @@ LEAFLET_CONFIG = {
 }
 
 
+OQ_ENGINE_SERVER_DATABASE = "platform"
+
+
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = True
 
 # Add additional paths (as regular expressions) that don't require
 # authentication. This URL needs to be hit by the oq-engine-server.
-# TODO(LB): This will go away once we implement authorization
-# TODO(LB): See https://bugs.launchpad.net/oq-platform/+bug/1234350
-AUTH_EXEMPT_URLS = ('/icebox/artifacts/import', )
+AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)', '/geoserver/')
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (

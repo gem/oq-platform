@@ -1,0 +1,9 @@
+<layer>
+  <defaultStyle>
+    <name>%(class_name)s</name>
+    <workspace></workspace>
+  </defaultStyle>
+  <enabled>true</enabled>
+  <advertised>true</advertised>
+  <queryable>true</queryable>
+</layer>

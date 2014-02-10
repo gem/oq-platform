@@ -232,8 +232,6 @@ layer_manage() {
 }
 
 #
-#  layer_manage: Remove or dump a layer
-#
 #  styles_manage: Remove or dump all styles from a workspaces
 styles_manage () {
     local is_drop="$1" ws_name="$2" st_list_urls="$3"
@@ -829,15 +827,23 @@ layer_restore () {
     local ws_name="$1" la_name="$2"
     local ret
 
-    fname="tmp/layers/${la_name}.post.xml"
+    fname="tmp/layers/${la_name}.${iter}.post.xml"
     # set -x
     web_put "$fname" "text/xml" "" "${RESTDIR}/layers/${la_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
     # set +x
     ret=$?
     if [ $ret -eq 0 ]; then
-        echo "  Layer [${ws_name}:$la_name] restored."
+        echo "  Layer [${ws_name}:$la_name] restored ($iter)."
+    else
+        break
     fi
 
+    # hack to set explicitly the default style for this layer
+    stylename="$(xmlstarlet sel -t -m "/layer/defaultStyle" -v "concat(name, '')" "${RESTDIR}/layers/${la_name}.xml")"
+    if [ "$stylename" != "" ]; then
+        fname="tmp/layers/${la_name}/styles.post.xml"
+        web_put "$fname" "text/xml" "<layer><defaultStyle><name>$stylename</name></defaultStyle><enabled>true</enabled></layer>" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
+    fi
 
     return $ret
     }
