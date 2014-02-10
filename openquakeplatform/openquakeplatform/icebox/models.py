@@ -50,6 +50,7 @@ class Calculation(models.Model):
     calculation_type = models.TextField(choices=(('hazard', 'hazard'),
                                                  ('risk', 'risk')))
     status = models.TextField(default="queued")
+    einfo = models.TextField(null=True)
     engine_id = models.TextField(null=True)
     description = models.TextField(null=True)
     map = models.ForeignKey(maps.Map, null=True)
