@@ -73,6 +73,9 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     :param str dbpassword:
         Should match the one in settings.py.
     """
+    # check for xmlstarlet installation
+    local("which xmlstarlet")
+
     baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
     apps()
 
