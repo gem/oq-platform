@@ -306,7 +306,6 @@ def start_django():
     Start the GeoNode Django application
     """
     bind = options.get('bind', '')
-    print "MOP BIND: %s" % bind
     sh('python manage.py runserver %s &' % bind)
 
 
