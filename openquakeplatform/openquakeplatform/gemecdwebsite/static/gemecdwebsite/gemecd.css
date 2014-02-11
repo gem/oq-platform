@@ -8,7 +8,12 @@
     margin:0 auto 30px
 }
 
-.container{
+#oq-page-middle div.content-wrap div.container {
+        width: 100%;
+}
+
+div.spanlist div.container {
+    min-width: 0px;
     width: auto;
 }
 
