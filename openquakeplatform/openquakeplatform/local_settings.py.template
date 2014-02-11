@@ -1,3 +1,10 @@
+import os
+import geonode
+import openquakeplatform
+
+GEONODE_ROOT = os.path.dirname(geonode.__file__)
+OQP_ROOT = os.path.dirname(openquakeplatform.__file__)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -16,6 +23,23 @@ except ImportError:
                   ImportWarning)
 
 SITEURL = '%(siteurl)s'
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    os.path.join(OQP_ROOT, 'static'),
+    os.path.join(GEONODE_ROOT, 'static'),
+    '/etc/geonode/static.apps',
+    '/etc/geonode/static',
+    '/etc/geonode/media',
+]
+
+TEMPLATE_DIRS = (
+    os.path.join(OQP_ROOT, 'templates'),
+    os.path.join(OQP_ROOT, 'gemecdwebsite'),
+    os.path.join(OQP_ROOT, 'gemecdwebsite/templates'),
+    os.path.join(GEONODE_ROOT, 'templates'),
+)
+
 
 OQ_ENGINE_SERVER_URLS = {
     'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/hazard/run',  # i.e. : 'http://oq-platform:8800'
