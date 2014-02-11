@@ -134,7 +134,6 @@ def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
 
 
 def apps():
-    local('python manage.py loaddata openquakeplatform/fixtures/isc_map_layer.json')
     # Add the apps
     _add_isc_viewer()
     _add_faulted_earth()
@@ -143,7 +142,9 @@ def apps():
     add_icebox()
 
     local('python manage.py updatelayers')
-
+    local('python manage.py loaddata openquakeplatform/fixtures/isc_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/fixtures/ghec_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/fixtures/gaf_map_layer.json')
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
     with settings(warn_only=True):
