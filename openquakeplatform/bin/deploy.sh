@@ -44,11 +44,54 @@ export TB='	'
 #
 #  functions
 
+faulted_earth_dataloader () {
+    return 0
+}
+
+gaf_viewer_dataloader () {
+    local oqpdir="$1" bdir
+
+    if [ -f "private_data/gaf_data_fs.csv" -a -f "private_data/gaf_data_ft.csv" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/gaf_viewer/dev_data"
+    fi
+    openquakeplatform import_gaf_fs_csv "${bdir}/gaf_data_fs.csv"
+    openquakeplatform import_gaf_ft_csv "${bdir}/gaf_data_ft.csv"
+}
+
+ghec_viewer_dataloader () {
+    local oqpdir="$1" bdir
+
+    if [ -f "private_data/ghec_data.csv" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/ghec_viewer/dev_data"
+    fi
+    openquakeplatform import_gheccsv "${bdir}/ghec_data.csv"
+}
+
+isc_viewer_dataloader () {
+    local oqpdir="$1" bdir
+
+    if [ -f "private_data/isc_data.csv" -a -f "private_data/isc_data_app.csv" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/isc_viewer/dev_data"
+    fi
+    openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
+}
+
 passwd_create () { 
     python -c "import string ; import random
 def id_generator(size=8, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 print id_generator()"
+}
+
+function_exists () {
+    local fname="$1"
+    set | grep -q "^$fname "
 }
 
 locset_create () {
@@ -164,7 +207,14 @@ oq_platform_install () {
     cur_step=0
 
     norm_home="$(grep "$norm_user" /etc/passwd | cut -d ":" -f 6)"
-    GEM_DB_PASS="$(passwd_create)"
+    
+    if [ 1 -eq 1 ]; then
+        GEM_DB_PASS="$(passwd_create)"
+    else
+        GEM_DB_PASS="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print DATABASES['default']['PASSWORD']" )" ;
+        geoserver_population "oq-platform/openquakeplatform/openquakeplatform/" "." "oq-platform/openquakeplatform/openquakeplatform/bin"
+        exit 123
+    fi
 
     # reset and install disabled
     if [ "$GEM_IS_REINSTALL" = "y" ]; then
@@ -221,6 +271,14 @@ fi
     geoserver_population "$oqpdir" "$oqpdir" "${oqpdir}/bin"
 
     openquakeplatform updatelayers
+
+    #
+    #  database population
+    for app in "${GEM_APP_LIST[@]}"; do 
+        if function_exists "${app}_dataloader"; then
+            "${app}_dataloader" "$oqpdir"
+        fi
+    done
 }
 
 

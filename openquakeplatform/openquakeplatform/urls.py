@@ -11,10 +11,6 @@ from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
 
-# Import *_signals.py
-# NOT WORKS WITH packaged geonode
-# import geonode.social_signals
-
 # Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()
@@ -93,6 +89,7 @@ urlpatterns = patterns(
     (r'^announcements/', include('announcements.urls')),
     #(r'^notifications/', include('notification.urls')),
     (r'^messages/', include('user_messages.urls')),
+    (r'^social/', include('geonode.social.urls')),
 
     # Accounts
     url(r'^account/ajax_login$', 'geonode.views.ajax_login',
