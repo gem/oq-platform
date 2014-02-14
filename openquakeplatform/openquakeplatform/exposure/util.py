@@ -268,3 +268,14 @@ ORDER BY grid_point.id;
     cursor.execute(query, [lng1, lat1, lng2, lat2])
 
     return cursor.fetchall()
+
+
+def _get_sv_themes():
+    """
+    Get all the dinstinct themes from table svir.column_info
+    """
+    query = "SELECT DISTINCT theme FROM svir.column_info"
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()

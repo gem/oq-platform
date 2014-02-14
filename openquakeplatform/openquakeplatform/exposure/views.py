@@ -61,6 +61,8 @@ BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
 
 POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
+SV_THEMES_CSV_HEADER = ('theme\n')
+
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
@@ -298,6 +300,28 @@ def export_population(request):
         )
 
     response_data = _stream_population_exposure(request, output_type)
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    return response
+
+
+@condition(etag_func=None)
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
+def export_sv_themes(request):
+    """
+    Perform a streaming export of the requested sv themes.
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameters::
+    """
+
+    output_type = 'csv'
+    content_disp = 'attachment; filename="sv_themes_export.csv"'
+    mimetype = 'text/csv'
+
+    response_data = _stream_sv_themes(request, output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
@@ -556,6 +580,22 @@ def _stream_population_exposure(request, output_type):
     elif output_type == 'nrml':
         for text in _pop_nrml_generator(exposure_data):
             yield text
+
+
+def _stream_sv_themes(request):
+    """
+    Stream SV distinct themes and corresponding ids from the database
+    into a csv file.
+
+    :param request:
+        A :class:`django.http.request.HttpRequest` object.
+    """
+    sv_themes = util._get_sv_themes()
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    yield SV_THEMES_CSV_HEADER
+    for theme in sv_themes:
+        yield '%s\n' % theme
 
 
 def copyright_csv(cr_text):

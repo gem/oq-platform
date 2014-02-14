@@ -26,6 +26,7 @@ from openquakeplatform.exposure.views import export_population
 from openquakeplatform.exposure.views import get_exposure_building_form
 from openquakeplatform.exposure.views import get_exposure_population_form
 from openquakeplatform.exposure.views import validate_export
+from openquakeplatform.exposure.views import export_svir_themes
 from openquakeplatform.utils import OQTemplateView
 
 
@@ -38,4 +39,5 @@ urlpatterns = patterns(
     url(r'^get_exposure_population_form', get_exposure_population_form),
     url(r'^export_building', export_building),
     url(r'^export_population', export_population),
+    url(r'^export_sv_themes', export_sv_themes),
 )
