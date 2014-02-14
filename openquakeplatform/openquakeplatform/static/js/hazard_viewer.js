@@ -48,6 +48,7 @@ var uhsAvailable = {};
 var curvesByInvestSingle = {};
 var uhsByInvestSingle = {};
 var selectedCurves = [];
+var selectedUhs = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -78,6 +79,10 @@ var startApp = function() {
     map.setZoom(2);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
+
+    function capitalize(str) {
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -335,9 +340,14 @@ var startApp = function() {
     }); //end getjson
 
     $("#addTileCurve").click(function() {
+        $('#addTileUhs').attr("disabled", true);
+        $('#removeTileUhs').attr("disabled", true);
+
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option);
+        var curvesListCap = [];
+        var curveType = "hc";
 
         if (investType.indexOf("mixed") == 1 ) {
             // Use investType to find the key in curvesByInvestMixed
@@ -366,29 +376,28 @@ var startApp = function() {
             if (index > -1) {
                 curvesList.splice(index, 1);
             }
-            index = curvesList.indexOf("periods");
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-            index = curvesList.indexOf("poe");
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-            var curvesList = curvesList.filter(function(v){return v!==''});
+            
+            // remove _ and capotolise the values in the curvesList 
+            for (var i = 0; i < curvesList.length; i++) {
+                var b = curvesList[i].replace(/_/g, " ");
+                b = capitalize(b);
+                curvesListCap.push(b);
+            };
+
             // Provide the user with the curves that are available in the dialog
             $('#hazardCurveDialog').append('<div id="curve-check-box" Select curves to be ploted in the chart:<br></div>');
-            for (var i = 0; i < curvesList.length; i++) {
-                var checkbox = '<input type="checkbox" id="'+curvesList[i]+'" class="curve-list" value=" '
-                    + curvesList[i]
+            for (var i = 0; i < curvesListCap.length; i++) {
+                var checkbox = '<input type="checkbox" id="'+curvesListCap[i]+'" class="curve-list" value=" '
+                    + curvesListCap[i]
                     + '">'
-                    + curvesList[i]
+                    + curvesListCap[i]
                     + '<br>';
 
                 $('#curve-check-box').append(checkbox);
             };
-            hazardCurveDialog.dialog("option", "height", (300 + (selectedCurves.length * 10)));
+            hazardCurveDialog.dialog("option", "height", (420 + (selectedCurves.length * 10)));
             $('.curve-list').prop('checked', true);
-            mixedCurve();
+            mixedCurve(curveType);
 
         } else if (investType.indexOf("single") == 0 ) {
             singleCurve();
@@ -396,7 +405,75 @@ var startApp = function() {
             alert("Whoops, there is an issue with the curve you are trying to load,"
                 +" One thing I can think of is some metadata that is required by this app is missing");
         }
-    });
+    }); //end add tile curve
+
+    $("#addTileUhs").click(function() {
+        $('#addTileCurve').attr("disabled", true);
+        $('#removeTileCurve').attr("disabled", true);
+
+        var e = document.getElementById("uhs-list");
+        var option = e.options[e.selectedIndex].value;
+        var investType = checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option);
+        var curveType = "uhs";
+
+        if (investType.indexOf("mixed") == 1 ) {
+            // Use investType to find the key in uhsByInvestMixed
+            var layerKey = investType.shift();
+            // Use that key to look up available uhs in uhsAvailable
+            var uhsList = uhsAvailable[layerKey].split(" ");
+            var uhsListCap = [];
+
+            // Remove items that are not uhs
+            index = uhsList.indexOf("lat");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("lon");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("invest_time");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("periods");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("poe");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+
+            // remove _ and capotolise the values in the uhsList 
+            for (var i = 0; i < uhsList.length; i++) {
+                var b = uhsList[i].replace(/_/g, " ");
+                b = capitalize(b);
+                uhsListCap.push(b);
+            };
+        
+            // Provide the user with the uhs that are available in the dialog
+            $('#hazardCurveDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
+            for (var i = 0; i < uhsListCap.length; i++) {
+                var checkbox = '<input type="checkbox" id="'+uhsListCap[i]+'" class="curve-list" value=" '
+                    + uhsListCap[i]
+                    + '">'
+                    + uhsListCap[i]
+                    + '<br>';
+
+                $('#curve-check-box').append(checkbox);
+            };
+            hazardCurveDialog.dialog("option", "height", (420 + (selectedUhs.length * 10)));
+            $('.curve-list').prop('checked', true);
+            mixedCurve(curveType);
+
+        } else if (investType.indexOf("single") == 0 ) {
+            singleCurve();
+        } else {
+            alert("Whoops, there is an issue with the curve you are trying to load,"
+                +" One thing I can think of is some metadata that is required by this app is missing");
+        }
+    }); // end add uhs curve
 
     // Check to see if the curve has an investigation time 'mixed'
     function checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option) {
@@ -413,6 +490,27 @@ var startApp = function() {
             if (!curvesByInvestSingle.hasOwnProperty(key)) 
                 continue;
             if (curvesByInvestSingle[key] === option) {
+                var single = "single";
+                return [single];
+            }
+        }
+    }
+
+    // Check to see if the uhs has an investigation time 'mixed'
+    function checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option) {
+        for (key in uhsByInvestMixed) {
+            if (!uhsByInvestMixed.hasOwnProperty(key)) 
+                continue;
+            if (uhsByInvestMixed[key] === option) {
+                var key  = key;
+                var mixed = "mixed";
+                return [key, mixed];
+            }
+        }
+        for (key in uhsByInvestSingle) {
+            if (!uhsByInvestSingle.hasOwnProperty(key)) 
+                continue;
+            if (uhsByInvestSingle[key] === option) {
                 var single = "single";
                 return [single];
             }
@@ -565,17 +663,34 @@ var startApp = function() {
     }
 
     // Add mixed curve layers form tilestream list
-    function mixedCurve() {
-        // Remove any existing UtfGrid layers in order to avoid conflict
-        var e = document.getElementById("curve-list");
-        var curveLayerId = e.options[e.selectedIndex].value;
+    function mixedCurve(curveType) {
 
-        // Look up the layer id using the layer name
-        var curveLayerIdArray = curveLayerNames[curveLayerId];
-        var selectedLayer = curveLayerIdArray.toString();
-        var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+        if (curveType == "hc") {
+
+            // Remove any existing UtfGrid layers in order to avoid conflict
+            // this is only needed in the case when the user adds the same curve twice
+            var e = document.getElementById("curve-list");
+            var curveLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var curveLayerIdArray = curveLayerNames[curveLayerId];
+            var selectedLayer = curveLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+
+        } 
+        else if (curveType == "uhs") {
+            var e = document.getElementById("uhs-list");
+            var uhsLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
+            var selectedLayer = uhsLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
+        };
 
         // Check for duplicae layes
+        console.log(selectedLayer);
+        console.log(layers);
         if (selectedLayer in layers) {
             showDuplicateMsg();
         }
@@ -601,6 +716,7 @@ var startApp = function() {
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
+                        console.log(utfGrid);
                 utfGridClickEventMixed(utfGrid);
             };
         }
@@ -637,6 +753,9 @@ var startApp = function() {
     // Remove curve layers from tilestream
     $(document).ready(function() {
         $('#removeTileCurve').click(function() {
+            $('#addTileUhs').attr("disabled", false);
+            $('#removeTileUhs').attr("disabled", false);
+
             $("#curve-check-box").remove();
             gridList = 0;
             map.removeLayer(utfGrid);
@@ -649,6 +768,38 @@ var startApp = function() {
     
             // Look up the layer id using the layer name
             var mapLayerIdArray = curveLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
+    
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+        });
+    });
+
+    // Remove uhs layers from tilestream
+    $(document).ready(function() {
+        $('#removeTileUhs').click(function() {
+            $('#addTileCurve').attr("disabled", false);
+            $('#removeTileCurve').attr("disabled", false);
+
+            $("#curve-check-box").remove();
+            gridList = 0;
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            utfGridClickEvent(utfGrid);
+            var e = document.getElementById("uhs-list");
+            var mapLayerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var mapLayerIdArray = uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
     
             // Check in the layer is in the map port
@@ -756,6 +907,7 @@ var startApp = function() {
 
             if (e.data) {
                 var chartData = e.data;
+                console.log(chartData);
                 //invest_time = e.data.invest_tim
                 buildMixedD3Chart(chartData, selectedCurves);
             } else {
@@ -1068,10 +1220,6 @@ var startApp = function() {
                         .attr('r', 2.5)
                         .style("fill", color);
                 });
-        }
-
-        function capitalize(str) {
-            return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
         }
 
         var margin = {top: 40, right: 20, bottom: 45, left: 60};
