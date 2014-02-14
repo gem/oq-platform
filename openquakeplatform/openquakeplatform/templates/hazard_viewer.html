@@ -22,7 +22,7 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 <button type="button" id="thematic-map">Maps</button>
-<button type="button" id="hazard-curve">Hazard Curves</button>
+<button type="button" id="hazard-curve">Load Models</button>
 <button type="button" id="hazard-dialog">Chart Dialog</button>
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
@@ -59,19 +59,25 @@ Explore - {{block.super}}
     </form>
   </div>
 
-  <div id="chartDialog" title="Hazard Curve">
+  <div id="chartDialog" title="Models">
   </div>
 
   <div id="hazardCurveDialog" title="Hazard Curve Options" style="overflow: hidden;">
     <form id="tile-form-list-curves">
-      <br>Category:<br>
+      <br>Hazard Models:<br>
       <select id="curve-category">
       </select>
-      <br>Curve Layer:<br>
+      <br>Hazard Curves:<br>
       <select id="curve-list">
       </select><br>
       <input type="button" id="addTileCurve" value="Add Layer">
       <input type="button" id="removeTileCurve" value="Remove Layer">
+      </br>
+      <br>Uniform Hazard Spectra:<br>
+      <select id="uhs-list">
+      </select><br>
+      <input type="button" id="addTileUhs" value="Add Layer">
+      <input type="button" id="removeTileUhs" value="Remove Layer">
     </form>
     
   </div>
