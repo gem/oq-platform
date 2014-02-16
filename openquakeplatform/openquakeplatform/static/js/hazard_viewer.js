@@ -84,6 +84,10 @@ var startApp = function() {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     }
 
+    function unCapitalize(str) {
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toLowerCase() + txt.substr(1).toLowerCase();});
+    }
+
     // Duplicate layer warnning message
     function showDuplicateMsg() {
         $("#worning-duplicate").dialog("open");
@@ -381,16 +385,16 @@ var startApp = function() {
             for (var i = 0; i < curvesList.length; i++) {
                 var b = curvesList[i].replace(/_/g, " ");
                 b = capitalize(b);
-                curvesListCap.push(b);
+                //  curvesListCap.push(b);
             };
 
             // Provide the user with the curves that are available in the dialog
             $('#hazardCurveDialog').append('<div id="curve-check-box" Select curves to be ploted in the chart:<br></div>');
-            for (var i = 0; i < curvesListCap.length; i++) {
-                var checkbox = '<input type="checkbox" id="'+curvesListCap[i]+'" class="curve-list" value=" '
-                    + curvesListCap[i]
+            for (var i = 0; i < curvesList.length; i++) {
+                var checkbox = '<input type="checkbox" id="'+curvesList[i]+'" class="curve-list" value=" '
+                    + curvesList[i]
                     + '">'
-                    + curvesListCap[i]
+                    + curvesList[i]
                     + '<br>';
 
                 $('#curve-check-box').append(checkbox);
@@ -449,16 +453,16 @@ var startApp = function() {
             for (var i = 0; i < uhsList.length; i++) {
                 var b = uhsList[i].replace(/_/g, " ");
                 b = capitalize(b);
-                uhsListCap.push(b);
+                //uhsListCap.push(b);
             };
         
             // Provide the user with the uhs that are available in the dialog
             $('#hazardCurveDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
-            for (var i = 0; i < uhsListCap.length; i++) {
-                var checkbox = '<input type="checkbox" id="'+uhsListCap[i]+'" class="curve-list" value=" '
-                    + uhsListCap[i]
+            for (var i = 0; i < uhsList.length; i++) {
+                var checkbox = '<input type="checkbox" id="'+uhsList[i]+'" class="curve-list" value=" '
+                    + uhsList[i]
                     + '">'
-                    + uhsListCap[i]
+                    + uhsList[i]
                     + '<br>';
 
                 $('#curve-check-box').append(checkbox);
@@ -671,9 +675,13 @@ var startApp = function() {
             // this is only needed in the case when the user adds the same curve twice
             var e = document.getElementById("curve-list");
             var curveLayerId = e.options[e.selectedIndex].value;
+            //curveLayerId = unCapitalize(curveLayerId);
+            //curveLayerId = curveLayerId.replace(/ /g, "_");
 
+            //TODO make sure that the curveLayerNames[curveLayerId] are in all lowwer case and are seperated by _
             // Look up the layer id using the layer name
             var curveLayerIdArray = curveLayerNames[curveLayerId];
+
             var selectedLayer = curveLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
 
@@ -716,8 +724,7 @@ var startApp = function() {
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
-                        console.log(utfGrid);
-                utfGridClickEventMixed(utfGrid);
+                utfGridClickEventMixed(utfGrid, curveType);
             };
         }
     }
@@ -891,12 +898,19 @@ var startApp = function() {
         }); // End utfGrid click
     } // End utfGridClickEvent
     
-    var utfGridClickEventMixed = function(utfGrid) {
+    var utfGridClickEventMixed = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             // Get the selected curves
             selectedCurves = [];
-            selectedCurves.push("iml");
-            var sc = $('.curve-list:checkbox:checked');
+            if (curveType == 'hc') {
+               selectedCurves.push("iml"); 
+               var sc = $('.curve-list:checkbox:checked');
+            } else if (curveType == 'uhs') {
+                selectedCurves.push('periods');
+                var sc = $('.uhs-list:checkbox:checked');
+            };
+            
+            
             for (var i = 0; i < sc.length; i++) {
                 selectedCurves.push(sc[i].defaultValue);
             };
@@ -909,7 +923,7 @@ var startApp = function() {
                 var chartData = e.data;
                 console.log(chartData);
                 //invest_time = e.data.invest_tim
-                buildMixedD3Chart(chartData, selectedCurves);
+                buildMixedD3Chart(chartData, selectedCurves, curveType);
             } else {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
@@ -1079,8 +1093,8 @@ var startApp = function() {
     ////////////// Mixed Chart //////////////////
     /////////////////////////////////////////////
 
-    function buildMixedD3Chart(chartData, selectedCurves) {
-        var lat, lon, iml, curve_vals, curve_coup, curve_name, legend, colors;
+    function buildMixedD3Chart(chartData, selectedCurves, curveType) {
+        var lat, lon, iml, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
         /* associative array of arrays of values */
@@ -1093,22 +1107,24 @@ var startApp = function() {
         lon = chartData["lon"];
         invest_time = chartData["invest_time"];
 
-        // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
-        // SA-0.1 = Spectral Acceleration (0.1 s)
-        imt = chartData["imt"];
-        if (imt.indexOf("SA-") == 0 ) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Spectral Acceleration (" + imtValue + " s) [g]";
-        } else if (imt.indexOf("PGA-") == 0) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Acceleration [g]";
-        } else if (imt.indexOf("PGV-") == 0) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Velocity [cm/s]";
-        } else if (imt.indexOf("PGD-") == 0) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Displacement [cm]";
-        }
+        if (curveType == 'hc') {
+            // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
+            // SA-0.1 = Spectral Acceleration (0.1 s)
+            imt = chartData["imt"];
+            if (imt.indexOf("SA-") == 0 ) {
+                var imtValue = imt.substring(imt.indexOf("-") + 1);
+                imt = "Spectral Acceleration (" + imtValue + " s) [g]";
+            } else if (imt.indexOf("PGA-") == 0) {
+                var imtValue = imt.substring(imt.indexOf("-") + 1);
+                imt = "Peak Ground Acceleration [g]";
+            } else if (imt.indexOf("PGV-") == 0) {
+                var imtValue = imt.substring(imt.indexOf("-") + 1);
+                imt = "Peak Ground Velocity [cm/s]";
+            } else if (imt.indexOf("PGD-") == 0) {
+                var imtValue = imt.substring(imt.indexOf("-") + 1);
+                imt = "Peak Ground Displacement [cm]";
+            }
+        };
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
@@ -1124,14 +1140,24 @@ var startApp = function() {
             }
         }
 
+        // Set the y axis variable depending on the type of curve
+        if (curveType == 'hc') {
+            yAxisVariable = curve_vals['iml'];
+            console.log(yAxisVariable);
+        } else if (curveType == 'uhs') {
+            //yAxisVariable = curve_vals['periods'];
+            yAxisVariable = [0.01, 0.1, 0.2, 0.3, 0.5, 1]
+            console.log(yAxisVariable);
+        };
+
         var old_value = -100;
-        for (i = 0 ; i < curve_vals["iml"].length ; i++) {
-            if (curve_vals["iml"][i] == old_value) {
-                curve_vals["iml"].splice(i, 1);                
+        for (i = 0 ; i < yAxisVariable.length ; i++) {
+            if (yAxisVariable[i] == old_value) {
+                yAxisVariable.splice(i, 1);                
                 i--;
             }
             else {
-                old_value = curve_vals["iml"][i];
+                old_value = yAxisVariable[i];
             }
         }
 
@@ -1143,8 +1169,8 @@ var startApp = function() {
 
             curve_coup[curve_name] = [];
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (curve_vals['iml'][i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
-                    curve_coup[curve_name].push([ curve_vals['iml'][i], curve_vals[curve_name][i] ]);
+                if (yAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
+                    curve_coup[curve_name].push([ yAxisVariable[i], curve_vals[curve_name][i] ]);
                 }
             }
         }
@@ -1226,20 +1252,20 @@ var startApp = function() {
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(curve_vals["iml"]), d3.max(curve_vals["iml"])]);
+        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
         var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
 
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
 
-        xAxis_n = parseInt(Math.ceil(curve_vals["iml"].length / 5));
+        xAxis_n = parseInt(Math.ceil(yAxisVariable.length / 5));
         if (xAxis_n > 4)
             xAxis_n = 4;
 
         for (var i = 0 ; i < xAxis_n ; i++) {
             xAxis_vals[i] = [];
-            for (var e = i ; e < curve_vals["iml"].length ; e += xAxis_n) {
-                xAxis_vals[i].push(curve_vals["iml"][e]);
+            for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
+                xAxis_vals[i].push(yAxisVariable[e]);
             }
             xAxis[i] = d3.svg.axis()
                 .scale(x_scale)
