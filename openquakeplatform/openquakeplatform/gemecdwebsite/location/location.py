@@ -16,6 +16,11 @@ from openquakeplatform.econd.models import Study, Location, Locations, Inventory
 from openquakeplatform.econd.sql_views import LocationsQuick
 from openquakeplatform.econd.photo_models import Photos, GeoArchiveLocations
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 # parameters for simple location editing as used when adding a new loaction
 appname = 'econd'
 modelname = 'Location'
