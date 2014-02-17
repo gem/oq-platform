@@ -115,7 +115,7 @@ class NRMLImporter:
                         num_records = len(current_record)  #actually reads the record
     
                     except BaseException, e:
-                        errmsg = 'failed to read table ' + element.tag + ': ' + str(e))
+                        errmsg = 'failed to read table ' + element.tag + ': ' + str(e)
                         logger.error(errmsg, exc_info=True)
                         self.abort(errmsg)
     
