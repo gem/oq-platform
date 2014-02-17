@@ -907,10 +907,9 @@ var startApp = function() {
                var sc = $('.curve-list:checkbox:checked');
             } else if (curveType == 'uhs') {
                 selectedCurves.push('periods');
-                var sc = $('.uhs-list:checkbox:checked');
+                var sc = $('.curve-list:checkbox:checked');
             };
-            
-            
+
             for (var i = 0; i < sc.length; i++) {
                 selectedCurves.push(sc[i].defaultValue);
             };
@@ -1094,7 +1093,7 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
-        var lat, lon, iml, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
+        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
         /* associative array of arrays of values */
@@ -1105,31 +1104,44 @@ var startApp = function() {
         /* associative array of curves produced with d3.line */
         lat = chartData["lat"];
         lon = chartData["lon"];
+        if (curveType == 'uhs') {
+            poe = chartData['poe'];
+        };
+
         invest_time = chartData["invest_time"];
+        if (curveType == 'hc') {
+            yAxisLable = "Probabability of exceedance in "+invest_time+" years";
+        } else if (curveType == 'uhs') {
+            yAxisLable = "Spectral acceleration (g)";
+        };
 
         if (curveType == 'hc') {
             // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
             // SA-0.1 = Spectral Acceleration (0.1 s)
-            imt = chartData["imt"];
-            if (imt.indexOf("SA-") == 0 ) {
-                var imtValue = imt.substring(imt.indexOf("-") + 1);
-                imt = "Spectral Acceleration (" + imtValue + " s) [g]";
-            } else if (imt.indexOf("PGA-") == 0) {
-                var imtValue = imt.substring(imt.indexOf("-") + 1);
-                imt = "Peak Ground Acceleration [g]";
-            } else if (imt.indexOf("PGV-") == 0) {
-                var imtValue = imt.substring(imt.indexOf("-") + 1);
-                imt = "Peak Ground Velocity [cm/s]";
-            } else if (imt.indexOf("PGD-") == 0) {
-                var imtValue = imt.substring(imt.indexOf("-") + 1);
-                imt = "Peak Ground Displacement [cm]";
+            xAxisLable = chartData["imt"];
+            if (xAxisLable.indexOf("SA-") == 0 ) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Spectral Acceleration (" + xAxisLableValue + " s) [g]";
+            } else if (xAxisLable.indexOf("PGA-") == 0) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Peak Ground Acceleration [g]";
+            } else if (xAxisLable.indexOf("PGV-") == 0) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Peak Ground Velocity [cm/s]";
+            } else if (xAxisLable.indexOf("PGD-") == 0) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Peak Ground Displacement [cm]";
             }
+        } else if (curveType == 'uhs') {
+            xAxisLable = 'Period (s) InvestigationTime='+invest_time+' and poE='+poe;
         };
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
             curve_vals[curve_name] = chartData[curve_name].split(",");
         }
+        console.log(selectedCurves);
+        console.log(curve_vals);
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
@@ -1145,8 +1157,7 @@ var startApp = function() {
             yAxisVariable = curve_vals['iml'];
             console.log(yAxisVariable);
         } else if (curveType == 'uhs') {
-            //yAxisVariable = curve_vals['periods'];
-            yAxisVariable = [0.01, 0.1, 0.2, 0.3, 0.5, 1]
+            yAxisVariable = curve_vals['periods'];
             console.log(yAxisVariable);
         };
 
@@ -1164,7 +1175,9 @@ var startApp = function() {
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
 
-            if (curve_name == "iml")
+            if (curveType == 'hc' && curve_name == "iml")
+                continue;
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             curve_coup[curve_name] = [];
@@ -1179,7 +1192,9 @@ var startApp = function() {
             var curve_name = selectedCurves[k];
             var min_cur = 1000.0, max_cur = -1;
 
-            if (curve_name == "iml")
+            if (curveType == 'hc' && curve_name == "iml")
+                continue;
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
@@ -1252,8 +1267,13 @@ var startApp = function() {
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
-        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        if (curveType == 'hc') {
+            var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+            var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        } else if (curveType == 'uhs') {
+            var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+            var y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
+        };
 
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
@@ -1267,20 +1287,28 @@ var startApp = function() {
             for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
                 xAxis_vals[i].push(yAxisVariable[e]);
             }
-            xAxis[i] = d3.svg.axis()
-                .scale(x_scale)
-                .ticks(4)
-                .innerTickSize(i == 0 ? 8 : 4)
-                .outerTickSize(0)
-                .tickValues(xAxis_vals[i])
-                .orient("bottom");
+            if (curveType == 'hc') {
+                xAxis[i] = d3.svg.axis()
+                    .scale(x_scale)
+                    .ticks(4)
+                    .innerTickSize(i == 0 ? 8 : 4)
+                    .outerTickSize(0)
+                    .tickValues(xAxis_vals[i])
+                    .orient("bottom");
+
+            } else if (curveType == 'uhs') {
+                xAxis[i] = d3.svg.axis()
+                    .scale(x_scale)
+                    .ticks(4)
+                    .orient("bottom");
+            };
+
             if (i == 0) {
                 xAxis[i].tickFormat(function (d) { return d; })
             }
             else {
                 xAxis[i].tickFormat(function (d) { return ""; })
             }
-
         }
 
         var yAxis = d3.svg.axis()
@@ -1289,9 +1317,11 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d,i) {
+                console.log(x_scale(d[0]));
                 return x_scale(d[0]);
             })
             .y(function(d) {
+                console.log(y_scale(d[1]));
                 return y_scale(d[1]);
             })
         
@@ -1325,7 +1355,9 @@ var startApp = function() {
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
 
-            if(curve_name == "iml")
+            if (curveType == 'hc' && curve_name == "iml")
+                continue;
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             var data = curve_coup[curve_name];
@@ -1390,7 +1422,7 @@ var startApp = function() {
                 .attr("dy", ".71em")
                 .attr("text-anchor", "middle")
                 .style("font-size","12px")
-                .text(imt);
+                .text(xAxisLable);
         }
         svg.append("g")
             .attr("class", "y axis")
@@ -1402,7 +1434,7 @@ var startApp = function() {
             .attr("dy", ".71em")
             .style("font-size","12px")
             .style("text-anchor", "end")
-            .text("Probabability of exceedance in "+invest_time+" years");
+            .text(yAxisLable);
 
         textTopLonLat = svg.append("text")
             .attr("x", 0)
