@@ -213,6 +213,7 @@ class LocationPage (Pagebase):
             nonaggoverviewfields = self.createFormFieldStructure( nonaggoverviewForm, nonaggoverview_record )
             self.page_context['nonaggoverviewfields'] = nonaggoverviewfields
         except Exception as exc:
+            nonaggoverview_record = None
             logger.error(exc, exc_info=True)
             self.page_context['nonaggoverviewfields'] = ''
 
