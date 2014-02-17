@@ -7,6 +7,8 @@ from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 
 from openquakeplatform import local_settings
+
+# TODO. Use context_processors instead of a custom TemplateView
 from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
@@ -30,7 +32,7 @@ urlpatterns = patterns(
     '',
 
     # disable open proxy provided by geonode
-    url(r'^proxy/$', lambda _r: HttpResponseBadRequest("Proxy disabled")),
+    #    url(r'^proxy/$', 'openquakeplatform.proxy.fake_proxy',),
     url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
         name="geoserver"),
 
@@ -49,18 +51,27 @@ urlpatterns = patterns(
         template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', OQTemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^calculate/$', OQTemplateView.as_view(
-        template_name="calculate.html"), name="calculate"),
     url(r'^svir_viewer/$', TemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
+    url(r'^hazus/$', TemplateView.as_view(
+        template_name="hazus.html"), name='hazus'),
+    url(r'^hazard_viewer/$', TemplateView.as_view(
+        template_name="hazard_viewer.html"), name='hazard_viewer'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
+    (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
     url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
+    url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
+
+    # Temporary pages TODO remove these when the customizable categories can be implemented
+    url(r'^temp_maps/$', TemplateView.as_view(template_name='temp_maps.html'), name='temp_maps'),
+    url(r'^temp_data/$', TemplateView.as_view(template_name='temp_data.html'), name='temp_data'),
+
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 

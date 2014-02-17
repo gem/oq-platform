@@ -13,25 +13,26 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+# You should have received a copy of the GNU Affero General Public
+# License along with this program. If not, see
+# <https://www.gnu.org/licenses/agpl.html>.
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from openquakeplatform.icebox.views import get_artifact
-from openquakeplatform.icebox.views import get_artifact_group
-from openquakeplatform.icebox.views import import_artifacts
-from openquakeplatform.icebox.views import list_artifact_groups
-from openquakeplatform.icebox.views import list_artifacts
+from openquakeplatform.icebox import views
+# TODO. Use context_processors instead of a custom TemplateView
+from openquakeplatform.utils import OQTemplateView
 
 
 urlpatterns = patterns(
     'geonode.icebox.views',
-    # TODO(LB): Used named urls.
-    # See https://github.com/gem/oq-platform/pull/98#discussion_r6825031
-    url(r'^artifacts/$', list_artifacts),
-    url(r'^artifact/(\d+)/$', get_artifact),
-    url(r'^artifacts/import/$', import_artifacts),
-    url(r'^artifact_groups/$', list_artifact_groups),
-    url(r'^artifact_group/(\d+)/$', get_artifact_group),
+    url(r'^$', OQTemplateView.as_view(template_name="calculate.html"),
+        name="calculate"),
+    url(r'^calculations$', views.CalculationsView.as_view(),
+        name="calculations"),
+    url(r'^outputs$', views.OutputsView.as_view(), name="outputs"),
+    url(r'^calculation/(?P<pk>\d+)$', views.CalculationView.as_view(),
+        name="calculation"),
+    url(r'^remove_calculation/(?P<pk>\d+)$', views.remove_calculation,
+        name="remove_calculation")
 )

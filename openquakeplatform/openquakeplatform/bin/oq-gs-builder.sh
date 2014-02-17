@@ -9,22 +9,16 @@ export PS4='+${LINENO}:${FUNCNAME[0]}: '
 #
 #  global vars
 # === experimental geoserver 2.0 ===
-GEM_USER=admin
-GEM_PASS=geoserver
-GEM_HOST=127.0.0.1
-GEM_PROTO=http
-GEM_PORT=":8080"
-
 # GEM_USER=here-your-user
+GEM_USER=admin
 # GEM_PASS=here-your-pass
+GEM_PASS=geoserver
 # GEM_HOST=oq-platform-mn.gem.lan
+GEM_HOST=127.0.0.1
 # GEM_PROTO=http
+GEM_PROTO=http
 # GEM_PORT=":8080"
-
-
-# GEM_HOST=platform.openquake.org
-# GEM_PROTO=https
-# GEM_PORT=""
+GEM_PORT=":8080"
 
 GEM_EXIT_ON_ERROR=false
 #
@@ -105,8 +99,9 @@ web_del () {
 }
 
 
-# curl -v -s -o output/ws.ged.post.xml -u nastasi:t4ng0g4m -XPOST -H Content-type: text/xml -d '<workspace><name>ged</name></workspace>' ${GEM_PROTO}://oq-platform2-mn.gem.lan${GEM_PORT}/geoserver/rest/workspaces
-# curl -v -s -o output/ws.ged.post.xml -u nastasi:t4ng0g4m -H Content-type: text/xml -d '<workspace><name>ged</name></workspace>' -XPOST ${GEM_PROTO}://oq-platform2-mn.gem.lan${GEM_PORT}/geoserver/rest/workspaces
+# Examples: 
+#   curl -v -s -o output/ws.ged.post.xml -u <user>:<password> -XPOST -H Content-type: text/xml -d '<workspace><name>ged</name></workspace>' ${GEM_PROTO}://oq-platform2-mn.gem.lan${GEM_PORT}/geoserver/rest/workspaces
+#   curl -v -s -o output/ws.ged.post.xml -u <user>:<password> -H Content-type: text/xml -d '<workspace><name>ged</name></workspace>' -XPOST ${GEM_PROTO}://oq-platform2-mn.gem.lan${GEM_PORT}/geoserver/rest/workspaces
 web_post_and_put () {
     local cmd="$1" fname="$2" typ="$3" cont="$4" upfile="$5" url="$6" expt="$7"
     local declare arr arr_ct=0
@@ -232,8 +227,6 @@ layer_manage() {
 }
 
 #
-#  layer_manage: Remove or dump a layer
-#
 #  styles_manage: Remove or dump all styles from a workspaces
 styles_manage () {
     local is_drop="$1" ws_name="$2" st_list_urls="$3"
@@ -317,9 +310,6 @@ featuretypes_manage () {
 
             fname="workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.xml"
             web_get "$fname" "$ft_url" 200
-
-            # ft_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/featureTypes/featureType" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )"
-            # featuretype_manage "$is_drop" "$ws_name" "$ds_name" "$ft_name" "$ft_list_url"
 
             if [ "$is_drop" = "true" ]; then
                 fname="tmp/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.del.xml"
@@ -519,8 +509,8 @@ all_data_drop() {
 all_data_dump() {
     mkdir -p "${OUTDIR}tmp" 
     all_data_manage false
-#    rm -rf "${OUTDIR}tmp"
-#    find "${OUTDIR}" -name '*.hea' -exec rm {} \;
+    rm -rf "${OUTDIR}tmp"
+    find "${OUTDIR}" -name '*.hea' -exec rm {} \;
     }
 
 #
@@ -564,8 +554,6 @@ all_data_manage() {
     fname="tmp/workspaces-list.get.xml"
     web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces.xml" 200
 
-    # WS="$(xmlstarlet sel -t -m "/workspaces/workspace" -v "concat(name, '$NL')" ${OUTDIR}${fname} | grep -v '^geonode$')"
-    # WS="$(xmlstarlet sel -t -m "/workspaces/workspace" -v "concat(name, '$NL')" ${OUTDIR}${fname} | grep isc_viewer)"
     WS="$(xmlstarlet sel -t -m "/workspaces/workspace" -v "concat(name, '$NL')" ${OUTDIR}${fname})" || true
 
     for ws in $WS; do
@@ -596,22 +584,11 @@ featuretype_restore () {
     local ws_name="$1" ds_name="$2" ft_name="$3"
     local ret ft_list ft
 
-    # xmlstarlet ed -d '/dataStore/featureTypes' "${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.xml" > ${OUTDIR}temp.ds.xml
     fname="tmp/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.post.xml"
     web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/datastores/${ds_name}/featuretypes.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "    FeatureType [$ft_name] restored."
-
-        # ft_list="$(ls ${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/*.xml)"
-        # for ft in $ft_list; do
-        #     ft_name="$(xmlstarlet sel -t -m "/dataStore" -v "concat(name, '$NL')" "$ft")"
-        #     featuretype_restore "$ws_name" "$ds_name" "$ft_name"
-        #     ret=$?
-        #     if [ $ret -ne 0 ]; then
-        #         break
-        #     fi
-        # done
     fi
 
     return $ret
@@ -655,16 +632,6 @@ coverage_restore () {
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "    Coverage [$co_name] restored."
-
-        # ft_list="$(ls ${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/*.xml)" || true
-        # for ft in $ft_list; do
-        #     ft_name="$(xmlstarlet sel -t -m "/dataStore" -v "concat(name, '$NL')" "$ft")"
-        #     featuretype_restore "$ws_name" "$ds_name" "$ft_name"
-        #     ret=$?
-        #     if [ $ret -ne 0 ]; then
-        #         break
-        #     fi
-        # done
     fi
 
     return $ret
@@ -676,8 +643,6 @@ coveragestore_restore () {
     local ret co_list co
 
     xmlstarlet ed -d '/coverageStore/coverages' "${RESTDIR}/workspaces/${ws_name}/coveragestores/${cs_name}.xml" > ${OUTDIR}tmp/temp.cs.xml
-
-    # read -p "UZZO" uzzo
 
     fname="tmp/workspaces/${ws_name}/coveragestores/${cs_name}.post.xml"
 
@@ -707,8 +672,6 @@ coveragestore_restore () {
 layergroup_restore () {
     local lg_name="$1"
     local ret
-
-#    xmlstarlet ed -d '/coverageStore/coverages' "${RESTDIR}/workspaces/${ws_name}/coveragestores/${cs_name}.xml" > ${OUTDIR}temp.cs.xml
 
     fname="tmp/layergroups/${lg_name}.post.xml"
     web_post "$fname" "text/xml" "" "${RESTDIR}/layergroups/${lg_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layergroups.xml" 201
@@ -829,15 +792,23 @@ layer_restore () {
     local ws_name="$1" la_name="$2"
     local ret
 
-    fname="tmp/layers/${la_name}.post.xml"
+    fname="tmp/layers/${la_name}.${iter}.post.xml"
     # set -x
     web_put "$fname" "text/xml" "" "${RESTDIR}/layers/${la_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
     # set +x
     ret=$?
     if [ $ret -eq 0 ]; then
-        echo "  Layer [${ws_name}:$la_name] restored."
+        echo "  Layer [${ws_name}:$la_name] restored ($iter)."
+    else
+        break
     fi
 
+    # hack to set explicitly the default style for this layer
+    stylename="$(xmlstarlet sel -t -m "/layer/defaultStyle" -v "concat(name, '')" "${RESTDIR}/layers/${la_name}.xml")"
+    if [ "$stylename" != "" ]; then
+        fname="tmp/layers/${la_name}/styles.post.xml"
+        web_put "$fname" "text/xml" "<layer><defaultStyle><name>$stylename</name></defaultStyle><enabled>true</enabled></layer>" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
+    fi
 
     return $ret
     }
@@ -900,12 +871,7 @@ all_data_restore () {
     RESTDIR="$1"
     ret=0
 
-    # set -x
-    # fname="tmp/workspaces_default.put.xml"
-    # web_put "$fname" "text/xml" "" "${RESTDIR}/workspaces_default.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/default.xml" 200
-# exit 123
     echo "Styles"
-
 
     st_list="$(ls ${RESTDIR}/styles/*.xml 2>/dev/null)" || true
     for st in $st_list; do
@@ -940,8 +906,6 @@ all_data_restore () {
             echo
         done
     done
-    # fname="tmp/workspaces_default.put.xml"
-    # web_put "$fname" "text/xml" "" "${RESTDIR}/workspaces_default.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/default.xml" 200
 
     if [ $ret -ne 0 ]; then
         return "$ret"

@@ -2,6 +2,11 @@ import os
 import sys
 from urlparse import urljoin as _urljoin
 
+from openquakeplatform.geoserver_api import (
+    GEOSERVER_BASE_URL, WS_NAME, DS_NAME, FEATURETYPES_URL,
+    WS_NAME, DS_NAME, XML_CONTENT_TYPE, SLD_CONTENT_TYPE)
+
+
 from fabric.api import env
 from fabric.api import local
 from fabric.api import run
@@ -24,16 +29,6 @@ POSTGIS_DIR = '/usr/share/postgresql/9.1/contrib/postgis-1.5'
 POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
                  ('postgis.sql', 'spatial_ref_sys.sql')]
 
-GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
-#: GeoServer workspace name
-WS_NAME = 'oqplatform'
-#: GeoServer datastore name
-DS_NAME = 'oqplatform'
-FEATURETYPES_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
-                    % dict(ws=WS_NAME, ds=DS_NAME))
-
-XML_CONTENT_TYPE = 'text/xml'
-SLD_CONTENT_TYPE = 'application/vnd.ogc.sld+xml'
 
 DB_PASSWORD = 'openquake'
 
@@ -58,12 +53,8 @@ except ImportError:
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
 
-ICEBOX_URLS = {
-    'artifacts': 'http://localhost:8000/icebox/artifacts/',
-    'artifacts_import': 'http://localhost:8000/icebox/artifacts/import/',
-    'artifact_groups': 'http://localhost:8000/icebox/artifact_groups/',
+SITEURL = 'http://localhost:8000'
 
-}
 OQ_ENGINE_SERVER_URLS = {
     'run_hazard_calc_form': 'http://localhost:11888/v1/calc/hazard/run',
     'run_risk_calc_form': 'http://localhost:11888/v1/calc/risk/run',
@@ -82,6 +73,9 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     :param str dbpassword:
         Should match the one in settings.py.
     """
+    # check for xmlstarlet installation
+    local("which xmlstarlet")
+
     baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
     apps()
 
@@ -147,7 +141,10 @@ def apps():
     _add_faulted_earth()
     _add_ghec_viewer()
     _add_gaf_viewer()
+    add_icebox()
 
+    local('openquakeplatform/bin/oq-gs-builder.sh drop')
+    local('openquakeplatform/bin/oq-gs-builder.sh restore gs_data')
     local('python manage.py updatelayers')
 
 
@@ -163,11 +160,11 @@ def setup():
 
 
 def init_start():
-    local('paver init_start')
+    local('paver init_start -b 0.0.0.0:8000')
 
 
 def start():
-    local('paver start')
+    local('paver start -b 0.0.0.0:8000')
 
 
 def stop():
@@ -230,26 +227,6 @@ def _geoserver_api(url, content, base_url=GEOSERVER_BASE_URL, username='admin',
     _do_curl(cmd)
 
 
-def _geoserver_api_from_file(url, file_path, base_url=GEOSERVER_BASE_URL,
-                             username='admin', password='geoserver',
-                             method='POST', content_type=XML_CONTENT_TYPE,
-                             message=None):
-    if message:
-        print('> GeoServer(%(meth)s): %(msg)s'
-              % dict(meth=method, msg=message))
-    # Since we are using fabric's `run`, the file path needs to be absolute.
-    # `run` performs a login and thus changes the working directory.
-    file_path = os.path.abspath(file_path)
-
-    cmd = ("curl -u %(username)s:%(password)s -v -X%(method)s -H "
-           "'Content-type:%(content_type)s' -d @%(file_path)s %(url)s")
-    cmd %= dict(username=username, password=password, file_path=file_path,
-                url=_urljoin(base_url, url), method=method,
-                content_type=content_type)
-
-    _do_curl(cmd)
-
-
 def _do_curl(cmd):
     with hide('stderr', 'stdout', 'running'):
         result = run(cmd)
@@ -277,7 +254,7 @@ def _maybe_createuser(dbuser, dbpassword):
         print('Creating user "%(dbuser)s". Please choose a password (it should'
               'match your local_settings.py). Recommended: "%(dbpassword)s".'
               % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgsudo('createuser --superuser --password %(dbuser)s'
+        _pgsudo('createuser --superuser --pwprompt %(dbuser)s'
                 % dict(dbpassword=dbpassword, dbuser=dbuser))
         _pgquery('ALTER USER %s WITH SUPERUSER' % dbuser)
         return True
@@ -328,88 +305,25 @@ def _maybe_install_postgis(dbname):
         return False
 
 
-def _collect(directory, ext='xml'):
-    """
-    Given a directory, collect all .xml (or whatever type) files in the
-    directory (not recursive) and return as a list of absolute file paths.
-    """
-    ext = ext.lower()
-
-    return [os.path.abspath(os.path.join(directory, x))
-            for x in os.listdir(directory)
-            if x.lower().endswith('.%s' % ext)]
-
-
-def _load_features(app_name):
-    features_dir = 'gs_data/%s/features' % app_name
-    features_files = _collect(features_dir)
-    for ff in features_files:
-        _geoserver_api_from_file(
-            FEATURETYPES_URL, ff,
-            message='Creating %s layer...' % app_name
-        )
-
-
-def _load_styles(app_name):
-    # Add styles:
-    styles_dir = 'gs_data/%s/styles' % app_name
-    styles_files = _collect(styles_dir)
-    for style in styles_files:
-        sld = os.path.splitext(style)[0] + ".sld"
-        # XML first:
-        _geoserver_api_from_file(
-            'styles.xml',
-            style,
-            message='Creating %s style...' % app_name
-        )
-
-        # Then update (PUT) the SLD:
-        sld_basename = os.path.basename(sld)
-        _geoserver_api_from_file(
-            'styles/%s' % sld_basename,
-            sld,
-            method='PUT',
-            content_type=SLD_CONTENT_TYPE,
-            message='Creating %s SLD...' % app_name
-        )
-
-
-def _load_layers(app_name):
-    layer_files = _collect('gs_data/%s/layers' % app_name)
-    for layer_file in layer_files:
-        layer_basename = os.path.basename(layer_file)
-        layer_name, _ext = os.path.splitext(layer_basename)
-        _geoserver_api_from_file(
-            'layers/%(ws)s:%(layer)s' % dict(ws=WS_NAME, layer=layer_name),
-            layer_file,
-            method='PUT',
-            message='Updating %s layer...' % app_name
-        )
-
-
-def _add_app(app_name):
-    _load_features(app_name)
-    _load_styles(app_name)
-    _load_layers(app_name)
-
-
 def _add_isc_viewer():
-    _add_app('isc_viewer')
     local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
           ' ../oq-ui-api/data/isc_data_app.csv')
 
 
+def add_icebox():
+    local('mkdir -p ./geoserver/data/templates/')
+    local('cp ./gs_data/icebox/content.ftl ./geoserver/data/templates/')
+
+
 def _add_faulted_earth():
-    _add_app('faulted_earth')
+    pass
 
 
 def _add_ghec_viewer():
-    _add_app('ghec_viewer')
     local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
 
 
 def _add_gaf_viewer():
-    _add_app('gaf_viewer')
     local('python manage.py import_gaf_fs_csv '
           '../oq-ui-api/data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '

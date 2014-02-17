@@ -1,0 +1,81 @@
+<!--
+Copyright (c) 2013, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "data_viewer_base.html" %}
+
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
+
+{% block body_outer %}
+<button type="button" id="thematic-map">Maps</button>
+<button type="button" id="hazard-curve">Hazard Curves</button>
+<button type="button" id="hazard-dialog">Chart Dialog</button>
+
+<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
+    <p>This layer has already been added to the map</p>
+</div>
+
+<div id="worning-duplicate-grid" title="Woops!" class="ui-helper-hidden">
+    <p>You can only load one interactive layer at a time</p>
+</div>
+
+<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+    <p>This layer in not loaded in the map</p>
+</div>
+
+{{block.super}}
+
+{% endblock %}
+
+
+{% block extra_script %}
+    {{block.super}}
+    <!-- Category tags-->
+
+  <div id="thematicMap" title="Map Options">
+    <form id="tile-form-list">
+      <br>Category:<br>
+      <select id="layer-category">
+      </select>
+      <br>Map Layer:<br>
+      <select id="layer-list">
+      </select><br>
+      <input type="button" id="addTileLayer" value="Add Layer">
+      <input type="button" id="removeTileLayer" value="Remove Layer">
+    </form>
+  </div>
+
+  <div id="chartDialog" title="Hazard Curve">
+  </div>
+
+  <div id="hazardCurveDialog" title="Hazard Curve Options" style="overflow: hidden;">
+    <form id="tile-form-list-curves">
+      <br>Category:<br>
+      <select id="curve-category">
+      </select>
+      <br>Curve Layer:<br>
+      <select id="curve-list">
+      </select><br>
+      <input type="button" id="addTileCurve" value="Add Layer">
+      <input type="button" id="removeTileCurve" value="Remove Layer">
+    </form>
+    
+  </div>
+
+
+    <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
+{% endblock extra_script %}
