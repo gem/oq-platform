@@ -322,7 +322,6 @@ var startApp = function() {
         for (var i in curveCategoryUnique) {
             // Append category names to curve dropdown list
             var curveCategoryTitle = curveCategoryUnique[i];
-            console.log(curveCategoryTitle);
             var curveOpt = document.createElement('option');
             curveOpt.innerHTML = curveCategoryTitle;
             curveOpt.value = curveCategoryTitle;
@@ -697,8 +696,6 @@ var startApp = function() {
         };
 
         // Check for duplicae layes
-        console.log(selectedLayer);
-        console.log(layers);
         if (selectedLayer in layers) {
             showDuplicateMsg();
         }
@@ -920,7 +917,6 @@ var startApp = function() {
 
             if (e.data) {
                 var chartData = e.data;
-                console.log(chartData);
                 //invest_time = e.data.invest_tim
                 buildMixedD3Chart(chartData, selectedCurves, curveType);
             } else {
@@ -1140,8 +1136,6 @@ var startApp = function() {
             curve_name = selectedCurves[k];
             curve_vals[curve_name] = chartData[curve_name].split(",");
         }
-        console.log(selectedCurves);
-        console.log(curve_vals);
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
@@ -1155,10 +1149,8 @@ var startApp = function() {
         // Set the y axis variable depending on the type of curve
         if (curveType == 'hc') {
             yAxisVariable = curve_vals['iml'];
-            console.log(yAxisVariable);
         } else if (curveType == 'uhs') {
             yAxisVariable = curve_vals['periods'];
-            console.log(yAxisVariable);
         };
 
         var old_value = -100;
@@ -1317,11 +1309,9 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d,i) {
-                console.log(x_scale(d[0]));
                 return x_scale(d[0]);
             })
             .y(function(d) {
-                console.log(y_scale(d[1]));
                 return y_scale(d[1]);
             })
         
