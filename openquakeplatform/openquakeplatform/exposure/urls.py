@@ -26,7 +26,7 @@ from openquakeplatform.exposure.views import export_population
 from openquakeplatform.exposure.views import get_exposure_building_form
 from openquakeplatform.exposure.views import get_exposure_population_form
 from openquakeplatform.exposure.views import validate_export
-from openquakeplatform.exposure.views import export_svir_themes
+from openquakeplatform.exposure.views import export_sv_themes
 from openquakeplatform.utils import OQTemplateView
 
 
