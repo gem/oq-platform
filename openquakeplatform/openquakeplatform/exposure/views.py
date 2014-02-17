@@ -316,12 +316,10 @@ def export_sv_themes(request):
         A "GET" :class:`django.http.HttpRequest` object containing the
         following parameters::
     """
-
-    output_type = 'csv'
     content_disp = 'attachment; filename="sv_themes_export.csv"'
     mimetype = 'text/csv'
 
-    response_data = _stream_sv_themes(request, output_type)
+    response_data = _stream_sv_themes(request)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
