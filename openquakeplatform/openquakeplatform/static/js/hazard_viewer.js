@@ -1443,10 +1443,12 @@ var startApp = function() {
             .text("Location (Lon/Lat): "+lon+", "+lat);
 
         textTopLable = svg.append("text")
-            .attr("x", 0)
+            .attr("x", -55)
             .attr("y", -47)
             .attr("dy", ".35em")
-            .text('InvestigationTime='+invest_time+', poE='+poe);
+            .style("font-weight", "bold")
+            .attr("font-size","12px")
+            .text('Investigation Time: '+invest_time+', Probability of exceedance: '+poe);
 
         textTop = svg.append("text")
             .attr("x", 0)
