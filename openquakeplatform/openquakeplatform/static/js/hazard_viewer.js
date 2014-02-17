@@ -833,7 +833,7 @@ var startApp = function() {
     var hazardCurveDialog = $("#hazardCurveDialog").dialog({
         autoOpen: false,
         height: 420,
-        width: 350,
+        width: 400,
         modal: true
     });
 
@@ -1133,7 +1133,7 @@ var startApp = function() {
                 xAxisLable = "Peak Ground Displacement [cm]";
             }
         } else if (curveType == 'uhs') {
-            xAxisLable = 'Period (s) InvestigationTime='+invest_time+' and poE='+poe;
+            xAxisLable = 'Period (s)';
         };
 
         for (var k in selectedCurves) {
@@ -1263,7 +1263,7 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 40, right: 20, bottom: 45, left: 60};
+        var margin = {top: 55, right: 20, bottom: 45, left: 60};
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
@@ -1441,6 +1441,12 @@ var startApp = function() {
             .attr("y", -32)
             .attr("dy", ".35em")
             .text("Location (Lon/Lat): "+lon+", "+lat);
+
+        textTopLable = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -47)
+            .attr("dy", ".35em")
+            .text('InvestigationTime='+invest_time+', poE='+poe);
 
         textTop = svg.append("text")
             .attr("x", 0)
