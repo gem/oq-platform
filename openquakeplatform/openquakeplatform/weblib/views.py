@@ -13,6 +13,11 @@ from django.core.servers.basehttp import FileWrapper
 import mimetypes
 import urllib
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 class GetDocument (Pagebase):
 
     def logdownload (self, the_request, filesize, documentid, statusmessage):
@@ -33,10 +38,8 @@ class GetDocument (Pagebase):
         log_record.ownerid = userid
         log_record.size = filesize
         log_record.statusmessage = statusmessage
-        try:
-            log_record.clientipv4 = str(the_request.META['REMOTE_ADDR'])
-        except:
-            pass
+
+        log_record.clientipv4 = the_request.META.get('REMOTE_ADDR', log_record.clientipv4)
         log_record.save()
 
         return None
@@ -59,7 +62,9 @@ class GetDocument (Pagebase):
                     # user is logged in - give them the honest answer
                     return self.showErrorPage(request, 'Error: document id ' + self.page_context['ix'] + ' does not exist')
             except:
-                return self.showErrorPage(request, 'Error: invalid parameter supplied')
+                errstr = 'Error: invalid parameter supplied'
+                logger.error(errstr, exc_info=True)
+                return self.showErrorPage(request, errstr)
 
             authmessage = 'Public download'
 
@@ -83,20 +88,18 @@ class GetDocument (Pagebase):
                         self.logdownload(request, 0, document.id, 'Denied access, not logged in')
                         return self.showErrorPage(request, 'You need to log in to see this document.')
 
-            from django.conf import settings
-            the_media_root = settings.MEDIA_ROOT
-            try:
-                the_media_root = settings.SECURE_MEDIA_ROOT # see if the secure media root is set, if so use it
-            except:
-                pass
+            from django.conf import settings            
+            the_media_root = getattr(settings, "SECURE_MEDIA_ROOT", settings.MEDIA_ROOT)
 
             filename = the_media_root + '/' + str(document.url)
             try:
                 # try to open the file from the url given in the documents table
                 wrapper = FileWrapper(open(filename,"rb"))
-            except:
+            except :
+                errmsg = 'Error: source file cannot be found on host filesystem: ' + filename
+                logger.error(errmsg, exc_info=True)
                 self.logdownload(request, 0, document.id, 'Failed: source file cannot be found on host filesystem')
-                return self.showErrorPage(request, 'Error: source file cannot be found on host filesystem: ' + filename)
+                return self.showErrorPage(request, errmsg)
 
             response = HttpResponse(wrapper)
 

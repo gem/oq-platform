@@ -12,6 +12,11 @@ from openquakeplatform.econd.event_models import Event
 from openquakeplatform.econd.models import Study, Location, Locations, Inventoryclass, Surveyvalue, Damagelevel, Casualtylevel
 from openquakeplatform.econd.sql_views import LocationsQuick
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 # parameters for simple location editing as used when adding a new loaction
 appname = 'econd'
 modelname = 'Event'
@@ -78,73 +83,57 @@ class EventDetailsPage (Pagebase):
 
         checked = request.GET.get('all')
         filter_all = False
-        try:
-            if checked is None or checked == '' or checked == 'True':
-                filter_all = True # defaults to true
-            else:
-                filter_all = False
-        except:
+
+        if checked is None or checked == '' or checked == 'True':
             filter_all = True # defaults to true
+        else:
+            filter_all = False
 
         checked = request.GET.get('f_b')
         filter_buildings = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_buildings = False # defaults to false
-            else:
-                filter_buildings = True
-        except:
+
+        if checked is None or checked == '' or checked == 'False':
             filter_buildings = False # defaults to false
+        else:
+            filter_buildings = True
 
         checked = request.GET.get('f_c')
         filter_casualty = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_casualty = False
-            else:
-                filter_casualty = True
-        except:
+
+        if checked is None or checked == '' or checked == 'False':
             filter_casualty = False
+        else:
+            filter_casualty = True
 
         checked = request.GET.get('f_i')
         filter_infrastructure = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_infrastructure = False
-            else:
-                filter_infrastructure = True
-        except:
+
+        if checked is None or checked == '' or checked == 'False':
             filter_infrastructure = False
+        else:
+            filter_infrastructure = True
 
         checked = request.GET.get('f_p')
         filter_photos = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_photos = False
-            else:
-                filter_photos = True
 
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_photos = False
+        else:
+            filter_photos = True
 
         checked = request.GET.get('f_s')
         filter_socioeconomic = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_socioeconomic = False # defaults to false
-            else:
-                filter_socioeconomic = True
-        except:
+
+        if checked is None or checked == '' or checked == 'False':
             filter_socioeconomic = False # defaults to false
+        else:
+            filter_socioeconomic = True
 
         # event id
         eventid = kwargs.get('ix')
-        try:
-            if eventid is None or eventid == '':
-                eventid = 0
-            eventid = int(eventid) # check its a number
-        except:
-            eventid = 0 # in case of input error
+        if eventid is None or eventid == '':
+            eventid = 0
+        eventid = int(eventid) # check its a number
 
         studytype = ''
 
@@ -164,7 +153,7 @@ class EventDetailsPage (Pagebase):
                 studyid = 0
             studyid = int(studyid) # check it is a number
 
-        except:
+        except ValueError:
             studyid = 0 # in case of input error
 
         ########################
@@ -183,6 +172,7 @@ class EventDetailsPage (Pagebase):
             self.page_context['narrative'] = event.eventnarrative.replace('\r', '<br \>').replace('\n','')
             self.page_context['impact'] = event.overallimpact.replace('\r', '<br \>').replace('\n','')
         except:
+            logger.error('Cannot find event with id ' + unicode(eventid), exc_info=True)
             return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 
 

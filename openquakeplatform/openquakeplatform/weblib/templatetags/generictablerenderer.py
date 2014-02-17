@@ -105,9 +105,6 @@ def iteratefieldstructure(field_structure, context):
     ident = 0  # we use this in case there is no id attribute in the queryset
 
     for record in queryset:
-        if record.id is None:
-            import pdb ; pdb.set_trace()
-
         # we must store the fields in a list so we keep the right ordering
         render_record = []
 
@@ -138,11 +135,8 @@ def iteratefieldstructure(field_structure, context):
                 tag_attributes['class'] = photosize + ' ' + columnname
 
             # link to track back through foreign key - try clause is there in case no _meta record
-            try:
-                if fieldtype != 'WebLibPhoto' and columnvalue is not None and record._meta.get_field(columnname).get_internal_type() == 'ForeignKey':
-                    columnvalue = '<a href=' + linkprefix + '/' + str(columnvalue._meta.module_name) + '/' + str(columnvalue.id) + '>' + str(columnvalue) + '</a>'
-            except:
-                pass
+            if fieldtype != 'WebLibPhoto' and columnvalue is not None and record._meta.get_field(columnname).get_internal_type() == 'ForeignKey':
+                columnvalue = '<a href=' + linkprefix + '/' + str(columnvalue._meta.module_name) + '/' + str(columnvalue.id) + '>' + str(columnvalue) + '</a>'
 
             if columnvalue is None:
                 columnvalue = ''
@@ -151,14 +145,11 @@ def iteratefieldstructure(field_structure, context):
 
             if fieldtype in ['DateTimeField']:
                 # not very robust way of detecting when a datetime was used to store just a date, or just a time
-                try:
-                    if columnvalue.time().hour == 0 and columnvalue.time().minute == 0 and columnvalue.time().second == 0 and columnvalue.time().microsecond == 0:
-                        columnvalue = columnvalue.date()
-                    if columnvalue.year == 2000 and columnvalue.month == 1 and columnvalue.day == 1:
-                        columnvalue = columnvalue.time()
-                    columnvalue = unicode(columnvalue)
-                except:
-                    pass
+                if columnvalue.time().hour == 0 and columnvalue.time().minute == 0 and columnvalue.time().second == 0 and columnvalue.time().microsecond == 0:
+                    columnvalue = columnvalue.date()
+                if columnvalue.year == 2000 and columnvalue.month == 1 and columnvalue.day == 1:
+                    columnvalue = columnvalue.time()
+                columnvalue = unicode(columnvalue)
 
             if fieldtype in ['DecimalField']:
                 if columnvalue is not '':

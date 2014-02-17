@@ -8,6 +8,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class Pagebase(FormView):
     page_context = dict()
@@ -35,16 +39,10 @@ class Pagebase(FormView):
         # edit and add mode - only available to authenticated staff & superusers
         if (request.user.is_staff or request.user.is_superuser) and request.user.is_active:
             #  note /edit/ must have trailing slash (dont know why)
-            try:
-                editmode = (kwargs.get('editmode') == 'edit')
-            except:
-                editmode = False;
+            editmode = (kwargs.get('editmode') == 'edit')
             self.page_context['editmode'] = editmode
 
-            try:
-                addmode = (kwargs.get('ix') == 'add')
-            except:
-                addmode = False;
+            addmode = (kwargs.get('ix') == 'add')
             self.page_context['addmode'] = addmode
 
         user_agent = request.META['HTTP_USER_AGENT']
@@ -141,7 +139,8 @@ class Pagebase(FormView):
                 current_object = get_model(appname, modelname).objects.get(pk=self.page_context['ix'])
             except ObjectDoesNotExist:
                 return self.showErrorPage(request, 'Error: ' + modelname + ' ' + str(self.page_context['ix']) + ' does not exist', errortemplate)
-            except:
+            except Exception as exc:
+                logger.error(exc, exc_info=True)
                 return self.showErrorPage(request, 'Error: invalid parameter supplied', errortemplate)
 
             self.page_context['current_object'] = current_object

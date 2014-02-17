@@ -3,6 +3,11 @@ __author__ = 'Simon Ruffle, CAR'
 from openquakeplatform.weblib.baseclasses.pagebase import Pagebase
 from openquakeplatform.econd.models import Inventoryclass
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 appname = 'econd'  # must have INSTALLED_APPS defined in settings.py for this to work
 modelname = 'InventoryClass'
 formphotosize = 'admin_thumbnail'
@@ -21,7 +26,8 @@ class BasicPage (Pagebase):
         # Create taxonomy string
         try:
             inventoryClass = Inventoryclass.objects.get(pk=self.page_context['ix'])
-        except:
+        except Exception as exc:
+            logger.log(exc, exc_info=True)
             return self.showErrorPage(request, 'Cannot find inventory class' )
         
         # STRUCTURAL SYSTEM GROUP

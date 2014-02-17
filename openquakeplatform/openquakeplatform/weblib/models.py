@@ -154,11 +154,7 @@ class ResourceConnection(models.Model):
 
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
-the_media_root = settings.MEDIA_ROOT
-try:
-    the_media_root = settings.SECURE_MEDIA_ROOT # see if the secure media root is set, if so use it
-except:
-    pass
+the_media_root = getattr(settings, "SECURE_MEDIA_ROOT", settings.MEDIA_ROOT)
 
 fs = FileSystemStorage(location=the_media_root, base_url='/accessdenied')  #because /accessdenied is not accessible via urls.py, this folder cannot be accessed directly from the web
 

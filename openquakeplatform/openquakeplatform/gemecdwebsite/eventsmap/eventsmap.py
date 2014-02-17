@@ -99,65 +99,40 @@ class EventsMap (Pagebase):
         self.page_context['page_title'] = 'GEMECD: Consequences Database World Map'
         # get checkbox defaults from the querystring
         checked = request.GET.get('all')
-        filter_all = False
-        try:
-            if checked is None or checked == '' or checked == 'True':
-                filter_all = True # defaults to true
-            else:
-                filter_all = False
-        except:
-            filter_all = True # defaults to true
+        if checked is None or checked == '' or checked == 'True':
+             filter_all = True # defaults to true
+        else:
+             filter_all = False
 
         checked = request.GET.get('f_b')
-        filter_buildings = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_buildings = False # defaults to false
-            else:
-                filter_buildings = True
-        except:
-            filter_buildings = False # defaults to false
+        if checked is None or checked == '' or checked == 'False':
+             filter_buildings = False # defaults to false
+        else:
+             filter_buildings = True
 
         checked = request.GET.get('f_c')
-        filter_casualty = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_casualty = False
-            else:
-                filter_casualty = True
-        except:
-            filter_casualty = False
+        if checked is None or checked == '' or checked == 'False':
+             filter_casualty = False
+        else:
+             filter_casualty = True
 
         checked = request.GET.get('f_i')
-        filter_infrastructure = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_infrastructure = False
-            else:
-                filter_infrastructure = True
-        except:
-            filter_infrastructure = False
+        if checked is None or checked == '' or checked == 'False':
+             filter_infrastructure = False
+        else:
+             filter_infrastructure = True
 
         checked = request.GET.get('f_p')
-        filter_photos = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_photos = False
-            else:
-                filter_photos = True
-
-        except:
-            filter_photos = False
+        if checked is None or checked == '' or checked == 'False':
+             filter_photos = False
+        else:
+             filter_photos = True
 
         checked = request.GET.get('f_s')
-        filter_socioeconomic = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_socioeconomic = False # defaults to false
-            else:
-                filter_socioeconomic = True
-        except:
-            filter_socioeconomic = False # defaults to false
+        if checked is None or checked == '' or checked == 'False':
+             filter_socioeconomic = False # defaults to false
+        else:
+             filter_socioeconomic = True
 
         # event drop down default from querystring
         eventid = request.GET.get('eventid')
@@ -165,7 +140,7 @@ class EventsMap (Pagebase):
             if eventid is None or eventid == '':
                 eventid = 0
             eventid = int(eventid) # check its a number
-        except:
+        except ValueError:
             eventid = 0 # in case of input error
 
         if filter_all:

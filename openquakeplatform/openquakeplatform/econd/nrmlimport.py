@@ -15,6 +15,11 @@ from django.db.models import Max
 from email.utils import parsedate_tz
 from django.utils.encoding import smart_str, smart_unicode
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 class NRMLImporter:
 
@@ -86,7 +91,10 @@ class NRMLImporter:
                     num_records = len(current_record)  #actually reads the record
     
                 except BaseException, e:
-                    self.abort('failed to read table ' + element.tag + ': ' + str(e))
+                    errmsg = 'failed to read table ' + element.tag + ': ' + str(e)
+                    logger.error(errmsg, exc_info=True)
+                    self.abort(errmsg)
+
             #end of special code to identify USGS event id
     
             # normal name lookup if the USGS lookup did not yield anything
@@ -107,7 +115,9 @@ class NRMLImporter:
                         num_records = len(current_record)  #actually reads the record
     
                     except BaseException, e:
-                        self.abort('failed to read table ' + element.tag + ': ' + str(e))
+                        errmsg = 'failed to read table ' + element.tag + ': ' + str(e))
+                        logger.error(errmsg, exc_info=True)
+                        self.abort(errmsg)
     
                 if num_records > 1:
                     self.abort('more than one record with same name found')
@@ -160,7 +170,9 @@ class NRMLImporter:
                                         setattr(new_record, field, '00000000-0000-0000-0000-000000000000' )  # a valid value for uuid type in PostGres
     
                         except BaseException, e :
-                            self.abort('unable to initialise new record ' + name.text + ' in table ' + element.tag + ': ' + str(e))
+                            errmsg = 'unable to initialise new record ' + name.text + ' in table ' + element.tag + ': ' + str(e)
+                            logger.error(errmsg, exc_info=True)
+                            self.abort(errmsg)
     
                         # now provide the field values we know
                         new_record.name = name.text
@@ -175,7 +187,9 @@ class NRMLImporter:
                                 else:
                                     new_record.parentid = parentid # when the parent is not set up as a FK
                         except BaseException, e:
-                            self.abort('failed to create new record ' + name.text + ' in table ' + element.tag + ': ' + str(e))
+                            errmsg = 'failed to create new record ' + name.text + ' in table ' + element.tag + ': ' + str(e)
+                            logger.error(errmsg, exc_info=True)
+                            self.abort(errmsg)
     
                         if parenttype != '0' :
                             new_record.parenttype = parenttype
@@ -191,7 +205,9 @@ class NRMLImporter:
                         try:
                             new_record.save()
                         except BaseException, e:
-                            self.abort('failed to create new record ' + name.text + ' in table ' + element.tag + ': ' + str(e))
+                            errmsg = 'failed to create new record ' + name.text + ' in table ' + element.tag + ': ' + str(e)
+                            logger.error(errmsg, exc_info=True)
+                            self.abort(errmsg)
     
                         if not self.aborted:
                             # get the newly created record
@@ -239,7 +255,9 @@ class NRMLImporter:
                                     parent_study_record = parent_study.objects.filter(pk=current_study_id)
                                     num_study_records = len(parent_study_record)  #actually reads the record
                                 except BaseException, e:
-                                    self.abort('failed to read study table ' + current_study_type + ' '  + str(e))
+                                    errmsg = 'failed to read study table ' + current_study_type + ' '  + str(e)
+                                    logger.error(errmsg, exc_info=True)
+                                    self.abort(errmsg)
     
                                 geobase_id = parent_study_record[0].geobaseid
     
@@ -249,7 +267,9 @@ class NRMLImporter:
                                     geobase_record = geobase_list.objects.filter(pk=geobase_id)
                                     num_geobase_records = len(geobase_record)  #actually reads the record
                                 except BaseException, e:
-                                    self.abort('failed to read geobase table ' + str(e))
+                                    errmsg = 'failed to read geobase table ' + str(e)
+                                    logger.error(errmsg, exc_info=True)
+                                    self.abort(errmsg)
     
                                 lookuptablename = geobase_record[0].tablename
                                 lookuptable = get_model('econd', lookuptablename)
@@ -275,7 +295,9 @@ class NRMLImporter:
                                 num_lookup_records = len(lookup_record)  #actually reads the record
     
                             except BaseException, e:
-                                self.abort('failed to read table ' + lookuptablename + ': ' + str(e))
+                                errmsg = 'failed to read table ' + lookuptablename + ': ' + str(e)
+                                logger.error(errmsg, exc_info=True)
+                                self.abort(errmsg)
     
                             if (lookuptablename[:8] == 'geobase_'):
                                 lookuptablename = 'boundary' #if we have been looking up in a specific geobase table need to write the looked up record value back into the boundaryid column
@@ -294,6 +316,7 @@ class NRMLImporter:
                                     current_record[0].save()
                                     logaction =  str(lookup_id)
                                 except BaseException, e:
+                                    logger.error('failed to write value "' + str(lookup_id) + '" to field ' + lookuptablename + 'id in table ' + element.tag + ': ' + str(e), exc_info=True)
                                     self.abort('<span style="color:red">failed to write value</span> "' + str(lookup_id) + '" to field ' + lookuptablename + 'id' + ' in table ' + element.tag + ': ' + str(e))
     
                             # end of lookup field code
@@ -307,7 +330,9 @@ class NRMLImporter:
                                 else:
                                     setattr(current_record[0], tag, text)
                             except BaseException, e:
-                                self.abort('unable to set value in table ' + element.tag + ' to column ' + tag + ' : ' + str(e))
+                                errmsg = 'unable to set value in table ' + element.tag + ' to column ' + tag + ' : ' + str(e)
+                                logger.error(errmsg, exc_info=True)
+                                self.abort(errmsg)
     
                             try:
                                 if current_model._meta.get_field(tag).get_internal_type() == 'DateTimeField':
@@ -320,6 +345,7 @@ class NRMLImporter:
                                 logaction =  text
     
                             except BaseException, e:
+                                logger.error('failed to write value "' + text + '" to field ' + tag + ' in table ' + element.tag + ': ' + str(e), exc_info=True)
                                 self.abort('<span style="color:red">failed to write value</span> "' + text + '" to field ' + tag + ' in table ' + element.tag + ': ' + str(e))
     
                 if not self.aborted:
@@ -378,6 +404,7 @@ class NRMLImporter:
             parser = etree.XMLParser(remove_comments=True)
             tree = etree.parse(self.PATH_FILE + file_name, parser=parser)
         except BaseException, e:
+            logger.error(str(e), exc_info=True)
             self.abort (str(e))
     
         level = 0
@@ -391,7 +418,7 @@ class NRMLImporter:
     
                 try:
                     rowmode = element.attrib['rowmode']
-                except:
+                except KeyError:
                     self.abort ( '"nrml" element is missing attribute "rowmode"')
     
                 if rowmode != 'element':
@@ -400,12 +427,12 @@ class NRMLImporter:
                 try:
                     global uid
                     uid = int(element.attrib['uid'])
-                except:
+                except (ValueError, KeyError):
                     self.abort ( '"nrml" element is missing attribute "uid"')
     
                 try:
                     version = element.attrib['version']
-                except:
+                except KeyError:
                     self.abort ( '"nrml" element is missing attribute "version"')
     
                 if version != '1.0':
@@ -445,7 +472,9 @@ class NRMLImporter:
             transaction.commit_unless_managed()
     
         except BaseException, e:
-            self.abort('Failed in post processing database queries: ' + str(e))
+            errmsg = 'Failed in post processing database queries: ' + str(e)
+            logger.error(errmsg, exc_info=True)
+            self.abort(errmsg)
     
         #if not self.aborted:
         #    self.stdout.write('File ' + file_name + ' imported successfully.\n')

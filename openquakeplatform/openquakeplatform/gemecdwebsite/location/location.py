@@ -96,65 +96,40 @@ class LocationPage (Pagebase):
         # get checkbox defaults from the querystring, not that we use them here
         # but we pass them back when going back to the eventoverview
         checked = request.GET.get('all')
-        filter_all = False
-        try:
-            if checked is None or checked == '' or checked == 'True':
-                filter_all = True # defaults to true
-            else:
-                filter_all = False
-        except:
+        if checked is None or checked == '' or checked == 'True':
             filter_all = True # defaults to true
+        else:
+            filter_all = False
 
         checked = request.GET.get('f_b')
-        filter_buildings = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_buildings = False # defaults to false
-            else:
-                filter_buildings = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_buildings = False # defaults to false
+        else:
+            filter_buildings = True
 
         checked = request.GET.get('f_c')
-        filter_casualty = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_casualty = False
-            else:
-                filter_casualty = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_casualty = False
+        else:
+            filter_casualty = True
 
         checked = request.GET.get('f_i')
-        filter_infrastructure = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_infrastructure = False
-            else:
-                filter_infrastructure = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_infrastructure = False
+        else:
+            filter_infrastructure = True
 
         checked = request.GET.get('f_p')
-        filter_photos = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_photos = False
-            else:
-                filter_photos = True
-
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_photos = False
+        else:
+            filter_photos = True
 
         checked = request.GET.get('f_s')
-        filter_socioeconomic = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_socioeconomic = False # defaults to false
-            else:
-                filter_socioeconomic = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_socioeconomic = False # defaults to false
+        else:
+            filter_socioeconomic = True
 
         # remember study id so we can return to the overview page with the right study selection
         rememberstudyid = request.GET.get('studyid')
@@ -162,7 +137,7 @@ class LocationPage (Pagebase):
             if rememberstudyid is None or rememberstudyid == '':
                 rememberstudyid = 0
             rememberstudyid = int(rememberstudyid) # check it is a number
-        except:
+        except ValueError:
             rememberstudyid = 0 # in case of input error
 
         # location id
@@ -171,7 +146,7 @@ class LocationPage (Pagebase):
             if locationid is None or locationid == '':
                 locationid = 0
             locationid = int(locationid) # check it is a number
-        except:
+        except ValueError:
             locationid = 0 # in case of input error
 
         #######################################
@@ -185,6 +160,7 @@ class LocationPage (Pagebase):
             #get overview record for the location, so we can derive its parent event etc
             overview_record = Locations.objects.get(id=locationid)
         except:
+            logger.error('Cannot find location with id ' + unicode(locationid), exc_info=True)
             return self.showErrorPage(request, 'Cannot find location with id ' + unicode(locationid), 'errorpage.html')
 
         # get the study and event for this location
@@ -231,7 +207,8 @@ class LocationPage (Pagebase):
             nonaggoverviewForm = self.NonaggOverviewForm (instance=nonaggoverview_record)
             nonaggoverviewfields = self.createFormFieldStructure( nonaggoverviewForm, nonaggoverview_record )
             self.page_context['nonaggoverviewfields'] = nonaggoverviewfields
-        except:
+        except Exception as exc:
+            logger.error(exc, exc_info=True)
             self.page_context['nonaggoverviewfields'] = ''
 
         ##########################################################################
@@ -245,7 +222,8 @@ class LocationPage (Pagebase):
             inventoryclassfields = self.createFormFieldStructure( inventoryclassForm, inventoryclass_record, {'foreignkeylinkprefix': '/ecd'})
             self.page_context['inventoryclassfields'] = inventoryclassfields # for display
             self.page_context['inventoryclassform'] = inventoryclassForm # for editing
-        except:
+        except Exception as exc:
+            logger.error(exc, exc_info=True)
             self.page_context['inventoryclassfields'] = ''
             self.page_context['inventoryclassform'] = ''
 
@@ -410,8 +388,8 @@ class LocationPage (Pagebase):
                     urlStrPolygons += 'override_i:0;locationid:' + unicode(locationid) + ';'
 
                     urlStrPolygonsList.append(urlStrPolygons)
-                except:
-                    pass
+                except Exception as exc:
+                    logger.error(exc, exc_info=True)
 
                 # get the map overlay points GeoJSON from Geoserver
                 geoJsonStrPoints = urllib2.urlopen(urlStrPoints).read()

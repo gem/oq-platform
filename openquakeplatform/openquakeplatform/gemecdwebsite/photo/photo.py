@@ -2,6 +2,7 @@ __author__ = 'Simon Ruffle, CAR'
 
 from django.forms import ModelForm
 from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from openquakeplatform.weblib.baseclasses.pagebase import Pagebase
 from openquakeplatform.weblib.models import WebLibPhoto
 from openquakeplatform.econd.models import Location
@@ -40,7 +41,7 @@ class PhotoPage (Pagebase):
             # get photo record
             try:
                 current_object = WebLibPhoto.objects.get(pk=ix)
-            except:
+            except ObjectDoesNotExist:
                 return self.showErrorPage(request, 'Error: photo with that id does not exist')
 
             cachedphotofilename = current_object._get_SIZE_url('photopage_large')

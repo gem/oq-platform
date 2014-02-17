@@ -17,6 +17,11 @@ from openquakeplatform.econd.event_models import Event
 from openquakeplatform.econd.sql_views import LocationsQuick
 from openquakeplatform.weblib.utils import JSONResponse
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 template_name = 'eventoverview/templates/eventoverview.html'
 appname = 'weblib'
 modelname = 'Page'
@@ -39,32 +44,28 @@ class PageFormDisplay (ModelForm):
 
 # location AJAX POST callback
 def locationjson (request, *args, **kwargs):
-    markerid = ''
     try:
         markerid = request.REQUEST['markerid']
         markerid = int(markerid)
-    except:
+    except (KeyError, ValueError):
         markerid = 0
 
-    locationid = ''
     try:
         locationid = request.REQUEST['locationid']
         locationid = int(locationid)
-    except:
+    except (KeyError, ValueError):
         locationid = 0
 
-    filterstring = ''
     try:
         # TODO this string ought to be sanitised
         filterstring = request.REQUEST['filterstring']
-    except:
+    except (KeyError, ValueError):
         filterstring = 0
 
-    isPolygon = False
     try:
         isPolygon = (request.REQUEST['polygon'] == '1')
-    except:
-        pass
+    except KeyError:
+        isPolygon = False
 
     json = []
 
@@ -249,65 +250,40 @@ class EventOverview (Pagebase):
 
         # get checkbox defaults from the querystring
         checked = request.GET.get('all')
-        filter_all = False
-        try:
-            if checked is None or checked == '' or checked == 'True':
-                filter_all = True # defaults to true
-            else:
-                filter_all = False
-        except:
+        if checked is None or checked == '' or checked == 'True':
             filter_all = True # defaults to true
+        else:
+            filter_all = False
 
         checked = request.GET.get('f_b')
-        filter_buildings = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_buildings = False # defaults to false
-            else:
-                filter_buildings = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_buildings = False # defaults to false
+        else:
+            filter_buildings = True
 
         checked = request.GET.get('f_c')
-        filter_casualty = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_casualty = False
-            else:
-                filter_casualty = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_casualty = False
+        else:
+            filter_casualty = True
 
         checked = request.GET.get('f_i')
-        filter_infrastructure = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_infrastructure = False
-            else:
-                filter_infrastructure = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_infrastructure = False
+        else:
+            filter_infrastructure = True
 
         checked = request.GET.get('f_p')
-        filter_photos = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_photos = False
-            else:
-                filter_photos = True
-
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_photos = False
+        else:
+            filter_photos = True
 
         checked = request.GET.get('f_s')
-        filter_socioeconomic = False
-        try:
-            if checked is None or checked == '' or checked == 'False':
-                filter_socioeconomic = False # defaults to false
-            else:
-                filter_socioeconomic = True
-        except:
+        if checked is None or checked == '' or checked == 'False':
             filter_socioeconomic = False # defaults to false
+        else:
+            filter_socioeconomic = True
 
         # event id
         eventid = kwargs.get('ix')
@@ -315,7 +291,7 @@ class EventOverview (Pagebase):
             if eventid is None or eventid == '':
                 eventid = 0
             eventid = int(eventid) # check its a number
-        except:
+        except ValueError:
             eventid = 0 # in case of input error
 
         studytype = ''
@@ -348,7 +324,7 @@ class EventOverview (Pagebase):
             if not study_found:
                 studyid = 0
 
-        except:
+        except ValueError:
             studyid = 0 # in case of input error
 
         # Prepare GeoServer request for point-based locations.
@@ -380,11 +356,12 @@ class EventOverview (Pagebase):
 
                 # we have a geobase, so
                 # Prepare GeoServer request for polygon-based locations
+                # to investigate reasons of: http://localhost:8080/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json&viewparams=parenttype:study;parentid:4;jointable:None;joincolumn:None;boundarygeom:None;override:0;
                 urlStrPolygons = geoserver_url + 'oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json'
                 urlStrPolygons += '&viewparams=parenttype:study;parentid:' + unicode(study.id) + ';jointable:' + geobase.tablename + ';joincolumn:' + geobase.idcolumnname + ';boundarygeom:' + geobase.geomcolumnname + ';override:0;'
                 urlStrPolygonsList.append(urlStrPolygons)
-            except:
-                pass
+            except Exception as exc:
+                logger.error(exc, exc_info=True)
 
         self.page_context['geoserver_url'] = geoserver_url
 
@@ -402,7 +379,8 @@ class EventOverview (Pagebase):
             self.page_context['epicentre'] = {'lat': epicentreWKT[1][:-1], 'lon': epicentreWKT[0][6:]}
             self.page_context['shakemapid'] = str(event.usgsshakemapid)
             self.page_context['eventid'] = str(eventid)
-        except:
+        except Exception as exc:
+            logger.error(exc, exc_info=True)
             return self.showErrorPage(request, 'Cannot find event with id ' + unicode(eventid), 'errorpage.html')
 
         # left hand panel event info form
