@@ -57,6 +57,7 @@ setup(
         "numpy==1.6.1",
         "Django==1.5.5",
         "GeoNode==2.0",
+        "django-photologue==2.6.1",
         "fabric"
     ],
     include_package_data=True,

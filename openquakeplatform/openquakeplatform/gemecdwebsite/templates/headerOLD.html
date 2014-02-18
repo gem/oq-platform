@@ -1,0 +1,35 @@
+
+
+    <div id="topbar">
+        <div class="nav">
+        <ul>
+            <li class="descendant"><a href="/home">Home</a></li>
+            <li class="descendant"><a href="/contact">Contact Us</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    {%  if editmode %}
+                        <li class="descendant"><a href="{{ editlink }}">View</a></li>
+                    {% else %}
+                        <li class="descendant"><a href="{{ editlink }}/edit/">Edit</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="descendant"><a href="/logout">Log out</a></li>
+                {% endif %}
+            {% else %}
+                <li class="descendant"><a href="/login">Log in</a></li>
+            {% endif %}
+        </ul>
+        </div>
+    </div>
+
+    <!-- logo -->
+    <div id="logo">
+        <a href="/home"><img src="{{ STATIC_URL }}logo.png" /></a>
+    </div>
+
+
+
+
+
+
+

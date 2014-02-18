@@ -32,43 +32,18 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage', 'django-photologue==2.6.1' ]
 
 #: Template for local_settings.py
-LOCAL_SETTINGS = """\
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': "%(dbname)s",
-        'USER': '%(dbuser)s',
-        'PASSWORD': '%(dbpassword)s'
-    },
-}
-
-try:
-    from openquakeplatform import ged_settings
-    DATABASES.update(ged_settings.DATABASES)
-except ImportError:
-    import warnings
-    warnings.warn('Global Exposure Database (GED) configuration not found!',
-                  ImportWarning)
-
-SITEURL = 'http://localhost:8000'
-
-OQ_ENGINE_SERVER_URLS = {
-    'run_hazard_calc_form': 'http://localhost:11888/v1/calc/hazard/run',
-    'run_risk_calc_form': 'http://localhost:11888/v1/calc/risk/run',
-}
-THIRD_PARTY_URLS = {
-    'leaflet_base_map': (
-        'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
-    ),
-}
-"""
+GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
 def bootstrap(dbname='oqplatform', dbuser='oqplatform',
-              dbpassword=DB_PASSWORD):
+              dbpassword=DB_PASSWORD, siteurl='http://oq-platform/',
+              hazard_calc_addr='http://oq-platform:8800',
+              risk_calc_addr='http://oq-platform:8800',
+              oq_engserv_key='oq-platform'):
+
     """
     :param str dbpassword:
         Should match the one in settings.py.
@@ -76,7 +51,10 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
-    baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+    baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword,
+            siteurl=siteurl, hazard_calc_addr=hazard_calc_addr,
+            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key)
+    # fix it in a proper way
     apps()
 
     # Install the libs needs to `test` and `test_with_xunit`:
@@ -90,9 +68,9 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     #if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
 
-
-def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
-    _write_local_settings(dbname, dbuser)
+def baseenv(siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
+            dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
+    _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -106,6 +84,11 @@ def baseenv(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
 
     # We need to start geoserver
     init_start()
+
+    geoserver_init(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+
+
+def geoserver_init(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
     # GeoServer: create workspace
     _geoserver_api(
         'workspaces.xml',
@@ -141,6 +124,9 @@ def apps():
     _add_faulted_earth()
     _add_ghec_viewer()
     _add_gaf_viewer()
+    _add_econd()
+    _add_weblib()
+    _add_gemecdwebsite()
     add_icebox()
 
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
@@ -185,11 +171,16 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(dbname, dbuser):
+def _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key):
+    local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
-        fh.write(LOCAL_SETTINGS % dict(dbname=dbname,
+        fh.write(local_settings % dict(dbname=dbname,
                                        dbuser=dbuser,
-                                       dbpassword=DB_PASSWORD))
+                                       dbpassword=dbpassword,
+                                       siteurl=siteurl,
+                                       hazard_calc_addr=hazard_calc_addr,
+                                       risk_calc_addr=risk_calc_addr,
+                                       oq_engserv_key=oq_engserv_key))
 
 
 def _pgsudo(command, **kwargs):
@@ -251,12 +242,9 @@ def _maybe_createuser(dbuser, dbpassword):
         print('Database user "%s" already exists!' % dbuser)
         return False
     else:
-        print('Creating user "%(dbuser)s". Please choose a password (it should'
-              'match your local_settings.py). Recommended: "%(dbpassword)s".'
+        print('Creating user "%(dbuser)s" with password "%(dbpassword)s.'
               % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgsudo('createuser --superuser --pwprompt %(dbuser)s'
-                % dict(dbpassword=dbpassword, dbuser=dbuser))
-        _pgquery('ALTER USER %s WITH SUPERUSER' % dbuser)
+        _pgquery("CREATE ROLE %(dbuser)s ENCRYPTED PASSWORD '%(dbpassword)s' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN" % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
         return True
 
 
@@ -328,3 +316,14 @@ def _add_gaf_viewer():
           '../oq-ui-api/data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '
           '../oq-ui-api/data/gaf_data_ft.csv')
+
+def _add_econd():
+    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
+    local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
+
+def _add_weblib():
+    pass
+
+def _add_gemecdwebsite():
+    pass
+
