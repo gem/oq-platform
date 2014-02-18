@@ -4,9 +4,20 @@ Openquake Platform
 Development Installation
 ------------------------
 
+Install the following dependencies::
+    for Ubuntu: git python-virtualenv virtualenvwrapper python-dev libxml2-dev libxslt-dev postgresql postgresql-9.1-postgis libpq-dev openjdk-6-jre-headless curl
+
+Create a virtual environment::
+
+    $ mkvirtualenv platform  # or whatever you want to call it
+
 Clone the git repo::
 
     $ git clone https://github.com/gem/oq-platform -b geonode2-integration
+
+Change directory to the downloaded repository directory::
+
+    $ cd oq-platform
 
 Initialize submodules::
 
@@ -18,9 +29,8 @@ and PostGIS 1.5.
 
 Install and run the application::
 
-    $ mkvirtualenv platform  # or whatever you want to call it
-    $ cd oq-platform
     $ pip install -e openquakeplatform  # installs `fabric` to enable `fab` commands (see below)
+
     $ cd openquakeplatform
 
 (Optional.) Set Global Exposure Database (GED) settings. Copy the sample config
