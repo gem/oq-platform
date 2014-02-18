@@ -32,7 +32,7 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage', 'django-photologue==2.6.1' ]
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage' ]
 
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
