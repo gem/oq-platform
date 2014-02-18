@@ -31,24 +31,34 @@ var gridList;
 var mapCategoryList = [];
 var curveCategoryList = [];
 var uhsCategoryList = [];
+var lossCategoryList = [];
 var mapLayerGrids = [];
 var curveLayerGrids = [];
 var uhsLayerGrids = [];
+var lossLayerGrids = [];
 var mapLayersByCat = {};
 var curveLayersByCat = {};
 var uhsLayersByCat = {};
+var lossLayersByCat = {};
 var mapLayerNames = {};
 var curveLayerNames = {};
 var uhsLayerNames = {};
+var lossLayerNames = {};
 var layerGrid = {};
 var curvesByInvestMixed = {};
 var uhsByInvestMixed = {};
+var lossByInvestMixed = {};
 var curvesAvailable = {};
 var uhsAvailable = {};
+var lossAvailable = {};
 var curvesByInvestSingle = {};
 var uhsByInvestSingle = {};
+var lossByInvestSingle = {};
 var selectedCurves = [];
 var selectedUhs = [];
+var selectedLoss = [];
+var lossLayerId = {};
+var lossLayerTitle = {};
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -177,22 +187,29 @@ var startApp = function() {
 
     var selCurveCat = document.getElementById('curve-category');
     var selUhsCat = document.getElementById('curve-category');
+    var selLossCat = document.getElementById('curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
+    var selLoss = document.getElementById('loss-list');
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
     catMenuHeader.innerHTML = "Category:";
     selCat.appendChild(catMenuHeader);
 
-    // Create a header for the menu curve drop down
+    // Create a header for the menu drop down
     var catCurveMenuHeader = document.createElement('option');
     catCurveMenuHeader.innerHTML = "Category:";
     selCurveCat.appendChild(catCurveMenuHeader);
 
-    // Create a header for the menu uhs drop down
+    // Create a header for the menu drop down
     var catUhsMenuHeader = document.createElement('option');
     selUhsCat.appendChild(catUhsMenuHeader);
+    $('#curve-category option:empty').remove();
+
+    // Create a header for the menu drop down
+    var catLossMenuHeader = document.createElement('option');
+    selLossCat.appendChild(catLossMenuHeader);
     $('#curve-category option:empty').remove();
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
@@ -205,14 +222,16 @@ var startApp = function() {
             var type = json[i].type;
             var grids = json[i].grids;
             var invest = json[i].investigationTime;
+            var app = json[i].application;
 
-            if (type == "curve-hc") {
+            if (type == "curve-hc" || type == "curve-uhs" || type == "curve-loss") {
                 curveCategoryList.push(cat);
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
                 var grid = grids.toString();
                 var gridName = grid.split("/")[4];
                 curveLayerGrids.push(gridName);
+
             }
 
             if (type == "curve-uhs") {
@@ -222,6 +241,15 @@ var startApp = function() {
                 var grid = grids.toString();
                 var gridName = grid.split("/")[4];
                 uhsLayerGrids.push(gridName);
+            }
+
+            if (type == "curve-loss") {
+                lossCategoryList.push(cat);
+                lossLayersByCat[cat] = [];
+                lossLayerNames[name] = [];
+                var grid = grids.toString();
+                var gridName = grid.split("/")[4];
+                lossLayerGrids.push(gridName);
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -286,6 +314,23 @@ var startApp = function() {
                 uhsByInvestSingle[i] = name;
             }
 
+            if (type == "curve-loss") {
+                lossLayerId = json[i].id;
+                lossLayerTitle = json[i].mapped_value;
+                lossLayerNames[name].push(lossLayerId);
+                lossLayersByCat[cat].push(lossLayerTitle);
+            }
+
+
+            if (type == "curve-loss") {
+                lossByInvestMixed[i] = name;
+                lossAvailable[i] = template;
+            }
+
+            if (type == "curve-loss") {
+                lossByInvestSingle[i] = name;
+            }
+
             if (invest == undefined && cat != undefined && type == "hazard") {
                 mapLayerId = json[i].id;
                 mapLayerTitle = json[i].mapped_value;
@@ -306,6 +351,10 @@ var startApp = function() {
 
         var uhsCategoryUnique = uhsCategoryList.filter(function(itm,i,uhsCategoryList){
             return i == uhsCategoryList.indexOf(itm);
+        });
+
+        var lossCategoryUnique = lossCategoryList.filter(function(itm,i,lossCategoryList){
+            return i == lossCategoryList.indexOf(itm);
         });
 
         for (var i in mapCategoryUnique) {
@@ -340,11 +389,24 @@ var startApp = function() {
             // Append layer list to dowpdown
             var layeruhsOpt = document.createElement('option');
         }
+
+        for (var i in curveCategoryUnique) {
+            // Append category names to loss dropdown list
+            var lossCategoryTitle = curveCategoryUnique[i];
+            var lossOpt = document.createElement('option');
+            lossOpt.innerHTML = lossCategoryTitle;
+            lossOpt.value = lossCategoryTitle;
+            selLossCat.appendChild(curveOpt);
+            // Append layer list to dowpdown
+            var layerlossOpt = document.createElement('option');
+        }
     }); //end getjson
 
     $("#addTileCurve").click(function() {
         $('#addTileUhs').attr("disabled", true);
         $('#removeTileUhs').attr("disabled", true);
+        $('#addTileLoss').attr("disabled", true);
+        $('#removeTileLoss').attr("disabled", true);
 
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
@@ -413,10 +475,13 @@ var startApp = function() {
     $("#addTileUhs").click(function() {
         $('#addTileCurve').attr("disabled", true);
         $('#removeTileCurve').attr("disabled", true);
+        $('#addTileLoss').attr("disabled", true);
+        $('#removeTileLoss').attr("disabled", true);
 
         var e = document.getElementById("uhs-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option);
+        console.log(investType);
         var curveType = "uhs";
 
         if (investType.indexOf("mixed") == 1 ) {
@@ -424,9 +489,10 @@ var startApp = function() {
             var layerKey = investType.shift();
             // Use that key to look up available uhs in uhsAvailable
             var uhsList = uhsAvailable[layerKey].split(" ");
+            console.log(uhsList);
             var uhsListCap = [];
 
-            // Remove items that are not uhs
+            // Remove items that are not curves
             index = uhsList.indexOf("lat");
             if (index > -1) {
                 uhsList.splice(index, 1);
@@ -469,14 +535,20 @@ var startApp = function() {
             hazardCurveDialog.dialog("option", "height", (420 + (selectedUhs.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
-
-        } else if (investType.indexOf("single") == 0 ) {
-            singleCurve();
         } else {
             alert("Whoops, there is an issue with the curve you are trying to load,"
                 +" One thing I can think of is some metadata that is required by this app is missing");
         }
     }); // end add uhs curve
+
+    $("#addTileLoss").click(function() {
+        $('#addTileCurve').attr("disabled", true);
+        $('#removeTileCurve').attr("disabled", true);
+        $('#addTileUhs').attr("disabled", true);
+        $('#removeTileUhs').attr("disabled", true);
+
+        lossCurve();
+    }); // end add loss curve
 
     // Check to see if the curve has an investigation time 'mixed'
     function checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option) {
@@ -574,6 +646,24 @@ var startApp = function() {
         }
     });
 
+    // Create dynamic categorized loss layer dialog
+    $("#curve-category").change(function() {
+        // Remove the layer list element
+        document.getElementById("loss-list").options.length = 0;
+
+       // Create the layer list based on the category selected
+        var e = document.getElementById("curve-category");
+        var strUser = e.options[e.selectedIndex].value;
+        var layersArray = lossLayersByCat[strUser];
+        for (var i in layersArray) {
+            var layers = layersArray[i];
+            var lossOpt = document.createElement('option');
+            lossOpt.innerHTML = layers;
+            lossOpt.valuse = layers;
+            selLoss.appendChild(lossOpt);
+        }
+    });
+
     map.addControl(layerControl.setPosition("topleft"));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
@@ -635,6 +725,48 @@ var startApp = function() {
         var curveLayerIdArray = curveLayerNames[curveLayerId];
         var selectedLayer = curveLayerIdArray.toString();
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+        // Check for duplicae layes
+        if (selectedLayer in layers) {
+            showDuplicateMsg();
+        }
+        else if (hasGrid == true && gridList > 0) {
+            showDuplicateGridMsg();
+        }
+        else {
+            var tileLayer = L.tileLayer(TILESTREAM_URL 
+                + selectedLayer
+                + '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL
+                +selectedLayer
+                +'.json'});
+            layerControl.addOverlay(tileLayer, selectedLayer);
+            map.addLayer(tileLayer);
+            // Keep track of layers that have been added
+            layers[selectedLayer] = tileLayer;
+            
+            if (hasGrid == true) {
+                gridList = 1;
+                utfGrid = new L.UtfGrid(TILESTREAM_URL
+                    + selectedLayer
+                    + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                map.addLayer(utfGrid);
+
+                utfGridClickEvent(utfGrid);
+            };
+        }
+    }
+
+    // Add loss curve layers form tilestream list
+    function lossCurve() {
+        // Remove any existing UtfGrid layers in order to avoid conflict
+        map.removeLayer(utfGrid);
+        utfGrid = {};
+        var e = document.getElementById("loss-list");
+        console.log(e);
+        var lossLayerId = e.options[e.selectedIndex].value;
+        // Look up the layer id using the layer name
+        var lossLayerIdArray = lossLayerNames[lossLayerId];
+        var selectedLayer = lossLayerIdArray.toString();
+        var hasGrid = $.inArray(selectedLayer, lossLayerGrids) > -1;
         // Check for duplicae layes
         if (selectedLayer in layers) {
             showDuplicateMsg();
