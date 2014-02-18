@@ -62,6 +62,9 @@ BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
 POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
 SV_THEMES_CSV_HEADER = ('theme\n')
+SV_SUBTHEMES_CSV_HEADER = ('subtheme\n')
+SV_TAGS_CSV_HEADER = ('tags\n')
+SV_NAMES_CSV_HEADER = ('names\n')
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
@@ -318,8 +321,19 @@ def export_sv_themes(request):
     """
     content_disp = 'attachment; filename="sv_themes_export.csv"'
     mimetype = 'text/csv'
-
     response_data = _stream_sv_themes(request)
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    return response
+
+
+@condition(etag_func=None)
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
+def export_sv_items(request):
+    content_disp = 'attachment; filename="sv_items_export.csv"'
+    mimetype = 'text/csv'
+    response_data = _stream_sv_items(request)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
@@ -580,6 +594,7 @@ def _stream_population_exposure(request, output_type):
             yield text
 
 
+# FIXME: Delete this!
 def _stream_sv_themes(request):
     """
     Stream SV distinct themes and corresponding ids from the database
@@ -594,6 +609,28 @@ def _stream_sv_themes(request):
     yield SV_THEMES_CSV_HEADER
     for theme in sv_themes:
         yield '%s\n' % theme
+
+
+def _stream_sv_items(request):
+    theme = request.GET.get('theme')
+    subtheme = request.GET.get('subtheme')
+    tag = request.GET.get('tag')
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    if theme and subtheme and tag:
+        sv_items = util._get_sv_names(theme, subtheme, tag)
+        yield SV_NAMES_CSV_HEADER
+    elif theme and subtheme:
+        sv_items = util._get_sv_tags(theme, subtheme)
+        yield SV_TAGS_CSV_HEADER
+    elif theme:
+        sv_items = util._get_sv_subthemes(theme)
+        yield SV_SUBTHEMES_CSV_HEADER
+    else:
+        sv_items = util._get_sv_themes()
+        yield SV_THEMES_CSV_HEADER
+    for sv_item in sv_items:
+        yield '%s\n' % sv_item
 
 
 def copyright_csv(cr_text):

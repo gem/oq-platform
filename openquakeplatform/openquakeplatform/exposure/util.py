@@ -274,7 +274,64 @@ def _get_sv_themes():
     """
     Get all the dinstinct themes from table svir.column_info
     """
-    query = "SELECT DISTINCT theme FROM svir.column_info"
+    query = "SELECT DISTINCT theme FROM svir.column_info ORDER BY theme;"
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def _get_sv_subthemes(theme):
+    """
+    Given a theme, get all its dinstinct subthemes
+
+    :param theme: theme selected by the user
+    """
+    query = """\
+SELECT DISTINCT subtheme
+FROM svir.column_info
+WHERE theme='%s'
+ORDER BY subtheme;
+""" % theme
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def _get_sv_tags(theme, subtheme):
+    """
+    Given a theme and a subtheme, get all the corresponding dinstinct tags
+
+    :param theme: theme selected by the user
+    :param subtheme: subtheme selected by the user
+    """
+    query = """\
+SELECT DISTINCT tag
+FROM svir.column_info
+WHERE theme='%s' AND subtheme='%s'
+ORDER BY tag;
+""" % (theme, subtheme)
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def _get_sv_names(theme, subtheme, tag):
+    """
+    Given a theme, a subtheme and a tag, get all corresponding distinct names
+
+    :param theme: theme selected by the user
+    :param subtheme: subtheme selected by the user
+    :param tag: tab selected by the user
+    """
+    query = """\
+SELECT DISTINCT name
+FROM svir.column_info
+WHERE theme='%s' AND subtheme='%s' AND tag='%s'
+ORDER BY name;
+""" % (theme, subtheme, tag)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
 
