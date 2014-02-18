@@ -66,9 +66,6 @@ class WebLibPhoto(Photo):
     hasowner = models.IntegerField()
     haspeople = models.IntegerField()
 
-#    class Meta:
-#        managed = False
-
     def __unicode__(self):
         return  self.title + ': "' + self.caption + '"'
 
@@ -83,10 +80,6 @@ class Pagetype (models.Model):
     listapp = models.CharField(max_length=50, default='weblib')
     listmodel = models.CharField(max_length=50)
 
-#    class Meta:
-#        db_table = u'weblib_pagetype'
-#        managed = False
-
     def __unicode__(self):
         return self.name
 
@@ -95,8 +88,7 @@ class Page(models.Model):
     name = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
     introtext = models.TextField(null=True, blank=True, verbose_name='Intro text')
-    image1 = models.ForeignKey('WebLibPhoto', db_column='image1id',null=True, blank=True, verbose_name='Iconic image') #if using syncdb change this to PhotologuePhoto and comment out WebLibPhoto
-    #image1 = models.ForeignKey( 'PhotologuePhoto', db_column='image1id',null=True, blank=True)
+    image1 = models.ForeignKey('WebLibPhoto', db_column='image1id',null=True, blank=True, verbose_name='Iconic image')
     image1size = models.ForeignKey('PhotologuePhotoSize', db_column='image1photosizeid',null=True, blank=True)
     maintext = models.TextField(null=True, blank=True, verbose_name='Main text')
     righttext = models.TextField(null=True, blank=True, verbose_name='Right hand text')
@@ -106,9 +98,6 @@ class Page(models.Model):
     lastupdate = models.DateTimeField(null=True, blank=True)
     lastupdatebyid = models.IntegerField(null=True, blank=True)
     ownerid = models.IntegerField(null=True, blank=True)
-
-#    class Meta:
-#        managed = False
 
     def __unicode__(self):
         return self.name
@@ -123,15 +112,12 @@ class Link(models.Model):
     year = models.IntegerField(null=True, blank=True, )
     displayorder = models.IntegerField(null=True, blank=True, )
     introtext = models.TextField(blank=True, )
-    image1 = models.ForeignKey( 'WebLibPhoto', db_column='image1id',null=True, blank=True, ) #if using syncdb change this to PhotologuePhoto and comment out WebLibPhoto
-    #image1id = models.ForeignKey(PhotologuePhoto, null=True, db_column='image1id', blank=True)
+    image1 = models.ForeignKey( 'WebLibPhoto', db_column='image1id',null=True, blank=True, ) 
     image1photosizeid = models.ForeignKey(PhotologuePhotoSize, null=True, db_column='image1photosizeid', blank=True, )
     maintext = models.TextField(blank=True, )
     lastupdate = models.DateTimeField(null=True, blank=True, )
     lastupdatebyid = models.IntegerField(null=True, blank=True, )
     ownerid = models.IntegerField(null=True, blank=True, )
-#    class Meta:
-#        db_table = u'weblib_link'
 
     def __unicode__(self):
         return self.name
@@ -144,9 +130,6 @@ class ResourceConnection(models.Model):
     childmodel = models.CharField(max_length=50)
     childpk = models.IntegerField()
     timeline = models.IntegerField()
-
-#    class Meta:
-#        db_table = u'weblib_resourceconnection_mop'
 
     def __unicode__(self):
         return self.parentmodel + '/' + str(self.parentpk) + '->' + self.childmodel + '/' + str(self.childpk) + ' (' + str(self.timeline) + ')'
@@ -170,9 +153,6 @@ class Document(models.Model):
     lastupdatebyid = models.IntegerField(null=True, blank=True)
     ownerid = models.IntegerField(null=True, blank=True)
 
-#    class Meta:
-#        db_table = u'weblib_document_mop'
-
     def __unicode__(self):
         return self.name
 
@@ -188,9 +168,6 @@ class DownloadLog(models.Model):
     lastupdate = models.DateTimeField(null=True, blank=True)
     lastupdatebyid = models.IntegerField(null=True, blank=True)
     ownerid = models.IntegerField(null=True, blank=True)
-
-#    class Meta:
-#        db_table = u'weblib_downloadlog_mop'
 
     def __unicode__(self):
         return self.entity + '/' + str(self.entityid)

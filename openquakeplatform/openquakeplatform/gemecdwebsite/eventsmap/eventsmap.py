@@ -50,33 +50,19 @@ class EventsMap (Pagebase):
     class FilterBarForm(forms.Form):
         all = forms.BooleanField(label='All', required=False)
         all.widget.attrs['title'] = "All"
-        #all.widget.attrs['onchange'] = 'submit()'
         all.widget.attrs['class'] = 'iconbutton'
 
         buildings = forms.BooleanField(label='Buildings', required=False)
         buildings.widget.attrs['title'] = "Consequences to aggregated buildings"
-        #buildings.widget.attrs['onchange'] = 'submit()'
         buildings.widget.attrs['class'] = 'iconbutton'
 
         casualty = forms.BooleanField(label='Casualty', required=False)
         casualty.widget.attrs['title'] = "Consequences to casualty"
-        #casualty.widget.attrs['onchange'] = 'submit()'
         casualty.widget.attrs['class'] = 'iconbutton'
 
         infrastructure = forms.BooleanField(label='CBI', required=False)
         infrastructure.widget.attrs['title'] = "Consequences to infrastructure"
-        #infrastructure.widget.attrs['onchange'] = 'submit()'
         infrastructure.widget.attrs['class'] = 'iconbutton'
-
-        #photos = forms.BooleanField(label='Photos', required=False)
-        #photos.widget.attrs['title'] = "Photos"
-        ##photos.widget.attrs['onchange'] = 'submit()'
-        #photos.widget.attrs['class'] = 'iconbutton'
-
-        #socioeconomic = forms.BooleanField(label='Socioeconomic', required=False)
-        #socioeconomic.widget.attrs['title'] = "Socioeconomic"
-        ##socioeconomic.widget.attrs['onchange'] = 'submit()'
-        #socioeconomic.widget.attrs['class'] = 'iconbutton'
 
 
 
@@ -85,9 +71,6 @@ class EventsMap (Pagebase):
         event.widget.attrs['title'] = "Select event to see more details"
         event.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         event.widget.attrs['class'] = 'eventdropdown'
-
-
-        #buttonArray = forms.MultipleChoiceField(label='', required=False, widget = CheckboxSelectMultiple())
 
     def dispatch(self, request, *args, **kwargs):
         geoserver_url = settings.OGC_SERVER['default']['LOCATION']
@@ -146,7 +129,6 @@ class EventsMap (Pagebase):
         if filter_all:
             # show all events with no filtering applied so request all events layer from Geoserver
             urlStr = geoserver_url + 'oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:gemecdallevents&maxFeatures=5000&outputFormat=json'
-            # urlStr = geoserver_url + 'geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:gemecdallevents&maxFeatures=5000&outputFormat=json'
 
         else:
             # if socio economic filter is on, we restrict the query to events that have socioeconomic studies
@@ -261,8 +243,6 @@ class EventsMap (Pagebase):
                 filterbarform.base_fields['buildings'].initial = filter_buildings
                 filterbarform.base_fields['casualty'].initial = filter_casualty
                 filterbarform.base_fields['infrastructure'].initial = filter_infrastructure
-                #filterbarform.base_fields['photos'].initial = filter_photos
-                #filterbarform.base_fields['socioeconomic'].initial = filter_socioeconomic
                 filterbarform.base_fields['all'].initial = filter_all
 
                 self.page_context['filterbarform'] = filterbarform(prefix="filterbarform", label_suffix='')
@@ -289,16 +269,6 @@ class EventsMap (Pagebase):
                 eventslist = self.createListFieldStructure(eventsListForm, events, '/ecd/eventoverview/', {'foreignkeylinkprefix':'ecd', 'tagclass': 'eventslist', 'linksuffix': '?' + self.page_context['filterstring']} )
                 self.page_context['eventslist'] = eventslist
                 self.page_context['pageclass'] = 'eventsmap'
-                
- 
-                # alternative left hand drop down list, currently commented out
-                #panelform = self.PanelForm
-                #for event in events:
-                #    eventlist.append((unicode(event.id),unicode(event.yearint) + ' ' + event.eventname + ' ' + unicode(event.country) + ' (' + event.partner + ')' ))
-                #panelform.base_fields['event'].choices = eventlist
-                #panelform.base_fields['event'].initial = eventid
-                #self.page_context['panelform'] = panelform(prefix="panelform", label_suffix='')
 
-            # self.page_context['ogc_server_location'] = OGC_SERVER['default']['LOCATION']
 
             return render(request, template_name, self.page_context)

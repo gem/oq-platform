@@ -82,10 +82,8 @@ def locationjson (request, *args, **kwargs):
 
             # fudge to allow image to be got directly from geoarchive
             if platform.system() == 'Windows':
-                #photourl = 'http://geoarchive.net/photos/cache/' + photourl[18:]
                 pass
             else:
-                #photourl = 'http://geoarchive.net/photos/cache/' + photourl[16:]
                 pass # ecd-dev has the MEDIA_URL set to point to geoarchive
         else:
             photourl = ''
@@ -198,45 +196,26 @@ class EventOverview (Pagebase):
     class FilterBarForm(forms.Form):
         all = forms.BooleanField(label='All', required=False)
         all.widget.attrs['title'] = "All"
-        #all.widget.attrs['onchange'] = 'submit()'
         all.widget.attrs['class'] = 'iconbutton'
 
         buildings = forms.BooleanField(label='Buildings', required=False)
         buildings.widget.attrs['title'] = "Consequences to aggregated buildings"
-        #buildings.widget.attrs['onchange'] = 'submit()'
         buildings.widget.attrs['class'] = 'iconbutton'
 
         casualty = forms.BooleanField(label='Casualty', required=False)
         casualty.widget.attrs['title'] = "Consequences to casualty"
-        #casualty.widget.attrs['onchange'] = 'submit()'
         casualty.widget.attrs['class'] = 'iconbutton'
 
         infrastructure = forms.BooleanField(label='CBI', required=False)
         infrastructure.widget.attrs['title'] = "Consequences to infrastructure"
-        #infrastructure.widget.attrs['onchange'] = 'submit()'
         infrastructure.widget.attrs['class'] = 'iconbutton'
 
-        #photos = forms.BooleanField(label='Photos', required=False)
-        #photos.widget.attrs['title'] = "Photos"
-        ##photos.widget.attrs['onchange'] = 'submit()'
-        #photos.widget.attrs['class'] = 'iconbutton'
-
-        #socioeconomic = forms.BooleanField(label='Socioeconomic', required=False)
-        #socioeconomic.widget.attrs['title'] = "Socioeconomic"
-        ##socioeconomic.widget.attrs['onchange'] = 'submit()'
-        #socioeconomic.widget.attrs['class'] = 'iconbutton'
 
     class PanelForm(forms.Form):
         study = forms.ChoiceField(label='Study', required=False) #required=False allows field to be disabled
         study.widget.attrs['title'] = "Filter by study"
         study.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
         study.widget.attrs['class'] = 'studydropdown'
-
-        # if we were to want the location dropdown on this page:
-        #location = forms.ChoiceField(label='Location', required=False) #required=False allows field to be disabled
-        #location.widget.attrs['title'] = "Go to location"
-        #location.widget.attrs['onchange'] = 'submit()'  # this is how you add a change event to a form element - fires this javascript
-        #location.widget.attrs['class'] = 'locationdropdown'
 
     class EventForm (ModelForm):
         class Meta:
@@ -417,7 +396,6 @@ class EventOverview (Pagebase):
                     #    studyid = panelform.cleaned_data['study']
 
                     # get raw data
-                    #locationid = panelform.data['panelform-location']  # not used
                     studyid = panelform.data['panelform-study']
 
                 else:
@@ -429,8 +407,6 @@ class EventOverview (Pagebase):
                         filter_buildings = filterbarform.cleaned_data['buildings']
                         filter_casualty = filterbarform.cleaned_data['casualty']
                         filter_infrastructure = filterbarform.cleaned_data['infrastructure']
-                        #filter_photos = filterbarform.cleaned_data['photos']
-                        #filter_socioeconomic = filterbarform.cleaned_data['socioeconomic']
                         filter_all = filterbarform.cleaned_data['all']
 
                 pagename = '/ecd/eventoverview/' + str(eventid)
@@ -487,8 +463,6 @@ class EventOverview (Pagebase):
                 filterbarform.base_fields['buildings'].initial = filter_buildings
                 filterbarform.base_fields['casualty'].initial = filter_casualty
                 filterbarform.base_fields['infrastructure'].initial = filter_infrastructure
-                #filterbarform.base_fields['photos'].initial = filter_photos
-                #filterbarform.base_fields['socioeconomic'].initial = filter_socioeconomic
                 filterbarform.base_fields['all'].initial = filter_all
 
                 self.page_context['filterbarform'] = filterbarform(prefix="filterbarform", label_suffix='')

@@ -29,10 +29,6 @@ from openquakeplatform.econd.static_lookup_models import *
 # SQL Views
 from openquakeplatform.econd.sql_views import *
 
-if False:
-    # Sub events
-    from openquakeplatform.econd.subevent_models import *
-
 #####################
 # core data structure
 #####################

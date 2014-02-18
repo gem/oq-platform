@@ -43,12 +43,10 @@ class NRMLImporter:
             self.LOG_PATH_FILE='/var/lib/geonode/src/GeoNodePy/geonode/uploads/' #folder containing the log files
      
     def abort (self, message ):
-        #global self.aborted,self.abortmessage
         self.abortmessage = message
         self.aborted = True
         self.logmessages.append('<b>abort: ' + message + '</b>')
         self.write_logfile(self.LOG_PATH_FILE + self.CURRENT_FILE_NAME + '.htm',self.logmessages)
-        #raise CommandError(message)
 
     def getabortmessage(self):
         return self.abortmessage
