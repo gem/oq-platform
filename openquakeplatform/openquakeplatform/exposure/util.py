@@ -327,7 +327,7 @@ def _get_sv_names(theme, subtheme, tag):
     :param tag: tab selected by the user
     """
     query = """\
-SELECT DISTINCT name
+SELECT DISTINCT ON (id) id, name
 FROM svir.column_info
 WHERE theme='%s' AND subtheme='%s' AND tag='%s'
 ORDER BY name;
