@@ -17,7 +17,6 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
-from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -57,14 +56,14 @@ BLDG_ADMIN_0_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
                            'study_region, gadm_level_id, GEM_taxonomy, '
                            'time_of_day\n')
 BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-                           'study_region, gadm_level_id, GEM_taxonomy\n')
+                          'study_region, gadm_level_id, GEM_taxonomy\n')
 
 POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
 SV_THEMES_CSV_HEADER = ('theme\n')
 SV_SUBTHEMES_CSV_HEADER = ('subtheme\n')
-SV_TAGS_CSV_HEADER = ('tags\n')
-SV_NAMES_CSV_HEADER = ('names\n')
+SV_TAGS_CSV_HEADER = ('tag\n')
+SV_IDS_AND_NAMES_CSV_HEADER = ('id, name\n')
 
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
@@ -150,12 +149,12 @@ def get_exposure_population_form(request):
     else:
         form = forms.PopulationExposureForm()
         return render_to_response('exposure/population_form.html',
-                              {'exposure_form': form,
-                               'lat1': lat1,
-                               'lng1': lng1,
-                               'lat2': lat2,
-                               'lng2': lng2},
-                              context_instance=RequestContext(request))
+                                  {'exposure_form': form,
+                                   'lat1': lat1,
+                                   'lng1': lng1,
+                                   'lat2': lat2,
+                                   'lng2': lng2},
+                                  context_instance=RequestContext(request))
 
 
 def _export_area_valid(lat1, lng1, lat2, lng2):
@@ -311,25 +310,6 @@ def export_population(request):
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
-def export_sv_themes(request):
-    """
-    Perform a streaming export of the requested sv themes.
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameters::
-    """
-    content_disp = 'attachment; filename="sv_themes_export.csv"'
-    mimetype = 'text/csv'
-    response_data = _stream_sv_themes(request)
-    response = HttpResponse(response_data, mimetype=mimetype)
-    response['Content-Disposition'] = content_disp
-    return response
-
-
-@condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
 def export_sv_items(request):
     content_disp = 'attachment; filename="sv_items_export.csv"'
     mimetype = 'text/csv'
@@ -349,9 +329,9 @@ def _bldg_csv_admin0_generator(exposure_data):
     yield BLDG_ADMIN_0_CSV_HEADER
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type, dwelling_fraction,
-             day_pop_ratio, night_pop_ratio,
-             transit_pop_ratio) in exposure_data:
+         study_region_id, building_type, dwelling_fraction,
+         day_pop_ratio, night_pop_ratio,
+         transit_pop_ratio) in exposure_data:
 
         if all([x is None for x in (day_pop_ratio,
                                     night_pop_ratio,
@@ -383,9 +363,9 @@ def _bldg_nrml_admin0_generator(exposure_data):
     yield NRML_HEADER % dict(cat='buildings')
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type, dwelling_fraction,
-             day_pop_ratio, night_pop_ratio,
-             transit_pop_ratio) in exposure_data:
+         study_region_id, building_type, dwelling_fraction,
+         day_pop_ratio, night_pop_ratio,
+         transit_pop_ratio) in exposure_data:
 
         if all([x is None for x in (day_pop_ratio,
                                     night_pop_ratio,
@@ -432,8 +412,8 @@ def _bldg_csv_subnat_generator(exposure_data):
     yield BLDG_SUBNAT_CSV_HEADER
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type,
-             dwelling_fraction) in exposure_data:
+         study_region_id, building_type,
+         dwelling_fraction) in exposure_data:
         calc_pop_value = pop_value * dwelling_fraction
         row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
                country_id, building_type]
@@ -452,8 +432,8 @@ def _bldg_nrml_subnat_generator(exposure_data):
     yield NRML_HEADER % dict(cat='buildings')
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type,
-             dwelling_fraction) in exposure_data:
+         study_region_id, building_type,
+         dwelling_fraction) in exposure_data:
         calc_pop_value = pop_value * dwelling_fraction
 
         asset = NRML_ASSET_FMT % dict(
@@ -594,23 +574,6 @@ def _stream_population_exposure(request, output_type):
             yield text
 
 
-# FIXME: Delete this!
-def _stream_sv_themes(request):
-    """
-    Stream SV distinct themes and corresponding ids from the database
-    into a csv file.
-
-    :param request:
-        A :class:`django.http.request.HttpRequest` object.
-    """
-    sv_themes = util._get_sv_themes()
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    yield SV_THEMES_CSV_HEADER
-    for theme in sv_themes:
-        yield '%s\n' % theme
-
-
 def _stream_sv_items(request):
     theme = request.GET.get('theme')
     subtheme = request.GET.get('subtheme')
@@ -618,8 +581,14 @@ def _stream_sv_items(request):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
     if theme and subtheme and tag:
-        sv_items = util._get_sv_names(theme, subtheme, tag)
-        yield SV_NAMES_CSV_HEADER
+        sv_ids_and_names = util._get_sv_ids_and_names(theme, subtheme, tag)
+        print sv_ids_and_names
+        yield SV_IDS_AND_NAMES_CSV_HEADER
+        for id, name in sv_ids_and_names:
+            row = [id, name]
+            row = ["\"" + str(x) + "\"" for x in row]
+            yield '%s\n' % ','.join(row)
+        return
     elif theme and subtheme:
         sv_items = util._get_sv_tags(theme, subtheme)
         yield SV_TAGS_CSV_HEADER

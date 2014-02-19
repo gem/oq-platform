@@ -318,7 +318,7 @@ ORDER BY tag;
     return cursor.fetchall()
 
 
-def _get_sv_names(theme, subtheme, tag):
+def _get_sv_ids_and_names(theme, subtheme, tag):
     """
     Given a theme, a subtheme and a tag, get all corresponding distinct names
 
@@ -327,7 +327,7 @@ def _get_sv_names(theme, subtheme, tag):
     :param tag: tab selected by the user
     """
     query = """\
-SELECT DISTINCT ON (id) id, name
+SELECT id, name
 FROM svir.column_info
 WHERE theme='%s' AND subtheme='%s' AND tag='%s'
 ORDER BY name;
