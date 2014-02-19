@@ -481,7 +481,6 @@ var startApp = function() {
         var e = document.getElementById("uhs-list");
         var option = e.options[e.selectedIndex].value;
         var investType = checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option);
-        console.log(investType);
         var curveType = "uhs";
 
         if (investType.indexOf("mixed") == 1 ) {
@@ -489,7 +488,6 @@ var startApp = function() {
             var layerKey = investType.shift();
             // Use that key to look up available uhs in uhsAvailable
             var uhsList = uhsAvailable[layerKey].split(" ");
-            console.log(uhsList);
             var uhsListCap = [];
 
             // Remove items that are not curves
@@ -708,7 +706,7 @@ var startApp = function() {
                         + selectedLayer
                         + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                     map.addLayer(utfGrid);
-                    utfGridClickEvent(utfGrid);
+                    hazardCurveUtfGridClickEvent(utfGrid);
                 };
             }
         });
@@ -750,7 +748,7 @@ var startApp = function() {
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
 
-                utfGridClickEvent(utfGrid);
+                hazardCurveUtfGridClickEvent(utfGrid);
             };
         }
     }
@@ -761,7 +759,6 @@ var startApp = function() {
         map.removeLayer(utfGrid);
         utfGrid = {};
         var e = document.getElementById("loss-list");
-        console.log(e);
         var lossLayerId = e.options[e.selectedIndex].value;
         // Look up the layer id using the layer name
         var lossLayerIdArray = lossLayerNames[lossLayerId];
@@ -792,7 +789,7 @@ var startApp = function() {
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
 
-                utfGridClickEvent(utfGrid);
+                lossCurveUtfGridClickEvent(utfGrid);
             };
         }
     }
@@ -853,7 +850,7 @@ var startApp = function() {
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
-                utfGridClickEventMixed(utfGrid, curveType);
+                hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
             };
         }
     }
@@ -866,7 +863,7 @@ var startApp = function() {
             utfGrid = {};
             utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            utfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById("layer-list");
             var mapLayerId = e.options[e.selectedIndex].value;
     
@@ -891,6 +888,8 @@ var startApp = function() {
         $('#removeTileCurve').click(function() {
             $('#addTileUhs').attr("disabled", false);
             $('#removeTileUhs').attr("disabled", false);
+            $('#addTileLoss').attr("disabled", false);
+            $('#removeTileLoss').attr("disabled", false);
 
             $("#curve-check-box").remove();
             gridList = 0;
@@ -898,7 +897,7 @@ var startApp = function() {
             utfGrid = {};
             utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            utfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById("curve-list");
             var mapLayerId = e.options[e.selectedIndex].value;
     
@@ -923,6 +922,8 @@ var startApp = function() {
         $('#removeTileUhs').click(function() {
             $('#addTileCurve').attr("disabled", false);
             $('#removeTileCurve').attr("disabled", false);
+            $('#addTileLoss').attr("disabled", false);
+            $('#removeTileLoss').attr("disabled", false);
 
             $("#curve-check-box").remove();
             gridList = 0;
@@ -930,7 +931,7 @@ var startApp = function() {
             utfGrid = {};
             utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            utfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById("uhs-list");
             var mapLayerId = e.options[e.selectedIndex].value;
     
@@ -986,7 +987,7 @@ var startApp = function() {
         });
     });
 
-    var utfGridClickEvent = function(utfGrid) {
+    var hazardCurveUtfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $("#chartDialog").empty();
             var prob;
@@ -1020,14 +1021,14 @@ var startApp = function() {
                     lng = e.data.XCOORD;
                 }
                 invest_time = e.data.invest_tim;
-                buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
+                hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
             } else {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
-    } // End utfGridClickEvent
+    } // End hazardCurveUtfGridClickEvent
     
-    var utfGridClickEventMixed = function(utfGrid, curveType) {
+    var hazardCurveUtfGridClickEventMixed = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             // Get the selected curves
             selectedCurves = [];
@@ -1055,14 +1056,81 @@ var startApp = function() {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
-    } // End utfGridClickEventMixed
+    } // End hazardCurveUtfGridClickEventMixed
+
+    var lossCurveUtfGridClickEvent = function(utfGrid) {
+        utfGrid.on('click', function (e) {
+            $("#chartDialog").empty();
+            var asset;
+            var lat;
+            var lon;
+            var losses;
+            var poes;
+
+            Array.prototype.clean = function(deleteValue) {
+                for (var i = 0; i < this.length; i++) {
+                    if (this[i] == deleteValue) {         
+                        this.splice(i, 1);
+                        i--;
+                    }
+                }
+                return this;
+            };
+
+            if (e.data) {
+                asset = e.data.asset_ref;
+                asset = asset.toString()
+                asset.replace(/"/g, '');
+                
+                var assetArray = asset.split(',');
+                for (var i = 0; i < assetArray.length; i++) {
+                    assetArray[i] = assetArray[i].replace(/"/g, "");
+                }
+
+                losses = e.data.loss;
+                var lossesArray = losses.split('"');
+                lossesArray.clean("");
+                lossesArray.clean(",");
+                
+                for (i = 0; i < lossesArray.length; i++)
+                    lossesArray[i] = lossesArray[i].trim();
+
+                console.log(lossesArray);
+
+                poes = e.data.poes;
+                var poesArray = poes.split('"');
+                poesArray.clean("");
+                poesArray.clean(",");
+                for (i = 0; i < poesArray.length; i++)
+                    poesArray[i] = poesArray[i].trim();
+
+                lat = e.data.lat;
+                lon = e.data.lon;
+
+                var chartData = {}
+
+                for (var i = 0; i < lossesArray.length; i++) {
+                    chartData[assetArray[i]] = [];
+                };
+
+                for (var i = 0; i < lossesArray.length; i++) {
+                    chartData[assetArray[i]].push(lossesArray);
+                    chartData[assetArray[i]].push(poesArray);
+                };
+
+                LossD3Chart(chartData, assetArray, lat, lon);
+            } else {
+                //document.getElementById('click').innerHTML = 'click: nothing';
+            }
+        }); // End utfGrid click
+    } // End hazardCurveUtfGridClickEvent
 
 
     ////////////////////////////////////////////
-    ////////////// Line Chart //////////////////
+    ////////////// Single hazard Chart /////////
     ////////////////////////////////////////////
 
-    function buildD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
+    function hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
@@ -1217,7 +1285,7 @@ var startApp = function() {
 
 
     /////////////////////////////////////////////
-    ////////////// Mixed Chart //////////////////
+    ///////// Mixed Hazard/spectra Chart ////////
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
@@ -1273,7 +1341,6 @@ var startApp = function() {
             curve_name = selectedCurves[k];
             var i;
             for (i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                
                 curve_vals[curve_name][i] = parseFloat(curve_vals[curve_name][i]);
             }
         }
@@ -1571,6 +1638,282 @@ var startApp = function() {
             .style("font-weight", "bold")
             .attr("font-size","12px")
             .text('Investigation Time: '+invest_time+', Probability of exceedance: '+poe);
+
+        textTop = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -15)
+            .attr("dy", ".35em")
+            .text("");
+    } //End chart
+
+    ////////////////////////////////////////////
+    ////////////// Loss Curve Chart ////////////
+    ////////////////////////////////////////////
+
+    function LossD3Chart(chartData, assetArray, lat, lng) {
+        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
+        var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
+
+        /* associative array of arrays of values */
+        curve_valsX = [];
+        curve_valsY = [];
+        /* associative array of arrays [ x, y ] to describe the curve on the plane */
+        curve_coup = [];
+
+        /* associative array of curves produced with d3.line */
+        lat = chartData["lat"];
+        lon = chartData["lon"];
+        yAxisLable = "temp";
+        xAxisLable = 'temp';
+
+        var selectedCurves = assetArray;
+
+        for (var i = 0 ; i < assetArray.length ; i++) {
+            var curve_name = selectedCurves[i];
+            curve_valsX[curve_name] = chartData[curve_name][0][i].split(",");
+            curve_valsY[curve_name] = chartData[curve_name][1][i].split(",");
+        }
+
+        var length = (curve_valsX[curve_name].length);
+        
+        for (var k in selectedCurves) {
+            var curve_name = selectedCurves[k];
+            var i;
+            for (i = 0 ; i < length ; i++) {
+                if (curve_valsX[curve_name] != undefined) {
+                    curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
+                    curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
+                };
+            }
+        }
+
+        for (var k in selectedCurves) {
+            var curve_name = selectedCurves[k];
+            curve_coup[curve_name] = [];
+
+            for (var i = 0 ; i < length ; i++) {
+                if (curve_valsX[curve_name] != undefined) {
+                    curve_coup[curve_name].push([ curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
+                };
+            }
+        }
+
+        for (var k in selectedCurves) {
+            var curve_name = selectedCurves[k];
+            var min_cur = 1000.0, max_cur = -1;
+
+            for (var i = 0 ; i < length ; i++) {
+                if (curve_valsY[curve_name] != undefined) {
+ 
+                    if (min_cur > curve_valsY[curve_name][i])
+                        min_cur = curve_valsY[curve_name][i];
+                    if (max_cur < curve_valsY[curve_name][i])
+                        max_cur = curve_valsY[curve_name][i];
+                };
+            }
+            if (max_value < max_cur) {
+                max_value = max_cur;
+                max_value_k = curve_name;
+            }
+            if (min_value > min_cur) {
+                min_value = min_cur;
+                min_value_k = curve_name;
+            }
+        }
+
+        // grid line functions
+        function x_grid() {
+            return d3.svg.axis()
+                .scale(x_scale)
+                .orient("bottom")
+                .ticks(5)
+        }
+
+        function y_grid() {
+            return d3.svg.axis()
+                .scale(y_scale)
+                .orient("left")
+                .ticks(5)
+        }
+
+        function makeCircles(foo, k, color) {
+            // Points along the line
+            svg.selectAll("circle.line") 
+                .data(foo) 
+                .enter().append("circle") 
+                .attr("class", "line"+k) 
+                .attr("cx", function(d) { return x_scale(d[0]); }) 
+                .attr("cy", function(d) { return y_scale(d[1]); }) 
+                .attr("r", 2.5)
+                .style("fill", color)
+                .on("mouseover", function() {
+                    d3.select(this)
+                        .attr('r', 6)
+                        .text(circleX + ", " + circleY)
+                        .style("fill", "gray");
+                    var circleX = d3.select(this.__data__[0]);
+                    circleX = circleX.toString();
+                    circleX = circleX.split(","[0]);
+    
+                    var circleY = d3.select(this.__data__[1]);
+                    circleY = circleY.toString();
+                    circleY = circleY.split(","[0]);
+    
+                    //textTop.text("Point value (x/y): " + circleX + ", " + circleY);
+    
+                }).on("mouseout", function() {
+                    d3.select(this)
+                        .attr('r', 2.5)
+                        .style("fill", color);
+                });
+        }
+
+        var margin = {top: 55, right: 20, bottom: 45, left: 60};
+        var width = 400 - margin.left - margin.right;
+        var height = 380 - margin.top - margin.bottom;
+
+        var x_scale = d3.scale.linear().range([0, width]);
+        var y_scale = d3.scale.linear().range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .ticks(6)
+            .scale(x_scale)
+            //.tickFormat(d3.format( function (d) { return d; }))
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y_scale)
+            //.ticks(6)
+            .orient("left");
+
+        var line = d3.svg.line()
+            .x(function(d,i) {
+                return x_scale(d[0]);
+            })
+            .y(function(d) {
+                return y_scale(d[1]);
+            })
+        
+        var svg = d3.select("#chartDialog").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // grid lines
+        svg.append("g")         
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .attr('opacity', 0.6)
+            .call(x_grid()
+                .tickSize(-height, 0, 0)
+                .tickFormat("")
+            );
+    
+        svg.append("g")         
+            .attr("class", "grid")
+            .attr('opacity', 0.6)
+            .call(y_grid()
+                .tickSize(-width, 0, 0)
+                .tickFormat("")
+            );
+
+        legend = d3.select("#chartDialog").append("svg")
+            .attr("height", 25*(selectedCurves.length - 1));
+
+        //for (k in selectedCurves) {
+        for (var k = 0; k < selectedCurves.length; k++) {
+          
+            console.log(k);
+            var curve_name = selectedCurves[k];
+
+            var data = curve_coup[curve_name];
+
+            x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
+            y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
+
+            svg.append("path")
+                .data([curve_coup[curve_name]])
+                .attr("class", "line"+k)
+                .attr("d", line);
+
+            // Update the css for each line
+            colors = [
+                "darkred", 
+                "blue",
+                "green", 
+                "orange", 
+                "red", 
+                "sandybrown", 
+                "yellowgreen", 
+                "darksalmon", 
+                "lightseagreen",
+                "skyblue"
+            ];
+
+            var gray = "A0A0A0";
+            $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
+
+            var color = colors[k % colors.length];
+
+            makeCircles(data, k, color);
+
+            var str = selectedCurves[k];
+            //str = str.replace(/_/g, " ");
+            var curveTitle = str;
+
+            legend.append("text")
+                .attr("x", 90)
+                .attr("y", 20*(k))
+                .attr("dy", ".35em")
+                .text(curveTitle);
+
+            legend.append("svg:circle")
+                //.attr("cx", 50) 
+                .attr("cy", 20*(k)) 
+                .attr("cx", 80)
+                .attr("r", 3)
+                .style("fill", color)
+
+            $("."+selectedCurves[k]).css({'stroke':colors[k]});
+        }
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("x", 160)
+            .attr("y", 30)
+            .attr("dy", ".71em")
+            .attr("text-anchor", "middle")
+            .style("font-size","12px")
+            //.text("imt place holder");
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -60)
+            .attr("x", -20)
+            .attr("dy", ".71em")
+            .style("font-size","12px")
+            .style("text-anchor", "end")
+            .text(yAxisLable);
+
+        textTopLonLat = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -32)
+            .attr("dy", ".35em")
+            .text("Location (Lon/Lat): "+lon+", "+lat);
+
+        textTopLable = svg.append("text")
+            .attr("x", -55)
+            .attr("y", -47)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","12px")
+            .text('Investigation Time: , Probability of exceedance: '+poe);
 
         textTop = svg.append("text")
             .attr("x", 0)
