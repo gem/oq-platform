@@ -14,7 +14,8 @@
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+# along with this program.
+# If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 from django.db import connections
 from django.http import HttpResponse
@@ -332,6 +333,25 @@ FROM svir.column_info
 WHERE theme='%s' AND subtheme='%s' AND tag='%s'
 ORDER BY name;
 """ % (theme, subtheme, tag)
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def _get_sv_data_by_indices(indices):
+    """
+    For each country, retrieve iso, country_name and a variable number of
+    columns corresponding to the values of the social vulnerability indices
+    selected by the user
+
+    :param indices: a string of comma-separated index names
+    """
+    query = """\
+SELECT iso, country_name, %s
+FROM svir.svir_national
+ORDER BY iso;
+""" % indices
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
 

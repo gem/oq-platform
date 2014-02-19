@@ -319,6 +319,18 @@ def export_sv_items(request):
     return response
 
 
+@condition(etag_func=None)
+@util.allowed_methods(('GET', ))
+@util.sign_in_required
+def export_sv_data_by_indices(request):
+    content_disp = 'attachment; filename="sv_data_by_indices_export.csv"'
+    mimetype = 'text/csv'
+    response_data = _stream_sv_data_by_indices(request)
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    return response
+
+
 def _bldg_csv_admin0_generator(exposure_data):
     """
     Helper function for generating admin level 0 CSV data for building
@@ -582,7 +594,6 @@ def _stream_sv_items(request):
     yield copyright
     if theme and subtheme and tag:
         sv_ids_and_names = util._get_sv_ids_and_names(theme, subtheme, tag)
-        print sv_ids_and_names
         yield SV_IDS_AND_NAMES_CSV_HEADER
         for id, name in sv_ids_and_names:
             row = [id, name]
@@ -600,6 +611,18 @@ def _stream_sv_items(request):
         yield SV_THEMES_CSV_HEADER
     for sv_item in sv_items:
         yield '%s\n' % sv_item
+
+
+def _stream_sv_data_by_indices(request):
+    indices = request.GET['indices']
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    sv_data_by_indices = util._get_sv_data_by_indices(indices)
+    print "len(sv_data_by_indices):", len(sv_data_by_indices)
+    yield ('iso, country_name, %s\n' % indices)
+    for row in sv_data_by_indices:
+        row = [unicode(x) for x in row]
+        yield '%s\n' % ','.join(row)
 
 
 def copyright_csv(cr_text):
