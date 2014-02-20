@@ -618,7 +618,6 @@ def _stream_sv_data_by_indices(request):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
     sv_data_by_indices = util._get_sv_data_by_indices(indices)
-    print "len(sv_data_by_indices):", len(sv_data_by_indices)
     yield ('iso, country_name, %s\n' % indices)
     for row in sv_data_by_indices:
         row = [unicode(x) for x in row]
