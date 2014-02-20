@@ -74,7 +74,7 @@ var startApp = function() {
         $( "#chartDialog" ).dialog({
             autoOpen: false,
             height: 520,
-            width: 440,
+            width: 520,
             closeOnEscape: true,
             position: {at: "right bottom"}
         });
@@ -1650,8 +1650,8 @@ var startApp = function() {
     ////////////// Loss Curve Chart ////////////
     ////////////////////////////////////////////
 
-    function LossD3Chart(chartData, assetArray, lat, lng) {
-        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
+    function LossD3Chart(chartData, assetArray, lat, lon) {
+        var lat, lon, xAxisLable, yAxisLable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
         /* associative array of arrays of values */
@@ -1661,10 +1661,7 @@ var startApp = function() {
         curve_coup = [];
 
         /* associative array of curves produced with d3.line */
-        lat = chartData["lat"];
-        lon = chartData["lon"];
-        yAxisLable = "temp";
-        xAxisLable = 'temp';
+        yAxisLable = "Probability of exceedance";
 
         var selectedCurves = assetArray;
 
@@ -1674,7 +1671,6 @@ var startApp = function() {
             curve_valsY[curve_name] = chartData[curve_name][1][i].split(",");
         }
 
-        console.log(curve_valsX[curve_name]);
         var length = (curve_valsX[curve_name].length);
         
         for (var k in selectedCurves) {
@@ -1682,7 +1678,8 @@ var startApp = function() {
             var i;
             for (i = 0 ; i < length ; i++) {
                 if (curve_valsX[curve_name] != undefined) {
-                    curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
+                    curve_valsX[curve_name][i] = Math.log(parseFloat(curve_valsX[curve_name][i]));
+                    //curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
                     curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
                 };
             }
@@ -1694,7 +1691,10 @@ var startApp = function() {
 
             for (var i = 0 ; i < length ; i++) {
                 if (curve_valsX[curve_name] != undefined) {
-                    curve_coup[curve_name].push([ curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
+                    if (curve_valsX[curve_name][i] > 0.0) {
+                        curve_coup[curve_name].push([curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
+                    }
+                    //curve_coup[curve_name].push([curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
                 };
             }
         }
@@ -1704,12 +1704,11 @@ var startApp = function() {
             var min_cur = 1000.0, max_cur = -1;
 
             for (var i = 0 ; i < length ; i++) {
-                if (curve_valsY[curve_name] != undefined) {
- 
-                    if (min_cur > curve_valsY[curve_name][i])
-                        min_cur = curve_valsY[curve_name][i];
-                    if (max_cur < curve_valsY[curve_name][i])
-                        max_cur = curve_valsY[curve_name][i];
+                if (curve_valsX[curve_name] != undefined) {
+                    if (min_cur > curve_valsX[curve_name][i])
+                        min_cur = curve_valsX[curve_name][i];
+                    if (max_cur < curve_valsX[curve_name][i])
+                        max_cur = curve_valsX[curve_name][i];
                 };
             }
             if (max_value < max_cur) {
@@ -1769,12 +1768,19 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 55, right: 20, bottom: 45, left: 60};
-        var width = 400 - margin.left - margin.right;
+        var margin = {top: 55, right: 100, bottom: 45, left: 60};
+        var width = 480 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        var x_scale = d3.scale.log().range([0, width]);
-        var y_scale = d3.scale.linear().range([height, 0]);
+        var data = curve_coup[curve_name];
+
+        //var x_scale = d3.scale.log().range([0, width]);
+        //var y_scale = d3.scale.linear().range([height, 0]);
+        var x_scale = d3.scale.linear().domain([0, max_value]).range([0, width]);
+        var y_scale = d3.scale.linear().domain([0, 1]).range([height, 0]);
+
+        //x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
+        //y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
 
         var xAxis = d3.svg.axis()
             .ticks(6)
@@ -1789,11 +1795,11 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d,i) {
-                console.log(x_scale(d[0]));
+                console.log(d[0]);
                 return x_scale(d[0]);
             })
             .y(function(d) {
-                console.log(y_scale(d[1]));
+                //console.log(y_scale(d[1]));
                 return y_scale(d[1]);
             })
         
@@ -1821,19 +1827,17 @@ var startApp = function() {
                 .tickFormat("")
             );
 
-        legend = d3.select("#chartDialog").append("svg")
-            .attr("height", 25*(selectedCurves.length - 1));
+        //legend = d3.select("#chartDialog").append("svg")
+        //    .attr("height", 25*(selectedCurves.length - 1));
 
         //for (k in selectedCurves) {
         for (var k = 0; k < selectedCurves.length; k++) {
-          
-            console.log(k);
             var curve_name = selectedCurves[k];
 
             var data = curve_coup[curve_name];
 
-            x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
-            y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
+            //x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
+            //y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
 
             svg.append("path")
                 .data([curve_coup[curve_name]])
@@ -1865,16 +1869,15 @@ var startApp = function() {
             //str = str.replace(/_/g, " ");
             var curveTitle = str;
 
-            legend.append("text")
-                .attr("x", 90)
+            svg.append("text")
+                .attr("x", 360)
                 .attr("y", 20*(k))
                 .attr("dy", ".35em")
                 .text(curveTitle);
 
-            legend.append("svg:circle")
-                //.attr("cx", 50) 
-                .attr("cy", 20*(k)) 
-                .attr("cx", 80)
+            svg.append("svg:circle")
+                .attr("cx", 350)
+                .attr("cy", 20*(k))
                 .attr("r", 3)
                 .style("fill", color)
 
@@ -1891,7 +1894,8 @@ var startApp = function() {
             .attr("dy", ".71em")
             .attr("text-anchor", "middle")
             .style("font-size","12px")
-            //.text("imt place holder");
+            .text("Losses");
+
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
@@ -1911,12 +1915,12 @@ var startApp = function() {
             .text("Location (Lon/Lat): "+lon+", "+lat);
 
         textTopLable = svg.append("text")
-            .attr("x", -55)
+            .attr("x", 0)
             .attr("y", -47)
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","12px")
-            .text('Investigation Time: , Probability of exceedance: '+poe);
+            .text('Loss Curve: some other info might go here');
 
         textTop = svg.append("text")
             .attr("x", 0)
