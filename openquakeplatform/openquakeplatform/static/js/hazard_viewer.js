@@ -951,6 +951,39 @@ var startApp = function() {
         });
     });
 
+    // Remove uhs layers from tilestream
+    $(document).ready(function() {
+        $('#removeTileLoss').click(function() {
+            $('#addTileCurve').attr("disabled", false);
+            $('#removeTileCurve').attr("disabled", false);
+            $('#addTileUhs').attr("disabled", false);
+            $('#removeTileUhs').attr("disabled", false);
+                        $("#curve-check-box").remove();
+            gridList = 0;
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid);
+            var e = document.getElementById("loss-list");
+            var mapLayerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var mapLayerIdArray = lossLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
+    
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+        });
+    });
+
     // Map options selection dialog
     $("#thematicMap").dialog({
         autoOpen: false,
