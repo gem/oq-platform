@@ -1128,8 +1128,6 @@ var startApp = function() {
                 for (i = 0; i < lossesArray.length; i++)
                     lossesArray[i] = lossesArray[i].trim();
 
-                console.log(lossesArray);
-
                 poes = e.data.poes;
                 var poesArray = poes.split('"');
                 poesArray.clean("");
@@ -1679,6 +1677,34 @@ var startApp = function() {
             .text("");
     } //End chart
 
+function DownloadJSON2CSV(array)
+{
+    //var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    var str = '';
+     
+    for (var i = 0; i < array.length; i++) {
+        var line = '';
+        for (var index in array[i]) {
+            if(line != '') line += ','
+         
+            line += array[i][index];
+        }
+ 
+        str += line;
+    }
+ 
+    if (navigator.appName != 'Microsoft Internet Explorer')
+    {
+        window.open('data:text/csv;charset=utf-8,' + escape(str));
+    }
+    else
+    {
+        var popup = window.open('','csv','');
+        popup.document.body.innerHTML = '<pre>' + str + '</pre>';
+    }          
+}
+
+
     ////////////////////////////////////////////
     ////////////// Loss Curve Chart ////////////
     ////////////////////////////////////////////
@@ -1686,6 +1712,17 @@ var startApp = function() {
     function LossD3Chart(chartData, assetArray, lat, lon) {
         var lat, lon, xAxisLable, yAxisLable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
+
+        // Convert Object to JSON
+        //var jsonObject = JSON.stringify(chartData);
+        //console.log(jsonObject);
+        
+        // Convert JSON to CSV & Display CSV
+        //DownloadJSON2CSV(chartData);
+        //console.log(csv);
+
+
+
 
         /* associative array of arrays of values */
         curve_valsX = [];
@@ -1732,6 +1769,14 @@ var startApp = function() {
             }
         }
 
+
+        var jsonObject = JSON.stringify(chartData);
+        jsonObject = jsonObject.replace(/{/g, '').replace(/}/g, '').replace(/\]]]/g, '\r\n').replace(/\[/g, '').replace(/\]]/g, '').replace(/:/g, ",");
+
+        DownloadJSON2CSV(jsonObject);
+
+
+
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
             var min_cur = 1000.0, max_cur = -1;
@@ -1770,6 +1815,7 @@ var startApp = function() {
         }
 
         function makeCircles(foo, k, color) {
+
             // Points along the line
             svg.selectAll("circle.line") 
                 .data(foo) 
@@ -1792,7 +1838,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
     
-                    textTop.text("Point value (x/y): " + circleX + ", " + circleY);
+                    textTop.text("Point value (x/y): " + Math.pow(10, circleX) + ", " + circleY);
     
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -1805,34 +1851,23 @@ var startApp = function() {
         var width = 480 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        var data = curve_coup[curve_name];
-
-        //var x_scale = d3.scale.log().range([0, width]);
-        //var y_scale = d3.scale.linear().range([height, 0]);
         var x_scale = d3.scale.linear().domain([0, max_value]).range([0, width]);
         var y_scale = d3.scale.linear().domain([0, 1]).range([height, 0]);
-
-        //x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
-        //y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
 
         var xAxis = d3.svg.axis()
             .ticks(6)
             .scale(x_scale)
-            //.tickFormat(d3.format( function (d) { return d; }))
             .orient("bottom");
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
-            //.ticks(6)
             .orient("left");
 
         var line = d3.svg.line()
             .x(function(d,i) {
-                console.log(d[0]);
                 return x_scale(d[0]);
             })
             .y(function(d) {
-                //console.log(y_scale(d[1]));
                 return y_scale(d[1]);
             })
         
@@ -1860,17 +1895,10 @@ var startApp = function() {
                 .tickFormat("")
             );
 
-        //legend = d3.select("#chartDialog").append("svg")
-        //    .attr("height", 25*(selectedCurves.length - 1));
-
         //for (k in selectedCurves) {
         for (var k = 0; k < selectedCurves.length; k++) {
             var curve_name = selectedCurves[k];
-
             var data = curve_coup[curve_name];
-
-            //x_scale.domain(d3.extent(data, function(d) { return d[0]; }));
-            //y_scale.domain(d3.extent(data, function(d) { return d[1]; }));
 
             svg.append("path")
                 .data([curve_coup[curve_name]])
@@ -1898,15 +1926,11 @@ var startApp = function() {
 
             makeCircles(data, k, color);
 
-            var str = selectedCurves[k];
-            //str = str.replace(/_/g, " ");
-            var curveTitle = str;
-
             svg.append("text")
                 .attr("x", 360)
                 .attr("y", 20*(k))
                 .attr("dy", ".35em")
-                .text(curveTitle);
+                .text(selectedCurves[k]);
 
             svg.append("svg:circle")
                 .attr("cx", 350)
