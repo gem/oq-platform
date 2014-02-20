@@ -1674,6 +1674,7 @@ var startApp = function() {
             curve_valsY[curve_name] = chartData[curve_name][1][i].split(",");
         }
 
+        console.log(curve_valsX[curve_name]);
         var length = (curve_valsX[curve_name].length);
         
         for (var k in selectedCurves) {
@@ -1759,7 +1760,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
     
-                    //textTop.text("Point value (x/y): " + circleX + ", " + circleY);
+                    textTop.text("Point value (x/y): " + circleX + ", " + circleY);
     
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -1772,7 +1773,7 @@ var startApp = function() {
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        var x_scale = d3.scale.linear().range([0, width]);
+        var x_scale = d3.scale.log().range([0, width]);
         var y_scale = d3.scale.linear().range([height, 0]);
 
         var xAxis = d3.svg.axis()
@@ -1788,9 +1789,11 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d,i) {
+                console.log(x_scale(d[0]));
                 return x_scale(d[0]);
             })
             .y(function(d) {
+                console.log(y_scale(d[1]));
                 return y_scale(d[1]);
             })
         
