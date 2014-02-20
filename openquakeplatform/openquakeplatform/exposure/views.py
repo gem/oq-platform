@@ -311,6 +311,24 @@ def export_population(request):
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
 def export_sv_items(request):
+    """
+    Export a csv file containing the requested social vulnerability items
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing zero or more
+        of the following parameters::
+            * 'theme'
+            * 'subtheme'
+            * 'tag'
+        If none of those parameters is provided, the csv file will contain the
+        list of distinct themes in the svir DB.
+        If theme is provided, the csv file will contain the corresponding list
+        of distinct subthemes.
+        If also the subtheme is provided, the csv file will contain the
+        corresponding list of tags.
+        If also the tag is provided, the csv file will contain the names of the
+        corresponding indices and their ids
+    """
     content_disp = 'attachment; filename="sv_items_export.csv"'
     mimetype = 'text/csv'
     response_data = _stream_sv_items(request)
@@ -323,6 +341,16 @@ def export_sv_items(request):
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
 def export_sv_data_by_indices(request):
+    """
+    Export a csv file containing social vulnerability data corresponding to the
+    index names provided
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameter:
+            * 'indices': a string of comma-separated social vulnerability index
+                         names
+    """
     content_disp = 'attachment; filename="sv_data_by_indices_export.csv"'
     mimetype = 'text/csv'
     response_data = _stream_sv_data_by_indices(request)
