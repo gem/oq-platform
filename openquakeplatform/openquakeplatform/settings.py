@@ -202,6 +202,7 @@ INSTALLED_APPS = (
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
     'openquakeplatform.icebox',
+    'openquakeplatform.svir',
 )
 
 LOGGING = {

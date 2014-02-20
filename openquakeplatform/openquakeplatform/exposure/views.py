@@ -60,11 +60,6 @@ BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
 
 POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
-SV_THEMES_CSV_HEADER = ('theme\n')
-SV_SUBTHEMES_CSV_HEADER = ('subtheme\n')
-SV_TAGS_CSV_HEADER = ('tag\n')
-SV_IDS_AND_NAMES_CSV_HEADER = ('id, name\n')
-
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
@@ -302,58 +297,6 @@ def export_population(request):
         )
 
     response_data = _stream_population_exposure(request, output_type)
-    response = HttpResponse(response_data, mimetype=mimetype)
-    response['Content-Disposition'] = content_disp
-    return response
-
-
-@condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
-def export_sv_items(request):
-    """
-    Export a csv file containing the requested social vulnerability items
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing zero or more
-        of the following parameters::
-            * 'theme'
-            * 'subtheme'
-            * 'tag'
-        If none of those parameters is provided, the csv file will contain the
-        list of distinct themes in the svir DB.
-        If theme is provided, the csv file will contain the corresponding list
-        of distinct subthemes.
-        If also the subtheme is provided, the csv file will contain the
-        corresponding list of tags.
-        If also the tag is provided, the csv file will contain the names of the
-        corresponding indices and their ids
-    """
-    content_disp = 'attachment; filename="sv_items_export.csv"'
-    mimetype = 'text/csv'
-    response_data = _stream_sv_items(request)
-    response = HttpResponse(response_data, mimetype=mimetype)
-    response['Content-Disposition'] = content_disp
-    return response
-
-
-@condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
-def export_sv_data_by_indices(request):
-    """
-    Export a csv file containing social vulnerability data corresponding to the
-    index names provided
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameter:
-            * 'indices': a string of comma-separated social vulnerability index
-                         names
-    """
-    content_disp = 'attachment; filename="sv_data_by_indices_export.csv"'
-    mimetype = 'text/csv'
-    response_data = _stream_sv_data_by_indices(request)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
@@ -612,44 +555,6 @@ def _stream_population_exposure(request, output_type):
     elif output_type == 'nrml':
         for text in _pop_nrml_generator(exposure_data):
             yield text
-
-
-def _stream_sv_items(request):
-    theme = request.GET.get('theme')
-    subtheme = request.GET.get('subtheme')
-    tag = request.GET.get('tag')
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    if theme and subtheme and tag:
-        sv_ids_and_names = util._get_sv_ids_and_names(theme, subtheme, tag)
-        yield SV_IDS_AND_NAMES_CSV_HEADER
-        for id, name in sv_ids_and_names:
-            row = [id, name]
-            row = ["\"" + str(x) + "\"" for x in row]
-            yield '%s\n' % ','.join(row)
-        return
-    elif theme and subtheme:
-        sv_items = util._get_sv_tags(theme, subtheme)
-        yield SV_TAGS_CSV_HEADER
-    elif theme:
-        sv_items = util._get_sv_subthemes(theme)
-        yield SV_SUBTHEMES_CSV_HEADER
-    else:
-        sv_items = util._get_sv_themes()
-        yield SV_THEMES_CSV_HEADER
-    for sv_item in sv_items:
-        yield '%s\n' % sv_item
-
-
-def _stream_sv_data_by_indices(request):
-    indices = request.GET['indices']
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    sv_data_by_indices = util._get_sv_data_by_indices(indices)
-    yield ('iso, country_name, %s\n' % indices)
-    for row in sv_data_by_indices:
-        row = [unicode(x) for x in row]
-        yield '%s\n' % ','.join(row)
 
 
 def copyright_csv(cr_text):
