@@ -1156,6 +1156,25 @@ var startApp = function() {
         }); // End utfGrid click
     } // End hazardCurveUtfGridClickEvent
 
+    function downloadJSON2CSV(array) {
+        var str = '';
+         
+        for (var i = 0; i < array.length; i++) {
+            var line = '';
+            for (var index in array[i]) {
+                if(line != '') line += ','
+                line += array[i][index];
+            }
+            str += line;
+        }
+
+        if (navigator.appName != 'Microsoft Internet Explorer') {
+            window.open('data:text/csv;charset=utf-8,' + escape(str));
+        } else {
+            var popup = window.open('','csv','');
+            popup.document.body.innerHTML = '<pre>' + str + '</pre>';
+        }    
+    }
 
     ////////////////////////////////////////////
     ////////////// Single hazard Chart /////////
@@ -1675,27 +1694,55 @@ var startApp = function() {
             .attr("y", -15)
             .attr("dy", ".35em")
             .text("");
-    } //End chart
 
-    function downloadJSON2CSV(array) {
-        var str = '';
-         
-        for (var i = 0; i < array.length; i++) {
-            var line = '';
-            for (var index in array[i]) {
-                if(line != '') line += ','
-                line += array[i][index];
+        $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+        $('#downloadCurve').on("hover", function(){
+            $(this).css("cursor", "pointer");
+        });
+
+        var h = $("#chartDialog").height();
+        h = h + 20;
+        $("#chartDialog").css({"height": h+"px"});
+
+        // Prep data for download to CSV
+        $('#downloadCurve').click(function(event) {
+            var csvHeader = selectedCurves;
+            var csvData = [];
+            csvData = csvData.concat(csvHeader);
+            csvData = csvData.concat("investigationTime");
+            csvData = csvData.concat("poE");
+            csvData = csvData.concat("lon");
+            csvData = csvData.concat("lat");
+            csvData = JSON.stringify(csvData);
+            var lineBreak = "lineBreak";
+            csvData = csvData.concat(lineBreak);
+            var quotationMark = '"';
+
+            for (var k in selectedCurves) {
+                curve_name = selectedCurves[k];
+                var curveValue = chartData[curve_name];
+                csvData = csvData.concat(quotationMark);
+                csvData = csvData.concat(curveValue);
+                csvData = csvData.concat(quotationMark);
             }
-            str += line;
-        }
 
-        if (navigator.appName != 'Microsoft Internet Explorer') {
-            window.open('data:text/csv;charset=utf-8,' + escape(str));
-        } else {
-            var popup = window.open('','csv','');
-            popup.document.body.innerHTML = '<pre>' + str + '</pre>';
-        }    
-    }
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(invest_time);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(poe);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(lon);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(lat);
+            csvData = csvData
+                .replace(/lineBreak/, '\r\n')
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/""/g, '","');
+            console.log(csvData);
+            downloadJSON2CSV(csvData);
+        });
+    } //End chart
 
     ////////////////////////////////////////////
     ////////////// Loss Curve Chart ////////////
@@ -1704,17 +1751,6 @@ var startApp = function() {
     function LossD3Chart(chartData, assetArray, lat, lon) {
         var lat, lon, xAxisLable, yAxisLable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
-
-        // Convert Object to JSON
-        //var jsonObject = JSON.stringify(chartData);
-        //console.log(jsonObject);
-        
-        // Convert JSON to CSV & Display CSV
-        //DownloadJSON2CSV(chartData);
-        //console.log(csv);
-
-
-
 
         /* associative array of arrays of values */
         curve_valsX = [];
@@ -1969,14 +2005,14 @@ var startApp = function() {
             .attr("dy", ".35em")
             .text("");
 
-        $('#chartDialog').append('<div id="downloadLossCurve"><font color="blue">Download Curve</font></div>');
+        $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
 
-        $('#downloadLossCurve').on("hover", function(){
+        $('#downloadCurve').on("hover", function(){
             $(this).css("cursor", "pointer");
         });
 
         // Prep data for download to CSV
-        $('#downloadLossCurve').click(function(event) {
+        $('#downloadCurve').click(function(event) {
             var jsonObject = JSON.stringify(chartData);
             jsonObject = jsonObject
                 .replace(/{/g, '')
