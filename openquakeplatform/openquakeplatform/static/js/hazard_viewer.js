@@ -1181,6 +1181,7 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
+        var lon = lng;
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
@@ -1288,7 +1289,8 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text("Probabability of exceedance in "+invest_time+" years");
 
-        var legend = d3.select("#chartDialog").append("svg");
+        var legend = d3.select("#chartDialog").append("svg")
+            .attr("height", 25);
 
         // points along the line
         svg.selectAll("circle.line") 
@@ -1331,6 +1333,47 @@ var startApp = function() {
             .attr("y", 340)
             .attr("dy", ".35em")
             .text("");
+
+        $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+        $('#downloadCurve').on("hover", function(){
+            $(this).css("cursor", "pointer");
+        });
+
+        var h = $("#chartDialog").height();
+        h = h + 20;
+        $("#chartDialog").css({"height": h+"px"});
+
+        // Prep data for download to CSV
+        $('#downloadCurve').click(function(event) {
+            var csvData = [];
+            csvData = csvData.concat("prob");
+            csvData = csvData.concat("iml");
+            csvData = csvData.concat("investigationTime");
+            csvData = csvData.concat("lon");
+            csvData = csvData.concat("lat");
+            csvData = JSON.stringify(csvData);
+            var lineBreak = "lineBreak";
+            csvData = csvData.concat(lineBreak);
+            var quotationMark = '"';
+
+            csvData = csvData.concat('"');
+            csvData = csvData.concat(probArray);
+            csvData = csvData.concat('","');
+            csvData = csvData.concat(imlArray);
+            csvData = csvData.concat('",');
+            csvData = csvData.concat(invest_time);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(lon);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(lat);
+            csvData = csvData
+                .replace(/lineBreak/, '\r\n')
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/""/g, '","');
+            console.log(csvData);
+            downloadJSON2CSV(csvData);
+        });
     } // End Chart
 
 
@@ -1701,7 +1744,7 @@ var startApp = function() {
         });
 
         var h = $("#chartDialog").height();
-        h = h + 20;
+        h = h + 40;
         $("#chartDialog").css({"height": h+"px"});
 
         // Prep data for download to CSV
@@ -2012,6 +2055,7 @@ var startApp = function() {
         });
 
         // Prep data for download to CSV
+        // TODO extend this csv when there is more definition of the data
         $('#downloadCurve').click(function(event) {
             var jsonObject = JSON.stringify(chartData);
             jsonObject = jsonObject
