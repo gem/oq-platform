@@ -1145,8 +1145,8 @@ var startApp = function() {
                 };
 
                 for (var i = 0; i < lossesArray.length; i++) {
-                    chartData[assetArray[i]].push(lossesArray);
-                    chartData[assetArray[i]].push(poesArray);
+                    chartData[assetArray[i]].push(lossesArray[i]);
+                    chartData[assetArray[i]].push(poesArray[i]);
                 };
 
                 LossD3Chart(chartData, assetArray, lat, lon);
@@ -1677,33 +1677,25 @@ var startApp = function() {
             .text("");
     } //End chart
 
-function DownloadJSON2CSV(array)
-{
-    //var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
-    var str = '';
-     
-    for (var i = 0; i < array.length; i++) {
-        var line = '';
-        for (var index in array[i]) {
-            if(line != '') line += ','
+    function downloadJSON2CSV(array) {
+        var str = '';
          
-            line += array[i][index];
+        for (var i = 0; i < array.length; i++) {
+            var line = '';
+            for (var index in array[i]) {
+                if(line != '') line += ','
+                line += array[i][index];
+            }
+            str += line;
         }
- 
-        str += line;
-    }
- 
-    if (navigator.appName != 'Microsoft Internet Explorer')
-    {
-        window.open('data:text/csv;charset=utf-8,' + escape(str));
-    }
-    else
-    {
-        var popup = window.open('','csv','');
-        popup.document.body.innerHTML = '<pre>' + str + '</pre>';
-    }          
-}
 
+        if (navigator.appName != 'Microsoft Internet Explorer') {
+            window.open('data:text/csv;charset=utf-8,' + escape(str));
+        } else {
+            var popup = window.open('','csv','');
+            popup.document.body.innerHTML = '<pre>' + str + '</pre>';
+        }    
+    }
 
     ////////////////////////////////////////////
     ////////////// Loss Curve Chart ////////////
@@ -1737,8 +1729,8 @@ function DownloadJSON2CSV(array)
 
         for (var i = 0 ; i < assetArray.length ; i++) {
             var curve_name = selectedCurves[i];
-            curve_valsX[curve_name] = chartData[curve_name][0][i].split(",");
-            curve_valsY[curve_name] = chartData[curve_name][1][i].split(",");
+            curve_valsX[curve_name] = chartData[curve_name][0].split(",");
+            curve_valsY[curve_name] = chartData[curve_name][1].split(",");
         }
 
         var length = (curve_valsX[curve_name].length);
@@ -1768,14 +1760,6 @@ function DownloadJSON2CSV(array)
                 };
             }
         }
-
-
-        var jsonObject = JSON.stringify(chartData);
-        jsonObject = jsonObject.replace(/{/g, '').replace(/}/g, '').replace(/\]]]/g, '\r\n').replace(/\[/g, '').replace(/\]]/g, '').replace(/:/g, ",");
-
-        DownloadJSON2CSV(jsonObject);
-
-
 
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
@@ -1984,6 +1968,25 @@ function DownloadJSON2CSV(array)
             .attr("y", -15)
             .attr("dy", ".35em")
             .text("");
+
+        $('#chartDialog').append('<div id="downloadLossCurve"><font color="blue">Download Curve</font></div>');
+
+        $('#downloadLossCurve').on("hover", function(){
+            $(this).css("cursor", "pointer");
+        });
+
+        // Prep data for download to CSV
+        $('#downloadLossCurve').click(function(event) {
+            var jsonObject = JSON.stringify(chartData);
+            jsonObject = jsonObject
+                .replace(/{/g, '')
+                .replace(/}/g, '')
+                .replace(/\],/g, '\r\n')
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/:/g, ','+lon+','+lat+',');
+            downloadJSON2CSV(jsonObject);
+        });
     } //End chart
 }; // End startApp
 
