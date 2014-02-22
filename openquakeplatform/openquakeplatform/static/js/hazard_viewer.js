@@ -951,7 +951,7 @@ var startApp = function() {
         });
     });
 
-    // Remove uhs layers from tilestream
+    // Remove Loss layers from tilestream
     $(document).ready(function() {
         $('#removeTileLoss').click(function() {
             $('#addTileCurve').attr("disabled", false);
@@ -1515,7 +1515,7 @@ var startApp = function() {
                 .ticks(5)
         }
 
-        function makeCircles(foo, k, color) {
+        function makeCircles(foo, k, color, curveTitle) {
             // Points along the line
             svg.selectAll("circle.line") 
                 .data(foo) 
@@ -1538,7 +1538,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
     
-                    textTop.text("Point value (x/y): " + circleX + ", " + circleY);
+                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
     
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -1668,11 +1668,11 @@ var startApp = function() {
 
             var color = colors[k % colors.length];
 
-            makeCircles(data, k, color);
-
             var str = selectedCurves[k];
             str = str.replace(/_/g, " ");
             var curveTitle = capitalize(str)
+
+            makeCircles(data, k, color, curveTitle);
 
             legend.append("text")
                 .attr("x", 90)
@@ -1722,6 +1722,7 @@ var startApp = function() {
             .attr("x", 0)
             .attr("y", -32)
             .attr("dy", ".35em")
+            .attr("font-size","12px")
             .text("Location (Lon/Lat): "+lon+", "+lat);
 
         textTopLable = svg.append("text")
@@ -1736,6 +1737,7 @@ var startApp = function() {
             .attr("x", 0)
             .attr("y", -15)
             .attr("dy", ".35em")
+            .style("font-size","11px")
             .text("");
 
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
@@ -1877,7 +1879,7 @@ var startApp = function() {
                 .ticks(5)
         }
 
-        function makeCircles(foo, k, color) {
+        function makeCircles(foo, k, color, curve_name) {
 
             // Points along the line
             svg.selectAll("circle.line") 
@@ -1901,7 +1903,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
     
-                    textTop.text("Point value (x/y): " + Math.pow(10, circleX) + ", " + circleY);
+                    textTop.text(curve_name+" point value (x/y): " + Math.pow(10, circleX) + ", " + circleY);
     
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -1987,7 +1989,7 @@ var startApp = function() {
 
             var color = colors[k % colors.length];
 
-            makeCircles(data, k, color);
+            makeCircles(data, k, color, curve_name);
 
             svg.append("text")
                 .attr("x", 360)
@@ -2032,6 +2034,7 @@ var startApp = function() {
             .attr("x", 0)
             .attr("y", -32)
             .attr("dy", ".35em")
+            .attr("font-size","12px")
             .text("Location (Lon/Lat): "+lon+", "+lat);
 
         textTopLable = svg.append("text")
@@ -2046,6 +2049,7 @@ var startApp = function() {
             .attr("x", 0)
             .attr("y", -15)
             .attr("dy", ".35em")
+            .attr("font-size","11px")
             .text("");
 
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
