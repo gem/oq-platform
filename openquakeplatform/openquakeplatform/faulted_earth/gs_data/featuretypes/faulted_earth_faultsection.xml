@@ -3,7 +3,7 @@
   <nativeName>faulted_earth_faultsection</nativeName>
   <namespace>
     <name>oqplatform</name>
-    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="#GS_PROTO#//#GS_HOST#:#GS_PORT#/geoserver/rest/namespaces/oqplatform.xml" type="application/xml"/>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/namespaces/oqplatform.xml" type="application/xml"/>
   </namespace>
   <title>faulted_earth_faultsection</title>
   <abstract>No abstract provided</abstract>
@@ -11,32 +11,32 @@
     <metadataLink>
       <type>text/xml</type>
       <metadataType>TC211</metadataType>
-      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=199ea59b-8d63-477e-b696-6e17a342c342</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=8f6f26d6-65f2-41cc-971a-0d59a6b9ab65</content>
     </metadataLink>
     <metadataLink>
       <type>text/xml</type>
       <metadataType>FGDC</metadataType>
-      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2Fcsdgm&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=199ea59b-8d63-477e-b696-6e17a342c342</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2Fcsdgm&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=8f6f26d6-65f2-41cc-971a-0d59a6b9ab65</content>
     </metadataLink>
     <metadataLink>
       <type>text/xml</type>
       <metadataType>other</metadataType>
-      <content>http://localhost:8000/catalogue/csw?outputschema=urn%3Aoasis%3Anames%3Atc%3Aebxml-regrep%3Axsd%3Arim%3A3.0&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=199ea59b-8d63-477e-b696-6e17a342c342</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=urn%3Aoasis%3Anames%3Atc%3Aebxml-regrep%3Axsd%3Arim%3A3.0&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=8f6f26d6-65f2-41cc-971a-0d59a6b9ab65</content>
     </metadataLink>
     <metadataLink>
       <type>text/xml</type>
       <metadataType>other</metadataType>
-      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2F2.0.2&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=199ea59b-8d63-477e-b696-6e17a342c342</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2F2.0.2&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=8f6f26d6-65f2-41cc-971a-0d59a6b9ab65</content>
     </metadataLink>
     <metadataLink>
       <type>text/xml</type>
       <metadataType>other</metadataType>
-      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fgcmd.gsfc.nasa.gov%2FAboutus%2Fxml%2Fdif%2F&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=199ea59b-8d63-477e-b696-6e17a342c342</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fgcmd.gsfc.nasa.gov%2FAboutus%2Fxml%2Fdif%2F&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=8f6f26d6-65f2-41cc-971a-0d59a6b9ab65</content>
     </metadataLink>
     <metadataLink>
       <type>text/xml</type>
       <metadataType>other</metadataType>
-      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.w3.org%2F2005%2FAtom&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=199ea59b-8d63-477e-b696-6e17a342c342</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.w3.org%2F2005%2FAtom&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=8f6f26d6-65f2-41cc-971a-0d59a6b9ab65</content>
     </metadataLink>
   </metadataLinks>
   <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
@@ -70,7 +70,7 @@
   </metadata>
   <store class="dataStore">
     <name>oqplatform</name>
-    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="#GS_PROTO#//#GS_HOST#:#GS_PORT#/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>
