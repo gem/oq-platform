@@ -72,8 +72,6 @@ except ImportError:
 STATICFILES_DIRS = [
     os.path.join(OQPLATFORM_ROOT, 'static'),
     os.path.join(GEONODE_ROOT, 'static'),
-    '/etc/geonode/static.apps',
-    '/etc/geonode/static',
     '/etc/geonode/media',
 ]
 
