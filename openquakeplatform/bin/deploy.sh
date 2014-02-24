@@ -44,10 +44,14 @@ export TB='	'
 #
 #  functions
 
+#
+#
 faulted_earth_dataloader () {
     return 0
 }
 
+#
+#
 gaf_viewer_dataloader () {
     local oqpdir="$1" bdir
 
@@ -60,6 +64,8 @@ gaf_viewer_dataloader () {
     openquakeplatform import_gaf_ft_csv "${bdir}/gaf_data_ft.csv"
 }
 
+#
+#
 ghec_viewer_dataloader () {
     local oqpdir="$1" bdir
 
@@ -71,6 +77,8 @@ ghec_viewer_dataloader () {
     openquakeplatform import_gheccsv "${bdir}/ghec_data.csv"
 }
 
+#
+#
 isc_viewer_dataloader () {
     local oqpdir="$1" bdir
 
@@ -82,6 +90,8 @@ isc_viewer_dataloader () {
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
 }
 
+#
+#
 passwd_create () { 
     python -c "import string ; import random
 def id_generator(size=8, chars=string.ascii_uppercase + string.digits):
@@ -89,11 +99,15 @@ def id_generator(size=8, chars=string.ascii_uppercase + string.digits):
 print id_generator()"
 }
 
+#
+#
 function_exists () {
     local fname="$1"
     set | grep -q "^$fname "
 }
 
+#
+#
 locset_create () {
     local oqpdir="$1" gem_host_name="$2"
 
@@ -108,9 +122,14 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    dbuser='$GEM_DB_USER',
                                    dbpass='$GEM_DB_PASS',
                                    mediaroot='/var/www/openquake/platform/uploaded',
-                                   staticroot='/var/www/openquake/platform/static/'))"
+                                   staticroot='/var/www/openquake/platform/static/',
+                                   hazard_calc_addr='http://oq-platform:8800',
+                                   risk_calc_addr='http://oq-platform:8800',
+                                   oq_engserv_key='oq-platform'))"
 }
 
+#
+#
 db_user_exists () {
     local user="$1"
 
@@ -118,18 +137,24 @@ db_user_exists () {
              | psql -A -t | wc -l" postgres
 }
 
+#
+#
 db_base_exists () {
     local dbname="$1"
 
     su - -c "echo \"SELECT datname FROM pg_database WHERE datname = '$dbname';\" | psql -A -t | wc -l" postgres
 }
 
+#
+#
 db_gis_exists () {
     local dbname="$1"
 
     su - -c "echo \"SELECT proname FROM pg_proc WHERE proname = 'postgis_full_version';\" | psql -A -t \"$dbname\" | wc -l" postgres
 }
 
+#
+#
 db_user_create () {
     local user="$1" pass="$2" aex
 
@@ -142,6 +167,8 @@ db_user_create () {
     su - -c "echo \"CREATE ROLE ${user} ENCRYPTED PASSWORD '${pass}' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN;\" | psql" postgres
 }
 
+#
+#
 db_base_create () {
     local dbname="$1" owner="$2" aex
 
@@ -154,6 +181,8 @@ db_base_create () {
     su - -c "echo \"CREATE DATABASE ${dbname} OWNER ${owner};\" | psql" postgres
 }
 
+#
+#
 db_gis_create () {
     local dbname="$1" aex
 
@@ -168,6 +197,8 @@ db_gis_create () {
     done
 }
 
+#
+#
 geoserver_population () {
     local srcdir="$1" dstdir="$2" bindir="$3"
 
@@ -200,6 +231,8 @@ geoserver_population () {
     ${bindir}/oq-gs-builder.sh restore "${dstdir}/build-gs-tree"
 }
 
+#
+#
 oq_platform_install () {
     local norm_user="$1" norm_dir="$2" gem_host_name="$3" norm_home ret a distdesc rv
     local cur_step
