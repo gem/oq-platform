@@ -135,6 +135,7 @@ def apps():
     local('python manage.py loaddata openquakeplatform/fixtures/isc_map_layer.json')
     local('python manage.py loaddata openquakeplatform/fixtures/ghec_map_layer.json')
     local('python manage.py loaddata openquakeplatform/fixtures/gaf_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/fixtures/topic_categories.json')
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
     with settings(warn_only=True):
