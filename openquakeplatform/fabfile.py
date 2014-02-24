@@ -319,7 +319,6 @@ def _add_gaf_viewer():
     local('python manage.py import_gaf_ft_csv '
           '../oq-ui-api/data/gaf_data_ft.csv')
 
-
 def _add_econd():
     local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
     local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
@@ -329,5 +328,4 @@ def _add_weblib():
 
 def _add_gemecdwebsite():
     pass
-
 
