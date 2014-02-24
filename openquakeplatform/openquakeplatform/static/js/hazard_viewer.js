@@ -624,6 +624,13 @@ var startApp = function() {
             curveOpt.valuse = layers;
             selCurve.appendChild(curveOpt);
         }
+        if($('#curve-list').find('option').length == 0) {
+            $('#addTileCurve').attr("disabled", true);
+            $('#removeTileCurve').attr("disabled", true);
+        } else {
+            $('#addTileCurve').attr("disabled", false);
+            $('#removeTileCurve').attr("disabled", false);
+        }
     });
 
     // Create dynamic categorized uhs layer dialog
@@ -642,6 +649,16 @@ var startApp = function() {
             uhsOpt.valuse = layers;
             selUhs.appendChild(uhsOpt);
         }
+        
+        var foo = document.getElementById("loss-list");
+        console.log(foo);
+        if($('#uhs-list').find('option').length == 0) {
+            $('#addTileUhs').attr("disabled", true);
+            $('#removeTileUhs').attr("disabled", true);
+        } else {
+            $('#addTileUhs').attr("disabled", false);
+            $('#removeTileUhs').attr("disabled", false);
+        }
     });
 
     // Create dynamic categorized loss layer dialog
@@ -659,6 +676,13 @@ var startApp = function() {
             lossOpt.innerHTML = layers;
             lossOpt.valuse = layers;
             selLoss.appendChild(lossOpt);
+        }
+        if($('#loss-list').find('option').length == 0) {
+            $('#addTileLoss').attr("disabled", true);
+            $('#removeTileLoss').attr("disabled", true);
+        } else {
+            $('#addTileLoss').attr("disabled", false);
+            $('#removeTileLoss').attr("disabled", false);
         }
     });
 
