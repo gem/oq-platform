@@ -106,7 +106,7 @@ var startApp = function() {
     $(document).ready(function() {
         $("#worning-duplicate").dialog({
             autoOpen: false,
-            height: 300,
+            height: 100,
             width: 350,
             modal: true
         });
@@ -149,7 +149,7 @@ var startApp = function() {
     $(document).ready(function() {
         $("#worning-no-layer").dialog({
             autoOpen: false,
-            height: 300,
+            height: 100,
             width: 350,
             modal: true
         });
@@ -798,7 +798,6 @@ var startApp = function() {
     function mixedCurve(curveType) {
 
         if (curveType == "hc") {
-
             // Remove any existing UtfGrid layers in order to avoid conflict
             // this is only needed in the case when the user adds the same curve twice
             var e = document.getElementById("curve-list");
@@ -958,7 +957,7 @@ var startApp = function() {
             $('#removeTileCurve').attr("disabled", false);
             $('#addTileUhs').attr("disabled", false);
             $('#removeTileUhs').attr("disabled", false);
-                        $("#curve-check-box").remove();
+            $("#curve-check-box").remove();
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
@@ -1100,15 +1099,15 @@ var startApp = function() {
             var losses;
             var poes;
 
-            Array.prototype.clean = function(deleteValue) {
-                for (var i = 0; i < this.length; i++) {
-                    if (this[i] == deleteValue) {         
-                        this.splice(i, 1);
-                        i--;
+            function cleanArray(actual) { 
+                var newArray = new Array();
+                for(var i = 0; i<actual.length; i++) { 
+                    if (actual[i]) {
+                        newArray.push(actual[i]);
                     }
                 }
-                return this;
-            };
+                return newArray;
+            }
 
             if (e.data) {
                 asset = e.data.asset_ref;
@@ -1122,18 +1121,29 @@ var startApp = function() {
 
                 losses = e.data.loss;
                 var lossesArray = losses.split('"');
-                lossesArray.clean("");
-                lossesArray.clean(",");
-                
-                for (i = 0; i < lossesArray.length; i++)
-                    lossesArray[i] = lossesArray[i].trim();
+                for (var k in lossesArray) {
+                    var index = lossesArray.indexOf(",");
+                    if (index > -1) {
+                        lossesArray.splice(index, 1);
+                    }
+                    var index2 = lossesArray.indexOf("");
+                    if (index2 > -1) {
+                        lossesArray.splice(index2, 1);
+                    }
+                };
 
                 poes = e.data.poes;
                 var poesArray = poes.split('"');
-                poesArray.clean("");
-                poesArray.clean(",");
-                for (i = 0; i < poesArray.length; i++)
-                    poesArray[i] = poesArray[i].trim();
+                for (var k in poesArray) {
+                    var index = poesArray.indexOf(",");
+                    if (index > -1) {
+                        poesArray.splice(index, 1);
+                    }
+                    var index2 = poesArray.indexOf("");
+                    if (index2 > -1) {
+                        poesArray.splice(index2, 1);
+                    }
+                };
 
                 lat = e.data.lat;
                 lon = e.data.lon;
@@ -1295,7 +1305,7 @@ var startApp = function() {
         // points along the line
         svg.selectAll("circle.line") 
             .data(data) 
-        .enter().append("circle") 
+            .enter().append("circle") 
             .attr("class", "line") 
             .attr("cx", function(d) { return x(d.x); }) 
             .attr("cy", function(d) { return y(d.y); }) 
@@ -1669,6 +1679,7 @@ var startApp = function() {
             var color = colors[k % colors.length];
 
             var str = selectedCurves[k];
+            console.log(selectedCurves);
             str = str.replace(/_/g, " ");
             var curveTitle = capitalize(str)
 
@@ -1820,12 +1831,10 @@ var startApp = function() {
             var curve_name = selectedCurves[k];
             var i;
             for (i = 0 ; i < length ; i++) {
-                if (curve_valsX[curve_name] != undefined) {
-                    curve_valsX[curve_name][i] = Math.log(parseFloat(curve_valsX[curve_name][i]));
-                    //curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
-                    curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
-                };
-            }
+                curve_valsX[curve_name][i] = Math.log(parseFloat(curve_valsX[curve_name][i]));
+                //curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
+                curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
+            };
         }
 
         for (var k in selectedCurves) {
@@ -1833,12 +1842,9 @@ var startApp = function() {
             curve_coup[curve_name] = [];
 
             for (var i = 0 ; i < length ; i++) {
-                if (curve_valsX[curve_name] != undefined) {
-                    if (curve_valsX[curve_name][i] > 0.0) {
-                        curve_coup[curve_name].push([curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
-                    }
-                    //curve_coup[curve_name].push([curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
-                };
+                if (curve_valsX[curve_name][i] > 0.0) {
+                    curve_coup[curve_name].push([curve_valsX[curve_name][i], curve_valsY[curve_name][i] ]);
+                }
             }
         }
 
@@ -1847,12 +1853,10 @@ var startApp = function() {
             var min_cur = 1000.0, max_cur = -1;
 
             for (var i = 0 ; i < length ; i++) {
-                if (curve_valsX[curve_name] != undefined) {
-                    if (min_cur > curve_valsX[curve_name][i])
-                        min_cur = curve_valsX[curve_name][i];
-                    if (max_cur < curve_valsX[curve_name][i])
-                        max_cur = curve_valsX[curve_name][i];
-                };
+                if (min_cur > curve_valsX[curve_name][i])
+                    min_cur = curve_valsX[curve_name][i];
+                if (max_cur < curve_valsX[curve_name][i])
+                    max_cur = curve_valsX[curve_name][i];
             }
             if (max_value < max_cur) {
                 max_value = max_cur;
@@ -1880,7 +1884,6 @@ var startApp = function() {
         }
 
         function makeCircles(foo, k, color, curve_name) {
-
             // Points along the line
             svg.selectAll("circle.line") 
                 .data(foo) 
@@ -2059,7 +2062,7 @@ var startApp = function() {
         });
 
         // Prep data for download to CSV
-        // TODO extend this csv when there is more definition of the data
+        // TODO extend this when there is more definition of the data
         $('#downloadCurve').click(function(event) {
             var jsonObject = JSON.stringify(chartData);
             jsonObject = jsonObject
