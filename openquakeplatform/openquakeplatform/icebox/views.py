@@ -212,4 +212,6 @@ Login into Openquake platform to see them.
 def remove_calculation(request, pk):
     if request.method == "POST":
         icebox.Calculation.objects.get(pk=pk).delete()
+    # TODO: This should be an error
     return HttpResponse("OK")
+
