@@ -21,7 +21,9 @@ setup(
     license="BSD",
     keywords="openquakeplatform geonode django",
     url='https://github.com/gem/oq-platform',
-    packages=['openquakeplatform'],
+    packages=['openquakeplatform', 'openquakeplatform.icebox',
+              'openquakeplatform.econd', 'openquakeplatform.weblib',
+              'openquakeplatform.gemecdwebsite'],
     install_requires=[
         "agon-ratings==0.2",
         "beautifulsoup4==4.1.0",
