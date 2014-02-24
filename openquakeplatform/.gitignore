@@ -4,5 +4,5 @@ openquakeplatform.egg-info/
 *.pyc
 development.db
 static_root/
-uploaded
+./uploaded
 openquakeplatform/local_settings.py

@@ -29,7 +29,7 @@ Calculate - {{block.super}}
             <label style="width: auto" class="control-label" for="calc_config">
               Run a Hazard Calculation
             </label>
-            
+
             <div class="controls">
               <div class="fileinput fileinput-new" data-provides="fileinput">
                 <span class="btn btn-default btn-file"><span class="fileinput-new">Select Job Directory</span><span class="fileinput-exists">Change</span><input webkitdirectory directory multiple type="file" name="calc_config"/></span>
@@ -92,8 +92,12 @@ Calculate - {{block.super}}
           <% } %>
 
           <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed') { %>
-          <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-danger">Remove</a>
-          <% } %>
+            <% if(calc.get('status') == 'failed') { %>
+              <% traceback = calc.get('einfo') %>
+              <button class="btn" onclick="popup_error_traceback(traceback)">Traceback</button>
+            <% } %>
+            <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-danger">Remove</a>
+         <% } %>
         </td>
       </tr>
       <% }); %>
@@ -101,6 +105,13 @@ Calculate - {{block.super}}
   </table>
 </script>
 
+<script>
+  function popup_error_traceback(traceback) {
+    var w = window.open('', 'Traceback', 'width=1000, height=600, resizable, scrollbars');
+    w.document.write('<pre>' + traceback + '</pre>')
+    w.document.close();
+  }
+</script>
 
 <script type="text/template" id="output-table-template">
   <table id="output_table" class="table table-hover">

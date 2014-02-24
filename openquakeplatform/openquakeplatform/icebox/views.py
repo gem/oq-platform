@@ -86,7 +86,7 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
                 data=dict(
                     database=settings.OQ_ENGINE_SERVER_DATABASE,
                     callback_url="%s%s" % (
-                        settings.SITEURL[:-1], reverse(
+                        settings.SITEURL.rstrip("/"), reverse(
                         "calculation", args=(calculation.pk,))),
                     foreign_calculation_id=calculation.pk,
                     # Risk only
@@ -165,6 +165,9 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
                 else:
                     calculation.status = "complete"
                 #self._send_email(calculation)
+        if request.POST.get('einfo'):
+            calculation.einfo = request.POST['einfo']
+            calculation.save()
 
         return redirect('calculation', pk=pk)
 
@@ -209,4 +212,6 @@ Login into Openquake platform to see them.
 def remove_calculation(request, pk):
     if request.method == "POST":
         icebox.Calculation.objects.get(pk=pk).delete()
+    # TODO: This should be an error
     return HttpResponse("OK")
+
