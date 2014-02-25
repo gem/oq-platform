@@ -138,11 +138,19 @@ def _get_sv_data_by_indices(indices):
 
     :param indices: a string of comma-separated index names
     """
+    indices_list = indices.split(',')
+    indices_list = ['n.' + index.strip() for index in indices_list]
+    indices_str = ",".join(indices_list)
     query = """\
-SELECT iso, country_name, %s
-FROM svir.svir_national
-ORDER BY iso;
-""" % indices
+SELECT
+    n.iso, n.country_name, %s, ST_AsText(p.the_geom)
+FROM
+    svir.world_poly as p,
+    svir.svir_national as n
+WHERE
+    n.iso = p.gadm_iso
+ORDER BY n.iso;
+""" % indices_str
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
 

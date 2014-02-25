@@ -142,9 +142,9 @@ def _stream_sv_data_by_indices(request):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
     sv_data_by_indices = util._get_sv_data_by_indices(indices)
-    yield ('\niso, country_name, %s\n' % indices)
+    yield ('\niso, country_name, %s, geometry\n' % indices)
     for row in sv_data_by_indices:
-        row = [unicode(x) for x in row]
+        row = ["\"" + unicode(x) + "\"" for x in row]
         yield '%s\n' % ','.join(row)
 
 
