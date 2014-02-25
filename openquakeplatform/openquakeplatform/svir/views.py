@@ -98,6 +98,10 @@ def export_sv_data_by_indices(request):
             * 'indices': a string of comma-separated social vulnerability index
                          names
     """
+    if not request.GET.get('indices'):
+        msg = 'A list of social vulnerability indices must be specified'
+        response = HttpResponse(msg, status="400")
+        return response
     content_disp = 'attachment; filename="sv_data_by_indices_export.csv"'
     mimetype = 'text/csv'
     response_data = _stream_sv_data_by_indices(request)

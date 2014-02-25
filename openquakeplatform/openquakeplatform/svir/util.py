@@ -62,13 +62,6 @@ def sign_in_required(func):
     return wrapped
 
 
-#: Convert a Python list (containing numbers, such as record IDs as integers)
-#: to the format required for a SQL query.
-num_list_to_sql_array = lambda a_list: (
-    '(' + ', '.join(str(x) for x in a_list) + ')'
-)
-
-
 def _get_sv_themes():
     """
     Get all the dinstinct themes from table svir.column_info
