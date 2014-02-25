@@ -45,13 +45,13 @@ COPYRIGHT_HEADER = """\
  data beyond what is offered by CC-BY-NC-SA 3.0 (unported), please contact
  the GEM Foundation at: licensing@globalquakemodel.org
 
- More information on licensing: http://www.globalquakemodel.org/licensing\n
+ More information on licensing: http://www.globalquakemodel.org/licensing
 """
 
-SV_THEMES_CSV_HEADER = ('theme\n')
-SV_SUBTHEMES_CSV_HEADER = ('subtheme\n')
-SV_TAGS_CSV_HEADER = ('tag\n')
-SV_IDS_AND_NAMES_CSV_HEADER = ('id, name\n')
+SV_THEMES_CSV_HEADER = ('\ntheme\n')
+SV_SUBTHEMES_CSV_HEADER = ('\nsubtheme\n')
+SV_TAGS_CSV_HEADER = ('\ntag\n')
+SV_IDS_AND_NAMES_CSV_HEADER = ('\nid, name\n')
 
 
 @condition(etag_func=None)
@@ -138,7 +138,7 @@ def _stream_sv_data_by_indices(request):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
     sv_data_by_indices = util._get_sv_data_by_indices(indices)
-    yield ('iso, country_name, %s\n' % indices)
+    yield ('\niso, country_name, %s\n' % indices)
     for row in sv_data_by_indices:
         row = [unicode(x) for x in row]
         yield '%s\n' % ','.join(row)
