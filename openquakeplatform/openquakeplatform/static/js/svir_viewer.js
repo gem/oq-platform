@@ -138,7 +138,8 @@ var startApp = function() {
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-            if (cat != undefined) {
+            var type = json[i].type;
+            if (cat != undefined && type == "svir") {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
@@ -149,8 +150,8 @@ var startApp = function() {
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-
-            if (cat != undefined) {
+            var type = json[i].type;
+            if (cat != undefined && type == "svir") {
                 layerId = json[i].id;
                 layerTitle = json[i].mapped_value;
                 layerNames[name].push(layerId);
@@ -669,18 +670,12 @@ var startApp = function() {
 
                 for (var i in values) {
                     if (keys[i] != "country" && keys[i] != "region") {
-
                         var c = keys[i].replace(/_/g, " ");
-                        
                         var value = values[i];
-
                         dataFormated[c] = values[i];
-
                         var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
                         $('#chartOptions').append(chartDropDown);
-
                     };
-
                 }
 
                 $('.attributeOption:lt(6)').prop('checked', true);  
@@ -697,6 +692,7 @@ var startApp = function() {
                             attrSelection.pop();
                         } 
                 });
+                
 
                 $(function() {
                     var max = 6;
@@ -712,7 +708,13 @@ var startApp = function() {
                     for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
                         attrSelection[i] = attrSelectionArray[i].name;
                     };
-                }
+                } else {
+                    attrSelection = attrSelection = $('#chartOptions input[class="attributeOption"]:checked').map(function(){
+                            return this.name;
+                        });
+                };
+
+                console.log(attrSelection);
 
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {

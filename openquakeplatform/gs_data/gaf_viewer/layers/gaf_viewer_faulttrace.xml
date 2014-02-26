@@ -1,9 +1,0 @@
-<layer>
-  <defaultStyle>
-    <name>gaf_viewer__ns_net_slip_rate</name>
-    <workspace>oqplatform</workspace>
-  </defaultStyle>
-  <enabled>true</enabled>
-  <advertised>true</advertised>
-  <queryable>true</queryable>
-</layer>

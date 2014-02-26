@@ -51,8 +51,14 @@ def grab(src, dest, name):
     if download:
         urllib.urlretrieve(str(src), str(dest))
 
-GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
-DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
+GEOSERVER_URL = (
+    "http://ftp.openquake.org/oq-platform/"
+    "geoserver-geonode_2.0%2b201311140000/geoserver.war"
+)
+DATA_DIR_URL = (
+    "http://ftp.openquake.org/oq-platform/"
+    "geoserver-geonode_2.0%2b201311140000/data.zip"
+)
 JETTY_RUNNER_URL = (
     "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/"
     "8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
