@@ -279,7 +279,7 @@ class OutputLayer(models.Model):
         """
         return os.path.abspath(
             os.path.join(
-                os.path.dirname(__file__), "gs_data/%s.xml" % request_type))
+                os.path.dirname(__file__), "gs_data/tmpl/icebox/%s.xml.tmpl" % request_type))
 
     def create_featuretype(self, view_name):
         """

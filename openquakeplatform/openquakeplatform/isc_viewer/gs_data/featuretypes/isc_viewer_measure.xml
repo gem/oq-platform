@@ -11,7 +11,32 @@
     <metadataLink>
       <type>text/xml</type>
       <metadataType>TC211</metadataType>
-      <content>http://127.0.0.1/geonetwork/srv/en/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=caad0010-f4ff-4845-9bae-0ebc99ec4260</content>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=d3ead79f-474e-4d48-893b-2b9f6faf3e75</content>
+    </metadataLink>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>FGDC</metadataType>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2Fcsdgm&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=d3ead79f-474e-4d48-893b-2b9f6faf3e75</content>
+    </metadataLink>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>other</metadataType>
+      <content>http://localhost:8000/catalogue/csw?outputschema=urn%3Aoasis%3Anames%3Atc%3Aebxml-regrep%3Axsd%3Arim%3A3.0&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=d3ead79f-474e-4d48-893b-2b9f6faf3e75</content>
+    </metadataLink>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>other</metadataType>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2F2.0.2&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=d3ead79f-474e-4d48-893b-2b9f6faf3e75</content>
+    </metadataLink>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>other</metadataType>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fgcmd.gsfc.nasa.gov%2FAboutus%2Fxml%2Fdif%2F&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=d3ead79f-474e-4d48-893b-2b9f6faf3e75</content>
+    </metadataLink>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>other</metadataType>
+      <content>http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.w3.org%2F2005%2FAtom&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id=d3ead79f-474e-4d48-893b-2b9f6faf3e75</content>
     </metadataLink>
   </metadataLinks>
   <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
@@ -29,21 +54,16 @@
     <maxx>180.0</maxx>
     <miny>-90.0</miny>
     <maxy>90.0</maxy>
-    <crs>EPSG:4326</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
     <minx>-180.0</minx>
     <maxx>180.0</maxx>
     <miny>-90.0</miny>
     <maxy>90.0</maxy>
-    <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
   <enabled>true</enabled>
-  <metadata>
-    <entry key="cachingEnabled">false</entry>
-    <entry key="advertised">true</entry>
-  </metadata>
+  <advertised>true</advertised>
   <store class="dataStore">
     <name>oqplatform</name>
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
@@ -51,6 +71,13 @@
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>
   <attributes>
+    <attribute>
+      <name>src_id</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+      <binding>java.lang.Integer</binding>
+    </attribute>
     <attribute>
       <name>date</name>
       <minOccurs>1</minOccurs>
@@ -94,6 +121,13 @@
       <binding>java.lang.Double</binding>
     </attribute>
     <attribute>
+      <name>epic_q</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+      <binding>java.lang.String</binding>
+    </attribute>
+    <attribute>
       <name>depth</name>
       <minOccurs>0</minOccurs>
       <maxOccurs>1</maxOccurs>
@@ -108,6 +142,13 @@
       <binding>java.lang.Double</binding>
     </attribute>
     <attribute>
+      <name>depth_q</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+      <binding>java.lang.String</binding>
+    </attribute>
+    <attribute>
       <name>mw</name>
       <minOccurs>0</minOccurs>
       <maxOccurs>1</maxOccurs>
@@ -120,6 +161,13 @@
       <maxOccurs>1</maxOccurs>
       <nillable>true</nillable>
       <binding>java.lang.Double</binding>
+    </attribute>
+    <attribute>
+      <name>mw_q</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+      <binding>java.lang.String</binding>
     </attribute>
     <attribute>
       <name>s</name>
@@ -141,6 +189,13 @@
       <maxOccurs>1</maxOccurs>
       <nillable>true</nillable>
       <binding>java.lang.Double</binding>
+    </attribute>
+    <attribute>
+      <name>mo_auth</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+      <binding>java.lang.String</binding>
     </attribute>
     <attribute>
       <name>mpp</name>
@@ -185,53 +240,18 @@
       <binding>java.lang.Double</binding>
     </attribute>
     <attribute>
-      <name>the_geom</name>
-      <minOccurs>1</minOccurs>
-      <maxOccurs>1</maxOccurs>
-      <nillable>false</nillable>
-      <binding>com.vividsolutions.jts.geom.Point</binding>
-    </attribute>
-    <attribute>
-      <name>src_id</name>
-      <minOccurs>1</minOccurs>
-      <maxOccurs>1</maxOccurs>
-      <nillable>false</nillable>
-      <binding>java.lang.Integer</binding>
-    </attribute>
-    <attribute>
-      <name>epic_q</name>
-      <minOccurs>1</minOccurs>
-      <maxOccurs>1</maxOccurs>
-      <nillable>false</nillable>
-      <binding>java.lang.String</binding>
-    </attribute>
-    <attribute>
-      <name>depth_q</name>
-      <minOccurs>1</minOccurs>
-      <maxOccurs>1</maxOccurs>
-      <nillable>false</nillable>
-      <binding>java.lang.String</binding>
-    </attribute>
-    <attribute>
-      <name>mw_q</name>
-      <minOccurs>1</minOccurs>
-      <maxOccurs>1</maxOccurs>
-      <nillable>false</nillable>
-      <binding>java.lang.String</binding>
-    </attribute>
-    <attribute>
-      <name>mo_auth</name>
-      <minOccurs>1</minOccurs>
-      <maxOccurs>1</maxOccurs>
-      <nillable>false</nillable>
-      <binding>java.lang.String</binding>
-    </attribute>
-    <attribute>
       <name>eventid</name>
       <minOccurs>1</minOccurs>
       <maxOccurs>1</maxOccurs>
       <nillable>false</nillable>
       <binding>java.lang.Integer</binding>
+    </attribute>
+    <attribute>
+      <name>the_geom</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+      <binding>com.vividsolutions.jts.geom.Point</binding>
     </attribute>
   </attributes>
 </featureType>

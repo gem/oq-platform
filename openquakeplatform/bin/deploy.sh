@@ -28,7 +28,7 @@ GEM_DB_NAME='oqplatform'
 GEM_DB_USER='oqplatform'
 GEM_DB_PASS='the-password'
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -88,6 +88,12 @@ isc_viewer_dataloader () {
         bdir="${oqpdir}/isc_viewer/dev_data"
     fi
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
+}
+
+econd_dataloader () {
+    pwd
+    cat oq-platform/openquakeplatform/openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e oqplatform
+    # openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded
 }
 
 #
@@ -216,15 +222,26 @@ geoserver_population () {
     mkdir -p "$dstdir/build-gs-tree/${featuretypes_dir}"
     cp -rn "$srcdir/common/gs_data/"* "$dstdir/build-gs-tree"
     for app in "${GEM_APP_LIST[@]}"; do
+        echo "MOPOINT: ${srcdir}/${app}/gs_data"
         if [ ! -d "${srcdir}/${app}/gs_data" ]; then
             continue
         fi
-        cp -rn "${srcdir}/${app}/gs_data/layers/"*       "${dstdir}/build-gs-tree/layers"
-        cp -rn "${srcdir}/${app}/gs_data/styles/"*       "${dstdir}/build-gs-tree/workspaces/${workspace_name}/styles"
-        cp -rn "${srcdir}/${app}/gs_data/featuretypes/"* "${dstdir}/build-gs-tree/${featuretypes_dir}"
+        if [ -d "${srcdir}/${app}/gs_data/layers" ]; then
+            cp -rn "${srcdir}/${app}/gs_data/layers/"*       "${dstdir}/build-gs-tree/layers"
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/styles" ]; then
+            cp -rn "${srcdir}/${app}/gs_data/styles/"*       "${dstdir}/build-gs-tree/workspaces/${workspace_name}/styles"
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/featuretypes" ]; then
+            cp -rn "${srcdir}/${app}/gs_data/featuretypes/"* "${dstdir}/build-gs-tree/${featuretypes_dir}"
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/"tmpl ]; then
+            mkdir -p "${dstdir}/build-gs-tree/tmpl/${app}"
+            cp -rn "${srcdir}/${app}/gs_data/tmpl/"* "${dstdir}/build-gs-tree/tmpl/${app}"
+        fi
     done
 
-    sed -i "s@#DB_PASS#@$GEM_DB_PASS@g;s@#GS_PROTO#@http@g;s@#GS_HOST#@127.0.0.1@g;s@#GS_PORT#@8080@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
+    sed -i "s@#DB_PASS#@$GEM_DB_PASS@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
 
     rm -rf output
     ${bindir}/oq-gs-builder.sh drop
@@ -253,7 +270,7 @@ oq_platform_install () {
     if [ "$GEM_IS_REINSTALL" = "y" ]; then
         service tomcat7 stop
         sleep 5
-        pip uninstall -y openquakeplatform
+        pip uninstall -y openquakeplatform     || true
         su - -c "dropdb oqplatform" postgres   || true
         su - -c "dropuser oqplatform" postgres || true
         rm -rf /etc/openquake/platform         || true
@@ -295,15 +312,9 @@ fi
     openquakeplatform collectstatic --noinput
 
     echo "Please insert [the_pass] as password for the user 'the_user'"
-    openquakeplatform createsuperuser --username=the_user --email=the_mail@openquake.org
+    openquakeplatform createsuperuser --username=the_user --email=the_mail@openquake.org --noinput
 
     service apache2 restart
-
-    #
-    #  geoserver structure population
-    geoserver_population "$oqpdir" "$oqpdir" "${oqpdir}/bin"
-
-    openquakeplatform updatelayers
 
     #
     #  database population
@@ -312,6 +323,13 @@ fi
             "${app}_dataloader" "$oqpdir"
         fi
     done
+
+    #
+    #  geoserver structure population
+    geoserver_population "$oqpdir" "$oqpdir" "${oqpdir}/bin"
+
+    openquakeplatform updatelayers
+
 }
 
 
