@@ -22,6 +22,6 @@ class Command(models.Model):
 
     def handle(self):
         table_id = base_resourcebase.objects.get(id=1)
-        table_id.thumbnail_id = 1
+        table_id.title = "Instrumental Seismic Catalogue"
         table_id.save()
         
