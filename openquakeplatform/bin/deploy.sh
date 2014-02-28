@@ -216,7 +216,6 @@ geoserver_population () {
     mkdir -p "$dstdir/build-gs-tree/styles"
     mkdir -p "$dstdir/build-gs-tree/layers"
     mkdir -p "$dstdir/build-gs-tree/workspaces"
-    mkdir -p "$dstdir/build-gs-tree/workspaces/${workspace_name}/styles"
     mkdir -p "$dstdir/build-gs-tree/workspaces/${workspace_name}/datastores"
     featuretypes_dir="workspaces/${workspace_name}/datastores/${datastore_name}/featuretypes"
     mkdir -p "$dstdir/build-gs-tree/${featuretypes_dir}"
@@ -230,7 +229,7 @@ geoserver_population () {
             cp -rn "${srcdir}/${app}/gs_data/layers/"*       "${dstdir}/build-gs-tree/layers"
         fi
         if [ -d "${srcdir}/${app}/gs_data/styles" ]; then
-            cp -rn "${srcdir}/${app}/gs_data/styles/"*       "${dstdir}/build-gs-tree/workspaces/${workspace_name}/styles"
+            cp -rn "${srcdir}/${app}/gs_data/styles/"*       "${dstdir}/build-gs-tree/styles"
         fi
         if [ -d "${srcdir}/${app}/gs_data/featuretypes" ]; then
             cp -rn "${srcdir}/${app}/gs_data/featuretypes/"* "${dstdir}/build-gs-tree/${featuretypes_dir}"
