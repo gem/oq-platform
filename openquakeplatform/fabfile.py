@@ -127,15 +127,17 @@ def apps():
     _add_econd()
     _add_weblib()
     _add_gemecdwebsite()
+    _add_oqp_maps()
     add_icebox()
 
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local('openquakeplatform/bin/oq-gs-builder.sh restore gs_data')
     local('python manage.py updatelayers')
-    local('python manage.py loaddata openquakeplatform/fixtures/isc_map_layer.json')
-    local('python manage.py loaddata openquakeplatform/fixtures/ghec_map_layer.json')
-    local('python manage.py loaddata openquakeplatform/fixtures/gaf_map_layer.json')
-    local('python manage.py loaddata openquakeplatform/fixtures/topic_categories.json')
+    local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/isc_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/ghec_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/gaf_map_layer.json')
+    local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/topic_categories.json')
+    local('python manage.py map_title')
 
 def clean(dbname='oqplatform', dbuser='oqplatform'):
     with settings(warn_only=True):
