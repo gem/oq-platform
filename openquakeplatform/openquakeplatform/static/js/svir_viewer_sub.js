@@ -119,6 +119,18 @@ var startApp = function() {
         $("#worning-no-layer").dialog("open");
     };
 
+    //  New project selection dialog
+    var loadProject = $("#loadProjectDialog").dialog({
+        autoOpen: false,
+        height: 220,
+        width: 350,
+        modal: true
+    });
+
+    $("#load-project").button().click(function() {
+        $("#loadProjectDialog").dialog("open");
+    });
+
     $(document).ready(function() {
         $("#worning-no-layer").dialog({
             autoOpen: false,
@@ -155,17 +167,16 @@ var startApp = function() {
     // Get layer names from tilestream
     var tileStreamLayer = "";
     var category = "";
-    var selCat = document.getElementById('layer-category');
     var selLayer = document.getElementById('layer-list');
 
     // Create a header for the menu drop down
     var catMenuHeader = document.createElement('option');
-    catMenuHeader.innerHTML = "Category:";
-    selCat.appendChild(catMenuHeader);
+    catMenuHeader.innerHTML = "Projects:";
+    selLayer.appendChild(catMenuHeader);
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
-        // Create the category list (build the object)
+        // Create the project list (build the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
@@ -173,6 +184,15 @@ var startApp = function() {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
+            }
+
+            if (type == "svir") {
+                curveCategoryList.push(cat);
+                curveLayersByCat[cat] = [];
+                curveLayerNames[name] = [];
+                var grid = grids.toString();
+                var gridName = grid.split("/")[4];
+                curveLayerGrids.push(gridName);
             }
         }
 
@@ -204,7 +224,6 @@ var startApp = function() {
         // Append layer list to dowpdown
         var layerOpt = document.createElement('option');
     }
-
     });
 
     // Create dynamic categorized layer dialog

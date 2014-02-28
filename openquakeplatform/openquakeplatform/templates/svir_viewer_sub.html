@@ -21,6 +21,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+<button type="button" id="load-project">Load Project</button>
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -40,6 +41,17 @@ Explore - {{block.super}}
 
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
+</div>
+
+<div id="loadProjectDialog" title="Project Options" style="overflow: hidden;">
+  <form id="load-project-list">
+    <br>Projects:<br>
+    <select id="layer-list">
+    </select><br/>
+    <input type="button" id="addLayer" value="Add Layer">
+    <input type="button" id="removeLayer" value="Remove Layer">
+  </form>
+  
 </div>
 
 {{block.super}}
