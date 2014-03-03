@@ -20,12 +20,12 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from openquakeplatform.svir.views import export_sv_items
-from openquakeplatform.svir.views import export_sv_data_by_indices
+from openquakeplatform.svir.views import export_sv_category_names
+from openquakeplatform.svir.views import export_sv_data_by_variables_ids
 
 
 urlpatterns = patterns(
     'geonode.svir.views',
-    url(r'^export_sv_items', export_sv_items),
-    url(r'^export_sv_data_by_indices', export_sv_data_by_indices),
+    url(r'^export_sv_category_names', export_sv_category_names),
+    url(r'^export_sv_data_by_variables_ids', export_sv_data_by_variables_ids),
 )

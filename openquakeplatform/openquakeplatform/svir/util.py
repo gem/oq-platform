@@ -69,7 +69,6 @@ def _get_sv_themes():
     query = "SELECT DISTINCT theme FROM svir.column_info ORDER BY theme;"
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-
     return cursor.fetchall()
 
 
@@ -87,7 +86,6 @@ ORDER BY subtheme;
 """ % theme
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-
     return cursor.fetchall()
 
 
@@ -106,7 +104,6 @@ ORDER BY tag;
 """ % (theme, subtheme)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-
     return cursor.fetchall()
 
 
@@ -126,21 +123,21 @@ ORDER BY name;
 """ % (theme, subtheme, tag)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-
     return cursor.fetchall()
 
 
-def _get_sv_data_by_indices(indices):
+def _get_sv_data_by_variables_ids(sv_variables_ids):
     """
-    For each country, retrieve iso, country_name and a variable number of
-    columns corresponding to the values of the social vulnerability indices
+    For each country, retrieve iso, country_name and a number of
+    columns corresponding to the social vulnerability variables
     selected by the user
 
-    :param indices: a string of comma-separated index names
+    :param sv_variables_ids: a string of comma-separated ids of social
+                             vulnerability variables
     """
-    indices_list = indices.split(',')
-    indices_list = ['n.' + index.strip() for index in indices_list]
-    indices_str = ",".join(indices_list)
+    id_list = sv_variables_ids.split(',')
+    id_list = ['n.' + index.strip() for index in id_list]
+    id_str = ",".join(id_list)
     query = """\
 SELECT
     n.iso, n.country_name, %s, ST_AsText(p.the_geom)
@@ -150,8 +147,7 @@ FROM
 WHERE
     n.iso = p.gadm_iso
 ORDER BY n.iso;
-""" % indices_str
+""" % id_str
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-
     return cursor.fetchall()

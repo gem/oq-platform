@@ -57,9 +57,10 @@ SV_IDS_AND_NAMES_CSV_HEADER = ('\nid, name\n')
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
-def export_sv_items(request):
+def export_sv_category_names(request):
     """
-    Export a csv file containing the requested social vulnerability items
+    Export a csv file containing the requested social vulnerability category
+    names
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing zero or more
@@ -74,9 +75,9 @@ def export_sv_items(request):
         If also the subtheme is provided, the csv file will contain the
         corresponding list of tags.
         If also the tag is provided, the csv file will contain the names of the
-        corresponding indices and their ids
+        corresponding social vulnerability variables and their ids
     """
-    content_disp = 'attachment; filename="sv_items_export.csv"'
+    content_disp = 'attachment; filename="sv_category_names_export.csv"'
     mimetype = 'text/csv'
     response_data = _stream_sv_items(request)
     response = HttpResponse(response_data, mimetype=mimetype)
@@ -87,24 +88,24 @@ def export_sv_items(request):
 @condition(etag_func=None)
 @util.allowed_methods(('GET', ))
 @util.sign_in_required
-def export_sv_data_by_indices(request):
+def export_sv_data_by_variables_ids(request):
     """
-    Export a csv file containing social vulnerability data corresponding to the
-    index names provided
+    Export a csv file containing data corresponding to the social vulnerability
+    variables which ids are given in input
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing the
         following parameter:
-            * 'indices': a string of comma-separated social vulnerability index
-                         names
+            * 'sv_variables_ids': a string of comma-separated ids of social
+                                  vulnerability variables
     """
-    if not request.GET.get('indices'):
+    if not request.GET.get('sv_variables_ids'):
         msg = 'A list of social vulnerability indices must be specified'
         response = HttpResponse(msg, status="400")
         return response
-    content_disp = 'attachment; filename="sv_data_by_indices_export.csv"'
+    content_disp = 'attachment; filename="sv_data_by_variables_ids_export.csv"'
     mimetype = 'text/csv'
-    response_data = _stream_sv_data_by_indices(request)
+    response_data = _stream_sv_data_by_variables_ids(request)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
@@ -137,13 +138,14 @@ def _stream_sv_items(request):
         yield '%s\n' % sv_item
 
 
-def _stream_sv_data_by_indices(request):
-    indices = request.GET['indices']
+def _stream_sv_data_by_variables_ids(request):
+    sv_variables_ids = request.GET['sv_variables_ids']
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
-    sv_data_by_indices = util._get_sv_data_by_indices(indices)
-    yield ('\niso, country_name, %s, geometry\n' % indices)
-    for row in sv_data_by_indices:
+    sv_data_by_variables_ids = \
+        util._get_sv_data_by_variables_ids(sv_variables_ids)
+    yield ('\niso, country_name, %s, geometry\n' % sv_variables_ids)
+    for row in sv_data_by_variables_ids:
         row = ["\"" + unicode(x) + "\"" for x in row]
         yield '%s\n' % ','.join(row)
 
