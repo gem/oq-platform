@@ -289,7 +289,7 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var selectedPDefArray = projectDefinition[layerId];
             var selectedPDefStr = selectedPDefArray.toString();
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/a05a94858375bd0ae023f6950a2b13fac5127637?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/c2991c88bddea79cd612e0654e9a2cd9da90afdc?callback=_processGithubResponse";
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
                 encodedData = json.data.content;
                 var selectedPDef = window.atob(encodedData);
