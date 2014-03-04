@@ -3,73 +3,75 @@
   "children": [
   {
     "name": "PRI",
+    "weight": 0.5,
     "children": [
-      {"name": "Damage Ratio"},
-      {"name": "AAL"},
-      {"name": "Fatality"}
+      {"name": "Damage Ratio", "weight": 0.33,},
+      {"name": "AAL", "weight": 0.33,},
+      {"name": "Fatality", "weight": 0.33,}
     ]
   },
   {
     "name": "SVI",
+    "weight": 0.5,
     "children": [
       {
-        "name": "Population", "size": 3534,
+        "name": "Population", "weight": 0.16,
         "children": [
-          {"name": "Human Development Index", "size": 721},
-          {"name": "Population Density (people per km2)", "size": 4294},
-          {"name": "Percent Urban Population", "size": 9800},
-          {"name": "Percent of Population that is an International Migran", "size": 1314},
-          {"name": "Median Age", "size": 2220}
+          {"name": "Human Development Index", "weight": 721},
+          {"name": "Population Density (people per km2)", "weight": 4294},
+          {"name": "Percent Urban Population", "weight": 9800},
+          {"name": "Percent of Population that is an International Migran", "weight": 1314},
+          {"name": "Median Age", "weight": 2220}
         ]
       },
       {
-        "name": "Economy", "size": 5731,
+        "name": "Economy", "weight": 0.16,
         "children": [
-          {"name": "GNI per capita", "size": 721},
-          {"name": "GDP per capita", "size": 4294},
-          {"name": "Percent of GDP - Remittances", "size": 9800},
-          {"name": "Percent of GDP - Agriculture", "size": 1314},
-          {"name": "Percent of GDP - Industry", "size": 2220}
+          {"name": "GNI per capita", "weight": 0.2},
+          {"name": "GDP per capita", "weight": 0.2},
+          {"name": "Percent of GDP - Remittances", "weight": 0.2},
+          {"name": "Percent of GDP - Agriculture", "weight": 0.2},
+          {"name": "Percent of GDP - Industry", "weight": 0.2}
         ]
       },
       {
-        "name": "Education", "size": 7840,
+        "name": "Education", "weight": 0.16,
         "children": [
-          {"name": "Percent of Population that is Literate", "size": 721},
-          {"name": "Gross Enrollment Ratio - Primary Education", "size": 4294},
-          {"name": "Mean Years of Schooling", "size": 9800},
-          {"name": "Pupil to Teacher Ratio", "size": 1314},
-          {"name": "Education expenditures as Percent of GDP", "size": 2220}
+          {"name": "Percent of Population that is Literate", "weight": 0.2},
+          {"name": "Gross Enrollment Ratio - Primary Education", "weight": 0.2},
+          {"name": "Mean Years of Schooling", "weight": 0.2},
+          {"name": "Pupil to Teacher Ratio", "weight": 0.2},
+          {"name": "Education expenditures as Percent of GDP", "weight": 0.2}
         ]
       },
       {
-        "name": "Health", "size": 5914,
+        "name": "Health", "weight": 0.16,
         "children": [
-          {"name": "Birth Rate", "size": 721},
-          {"name": "Fertility Rate", "size": 4294},
-          {"name": "Infant Mortality Rate", "size": 9800},
-          {"name": "Life Expectancy", "size": 1314},
-          {"name": "Mortality Rate Adult Female (aged 25 over)", "size": 2220}
+          {"name": "Birth Rate", "weight": 0.2},
+          {"name": "Fertility Rate", "weight": 0.2},
+          {"name": "Infant Mortality Rate", "weight": 0.2},
+          {"name": "Life Expectancy", "weight": 0.2},
+          {"name": "Mortality Rate Adult Female (aged 25 over)", "weight": 0.2}
         ]
       },
       {
-        "name": "Infrastructure", "size": 3416,
+        "name": "Infrastructure", "weight": 0.16,
         "children": [
-          {"name": "Road Density (per km2)", "size": 721},
-          {"name": "Motor Vehicles per 1000 population", "size": 4294},
-          {"name": "Percent of Population with Improved Sanitation Facilities Access", "size": 9800},
-          {"name": "Percent of Population with Improved Water Source Access", "size": 1314},
-          {"name": "Mobile Cellular Subscriptions per 1000 population", "size": 2220}
+          {"name": "Road Density (per km2)", "weight": 0.2},
+          {"name": "Motor Vehicles per 1000 population", "weight": 0.2},
+          {"name": "Percent of Population with Improved Sanitation Facilities Access", "weight": 0.2},
+          {"name": "Percent of Population with Improved Water Source Access", "weight": 0.2},
+          {"name": "Mobile Cellular Subscriptions per 1000 population", "weight": 0.2}
         ]
       },
       {
-        "name": "Governance", "size": 3416,
+        "name": "Governance", "weight": 0.16,
         "children": [
-          {"name": "Intentional homicides (per 100,000 people)", "size": 721},
-          {"name": "Asylum Seekers (pending cases from country of origin)", "size": 4294},
-          {"name": "Corruption Index", "size": 9800},
-          {"name": "Percent of Population that Voted in Last Parliamentary Election", "size": 1314},
-          {"name": "Percent of Seats Held by Women in National Parliaments", "size": 2220}
+          {"name": "Intentional homicides (per 100,000 people)", "weight": 0.2},
+          {"name": "Asylum Seekers (pending cases from country of origin)", "weight": 0.2},
+          {"name": "Corruption Index", "weight": 0.2},
+          {"name": "Percent of Population that Voted in Last Parliamentary Election", "weight": 0.2},
+          {"name": "Percent of Seats Held by Women in National Parliaments", "weight": 0.2}
         ]
       }
     ]
