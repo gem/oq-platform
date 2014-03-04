@@ -284,17 +284,17 @@ var startApp = function() {
             var e = document.getElementById("layer-list");
             var layerId = e.options[e.selectedIndex].value;
 
+            $('#projectDefDialog').empty();
+
             // Look up the layer id using the layer name
             var selectedPDefArray = projectDefinition[layerId];
             var selectedPDefStr = selectedPDefArray.toString();
             selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/a05a94858375bd0ae023f6950a2b13fac5127637?callback=_processGithubResponse";
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
                 encodedData = json.data.content;
-                //console.log(json.data.content);
-                var decodedData = window.atob(encodedData);
-                console.log(decodedData);
+                var selectedPDef = window.atob(encodedData);
+                loadPD(selectedPDef);
             });
-            //loadPD(selectedPDef);
 
             var layerIdArray = layerNames[layerId];
             var selectedLayer = layerIdArray.toString();
@@ -435,13 +435,16 @@ var startApp = function() {
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
         
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#projectDefDialog").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
-        d3.json(selectedPDef, function(error, flare) {
+        d3.json(selectedPDef, function() {
+            flare=JSON.parse(selectedPDef)
+            
+            console.log(flare);
             root = flare;
             root.x0 = height / 2;
             root.y0 = 0;
