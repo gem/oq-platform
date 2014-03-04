@@ -42,6 +42,8 @@ var layers;
 var categoryList = [];
 var layersByCat = {};
 var layerNames = {};
+var layerGrids = [];
+var projectDefinition = {};
 
 // Grandpapa array
 var chartArray = [];
@@ -120,7 +122,7 @@ var startApp = function() {
     };
 
     //  New project selection dialog
-    var loadProject = $("#loadProjectDialog").dialog({
+    $("#loadProjectDialog").dialog({
         autoOpen: false,
         height: 220,
         width: 350,
@@ -129,6 +131,18 @@ var startApp = function() {
 
     $("#load-project").button().click(function() {
         $("#loadProjectDialog").dialog("open");
+    });
+
+    //  Project definition dialog
+    $("#projectDefDialog").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 600,
+        modal: false
+    });
+
+    $("#project-definition").button().click(function() {
+        $("#projectDefDialog").dialog("open");
     });
 
     $(document).ready(function() {
@@ -167,45 +181,58 @@ var startApp = function() {
     // Get layer names from tilestream
     var tileStreamLayer = "";
     var category = "";
+    var selCat = document.getElementById('layer-category');
     var selLayer = document.getElementById('layer-list');
 
     // Create a header for the menu drop down
     var catMenuHeader = document.createElement('option');
     catMenuHeader.innerHTML = "Projects:";
-    selLayer.appendChild(catMenuHeader);
+    selCat.appendChild(catMenuHeader);
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
-        // Create the project list (build the object)
+
+        // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
-            if (cat != undefined) {
+            var type = json[i].type;
+            var grids = json[i].grids;
+            var pDef = json[i].project_definition;
+
+            if (cat != undefined && type == "svir-qgis") {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
-            }
+                projectDefinition[name] = [];
 
-            if (type == "svir") {
-                curveCategoryList.push(cat);
-                curveLayersByCat[cat] = [];
-                curveLayerNames[name] = [];
-                var grid = grids.toString();
-                var gridName = grid.split("/")[4];
-                curveLayerGrids.push(gridName);
+                if (grids != undefined) {
+                    var grid = grids.toString();
+                    var gridName = grid.split("/")[4];
+                    layerGrids.push(gridName);
+                };
             }
+            if (grids != undefined) {
+                layerNames[grids] = [];
+            };
         }
+
+        console.log(categoryList);
 
         // Create the category list (population the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
             var cat = json[i].category;
+            var type = json[i].type;
+            var grids = json[i].grids;
+            var pDef = json[i].project_definition;
 
-            if (cat != undefined) {
+            if (cat != undefined && type == "svir-qgis") {
                 layerId = json[i].id;
                 layerTitle = json[i].mapped_value;
                 layerNames[name].push(layerId);
                 layersByCat[cat].push(layerTitle);
+                projectDefinition[name].push(pDef);
             }
         }
 
@@ -224,6 +251,7 @@ var startApp = function() {
         // Append layer list to dowpdown
         var layerOpt = document.createElement('option');
     }
+
     });
 
     // Create dynamic categorized layer dialog
@@ -235,6 +263,7 @@ var startApp = function() {
         var e = document.getElementById("layer-category");
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = layersByCat[strUser];
+
         for (var i in layersArray) {
             var layers = layersArray[i];
             var opt = document.createElement('option');
@@ -251,14 +280,24 @@ var startApp = function() {
     
     // Add layers form tilestream list
     $(document).ready(function() {
-        $("#addTileLayer").click(function() {
+        $("#addLayer").click(function() {
             var e = document.getElementById("layer-list");
             var layerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
+            var selectedPDefArray = projectDefinition[layerId];
+            var selectedPDefStr = selectedPDefArray.toString();
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/a05a94858375bd0ae023f6950a2b13fac5127637?callback=_processGithubResponse";
+            $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
+                encodedData = json.data.content;
+                //console.log(json.data.content);
+                var decodedData = window.atob(encodedData);
+                console.log(decodedData);
+            });
+            //loadPD(selectedPDef);
+
             var layerIdArray = layerNames[layerId];
             var selectedLayer = layerIdArray.toString();
-
             // Check for duplicae layes
             if (selectedLayer in layers) {
                 showDuplicateMsg();
@@ -279,7 +318,7 @@ var startApp = function() {
 
     // Remove layers from tilestream
     $(document).ready(function() {
-        $('#removeTileLayer').click(function() {
+        $('#removeLayer').click(function() {
     
             var e = document.getElementById("layer-list");
             var layerId = e.options[e.selectedIndex].value;
@@ -299,8 +338,6 @@ var startApp = function() {
             }
         });
     });
-
-
 
     // Map options selection dialog
     $("#thematicMap").dialog({
@@ -378,6 +415,150 @@ var startApp = function() {
             );
         }
     };
+
+    ////////////////////////////////////////////
+    //// Project Definition Collapsible Tree ///
+    ////////////////////////////////////////////
+
+    function loadPD(selectedPDef) {
+        var margin = {top: 20, right: 120, bottom: 20, left: 120},
+            width = 960 - margin.right - margin.left,
+            height = 800 - margin.top - margin.bottom;
+    
+        var i = 0,
+            duration = 750,
+            root;
+        
+        var tree = d3.layout.tree()
+            .size([height, width]);
+        
+        var diagonal = d3.svg.diagonal()
+            .projection(function(d) { return [d.y, d.x]; });
+        
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
+        d3.json(selectedPDef, function(error, flare) {
+            root = flare;
+            root.x0 = height / 2;
+            root.y0 = 0;
+            
+            function collapse(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            }
+        
+            root.children.forEach(collapse);
+            update(root);
+        });
+        
+        d3.select(self.frameElement).style("height", "800px");
+        
+        function update(source) {
+        
+            // Compute the new tree layout.
+            var nodes = tree.nodes(root).reverse(),
+                links = tree.links(nodes);
+        
+            // Normalize for fixed-depth.
+            nodes.forEach(function(d) { d.y = d.depth * 180; });
+        
+            // Update the nodes…
+            var node = svg.selectAll("g.node")
+                .data(nodes, function(d) { return d.id || (d.id = ++i); });
+            
+            // Enter any new nodes at the parent's previous position.
+            var nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+                .on("click", click);
+            
+            nodeEnter.append("circle")
+                .attr("r", 1e-6)
+                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+            
+            nodeEnter.append("text")
+                .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+                .attr("dy", ".35em")
+                .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+                .text(function(d) { return d.name; })
+                .style("fill-opacity", 1e-6);
+            
+            // Transition nodes to their new position.
+            var nodeUpdate = node.transition()
+                .duration(duration)
+                .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+            
+            nodeUpdate.select("circle")
+                .attr("r", 4.5)
+                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+            
+            nodeUpdate.select("text")
+                .style("fill-opacity", 1);
+            
+            // Transition exiting nodes to the parent's new position.
+            var nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+                .remove();
+            
+            nodeExit.select("circle")
+                .attr("r", 1e-6);
+            
+            nodeExit.select("text")
+                .style("fill-opacity", 1e-6);
+            
+            // Update the links…
+            var link = svg.selectAll("path.link")
+                .data(links, function(d) { return d.target.id; });
+            
+            // Enter any new links at the parent's previous position.
+            link.enter().insert("path", "g")
+                .attr("class", "link")
+                .attr("d", function(d) {
+                  var o = {x: source.x0, y: source.y0};
+                  return diagonal({source: o, target: o});
+                });
+            
+            // Transition links to their new position.
+            link.transition()
+                .duration(duration)
+                .attr("d", diagonal);
+            
+            // Transition exiting nodes to the parent's new position.
+            link.exit().transition()
+                .duration(duration)
+                .attr("d", function(d) {
+                  var o = {x: source.x, y: source.y};
+                  return diagonal({source: o, target: o});
+                })
+                .remove();
+            
+            // Stash the old positions for transition.
+            nodes.forEach(function(d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        }
+        
+        // Toggle children on click.
+        function click(d) {
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d);
+        }
+    }
 
 
     ////////////////////////////////////////////
@@ -636,12 +817,12 @@ var startApp = function() {
     });
 
     // This layer is used for the visual representation of the data
-    var portugal = L.tileLayer('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.png');
-    layerControl.addOverlay(portugal, "svir-portugal");
-    map.addLayer(portugal);
+    //var portugal = L.tileLayer('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.png');
+    //layerControl.addOverlay(portugal, "svir-portugal");
+    //map.addLayer(portugal);
 
-    var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-    map.addLayer(utfGrid);
+    //var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    //map.addLayer(utfGrid);
 
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {

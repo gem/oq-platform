@@ -22,6 +22,7 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 <button type="button" id="load-project">Load Project</button>
+<button type="button" id="project-definition">Project Definition</button>
 <div id="loadProjectDialog" title="Load Project">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -33,6 +34,10 @@ Explore - {{block.super}}
     <input type="button" id="addLayer" value="Add Layer">
     <input type="button" id="removeLayer" value="Remove Layer">
   </form>
+</div>
+
+<div id="projectDefDialog" title="Load Project">
+  <p> You first need to <b>load a Project</b> to be able to view a project definition</p>
 </div>
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
