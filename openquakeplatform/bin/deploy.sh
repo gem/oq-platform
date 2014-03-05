@@ -91,9 +91,10 @@ isc_viewer_dataloader () {
 }
 
 econd_dataloader () {
-    pwd
     cat oq-platform/openquakeplatform/openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e oqplatform
-    # openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded
+    oq-platform/openquakeplatform/openquakeplatform/econd/bin/photo_synt.sh oq-platform/openquakeplatform/openquakeplatform/econd/data/photo_synt_list.csv oq-platform/openquakeplatform/openquakeplatform/econd/data/placeholder.png /var/www/openquake/platform/uploaded
+    mkdir -p /var/www/openquake/platform/uploaded/
+    chown -R www-data.www-data /var/www/openquake/platform/uploaded/
 }
 
 #

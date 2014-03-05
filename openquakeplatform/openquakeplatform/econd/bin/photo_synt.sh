@@ -6,6 +6,9 @@ outpath="$3"
 if [ ! -d "$outpath" ]; then
     mkdir -p "$outpath"
 fi
+if [ ! -d "$outpath/tmp" ]; then
+    mkdir -p "$outpath/tmp"
+fi
 
 IFS='
 '
@@ -19,5 +22,11 @@ for i in $(cat "$fname"); do
         mkdir -p "$dname"
     fi
 
-    convert "$imgname" -geometry "${geom}!" "${outpath}/${name}"
+    if [ -f "$outpath/tmp/${geom}" ]; then
+        cp "$outpath/tmp/${geom}" "${outpath}/${name}"
+    else
+        convert "$imgname" -geometry "${geom}!" "${outpath}/${name}"
+        cp "${outpath}/${name}" "${outpath}/tmp/${geom}"
+    fi
+    rm -rf "$outpath/tmp"
 done
