@@ -144,12 +144,15 @@ def iteratefieldstructure(field_structure, context):
             html_definition['columnname'] = columnname
 
             if fieldtype in ['DateTimeField']:
-                # not very robust way of detecting when a datetime was used to store just a date, or just a time
-                if columnvalue.time().hour == 0 and columnvalue.time().minute == 0 and columnvalue.time().second == 0 and columnvalue.time().microsecond == 0:
-                    columnvalue = columnvalue.date()
-                if columnvalue.year == 2000 and columnvalue.month == 1 and columnvalue.day == 1:
-                    columnvalue = columnvalue.time()
-                columnvalue = unicode(columnvalue)
+                try:
+                    # not very robust way of detecting when a datetime was used to store just a date, or just a time
+                    if columnvalue.time().hour == 0 and columnvalue.time().minute == 0 and columnvalue.time().second == 0 and columnvalue.time().microsecond == 0:
+                        columnvalue = columnvalue.date()
+                    if columnvalue.year == 2000 and columnvalue.month == 1 and columnvalue.day == 1:
+                        columnvalue = columnvalue.time()
+                    columnvalue = unicode(columnvalue)
+                except:
+                    pass
 
             if fieldtype in ['DecimalField']:
                 if columnvalue is not '':
