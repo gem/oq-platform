@@ -289,8 +289,13 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var selectedPDefArray = projectDefinition[layerId];
             var selectedPDefStr = selectedPDefArray.toString();
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/c2991c88bddea79cd612e0654e9a2cd9da90afdc?callback=_processGithubResponse";
+
+            // TODO remove this link and replace with Django api call
+            // Link to Github is a temp proof of concept
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/40e010d17a10fd8218bbd75b099f686ca05261b2?callback=_processGithubResponse";
+ 
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
+                console.log(json);
                 encodedData = json.data.content;
                 var selectedPDef = window.atob(encodedData);
                 loadPD(selectedPDef);
@@ -438,11 +443,11 @@ var startApp = function() {
         var svg = d3.select("#projectDefDialog").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
-          .append("g")
+            .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
         d3.json(selectedPDef, function() {
-            flare=JSON.parse(selectedPDef)
+            flare = JSON.parse(selectedPDef)
             
             console.log(flare);
             root = flare;
@@ -456,8 +461,8 @@ var startApp = function() {
                     d.children = null;
                 }
             }
-        
-            root.children.forEach(collapse);
+
+            //root.children.forEach(collapse);
             update(root);
         });
         
@@ -480,12 +485,23 @@ var startApp = function() {
             var nodeEnter = node.enter().append("g")
                 .attr("class", "node")
                 .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-                .on("click", click);
+                //.on("click", click);
             
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
                 .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
             
+            nodeEnter.append("text")
+                .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+                .attr("dy", ".35em")
+                .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+                .text(function(d) { return d.name + " " + d.weight; })
+                .style("fill-opacity", 1e-6)
+                .on("click", function() {
+                    console.log(this);
+                    d3.select(this)
+                });
+
             nodeEnter.append("text")
                 .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
                 .attr("dy", ".35em")
