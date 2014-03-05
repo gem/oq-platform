@@ -292,7 +292,7 @@ var startApp = function() {
 
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/40e010d17a10fd8218bbd75b099f686ca05261b2?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/40195780493bb7243813491860f9aafb27f1264c?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
                 console.log(json);
@@ -447,7 +447,7 @@ var startApp = function() {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
         d3.json(selectedPDef, function() {
-            flare = JSON.parse(selectedPDef)
+            flare = JSON.parse(selectedPDef);
             
             console.log(flare);
             root = flare;
@@ -492,22 +492,27 @@ var startApp = function() {
                 .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
             
             nodeEnter.append("text")
+                .attr("class", (function(d) { return "level-" + d.level; }))
+                .attr("id", (function(d) { return d.name; }))
+                .attr("value", (function(d) { return d.weight; }))
                 .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
                 .attr("dy", ".35em")
                 .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
                 .text(function(d) { return d.name + " " + d.weight; })
                 .style("fill-opacity", 1e-6)
-                .on("click", function() {
-                    console.log(this);
-                    d3.select(this)
+                .on("click", function(d) {
+                    //console.log($(this).attr('value'));
+                    //d3.select(this)
+                    // Get the div id of the selected node
+                    var id = $(this).attr('id');
+                    console.log(id);
+                    // Get the class level of the selected node
+                    var level = $(this).attr('class');
+                    console.log(level);
+                    var weight = $(this).attr('value');
+                    console.log(weight);
+                    console.log(d);
                 });
-
-            nodeEnter.append("text")
-                .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-                .attr("dy", ".35em")
-                .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-                .text(function(d) { return d.name; })
-                .style("fill-opacity", 1e-6);
             
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
