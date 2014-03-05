@@ -1,5 +1,6 @@
 {
   "name": "IRI",
+  "weight": "",
   "children": [
   {
     "name": "PRI",
@@ -15,7 +16,8 @@
     "weight": 0.5,
     "children": [
       {
-        "name": "Population", "weight": 0.16,
+        "name": "Population", 
+        "weight": 0.16,
         "children": [
           {"name": "Human Development Index", "weight": 0.2},
           {"name": "Population Density (people per km2)", "weight": 0.2},
@@ -25,7 +27,8 @@
         ]
       },
       {
-        "name": "Economy", "weight": 0.16,
+        "name": "Economy", 
+        "weight": 0.16,
         "children": [
           {"name": "GNI per capita", "weight": 0.2},
           {"name": "GDP per capita", "weight": 0.2},
@@ -35,7 +38,8 @@
         ]
       },
       {
-        "name": "Education", "weight": 0.16,
+        "name": "Education", 
+        "weight": 0.16,
         "children": [
           {"name": "Percent of Population that is Literate", "weight": 0.2},
           {"name": "Gross Enrollment Ratio - Primary Education", "weight": 0.2},
@@ -45,7 +49,8 @@
         ]
       },
       {
-        "name": "Health", "weight": 0.16,
+        "name": "Health", 
+        "weight": 0.16,
         "children": [
           {"name": "Birth Rate", "weight": 0.2},
           {"name": "Fertility Rate", "weight": 0.2},
@@ -55,7 +60,8 @@
         ]
       },
       {
-        "name": "Infrastructure", "weight": 0.16,
+        "name": "Infrastructure", 
+        "weight": 0.16,
         "children": [
           {"name": "Road Density (per km2)", "weight": 0.2},
           {"name": "Motor Vehicles per 1000 population", "weight": 0.2},
@@ -65,7 +71,8 @@
         ]
       },
       {
-        "name": "Governance", "weight": 0.16,
+        "name": "Governance", 
+        "weight": 0.16,
         "children": [
           {"name": "Intentional homicides (per 100,000 people)", "weight": 0.2},
           {"name": "Asylum Seekers (pending cases from country of origin)", "weight": 0.2},
