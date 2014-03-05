@@ -83,11 +83,11 @@
         "weight": 0.16,
         "level": 3.2,
         "children": [
-          {"name": "Intentional homicides (per 100,000 people)", "weight": 0.2, "level": 4.5,},
-          {"name": "Asylum Seekers (pending cases from country of origin)", "weight": 0.2, "level": 4.5,},
-          {"name": "Corruption Index", "weight": 0.2, "level": 4.5,},
-          {"name": "Percent of Population that Voted in Last Parliamentary Election", "weight": 0.2, "level": 4.5,},
-          {"name": "Percent of Seats Held by Women in National Parliaments", "weight": 0.2, "level": 4.5,}
+          {"name": "Intentional homicides (per 100,000 people)", "weight": 0.2, "level": 4.5},
+          {"name": "Asylum Seekers (pending cases from country of origin)", "weight": 0.2, "level": 4.5},
+          {"name": "Corruption Index", "weight": 0.2, "level": 4.5},
+          {"name": "Percent of Population that Voted in Last Parliamentary Election", "weight": 0.2, "level": 4.5},
+          {"name": "Percent of Seats Held by Women in National Parliaments", "weight": 0.2, "level": 4.5}
         ]
       }
     ]
