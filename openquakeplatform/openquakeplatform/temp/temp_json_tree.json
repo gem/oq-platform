@@ -23,11 +23,11 @@
         "weight": 0.16,
         "level": 3.2,
         "children": [
-          {"name": "Human Development Index", "weight": 0.2, "level": 4,},
-          {"name": "Population Density (people per km2)", "weight": 0.2, "level": 4,},
-          {"name": "Percent Urban Population", "weight": 0.2, "level": 4,},
+          {"name": "Human Development Index", "weight": 0.2, "level": 4},
+          {"name": "Population Density (people per km2)", "weight": 0.2, "level": 4},
+          {"name": "Percent Urban Population", "weight": 0.2, "level": 4},
           {"name": "Percent of Population that is an International Migran", "weight": 1314},
-          {"name": "Median Age", "weight": 0.2, "level": 4,}
+          {"name": "Median Age", "weight": 0.2, "level": 4}
         ]
       },
       {
@@ -35,11 +35,11 @@
         "weight": 0.16,
         "level": 3.2,
         "children": [
-          {"name": "GNI per capita", "weight": 0.2, "level": 4.1,},
-          {"name": "GDP per capita", "weight": 0.2, "level": 4.1,},
-          {"name": "Percent of GDP - Remittances", "weight": 0.2, "level": 4.1,},
-          {"name": "Percent of GDP - Agriculture", "weight": 0.2, "level": 4.1,},
-          {"name": "Percent of GDP - Industry", "weight": 0.2, "level": 4.1,}
+          {"name": "GNI per capita", "weight": 0.2, "level": 4.1},
+          {"name": "GDP per capita", "weight": 0.2, "level": 4.1},
+          {"name": "Percent of GDP - Remittances", "weight": 0.2, "level": 4.1},
+          {"name": "Percent of GDP - Agriculture", "weight": 0.2, "level": 4.1},
+          {"name": "Percent of GDP - Industry", "weight": 0.2, "level": 4.1}
         ]
       },
       {
@@ -47,11 +47,11 @@
         "weight": 0.16,
         "level": 3.2,
         "children": [
-          {"name": "Percent of Population that is Literate", "weight": 0.2, "level": 4.2,},
-          {"name": "Gross Enrollment Ratio - Primary Education", "weight": 0.2, "level": 4.2,},
-          {"name": "Mean Years of Schooling", "weight": 0.2, "level": 4.2,},
-          {"name": "Pupil to Teacher Ratio", "weight": 0.2, "level": 4.2,},
-          {"name": "Education expenditures as Percent of GDP", "weight": 0.2, "level": 4.2,}
+          {"name": "Percent of Population that is Literate", "weight": 0.2, "level": 4.2},
+          {"name": "Gross Enrollment Ratio - Primary Education", "weight": 0.2, "level": 4.2},
+          {"name": "Mean Years of Schooling", "weight": 0.2, "level": 4.2},
+          {"name": "Pupil to Teacher Ratio", "weight": 0.2, "level": 4.2},
+          {"name": "Education expenditures as Percent of GDP", "weight": 0.2, "level": 4.2}
         ]
       },
       {
@@ -59,11 +59,11 @@
         "weight": 0.16,
         "level": 3.2,
         "children": [
-          {"name": "Birth Rate", "weight": 0.2, "level": 4.3,},
-          {"name": "Fertility Rate", "weight": 0.2, "level": 4.3,},
-          {"name": "Infant Mortality Rate", "weight": 0.2, "level": 4.3,},
-          {"name": "Life Expectancy", "weight": 0.2, "level": 4.3,},
-          {"name": "Mortality Rate Adult Female (aged 25 over)", "weight": 0.2, "level": 4.3,}
+          {"name": "Birth Rate", "weight": 0.2, "level": 4.3},
+          {"name": "Fertility Rate", "weight": 0.2, "level": 4.3},
+          {"name": "Infant Mortality Rate", "weight": 0.2, "level": 4.3},
+          {"name": "Life Expectancy", "weight": 0.2, "level": 4.3},
+          {"name": "Mortality Rate Adult Female (aged 25 over)", "weight": 0.2, "level": 4.3}
         ]
       },
       {
@@ -71,11 +71,11 @@
         "weight": 0.16,
         "level": 3.2,
         "children": [
-          {"name": "Road Density (per km2)", "weight": 0.2, "level": 4.4,},
-          {"name": "Motor Vehicles per 1000 population", "weight": 0.2, "level": 4.4,},
-          {"name": "Percent of Population with Improved Sanitation Facilities Access", "weight": 0.2, "level": 4.4,},
-          {"name": "Percent of Population with Improved Water Source Access", "weight": 0.2, "level": 4.4,},
-          {"name": "Mobile Cellular Subscriptions per 1000 population", "weight": 0.2, "level": 4.4,}
+          {"name": "Road Density (per km2)", "weight": 0.2, "level": 4.4},
+          {"name": "Motor Vehicles per 1000 population", "weight": 0.2, "level": 4.4},
+          {"name": "Percent of Population with Improved Sanitation Facilities Access", "weight": 0.2, "level": 4.4},
+          {"name": "Percent of Population with Improved Water Source Access", "weight": 0.2, "level": 4.4},
+          {"name": "Mobile Cellular Subscriptions per 1000 population", "weight": 0.2, "level": 4.4}
         ]
       },
       {
