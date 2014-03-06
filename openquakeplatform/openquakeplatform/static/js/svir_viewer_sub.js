@@ -82,6 +82,7 @@ var pdLevel;
 // Keep track of project definition elements whos weights have been changes
 var pdWeightList = [];
 var pdTempWeights = [];
+var pdTempSameLevelNames = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -459,13 +460,12 @@ var startApp = function() {
             // find all the weight values for matching level 
             // except the one that has been changed
             if (pdLevel.some(function(currentValue) {
-                return (pdData.level === currentValue && pdData.name != currentValue);
+                return (pdData.level === currentValue && pdData.name != pdWeightList);
             })) {
-                console.log("match");
+                // Push all those weights into weightArray (exclude those in dictionary)
                 pdTempWeights.push(pdData.weight);
+                pdTempSameLevelNames.push(pdData.name);
             }
-            // push all those weights into weightArray (exclude those in dictionary)
-            // add them all up, divide my 'n' and then update the json object with those values
             if (pdName.some(function(currentValue) {
                 return pdData.name === currentValue;
             })) {
@@ -475,6 +475,19 @@ var startApp = function() {
                 rec(currentItem, pdName, newWeight, pdLevel);
             });
             console.log(pdTempWeights);
+            console.log(pdTempWeights.length);
+            // add them all up, divide my 'n' and then update the json object with those values
+            var remander = (1 - newWeight) / pdTempWeights.length;
+            console.log(remander);
+            console.log(pdTempSameLevelNames);
+            if (pdName.some(function(currentValue) {
+
+                
+                console.log(pdData.name === pdTempSameLevelNames);
+                return pdData.name === pdTempSameLevelNames;
+            })) {
+                pdData.weight = remander;
+            }
         }
 
         var spinner = $('#projectDefDialog').append('<br/><input id="spinner" name="spinner" value="0.00">');
@@ -492,6 +505,8 @@ var startApp = function() {
         $('#update-spinner-value').click(function() {
             var newWeight = $('#spinner').spinner("value");
             console.log(newWeight);
+            // Empty temp arrays
+            pdTempSameLevelNames = [];
             pdTempWeights = [];
             rec(pdData, [pdName], newWeight, [pdLevel]);
             console.log(pdData);
