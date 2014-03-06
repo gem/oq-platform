@@ -77,6 +77,11 @@ var data;
 var pdData;
 var pdName;
 var pdWeight;
+var pdLevel;
+
+// Keep track of project definition elements whos weights have been changes
+var pdWeightList = [];
+var pdTempWeights = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -144,7 +149,7 @@ var startApp = function() {
     $("#projectDefDialog").dialog({
         autoOpen: false,
         height: 500,
-        width: 600,
+        width: 800,
         modal: false
     });
 
@@ -428,18 +433,6 @@ var startApp = function() {
         }
     };
 
-    // Find and replace the weighted values
-    function rec(currentObject, values, replacement) {
-        if (values.some(function(currentValue) {
-            return currentObject.name === currentValue;
-        })) {
-            currentObject.weight = replacement;
-        }
-        (currentObject.children || []).forEach(function(currentItem) {
-            rec(currentItem, values, replacement);
-        });
-    }
-
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
@@ -460,7 +453,31 @@ var startApp = function() {
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        var spinner = $('.ui-dialog-titlebar').append('<input id="spinner" name="spinner" value="0.00">');
+
+        // Find and replace the weighted values
+        function rec(pdData, pdName, newWeight, pdLevel) {
+            // find all the weight values for matching level 
+            // except the one that has been changed
+            if (pdLevel.some(function(currentValue) {
+                return (pdData.level === currentValue && pdData.name != currentValue);
+            })) {
+                console.log("match");
+                pdTempWeights.push(pdData.weight);
+            }
+            // push all those weights into weightArray (exclude those in dictionary)
+            // add them all up, divide my 'n' and then update the json object with those values
+            if (pdName.some(function(currentValue) {
+                return pdData.name === currentValue;
+            })) {
+                pdData.weight = newWeight;
+            }
+            (pdData.children || []).forEach(function(currentItem) {
+                rec(currentItem, pdName, newWeight, pdLevel);
+            });
+            console.log(pdTempWeights);
+        }
+
+        var spinner = $('#projectDefDialog').append('<br/><input id="spinner" name="spinner" value="0.00">');
         $(function() {
             $( "#spinner" ).width(40).spinner({
                 min: 0, 
@@ -471,11 +488,12 @@ var startApp = function() {
         });
 
         var nodeEnter;
-        $('.ui-dialog-titlebar').append(' <button type="button" id="update-spinner-value">Update</button>');
+        $('#projectDefDialog').append(' <button type="button" id="update-spinner-value">Update</button>');
         $('#update-spinner-value').click(function() {
             var newWeight = $('#spinner').spinner("value");
             console.log(newWeight);
-            rec(pdData, [pdName], newWeight);
+            pdTempWeights = [];
+            rec(pdData, [pdName], newWeight, [pdLevel]);
             console.log(pdData);
             data = pdData;
             nodeEnter.remove("text");
@@ -549,13 +567,14 @@ var startApp = function() {
                     pdName = d.name;
                     pdData = data;
                     pdWeight = d.weight;
+                    pdLevel = d.level;
+
+                    // keep track of all elements whos weights have been 
+                    // changed by the user
+                    pdWeightList.push(pdName);
 
                     $('#spinner').spinner("value", d.weight);
-                    //nodeEnter.remove("text");
                 });
-
-                console.log(nodeEnter);
-            node.exit().remove();
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
