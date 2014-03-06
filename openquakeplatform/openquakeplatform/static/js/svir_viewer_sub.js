@@ -31,6 +31,7 @@ var svirRankValues = new Array();
 var svirRegionRankKeys = new Array();
 var svirRegionRankValues = new Array();
 var layerControl;
+var selectedPDef;
 
 // An object of all attributes and values to be used for the checkbox selection
 var dataFormated = {};
@@ -70,6 +71,11 @@ var obj17 = {};
 var obj18 = {};
 
 var chart;
+
+// vars used to set the weights of the project definition json
+var pdData;
+var pdName;
+var pdWeight;
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -295,9 +301,9 @@ var startApp = function() {
             selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/40195780493bb7243813491860f9aafb27f1264c?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
-                console.log(json);
+                //console.log(json);
                 encodedData = json.data.content;
-                var selectedPDef = window.atob(encodedData);
+                selectedPDef = window.atob(encodedData);
                 loadPD(selectedPDef);
             });
 
@@ -421,12 +427,25 @@ var startApp = function() {
         }
     };
 
+    // Find and replace the weighted values
+    function rec(currentObject, values, replacement) {
+        if (values.some(function(currentValue) {
+            return currentObject.name === currentValue;
+        })) {
+            currentObject.weight = replacement;
+        }
+        (currentObject.children || []).forEach(function(currentItem) {
+            rec(currentItem, values, replacement);
+        });
+    }
+
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
-        var margin = {top: 20, right: 120, bottom: 20, left: 120},
+
+        var margin = {top: 100, right: 120, bottom: 20, left: 120},
             width = 960 - margin.right - margin.left,
             height = 800 - margin.top - margin.bottom;
     
@@ -439,7 +458,24 @@ var startApp = function() {
         
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
-        
+
+        var spinner = $('#projectDefDialog').append('<input id="spinner" name="spinner" value="0.00">');
+        $(function() {
+            $( "#spinner" ).width(40).spinner({
+                min: 0, 
+                max: 1,
+                step: 0.01,
+                numberFormat: "n"
+            });
+        });
+
+        $('#projectDefDialog').append(' <button type="button" id="update-spinner-value">Update</button>');
+        $('#update-spinner-value').click(function() {
+            var newWeight = $('#spinner').spinner("value");
+            console.log(newWeight);
+            rec(pdData, [pdName], newWeight);
+        });
+
         var svg = d3.select("#projectDefDialog").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
@@ -447,10 +483,10 @@ var startApp = function() {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
         d3.json(selectedPDef, function() {
-            flare = JSON.parse(selectedPDef);
+            data = JSON.parse(selectedPDef);
             
-            console.log(flare);
-            root = flare;
+            console.log(data);
+            root = data;
             root.x0 = height / 2;
             root.y0 = 0;
             
@@ -469,7 +505,7 @@ var startApp = function() {
         d3.select(self.frameElement).style("height", "800px");
         
         function update(source) {
-        
+
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
@@ -490,10 +526,12 @@ var startApp = function() {
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
                 .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-            
+
             nodeEnter.append("text")
                 .attr("class", (function(d) { return "level-" + d.level; }))
-                .attr("id", (function(d) { return d.name; }))
+                //.attr("id", (function(d) { return d.name; }))
+                .attr("id", "spinner")
+                .attr("name", "spinner")
                 .attr("value", (function(d) { return d.weight; }))
                 .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
                 .attr("dy", ".35em")
@@ -501,19 +539,20 @@ var startApp = function() {
                 .text(function(d) { return d.name + " " + d.weight; })
                 .style("fill-opacity", 1e-6)
                 .on("click", function(d) {
-                    //console.log($(this).attr('value'));
-                    //d3.select(this)
-                    // Get the div id of the selected node
-                    var id = $(this).attr('id');
-                    console.log(id);
-                    // Get the class level of the selected node
-                    var level = $(this).attr('class');
-                    console.log(level);
-                    var weight = $(this).attr('value');
-                    console.log(weight);
-                    console.log(d);
+                    console.log(data);
+                    console.log(d.weight);
+                    console.log(d.name);
+                    pdName = d.name;
+                    pdData = d;
+                    pdWeight = d.weight;
+
+                    $('#spinner').spinner("value", d.weight);
+
+                    //rec(data, [name], 55);
+                    console.log(data);
+
                 });
-            
+
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
                 .duration(duration)

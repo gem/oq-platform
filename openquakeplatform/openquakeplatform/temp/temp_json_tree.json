@@ -26,7 +26,7 @@
           {"name": "Human Development Index", "weight": 0.2, "level": 4},
           {"name": "Population Density (people per km2)", "weight": 0.2, "level": 4},
           {"name": "Percent Urban Population", "weight": 0.2, "level": 4},
-          {"name": "Percent of Population that is an International Migran", "weight": 1314},
+          {"name": "Percent of Population that is an International Migran", "weight": 0.2, "level": 4},
           {"name": "Median Age", "weight": 0.2, "level": 4}
         ]
       },
