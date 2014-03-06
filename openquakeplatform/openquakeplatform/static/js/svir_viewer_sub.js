@@ -73,6 +73,7 @@ var obj18 = {};
 var chart;
 
 // vars used to set the weights of the project definition json
+var data;
 var pdData;
 var pdName;
 var pdWeight;
@@ -445,7 +446,7 @@ var startApp = function() {
 
     function loadPD(selectedPDef) {
 
-        var margin = {top: 100, right: 120, bottom: 20, left: 120},
+        var margin = {top: 20, right: 120, bottom: 20, left: 30},
             width = 960 - margin.right - margin.left,
             height = 800 - margin.top - margin.bottom;
     
@@ -459,7 +460,7 @@ var startApp = function() {
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        var spinner = $('#projectDefDialog').append('<input id="spinner" name="spinner" value="0.00">');
+        var spinner = $('.ui-dialog-titlebar').append('<input id="spinner" name="spinner" value="0.00">');
         $(function() {
             $( "#spinner" ).width(40).spinner({
                 min: 0, 
@@ -469,16 +470,23 @@ var startApp = function() {
             });
         });
 
-        $('#projectDefDialog').append(' <button type="button" id="update-spinner-value">Update</button>');
+        var nodeEnter;
+        $('.ui-dialog-titlebar').append(' <button type="button" id="update-spinner-value">Update</button>');
         $('#update-spinner-value').click(function() {
             var newWeight = $('#spinner').spinner("value");
             console.log(newWeight);
             rec(pdData, [pdName], newWeight);
+            console.log(pdData);
+            data = pdData;
+            nodeEnter.remove("text");
+            //$('#project-definition-svg').empty();
+            update(data);
         });
 
         var svg = d3.select("#projectDefDialog").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
+            .attr("id", "project-definition-svg")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
@@ -518,7 +526,7 @@ var startApp = function() {
                 .data(nodes, function(d) { return d.id || (d.id = ++i); });
             
             // Enter any new nodes at the parent's previous position.
-            var nodeEnter = node.enter().append("g")
+            nodeEnter = node.enter().append("g")
                 .attr("class", "node")
                 .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
                 //.on("click", click);
@@ -526,12 +534,11 @@ var startApp = function() {
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
                 .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-
+            
             nodeEnter.append("text")
                 .attr("class", (function(d) { return "level-" + d.level; }))
                 //.attr("id", (function(d) { return d.name; }))
-                .attr("id", "spinner")
-                .attr("name", "spinner")
+                .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
                 .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
                 .attr("dy", ".35em")
@@ -539,19 +546,16 @@ var startApp = function() {
                 .text(function(d) { return d.name + " " + d.weight; })
                 .style("fill-opacity", 1e-6)
                 .on("click", function(d) {
-                    console.log(data);
-                    console.log(d.weight);
-                    console.log(d.name);
                     pdName = d.name;
-                    pdData = d;
+                    pdData = data;
                     pdWeight = d.weight;
 
                     $('#spinner').spinner("value", d.weight);
-
-                    //rec(data, [name], 55);
-                    console.log(data);
-
+                    //nodeEnter.remove("text");
                 });
+
+                console.log(nodeEnter);
+            node.exit().remove();
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
@@ -608,6 +612,7 @@ var startApp = function() {
                 d.x0 = d.x;
                 d.y0 = d.y;
             });
+
         }
         
         // Toggle children on click.
