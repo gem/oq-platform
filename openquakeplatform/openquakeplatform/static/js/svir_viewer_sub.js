@@ -490,15 +490,19 @@ var startApp = function() {
             // does not get over written by the modifyWeightRemainder function
             //console.log("pdTempSameLevelElements: "+pdTempSameLevelElements);
             //console.log("pdHasBeenMod: "+pdHasBeenMod);
-            for (var i = 0; i < pdHasBeenMod.length; i++) {
-                console.log("pdHasBeenMod: "+pdHasBeenMod[i]);
-                var inx = pdTempSameLevelElements.indexOf(pdHasBeenMod[i]);
-                console.log(inx);
-                
-                //console.log("index: "+ inx)
+            console.log("pdHasBeenMod: "+pdHasBeenMod);
+            //remove dups in array
+            var uniqueNames = [];
+            $.each(pdHasBeenMod, function(i, el){
+                if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+            });
+
+            for (var i = 0; i < uniqueNames.length; i++) {
+                var inx = pdTempSameLevelElements.indexOf(uniqueNames[i]);
+
                 if (inx != -1) {
                     //this splice is not working, its splicing too much out of the array :(
-                    pdTempSameLevelElements = pdTempSameLevelElements.splice(inx, 1);
+                    pdTempSameLevelElements = pdTempSameLevelElements.splice(inx, 0);
                 };
             };
             
