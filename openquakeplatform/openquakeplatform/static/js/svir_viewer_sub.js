@@ -80,9 +80,10 @@ var pdWeight;
 var pdLevel;
 
 // Keep track of project definition elements whos weights have been changes
-var pdWeightList = [];
+var pdHasBeenMod = [];
 var pdTempWeights = [];
-var pdTempSameLevelNames = [];
+var pdTempSameLevelElements = [];
+var pdTempRemainder = "";
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -455,39 +456,70 @@ var startApp = function() {
             .projection(function(d) { return [d.y, d.x]; });
 
 
-        // Find and replace the weighted values
-        function rec(pdData, pdName, newWeight, pdLevel) {
-            // find all the weight values for matching level 
-            // except the one that has been changed
+        // Find and replace the weight value of the element that has been 
+        // modified by the user
+        function modifyWeight(pdData, pdName, newWeight, pdLevel) {
+            // Find all the weight values for matching level 
+            // Except the one that has been changed
+            console.log("pdTempSameLevelElements enter function: "+pdTempSameLevelElements);
             if (pdLevel.some(function(currentValue) {
-                return (pdData.level === currentValue && pdData.name != pdWeightList);
+                //console.log("pdData.name: "+pdData.name);
+                //console.log("pdName: "+pdName);
+                //console.log("currentValue: "+currentValue);
+                //console.log("pdData.level: "+ pdData.level);
+                //console.log(pdData.level === currentValue && pdData.name != pdName);
+                return (pdData.level === currentValue && pdData.name != pdName);
             })) {
-                // Push all those weights into weightArray (exclude those in dictionary)
+                // Push all those weights into temp weightArray & keep track of their names
                 pdTempWeights.push(pdData.weight);
-                pdTempSameLevelNames.push(pdData.name);
+                pdTempSameLevelElements.push(pdData.name);
+                //console.log("pdTempSameLevelElements: "+pdTempSameLevelElements)
             }
+            // Find the value that has be changed and updated its weight
             if (pdName.some(function(currentValue) {
                 return pdData.name === currentValue;
             })) {
                 pdData.weight = newWeight;
             }
             (pdData.children || []).forEach(function(currentItem) {
-                rec(currentItem, pdName, newWeight, pdLevel);
+                modifyWeight(currentItem, pdName, newWeight, pdLevel);
             });
-            console.log(pdTempWeights);
-            console.log(pdTempWeights.length);
-            // add them all up, divide my 'n' and then update the json object with those values
-            var remander = (1 - newWeight) / pdTempWeights.length;
-            console.log(remander);
-            console.log(pdTempSameLevelNames);
-            if (pdName.some(function(currentValue) {
-
+            // Update the values of corresponding levels with remainder values
+            pdTempRemainder = (1 - newWeight) / pdTempWeights.length;
+            // Remove pdName from pdTempSameLevelElements so that its weight
+            // does not get over written by the modifyWeightRemainder function
+            //console.log("pdTempSameLevelElements: "+pdTempSameLevelElements);
+            //console.log("pdHasBeenMod: "+pdHasBeenMod);
+            for (var i = 0; i < pdHasBeenMod.length; i++) {
+                console.log("pdHasBeenMod: "+pdHasBeenMod[i]);
+                var inx = pdTempSameLevelElements.indexOf(pdHasBeenMod[i]);
+                console.log(inx);
                 
-                console.log(pdData.name === pdTempSameLevelNames);
-                return pdData.name === pdTempSameLevelNames;
-            })) {
-                pdData.weight = remander;
-            }
+                //console.log("index: "+ inx)
+                if (inx != -1) {
+                    //this splice is not working, its splicing too much out of the array :(
+                    pdTempSameLevelElements = pdTempSameLevelElements.splice(inx, 1);
+                };
+            };
+            
+            console.log("pdTempSameLevelElements after splice: "+pdTempSameLevelElements);
+        }
+
+        // Find and update the weights for the elements that share the 
+        // same level as the one that was modified with remainder values
+        function modifyWeightRemainder(pdData, pdName, newWeight, pdLevel) {
+ 
+            for (var i = 0; i < pdTempSameLevelElements.length; i++) {
+                if (pdName.some(function(currentValue) {
+                    return pdData.name == pdTempSameLevelElements[i];
+                })) {
+                    pdData.weight = pdTempRemainder;
+                }
+                (pdData.children || []).forEach(function(currentItem) {
+                    modifyWeightRemainder(currentItem, pdName, newWeight, pdLevel);
+                });
+            };
+            
         }
 
         var spinner = $('#projectDefDialog').append('<br/><input id="spinner" name="spinner" value="0.00">');
@@ -506,9 +538,10 @@ var startApp = function() {
             var newWeight = $('#spinner').spinner("value");
             console.log(newWeight);
             // Empty temp arrays
-            pdTempSameLevelNames = [];
-            pdTempWeights = [];
-            rec(pdData, [pdName], newWeight, [pdLevel]);
+            pdTempSameLevelElements.splice(0, pdTempSameLevelElements.length);
+            pdTempWeights.splice(0, pdTempWeights.length);
+            modifyWeight(pdData, [pdName], newWeight, [pdLevel]);
+            modifyWeightRemainder(pdData, [pdName], newWeight, [pdLevel]);
             console.log(pdData);
             data = pdData;
             nodeEnter.remove("text");
@@ -586,7 +619,7 @@ var startApp = function() {
 
                     // keep track of all elements whos weights have been 
                     // changed by the user
-                    pdWeightList.push(pdName);
+                    pdHasBeenMod.push(pdName);
 
                     $('#spinner').spinner("value", d.weight);
                 });
