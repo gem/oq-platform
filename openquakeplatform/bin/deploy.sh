@@ -92,11 +92,26 @@ isc_viewer_dataloader () {
 
 econd_dataloader () {
     cat oq-platform/openquakeplatform/openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e oqplatform
-    oq-platform/openquakeplatform/openquakeplatform/econd/bin/photo_synt.sh oq-platform/openquakeplatform/openquakeplatform/econd/data/photo_synt_list.csv oq-platform/openquakeplatform/openquakeplatform/econd/data/placeholder.png /var/www/openquake/platform/uploaded
-    mkdir -p /var/www/openquake/platform/uploaded/
+
+    if [ -d "private_data/econd/pictures" ]; then
+        if [ -d "/var/www/openquake/platform/uploaded/" ]; then
+            rm -rf "/var/www/openquake/platform/uploaded/"
+        fi
+        cp -r private_data/econd/pictures /var/www/openquake/platform/uploaded
+    else
+        mkdir -p /var/www/openquake/platform/uploaded/
+        oq-platform/openquakeplatform/openquakeplatform/econd/bin/photo_synt.sh oq-platform/openquakeplatform/openquakeplatform/econd/data/photo_synt_list.csv oq-platform/openquakeplatform/openquakeplatform/econd/data/placeholder.png /var/www/openquake/platform/uploaded
+    fi
     chown -R www-data.www-data /var/www/openquake/platform/uploaded/
 }
 
+econd_fixtureupdate () {
+    oqpdir="$1"
+
+    if [ -f "private_data/econd/initial_data.json" ]; then
+        cp private_data/econd/initial_data.json ${oqpdir}/econd/fixtures
+    fi
+}
 #
 #
 passwd_create () { 
@@ -222,7 +237,6 @@ geoserver_population () {
     mkdir -p "$dstdir/build-gs-tree/${featuretypes_dir}"
     cp -rn "$srcdir/common/gs_data/"* "$dstdir/build-gs-tree"
     for app in "${GEM_APP_LIST[@]}"; do
-        echo "MOPOINT: ${srcdir}/${app}/gs_data"
         if [ ! -d "${srcdir}/${app}/gs_data" ]; then
             continue
         fi
@@ -268,24 +282,26 @@ oq_platform_install () {
 
     # reset and install disabled
     if [ "$GEM_IS_REINSTALL" = "y" ]; then
-        service tomcat7 stop
-        sleep 5
+        service tomcat7 stop                   || true
+        sleep 5                                || true
         pip uninstall -y openquakeplatform     || true
         su - -c "dropdb oqplatform" postgres   || true
         su - -c "dropuser oqplatform" postgres || true
         rm -rf /etc/openquake/platform         || true
-        a2dissite geonode || true
-        a2dissite oqplatform || true
-        service tomcat7 start
+        a2dissite geonode                      || true
+        a2dissite oqplatform                   || true
+        service tomcat7 start                  || true
     fi
 
-if [ 0 -eq 1 ]; then
     # temporarly disabled for geoserver-geonode package trouble
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:geonode/testing
+    add-apt-repository -y ppa:geonode/release
     apt-get update
     apt-get install -y geonode
-fi
+
+    # TODO: add an enhancement to try to manage connection to <hostname>:80 before fallback to localhost:80
+    sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
+
     cd oq-platform/openquakeplatform
     pip install . -U --no-deps
     cd -
@@ -308,10 +324,17 @@ fi
     db_base_create "$GEM_DB_NAME" "$GEM_DB_USER"
     db_gis_create  "$GEM_DB_NAME"
 
+    #
+    #  database population
+    for app in "${GEM_APP_LIST[@]}"; do
+        if function_exists "${app}_fixtureupdate"; then
+            "${app}_fixtureupdate" "$oqpdir"
+        fi
+    done
+
     openquakeplatform syncdb --all --noinput
     openquakeplatform collectstatic --noinput
 
-    echo "Please insert [the_pass] as password for the user 'the_user'"
     openquakeplatform createsuperuser --username=the_user --email=the_mail@openquake.org --noinput
 
     service apache2 restart
@@ -329,7 +352,6 @@ fi
     geoserver_population "$oqpdir" "$oqpdir" "${oqpdir}/bin"
 
     openquakeplatform updatelayers
-
 }
 
 

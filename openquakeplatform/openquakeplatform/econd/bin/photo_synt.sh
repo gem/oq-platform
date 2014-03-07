@@ -1,4 +1,5 @@
 #!/bin/bash
+# set -x
 fname="$1"
 imgname="$2"
 outpath="$3"
