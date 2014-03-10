@@ -3,12 +3,13 @@
 fname="$1"
 imgname="$2"
 outpath="$3"
+cachepath="$3/tmp"
 
 if [ ! -d "$outpath" ]; then
     mkdir -p "$outpath"
 fi
-if [ ! -d "$outpath/tmp" ]; then
-    mkdir -p "$outpath/tmp"
+if [ ! -d "$cachepath" ]; then
+    mkdir -p "$cachepath"
 fi
 
 IFS='
@@ -23,11 +24,11 @@ for i in $(cat "$fname"); do
         mkdir -p "$dname"
     fi
 
-    if [ -f "$outpath/tmp/${geom}" ]; then
-        cp "$outpath/tmp/${geom}" "${outpath}/${name}"
+    if [ -f "${cachepath}/${geom}" ]; then
+        cp "${cachepath}/${geom}" "${outpath}/${name}"
     else
         convert "$imgname" -geometry "${geom}!" "${outpath}/${name}"
-        cp "${outpath}/${name}" "${outpath}/tmp/${geom}"
+        cp "${outpath}/${name}" "${cachepath}/${geom}"
     fi
-    rm -rf "$outpath/tmp"
 done
+rm -rf "${cachepath}"
