@@ -486,34 +486,22 @@ var startApp = function() {
                 pdSessionModIds.push(pdData.id);
             }
 
-
-
-
             // find all modified weights of the same level
-            
             for (var i = 0; i < pdSessionModIds.length; i++) {
                 if (pdLevel.some(function(currentValue) {
-                    // if pdSessionModIds is in the pdLevel then find its weight
+                    // If pdSessionModIds is in the pdLevel then find its weight
                     return (pdData.level == pdLevel && pdData.id == pdSessionModIds[i] && pdData.name != pdName);
                 })) {
-                    console.log("match: "+pdSessionModIds[i]);
-                    console.log("weight: "+pdData.weight);
-                    console.log("name: "+ pdData.name);
-                    // check if any of the other elements that share the level as the new
+                    // Check if any of the other elements that share the level as the new
                     // modified elements, have been previosly modified. 
+                    // TODO record the length of each level and then check if the value beeing modifiyed is the last, if it is, then disactivate spinner
 
-                    console.log(pdSessionWeights[pdData.name][0]);
+                    //TODO round the decimal places
+                    console.log(pdSessionWeights);
                     pdTempSameLevelWeights.push(pdSessionWeights[pdData.name][0]);
-
-                    // Sum the weights of all the previously modified elements of the same level
-                    //pdSessionWeights.shift();
-                    
                 }
                 
             };
-console.log(pdTempSameLevelWeights);
-
-
 
             (pdData.children || []).forEach(function(currentItem) {
                 modifyWeight(currentItem, pdName, newWeight, pdLevel);
@@ -557,10 +545,8 @@ console.log(pdTempSameLevelWeights);
             pdSessionWeights[pdName].push(pdLevel);
             
             // Update the values of corresponding levels with remainder values
-            console.log(pdTempSameLevelWeights.length);
             if (pdTempSameLevelWeights.length == 0) {
                 pdTempRemainder = (1 - newWeight) / pdTempWeights.length;
-                console.log(pdTempRemainder);
             } else if (pdTempSameLevelWeights.length == 1) {
                 var tmp = pdTempSameLevelWeights[0];
                 pdTempRemainder = (1 - (newWeight + tmp)) / (pdTempWeights.length - 1);
@@ -568,8 +554,6 @@ console.log(pdTempSameLevelWeights);
                 $.each(pdTempSameLevelWeights, function() {
                     pdTempWeights += this;
                 })
-                
-                console.log(pdTempWeights);
             }
             console.log("pdTempWeights: "+pdTempWeights);
         }
