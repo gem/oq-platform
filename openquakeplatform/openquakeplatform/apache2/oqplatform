@@ -27,12 +27,12 @@ WSGIDaemonProcess openquakeplatform user=www-data threads=15 processes=2
        Deny from all
     </Directory>
 
-    # <Proxy *>
-    #   Order allow,deny
-    #   Allow from all
-    # </Proxy>
+    <Proxy *>
+      Order allow,deny
+      Allow from all
+    </Proxy>
 
-    # ProxyPreserveHost On
-    # ProxyPass /geoserver http://localhost:8080/geoserver
-    # ProxyPassReverse /geoserver http://localhost:8080/geoserver
+    ProxyPreserveHost On
+    ProxyPass /geoserver http://localhost:8080/geoserver
+    ProxyPassReverse /geoserver http://localhost:8080/geoserver
 </VirtualHost>
