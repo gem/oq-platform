@@ -23,6 +23,7 @@ from django.template import RequestContext
 from django.views.decorators.http import condition
 
 from openquakeplatform.exposure import forms
+from openquakeplatform.utils import allowed_methods, sign_in_required
 from openquakeplatform.exposure import util
 
 COPYRIGHT_HEADER = """\
@@ -94,8 +95,8 @@ NRML_FOOTER = """
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
 
 
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def get_exposure_building_form(request):
     # get the lat long variables from the client
     lat1 = request.GET['lat1']
@@ -127,8 +128,8 @@ def get_exposure_building_form(request):
                               context_instance=RequestContext(request))
 
 
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def get_exposure_population_form(request):
     lat1 = request.GET['lat1']
     lng1 = request.GET['lng1']
@@ -201,8 +202,8 @@ def validate_export(request):
 
 
 @condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_building(request):
     """
     Perform a streaming export of the requested exposure data.
@@ -253,8 +254,8 @@ def export_building(request):
 
 
 @condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_population(request):
     """
     Perform a streaming export of the requested exposure data.

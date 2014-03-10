@@ -19,7 +19,8 @@
 
 from django.http import HttpResponse
 from django.views.decorators.http import condition
-import util
+from openquakeplatform.utils import allowed_methods, sign_in_required
+from openquakeplatform.svir import util
 
 COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
@@ -55,8 +56,8 @@ SV_IDS_AND_NAMES_CSV_HEADER = ('\nid, name\n')
 
 
 @condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_sv_category_names(request):
     """
     Export a csv file containing the requested social vulnerability category
@@ -86,8 +87,8 @@ def export_sv_category_names(request):
 
 
 @condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_sv_data_by_variables_ids(request):
     """
     Export a csv file containing data corresponding to the social vulnerability
