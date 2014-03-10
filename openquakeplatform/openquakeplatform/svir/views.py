@@ -17,12 +17,14 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+import csv
 from django.http import HttpResponse
 from django.views.decorators.http import condition
-from openquakeplatform.utils import allowed_methods, sign_in_required
+from openquakeplatform.utils import (allowed_methods,
+                                     sign_in_required)
 from openquakeplatform.svir import util
 
-COPYRIGHT_HEADER = """\
+COPYRIGHT_HEADER = u"""\
  Version 1.0 released on 31.01.2013
 
  Copyright (C) 2013 GEM Foundation
@@ -49,11 +51,6 @@ COPYRIGHT_HEADER = """\
  More information on licensing: http://www.globalquakemodel.org/licensing
 """
 
-SV_THEMES_CSV_HEADER = ('\ntheme\n')
-SV_SUBTHEMES_CSV_HEADER = ('\nsubtheme\n')
-SV_TAGS_CSV_HEADER = ('\ntag\n')
-SV_IDS_AND_NAMES_CSV_HEADER = ('\nid, name\n')
-
 
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
@@ -78,11 +75,29 @@ def export_sv_category_names(request):
         If also the tag is provided, the csv file will contain the names of the
         corresponding social vulnerability variables and their ids
     """
+    response = HttpResponse(content_type='text/csv')
     content_disp = 'attachment; filename="sv_category_names_export.csv"'
-    mimetype = 'text/csv'
-    response_data = _stream_sv_items(request)
-    response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
+    theme = request.GET.get('theme')
+    subtheme = request.GET.get('subtheme')
+    tag = request.GET.get('tag')
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    response.write(copyright + "\n")
+    writer = csv.writer(response)
+    if theme and subtheme and tag:
+        sv_items = util._get_sv_ids_and_names(theme, subtheme, tag)
+        writer.writerow(["ID", "NAME"])
+    elif theme and subtheme:
+        sv_items = util._get_sv_tags(theme, subtheme)
+        writer.writerow(["TAG"])
+    elif theme:
+        sv_items = util._get_sv_subthemes(theme)
+        writer.writerow(["SUBTHEME"])
+    else:
+        writer.writerow(["THEME"])
+        sv_items = util._get_sv_themes()
+    for sv_item in sv_items:
+        writer.writerow(sv_item)
     return response
 
 
@@ -101,54 +116,36 @@ def export_sv_data_by_variables_ids(request):
                                   vulnerability variables
     """
     if not request.GET.get('sv_variables_ids'):
-        msg = 'A list of social vulnerability indices must be specified'
+        msg = ('A list of comma-separated social vulnerability variable names'
+               ' must be specified')
         response = HttpResponse(msg, status="400")
         return response
+    response = HttpResponse(content_type='text/csv')
     content_disp = 'attachment; filename="sv_data_by_variables_ids_export.csv"'
-    mimetype = 'text/csv'
-    response_data = _stream_sv_data_by_variables_ids(request)
-    response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
-    return response
-
-
-def _stream_sv_items(request):
-    theme = request.GET.get('theme')
-    subtheme = request.GET.get('subtheme')
-    tag = request.GET.get('tag')
     copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    if theme and subtheme and tag:
-        sv_ids_and_names = util._get_sv_ids_and_names(theme, subtheme, tag)
-        yield SV_IDS_AND_NAMES_CSV_HEADER
-        for id, name in sv_ids_and_names:
-            row = [id, name]
-            row = ["\"" + str(x) + "\"" for x in row]
-            yield '%s\n' % ','.join(row)
-        return
-    elif theme and subtheme:
-        sv_items = util._get_sv_tags(theme, subtheme)
-        yield SV_TAGS_CSV_HEADER
-    elif theme:
-        sv_items = util._get_sv_subthemes(theme)
-        yield SV_SUBTHEMES_CSV_HEADER
-    else:
-        sv_items = util._get_sv_themes()
-        yield SV_THEMES_CSV_HEADER
-    for sv_item in sv_items:
-        yield '%s\n' % sv_item
-
-
-def _stream_sv_data_by_variables_ids(request):
+    writer = csv.writer(response)
+    response.write(copyright + "\n")
     sv_variables_ids = request.GET['sv_variables_ids']
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
+    sv_variables_ids_list = sv_variables_ids.split(",")
+    # build the header, appending sv_variables_ids properly
+    header_list = ["ISO", "COUNTRY_NAME"]
+    for sv_variable_id in sv_variables_ids_list:
+        header_list.append(sv_variable_id)
+    header_list.append("GEOMETRY")
+    writer.writerow(header_list)
     sv_data_by_variables_ids = \
         util._get_sv_data_by_variables_ids(sv_variables_ids)
-    yield ('\niso, country_name, %s, geometry\n' % sv_variables_ids)
     for row in sv_data_by_variables_ids:
-        row = ["\"" + unicode(x) + "\"" for x in row]
-        yield '%s\n' % ','.join(row)
+        encoded_row = []
+        for element in row:
+            if isinstance(element, unicode):
+                encoded_element = element.encode('utf-8')
+            else:
+                encoded_element = unicode(element).encode('utf-8')
+            encoded_row.append(encoded_element)
+        writer.writerow(encoded_row)
+    return response
 
 
 def copyright_csv(cr_text):
