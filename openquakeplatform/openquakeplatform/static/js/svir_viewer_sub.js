@@ -82,8 +82,13 @@ var pdLevel;
 // Keep track of project definition elements whos weights have been changes
 var pdHasBeenMod = [];
 var pdTempWeights = [];
+var pdTempSameLevelWeights = [];
 var pdTempSameLevelElements = [];
 var pdTempRemainder = "";
+var pdSessionModIds = [];
+var pdSessionWeights = {};
+var pdTempWeightMod;
+var pdNewWeight;
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -461,52 +466,74 @@ var startApp = function() {
         function modifyWeight(pdData, pdName, newWeight, pdLevel) {
             // Find all the weight values for matching level 
             // Except the one that has been changed
-            console.log("pdTempSameLevelElements enter function: "+pdTempSameLevelElements);
             if (pdLevel.some(function(currentValue) {
-                //console.log("pdData.name: "+pdData.name);
-                //console.log("pdName: "+pdName);
-                //console.log("currentValue: "+currentValue);
-                //console.log("pdData.level: "+ pdData.level);
-                //console.log(pdData.level === currentValue && pdData.name != pdName);
                 return (pdData.level === currentValue && pdData.name != pdName);
             })) {
                 // Push all those weights into temp weightArray & keep track of their names
                 pdTempWeights.push(pdData.weight);
                 pdTempSameLevelElements.push(pdData.name);
-                //console.log("pdTempSameLevelElements: "+pdTempSameLevelElements)
+                pdSessionWeights[pdName] = [];
             }
-            // Find the value that has be changed and updated its weight
+            
+            // Find the value that has been changed and updated its weight
             if (pdName.some(function(currentValue) {
                 return pdData.name === currentValue;
             })) {
                 pdData.weight = newWeight;
+                pdNewWeight = newWeight;
+
+                // keep track of all elements whos weights have been modified
+                pdSessionModIds.push(pdData.id);
             }
+
+
+
+
+            // find all modified weights of the same level
+            
+            for (var i = 0; i < pdSessionModIds.length; i++) {
+                if (pdLevel.some(function(currentValue) {
+                    // if pdSessionModIds is in the pdLevel then find its weight
+                    return (pdData.level == pdLevel && pdData.id == pdSessionModIds[i] && pdData.name != pdName);
+                })) {
+                    console.log("match: "+pdSessionModIds[i]);
+                    console.log("weight: "+pdData.weight);
+                    console.log("name: "+ pdData.name);
+                    // check if any of the other elements that share the level as the new
+                    // modified elements, have been previosly modified. 
+
+                    console.log(pdSessionWeights[pdData.name][0]);
+                    pdTempSameLevelWeights.push(pdSessionWeights[pdData.name][0]);
+
+                    // Sum the weights of all the previously modified elements of the same level
+                    //pdSessionWeights.shift();
+                    
+                }
+                
+            };
+console.log(pdTempSameLevelWeights);
+
+
+
             (pdData.children || []).forEach(function(currentItem) {
                 modifyWeight(currentItem, pdName, newWeight, pdLevel);
             });
-            // Update the values of corresponding levels with remainder values
-            pdTempRemainder = (1 - newWeight) / pdTempWeights.length;
-            // Remove pdName from pdTempSameLevelElements so that its weight
-            // does not get over written by the modifyWeightRemainder function
-            //console.log("pdTempSameLevelElements: "+pdTempSameLevelElements);
-            //console.log("pdHasBeenMod: "+pdHasBeenMod);
-            console.log("pdHasBeenMod: "+pdHasBeenMod);
-            //remove dups in array
+
+            // Remove dups in array
             var uniqueNames = [];
             $.each(pdHasBeenMod, function(i, el){
-                if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+                if($.inArray(el, pdHasBeenMod) === -1) pdHasBeenMod.push(el);
             });
 
-            for (var i = 0; i < uniqueNames.length; i++) {
-                var inx = pdTempSameLevelElements.indexOf(uniqueNames[i]);
+            // Remove pdName from pdTempSameLevelElements so that its weight
+            // does not get over written by the modifyWeightRemainder function
+            for (var i = 0; i < pdHasBeenMod.length; i++) {
+                var inx = pdTempSameLevelElements.indexOf(pdHasBeenMod[i]);
 
                 if (inx != -1) {
-                    //this splice is not working, its splicing too much out of the array :(
                     pdTempSameLevelElements = pdTempSameLevelElements.splice(inx, 0);
                 };
             };
-            
-            console.log("pdTempSameLevelElements after splice: "+pdTempSameLevelElements);
         }
 
         // Find and update the weights for the elements that share the 
@@ -522,9 +549,31 @@ var startApp = function() {
                 (pdData.children || []).forEach(function(currentItem) {
                     modifyWeightRemainder(currentItem, pdName, newWeight, pdLevel);
                 });
-            };
-            
+            }; 
         }
+
+        function sumWeightModElements(newWeight) {
+            pdSessionWeights[pdName].push(pdNewWeight);
+            pdSessionWeights[pdName].push(pdLevel);
+            
+            // Update the values of corresponding levels with remainder values
+            console.log(pdTempSameLevelWeights.length);
+            if (pdTempSameLevelWeights.length == 0) {
+                pdTempRemainder = (1 - newWeight) / pdTempWeights.length;
+                console.log(pdTempRemainder);
+            } else if (pdTempSameLevelWeights.length == 1) {
+                var tmp = pdTempSameLevelWeights[0];
+                pdTempRemainder = (1 - (newWeight + tmp)) / (pdTempWeights.length - 1);
+            } else if (pdTempSameLevelWeights.length > 1) {
+                $.each(pdTempSameLevelWeights, function() {
+                    pdTempWeights += this;
+                })
+                
+                console.log(pdTempWeights);
+            }
+            console.log("pdTempWeights: "+pdTempWeights);
+        }
+
 
         var spinner = $('#projectDefDialog').append('<br/><input id="spinner" name="spinner" value="0.00">');
         $(function() {
@@ -540,13 +589,15 @@ var startApp = function() {
         $('#projectDefDialog').append(' <button type="button" id="update-spinner-value">Update</button>');
         $('#update-spinner-value').click(function() {
             var newWeight = $('#spinner').spinner("value");
-            console.log(newWeight);
             // Empty temp arrays
             pdTempSameLevelElements.splice(0, pdTempSameLevelElements.length);
-            pdTempWeights.splice(0, pdTempWeights.length);
+            //pdTempWeights.splice(0, pdTempWeights.length);
+            pdTempWeights = [];
+            pdTempSameLevelWeights = [];
             modifyWeight(pdData, [pdName], newWeight, [pdLevel]);
+            sumWeightModElements(newWeight);
             modifyWeightRemainder(pdData, [pdName], newWeight, [pdLevel]);
-            console.log(pdData);
+            
             data = pdData;
             nodeEnter.remove("text");
             //$('#project-definition-svg').empty();
