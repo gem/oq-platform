@@ -35,6 +35,19 @@ GEM_WEBDIR=/var/www/openquake/platform
 GEM_LOCAL_SETTINGS_TMPL="local_settings.py.template"
 GEM_LOCAL_SETTINGS="/etc/openquake/platform/local_settings.py"
 
+#
+#   geoserver related vars
+#
+# base data dir in ubuntu production environment
+GEM_GS_DATADIR="/usr/share/geoserver/data"
+# geoserver default workspace
+GEM_GS_WS_NAME="oqplatform"
+# geoserver default datastore
+GEM_GS_DS_NAME="oqplatform"
+
+#
+#   postgis related vars
+#
 POSTGIS_DIR=/usr/share/postgresql/9.1/contrib/
 POSTGIS_FILES=( ${POSTGIS_DIR}{postgis-1.5/postgis,postgis-1.5/spatial_ref_sys,postgis_comments}.sql )
 export NL='
@@ -90,6 +103,9 @@ isc_viewer_dataloader () {
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
 }
 
+
+#
+#
 econd_dataloader () {
     cat oq-platform/openquakeplatform/openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e oqplatform
 
@@ -223,9 +239,7 @@ db_gis_create () {
 #
 geoserver_population () {
     local srcdir="$1" dstdir="$2" bindir="$3"
-
-    workspace_name=oqplatform
-    datastore_name=oqplatform
+    local workspace_name="$GEM_GS_WS_NAME" datastore_name="$GEM_GS_DS_NAME"
 
     rm -rf "$dstdir/build-gstree"
     mkdir -p "$dstdir/build-gs-tree"
@@ -240,6 +254,17 @@ geoserver_population () {
         if [ ! -d "${srcdir}/${app}/gs_data" ]; then
             continue
         fi
+        if [ -d "${srcdir}/${app}/gs_data/datastores" ]; then
+            cp "${srcdir}/${app}/gs_data/datastores/"* "$dstdir/build-gs-tree/workspaces/${workspace_name}/datastores"
+            datastore_name="$(basename "${srcdir}/${app}/gs_data/datastores/"* .xml)"
+        else
+            datastore_name="$GEM_GS_DS_NAME"
+        fi
+        featuretypes_dir="workspaces/${workspace_name}/datastores/${datastore_name}/featuretypes"
+        if [ ! -d "$featuretypes_dir" ]; then
+            mkdir -p "$dstdir/build-gs-tree/${featuretypes_dir}"
+        fi
+
         if [ -d "${srcdir}/${app}/gs_data/layers" ]; then
             cp -rn "${srcdir}/${app}/gs_data/layers/"*       "${dstdir}/build-gs-tree/layers"
         fi
@@ -260,6 +285,14 @@ geoserver_population () {
     rm -rf output
     ${bindir}/oq-gs-builder.sh drop
     ${bindir}/oq-gs-builder.sh restore "${dstdir}/build-gs-tree"
+
+    #
+    #  post population
+    for app in "${GEM_APP_LIST[@]}"; do
+        if [ -d "${dstdir}/build-gs-tree/tmpl/${app}/datastore" ]; then
+            cp -rn "${dstdir}/build-gs-tree/tmpl/${app}/datastore/"* "${GEM_GS_DATADIR}/workspaces/${workspace_name}/"
+        fi
+    done
 }
 
 #
