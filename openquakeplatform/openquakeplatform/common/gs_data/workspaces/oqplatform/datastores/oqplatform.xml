@@ -4,7 +4,7 @@
   <enabled>true</enabled>
   <workspace>
     <name>oqplatform</name>
-    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="#GS_PROTO#//#GS_HOST#:#GS_PORT#/geoserver/rest/workspaces/oqplatform.xml" type="application/xml"/>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform.xml" type="application/xml"/>
   </workspace>
   <connectionParameters>
     <entry key="port">5432</entry>
@@ -18,6 +18,6 @@
   </connectionParameters>
   <__default>false</__default>
   <featureTypes>
-    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="#GS_PROTO#//#GS_HOST#:#GS_PORT#/geoserver/rest/workspaces/oqplatform/datastores/oqplatform/featuretypes.xml" type="application/xml"/>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform/featuretypes.xml" type="application/xml"/>
   </featureTypes>
 </dataStore>
