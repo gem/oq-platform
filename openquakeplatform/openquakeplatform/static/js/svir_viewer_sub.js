@@ -82,13 +82,9 @@ var pdLevel;
 // Keep track of project definition elements whos weights have been changes
 var pdHasBeenMod = [];
 var pdTempWeights = [];
-var pdTempSameLevelWeights = [];
-var pdTempSameLevelElements = [];
-var pdTempRemainder = "";
-var pdSessionModIds = [];
-var pdSessionWeights = {};
-var pdTempWeightMod;
-var pdNewWeight;
+var pdTempWeightsComputed = [];
+var pdTempSpinnerIds = [];
+var pdTempIds = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -158,6 +154,14 @@ var startApp = function() {
         height: 500,
         width: 800,
         modal: false
+    });
+
+    //  Project definition weight dialog
+    $("#projectDefWeightDialog").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 500,
+        modal: true
     });
 
     $("#project-definition").button().click(function() {
@@ -236,8 +240,6 @@ var startApp = function() {
             };
         }
 
-        console.log(categoryList);
-
         // Create the category list (population the object)
         for (var i=0; i < json.length; i++) {
             var name = json[i].mapped_value;
@@ -314,7 +316,6 @@ var startApp = function() {
             selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/40195780493bb7243813491860f9aafb27f1264c?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
-                //console.log(json);
                 encodedData = json.data.content;
                 selectedPDef = window.atob(encodedData);
                 loadPD(selectedPDef);
@@ -460,133 +461,84 @@ var startApp = function() {
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-
-        // Find and replace the weight value of the element that has been 
-        // modified by the user
-        function modifyWeight(pdData, pdName, newWeight, pdLevel) {
-            // Find all the weight values for matching level 
-            // Except the one that has been changed
-            if (pdLevel.some(function(currentValue) {
-                return (pdData.level === currentValue && pdData.name != pdName);
-            })) {
-                // Push all those weights into temp weightArray & keep track of their names
-                pdTempWeights.push(pdData.weight);
-                pdTempSameLevelElements.push(pdData.name);
-                pdSessionWeights[pdName] = [];
-            }
-            
-            // Find the value that has been changed and updated its weight
-            if (pdName.some(function(currentValue) {
-                return pdData.name === currentValue;
-            })) {
-                pdData.weight = newWeight;
-                pdNewWeight = newWeight;
-
-                // keep track of all elements whos weights have been modified
-                pdSessionModIds.push(pdData.id);
-            }
-
-            // find all modified weights of the same level
-            for (var i = 0; i < pdSessionModIds.length; i++) {
-                if (pdLevel.some(function(currentValue) {
-                    // If pdSessionModIds is in the pdLevel then find its weight
-                    return (pdData.level == pdLevel && pdData.id == pdSessionModIds[i] && pdData.name != pdName);
-                })) {
-                    // Check if any of the other elements that share the level as the new
-                    // modified elements, have been previosly modified. 
-                    // TODO record the length of each level and then check if the value beeing modifiyed is the last, if it is, then disactivate spinner
-
-                    //TODO round the decimal places
-                    console.log(pdSessionWeights);
-                    pdTempSameLevelWeights.push(pdSessionWeights[pdData.name][0]);
-                }
-                
-            };
-
-            (pdData.children || []).forEach(function(currentItem) {
-                modifyWeight(currentItem, pdName, newWeight, pdLevel);
-            });
-
-            // Remove dups in array
-            var uniqueNames = [];
-            $.each(pdHasBeenMod, function(i, el){
-                if($.inArray(el, pdHasBeenMod) === -1) pdHasBeenMod.push(el);
-            });
-
-            // Remove pdName from pdTempSameLevelElements so that its weight
-            // does not get over written by the modifyWeightRemainder function
-            for (var i = 0; i < pdHasBeenMod.length; i++) {
-                var inx = pdTempSameLevelElements.indexOf(pdHasBeenMod[i]);
-
-                if (inx != -1) {
-                    pdTempSameLevelElements = pdTempSameLevelElements.splice(inx, 0);
-                };
-            };
-        }
-
-        // Find and update the weights for the elements that share the 
-        // same level as the one that was modified with remainder values
-        function modifyWeightRemainder(pdData, pdName, newWeight, pdLevel) {
- 
-            for (var i = 0; i < pdTempSameLevelElements.length; i++) {
-                if (pdName.some(function(currentValue) {
-                    return pdData.name == pdTempSameLevelElements[i];
-                })) {
-                    pdData.weight = pdTempRemainder;
-                }
-                (pdData.children || []).forEach(function(currentItem) {
-                    modifyWeightRemainder(currentItem, pdName, newWeight, pdLevel);
+        function createSpinner(id, weight, name) {
+            pdTempSpinnerIds.push("spinner-"+id);
+            $('#projectDefWeightDialog').dialog("open");
+            $('#projectDefWeightDialog').append('<br/><p>'+name+': </p><input id="spinner-'+id+'" name="spinner" value="'+weight+'">');
+            $(function() {
+                $("#spinner-"+id).width(50).spinner({
+                    min: 0, 
+                    max: 100,
+                    step: 1,
+                    numberFormat: "n"
                 });
-            }; 
-        }
-
-        function sumWeightModElements(newWeight) {
-            pdSessionWeights[pdName].push(pdNewWeight);
-            pdSessionWeights[pdName].push(pdLevel);
-            
-            // Update the values of corresponding levels with remainder values
-            if (pdTempSameLevelWeights.length == 0) {
-                pdTempRemainder = (1 - newWeight) / pdTempWeights.length;
-            } else if (pdTempSameLevelWeights.length == 1) {
-                var tmp = pdTempSameLevelWeights[0];
-                pdTempRemainder = (1 - (newWeight + tmp)) / (pdTempWeights.length - 1);
-            } else if (pdTempSameLevelWeights.length > 1) {
-                $.each(pdTempSameLevelWeights, function() {
-                    pdTempWeights += this;
-                })
-            }
-            console.log("pdTempWeights: "+pdTempWeights);
-        }
-
-
-        var spinner = $('#projectDefDialog').append('<br/><input id="spinner" name="spinner" value="0.00">');
-        $(function() {
-            $( "#spinner" ).width(40).spinner({
-                min: 0, 
-                max: 1,
-                step: 0.01,
-                numberFormat: "n"
             });
-        });
+        }
 
         var nodeEnter;
-        $('#projectDefDialog').append(' <button type="button" id="update-spinner-value">Update</button>');
-        $('#update-spinner-value').click(function() {
-            var newWeight = $('#spinner').spinner("value");
-            // Empty temp arrays
-            pdTempSameLevelElements.splice(0, pdTempSameLevelElements.length);
-            //pdTempWeights.splice(0, pdTempWeights.length);
-            pdTempWeights = [];
-            pdTempSameLevelWeights = [];
-            modifyWeight(pdData, [pdName], newWeight, [pdLevel]);
-            sumWeightModElements(newWeight);
-            modifyWeightRemainder(pdData, [pdName], newWeight, [pdLevel]);
-            
-            data = pdData;
-            nodeEnter.remove("text");
-            //$('#project-definition-svg').empty();
-            update(data);
-        });
+        function updateButton(){
+            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value">Update</button>');
+            $('#update-spinner-value').click(function() {
+                pdTempWeights = [];
+                pdTempWeightsComputed = [];
+
+                // Get the values of the spinners
+                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).attr('value'));
+                };
+
+                // Adjust the values into percentages
+                pdTempWeights = pdTempWeights.map(Number);
+                var totalWeights = 0;
+                $.each(pdTempWeights,function() {
+                    totalWeights += this;
+                });
+
+                for (var i = 0; i < pdTempWeights.length; i++) {
+                    pdTempWeightsComputed.push(Math.floor((pdTempWeights[i] * 100) / totalWeights));
+                };
+
+                // Uopdate the results back into the spinners and to the d3.js chart
+                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                    $('#'+pdTempSpinnerIds[i]).spinner("value", pdTempWeightsComputed[i]);
+                };
+
+                // Upadte the json with new values
+                for (var i = 0; i < pdTempWeightsComputed.length; i++) {
+                    updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
+                };
+                
+                nodeEnter.remove("text");
+                updateD3Tree(pdData);
+            });
+        };
+
+        function findTreeBranchInfo(pdData, pdName, pdLevel) {
+            // Find out how many elements are in tree branch
+            if (pdLevel.some(function(currentValue) {
+                return (pdData.level == currentValue);
+                
+            })) {
+                pdTempIds.push(pdData.id);
+                createSpinner(pdData.id, pdData.weight, pdData.name);
+            }
+
+            (pdData.children || []).forEach(function(currentItem) {
+                findTreeBranchInfo(currentItem, [pdName], [pdLevel]);
+            });
+        }
+
+        function updateTreeBranch(pdData, id, pdWeight) {
+            if (id.some(function(currentValue) {
+                return (pdData.id == currentValue);
+            })) {
+                pdData.weight = pdWeight;
+            }
+
+            (pdData.children || []).forEach(function(currentItem) {
+                updateTreeBranch(currentItem, id, pdWeight);
+            });
+        }
 
         var svg = d3.select("#projectDefDialog").append("svg")
             .attr("width", width + margin.right + margin.left)
@@ -597,8 +549,6 @@ var startApp = function() {
         
         d3.json(selectedPDef, function() {
             data = JSON.parse(selectedPDef);
-            
-            console.log(data);
             root = data;
             root.x0 = height / 2;
             root.y0 = 0;
@@ -612,13 +562,12 @@ var startApp = function() {
             }
 
             //root.children.forEach(collapse);
-            update(root);
+            updateD3Tree(root);
         });
         
         d3.select(self.frameElement).style("height", "800px");
         
-        function update(source) {
-
+        function updateD3Tree(source) {
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
@@ -660,7 +609,11 @@ var startApp = function() {
                     // changed by the user
                     pdHasBeenMod.push(pdName);
 
-                    $('#spinner').spinner("value", d.weight);
+                    pdTempSpinnerIds = [];
+                    pdTempIds = [];
+                    $('#projectDefWeightDialog').empty();
+                    findTreeBranchInfo(pdData, [pdName], [pdLevel]);
+                    updateButton();
                 });
 
             // Transition nodes to their new position.
@@ -775,8 +728,6 @@ var startApp = function() {
             //  - not sure if you need it though.)
             chartArray[i] = window['obj'+i] = obj;
         };
-
-        console.log(chartArray);
         
         var country = attrClean;
         var m = [80, 160, 200, 160],
@@ -1021,8 +972,6 @@ var startApp = function() {
                     values.push(e.data[d]);
                 }
                 var keys = Object.keys(e.data);
-                //console.log(keys);
-
 
                 $(function() {
                     var max = 6;
@@ -1076,8 +1025,6 @@ var startApp = function() {
                 // give weight to the categories
                 var svirData = e.data;
                 var econWeight = ($( "#econ-weight" ).val() / 100);
-                //console.log(econWeight);
-                console.log(econ);
 
                 //var a = econ.map(function(x) x * 5);
 
@@ -1088,8 +1035,6 @@ var startApp = function() {
                 var f = infra.map(function(x) { return x * ((1 - econWeight) / 5)});
                 var g = social.map(function(x) { return x * ((1 - econWeight) / 5)});
 
-                console.log(b);
-                console.log(a);
                 econ = a;
                 edu = b;
                 gov = c;
