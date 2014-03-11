@@ -17,3 +17,13 @@
   stroke: #ccc;
   stroke-width: 1.5px;
 }
+
+label {
+	display:block;
+    float:left;
+    text-align:left;
+}
+input {
+  width:240px;
+  float:left;	
+}

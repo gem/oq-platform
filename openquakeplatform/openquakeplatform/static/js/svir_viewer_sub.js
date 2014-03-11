@@ -464,7 +464,7 @@ var startApp = function() {
         function createSpinner(id, weight, name) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append('<br/><p>'+name+': </p><input id="spinner-'+id+'" name="spinner" value="'+weight+'">');
+            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" name="spinner" value="'+weight+'"></p>');
             $(function() {
                 $("#spinner-"+id).width(50).spinner({
                     min: 0, 
@@ -622,9 +622,43 @@ var startApp = function() {
                 .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
             
             nodeUpdate.select("circle")
-                .attr("r", 4.5)
-                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-            
+                .attr("r", function (d) {
+                    if (d.weight <= 10) {
+                        return 2;
+                    }
+                    else if (d.weight > 10 && d.weight <= 20 ) {
+                        return 3;
+                    }
+                    else if (d.weight > 20 && d.weight <= 30 ) {
+                        return 4;
+                    }
+                    else if (d.weight > 30 && d.weight <= 40 ) {
+                        return 5;
+                    }
+                    else if (d.weight > 40 && d.weight <= 50 ) {
+                        return 6;
+                    }
+                    else if (d.weight > 50 && d.weight <= 60 ) {
+                        return 7;
+                    }
+                    else if (d.weight > 60 && d.weight <= 70 ) {
+                        return 8;
+                    }
+                    else if (d.weight > 70 && d.weight <= 80 ) {
+                        return 9;
+                    }
+                    else if (d.weight > 80 && d.weight <= 90 ) {
+                        return 10;
+                    }
+                    else if (d.weight > 90 && d.weight <= 100 ) {
+                        return 11;
+                    };
+                })
+                .style("fill", function(d) {
+                    return d.source ? d.source.linkColor: d.linkColor
+                })
+
+
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
             
