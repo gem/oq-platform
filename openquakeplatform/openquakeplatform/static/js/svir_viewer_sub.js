@@ -48,6 +48,11 @@ var layerNames = {};
 var layerGrids = [];
 var projectDefinition = {};
 
+// Three PCP charts
+var iriChart = {};
+var categoryChart = {};
+var indicatorChart = {};
+
 // Grandpapa array
 var chartArray = [];
 
@@ -316,11 +321,12 @@ var startApp = function() {
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
             // Load the project definition json
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/b7ada2e8e65e28138b9b77816f29d3b62b69458e?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/74072235b6804c9d7cc876db478da0417e13f9e4?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
                 selectedPDef = window.atob(encodedData);
+                pdData = JSON.parse(selectedPDef)
                 loadPD(selectedPDef);
             });
 
@@ -469,6 +475,43 @@ var startApp = function() {
         }
     };
 
+
+    var utfGridClickEvent = function(utfGrid) {
+        utfGrid.on('click', function(e) {
+            // Get the SVIR data from the utfGrid
+            console.log(e.data);
+            console.log(pdData);
+            var tmp = {};
+
+            if (e.data) {
+                console.log(iriChart);
+
+                var iri = e.data.ir;
+                iri = iri.split(',');
+                var munic = e.data.municipio;
+                munic = munic.split(',');
+                var pri = e.data.pri;
+                if (pri == undefined) {
+                    pri = e.data.aal;
+                };
+
+                //TODO multiply the raw data value by the weighted vbalue!!
+
+                for (var i = 0; i < munic.length; i++) {
+                    tmp.munic = munic[i]; // municipo name
+                    tmp.iri = iri[i]; // iri values
+                    tmp.pri = pri[i]; //pri values
+                    iriChart[i] = tmp;
+                };
+                
+                console.log(iriChart);
+
+
+            }
+        });
+    } 
+
+
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
@@ -538,7 +581,7 @@ var startApp = function() {
                 
                 nodeEnter.remove("text");
                 updateD3Tree(pdData);
-                processNewPdData();
+                //processNewPdData();
             });
         };
 
@@ -747,13 +790,6 @@ var startApp = function() {
     }
 
 
-     function processNewPdData() {
-        console.log(pdData);
-
-    };
-
-
-
     ////////////////////////////////////////////
     //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
@@ -950,7 +986,7 @@ var startApp = function() {
                 });
             });
         }
-    }
+    } // End PCP Chart
 
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){ 
@@ -1014,7 +1050,7 @@ var startApp = function() {
 
     //var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
     //map.addLayer(utfGrid);
-
+/*
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
             // TODO allow the user to control the number of countries/attributes to interrogate
@@ -1124,7 +1160,7 @@ var startApp = function() {
             }
         }); // End utfGrid click
     } // End utfGridClickEvent
-    
+    */
 };
 
 
