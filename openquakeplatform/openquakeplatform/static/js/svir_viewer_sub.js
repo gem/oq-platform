@@ -33,6 +33,8 @@ var svirRegionRankValues = new Array();
 var layerControl;
 var selectedPDef;
 
+var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
+
 // An object of all attributes and values to be used for the checkbox selection
 var dataFormated = {};
 
@@ -78,9 +80,9 @@ var pdData;
 var pdName;
 var pdWeight;
 var pdLevel;
+var pdParent;
 
 // Keep track of project definition elements whos weights have been changes
-var pdHasBeenMod = [];
 var pdTempWeights = [];
 var pdTempWeightsComputed = [];
 var pdTempSpinnerIds = [];
@@ -257,21 +259,21 @@ var startApp = function() {
             }
         }
 
-    // Get unique category names
-    var categoryUnique = categoryList.filter(function(itm,i,categoryList){
-        return i==categoryList.indexOf(itm);
-    });
-
-    for (var i in categoryUnique) {
-        // Append category names to dropdown list
-        var categoryTitle = categoryUnique[i];
-        var opt = document.createElement('option');
-        opt.innerHTML = categoryTitle;
-        opt.value = categoryTitle;
-        selCat.appendChild(opt);
-        // Append layer list to dowpdown
-        var layerOpt = document.createElement('option');
-    }
+        // Get unique category names
+        var categoryUnique = categoryList.filter(function(itm,i,categoryList){
+            return i==categoryList.indexOf(itm);
+        });
+    
+        for (var i in categoryUnique) {
+            // Append category names to dropdown list
+            var categoryTitle = categoryUnique[i];
+            var opt = document.createElement('option');
+            opt.innerHTML = categoryTitle;
+            opt.value = categoryTitle;
+            selCat.appendChild(opt);
+            // Append layer list to dowpdown
+            var layerOpt = document.createElement('option');
+        }
 
     });
 
@@ -307,27 +309,38 @@ var startApp = function() {
 
             $('#projectDefDialog').empty();
 
-            // Look up the layer id using the layer name
+            // Look up the project definition layer id using the layer name
             var selectedPDefArray = projectDefinition[layerId];
             var selectedPDefStr = selectedPDefArray.toString();
 
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/40195780493bb7243813491860f9aafb27f1264c?callback=_processGithubResponse";
+            // Load the project definition json
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/b7ada2e8e65e28138b9b77816f29d3b62b69458e?callback=_processGithubResponse";
  
-            $.getJSON(selectedPDefStr+'?format=json&callback=?', function(json) {
-                encodedData = json.data.content;
+            $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
+                encodedData = pdJson.data.content;
                 selectedPDef = window.atob(encodedData);
                 loadPD(selectedPDef);
             });
 
+            // Look up the tile layer id using the layer name
             var layerIdArray = layerNames[layerId];
             var selectedLayer = layerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, layerGrids) > -1;
+            
+            console.log(selectedLayer);
+            console.log(layerGrids);
+            console.log(hasGrid);
+
             // Check for duplicae layes
             if (selectedLayer in layers) {
                 showDuplicateMsg();
             }
             else {
+                map.removeLayer(utfGrid);
+                utfGrid = {};
+
                 var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
                     + selectedLayer
                     + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
@@ -337,6 +350,15 @@ var startApp = function() {
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
+
+                if (hasGrid == true) {
+                    gridList = 1;
+                    utfGrid = new L.UtfGrid(TILESTREAM_URL
+                        + selectedLayer
+                        + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                    map.addLayer(utfGrid);
+                    utfGridClickEvent(utfGrid);
+                };
             }
         });
     });
@@ -344,6 +366,12 @@ var startApp = function() {
     // Remove layers from tilestream
     $(document).ready(function() {
         $('#removeLayer').click(function() {
+            gridList = 0;
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            utfGridClickEvent(utfGrid);
     
             var e = document.getElementById("layer-list");
             var layerId = e.options[e.selectedIndex].value;
@@ -510,6 +538,7 @@ var startApp = function() {
                 
                 nodeEnter.remove("text");
                 updateD3Tree(pdData);
+                processNewPdData();
             });
         };
 
@@ -604,11 +633,7 @@ var startApp = function() {
                     pdData = data;
                     pdWeight = d.weight;
                     pdLevel = d.level;
-
-                    // keep track of all elements whos weights have been 
-                    // changed by the user
-                    pdHasBeenMod.push(pdName);
-
+                    pdParent = d.parent.name;
                     pdTempSpinnerIds = [];
                     pdTempIds = [];
                     $('#projectDefWeightDialog').empty();
@@ -720,6 +745,13 @@ var startApp = function() {
             update(d);
         }
     }
+
+
+     function processNewPdData() {
+        console.log(pdData);
+
+    };
+
 
 
     ////////////////////////////////////////////
