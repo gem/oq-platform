@@ -51,7 +51,10 @@ var projectDefinition = {};
 // Three PCP charts
 var iriChart = {};
 var categoryChart = {};
-var indicatorChart = {};
+
+// Primary indicator for the PCP chart
+var primaryIndicator = {};
+var sessionPrimaryIndicator = {};
 
 // Grandpapa array
 var chartArray = [];
@@ -92,6 +95,7 @@ var pdTempWeights = [];
 var pdTempWeightsComputed = [];
 var pdTempSpinnerIds = [];
 var pdTempIds = [];
+var pdTempPrimaryIndicator = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -321,7 +325,7 @@ var startApp = function() {
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
             // Load the project definition json
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/74072235b6804c9d7cc876db478da0417e13f9e4?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/3645f64d9d1501c88097d13cdd06831e52464bd2?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
@@ -475,36 +479,112 @@ var startApp = function() {
         }
     };
 
+    function findPrimaryIndicators(pdData, pi) {
+        // Find all of the primary indicators
+        if (pi.some(function(currentValue) {
+            return (pdData.type == currentValue);
+        })) {
+            console.log(pdData);
+            // Create array of primary indicators
+            pdTempPrimaryIndicator.push(pdData.name);
+        }
+        (pdData.children || []).forEach(function(currentItem) {
+            findPrimaryIndicators(currentItem, [pi]);
+        });
+    }
 
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
             console.log(e.data);
             console.log(pdData);
-            var tmp = {};
+            
+            var tmpIri = {};
+            var tmpPI;
 
             if (e.data) {
                 console.log(iriChart);
+
+                // Need to know all the variables that are primary indicators
+                var pi = "primaryIndicator";
+                findPrimaryIndicators(pdData, [pi])  
 
                 var iri = e.data.ir;
                 iri = iri.split(',');
                 var munic = e.data.municipio;
                 munic = munic.split(',');
+                //console.log(munic);
                 var pri = e.data.pri;
                 if (pri == undefined) {
                     pri = e.data.aal;
                 };
 
-                //TODO multiply the raw data value by the weighted vbalue!!
+                var munic_num = e.data['municipio'].split(',').length;
+                var municArray = e.data['municipio'].split(',');
+                // TODO remove spaces from municArray
 
-                for (var i = 0; i < munic.length; i++) {
-                    tmp.munic = munic[i]; // municipo name
-                    tmp.iri = iri[i]; // iri values
-                    tmp.pri = pri[i]; //pri values
-                    iriChart[i] = tmp;
+                for (var m = 0; m < munic_num; m++) {
+
+                    var tmp = {};
+
+                    for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
+                        var elementName = pdTempPrimaryIndicator[i].toLowerCase();
+                        tmpPI = e.data[pdTempPrimaryIndicator[i].toLowerCase()];
+
+                        if (tmpPI != undefined) {
+
+                            tmpPI = tmpPI.split(',');
+                            
+                            //TODO multiply the raw data value by the weighted vbalue!!
+                            
+                            tmp[elementName] = parseFloat(tmpPI[m]);
+                            primaryIndicator[m] = tmp;
+                        };
+                    };
+                };
+                console.log(primaryIndicator);
+
+                // keep the primaryIndicator obj as is and make a session copy that 
+                // is to be modifyed by the project definition weights 
+                sessionPrimaryIndicator = primaryIndicator;
+
+                for (var m = 0; m < munic_num; m++) {
+                    for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
+                        var elementName = municArray[i];
+                    
+                    
+                        console.log(elementName);
+                        //console.log(m);
+                        //console.log(i);
+                        //console.log(sessionPrimaryIndicator[m]);
+                        //TODO fix this...
+                        //sessionPrimaryIndicator[m][elementName] = (sessionPrimaryIndicator[m][elementName] * 940);
+                    };
                 };
                 
-                console.log(iriChart);
+                console.log(sessionPrimaryIndicator);
+
+
+                // Create the primary indicators obj
+                for (var i = 0; i < munic.length; i++) {
+                    tmp.munic = munic[i];
+                    //console.log(tmp);
+                    //primaryIndicator[i] = tmp;
+                };
+
+                //TODO multiply the raw data value by the weighted vbalue!!
+
+                // Create the iri obj
+                /*
+                for (var i = 0; i < munic.length; i++) {
+                    //console.log(munic[i]);
+                    tmpIri.munic = munic[i]; // municipo name
+                    tmpIri.iri = iri[i]; // iri values
+                    tmpIri.pri = pri[i]; //pri values
+                    iriChart[i] = tmpIri;
+                };
+                */
+                                //console.log(iriChart);
 
 
             }
