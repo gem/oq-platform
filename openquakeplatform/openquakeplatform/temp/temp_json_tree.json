@@ -17,62 +17,67 @@
         "name": "population",
         "weight": 16,
         "level": 3.2,
+        "type": "indicator",
         "children": [
-          {"name": "QFEMALE", "weight": 8.3, "level": 4.0},
-          {"name": "QURBAN", "weight": 8.3, "level": 4.0},
-          {"name": "MIGFOREIGN", "weight": 8.3, "level": 4.0},
-          {"name": "MIGMUNICIP", "weight": 8.3, "level": 4.0},
-          {"name": "QFOREIGN", "weight": 8.3, "level": 4.0},
-          {"name": "QAGEDEP", "weight": 8.3, "level": 4.0},
-          {"name": "POPDENT", "weight": 8.3, "level": 4.0},
-          {"name": "PPUNIT", "weight": 8.3, "level": 4.0},
-          {"name": "QFHH", "weight": 8.3, "level": 4.0},
-          {"name": "QRENTAL", "weight": 8.3, "level": 4.0},
-          {"name": "QDISABLED", "weight": 8.3, "level": 4.0},
-          {"name": "QSSINT", "weight": 8.3, "level": 4.0}
+          {"name": "QFEMALE", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QURBAN", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "MIGFOREIGN", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "MIGMUNICIP", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QFOREIGN", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QAGEDEP", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "POPDENT", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "PPUNIT", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QFHH", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QRENTAL", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QDISABLED", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
+          {"name": "QSSINT", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"}
         ]
       },
       {
         "name": "economy",
         "weight": 16,
         "level": 3.2,
+        "type": "indicator",
         "children": [
-          {"name": "QUNEMPL", "weight": 16.7, "level": 4.1},
-          {"name": "QFEMLBR", "weight": 16.7, "level": 4.1},
-          {"name": "QSECOEMPL", "weight": 16.7, "level": 4.1},
-          {"name": "QSERVEMPL", "weight": 16.7, "level": 4.1},
-          {"name": "QNOSKILLEMPL", "weight": 16.7, "level": 4.1},
-          {"name": "PCPP", "weight": 16.7, "level": 4.1}
+          {"name": "QUNEMPL", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
+          {"name": "QFEMLBR", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
+          {"name": "QSECOEMPL", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
+          {"name": "QSERVEMPL", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
+          {"name": "QNOSKILLEMPL", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
+          {"name": "PCPP", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"}
         ]
       },
       {
         "name": "education",
         "weight": 16,
         "level": 3.2,
+        "type": "indicator",
         "children": [
-          {"name": "QEDLESS", "weight": 50, "level": 4.2},
-          {"name": "EDUTERTIARY", "weight": 50, "level": 4.2}
+          {"name": "QEDLESS", "weight": 50, "level": 4.2, "type": "primaryIndicator"},
+          {"name": "EDUTERTIARY", "weight": 50, "level": 4.2, "type": "primaryIndicator"}
         ]
       },
       {
         "name": "infrastructure",
         "weight": 16,
         "level": 3.2,
+        "type": "indicator",
         "children": [
-          {"name": "QBLDREPAIR", "weight": 25, "level": 4.4},
-          {"name": "NEWBUILD", "weight": 25, "level": 4.4},
-          {"name": "QPOPNOWATER", "weight": 25, "level": 4.4},
-          {"name": "QPOPNOWASTE", "weight": 25, "level": 4.4}
+          {"name": "QBLDREPAIR", "weight": 25, "level": 4.4, "type": "primaryIndicator"},
+          {"name": "NEWBUILD", "weight": 25, "level": 4.4, "type": "primaryIndicator"},
+          {"name": "QPOPNOWATER", "weight": 25, "level": 4.4, "type": "primaryIndicator"},
+          {"name": "QPOPNOWASTE", "weight": 25, "level": 4.4, "type": "primaryIndicator"}
         ]
       },
       {
         "name": "governance",
         "weight": 16,
         "level": 3.2,
+        "type": "indicator",
         "children": [
-          {"name": "CRIMERATE", "weight": 33.3, "level": 4.5},
-          {"name": "QNOVOTEMU", "weight": 33.3, "level": 4.5},
-          {"name": "QNOVOTEPR", "weight": 33.3, "level": 4.5}
+          {"name": "CRIMERATE", "weight": 33.3, "level": 4.5, "type": "primaryIndicator"},
+          {"name": "QNOVOTEMU", "weight": 33.3, "level": 4.5, "type": "primaryIndicator"},
+          {"name": "QNOVOTEPR", "weight": 33.3, "level": 4.5, "type": "primaryIndicator"}
         ]
       }
     ]
