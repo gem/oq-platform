@@ -54,7 +54,10 @@ var categoryChart = {};
 
 // Primary indicator for the PCP chart
 var primaryIndicator = {};
+var categoryIndicator = {};
 var sessionPrimaryIndicator = {};
+var sessionCategoryIndicator = {};
+var defaultPrimaryIndicator = {};
 
 // Grandpapa array
 var chartArray = [];
@@ -92,11 +95,13 @@ var pdParent;
 
 // Keep track of project definition elements whos weights have been changes
 var tempWeight = {};
+var tempCatWeight = {};
 var pdTempWeights = [];
 var pdTempWeightsComputed = [];
 var pdTempSpinnerIds = [];
 var pdTempIds = [];
 var pdTempPrimaryIndicator = [];
+var pdTempCategoryIndicator = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -495,6 +500,21 @@ var startApp = function() {
         });
     }
 
+    function findCategoryIndicators(pdData, ci) {
+        // Find all of the primary indicators
+        if (ci.some(function(currentValue) {
+            return (pdData.type == currentValue);
+        })) {
+            //console.log(pdData);
+            // Create array of primary indicators
+            pdTempCategoryIndicator.push(pdData.name);
+            tempCatWeight[pdData.name.toLowerCase()] = (pdData.weight);
+        }
+        (pdData.children || []).forEach(function(currentItem) {
+            findCategoryIndicators(currentItem, [ci]);
+        });
+    }
+
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
@@ -502,11 +522,15 @@ var startApp = function() {
             
             var tmpIri = {};
             var tmpPI;
+            var tempCI;
 
             if (e.data) {
-                // Need to know all the variables that are primary indicators
+                // Find the variables that are primary indicators
                 var pi = "primaryIndicator";
-                findPrimaryIndicators(pdData, [pi])  
+                var ci = "indicator";
+                findPrimaryIndicators(pdData, [pi]);
+                findCategoryIndicators(pdData, [ci]);
+
 
                 var iri = e.data.ir;
                 iri = iri.split(',');
@@ -521,13 +545,15 @@ var startApp = function() {
                 var munic_num = e.data['municipio'].split(',').length;
                 var municipality = e.data['municipio'].split(',');
                 console.log(municipality);
-                console.log(tempWeight);
-                //var sessionWeight = pdData['weight'].split(',');
+                console.log(tempCatWeight);
+ 
                 for (i=0; i < municipality.length; i++)
                     municipality[i] = municipality[i].trim();
 
+                /////////////////////////////////////////////
+                // Create the raw primary indicator object //
+                /////////////////////////////////////////////
                 for (var m = 0; m < munic_num; m++) {
-
                     var tmp = {};
 
                     for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
@@ -535,10 +561,7 @@ var startApp = function() {
                         tmpPI = e.data[pdTempPrimaryIndicator[i].toLowerCase()];
 
                         if (tmpPI != undefined) {
-
                             tmpPI = tmpPI.split(',');
-                            
-                            //TODO multiply the raw data value by the weighted value!!
                             
                             tmp[elementName] = parseFloat(tmpPI[m]);
                             tmp.municipality = municipality[m];
@@ -547,19 +570,19 @@ var startApp = function() {
                     };
                 };
 
-                // Create the primary indicators obj
+                // Create the primary indicators obj continued 
                 for (var i = 0; i < munic_num.length; i++) {
                     tmp.municipality = municipality[i];
                     //console.log(tmp);
                     primaryIndicator[i] = tmp;
                 };
 
-                console.log(primaryIndicator);
-
-                // keep the primaryIndicator obj as is and make a session copy that 
+                // Keep the primaryIndicator obj as is and make a session copy that 
                 // is to be modifyed by the project definition weights 
+                var defaultPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
                 var sessionPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
-
+                
+                // Multiply the copy of primary indicator data by the weighted value
                 for(var p1 in sessionPrimaryIndicator){
                     for(var p2 in sessionPrimaryIndicator[p1]){
                         if(tempWeight.hasOwnProperty(p2)){
@@ -568,12 +591,50 @@ var startApp = function() {
                     }
                 }
                 
-                console.log(sessionPrimaryIndicator);
+                //////////////////////////////////////////////
+                // Create the raw category indicator object //
+                //////////////////////////////////////////////
+                for (var j = 0; j < munic_num; j++) {
+                    var tmpCat = {};
 
+                    for (var l = 0; l < pdTempCategoryIndicator.length; l++) {
+                        var catElementName = pdTempCategoryIndicator[l].toLowerCase();
+                        tempCI = e.data[pdTempCategoryIndicator[l].toLowerCase()];
 
+                        if (tempCI != undefined) {
+                            tempCI = tempCI.split(',');
+                            
+                            tmpCat[catElementName] = parseFloat(tempCI[j]);
+                            tmpCat.municipality = municipality[j];
+                            categoryIndicator[j] = tmpCat;
+                        };
+                    };
+                };
 
+                // Create the category indicators obj continued 
+                for (var i = 0; i < munic_num.length; i++) {
+                    tmpCat.municipality = municipality[i];
+                    //console.log(tmpCat);
+                    categoryIndicator[i] = tmpCat;
+                };
 
-                //TODO multiply the raw data value by the weighted vbalue!!
+                console.log(categoryIndicator);
+
+                // Keep the categoryIndicator obj as is and make a session copy that 
+                // is to be modifyed by the project definition weights 
+                var sessionCategoryIndicator = JSON.parse( JSON.stringify( categoryIndicator ) );
+                
+                // Multiply the copy of primary indicator data by the weighted value
+                for(var c1 in sessionCategoryIndicator){
+                    for(var c2 in sessionCategoryIndicator[c1]){
+                        if(tempCatWeight.hasOwnProperty(c2)){
+                            sessionCategoryIndicator[c1][c2] *= tempCatWeight[c2];
+                        }
+                    }
+                }
+
+                console.log(sessionCategoryIndicator);
+                //TODO understand how the primary indicators influance the category indicators
 
                 // Create the iri obj
                 /*
