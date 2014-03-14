@@ -91,6 +91,7 @@ var pdLevel;
 var pdParent;
 
 // Keep track of project definition elements whos weights have been changes
+var tempWeight = {};
 var pdTempWeights = [];
 var pdTempWeightsComputed = [];
 var pdTempSpinnerIds = [];
@@ -484,9 +485,10 @@ var startApp = function() {
         if (pi.some(function(currentValue) {
             return (pdData.type == currentValue);
         })) {
-            console.log(pdData);
+            //console.log(pdData);
             // Create array of primary indicators
             pdTempPrimaryIndicator.push(pdData.name);
+            tempWeight[pdData.name.toLowerCase()] = (pdData.weight);
         }
         (pdData.children || []).forEach(function(currentItem) {
             findPrimaryIndicators(currentItem, [pi]);
@@ -497,14 +499,11 @@ var startApp = function() {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
             console.log(e.data);
-            console.log(pdData);
             
             var tmpIri = {};
             var tmpPI;
 
             if (e.data) {
-                console.log(iriChart);
-
                 // Need to know all the variables that are primary indicators
                 var pi = "primaryIndicator";
                 findPrimaryIndicators(pdData, [pi])  
@@ -520,8 +519,12 @@ var startApp = function() {
                 };
 
                 var munic_num = e.data['municipio'].split(',').length;
-                var municArray = e.data['municipio'].split(',');
-                // TODO remove spaces from municArray
+                var municipality = e.data['municipio'].split(',');
+                console.log(municipality);
+                console.log(tempWeight);
+                //var sessionWeight = pdData['weight'].split(',');
+                for (i=0; i < municipality.length; i++)
+                    municipality[i] = municipality[i].trim();
 
                 for (var m = 0; m < munic_num; m++) {
 
@@ -535,42 +538,40 @@ var startApp = function() {
 
                             tmpPI = tmpPI.split(',');
                             
-                            //TODO multiply the raw data value by the weighted vbalue!!
+                            //TODO multiply the raw data value by the weighted value!!
                             
                             tmp[elementName] = parseFloat(tmpPI[m]);
+                            tmp.municipality = municipality[m];
                             primaryIndicator[m] = tmp;
                         };
                     };
                 };
+
+                // Create the primary indicators obj
+                for (var i = 0; i < munic_num.length; i++) {
+                    tmp.municipality = municipality[i];
+                    //console.log(tmp);
+                    primaryIndicator[i] = tmp;
+                };
+
                 console.log(primaryIndicator);
 
                 // keep the primaryIndicator obj as is and make a session copy that 
                 // is to be modifyed by the project definition weights 
-                sessionPrimaryIndicator = primaryIndicator;
+                var sessionPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
 
-                for (var m = 0; m < munic_num; m++) {
-                    for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
-                        var elementName = municArray[i];
-                    
-                    
-                        console.log(elementName);
-                        //console.log(m);
-                        //console.log(i);
-                        //console.log(sessionPrimaryIndicator[m]);
-                        //TODO fix this...
-                        //sessionPrimaryIndicator[m][elementName] = (sessionPrimaryIndicator[m][elementName] * 940);
-                    };
-                };
+                for(var p1 in sessionPrimaryIndicator){
+                    for(var p2 in sessionPrimaryIndicator[p1]){
+                        if(tempWeight.hasOwnProperty(p2)){
+                            sessionPrimaryIndicator[p1][p2] *= tempWeight[p2];
+                        }
+                    }
+                }
                 
                 console.log(sessionPrimaryIndicator);
 
 
-                // Create the primary indicators obj
-                for (var i = 0; i < munic.length; i++) {
-                    tmp.munic = munic[i];
-                    //console.log(tmp);
-                    //primaryIndicator[i] = tmp;
-                };
+
 
                 //TODO multiply the raw data value by the weighted vbalue!!
 
