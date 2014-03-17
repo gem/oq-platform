@@ -2,22 +2,25 @@
   "name": "ir",
   "weight": "",
   "level" : 1,
+  "type" : "topIndicator",
   "children": [
   {
     "name": "aal",
     "weight": 50,
-    "level": 2
+    "level": 2,
+    "type" : "topIndicator",
   },
   {
     "name": "svi",
     "weight": 50,
     "level": 2,
+    "type" : "topIndicator",
     "children": [
       {
         "name": "population",
         "weight": 16,
         "level": 3.2,
-        "type": "indicator",
+        "type": "categoryIndicator",
         "children": [
           {"name": "QFEMALE", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
           {"name": "QURBAN", "weight": 8.3, "level": 4.0, "type": "primaryIndicator"},
@@ -37,7 +40,7 @@
         "name": "economy",
         "weight": 16,
         "level": 3.2,
-        "type": "indicator",
+        "type": "categoryIndicator",
         "children": [
           {"name": "QUNEMPL", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
           {"name": "QFEMLBR", "weight": 16.7, "level": 4.1, "type": "primaryIndicator"},
@@ -48,10 +51,10 @@
         ]
       },
       {
-        "name": "education",
+        "name": "categoryIndicator",
         "weight": 16,
         "level": 3.2,
-        "type": "indicator",
+        "type": "categoryIndicator",
         "children": [
           {"name": "QEDLESS", "weight": 50, "level": 4.2, "type": "primaryIndicator"},
           {"name": "EDUTERTIARY", "weight": 50, "level": 4.2, "type": "primaryIndicator"}
@@ -61,7 +64,7 @@
         "name": "infrastructure",
         "weight": 16,
         "level": 3.2,
-        "type": "indicator",
+        "type": "categoryIndicator",
         "children": [
           {"name": "QBLDREPAIR", "weight": 25, "level": 4.4, "type": "primaryIndicator"},
           {"name": "NEWBUILD", "weight": 25, "level": 4.4, "type": "primaryIndicator"},
@@ -73,7 +76,7 @@
         "name": "governance",
         "weight": 16,
         "level": 3.2,
-        "type": "indicator",
+        "type": "categoryIndicator",
         "children": [
           {"name": "CRIMERATE", "weight": 33.3, "level": 4.5, "type": "primaryIndicator"},
           {"name": "QNOVOTEMU", "weight": 33.3, "level": 4.5, "type": "primaryIndicator"},
