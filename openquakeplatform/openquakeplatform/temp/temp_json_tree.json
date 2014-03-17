@@ -8,7 +8,7 @@
     "name": "aal",
     "weight": 50,
     "level": 2,
-    "type" : "topIndicator",
+    "type" : "topIndicator"
   },
   {
     "name": "svi",
