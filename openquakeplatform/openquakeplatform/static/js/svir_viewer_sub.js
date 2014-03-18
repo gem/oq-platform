@@ -550,11 +550,8 @@ var startApp = function() {
                 findPrimaryIndicators(pdData, [pi]);
 
                 // Create an object for each of the category indicators
-                for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
-                    console.log(pdTempCategoryIndicator[n]);
-                    parentChildKey[pdTempCategoryIndicator[n]] = [];
+                for (var n = 0; n < pdTempCategoryIndicator.length; n++) {                    parentChildKey[pdTempCategoryIndicator[n]] = [];
                     var category = pdTempCategoryIndicator[n];
-                    console.log(parentChildKey);
                 };
 
                 var iri = e.data.ir;
@@ -645,37 +642,57 @@ var startApp = function() {
                 // For each category array, sum and devide by array length
                 // the values.
 
-
-                var foo = [];
-                var bar = {};
+                var pck = [];
+                var catIndicator = {};
                 //var searchElements = [];
                 for (k in parentChildKey) {
-                    foo.push(k);
+                    pck.push(k);
                 };
 
-                for (var i = 0; i < foo.length; i++) {
-                    bar[foo[i]] = [];
+                for (var i = 0; i < pck.length; i++) {
+                    catIndicator[pck[i]] = {};
                 };
 
-                console.log(bar);
-                console.log(foo.length);
-                for (var i = 0; i < foo.length; i++) {
-                    var searchElements = parentChildKey[foo[i]]; //what we are looking for in sessionPrimaryIndicator 
-                    console.log(searchElements);
-                    var value = [];
+                for (var i = 0; i < pck.length; i++) {
+                    //console.log(pck[i]);
+                    searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
 
                     for (var j = 0; j < searchElements.length; j++) {
+                         // contains an array of each category child values
+                        
                         for (var key in sessionPrimaryIndicator) {
                             var obj = sessionPrimaryIndicator[key];
-                        
-                            for (var prop in obj) {
-                                if (prop == searchElements[j]) {
-                                    bar[foo[i]].push(sessionPrimaryIndicator[key][prop]);
-                                };
+                            var prObj = {};
+                            var piArray = [];
+                            //var se = searchElements[i];
+                            //console.log(searchElements[i]);
+                            for (var n = 0; n < searchElements.length; n++) {
+                                //console.log(searchElements[n])
+                                piArray.push(obj[searchElements[n]]);
+                                //console.log(piArray);
                             };
+ 
+                            //console.log(piArray);
+                            var average = 0;
+                            $.each(piArray,function() {
+                                average += this;
+                            });
+                            average = (average / piArray.length); // This contains the category (without weight) value
+                            console.log(pck[i]);
+                            //TODO find this municipality...
+                            //prObj[municipality] = sessionPrimaryIndicator[key][municipality[n]];
+                            //TODO use prObj and a temp object that contains the municipality (key) and average (value)
+                            console.log(prObj);
+                            //TODO append the prObj to the catIndicator object
+                            //catIndicator[pck[i]] = //some object
+
+                            // TODO this avarage value is not weighted!!!****
                         };
+
+
+                       
                     };  
-                    console.log(bar);
+                    console.log(catIndicator);
                     
                 };
 
