@@ -101,7 +101,10 @@ var pdTempWeightsComputed = [];
 var pdTempSpinnerIds = [];
 var pdTempIds = [];
 var pdTempPrimaryIndicator = [];
+var pdTempPrimaryIndicatorLevels = [];
+var pdTempPILevel = {};
 var pdTempCategoryIndicator = [];
+var tempCat = {};
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -331,12 +334,12 @@ var startApp = function() {
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
             // Load the project definition json
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/3645f64d9d1501c88097d13cdd06831e52464bd2?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/579e6a86f1ff6dc6632a9e02ef2e0ca9b46eece6?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
                 selectedPDef = window.atob(encodedData);
-                pdData = JSON.parse(selectedPDef)
+                pdData = JSON.parse(selectedPDef);
                 loadPD(selectedPDef);
             });
 
@@ -493,44 +496,68 @@ var startApp = function() {
             //console.log(pdData);
             // Create array of primary indicators
             pdTempPrimaryIndicator.push(pdData.name);
+            pdTempPrimaryIndicatorLevels[pdData.name.toLowerCase()] = (pdData.level);
+            console.log(pdTempPrimaryIndicatorLevels);
+            //console.log(pdTempPILevel);
             tempWeight[pdData.name.toLowerCase()] = (pdData.weight);
         }
         (pdData.children || []).forEach(function(currentItem) {
             findPrimaryIndicators(currentItem, [pi]);
         });
-    }
+    }    
 
     function findCategoryIndicators(pdData, ci) {
         // Find all of the primary indicators
         if (ci.some(function(currentValue) {
             return (pdData.type == currentValue);
         })) {
-            //console.log(pdData);
             // Create array of primary indicators
             pdTempCategoryIndicator.push(pdData.name);
             tempCatWeight[pdData.name.toLowerCase()] = (pdData.weight);
+            // Create a key pair for each category indicator and its respective child level
+            pdTempPILevel[pdData.name.toLowerCase()] = (pdData.children[0].level);
+            console.log(pdTempPILevel);
         }
         (pdData.children || []).forEach(function(currentItem) {
             findCategoryIndicators(currentItem, [ci]);
         });
     }
 
+    function checkElementCategory(elementName) {
+        var foo = pdTempPrimaryIndicatorLevels[elementName];
+
+        for(var prop in pdTempPILevel) {
+            if(pdTempPILevel.hasOwnProperty(prop)) {
+                if(pdTempPILevel[prop] === foo) {
+                    return prop;
+                }
+            }
+        }
+    }
+
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
-            console.log(e.data);
+            console.log(e.data.firstChild);
             
             var tmpIri = {};
             var tmpPI;
             var tempCI;
 
             if (e.data) {
-                // Find the variables that are primary indicators
+                // Find the variables that are primary indicators and their respecive category
                 var pi = "primaryIndicator";
-                var ci = "indicator";
-                findPrimaryIndicators(pdData, [pi]);
+                var ci = "categoryIndicator";
                 findCategoryIndicators(pdData, [ci]);
+                findPrimaryIndicators(pdData, [pi]);
 
+                // Create an object for each of the category indicators
+                for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
+                    console.log(pdTempCategoryIndicator[n]);
+                    tempCat[pdTempCategoryIndicator[n]] = [];
+                    var category = pdTempCategoryIndicator[n];
+                    console.log(tempCat);
+                };
 
                 var iri = e.data.ir;
                 iri = iri.split(',');
@@ -544,27 +571,47 @@ var startApp = function() {
 
                 var munic_num = e.data['municipio'].split(',').length;
                 var municipality = e.data['municipio'].split(',');
-                console.log(municipality);
-                console.log(tempCatWeight);
+
+
+                /////////////////////////////////////////////
+                //// Create the primary indicator objects ///
+                /////////////////////////////////////////////
  
                 for (i=0; i < municipality.length; i++)
                     municipality[i] = municipality[i].trim();
 
-                /////////////////////////////////////////////
-                // Create the raw primary indicator object //
-                /////////////////////////////////////////////
                 for (var m = 0; m < munic_num; m++) {
                     var tmp = {};
 
                     for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
                         var elementName = pdTempPrimaryIndicator[i].toLowerCase();
+                        //console.log(elementName);
                         tmpPI = e.data[pdTempPrimaryIndicator[i].toLowerCase()];
 
                         if (tmpPI != undefined) {
                             tmpPI = tmpPI.split(',');
                             
+                            // Check and see what category the tmpPI belongs to
+                            var elementsParent =  checkElementCategory(elementName);
+
+                            //console.log(elementsParent);
+
+                            // Keep track of parents and their respective children
+                            for (var k in tempCat) {
+                                if(k == elementsParent) {
+                                    var ep = elementsParent;
+                                    var pos;
+                                    pos = tempCat[ep].indexOf(elementName);
+                                    if (!~pos) {
+                                        tempCat[ep].push(elementName);
+                                    }
+                                    console.log(tempCat);
+                                }
+                            }
+                            
                             tmp[elementName] = parseFloat(tmpPI[m]);
                             tmp.municipality = municipality[m];
+                            //console.log(tempCat);
                             primaryIndicator[m] = tmp;
                         };
                     };
@@ -590,63 +637,31 @@ var startApp = function() {
                         }
                     }
                 }
+
+                console.log(sessionPrimaryIndicator);
                 
+
+                /////////////////////////////////////////////
+                /// Create the category indicator objects ///
+                /////////////////////////////////////////////
+
+
+
+
+
+
                 //////////////////////////////////////////////
-                // Create the raw category indicator object //
+                // Create the IRI category indicator object //
                 //////////////////////////////////////////////
-                for (var j = 0; j < munic_num; j++) {
-                    var tmpCat = {};
-
-                    for (var l = 0; l < pdTempCategoryIndicator.length; l++) {
-                        var catElementName = pdTempCategoryIndicator[l].toLowerCase();
-                        tempCI = e.data[pdTempCategoryIndicator[l].toLowerCase()];
-
-                        if (tempCI != undefined) {
-                            tempCI = tempCI.split(',');
-                            
-                            tmpCat[catElementName] = parseFloat(tempCI[j]);
-                            tmpCat.municipality = municipality[j];
-                            categoryIndicator[j] = tmpCat;
-                        };
-                    };
-                };
-
-                // Create the category indicators obj continued 
-                for (var i = 0; i < munic_num.length; i++) {
-                    tmpCat.municipality = municipality[i];
-                    //console.log(tmpCat);
-                    categoryIndicator[i] = tmpCat;
-                };
-
-                console.log(categoryIndicator);
-
-                // Keep the categoryIndicator obj as is and make a session copy that 
-                // is to be modifyed by the project definition weights 
-                var sessionCategoryIndicator = JSON.parse( JSON.stringify( categoryIndicator ) );
-                
-                // Multiply the copy of primary indicator data by the weighted value
-                for(var c1 in sessionCategoryIndicator){
-                    for(var c2 in sessionCategoryIndicator[c1]){
-                        if(tempCatWeight.hasOwnProperty(c2)){
-                            sessionCategoryIndicator[c1][c2] *= tempCatWeight[c2];
-                        }
-                    }
-                }
-
-                console.log(sessionCategoryIndicator);
-                //TODO understand how the primary indicators influance the category indicators
-
-                // Create the iri obj
                 /*
                 for (var i = 0; i < munic.length; i++) {
                     //console.log(munic[i]);
                     tmpIri.munic = munic[i]; // municipo name
                     tmpIri.iri = iri[i]; // iri values
-                    tmpIri.pri = pri[i]; //pri values
+                    tmpIri.pri = pri[i]; // pri values
                     iriChart[i] = tmpIri;
                 };
                 */
-                                //console.log(iriChart);
 
 
             }
@@ -679,11 +694,11 @@ var startApp = function() {
             $('#projectDefWeightDialog').dialog("open");
             $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" name="spinner" value="'+weight+'"></p>');
             $(function() {
-                $("#spinner-"+id).width(50).spinner({
-                    min: 0, 
+                $("#spinner-"+id).width(100).spinner({
+                    min: 0.00000001, 
                     max: 100,
-                    step: 1,
-                    numberFormat: "n"
+                    step: 0.01,
+                    numberFormat: "n",
                 });
             });
         }
@@ -708,7 +723,8 @@ var startApp = function() {
                 });
 
                 for (var i = 0; i < pdTempWeights.length; i++) {
-                    pdTempWeightsComputed.push(Math.floor((pdTempWeights[i] * 100) / totalWeights));
+                    var tempMath = Math.floor((pdTempWeights[i] * 100) / totalWeights);
+                    pdTempWeightsComputed.push(tempMath / 100);
                 };
 
                 // Uopdate the results back into the spinners and to the d3.js chart

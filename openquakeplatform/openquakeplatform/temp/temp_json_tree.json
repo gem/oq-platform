@@ -2,19 +2,17 @@
   "name": "ir",
   "weight": "",
   "level" : 1,
-  "type" : "topIndicator",
+  "type" : "categoryIndicator"
   "children": [
   {
     "name": "aal",
     "weight": 50,
-    "level": 2,
-    "type" : "topIndicator"
+    "level": 2
   },
   {
     "name": "svi",
     "weight": 50,
     "level": 2,
-    "type" : "topIndicator",
     "children": [
       {
         "name": "population",
@@ -51,7 +49,7 @@
         ]
       },
       {
-        "name": "categoryIndicator",
+        "name": "education",
         "weight": 16,
         "level": 3.2,
         "type": "categoryIndicator",
