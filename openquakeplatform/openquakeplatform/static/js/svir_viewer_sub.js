@@ -104,7 +104,7 @@ var pdTempPrimaryIndicator = [];
 var pdTempPrimaryIndicatorLevels = [];
 var pdTempPILevel = {};
 var pdTempCategoryIndicator = [];
-var tempCat = {};
+var parentChildKey = {};
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -497,8 +497,6 @@ var startApp = function() {
             // Create array of primary indicators
             pdTempPrimaryIndicator.push(pdData.name);
             pdTempPrimaryIndicatorLevels[pdData.name.toLowerCase()] = (pdData.level);
-            console.log(pdTempPrimaryIndicatorLevels);
-            //console.log(pdTempPILevel);
             tempWeight[pdData.name.toLowerCase()] = (pdData.weight);
         }
         (pdData.children || []).forEach(function(currentItem) {
@@ -554,9 +552,9 @@ var startApp = function() {
                 // Create an object for each of the category indicators
                 for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
                     console.log(pdTempCategoryIndicator[n]);
-                    tempCat[pdTempCategoryIndicator[n]] = [];
+                    parentChildKey[pdTempCategoryIndicator[n]] = [];
                     var category = pdTempCategoryIndicator[n];
-                    console.log(tempCat);
+                    console.log(parentChildKey);
                 };
 
                 var iri = e.data.ir;
@@ -597,21 +595,20 @@ var startApp = function() {
                             //console.log(elementsParent);
 
                             // Keep track of parents and their respective children
-                            for (var k in tempCat) {
+                            for (var k in parentChildKey) {
                                 if(k == elementsParent) {
                                     var ep = elementsParent;
                                     var pos;
-                                    pos = tempCat[ep].indexOf(elementName);
+                                    pos = parentChildKey[ep].indexOf(elementName);
                                     if (!~pos) {
-                                        tempCat[ep].push(elementName);
+                                        parentChildKey[ep].push(elementName);
                                     }
-                                    console.log(tempCat);
                                 }
                             }
                             
                             tmp[elementName] = parseFloat(tmpPI[m]);
                             tmp.municipality = municipality[m];
-                            //console.log(tempCat);
+                            //console.log(parentChildKey);
                             primaryIndicator[m] = tmp;
                         };
                     };
@@ -645,8 +642,42 @@ var startApp = function() {
                 /// Create the category indicator objects ///
                 /////////////////////////////////////////////
 
+                // For each category array, sum and devide by array length
+                // the values.
 
 
+                var foo = [];
+                var bar = {};
+                //var searchElements = [];
+                for (k in parentChildKey) {
+                    foo.push(k);
+                };
+
+                for (var i = 0; i < foo.length; i++) {
+                    bar[foo[i]] = [];
+                };
+
+                console.log(bar);
+                console.log(foo.length);
+                for (var i = 0; i < foo.length; i++) {
+                    var searchElements = parentChildKey[foo[i]]; //what we are looking for in sessionPrimaryIndicator 
+                    console.log(searchElements);
+                    var value = [];
+
+                    for (var j = 0; j < searchElements.length; j++) {
+                        for (var key in sessionPrimaryIndicator) {
+                            var obj = sessionPrimaryIndicator[key];
+                        
+                            for (var prop in obj) {
+                                if (prop == searchElements[j]) {
+                                    bar[foo[i]].push(sessionPrimaryIndicator[key][prop]);
+                                };
+                            };
+                        };
+                    };  
+                    console.log(bar);
+                    
+                };
 
 
 
