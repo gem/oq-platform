@@ -42,7 +42,8 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
               dbpass=DB_PASSWORD, host='oq-platform',
               hazard_calc_addr='http://oq-platform:8800',
               risk_calc_addr='http://oq-platform:8800',
-              oq_engserv_key='oq-platform'):
+              oq_engserv_key='oq-platform',
+              mediaroot='/tmp', staticroot='/home'):
 
     """
     :param str dbpass:
@@ -51,9 +52,10 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
-    baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword,
-            siteurl=siteurl, hazard_calc_addr=hazard_calc_addr,
-            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key)
+    baseenv(dbname=dbname, dbuser=dbuser, dbpass=dbpass,
+            host=host, hazard_calc_addr=hazard_calc_addr,
+            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
+            mediaroot=mediaroot, staticroot=staticroot)
     # fix it in a proper way
     apps()
 
@@ -68,9 +70,11 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     #if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
 
-def baseenv(siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
-            dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
-    _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key)
+def baseenv(
+            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
+            dbname='oqplatform', dbuser='oqplatform', dbpass=DB_PASSWORD,
+            mediaroot='/tmp', staticroot='/home'):
+    _write_local_settings(dbname,  dbuser, dbpass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -85,52 +89,25 @@ def baseenv(siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
     # We need to start geoserver
     init_start()
 
-    geoserver_init(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
-
-
-def geoserver_init(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
-    # GeoServer: create workspace
-    _geoserver_api(
-        'workspaces.xml',
-        '<workspace><name>%s</name></workspace>' % WS_NAME,
-        message='Creating workspace...'
-    )
-    # GeoServer: create store
-    store_content = """\
-<dataStore>
-<name>%(dsname)s</name>
-<connectionParameters>
-     <host>localhost</host>
-     <port>5432</port>
-     <database>%(dbname)s</database>
-     <schema>public</schema>
-     <user>%(dbuser)s</user>
-     <passwd>%(dbpassword)s</passwd>
-     <dbtype>postgis</dbtype>
-</connectionParameters>
-</dataStore>"""
-    store_content %= dict(dsname=DS_NAME, dbname=dbname, dbuser=dbuser,
-                          dbpassword=dbpassword)
-
-    _geoserver_api(
-        'workspaces/%s/datastores.xml' % WS_NAME,
-        store_content, message='Creating workspace...'
-    )
-
+APPS_LIST=['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
+           'econd', 'weblib', 'gemecdwebsite', 'icebox']
 
 def apps():
+    globs = globals()
+    apps_list=""
     # Add the apps
-    _add_isc_viewer()
-    _add_faulted_earth()
-    _add_ghec_viewer()
-    _add_gaf_viewer()
-    _add_econd()
-    _add_weblib()
-    _add_gemecdwebsite()
-    add_icebox()
+    for app in APPS_LIST:
+        apps_list += " '"+app+"'"
+        try:
+            add_fn = globs["_add_" + app]
+        except KeyError:
+            pass
+        else:
+            add_fn()
 
+    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' '.' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + DB_PASSWORD + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
-    local('openquakeplatform/bin/oq-gs-builder.sh restore gs_data')
+    local('openquakeplatform/bin/oq-gs-builder.sh restore build-gs-tree')
     local('python manage.py updatelayers')
 
 
@@ -171,7 +148,7 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key):
+def _write_local_settings(dbname, dbuser, dbpass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
         fh.write(local_settings % dict(dbname=dbname,
@@ -180,7 +157,9 @@ def _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr,
                                        host=host,
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
-                                       oq_engserv_key=oq_engserv_key))
+                                       oq_engserv_key=oq_engserv_key,
+                                       mediaroot=mediaroot,
+                                       staticroot=staticroot))
 
 
 def _pgsudo(command, **kwargs):
@@ -298,10 +277,8 @@ def _add_isc_viewer():
           ' ../oq-ui-api/data/isc_data_app.csv')
 
 
-def add_icebox():
-    local('mkdir -p ./geoserver/data/templates/')
-    local('cp ./gs_data/icebox/content.ftl ./geoserver/data/templates/')
-
+def _add_icebox():
+    pass
 
 def _add_faulted_earth():
     pass

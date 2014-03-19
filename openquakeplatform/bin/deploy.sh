@@ -236,7 +236,7 @@ db_gis_create () {
 }
 
 #
-#
+# obsolete
 geoserver_population () {
     local srcdir="$1" dstdir="$2" bindir="$3"
     local workspace_name="$GEM_GS_WS_NAME" datastore_name="$GEM_GS_DS_NAME"
@@ -307,9 +307,10 @@ oq_platform_install () {
     
     if [ 1 -eq 1 ]; then
         GEM_DB_PASS="$(passwd_create)"
+        GEM_DB_PASS="K020VGFA"
     else
         GEM_DB_PASS="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print DATABASES['default']['PASSWORD']" )" ;
-        geoserver_population "oq-platform/openquakeplatform/openquakeplatform/" "." "oq-platform/openquakeplatform/openquakeplatform/bin"
+
         exit 123
     fi
 
@@ -382,7 +383,7 @@ oq_platform_install () {
 
     #
     #  geoserver structure population
-    geoserver_population "$oqpdir" "$oqpdir" "${oqpdir}/bin"
+    ${oqpdir}/bin/oq-gs-builder.sh populate "$oqpdir" "$oqpdir" "${oqpdir}/bin" "$GEM_GS_WS_NAME" "$GEM_GS_DS_NAME" "$GEM_DB_PASS" "${GEM_GS_DATADIR}" "${GEM_APP_LIST[@]}"
 
     openquakeplatform updatelayers
 }
