@@ -105,6 +105,7 @@ var pdTempPrimaryIndicatorLevels = [];
 var pdTempPILevel = {};
 var pdTempCategoryIndicator = [];
 var parentChildKey = {};
+var pdTempCatWeight = {};
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -533,6 +534,22 @@ var startApp = function() {
         }
     }
 
+    function findCatIndicatorWeight(pdData, ci) {
+        // Find all of the primary indicators
+        if (ci.some(function(currentValue) {
+            return (pdData.name == currentValue);
+        })) {
+            pdTempCatWeight[pdData.name.toLowerCase()] = (pdData.weight);
+            //pdTempPrimaryIndicator.push(pdData.name);
+            //pdTempPrimaryIndicatorLevels[pdData.name.toLowerCase()] = (pdData.level);
+            //tempWeight[pdData.name.toLowerCase()] = (pdData.weight);
+
+        }
+        (pdData.children || []).forEach(function(currentItem) {
+            findCatIndicatorWeight(currentItem, [ci]);
+        });
+    }
+
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
@@ -550,8 +567,11 @@ var startApp = function() {
                 findPrimaryIndicators(pdData, [pi]);
 
                 // Create an object for each of the category indicators
-                for (var n = 0; n < pdTempCategoryIndicator.length; n++) {                    parentChildKey[pdTempCategoryIndicator[n]] = [];
+                for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
+                    console.log(pdTempCategoryIndicator[n]);
+                    parentChildKey[pdTempCategoryIndicator[n]] = [];
                     var category = pdTempCategoryIndicator[n];
+                    console.log(parentChildKey);
                 };
 
                 var iri = e.data.ir;
@@ -639,65 +659,70 @@ var startApp = function() {
                 /// Create the category indicator objects ///
                 /////////////////////////////////////////////
 
-                // For each category array, sum and devide by array length
-                // the values.
+                // The category indicator is the average value of it's children
+                // and then multiplyed by its respective weight value
 
                 var pck = [];
                 var catIndicator = {};
+                pdTempCatWeight = {};
                 //var searchElements = [];
                 for (k in parentChildKey) {
                     pck.push(k);
                 };
 
                 for (var i = 0; i < pck.length; i++) {
-                    catIndicator[pck[i]] = {};
+                    catIndicator[pck[i]] = [];
                 };
 
                 for (var i = 0; i < pck.length; i++) {
                     //console.log(pck[i]);
                     searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
-
-                    for (var j = 0; j < searchElements.length; j++) {
-                         // contains an array of each category child values
                         
-                        for (var key in sessionPrimaryIndicator) {
-                            var obj = sessionPrimaryIndicator[key];
-                            var prObj = {};
-                            var piArray = [];
-                            //var se = searchElements[i];
-                            //console.log(searchElements[i]);
-                            for (var n = 0; n < searchElements.length; n++) {
-                                //console.log(searchElements[n])
-                                piArray.push(obj[searchElements[n]]);
-                                //console.log(piArray);
-                            };
- 
+                    for (var key in sessionPrimaryIndicator) {
+                        var obj = sessionPrimaryIndicator[key];
+                        var prObj;
+                        var piArray = [];
+                        var mun = sessionPrimaryIndicator[key].municipality;
+                        //var se = searchElements[i];
+                        //console.log(searchElements[i]);
+                        for (var n = 0; n < searchElements.length; n++) {
+                            //console.log(searchElements[n])
+                            piArray.push(obj[searchElements[n]]);
                             //console.log(piArray);
-                            var average = 0;
-                            $.each(piArray,function() {
-                                average += this;
-                            });
-                            average = (average / piArray.length); // This contains the category (without weight) value
-                            console.log(pck[i]);
-                            //TODO find this municipality...
-                            //prObj[municipality] = sessionPrimaryIndicator[key][municipality[n]];
-                            //TODO use prObj and a temp object that contains the municipality (key) and average (value)
-                            console.log(prObj);
-                            //TODO append the prObj to the catIndicator object
-                            //catIndicator[pck[i]] = //some object
-
-                            // TODO this avarage value is not weighted!!!****
                         };
+                        //console.log(piArray);
+                        var average = 0;
+                        $.each(piArray,function() {
+                            average += this;
+                        });
+                        // The category value (without weight)
+                        average = (average / piArray.length); 
 
+                        prObj = mun +' '+ average.toFixed(2);
+                        catIndicator[pck[i]].push(prObj);
+                        // TODO this avarage value is not weighted!!!****
+                    }; 
 
-                       
-                    };  
-                    console.log(catIndicator);
-                    
                 };
 
+                // Get the category indicator weight
+                findCatIndicatorWeight(pdData, [pck[i]]);
+
+                console.log(pdTempCatWeight);
+                // Multiply the category indicator data by the weighted value
+                for(var p1 in catIndicator){
+                    for(var p2 in catIndicator[p1]){
+                        if(pdTempCatWeight.hasOwnProperty(p2)){
+                            console.log("match");
+                            //TODO parse each array into name and value, then multiply by weight
+                            //catIndicator[p1][p2] *= pdTempCatWeight[p2];
+                        }
+                    }
+                }
+                console.log(catIndicator);
 
 
+                
                 //////////////////////////////////////////////
                 // Create the IRI category indicator object //
                 //////////////////////////////////////////////
