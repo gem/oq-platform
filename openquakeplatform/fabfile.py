@@ -39,13 +39,13 @@ GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
 def bootstrap(dbname='oqplatform', dbuser='oqplatform',
-              dbpassword=DB_PASSWORD, siteurl='http://oq-platform/',
+              dbpass=DB_PASSWORD, host='oq-platform',
               hazard_calc_addr='http://oq-platform:8800',
               risk_calc_addr='http://oq-platform:8800',
               oq_engserv_key='oq-platform'):
 
     """
-    :param str dbpassword:
+    :param str dbpass:
         Should match the one in settings.py.
     """
     # check for xmlstarlet installation
@@ -74,7 +74,7 @@ def baseenv(siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
-    user_created = _maybe_createuser(dbuser, dbpassword)
+    user_created = _maybe_createuser(dbuser, dbpass)
     # Add database
     _maybe_createdb(dbname)
     # Add postgis
@@ -176,8 +176,8 @@ def _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr,
     with open('openquakeplatform/local_settings.py', 'w') as fh:
         fh.write(local_settings % dict(dbname=dbname,
                                        dbuser=dbuser,
-                                       dbpassword=dbpassword,
-                                       siteurl=siteurl,
+                                       dbpass=dbpass,
+                                       host=host,
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
                                        oq_engserv_key=oq_engserv_key))
@@ -226,7 +226,7 @@ def _do_curl(cmd):
         print(resp)
 
 
-def _maybe_createuser(dbuser, dbpassword):
+def _maybe_createuser(dbuser, dbpass):
     """
     Returns `True` if the specified database user ``dbuser`` is create, `False`
     if it already exists.
@@ -242,9 +242,9 @@ def _maybe_createuser(dbuser, dbpassword):
         print('Database user "%s" already exists!' % dbuser)
         return False
     else:
-        print('Creating user "%(dbuser)s" with password "%(dbpassword)s.'
-              % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgquery("CREATE ROLE %(dbuser)s ENCRYPTED PASSWORD '%(dbpassword)s' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN" % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
+        print('Creating user "%(dbuser)s" with password "%(dbpass)s.'
+              % dict(dbuser=dbuser, dbpass=DB_PASSWORD))
+        _pgquery("CREATE ROLE %(dbuser)s ENCRYPTED PASSWORD '%(dbpass)s' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN" % dict(dbuser=dbuser, dbpass=DB_PASSWORD))
         return True
 
 
