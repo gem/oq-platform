@@ -2,7 +2,6 @@
   "name": "ir",
   "weight": "",
   "level" : 1,
-  "type" : "categoryIndicator",
   "children": [
   {
     "name": "aal",
