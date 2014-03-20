@@ -16,12 +16,16 @@
 import csv
 from django.core.management.base import BaseCommand, CommandError
 from geonode.maps.models import Map
+from geonode.base.models import ResourceBase
 
 
-class Command(models.Model):
+class Command(BaseCommand):
+	
+    def handle(self, *args, **options):
+    	titles = ((1, "Instrumental Seismic Catalogue"), (2, "Global Historic Catalogue"), (3, "Global Active Faults"))
 
-    def handle(self):
-        table_id = base_resourcebase.objects.get(id=1)
-        table_id.title = "Instrumental Seismic Catalogue"
-        table_id.save()
-        
+    	for id, name in titles:
+        	table_row = ResourceBase.objects.get(id=id)
+        	table_row.title = name
+        	table_row.save()
+
