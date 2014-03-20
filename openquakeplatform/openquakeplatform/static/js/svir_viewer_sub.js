@@ -106,6 +106,7 @@ var pdTempPILevel = {};
 var pdTempCategoryIndicator = [];
 var parentChildKey = {};
 var pdTempCatWeight = {};
+var tempCategory = "";
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -335,7 +336,7 @@ var startApp = function() {
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
             // Load the project definition json
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/579e6a86f1ff6dc6632a9e02ef2e0ca9b46eece6?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/174a54f78ec527acfac8822c5a4e880e240c75a1?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
@@ -664,7 +665,7 @@ var startApp = function() {
 
                 var pck = [];
                 var catIndicator = {};
-                //pdTempCatWeight = {};
+                pdTempCatWeight = {};
                 //var searchElements = [];
                 for (k in parentChildKey) {
                     pck.push(k);
@@ -677,10 +678,10 @@ var startApp = function() {
                 for (var i = 0; i < pck.length; i++) {
                     //console.log(pck[i]);
                     searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
-                    
-                    var prObj = {};
+                        
                     for (var key in sessionPrimaryIndicator) {
                         var obj = sessionPrimaryIndicator[key];
+                        var prObj;
                         var piArray = [];
                         var mun = sessionPrimaryIndicator[key].municipality;
                         //var se = searchElements[i];
@@ -698,27 +699,26 @@ var startApp = function() {
                         // The category value (without weight)
                         average = (average / piArray.length); 
 
-                        prObj[mun] = average.toFixed(2);
+                        prObj = mun +' '+ average.toFixed(2);
                         catIndicator[pck[i]].push(prObj);
                         // TODO this avarage value is not weighted!!!****
+                        tempCategory = pck[i];
                     }; 
 
                 };
 
                 // Get the category indicator weight
-                findCatIndicatorWeight(pdData, [pck[i]]);
+                findCatIndicatorWeight(pdData, [tempCategory]);
 
-                console.log(pdTempCatWeight); // WHY IS THIS EMPTY????
+                console.log(pdTempCatWeight);
                 // Multiply the category indicator data by the weighted value
                 for(var p1 in catIndicator){
                     //for(var p2 in catIndicator[p1]){
-                        console.log(pdTempCatWeight);
+                        //console.log(p2);
                         console.log(p1);
-
-                        //pdTempCatWeight is wrong...
                         if(pdTempCatWeight.hasOwnProperty(p1)){
                             console.log("match");
-                            //TODO multiply by weight
+                            //TODO parse each array into name and value, then multiply by weight
                             //catIndicator[p1][p2] *= pdTempCatWeight[p2];
                         }
                     //}
