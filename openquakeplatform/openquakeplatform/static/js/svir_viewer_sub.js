@@ -569,10 +569,8 @@ var startApp = function() {
 
                 // Create an object for each of the category indicators
                 for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
-                    console.log(pdTempCategoryIndicator[n]);
                     parentChildKey[pdTempCategoryIndicator[n]] = [];
                     var category = pdTempCategoryIndicator[n];
-                    console.log(parentChildKey);
                 };
 
                 var iri = e.data.ir;
@@ -626,7 +624,6 @@ var startApp = function() {
                             
                             tmp[elementName] = parseFloat(tmpPI[m]);
                             tmp.municipality = municipality[m];
-                            //console.log(parentChildKey);
                             primaryIndicator[m] = tmp;
                         };
                     };
@@ -635,7 +632,6 @@ var startApp = function() {
                 // Create the primary indicators obj continued 
                 for (var i = 0; i < munic_num.length; i++) {
                     tmp.municipality = municipality[i];
-                    //console.log(tmp);
                     primaryIndicator[i] = tmp;
                 };
 
@@ -655,7 +651,6 @@ var startApp = function() {
 
                 console.log(sessionPrimaryIndicator);
                 
-
                 /////////////////////////////////////////////
                 /// Create the category indicator objects ///
                 /////////////////////////////////////////////
@@ -678,52 +673,65 @@ var startApp = function() {
                 for (var i = 0; i < pck.length; i++) {
                     //console.log(pck[i]);
                     searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
-                        
-                    for (var key in sessionPrimaryIndicator) {
-                        var obj = sessionPrimaryIndicator[key];
-                        var prObj;
-                        var piArray = [];
-                        var mun = sessionPrimaryIndicator[key].municipality;
-                        //var se = searchElements[i];
-                        //console.log(searchElements[i]);
-                        for (var n = 0; n < searchElements.length; n++) {
-                            //console.log(searchElements[n])
-                            piArray.push(obj[searchElements[n]]);
-                            //console.log(piArray);
-                        };
-                        //console.log(piArray);
-                        var average = 0;
-                        $.each(piArray,function() {
-                            average += this;
-                        });
-                        // The category value (without weight)
-                        average = (average / piArray.length); 
 
-                        prObj = mun +' '+ average.toFixed(2);
-                        catIndicator[pck[i]].push(prObj);
-                        // TODO this avarage value is not weighted!!!****
-                        tempCategory = pck[i];
-                    }; 
+                    // This function is needed to provide i with its own scope
+                    function scopForIteration(i) {
+                        for (var key in sessionPrimaryIndicator) {
+                            var obj = sessionPrimaryIndicator[key];
+                            var prObj = [];
+                            var piArray = [];
+                            var mun = sessionPrimaryIndicator[key].municipality;
 
-                };
+                            for (var n = 0; n < searchElements.length; n++) {
+                                piArray.push(obj[searchElements[n]]);
+                            };
+
+                            var average = 0;
+                            $.each(piArray,function() {
+                                average += this;
+                            });
+
+                            // The category value (without weight)
+                            average = (average / piArray.length); 
+    
+                            prObj[mun] = average;
+                            catIndicator[pck[i]].push(prObj);
+                            // TODO this avarage value is not weighted!!!****
+                            tempCategory = pck[i];
+                        }; 
+    
+                    } //end function
+
+                    scopForIteration(i);
+                }; 
 
                 // Get the category indicator weight
                 findCatIndicatorWeight(pdData, [tempCategory]);
 
-                console.log(pdTempCatWeight);
-                // Multiply the category indicator data by the weighted value
-                for(var p1 in catIndicator){
-                    //for(var p2 in catIndicator[p1]){
-                        //console.log(p2);
-                        console.log(p1);
-                        if(pdTempCatWeight.hasOwnProperty(p1)){
-                            console.log("match");
-                            //TODO parse each array into name and value, then multiply by weight
-                            //catIndicator[p1][p2] *= pdTempCatWeight[p2];
-                        }
-                    //}
-                }
                 console.log(catIndicator);
+
+                var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
+
+                // Multiply the category indicator data by the weighted value
+                for(var p1 in sessionCatIndicator){
+                    for(var p2 in catIndicator[p1]) {
+                        //if(catIndicator.hasOwnProperty(p1)){
+                            //console.log(sessionCatIndicator[p1]);
+                            for (var i = 0; i < sessionCatIndicator[p1].length; i++) {
+                                for(prop in sessionCatIndicator[p1][i]) {
+                                    if(sessionCatIndicator[p1][i].hasOwnProperty(prop)){
+                                        //TODO fix this!
+                                        console.log(tempCatWeight[p1]);
+
+                                        sessionCatIndicator[p1][i][prop] *= tempCatWeight[p1];
+                                    }
+                                }
+                            };
+                            
+                        //}
+                    }
+                }
+                console.log(sessionCatIndicator);
 
 
 
