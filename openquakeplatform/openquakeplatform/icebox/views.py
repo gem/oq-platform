@@ -40,21 +40,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def open_archive(files):
-    """
-    Create a zip archive from the given files (which are instances
-    of django.core.files.uploadedfile.InMemoryUploadedFile) and return
-    an open file object with the zipfile.
-    """
-    fd, name = tempfile.mkstemp()
-    os.close(fd)
-    archive = zipfile.ZipFile(name, 'w')
-    for f in files:
-        archive.writestr(f.name, f.read())
-    archive.close()
-    return open(name)
-
-
 #: Got from
 # https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/
 class JSONResponseMixin(object):
@@ -99,7 +84,7 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
             raise RuntimeError(
                 "Unknown calculation_type %s" % calculation_type)
 
-        archive = open_archive(request.FILES.getlist('calc_config'))
+        archive = request.FILES['calc_archive']
         try:
             requests.post(
                 url,
