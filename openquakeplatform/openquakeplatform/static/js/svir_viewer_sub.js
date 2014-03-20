@@ -664,7 +664,7 @@ var startApp = function() {
 
                 var pck = [];
                 var catIndicator = {};
-                pdTempCatWeight = {};
+                //pdTempCatWeight = {};
                 //var searchElements = [];
                 for (k in parentChildKey) {
                     pck.push(k);
@@ -677,10 +677,10 @@ var startApp = function() {
                 for (var i = 0; i < pck.length; i++) {
                     //console.log(pck[i]);
                     searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
-                        
+                    
+                    var prObj = {};
                     for (var key in sessionPrimaryIndicator) {
                         var obj = sessionPrimaryIndicator[key];
-                        var prObj;
                         var piArray = [];
                         var mun = sessionPrimaryIndicator[key].municipality;
                         //var se = searchElements[i];
@@ -698,7 +698,7 @@ var startApp = function() {
                         // The category value (without weight)
                         average = (average / piArray.length); 
 
-                        prObj = mun +' '+ average.toFixed(2);
+                        prObj[mun] = average.toFixed(2);
                         catIndicator[pck[i]].push(prObj);
                         // TODO this avarage value is not weighted!!!****
                     }; 
@@ -708,21 +708,25 @@ var startApp = function() {
                 // Get the category indicator weight
                 findCatIndicatorWeight(pdData, [pck[i]]);
 
-                console.log(pdTempCatWeight);
+                console.log(pdTempCatWeight); // WHY IS THIS EMPTY????
                 // Multiply the category indicator data by the weighted value
                 for(var p1 in catIndicator){
-                    for(var p2 in catIndicator[p1]){
-                        if(pdTempCatWeight.hasOwnProperty(p2)){
+                    //for(var p2 in catIndicator[p1]){
+                        console.log(pdTempCatWeight);
+                        console.log(p1);
+
+                        //pdTempCatWeight is wrong...
+                        if(pdTempCatWeight.hasOwnProperty(p1)){
                             console.log("match");
-                            //TODO parse each array into name and value, then multiply by weight
+                            //TODO multiply by weight
                             //catIndicator[p1][p2] *= pdTempCatWeight[p2];
                         }
-                    }
+                    //}
                 }
                 console.log(catIndicator);
 
 
-                
+
                 //////////////////////////////////////////////
                 // Create the IRI category indicator object //
                 //////////////////////////////////////////////
