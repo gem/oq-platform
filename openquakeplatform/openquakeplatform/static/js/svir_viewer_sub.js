@@ -535,22 +535,6 @@ var startApp = function() {
         }
     }
 
-    function findCatIndicatorWeight(pdData, ci) {
-        // Find all of the primary indicators
-        if (ci.some(function(currentValue) {
-            return (pdData.name == currentValue);
-        })) {
-            pdTempCatWeight[pdData.name.toLowerCase()] = (pdData.weight);
-            //pdTempPrimaryIndicator.push(pdData.name);
-            //pdTempPrimaryIndicatorLevels[pdData.name.toLowerCase()] = (pdData.level);
-            //tempWeight[pdData.name.toLowerCase()] = (pdData.weight);
-
-        }
-        (pdData.children || []).forEach(function(currentItem) {
-            findCatIndicatorWeight(currentItem, [ci]);
-        });
-    }
-
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
@@ -674,7 +658,7 @@ var startApp = function() {
                     //console.log(pck[i]);
                     searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
 
-                    // This function is needed to provide i with its own scope
+                    // This function is needed to provide 'i' with its own scope
                     function scopForIteration(i) {
                         for (var key in sessionPrimaryIndicator) {
                             var obj = sessionPrimaryIndicator[key];
@@ -692,21 +676,16 @@ var startApp = function() {
                             });
 
                             // The category value (without weight)
-                            average = (average / piArray.length); 
-    
+                            average = (average / piArray.length);
                             prObj[mun] = average;
                             catIndicator[pck[i]].push(prObj);
-                            // TODO this avarage value is not weighted!!!****
                             tempCategory = pck[i];
                         }; 
     
                     } //end function
 
                     scopForIteration(i);
-                }; 
-
-                // Get the category indicator weight
-                findCatIndicatorWeight(pdData, [tempCategory]);
+                };
 
                 console.log(catIndicator);
 
@@ -714,21 +693,12 @@ var startApp = function() {
 
                 // Multiply the category indicator data by the weighted value
                 for(var p1 in sessionCatIndicator){
-                    for(var p2 in catIndicator[p1]) {
-                        //if(catIndicator.hasOwnProperty(p1)){
-                            //console.log(sessionCatIndicator[p1]);
-                            for (var i = 0; i < sessionCatIndicator[p1].length; i++) {
-                                for(prop in sessionCatIndicator[p1][i]) {
-                                    if(sessionCatIndicator[p1][i].hasOwnProperty(prop)){
-                                        //TODO fix this!
-                                        console.log(tempCatWeight[p1]);
-
-                                        sessionCatIndicator[p1][i][prop] *= tempCatWeight[p1];
-                                    }
-                                }
-                            };
-                            
-                        //}
+                    for (var i = 0; i < sessionCatIndicator[p1].length; i++) {
+                        for(prop in sessionCatIndicator[p1][i]) {
+                            if(sessionCatIndicator[p1][i].hasOwnProperty(prop)){
+                                sessionCatIndicator[p1][i][prop] *= (tempCatWeight[p1] * 10);
+                            }
+                        }
                     }
                 }
                 console.log(sessionCatIndicator);
