@@ -336,7 +336,7 @@ var startApp = function() {
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
             // Load the project definition json
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/174a54f78ec527acfac8822c5a4e880e240c75a1?callback=_processGithubResponse";
+            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/9864cb7a5d36572af1451e585f4516d1d19ce568?callback=_processGithubResponse";
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
@@ -619,6 +619,8 @@ var startApp = function() {
                     primaryIndicator[i] = tmp;
                 };
 
+                console.log(primaryIndicator);
+
                 // Keep the primaryIndicator obj as is and make a session copy that 
                 // is to be modifyed by the project definition weights 
                 var defaultPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
@@ -687,7 +689,7 @@ var startApp = function() {
                     scopForIteration(i);
                 };
 
-                console.log(catIndicator);
+                console.log(catIndicator); // Raw value with no weight applied
 
                 var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
 
@@ -696,7 +698,7 @@ var startApp = function() {
                     for (var i = 0; i < sessionCatIndicator[p1].length; i++) {
                         for(prop in sessionCatIndicator[p1][i]) {
                             if(sessionCatIndicator[p1][i].hasOwnProperty(prop)){
-                                sessionCatIndicator[p1][i][prop] *= (tempCatWeight[p1] * 10);
+                                sessionCatIndicator[p1][i][prop] *= tempCatWeight[p1];
                             }
                         }
                     }
@@ -904,35 +906,35 @@ var startApp = function() {
             
             nodeUpdate.select("circle")
                 .attr("r", function (d) {
-                    if (d.weight <= 10) {
+                    if (d.weight <= 0.10) {
                         return 2;
                     }
-                    else if (d.weight > 10 && d.weight <= 20 ) {
-                        return 3;
-                    }
-                    else if (d.weight > 20 && d.weight <= 30 ) {
+                    else if (d.weight > 0.10 && d.weight <= 0.20 ) {
                         return 4;
                     }
-                    else if (d.weight > 30 && d.weight <= 40 ) {
-                        return 5;
-                    }
-                    else if (d.weight > 40 && d.weight <= 50 ) {
+                    else if (d.weight > 0.20 && d.weight <= 0.30 ) {
                         return 6;
                     }
-                    else if (d.weight > 50 && d.weight <= 60 ) {
-                        return 7;
-                    }
-                    else if (d.weight > 60 && d.weight <= 70 ) {
+                    else if (d.weight > 0.30 && d.weight <= 0.40 ) {
                         return 8;
                     }
-                    else if (d.weight > 70 && d.weight <= 80 ) {
-                        return 9;
-                    }
-                    else if (d.weight > 80 && d.weight <= 90 ) {
+                    else if (d.weight > 0.40 && d.weight <= 0.50 ) {
                         return 10;
                     }
-                    else if (d.weight > 90 && d.weight <= 100 ) {
-                        return 11;
+                    else if (d.weight > 0.50 && d.weight <= 0.60 ) {
+                        return 12;
+                    }
+                    else if (d.weight > 0.60 && d.weight <= 0.70 ) {
+                        return 14;
+                    }
+                    else if (d.weight > 0.70 && d.weight <= 0.80 ) {
+                        return 16;
+                    }
+                    else if (d.weight > 0.80 && d.weight <= 0.90 ) {
+                        return 18;
+                    }
+                    else if (d.weight > 0.90 && d.weight <= 100 ) {
+                        return 20;
                     };
                 })
                 .style("fill", function(d) {
