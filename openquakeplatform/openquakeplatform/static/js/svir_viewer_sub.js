@@ -105,8 +105,14 @@ var pdTempPrimaryIndicatorLevels = [];
 var pdTempPILevel = {};
 var pdTempCategoryIndicator = [];
 var parentChildKey = {};
+var sviParentChildKey = {};
 var pdTempCatWeight = {};
 var tempCategory = "";
+var tempSVI = "";
+var tempParentChildKey = [];
+var catIndicator = {};
+var tempCatSearchElements = [];
+var tempSviSearchElements = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -516,7 +522,6 @@ var startApp = function() {
             tempCatWeight[pdData.name.toLowerCase()] = (pdData.weight);
             // Create a key pair for each category indicator and its respective child level
             pdTempPILevel[pdData.name.toLowerCase()] = (pdData.children[0].level);
-            console.log(pdTempPILevel);
         }
         (pdData.children || []).forEach(function(currentItem) {
             findCategoryIndicators(currentItem, [ci]);
@@ -538,8 +543,6 @@ var startApp = function() {
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
-            console.log(e.data.firstChild);
-            
             var tmpIri = {};
             var tmpPI;
             var tempCI;
@@ -619,8 +622,6 @@ var startApp = function() {
                     primaryIndicator[i] = tmp;
                 };
 
-                console.log(primaryIndicator);
-
                 // Keep the primaryIndicator obj as is and make a session copy that 
                 // is to be modifyed by the project definition weights 
                 var defaultPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
@@ -634,8 +635,6 @@ var startApp = function() {
                         }
                     }
                 }
-
-                console.log(sessionPrimaryIndicator);
                 
                 /////////////////////////////////////////////
                 /// Create the category indicator objects ///
@@ -644,32 +643,28 @@ var startApp = function() {
                 // The category indicator is the average value of it's children
                 // and then multiplyed by its respective weight value
 
-                var pck = [];
-                var catIndicator = {};
-                pdTempCatWeight = {};
-                //var searchElements = [];
                 for (k in parentChildKey) {
-                    pck.push(k);
+                    tempParentChildKey.push(k);
                 };
 
-                for (var i = 0; i < pck.length; i++) {
-                    catIndicator[pck[i]] = [];
+                for (var i = 0; i < tempParentChildKey.length; i++) {
+                    catIndicator[tempParentChildKey[i]] = [];
                 };
 
-                for (var i = 0; i < pck.length; i++) {
-                    //console.log(pck[i]);
-                    searchElements = parentChildKey[pck[i]]; //what we are looking for in sessionPrimaryIndicator
+                for (var i = 0; i < tempParentChildKey.length; i++) {
+                    tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
 
                     // This function is needed to provide 'i' with its own scope
-                    function scopForIteration(i) {
+                    function scopForCatIteration(i) {
+                        //console.log(sessionPrimaryIndicator);
                         for (var key in sessionPrimaryIndicator) {
                             var obj = sessionPrimaryIndicator[key];
                             var prObj = [];
                             var piArray = [];
                             var mun = sessionPrimaryIndicator[key].municipality;
 
-                            for (var n = 0; n < searchElements.length; n++) {
-                                piArray.push(obj[searchElements[n]]);
+                            for (var n = 0; n < tempCatSearchElements.length; n++) {
+                                piArray.push(obj[tempCatSearchElements[n]]);
                             };
 
                             var average = 0;
@@ -680,16 +675,14 @@ var startApp = function() {
                             // The category value (without weight)
                             average = (average / piArray.length);
                             prObj[mun] = average;
-                            catIndicator[pck[i]].push(prObj);
-                            tempCategory = pck[i];
+                            catIndicator[tempParentChildKey[i]].push(prObj); // Raw value with no weight applied
+                            tempCategory = tempParentChildKey[i];
                         }; 
     
                     } //end function
 
-                    scopForIteration(i);
+                    scopForCatIteration(i);
                 };
-
-                console.log(catIndicator); // Raw value with no weight applied
 
                 var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
 
@@ -705,6 +698,66 @@ var startApp = function() {
                 }
                 console.log(sessionCatIndicator);
 
+                /////////////////////////////////////////////
+                ////// Create the svi indicator object //////
+                /////////////////////////////////////////////
+
+
+                var tempSviParentChildKey = [];
+                var sviIndicator = {};
+
+                tempSviSearchElements = Object.keys(sessionCatIndicator);
+                console.log(tempSviSearchElements);
+
+                for (var i = 0; i < tempSviSearchElements.length; i++) {
+                    //tempSviSearchElements = sviParentChildKey[tempSviParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
+                    // for each array within sessionCatIndicator, add up the values for each munic... 
+                    //console.log(sessionCatIndicator[i]);
+
+                    // This function is needed to provide 'i' with its own scope
+                    function scopForSviIteration(i) {
+                        for (var key in sessionCatIndicator) {
+                            var obj = sessionCatIndicator[key];
+                            var prObj = [];
+                            var piArray = [];
+                            var mun = sessionCatIndicator[key].municipality;
+
+                            for (var n = 0; n < tempSviSearchElements.length; n++) {
+                                piArray.push(obj[tempSviSearchElements[n]]);
+                            };
+
+                            var average = 0;
+                            $.each(piArray,function() {
+                                average += this;
+                            });
+
+                            // The category value (without weight)
+                            average = (average / piArray.length);
+                            prObj[mun] = average;
+                            sviIndicator[tempSviParentChildKey[i]].push(prObj);
+                            tempSVI = tempSviParentChildKey[i];
+                        }; 
+    
+                    } //end function
+
+                    scopForSviIteration(i);
+                };
+
+                console.log(sviIndicator); // Raw value with no weight applied
+
+                var sessionSviIndicator = jQuery.extend(true, {}, sviIndicator);
+
+                // Multiply the category indicator data by the weighted value
+                for(var p1 in sessionSviIndicator){
+                    for (var i = 0; i < sessionSviIndicator[p1].length; i++) {
+                        for(prop in sessionSviIndicator[p1][i]) {
+                            if(sessionSviIndicator[p1][i].hasOwnProperty(prop)){
+                                sessionSviIndicator[p1][i][prop] *= tempSviWeight[p1];
+                            }
+                        }
+                    }
+                }
+                console.log(sessionSviIndicator);
 
 
                 //////////////////////////////////////////////
