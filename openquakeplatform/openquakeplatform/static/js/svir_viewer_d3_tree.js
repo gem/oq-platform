@@ -38,7 +38,7 @@
     $(document).ready(function() {
         $("#warning-no-layer").dialog({
             autoOpen: false,
-            hieght: 300,
+            height: 300,
             width: 350,
             modal: true
         });

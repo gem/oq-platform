@@ -116,6 +116,7 @@ var tempSviSearchElements = [];
 var tempSviWeight = "";
 var tempAalWeight = "";
 var tempAalValue = "";
+var tempIriWeight = "";
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -696,7 +697,6 @@ var startApp = function() {
                         }
                     }
                 }
-                console.log(sessionCatIndicator);
 
                 /////////////////////////////////////////////
                 /////////// Create the svi object ///////////
@@ -755,8 +755,6 @@ var startApp = function() {
                     sviIndicator[key] = sviValue;
                 })
 
-                console.log(sviIndicator);
-
                 //////////////////////////////////////////////
                 /////////// Create the PRI object ////////////
                 //////////////////////////////////////////////
@@ -765,43 +763,72 @@ var startApp = function() {
                 // However in the future this will need to be expanded
                 // to include the children of pri
 
-                var aal = {};
+                var aalIndicator = {};
                 var aalArray = e.data.aal.split(",");
 
                 for (var i = 0; i < municipality.length; i++) {
-                    aal[municipality[i]] = parseFloat([aalArray[i]]);
+                    aalIndicator[municipality[i]] = parseFloat([aalArray[i]]);
                 };
 
-                aalCopy = jQuery.extend(true, {}, aal);
-
-                console.log(aalCopy);
+                aalCopy = jQuery.extend(true, {}, aalIndicator); // ** Value with no Weight
 
                 var aalStr = "aal";
                 findAalWeight(pdData, [aalStr]);
 
                 // Multiply the aal value by the weighted value
-                $.each(aal, function(key, value) {
+                $.each(aalIndicator, function(key, value) {
                     var aalValue = 0;
                     aalValue = (value * tempAalWeight);
-                    aal[key] = aalValue;
+                    aalIndicator[key] = aalValue;
                 })
 
-                console.log(aal);
+                console.log(aalIndicator);
 
                 //////////////////////////////////////////////
                 // Create the IRI category indicator object //
                 //////////////////////////////////////////////
-                /*
-                for (var i = 0; i < munic.length; i++) {
-                    //console.log(munic[i]);
-                    tmpIri.munic = munic[i]; // municipo name
-                    tmpIri.iri = iri[i]; // iri values
-                    tmpIri.pri = pri[i]; // pri values
-                    iriChart[i] = tmpIri;
+
+                var iriIndicator = {};
+                var iriArray = iri; // Do not use these values, 
+                // instead compute the iri from PRI and SVI
+
+                console.log(iri);
+
+                for (var i = 0; i < municipality.length; i++) {
+                    iriIndicator[municipality[i]] = [];
                 };
-                */
+
+                iriCopy = jQuery.extend(true, {}, iriIndicator);
+                console.log(iriIndicator);
+
+                var iriKey;
+                var aalKey;
+                var aalValue;
+                var sviKey;
+                var sviValue;
+
+                // Compute IRI from PRI and SVI
+
+                $.each(aalIndicator, function(key, value) {
+                    aalKey = key;
+                    aalValue = value;
+                });
+
+                $.each(sviIndicator, function(key, value) {
+                    sviKey = key;
+                    sviValue = value;
+                });
+
+                for(var k in iriIndicator) {
+                    iriKey = k;
+                    if (iriKey == aalKey) {
+                        //iriIndicator[iriKey].push() //push the sum of aalValue and sviValue
+                    };
+
+                }
 
 
+                console.log(iriIndicator);
             }
         });
     }
