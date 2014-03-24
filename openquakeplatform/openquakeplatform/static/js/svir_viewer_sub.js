@@ -113,6 +113,7 @@ var tempParentChildKey = [];
 var catIndicator = {};
 var tempCatSearchElements = [];
 var tempSviSearchElements = [];
+var tempSviWeight = "";
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -540,6 +541,18 @@ var startApp = function() {
         }
     }
 
+    function findSvi(pdData, svi) {
+        // Find all of the primary indicators
+        if (svi.some(function(currentValue) {
+            return (pdData.name == currentValue);
+        })) {
+            tempSviWeight = pdData.weight;
+        }
+        (pdData.children || []).forEach(function(currentItem) {
+            findSvi(currentItem, [svi]);
+        });
+    }
+
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
             // Get the SVIR data from the utfGrid
@@ -549,10 +562,12 @@ var startApp = function() {
 
             if (e.data) {
                 // Find the variables that are primary indicators and their respecive category
-                var pi = "primaryIndicator";
                 var ci = "categoryIndicator";
                 findCategoryIndicators(pdData, [ci]);
+                var pi = "primaryIndicator";
                 findPrimaryIndicators(pdData, [pi]);
+                var svi = "svi";
+                findSvi(pdData, [svi]);
 
                 // Create an object for each of the category indicators
                 for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
@@ -655,7 +670,7 @@ var startApp = function() {
                     tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
 
                     // This function is needed to provide 'i' with its own scope
-                    function scopForCatIteration(i) {
+                    function scopeForCatIteration(i) {
                         //console.log(sessionPrimaryIndicator);
                         for (var key in sessionPrimaryIndicator) {
                             var obj = sessionPrimaryIndicator[key];
@@ -681,7 +696,7 @@ var startApp = function() {
     
                     } //end function
 
-                    scopForCatIteration(i);
+                    scopeForCatIteration(i);
                 };
 
                 var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
@@ -702,7 +717,7 @@ var startApp = function() {
                 ////// Create the svi indicator object //////
                 /////////////////////////////////////////////
 
-                var viIndicator = {};
+                var sviIndicator = {};
                 var tempSviParentChildKey = [];
                 var tempSviIndicator = {};
                 //var strName, strValue, tempIndicatorKey, tempIndicatorValue; //move these vars into for loop below
@@ -712,8 +727,6 @@ var startApp = function() {
                     tempSviIndicator[municipality[i]] = [];
                 };
 
-
-
                 tempSviSearchElements = Object.keys(sessionCatIndicator);
                 console.log(tempSviSearchElements);
 
@@ -722,47 +735,49 @@ var startApp = function() {
                     sessionKey = k;
                 }
 
-                function bar() {
+                function sc() {
                     if (tempIndicatorKey = strName) {
-
-                        console.log(strName);
                         tempSviIndicator[tempIndicatorKey].push(strValue);
-
-                        console.log(tempSviIndicator[tempIndicatorKey]);
-
                     };
                 };
 
                 for (var i = 0; i < tempSviSearchElements.length; i++) {
                     if (sessionKey = tempSviSearchElements[i]) {
-                        //console.log(sessionKey);
-                        //console.log(sessionCatIndicator[sessionKey]);
                         for (var j = 0; j < sessionCatIndicator[sessionKey].length; j++) {
-                            var foo = sessionCatIndicator[sessionKey][j]
-                            var strName, strValue, tempIndicatorKey, tempIndicatorValue; //move these vars into for loop below
-                
+                            var strName, strValue, tempIndicatorKey, tempIndicatorValue;
 
-                            for(strName in foo) {
-                                strValue = foo[strName];
+                            for(strName in sessionCatIndicator[sessionKey][j]) {
+                                strValue = sessionCatIndicator[sessionKey][j][strName];
                                 
                                 $.each(tempSviIndicator, function(key, value){
-                                    console.log(key);
                                     tempIndicatorKey = key;
                                     tempIndicatorValue = value;
                                 });
                             }
-                            bar();
-                        };
-                        
+                            sc();
+                        };  
                     };
-                    //bar();
                 };
-                
 
+                sviIndicator = jQuery.extend(true, {}, tempSviIndicator);
+
+                // Multiply the svi value by the weighted value
+                $.each(tempSviIndicator, function(key, value) {
+                    console.log(key);
+                    console.log(value);
+                    var sviAverage = 0;
+                    var sviValue = 0;
+                    $.each(value, function() {
+                        sviAverage =+ (this / value.length);
+                        sviValue = (sviAverage * tempSviWeight);
+                    });
+                    console.log(sviAverage);
+                    console.log(sviValue);
+                    tempSviIndicator[key] = sviValue;
+                })
+
+                console.log(sviIndicator);
                 console.log(tempSviIndicator);
-
-  
-
 
 
                 //////////////////////////////////////////////
