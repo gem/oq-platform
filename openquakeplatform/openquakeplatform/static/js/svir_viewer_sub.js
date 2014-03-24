@@ -702,62 +702,67 @@ var startApp = function() {
                 ////// Create the svi indicator object //////
                 /////////////////////////////////////////////
 
-
+                var viIndicator = {};
                 var tempSviParentChildKey = [];
-                var sviIndicator = {};
+                var tempSviIndicator = {};
+                //var strName, strValue, tempIndicatorKey, tempIndicatorValue; //move these vars into for loop below
+                console.log(municipality);
+
+                for (var i = 0; i < municipality.length; i++) {
+                    tempSviIndicator[municipality[i]] = [];
+                };
+
+
 
                 tempSviSearchElements = Object.keys(sessionCatIndicator);
                 console.log(tempSviSearchElements);
 
-                for (var i = 0; i < tempSviSearchElements.length; i++) {
-                    //tempSviSearchElements = sviParentChildKey[tempSviParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
-                    // for each array within sessionCatIndicator, add up the values for each munic... 
-                    //console.log(sessionCatIndicator[i]);
+                var sessionKey = "";
+                for(var k in sessionCatIndicator) {
+                    sessionKey = k;
+                }
 
-                    // This function is needed to provide 'i' with its own scope
-                    function scopForSviIteration(i) {
-                        for (var key in sessionCatIndicator) {
-                            var obj = sessionCatIndicator[key];
-                            var prObj = [];
-                            var piArray = [];
-                            var mun = sessionCatIndicator[key].municipality;
+                function bar() {
+                    if (tempIndicatorKey = strName) {
 
-                            for (var n = 0; n < tempSviSearchElements.length; n++) {
-                                piArray.push(obj[tempSviSearchElements[n]]);
-                            };
+                        console.log(strName);
+                        tempSviIndicator[tempIndicatorKey].push(strValue);
 
-                            var average = 0;
-                            $.each(piArray,function() {
-                                average += this;
-                            });
+                        console.log(tempSviIndicator[tempIndicatorKey]);
 
-                            // The category value (without weight)
-                            average = (average / piArray.length);
-                            prObj[mun] = average;
-                            sviIndicator[tempSviParentChildKey[i]].push(prObj);
-                            tempSVI = tempSviParentChildKey[i];
-                        }; 
-    
-                    } //end function
-
-                    scopForSviIteration(i);
+                    };
                 };
 
-                console.log(sviIndicator); // Raw value with no weight applied
+                for (var i = 0; i < tempSviSearchElements.length; i++) {
+                    if (sessionKey = tempSviSearchElements[i]) {
+                        //console.log(sessionKey);
+                        //console.log(sessionCatIndicator[sessionKey]);
+                        for (var j = 0; j < sessionCatIndicator[sessionKey].length; j++) {
+                            var foo = sessionCatIndicator[sessionKey][j]
+                            var strName, strValue, tempIndicatorKey, tempIndicatorValue; //move these vars into for loop below
+                
 
-                var sessionSviIndicator = jQuery.extend(true, {}, sviIndicator);
-
-                // Multiply the category indicator data by the weighted value
-                for(var p1 in sessionSviIndicator){
-                    for (var i = 0; i < sessionSviIndicator[p1].length; i++) {
-                        for(prop in sessionSviIndicator[p1][i]) {
-                            if(sessionSviIndicator[p1][i].hasOwnProperty(prop)){
-                                sessionSviIndicator[p1][i][prop] *= tempSviWeight[p1];
+                            for(strName in foo) {
+                                strValue = foo[strName];
+                                
+                                $.each(tempSviIndicator, function(key, value){
+                                    console.log(key);
+                                    tempIndicatorKey = key;
+                                    tempIndicatorValue = value;
+                                });
                             }
-                        }
-                    }
-                }
-                console.log(sessionSviIndicator);
+                            bar();
+                        };
+                        
+                    };
+                    //bar();
+                };
+                
+
+                console.log(tempSviIndicator);
+
+  
+
 
 
                 //////////////////////////////////////////////
