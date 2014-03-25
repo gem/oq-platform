@@ -88,9 +88,10 @@
 
                 // Get the values of the spinners
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).attr('value'));
+                    console.log(pdTempSpinnerIds[i]);
+                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).attr('aria-valuenow'));
                 };
-
+                console.log(pdTempWeights);
                 // Adjust the values into percentages
                 pdTempWeights = pdTempWeights.map(Number);
                 var totalWeights = 0;
@@ -115,7 +116,7 @@
                 
                 nodeEnter.remove("text");
                 updateD3Tree(pdData);
-                //processNewPdData();
+                console.log(pdData);
             });
         };
 
