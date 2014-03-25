@@ -801,32 +801,30 @@ var startApp = function() {
                 iriCopy = jQuery.extend(true, {}, iriIndicator);
                 console.log(iriIndicator);
 
-                var iriKey;
                 var aalKey;
                 var aalValue;
                 var sviKey;
                 var sviValue;
 
                 // Compute IRI from PRI and SVI
-
-                $.each(aalIndicator, function(key, value) {
-                    aalKey = key;
-                    aalValue = value;
-                });
-
-                $.each(sviIndicator, function(key, value) {
-                    sviKey = key;
-                    sviValue = value;
-                });
-
-                for(var k in iriIndicator) {
-                    iriKey = k;
-                    if (iriKey == aalKey) {
-                        //iriIndicator[iriKey].push() //push the sum of aalValue and sviValue
-                    };
-
+                // TODO expand this to use proper IRI function...
+                function getNewValues(k) {
+                    aalValue = aalIndicator[k];
+                    sviValue = sviIndicator[k];
                 }
 
+                for (var i = 0; i < municipality.length; i++) {
+                    tmp = 0;
+                    for(var k in iriIndicator) {
+                        getNewValues(k);
+                        tmp = ((sviValue + aalValue) / 2);
+
+                        var inx = iriIndicator[k].indexOf(tmp);
+                        if (!~inx) {
+                            iriIndicator[k].push(tmp)
+                        }
+                    }
+                };
 
                 console.log(iriIndicator);
             }
