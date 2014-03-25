@@ -168,6 +168,25 @@ var startApp = function() {
         $("#warning-no-layer").dialog("open");
     };
 
+    //  Project definition dialog
+    $("#projectDefDialog").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 800,
+        modal: false
+    });
+
+    $("#project-definition").button().click(function() {
+        $("#projectDefDialog").dialog("open");
+    });
+
+    $("#warning-no-layer").dialog({
+        autoOpen: false,
+        hieght: 300,
+        width: 350,
+        modal: true
+    });
+
     //  New project selection dialog
     $("#loadProjectDialog").dialog({
         autoOpen: false,
@@ -792,14 +811,11 @@ var startApp = function() {
                 var iriArray = iri; // Do not use these values, 
                 // instead compute the iri from PRI and SVI
 
-                console.log(iri);
-
                 for (var i = 0; i < municipality.length; i++) {
-                    iriIndicator[municipality[i]] = [];
+                    iriIndicator[municipality[i]] = "";
                 };
 
                 iriCopy = jQuery.extend(true, {}, iriIndicator);
-                console.log(iriIndicator);
 
                 var aalKey;
                 var aalValue;
@@ -818,61 +834,27 @@ var startApp = function() {
                     for(var k in iriIndicator) {
                         getNewValues(k);
                         tmp = ((sviValue + aalValue) / 2);
-
-                        var inx = iriIndicator[k].indexOf(tmp);
-                        if (!~inx) {
-                            iriIndicator[k].push(tmp)
-                        }
+                        iriIndicator[k] = tmp;
                     }
                 };
 
                 console.log(iriIndicator);
             }
+            var iriPcpData = [];
+            iriPcpData.push(iriIndicator);
+            iriPcpData.push(sviIndicator);
+            iriPcpData.push(aalIndicator);
+            console.log(iriPcpData);
+            buildD3SpiderChart(iriPcpData);
         });
     }
 
     ////////////////////////////////////////////
-    //////// Parallel Coordinates Chart ////////
+    ////// IRI Parallel Coordinates Chart //////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(keys, distName, econ, edu, gov, health, infra, social, distAttr) {
+    function buildD3SpiderChart(iriPcpData) {
 
-        var attributes = distAttr;
-        var replaceInArray = function(str){
-            return str.replace(/\s+/g, "-")
-        }
-
-        var attrClean = attributes.map(replaceInArray);
-
-        // Set up some variables and the field values you will use:
-        var j,
-            obj,
-                a = econ[0],
-                b = edu[1],
-                c = infra[2],
-                d = health[3],
-                e = gov[4],
-                f = social[5];
-        
-        // Loop through the array.
-        for (i = 0; i < attrClean.length; i++) {
-            // Create an object with a country field. 
-            obj = { country: attrClean[i] };
-            // Populate the other fields.
-            obj[keys[0]] = econ[i];
-            obj[keys[1]] = edu[i];
-            obj[keys[2]] = infra[i];
-            obj[keys[3]] = health[i];
-            obj[keys[4]] = gov[i];
-            obj[keys[5]] = social[i];
-            
-            // Set the array index to contain the object
-            // (and if you need it then create a global object `objx`
-            //  - not sure if you need it though.)
-            chartArray[i] = window['obj'+i] = obj;
-        };
-        
-        var country = attrClean;
         var m = [80, 160, 200, 160],
             w = 1480 - m[1] - m[3],
             h = 500 - m[0] - m[2];
@@ -906,10 +888,10 @@ var startApp = function() {
                     .y(y[d])
                     .on("brush", brush);
             });
-
+/*
             // Add a legend.
             var legend = svg.selectAll("g.legend")
-                .data(country)
+                .data(iriPcpData)
                 .enter().append("svg:g")
                 .attr("class", "legend")
           
@@ -931,12 +913,12 @@ var startApp = function() {
                 .attr("dy", ".31em")
                 .text(function(d) { return d; })
                 .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
-          
+          */
             // Add foreground lines.
             foreground = svg.append("svg:g")
                 .attr("class", "foreground")
                 .selectAll("path")
-                .data(chartArray)
+                .data(iriPcpData)
                 .enter().append("svg:path")
                 .attr("d", path)
                 .attr("class", function(d) { return d.country; });
