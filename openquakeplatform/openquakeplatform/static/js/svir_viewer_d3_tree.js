@@ -69,8 +69,7 @@
 
                 // Get the values of the spinners
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    console.log(pdTempSpinnerIds[i]);
-                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).attr('aria-valuenow'));
+                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).val());
                 };
                 console.log(pdTempWeights);
                 // Adjust the values into percentages
