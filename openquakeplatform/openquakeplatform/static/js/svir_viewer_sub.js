@@ -176,6 +176,14 @@ var startApp = function() {
         modal: false
     });
 
+    //  IRI PCP dialog
+    $("#iri-pcp-chart").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 800,
+        modal: false
+    });
+
     $("#project-definition").button().click(function() {
         $("#projectDefDialog").dialog("open");
     });
@@ -560,6 +568,7 @@ var startApp = function() {
 
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
+            $("#iri-pcp-chart").dialog("open");
             // Get the SVIR data from the utfGrid
             var tmpIri = {};
             var tmpPI;
@@ -855,6 +864,11 @@ var startApp = function() {
 
     function buildD3SpiderChart(iriPcpData) {
 
+        var keys = [];
+        for (var k in iriPcpData) {
+            keys.push(k);
+        }
+
         var m = [80, 160, 200, 160],
             w = 1480 - m[1] - m[3],
             h = 500 - m[0] - m[2];
@@ -866,9 +880,9 @@ var startApp = function() {
             axis = d3.svg.axis().orient("left"),
             foreground;
 
-        $("#"+chartCat+"-spider").empty();
+        $("#iri-pcp-chart").empty();
 
-        var svg = d3.select("#"+chartCat+"-spider").append("svg")
+        var svg = d3.select("#iri-pcp-chart").append("svg")
             .attr("width", w + m[1] + m[3])
             .attr("height", h + m[0] + m[2])
             .append("svg:g")
@@ -971,7 +985,7 @@ var startApp = function() {
                 t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 t.selectAll(".foreground path").attr("d", path);
             }
-
+/*
         // Update the css for each country
         $("."+attrClean[0]).css('stroke', 'red');
         $("."+attrClean[1]).css('stroke', 'blue');
@@ -992,7 +1006,7 @@ var startApp = function() {
         $("."+attrClean[16]).css('stroke', 'MediumSeaGreen');
         $("."+attrClean[17]).css('stroke', 'MidnightBlue');
         $("."+attrClean[18]).css('stroke', 'Maroon');
-
+*/
         // Returns the path for a given data point.
         
         function path(d) {
