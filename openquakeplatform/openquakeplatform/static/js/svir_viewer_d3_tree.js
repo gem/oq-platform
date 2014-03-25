@@ -69,7 +69,7 @@
 
                 // Get the values of the spinners
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).val(2));
+                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).val());
                 };
 
                 // Adjust the values into percentages
