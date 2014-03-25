@@ -6,7 +6,6 @@ Calculate - {{block.super}}
 
 {% block extra_head %}
 {{block.super}}
-    <link href="{{ STATIC_URL }}/bootstrap/css/bootstrap.css" rel="stylesheet"/>
 
     <link href="{{ STATIC_URL }}/bootstrap-extend/css/jasny-bootstrap.min.css" rel="stylesheet"/>
 
@@ -31,8 +30,8 @@ Calculate - {{block.super}}
             </label>
 
             <div class="controls">
-              <div class="fileinput fileinput-new" data-provides="fileinput">
-                <span class="btn btn-default btn-file"><span class="fileinput-new">Select Job Archive</span><span class="fileinput-exists">Change</span><input type="file" name="calc_archive"/></span>
+              <div class="fileinput" data-provides="fileinput">
+                <span class="btn btn-default btn-file"><span>Select Job Archive</span><input type="file" name="calc_archive"/></span>
               </div>
             </div>
           </div>
