@@ -16,14 +16,6 @@
 */
 
     $(document).ready(function() {
-        //  Project definition dialog
-        $("#projectDefDialog").dialog({
-            autoOpen: false,
-            height: 500,
-            width: 800,
-            modal: false
-        });
-    
         //  Project definition weight dialog
         $("#projectDefWeightDialog").dialog({
             autoOpen: false,
@@ -31,18 +23,25 @@
             width: 500,
             modal: true
         });
-    
-        $("#project-definition").button().click(function() {
-            $("#projectDefDialog").dialog("open");
-        });
+    });
 
-    
-        $("#warning-no-layer").dialog({
-            autoOpen: false,
-            hieght: 300,
-            width: 350,
-            modal: true
-        });
+    //  Project definition dialog
+    $("#projectDefDialog").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 800,
+        modal: false
+    });
+
+    $("#project-definition").button().click(function() {
+        $("#projectDefDialog").dialog("open");
+    });
+
+    $("#warning-no-layer").dialog({
+        autoOpen: false,
+        hieght: 300,
+        width: 350,
+        modal: true
     });
 
 
