@@ -30,8 +30,8 @@
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
 
-    function loadPD(selectedPDef) {
-
+    function loadPD(selectedPDef, qt_page) {
+        var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
         var margin = {top: 20, right: 120, bottom: 20, left: 30},
             width = 960 - margin.right - margin.left,
             height = 800 - margin.top - margin.bottom;
@@ -287,7 +287,9 @@
                 d.x0 = d.x;
                 d.y0 = d.y;
             });
-
+            if (qt_page){
+                qt_page.json_updated(pdData)
+            }
         }
         
         // Toggle children on click.
@@ -302,4 +304,5 @@
             update(d);
         }
     } //end d3 tree
+
 
