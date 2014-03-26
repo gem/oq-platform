@@ -101,6 +101,8 @@ urlpatterns = patterns(
         template_name="hazus.html"), name='hazus'),
     url(r'^hazard_viewer/$', TemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
+    url(r'^fragility_viewer/$', TemplateView.as_view(
+        template_name="fragility_viewer.html"), name='fragility_viewer'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
