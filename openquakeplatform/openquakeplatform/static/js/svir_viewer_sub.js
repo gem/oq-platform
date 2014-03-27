@@ -117,6 +117,7 @@ var tempSviWeight = "";
 var tempAalWeight = "";
 var tempAalValue = "";
 var tempIriWeight = "";
+var municipality = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -600,7 +601,7 @@ var startApp = function() {
                 };
 
                 var munic_num = e.data['municipio'].split(',').length;
-                var municipality = e.data['municipio'].split(',');
+                municipality = e.data['municipio'].split(',');
 
 
                 /////////////////////////////////////////////
@@ -691,6 +692,7 @@ var startApp = function() {
                             var prObj = [];
                             var piArray = [];
                             var mun = sessionPrimaryIndicator[key].municipality;
+
 
                             for (var n = 0; n < tempCatSearchElements.length; n++) {
                                 piArray.push(obj[tempCatSearchElements[n]]);
@@ -854,6 +856,7 @@ var startApp = function() {
             iriPcpData.push(sviIndicator);
             iriPcpData.push(aalIndicator);
             console.log(iriPcpData);
+            //buildD3SpiderChart(iriPcpData);
             buildD3SpiderChart(iriPcpData);
         });
     }
@@ -873,7 +876,7 @@ var startApp = function() {
             w = 1480 - m[1] - m[3],
             h = 500 - m[0] - m[2];
         
-        var x = d3.scale.ordinal().domain(keys).rangePoints([0, w]),
+        var x = d3.scale.ordinal().domain(municipality).rangePoints([0, w]),
             y = {};
         
         var line = d3.svg.line(),
@@ -890,12 +893,12 @@ var startApp = function() {
         
         
             // Create a scale and brush for each trait.
-            keys.forEach(function(d) {
+            municipality.forEach(function(d) {
                 // Coerce values to numbers.
-                chartArray.forEach(function(p) { p[d] = +p[d]; });
+                iriPcpData.forEach(function(p) { p[d] = +p[d]; });
 
                 y[d] = d3.scale.linear()
-                    .domain(d3.extent(chartArray, function(p) { return p[d]; }))
+                    .domain(d3.extent(iriPcpData, function(p) { return p[d]; }))
                     .range([h, 0]);
           
                 y[d].brush = d3.svg.brush()
@@ -939,7 +942,7 @@ var startApp = function() {
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
-                .data(keys)
+                .data(municipality)
                 .enter().append("svg:g")
                 .attr("class", "trait")
                 .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
@@ -1010,12 +1013,12 @@ var startApp = function() {
         // Returns the path for a given data point.
         
         function path(d) {
-            return line(keys.map(function(p) { return [x(p), y[p](d[p])]; }));
+            return line(municipality.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
 
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
-            var actives = keys.filter(function(p) { return !y[p].brush.empty(); }),
+            var actives = municipality.filter(function(p) { return !y[p].brush.empty(); }),
                 extents = actives.map(function(p) { return y[p].brush.extent(); });
             foreground.classed("fade", function(d) {
                 return !actives.every(function(p, i) {
