@@ -147,7 +147,7 @@ function_exists () {
 #
 #
 locset_create () {
-    local oqpdir="$1" gem_host_name="$2"
+    local oqpdir="$1" gem_host_name="$2" gem_db_name="$3" gem_db_user="$4" gem_db_pass="$5"
 
     if [ -f "$GEM_LOCAL_SETTINGS" ]; then
         return 1
@@ -156,9 +156,9 @@ locset_create () {
 local_settings = open('${oqpdir}/$GEM_LOCAL_SETTINGS_TMPL', 'r').read()
 with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
     fh.write(local_settings % dict(host='$gem_host_name',
-                                   dbname='$GEM_DB_NAME',
-                                   dbuser='$GEM_DB_USER',
-                                   dbpass='$GEM_DB_PASS',
+                                   dbname='$gem_db_name',
+                                   dbuser='$gem_db_user',
+                                   dbpass='$gem_db_pass',
                                    mediaroot='/var/www/openquake/platform/uploaded',
                                    staticroot='/var/www/openquake/platform/static/',
                                    hazard_calc_addr='http://oq-platform:8800',
@@ -342,7 +342,8 @@ oq_platform_install () {
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"
 
     mkdir -p /etc/openquake/platform
-    locset_create "$oqpdir" "$gem_host_name"
+    locset_create "$oqpdir" "$gem_host_name" "$GEM_DB_NAME" "$GEM_DB_USER" "$GEM_DB_PASS"
+
 
     cp "${oqpdir}/apache2/oqplatform" /etc/apache2/sites-available/
     ln -sf /etc/openquake/platform/local_settings.py "${oqpdir}"
