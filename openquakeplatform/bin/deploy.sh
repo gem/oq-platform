@@ -355,9 +355,9 @@ oq_platform_install () {
     chmod a+x "/usr/sbin/openquakeplatform"
     mkdir -p /etc/openquake/platform/media
 
-    db_user_create "$GEM_DB_USER" "$GEM_DB_PASS"
-    db_base_create "$GEM_DB_NAME" "$GEM_DB_USER"
-    db_gis_create  "$GEM_DB_NAME"
+    db_user_create "$gem_db_user" "$gem_db_pass"
+    db_base_create "$gem_db_name" "$gem_db_user"
+    db_gis_create  "$gem_db_name"
 
     #
     #  database population

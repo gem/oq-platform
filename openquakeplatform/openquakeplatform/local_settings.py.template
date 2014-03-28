@@ -11,16 +11,16 @@ GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': '%(dbname)s',
-        'USER': '%(dbuser)s',
-        'PASSWORD': '%(dbpass)s',
+        'NAME': '%(db_name)s',
+        'USER': '%(db_user)s',
+        'PASSWORD': '%(db_pass)s',
     },
     # vector datastore for uploads
     'datastore' : {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': '%(dbname)s',
-        'USER': '%(dbuser)s',
-        'PASSWORD': '%(dbpass)s',
+        'NAME': '%(db_name)s',
+        'USER': '%(db_user)s',
+        'PASSWORD': '%(db_pass)s',
         'HOST' : 'localhost',
         'PORT' : '5432',
     }
