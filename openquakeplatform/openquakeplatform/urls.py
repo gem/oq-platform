@@ -88,9 +88,6 @@ urlpatterns = patterns(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
     url(r'^geodetic/$', OQTemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^explore_leaflet/$', OQTemplateView.as_view(
-        template_name="explore_leaflet.html"), name='explore_leaflet'),
-
     url(r'^geojson/$', OQTemplateView.as_view(
         template_name="geojson.html"), name='geojson'),
     url(r'^hazard_models/$', OQTemplateView.as_view(

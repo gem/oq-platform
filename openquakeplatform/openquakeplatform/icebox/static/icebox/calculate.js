@@ -165,10 +165,10 @@
 
        /* XXX. Reset the input file value to ensure the change event
         will be always triggered */
-       $(document).on("click", 'input[name=calc_config]',
+       $(document).on("click", 'input[name=calc_archive]',
                       function(e) { this.value = null; });
 
-       $(document).on("change", 'input[name=calc_config]',
+       $(document).on("change", 'input[name=calc_archive]',
                       function(e) {
                         dialog.showPleaseWait('Uploading calculation', true);
                         var input = $(e.target);
