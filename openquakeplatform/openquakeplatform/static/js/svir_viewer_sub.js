@@ -785,6 +785,8 @@ var startApp = function() {
                     sviIndicator[key] = sviValue;
                 })
 
+                sviIndicator.plotElement = "svi"; // Lable within the object
+
                 //////////////////////////////////////////////
                 /////////// Create the PRI object ////////////
                 //////////////////////////////////////////////
@@ -812,7 +814,7 @@ var startApp = function() {
                     aalIndicator[key] = aalValue;
                 })
 
-                console.log(aalIndicator);
+                aalIndicator.plotElement = "aal"; // Lable within the object
 
                 //////////////////////////////////////////////
                 // Create the IRI category indicator object //
@@ -844,11 +846,12 @@ var startApp = function() {
                     tmp = 0;
                     for(var k in iriIndicator) {
                         getNewValues(k);
-                        tmp = ((sviValue + aalValue) / 2);
+                        tmp = (sviValue + aalValue);
                         iriIndicator[k] = tmp;
                     }
                 };
 
+                iriIndicator.plotElement = "iri"; // Lable within the object
                 console.log(iriIndicator);
             }
             var iriPcpData = [];
@@ -866,6 +869,8 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3SpiderChart(iriPcpData) {
+
+        var plotElements = ["iri", "svi", "aal"]; //need to add these lables into the respective objects
 
         var keys = [];
         for (var k in iriPcpData) {
@@ -905,10 +910,10 @@ var startApp = function() {
                     .y(y[d])
                     .on("brush", brush);
             });
-/*
+
             // Add a legend.
             var legend = svg.selectAll("g.legend")
-                .data(iriPcpData)
+                .data(plotElements)
                 .enter().append("svg:g")
                 .attr("class", "legend")
           
@@ -930,7 +935,7 @@ var startApp = function() {
                 .attr("dy", ".31em")
                 .text(function(d) { return d; })
                 .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
-          */
+          
             // Add foreground lines.
             foreground = svg.append("svg:g")
                 .attr("class", "foreground")
@@ -938,7 +943,7 @@ var startApp = function() {
                 .data(iriPcpData)
                 .enter().append("svg:path")
                 .attr("d", path)
-                .attr("class", function(d) { return d.country; });
+                .attr("class", function(d) { console.log(d); return d.plotElement; });
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
@@ -988,28 +993,30 @@ var startApp = function() {
                 t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 t.selectAll(".foreground path").attr("d", path);
             }
-/*
-        // Update the css for each country
-        $("."+attrClean[0]).css('stroke', 'red');
-        $("."+attrClean[1]).css('stroke', 'blue');
-        $("."+attrClean[2]).css('stroke', 'green');
-        $("."+attrClean[3]).css('stroke', 'orange');
-        $("."+attrClean[4]).css('stroke', 'purple');
-        $("."+attrClean[5]).css('stroke', 'black');
-        $("."+attrClean[6]).css('stroke', 'gray');
-        $("."+attrClean[7]).css('stroke', 'pink');
-        $("."+attrClean[8]).css('stroke', 'teal');
-        $("."+attrClean[9]).css('stroke', 'DarkBlue');
-        $("."+attrClean[10]).css('stroke', 'DarkCyan');
-        $("."+attrClean[11]).css('stroke', 'Crimson');
-        $("."+attrClean[12]).css('stroke', 'Coral');
-        $("."+attrClean[13]).css('stroke', 'DarkGoldenRod');
-        $("."+attrClean[14]).css('stroke', 'MediumPurple');
-        $("."+attrClean[15]).css('stroke', 'MediumSlateBlue');
-        $("."+attrClean[16]).css('stroke', 'MediumSeaGreen');
-        $("."+attrClean[17]).css('stroke', 'MidnightBlue');
-        $("."+attrClean[18]).css('stroke', 'Maroon');
-*/
+
+            
+
+        // Update the css for each plotElements
+        $("."+plotElements[0]).css('stroke', 'red');
+        $("."+plotElements[1]).css('stroke', 'blue');
+        $("."+plotElements[2]).css('stroke', 'green');
+        $("."+plotElements[3]).css('stroke', 'orange');
+        $("."+plotElements[4]).css('stroke', 'purple');
+        $("."+plotElements[5]).css('stroke', 'black');
+        $("."+plotElements[6]).css('stroke', 'gray');
+        $("."+plotElements[7]).css('stroke', 'pink');
+        $("."+plotElements[8]).css('stroke', 'teal');
+        $("."+plotElements[9]).css('stroke', 'DarkBlue');
+        $("."+plotElements[10]).css('stroke', 'DarkCyan');
+        $("."+plotElements[11]).css('stroke', 'Crimson');
+        $("."+plotElements[12]).css('stroke', 'Coral');
+        $("."+plotElements[13]).css('stroke', 'DarkGoldenRod');
+        $("."+plotElements[14]).css('stroke', 'MediumPurple');
+        $("."+plotElements[15]).css('stroke', 'MediumSlateBlue');
+        $("."+plotElements[16]).css('stroke', 'MediumSeaGreen');
+        $("."+plotElements[17]).css('stroke', 'MidnightBlue');
+        $("."+plotElements[18]).css('stroke', 'Maroon');
+
         // Returns the path for a given data point.
         
         function path(d) {
