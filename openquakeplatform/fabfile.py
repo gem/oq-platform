@@ -57,7 +57,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
             risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
             mediaroot=mediaroot, staticroot=staticroot)
     # fix it in a proper way
-    apps()
+    apps(dbname, dbuser, dbpass)
 
     # Install the libs needs to `test` and `test_with_xunit`:
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
@@ -92,7 +92,7 @@ def baseenv(
 APPS_LIST=['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
            'econd', 'weblib', 'gemecdwebsite', 'icebox']
 
-def apps():
+def apps(dbname, dbuser, dbpass):
     globs = globals()
     apps_list=""
     # Add the apps
@@ -105,7 +105,7 @@ def apps():
         else:
             add_fn()
 
-    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' '.' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + DB_PASSWORD + "' 'geoserver/data' " + apps_list)
+    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' '.' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + dbname + "' '" + dbuser + "' '" + dbpass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local('openquakeplatform/bin/oq-gs-builder.sh restore build-gs-tree')
     local('python manage.py updatelayers')

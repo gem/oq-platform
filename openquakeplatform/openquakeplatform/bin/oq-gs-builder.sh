@@ -948,7 +948,7 @@ geoserver_population () {
     local srcdir="$1" dstdir="$2" bindir="$3"
 #    local workspace_name="$GEM_GS_WS_NAME" datastore_name="$GEM_GS_DS_NAME"
     local workspace_name_default="$4" datastore_name_default="$5"
-    local db_pass="$6" gs_datadir="$7"
+    local db_name="$6" db_user="$7" db_pass="$8" gs_datadir="$9"
     shift 7
     declare -a gem_app_list=("$@")
     local workspace_name datastore_name
@@ -993,7 +993,7 @@ geoserver_population () {
         fi
     done
 
-    sed -i "s@#DB_PASS#@$db_pass@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
+    sed -i "s@#DB_NAME#@$db_name@g;s@#DB_USER#@$db_user@g;s@#DB_PASS#@$db_pass@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
 
     rm -rf output
     ${bindir}/oq-gs-builder.sh drop
@@ -1013,7 +1013,7 @@ usage () {
     echo "$0 dump"
     echo "$0 drop"
     echo "$0 restore <dirname>"
-    echo "$0 populate <srcdir> <dstdir> <bindir> <workspace_name_def> <datastore_name_def> <db_pass> <gs_datadir> <app1> [<app2> [...]]"
+    echo "$0 populate <srcdir> <dstdir> <bindir> <workspace_name_def> <datastore_name_def> <db_name> <db_user> <db_pass> <gs_datadir> <app1> [<app2> [...]]"
     }
 
 #
