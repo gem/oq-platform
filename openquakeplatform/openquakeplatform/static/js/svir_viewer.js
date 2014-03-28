@@ -422,6 +422,7 @@ var startApp = function() {
         }
 
         console.log(chartArray);
+        console.log(country);
 
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],
