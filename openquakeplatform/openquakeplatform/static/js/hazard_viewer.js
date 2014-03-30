@@ -768,6 +768,7 @@ var startApp = function() {
         };
 
         data.forEach(dataCallback);
+        console.log(data);
         x.domain(d3.extent(data, function(d) { return d.x; }));
         y.domain(d3.extent(data, function(d) { return d.y; }));
 
