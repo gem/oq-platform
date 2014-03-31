@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 export GEM_GN_LOCSET="/etc/openquake/platform/local_settings.py"
 export GEM_CERT_KEY=oq-platform.key
 export GEM_CERT_CRT=oq-platform.crt
