@@ -612,7 +612,7 @@ var startApp = function() {
     var min = 0.05;
     var max = 2.5;
     var inc = ((max - min) / 100);
-    var chartData = {};
+    var chartData = [];
     var x = [];
     var slightY = [];
     var moderateY = [];
@@ -712,12 +712,26 @@ var startApp = function() {
 
     // for multiple curves...
 
+    chartData['slight'] = [];
+    chartData['moderate'] = [];
+    chartData['extensive'] = [];
+    chartData['complete'] = [];
+
+    for (var i = 0; i < x.length; i++) {
+        chartData.slight.push([slightY[i], x[i]]);
+        chartData.moderate.push([moderateY[i], x[i]]);
+        chartData.extensive.push([extensiveY[i], x[i]]);
+        chartData.complete.push([completeY[i], x[i]]);
+    };
+    
+
+/*
     chartData.slight = slightY.toString();
     chartData.moderate = moderateY.toString();
     chartData.extensive = extensiveY.toString();
     chartData.complete = completeY.toString();
     chartData.x = x.toString();
-
+*/
 /*
     chartData.slight.push(slightY.toString(), x.toString());
     chartData.moderate.push(moderateY.toString(), x.toString());
@@ -861,12 +875,17 @@ var startApp = function() {
         };
 */
 
+
+/*
         for (var k in chartData) {
             var tmp = chartData[k].toString();
             tmp = tmp.split(',').map(parseFloat);
             curve_vals[k] = tmp;
             console.log(curve_vals);
         }
+        */
+ 
+
         /*
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
@@ -889,8 +908,10 @@ var startApp = function() {
             xAxisVariable = curve_vals['periods'];
         };
 */
-        xAxisVariable = curve_vals['x'];
 
+
+        xAxisVariable = curve_vals['x'];
+/*
         var old_value = -100;
         for (i = 0 ; i < xAxisVariable.length ; i++) {
             if (xAxisVariable[i] == old_value) {
@@ -917,7 +938,10 @@ var startApp = function() {
                 }
             }
         }
+        */
 
+        curve_coup = chartData;
+/*
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
             var min_cur = 1000.0, max_cur = -1;
@@ -945,7 +969,7 @@ var startApp = function() {
                 min_value_k = curve_name;
             }
         }
-
+*/
         // grid line functions
         function x_grid() {
             return d3.svg.axis()
@@ -961,10 +985,10 @@ var startApp = function() {
                 .ticks(5)
         }
 
-        function makeCircles(foo, k, color, curveTitle) {
+        function makeCircles(data, k, color, curveTitle) {
             // Points along the line
             svg.selectAll("circle.line") 
-                .data(foo) 
+                .data(data) 
                 .enter().append("circle") 
                 .attr("class", "line"+k) 
                 .attr("cx", function(d) { return x_scale(d[0]); }) 
@@ -997,13 +1021,10 @@ var startApp = function() {
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        if (curveType == 'hc') {
-            var x_scale = d3.scale.log().range([0, width]).domain([d3.min(xAxisVariable), d3.max(xAxisVariable)]);
-            var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
-        } else if (curveType == 'uhs') {
-            var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(xAxisVariable), d3.max(xAxisVariable)]);
-            var y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
-        };
+        
+        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(xAxisVariable), d3.max(xAxisVariable)]);
+        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        
 
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
@@ -1080,18 +1101,13 @@ var startApp = function() {
         legend = d3.select("#chartDialog").append("svg")
             .attr("height", 25*(selectedCurves.length - 1));
 
-        for (k in selectedCurves) {
-            var curve_name = selectedCurves[k];
+        for (k in curve_coup) {
+            //var curve_name = selectedCurves[k];
 
-            if (curveType == 'hc' && curve_name == "iml")
-                continue;
-            if (curveType == 'uhs' && curve_name == "periods")
-                continue;
-
-            var data = curve_coup[curve_name];
+            var data = curve_coup[k];
 
             svg.append("path")
-                .data([curve_coup[curve_name]])
+                .data([curve_coup[k]])
                 .attr("class", "line"+k)
                 .attr("d", line);
 
