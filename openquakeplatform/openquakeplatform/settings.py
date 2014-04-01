@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append(
+    '/home/paolo/projects/virtualenvs/platform/lib/python2.7/site-packages/')
+
 # Django settings for the Openquake Platform project.
 import os
 import geonode
@@ -151,6 +155,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'nested_inlines',  # it must be BEFORE django.contrib.admin
     'django.contrib.admin',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
@@ -232,7 +237,7 @@ LOGGING = {
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
-     }
+        }
     },
     'handlers': {
         'null': {
@@ -411,7 +416,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
         'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
+        'PUBLIC_LOCATION': SITEURL + 'geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'DATASTORE': 'default',   # 'datastore',
@@ -509,7 +514,7 @@ CACHE_TIME = 0
 
 # Uploader Settings
 UPLOADER = {
-    'BACKEND' : 'geonode.rest',
+    'BACKEND': 'geonode.rest',
     'OPTIONS': {
         'TIME_ENABLED': False,
         'GEOGIT_ENABLED': False,
@@ -542,7 +547,7 @@ MAP_BASELAYERS = [{
     }, {
     "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
-    "name":"mapnik",
+    "name": "mapnik",
     "visibility": False,
     "fixed": True,
     "group": "background"
@@ -563,7 +568,7 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "group": "background"
     }, {
-    "source": {"ptype": "gxp_tilestreamsource" }
+    "source": {"ptype": "gxp_tilestreamsource"}
     }, {
     "source": {"ptype": "gxp_mapboxsource"},
     }, {
