@@ -1282,27 +1282,50 @@ var startApp = function() {
         // grid line functions
         function make_x_axis() {        
             return d3.svg.axis()
-                .scale(x)
+                .scale(x_scale)
                 .orient("bottom")
                 .ticks(5)
         }
 
         function make_y_axis() {        
             return d3.svg.axis()
-                .scale(y)
+                .scale(y_scale)
                 .orient("left")
                 .ticks(5)
         }
-/*
-        var data = [];
-        for(i=0; i<probArray.length; i++) {
-            // without log values...
-            data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
-        
-            // with log valuse...
-            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+
+        function makeCircles(data, k, color) {
+            // Points along the line
+            svg.selectAll("circle.line") 
+                .data(data) 
+                .enter().append("circle") 
+                .attr("class", "line"+k) 
+                .attr("cx", function(d) { return x_scale(d[1]); }) 
+                .attr("cy", function(d) { return y_scale(d[0]); }) 
+                .attr("r", 2.5)
+                .style("fill", color)
+                .on("mouseover", function() {
+                    d3.select(this)
+                        .attr('r', 6)
+                        .text(circleX + ", " + circleY)
+                        .style("fill", "gray");
+                    var circleX = d3.select(this.__data__[0]);
+                    circleX = circleX.toString();
+                    circleX = circleX.split(","[0]);
+    
+                    var circleY = d3.select(this.__data__[1]);
+                    circleY = circleY.toString();
+                    circleY = circleY.split(","[0]);
+    
+                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
+    
+                }).on("mouseout", function() {
+                    d3.select(this)
+                        .attr('r', 2.5)
+                        .style("fill", color);
+                });
         }
-*/
+
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
@@ -1312,17 +1335,17 @@ var startApp = function() {
         console.log(d3.min(iml));
         console.log(d3.max(iml));
 
-        var x = d3.scale.linear().range([0, width]).domain([d3.min(iml), d3.max(iml)]);
-        var y = d3.scale.linear().range([0, height]).domain([1, 0]);
+        var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(iml), d3.max(iml)]);
+        var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
         
 
         var xAxis = d3.svg.axis()
-            .scale(x)
+            .scale(x_scale)
             //.ticks(4)
             .tickFormat(function (d) { return d; })
             .orient("bottom");
         var yAxis = d3.svg.axis()
-            .scale(y)
+            .scale(y_scale)
 
             .orient("left");
 
@@ -1330,12 +1353,12 @@ var startApp = function() {
             .x(function(d) {
                 //console.log(d[0]);
                 //console.log(x(d[0]));
-                return x(d[1]); 
+                return x_scale(d[1]); 
             })
             .y(function(d) {
                 //console.log(d[1]);
                 //console.log(y(d[1]));
-                return y(d[0]); 
+                return y_scale(d[0]); 
             });
 
         var svg = d3.select("#chartDialog").append("svg")
@@ -1360,6 +1383,7 @@ var startApp = function() {
                 .tickFormat("")
             );
 
+        var count = 0;
         for (var k in chartData) {
             console.log(chartData[k]);
 
@@ -1367,6 +1391,33 @@ var startApp = function() {
                 .data([chartData[k]])
                 .attr("class", "line")
                 .attr("d", line);
+
+            // Update the css for each line
+            if (chartData.hasOwnProperty(k)) {
+                ++count;
+            }
+
+            colors = [
+                "darkred", 
+                "blue",
+                "green", 
+                "orange", 
+                "red", 
+                "sandybrown", 
+                "yellowgreen", 
+                "darksalmon", 
+                "lightseagreen",
+                "skyblue"
+            ];
+
+            var gray = "A0A0A0";
+            $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
+
+            var color = colors[count % colors.length];
+            var data = chartData[k];
+
+            makeCircles(data, k, color);
+
             svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
@@ -1395,36 +1446,6 @@ var startApp = function() {
             var legend = d3.select("#chartDialog").append("svg")
                 .attr("height", 25);
     
-            // points along the line
-            svg.selectAll("circle.line") 
-                .data(chartData[k]) 
-                .enter().append("circle") 
-                .attr("class", "line") 
-                .attr("cx", function(d) { return x(d[1]); }) 
-                .attr("cy", function(d) { return y(d[0]); }) 
-                .attr("r", 4.5)
-                .style("fill", "gray")
-                .on("mouseover", function() {
-                    d3.select(this)
-                        .attr('r', 6.6)
-                        .text(circleX + ", " + circleY)
-                        .style("fill", "red");
-                    var circleX = d3.select(this.__data__.x);
-                    circleX = circleX.toString();
-                    circleX = circleX.split(","[0]);
-    
-                    var circleY = d3.select(this.__data__.y);
-                    circleY = circleY.toString();
-                    circleY = circleY.split(","[0]);
-    
-                    textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
-    
-                }).on("mouseout", function() {
-                    d3.select(this)
-                        .attr('r', 4.5)
-                        .style("fill", "gray");
-                });
-    
             legend.append("text")
                 .attr("x", 60)
                 .attr("y", 7)
@@ -1437,8 +1458,6 @@ var startApp = function() {
                 .attr("y", 340)
                 .attr("dy", ".35em")
                 .text("");
-    
-
         }
 
 
