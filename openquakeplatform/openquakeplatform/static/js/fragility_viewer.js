@@ -51,12 +51,14 @@ var iml = [];
 var slightY = [];
 var moderateY = [];
 var extensiveY = [];
-var completeY = [];
+var collapseY = [];
+var imtTitle = "SA(0.24)";
+var plotTitle = "Fragility Model Example";
 //var slight = [];
 var slightTest = [];
 //var moderate = [];
 //var extensive = [];
-//var complete = [];
+//var collapse = [];
 var slightMean = 0.269319817;
 var slightStddev = 0.157809655;
 var moderate = [];
@@ -65,9 +67,9 @@ var moderateStddev = 0.265456576;
 var extensive = [];
 var extensiveMean = 0.72847252;
 var extensiveStddev = 0.281239271;
-var complete = [];
-var completeMean = 1.087186036;
-var completeStddev = 0.322411831;
+var collapse = [];
+var collapseMean = 1.087186036;
+var collapseStddev = 0.322411831;
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -83,7 +85,7 @@ var startApp = function() {
         $( "#chartDialog" ).dialog({
             autoOpen: false,
             height: 520,
-            width: 440,
+            width: 500,
             closeOnEscape: true,
             position: {at: "right bottom"}
         });
@@ -700,11 +702,11 @@ var startApp = function() {
         extensiveY.push(val);
     }
 
-    var  completeFragility = makeFragilityFunctionContinuous(completeMean, completeStddev);
+    var  collapseFragility = makeFragilityFunctionContinuous(collapseMean, collapseStddev);
     
     for (var i = 0; i < iml.length; i++) {
-        var val = completeFragility(iml[i]);
-        completeY.push(val);
+        var val = collapseFragility(iml[i]);
+        collapseY.push(val);
     }
     
     // for single curve...
@@ -717,47 +719,30 @@ var startApp = function() {
     chartData['slight'] = [];
     chartData['moderate'] = [];
     chartData['extensive'] = [];
-    chartData['complete'] = [];
+    chartData['collapse'] = [];
 
 
     for (var i = 0; i < iml.length; i++) {
 
         if (iml[i] > 0.0 && slightY[i] > 0.0) {
-            chartData.slight.push([slightY[i], iml[i]]);
+            chartData.slight.push([iml[i], slightY[i]]);
         };
 
         if (iml[i] > 0.0 && moderateY[i] > 0.0) {
-            chartData.moderate.push([moderateY[i], iml[i]]);
+            chartData.moderate.push([iml[i], moderateY[i]]);
         };
 
 
         if (iml[i] > 0.0 && extensiveY[i] > 0.0) {
-            chartData.extensive.push([extensiveY[i], iml[i]]);
+            chartData.extensive.push([iml[i], extensiveY[i]]);
         };
 
 
-        if (iml[i] > 0.0 && completeY[i] > 0.0) {
-            chartData.complete.push([completeY[i], iml[i]]);
+        if (iml[i] > 0.0 && collapseY[i] > 0.0) {
+            chartData.collapse.push([iml[i], collapseY[i]]);
         };
                 
     };
-    
-
-/*
-    chartData.slight = slightY.toString();
-    chartData.moderate = moderateY.toString();
-    chartData.extensive = extensiveY.toString();
-    chartData.complete = completeY.toString();
-    chartData.x = x.toString();
-*/
-/*
-    chartData.slight.push(slightY.toString(), x.toString());
-    chartData.moderate.push(moderateY.toString(), x.toString());
-    chartData.extensive.push(extensiveY.toString(), x.toString());
-    chartData.complete.push(completeY.toString(), x.toString());
-*/
-    //console.log(slight);
-    console.log(chartData);
 
 
     $("#fragility-dialog").button().click(function() {
@@ -839,438 +824,9 @@ var startApp = function() {
     } // End utfGridClickEventMixed
 
 
-    /////////////////////////////////////////////
-    ////////////// Fragility Chart //////////////
-    /////////////////////////////////////////////
-
-    function buildMixedD3ChartTEST(chartData) {
-    
-        console.log("chartData");
-        console.log(chartData);
-        var lat, lon, poe, xAxisLable, yAxisLable, xAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
-        var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
-
-        /* associative array of arrays of values */
-        curve_vals = [];
-        /* associative array of arrays [ x, y ] to describe the curve on the plane */
-        curve_coup = [];
-
-        /* associative array of curves produced with d3.line */
-        //lat = chartData["lat"];
-        //lon = chartData["lon"];
-        /*
-        if (curveType == 'uhs') {
-            poe = chartData['poe'];
-        };
-*/
-        //invest_time = chartData["invest_time"];
-        /*
-        if (curveType == 'hc') {
-            yAxisLable = "Probabability of exceedance in "+invest_time+" years";
-        } else if (curveType == 'uhs') {
-            yAxisLable = "Spectral acceleration (g)";
-        };
-
-        if (curveType == 'hc') {
-            // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
-            // SA-0.1 = Spectral Acceleration (0.1 s)
-            xAxisLable = chartData["imt"];
-            if (xAxisLable.indexOf("SA-") == 0 ) {
-                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
-                xAxisLable = "Spectral Acceleration (" + xAxisLableValue + " s) [g]";
-            } else if (xAxisLable.indexOf("PGA-") == 0) {
-                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
-                xAxisLable = "Peak Ground Acceleration [g]";
-            } else if (xAxisLable.indexOf("PGV-") == 0) {
-                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
-                xAxisLable = "Peak Ground Velocity [cm/s]";
-            } else if (xAxisLable.indexOf("PGD-") == 0) {
-                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
-                xAxisLable = "Peak Ground Displacement [cm]";
-            }
-        } else if (curveType == 'uhs') {
-            xAxisLable = 'Period (s)';
-        };
-*/
-
-
-/*
-        for (var k in chartData) {
-            var tmp = chartData[k].toString();
-            tmp = tmp.split(',').map(parseFloat);
-            curve_vals[k] = tmp;
-            console.log(curve_vals);
-        }
-        */
- 
-
-        /*
-        for (var k in selectedCurves) {
-            curve_name = selectedCurves[k];
-            curve_vals[curve_name] = chartData[curve_name].split(",");
-        }
-
-        for (var k in selectedCurves) {
-            curve_name = selectedCurves[k];
-            var i;
-            for (i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                curve_vals[curve_name][i] = parseFloat(curve_vals[curve_name][i]);
-            }
-        }
-*/
-/*
-        // Set the y axis variable depending on the type of curve
-        if (curveType == 'hc') {
-            xAxisVariable = curve_vals['iml'];
-        } else if (curveType == 'uhs') {
-            xAxisVariable = curve_vals['periods'];
-        };
-*/
-
-
-        xAxisVariable = x;
-/*
-        var old_value = -100;
-        for (i = 0 ; i < xAxisVariable.length ; i++) {
-            if (xAxisVariable[i] == old_value) {
-                xAxisVariable.splice(i, 1);                
-                i--;
-            }
-            else {
-                old_value = xAxisVariable[i];
-            }
-        }
-
-        for (var k in selectedCurves) {
-            curve_name = selectedCurves[k];
-
-            if (curveType == 'hc' && curve_name == "iml")
-                continue;
-            if (curveType == 'uhs' && curve_name == "periods")
-                continue;
-
-            curve_coup[curve_name] = [];
-            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (xAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
-                    curve_coup[curve_name].push([ xAxisVariable[i], curve_vals[curve_name][i] ]);
-                }
-            }
-        }
-        */
-
-        curve_coup = chartData;
-/*
-        for (var k in selectedCurves) {
-            var curve_name = selectedCurves[k];
-            var min_cur = 1000.0, max_cur = -1;
-
-            if (curveType == 'hc' && curve_name == "iml")
-                continue;
-            if (curveType == 'uhs' && curve_name == "periods")
-                continue;
-
-            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (curve_vals[curve_name][i] == 0)
-                    continue;
-
-                if (min_cur > curve_vals[curve_name][i])
-                    min_cur = curve_vals[curve_name][i];
-                if (max_cur < curve_vals[curve_name][i])
-                    max_cur = curve_vals[curve_name][i];
-            }
-            if (max_value < max_cur) {
-                max_value = max_cur;
-                max_value_k = curve_name;
-            }
-            if (min_value > min_cur) {
-                min_value = min_cur;
-                min_value_k = curve_name;
-            }
-        }
-*/
-        // grid line functions
-        function x_grid() {
-            return d3.svg.axis()
-                .scale(x_scale)
-                .orient("bottom")
-                .ticks(5)
-        }
-
-        function y_grid() {
-            return d3.svg.axis()
-                .scale(y_scale)
-                .orient("left")
-                .ticks(5)
-        }
-
-        function makeCircles(data, k, color, curveTitle) {
-            // Points along the line
-            svg.selectAll("circle.line") 
-                .data(data) 
-                .enter().append("circle") 
-                .attr("class", "line"+k) 
-                .attr("cx", function(d) { return x_scale(d[0]); }) 
-                .attr("cy", function(d) { return y_scale(d[1]); }) 
-                .attr("r", 2.5)
-                .style("fill", color)
-                .on("mouseover", function() {
-                    d3.select(this)
-                        .attr('r', 6)
-                        .text(circleX + ", " + circleY)
-                        .style("fill", "gray");
-                    var circleX = d3.select(this.__data__[0]);
-                    circleX = circleX.toString();
-                    circleX = circleX.split(","[0]);
-    
-                    var circleY = d3.select(this.__data__[1]);
-                    circleY = circleY.toString();
-                    circleY = circleY.split(","[0]);
-    
-                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
-    
-                }).on("mouseout", function() {
-                    d3.select(this)
-                        .attr('r', 2.5)
-                        .style("fill", color);
-                });
-        }
-
-        var margin = {top: 55, right: 20, bottom: 45, left: 60};
-        var width = 400 - margin.left - margin.right;
-        var height = 380 - margin.top - margin.bottom;
-
-        
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(xAxisVariable), d3.max(xAxisVariable)]);
-        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
-        
-
-        var xAxis = [], xAxis_n = 1;
-        var xAxis_vals = [];
-
-        xAxis_n = parseInt(Math.ceil(xAxisVariable.length / 5));
-        if (xAxis_n > 4)
-            xAxis_n = 4;
-
-        for (var i = 0 ; i < xAxis_n ; i++) {
-            xAxis_vals[i] = [];
-            for (var e = i ; e < xAxisVariable.length ; e += xAxis_n) {
-                xAxis_vals[i].push(xAxisVariable[e]);
-            }
- 
-            xAxis[i] = d3.svg.axis()
-                .scale(x_scale)
-                .ticks(4)
-                .innerTickSize(i == 0 ? 8 : 4)
-                .outerTickSize(0)
-                .tickValues(xAxis_vals[i])
-                .orient("bottom");
-
-
-
-            if (i == 0) {
-                xAxis[i].tickFormat(function (d) { return d; })
-            }
-            else {
-                xAxis[i].tickFormat(function (d) { return ""; })
-            }
-        }
-
-        var yAxis = d3.svg.axis()
-            .scale(y_scale)
-            .orient("left");
-
-        var line = d3.svg.line()
-            .x(function(d,i) {
-                return x_scale(d[0]);
-            })
-            .y(function(d) {
-                return y_scale(d[1]);
-            })
-        
-        var svg = d3.select("#chartDialog").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        // grid lines
-        svg.append("g")         
-            .attr("class", "grid")
-            .attr("transform", "translate(0," + height + ")")
-            .attr('opacity', 0.6)
-            .call(x_grid()
-                .tickSize(-height, 0, 0)
-                .tickFormat("")
-            );
-    
-        svg.append("g")         
-            .attr("class", "grid")
-            .attr('opacity', 0.6)
-            .call(y_grid()
-                .tickSize(-width, 0, 0)
-                .tickFormat("")
-            );
-
-        legend = d3.select("#chartDialog").append("svg")
-            .attr("height", 25*(selectedCurves.length - 1));
-
-        for (k in curve_coup) {
-            //var curve_name = selectedCurves[k];
-
-            var data = curve_coup[k];
-
-            svg.append("path")
-                .data([curve_coup[k]])
-                .attr("class", "line"+k)
-                .attr("d", line);
-
-            // Update the css for each line
-            colors = [
-                "darkred", 
-                "blue",
-                "green", 
-                "orange", 
-                "red", 
-                "sandybrown", 
-                "yellowgreen", 
-                "darksalmon", 
-                "lightseagreen",
-                "skyblue"
-            ];
-
-            var gray = "A0A0A0";
-            $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
-
-            var color = colors[k % colors.length];
-
-            var str = selectedCurves[k];
-            console.log(selectedCurves);
-            str = str.replace(/_/g, " ");
-            var curveTitle = capitalize(str)
-
-            makeCircles(data, k, color, curveTitle);
-
-            legend.append("text")
-                .attr("x", 90)
-                .attr("y", 20*(k))
-                .attr("dy", ".35em")
-                .text(curveTitle);
-
-            legend.append("svg:circle")
-                //.attr("cx", 50) 
-                .attr("cy", 20*(k)) 
-                .attr("cx", 80)
-                .attr("r", 3)
-                .style("fill", color)
-
-            $("."+selectedCurves[k]).css({'stroke':colors[k]});
-        }
-
-        for (i = 0 ; i < xAxis_n ; i++) {
-            var g = svg.append("g");
-
-            g.attr("class", "x axis")
-            
-            g.attr("transform", "translate(0," + height + ")")
-            .call(xAxis[i]);
-            if (i == (xAxis_n - 1))
-                g.append("text")
-                .attr("x", 160)
-                .attr("y", 30)
-                .attr("dy", ".71em")
-                .attr("text-anchor", "middle")
-                .style("font-size","12px")
-                .text(xAxisLable);
-        }
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", -60)
-            .attr("x", -20)
-            .attr("dy", ".71em")
-            .style("font-size","12px")
-            .style("text-anchor", "end")
-            .text(yAxisLable);
-
-        textTopLonLat = svg.append("text")
-            .attr("x", 0)
-            .attr("y", -32)
-            .attr("dy", ".35em")
-            .attr("font-size","12px")
-            .text("Location (Lon/Lat): "+lon+", "+lat);
-
-        textTopLable = svg.append("text")
-            .attr("x", -55)
-            .attr("y", -47)
-            .attr("dy", ".35em")
-            .style("font-weight", "bold")
-            .attr("font-size","12px")
-            .text('Investigation Time: '+invest_time+', Probability of exceedance: '+poe);
-
-        textTop = svg.append("text")
-            .attr("x", 0)
-            .attr("y", -15)
-            .attr("dy", ".35em")
-            .style("font-size","11px")
-            .text("");
-
-        $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
-        $('#downloadCurve').on("hover", function(){
-            $(this).css("cursor", "pointer");
-        });
-
-        var h = $("#chartDialog").height();
-        h = h + 40;
-        $("#chartDialog").css({"height": h+"px"});
-
-        // Prep data for download to CSV
-        $('#downloadCurve').click(function(event) {
-            var csvHeader = selectedCurves;
-            var csvData = [];
-            csvData = csvData.concat(csvHeader);
-            csvData = csvData.concat("investigationTime");
-            csvData = csvData.concat("poE");
-            csvData = csvData.concat("lon");
-            csvData = csvData.concat("lat");
-            csvData = JSON.stringify(csvData);
-            var lineBreak = "lineBreak";
-            csvData = csvData.concat(lineBreak);
-            var quotationMark = '"';
-
-            for (var k in selectedCurves) {
-                curve_name = selectedCurves[k];
-                var curveValue = chartData[curve_name];
-                csvData = csvData.concat(quotationMark);
-                csvData = csvData.concat(curveValue);
-                csvData = csvData.concat(quotationMark);
-            }
-
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(invest_time);
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(poe);
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(lon);
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(lat);
-            csvData = csvData
-                .replace(/lineBreak/, '\r\n')
-                .replace(/\[/g, '')
-                .replace(/\]/g, '')
-                .replace(/""/g, '","');
-            console.log(csvData);
-            downloadJSON2CSV(csvData);
-        });
-    } //End chart
-
-
-
-
 
     /////////////////////////////////////////////
-    ///////////// Fragility Chart Single ////////
+    ///////////// Fragility Chart ///////////////
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData) {
@@ -1294,14 +850,19 @@ var startApp = function() {
                 .ticks(5)
         }
 
-        function makeCircles(data, k, color) {
+        function capitalise(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+        }
+
+        function makeCircles(data, k, color, curveTitle) {
+
             // Points along the line
             svg.selectAll("circle.line") 
                 .data(data) 
                 .enter().append("circle") 
                 .attr("class", "line"+k) 
-                .attr("cx", function(d) { return x_scale(d[1]); }) 
-                .attr("cy", function(d) { return y_scale(d[0]); }) 
+                .attr("cx", function(d) { return x_scale(d[0]); }) 
+                .attr("cy", function(d) { return y_scale(d[1]); }) 
                 .attr("r", 2.5)
                 .style("fill", color)
                 .on("mouseover", function() {
@@ -1317,7 +878,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
     
-                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
+                    textTop.text(curveTitle+" point value (x/y): " + Math.round(circleX * 1000) / 1000 + ", " + Math.round(circleY * 1000) / 1000);
     
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -1326,18 +887,12 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 20, right: 20, bottom: 80, left: 60},
-        width = 400 - margin.left - margin.right,
+        var margin = {top: 55, right: 100, bottom: 80, left: 60},
+        width = 480 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
-
-        //var x = d3.scale.linear().range([0, width]);
-        //var y = d3.scale.linear().range([height, 0]);
-        console.log(d3.min(iml));
-        console.log(d3.max(iml));
 
         var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(iml), d3.max(iml)]);
         var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
-        
 
         var xAxis = d3.svg.axis()
             .scale(x_scale)
@@ -1351,14 +906,10 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d) {
-                //console.log(d[0]);
-                //console.log(x(d[0]));
-                return x_scale(d[1]); 
+                return x_scale(d[0]); 
             })
             .y(function(d) {
-                //console.log(d[1]);
-                //console.log(y(d[1]));
-                return y_scale(d[0]); 
+                return y_scale(d[1]); 
             });
 
         var svg = d3.select("#chartDialog").append("svg")
@@ -1383,13 +934,14 @@ var startApp = function() {
                 .tickFormat("")
             );
 
+        var legend = d3.select("#chartDialog").append("svg")
+            .attr("height", 25);
+
         var count = 0;
         for (var k in chartData) {
-            console.log(chartData[k]);
-
             svg.append("path")
                 .data([chartData[k]])
-                .attr("class", "line")
+                .attr("class", "line"+k)
                 .attr("d", line);
 
             // Update the css for each line
@@ -1411,12 +963,28 @@ var startApp = function() {
             ];
 
             var gray = "A0A0A0";
-            $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
+            $(".line"+k).css({'fill':'none','opacity':'0.7', 'stroke':gray});
 
             var color = colors[count % colors.length];
             var data = chartData[k];
+            var curveTitle = k;
+            curveTitle = capitalise(curveTitle);
 
-            makeCircles(data, k, color);
+            makeCircles(data, k, color, curveTitle);
+
+            // Curve lables
+            svg.append("text")
+                .attr("x", 340)
+                .attr("y", 20*(count))
+                .attr("dy", ".35em")
+                .text(curveTitle);
+
+            svg.append("svg:circle")
+                //.attr("cx", 50)
+                .attr("cy", 20*(count))
+                .attr("cx", 330)
+                .attr("r", 3)
+                .style("fill", color)
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -1428,8 +996,8 @@ var startApp = function() {
                 .attr("dy", ".71em")
                 .attr("text-anchor", "middle")
                 .style("font-size","12px")
-                //.text(imt);
-                ;
+                .text(imtTitle);
+                
             svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
@@ -1440,22 +1008,19 @@ var startApp = function() {
                 .attr("dy", ".71em")
                 .style("font-size","12px")
                 .style("text-anchor", "end")
-                //.text("Probabability of exceedance in "+invest_time+" years");
-                ;
-    
-            var legend = d3.select("#chartDialog").append("svg")
-                .attr("height", 25);
-    
-            legend.append("text")
-                .attr("x", 60)
-                .attr("y", 7)
-                .attr("dy", ".35em")
-                //.text("Location (Lon/Lat): "+lng+", "+lat);
-                ;
-                
-            textBottom = svg.append("text")
+                .text("Probabability of exceedance");
+
+            textTopLable = svg.append("text")
                 .attr("x", 0)
-                .attr("y", 340)
+                .attr("y", -35)
+                .attr("dy", ".35em")
+                //.style("font-weight", "bold")
+                .attr("font-size","14px")
+                .text(plotTitle);
+                
+            textTop = svg.append("text")
+                .attr("x", 0)
+                .attr("y", -15)
                 .attr("dy", ".35em")
                 .text("");
         }
