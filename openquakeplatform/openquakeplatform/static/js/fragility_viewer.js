@@ -42,6 +42,33 @@ var curvesAvailable = {};
 var layersByInvestSingle = {};
 var selectedCurves = [];
 
+// Some hard codded data for demo and required vars and functions for fragility curve
+var min = 0.05;
+var max = 2.5;
+var inc = ((max - min) / 100);
+var chartData = [];
+var iml = [];
+var slightY = [];
+var moderateY = [];
+var extensiveY = [];
+var completeY = [];
+//var slight = [];
+var slightTest = [];
+//var moderate = [];
+//var extensive = [];
+//var complete = [];
+var slightMean = 0.269319817;
+var slightStddev = 0.157809655;
+var moderate = [];
+var moderateMean = 0.429717196;
+var moderateStddev = 0.265456576;
+var extensive = [];
+var extensiveMean = 0.72847252;
+var extensiveStddev = 0.281239271;
+var complete = [];
+var completeMean = 1.087186036;
+var completeStddev = 0.322411831;
+
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
 );
@@ -608,38 +635,13 @@ var startApp = function() {
         $("#fragilityCurveDialog").dialog("open");
     });
 
-    // Some hard codded data for demo and required vars and functions for fragility curve
-    var min = 0.05;
-    var max = 2.5;
-    var inc = ((max - min) / 100);
-    var chartData = [];
-    var x = [];
-    var slightY = [];
-    var moderateY = [];
-    var extensiveY = [];
-    var completeY = [];
-    //var slight = [];
-    var slightTest = [];
-    //var moderate = [];
-    //var extensive = [];
-    //var complete = [];
-    var slightMean = 0.269319817;
-    var slightStddev = 0.157809655;
-    var moderate = [];
-    var moderateMean = 0.429717196;
-    var moderateStddev = 0.265456576;
-    var extensive = [];
-    var extensiveMean = 0.72847252;
-    var extensiveStddev = 0.281239271;
-    var complete = [];
-    var completeMean = 1.087186036;
-    var completeStddev = 0.322411831;
+
     
     // create the x axis values
     for(var i=min; i<max;i=i+inc) {
-        x.push(Math.round(i*1000) / 1000);
+        iml.push(Math.round(i*1000) / 1000);
     }
-    x.push(max);
+    iml.push(max);
     
     function normalCumulativeProbability(z) {
         var b1 = 0.31938153;
@@ -679,35 +681,35 @@ var startApp = function() {
     
     var  slightFragility = makeFragilityFunctionContinuous(slightMean, slightStddev);
     
-    for (var i = 0; i < x.length; i++) {
-        var val = slightFragility(x[i]);
+    for (var i = 0; i < iml.length; i++) {
+        var val = slightFragility(iml[i]);
         slightY.push(val);
     }
 
     var  moderateFragility = makeFragilityFunctionContinuous(moderateMean, moderateStddev);
     
-    for (var i = 0; i < x.length; i++) {
-        var val = moderateFragility(x[i]);
+    for (var i = 0; i < iml.length; i++) {
+        var val = moderateFragility(iml[i]);
         moderateY.push(val);
     }
 
     var  extensiveFragility = makeFragilityFunctionContinuous(extensiveMean, extensiveStddev);
     
-    for (var i = 0; i < x.length; i++) {
-        var val = extensiveFragility(x[i]);
+    for (var i = 0; i < iml.length; i++) {
+        var val = extensiveFragility(iml[i]);
         extensiveY.push(val);
     }
 
     var  completeFragility = makeFragilityFunctionContinuous(completeMean, completeStddev);
     
-    for (var i = 0; i < x.length; i++) {
-        var val = completeFragility(x[i]);
+    for (var i = 0; i < iml.length; i++) {
+        var val = completeFragility(iml[i]);
         completeY.push(val);
     }
     
     // for single curve...
-    for (var i = 0; i < x.length; i++) {
-        slightTest.push([x[i], slightY[i]]);
+    for (var i = 0; i < iml.length; i++) {
+        slightTest.push([iml[i], slightY[i]]);
     };
 
     // for multiple curves...
@@ -717,11 +719,27 @@ var startApp = function() {
     chartData['extensive'] = [];
     chartData['complete'] = [];
 
-    for (var i = 0; i < x.length; i++) {
-        chartData.slight.push([slightY[i], x[i]]);
-        chartData.moderate.push([moderateY[i], x[i]]);
-        chartData.extensive.push([extensiveY[i], x[i]]);
-        chartData.complete.push([completeY[i], x[i]]);
+
+    for (var i = 0; i < iml.length; i++) {
+
+        if (iml[i] > 0.0 && slightY[i] > 0.0) {
+            chartData.slight.push([slightY[i], iml[i]]);
+        };
+
+        if (iml[i] > 0.0 && moderateY[i] > 0.0) {
+            chartData.moderate.push([moderateY[i], iml[i]]);
+        };
+
+
+        if (iml[i] > 0.0 && extensiveY[i] > 0.0) {
+            chartData.extensive.push([extensiveY[i], iml[i]]);
+        };
+
+
+        if (iml[i] > 0.0 && completeY[i] > 0.0) {
+            chartData.complete.push([completeY[i], iml[i]]);
+        };
+                
     };
     
 
@@ -825,7 +843,7 @@ var startApp = function() {
     ////////////// Fragility Chart //////////////
     /////////////////////////////////////////////
 
-    function buildMixedD3Chart(chartData) {
+    function buildMixedD3ChartTEST(chartData) {
     
         console.log("chartData");
         console.log(chartData);
@@ -910,7 +928,7 @@ var startApp = function() {
 */
 
 
-        xAxisVariable = curve_vals['x'];
+        xAxisVariable = x;
 /*
         var old_value = -100;
         for (i = 0 ; i < xAxisVariable.length ; i++) {
@@ -1038,21 +1056,16 @@ var startApp = function() {
             for (var e = i ; e < xAxisVariable.length ; e += xAxis_n) {
                 xAxis_vals[i].push(xAxisVariable[e]);
             }
-            if (curveType == 'hc') {
-                xAxis[i] = d3.svg.axis()
-                    .scale(x_scale)
-                    .ticks(4)
-                    .innerTickSize(i == 0 ? 8 : 4)
-                    .outerTickSize(0)
-                    .tickValues(xAxis_vals[i])
-                    .orient("bottom");
+ 
+            xAxis[i] = d3.svg.axis()
+                .scale(x_scale)
+                .ticks(4)
+                .innerTickSize(i == 0 ? 8 : 4)
+                .outerTickSize(0)
+                .tickValues(xAxis_vals[i])
+                .orient("bottom");
 
-            } else if (curveType == 'uhs') {
-                xAxis[i] = d3.svg.axis()
-                    .scale(x_scale)
-                    .ticks(4)
-                    .orient("bottom");
-            };
+
 
             if (i == 0) {
                 xAxis[i].tickFormat(function (d) { return d; })
@@ -1260,9 +1273,11 @@ var startApp = function() {
     ///////////// Fragility Chart Single ////////
     /////////////////////////////////////////////
 
-    function buildMixedD3ChartSingle(slight) {
+    function buildMixedD3Chart(chartData) {
 
-        console.log(slight);
+        var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
+
+        console.log(chartData);
         //var lon = lng;
         // grid line functions
         function make_x_axis() {        
@@ -1292,8 +1307,14 @@ var startApp = function() {
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
-        var x = d3.scale.log().range([0, width]);
-        var y = d3.scale.log().range([height, 0]);
+        //var x = d3.scale.linear().range([0, width]);
+        //var y = d3.scale.linear().range([height, 0]);
+        console.log(d3.min(iml));
+        console.log(d3.max(iml));
+
+        var x = d3.scale.linear().range([0, width]).domain([d3.min(iml), d3.max(iml)]);
+        var y = d3.scale.linear().range([0, height]).domain([1, 0]);
+        
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -1307,10 +1328,14 @@ var startApp = function() {
 
         var line = d3.svg.line()
             .x(function(d) {
-                return x(d.x); 
+                //console.log(d[0]);
+                //console.log(x(d[0]));
+                return x(d[1]); 
             })
-            .y(function(d) { 
-                return y(d.y); 
+            .y(function(d) {
+                //console.log(d[1]);
+                //console.log(y(d[1]));
+                return y(d[0]); 
             });
 
         var svg = d3.select("#chartDialog").append("svg")
@@ -1335,89 +1360,87 @@ var startApp = function() {
                 .tickFormat("")
             );
 
-        var dataCallback = function(d) {
-            d.x = +d[0];
-            d.y = +d[1];
-        };
+        for (var k in chartData) {
+            console.log(chartData[k]);
 
-        slight.forEach(dataCallback);
-        x.domain(d3.extent(slight, function(d) { return d.x; }));
-        y.domain(d3.extent(slight, function(d) { return d.y; }));
+            svg.append("path")
+                .data([chartData[k]])
+                .attr("class", "line")
+                .attr("d", line);
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .append("text")
+                .attr("x", 160)
+                .attr("y", 30)
+                .attr("dy", ".71em")
+                .attr("text-anchor", "middle")
+                .style("font-size","12px")
+                //.text(imt);
+                ;
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -60)
+                .attr("x", -20)
+                .attr("dy", ".71em")
+                .style("font-size","12px")
+                .style("text-anchor", "end")
+                //.text("Probabability of exceedance in "+invest_time+" years");
+                ;
+    
+            var legend = d3.select("#chartDialog").append("svg")
+                .attr("height", 25);
+    
+            // points along the line
+            svg.selectAll("circle.line") 
+                .data(chartData[k]) 
+                .enter().append("circle") 
+                .attr("class", "line") 
+                .attr("cx", function(d) { return x(d[1]); }) 
+                .attr("cy", function(d) { return y(d[0]); }) 
+                .attr("r", 4.5)
+                .style("fill", "gray")
+                .on("mouseover", function() {
+                    d3.select(this)
+                        .attr('r', 6.6)
+                        .text(circleX + ", " + circleY)
+                        .style("fill", "red");
+                    var circleX = d3.select(this.__data__.x);
+                    circleX = circleX.toString();
+                    circleX = circleX.split(","[0]);
+    
+                    var circleY = d3.select(this.__data__.y);
+                    circleY = circleY.toString();
+                    circleY = circleY.split(","[0]);
+    
+                    textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
+    
+                }).on("mouseout", function() {
+                    d3.select(this)
+                        .attr('r', 4.5)
+                        .style("fill", "gray");
+                });
+    
+            legend.append("text")
+                .attr("x", 60)
+                .attr("y", 7)
+                .attr("dy", ".35em")
+                //.text("Location (Lon/Lat): "+lng+", "+lat);
+                ;
+                
+            textBottom = svg.append("text")
+                .attr("x", 0)
+                .attr("y", 340)
+                .attr("dy", ".35em")
+                .text("");
+    
 
-        svg.append("path")
-            .data(slight)
-            .attr("class", "line")
-            .attr("d", line);
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("x", 160)
-            .attr("y", 30)
-            .attr("dy", ".71em")
-            .attr("text-anchor", "middle")
-            .style("font-size","12px")
-            //.text(imt);
-            ;
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", -60)
-            .attr("x", -20)
-            .attr("dy", ".71em")
-            .style("font-size","12px")
-            .style("text-anchor", "end")
-            //.text("Probabability of exceedance in "+invest_time+" years");
-            ;
+        }
 
-        var legend = d3.select("#chartDialog").append("svg")
-            .attr("height", 25);
-
-        // points along the line
-        svg.selectAll("circle.line") 
-            .data(slight) 
-            .enter().append("circle") 
-            .attr("class", "line") 
-            .attr("cx", function(d) { return x(d.x); }) 
-            .attr("cy", function(d) { return y(d.y); }) 
-            .attr("r", 4.5)
-            .style("fill", "gray")
-            .on("mouseover", function() {
-                d3.select(this)
-                    .attr('r', 6.6)
-                    .text(circleX + ", " + circleY)
-                    .style("fill", "red");
-                var circleX = d3.select(this.__data__.x);
-                circleX = circleX.toString();
-                circleX = circleX.split(","[0]);
-
-                var circleY = d3.select(this.__data__.y);
-                circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
-
-                textBottom.text("Point value (x/y): " + circleX + ", " + circleY);
-
-            }).on("mouseout", function() {
-                d3.select(this)
-                    .attr('r', 4.5)
-                    .style("fill", "gray");
-            });
-
-        legend.append("text")
-            .attr("x", 60)
-            .attr("y", 7)
-            .attr("dy", ".35em")
-            //.text("Location (Lon/Lat): "+lng+", "+lat);
-            ;
-            
-        textBottom = svg.append("text")
-            .attr("x", 0)
-            .attr("y", 340)
-            .attr("dy", ".35em")
-            .text("");
 
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
         $('#downloadCurve').on("hover", function(){
