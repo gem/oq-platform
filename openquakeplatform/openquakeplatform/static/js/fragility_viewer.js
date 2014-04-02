@@ -639,6 +639,10 @@ var startApp = function() {
 
 
     
+    /////////////////////////////////
+    /////// Fragility Stuff /////////
+    /////////////////////////////////
+
     // create the x axis values
     for(var i=min; i<max;i=i+inc) {
         iml.push(Math.round(i*1000) / 1000);
@@ -677,73 +681,26 @@ var startApp = function() {
            return normalCumulativeProbability((Math.log(iml / mu)) / sigma);
         };
     };
-    
-    //console.log("input x values: ");
-    //console.log(x);
-    
-    var  slightFragility = makeFragilityFunctionContinuous(slightMean, slightStddev);
-    
-    for (var i = 0; i < iml.length; i++) {
-        var val = slightFragility(iml[i]);
-        slightY.push(val);
-    }
 
-    var  moderateFragility = makeFragilityFunctionContinuous(moderateMean, moderateStddev);
-    
-    for (var i = 0; i < iml.length; i++) {
-        var val = moderateFragility(iml[i]);
-        moderateY.push(val);
-    }
+    // To make all this work, this object need to be created somehow...
+    var tempObj = {};
+    tempObj.slightFragility = [0.269319817, 0.157809655];
+    tempObj.moderateFragility = [0.429717196, 0.265456576];
+    tempObj.extensiveFragility = [0.72847252, 0.281239271];
+    tempObj.collapseFragility = [1.087186036, 0.322411831];
 
-    var  extensiveFragility = makeFragilityFunctionContinuous(extensiveMean, extensiveStddev);
-    
-    for (var i = 0; i < iml.length; i++) {
-        var val = extensiveFragility(iml[i]);
-        extensiveY.push(val);
-    }
+    console.log(tempObj);
 
-    var  collapseFragility = makeFragilityFunctionContinuous(collapseMean, collapseStddev);
-    
-    for (var i = 0; i < iml.length; i++) {
-        var val = collapseFragility(iml[i]);
-        collapseY.push(val);
-    }
-    
-    // for single curve...
-    for (var i = 0; i < iml.length; i++) {
-        slightTest.push([iml[i], slightY[i]]);
-    };
+    for (var k in tempObj) {
+        var tmp = makeFragilityFunctionContinuous(tempObj[k][0], tempObj[k][1]);
+        chartData[k] = [];
 
-    // for multiple curves...
-
-    chartData['slight'] = [];
-    chartData['moderate'] = [];
-    chartData['extensive'] = [];
-    chartData['collapse'] = [];
-
-
-    for (var i = 0; i < iml.length; i++) {
-
-        if (iml[i] > 0.0 && slightY[i] > 0.0) {
-            chartData.slight.push([iml[i], slightY[i]]);
+        for (var i = 0; i < iml.length; i++) {
+            var val = tmp(iml[i]);
+            chartData[k].push([iml[i], val]);
         };
-
-        if (iml[i] > 0.0 && moderateY[i] > 0.0) {
-            chartData.moderate.push([iml[i], moderateY[i]]);
-        };
-
-
-        if (iml[i] > 0.0 && extensiveY[i] > 0.0) {
-            chartData.extensive.push([iml[i], extensiveY[i]]);
-        };
-
-
-        if (iml[i] > 0.0 && collapseY[i] > 0.0) {
-            chartData.collapse.push([iml[i], collapseY[i]]);
-        };
-                
-    };
-
+        
+    }
 
     $("#fragility-dialog").button().click(function() {
         $("#chartDialog").dialog("open");
