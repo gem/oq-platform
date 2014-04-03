@@ -118,14 +118,12 @@ var startApp = function() {
         };
     };
 
-    // To make all this work, this object need to be created somehow...
+    // To make all this work, this tempObj needs to be created somehow...
     var tempObj = {};
     tempObj.slightFragility = [0.269319817, 0.157809655];
     tempObj.moderateFragility = [0.429717196, 0.265456576];
     tempObj.extensiveFragility = [0.72847252, 0.281239271];
     tempObj.collapseFragility = [1.087186036, 0.322411831];
-
-    console.log(tempObj);
 
     for (var k in tempObj) {
         var tmp = makeFragilityFunctionContinuous(tempObj[k][0], tempObj[k][1]);
