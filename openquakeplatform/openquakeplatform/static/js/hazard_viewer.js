@@ -450,7 +450,7 @@ var startApp = function() {
             };
 
             // Provide the user with the curves that are available in the dialog
-            $('#hazardCurveDialog').append('<div id="curve-check-box" Select curves to be ploted in the chart:<br></div>');
+            $('#hazardCurveDialog').append('<div id="curve-check-box"<p><b>Select curves to be ploted in the chart:</b></p></div>');
             for (var i = 0; i < curvesList.length; i++) {
                 var checkbox = '<input type="checkbox" id="'+curvesList[i]+'" class="curve-list" value=" '
                     + curvesList[i]
@@ -460,7 +460,8 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             };
-            hazardCurveDialog.dialog("option", "height", (420 + (selectedCurves.length * 10)));
+
+            hazardCurveDialog.dialog("option", "height", (500 + (curvesList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -530,7 +531,7 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             };
-            hazardCurveDialog.dialog("option", "height", (420 + (selectedUhs.length * 10)));
+            hazardCurveDialog.dialog("option", "height", (500 + (uhsList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
         } else {
@@ -638,7 +639,7 @@ var startApp = function() {
         // Remove the layer list element
         document.getElementById("uhs-list").options.length = 0;
 
-       // Create the layer list based on the category selected
+        // Create the layer list based on the category selected
         var e = document.getElementById("curve-category");
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = uhsLayersByCat[strUser];
@@ -649,9 +650,7 @@ var startApp = function() {
             uhsOpt.valuse = layers;
             selUhs.appendChild(uhsOpt);
         }
-        
-        var foo = document.getElementById("loss-list");
-        console.log(foo);
+
         if($('#uhs-list').find('option').length == 0) {
             $('#addTileUhs').attr("disabled", true);
             $('#removeTileUhs').attr("disabled", true);
@@ -1405,7 +1404,6 @@ var startApp = function() {
                 .replace(/\[/g, '')
                 .replace(/\]/g, '')
                 .replace(/""/g, '","');
-            console.log(csvData);
             downloadJSON2CSV(csvData);
         });
     } // End Chart
@@ -1549,10 +1547,10 @@ var startApp = function() {
                 .ticks(5)
         }
 
-        function makeCircles(foo, k, color, curveTitle) {
+        function makeCircles(circleData, k, color, curveTitle) {
             // Points along the line
             svg.selectAll("circle.line") 
-                .data(foo) 
+                .data(circleData) 
                 .enter().append("circle") 
                 .attr("class", "line"+k) 
                 .attr("cx", function(d) { return x_scale(d[0]); }) 
@@ -1703,7 +1701,6 @@ var startApp = function() {
             var color = colors[k % colors.length];
 
             var str = selectedCurves[k];
-            console.log(selectedCurves);
             str = str.replace(/_/g, " ");
             var curveTitle = capitalize(str)
 
@@ -1819,7 +1816,6 @@ var startApp = function() {
                 .replace(/\[/g, '')
                 .replace(/\]/g, '')
                 .replace(/""/g, '","');
-            console.log(csvData);
             downloadJSON2CSV(csvData);
         });
     } //End chart
@@ -1907,10 +1903,10 @@ var startApp = function() {
                 .ticks(5)
         }
 
-        function makeCircles(foo, k, color, curve_name) {
+        function makeCircles(circleData, k, color, curve_name) {
             // Points along the line
             svg.selectAll("circle.line") 
-                .data(foo) 
+                .data(circleData) 
                 .enter().append("circle") 
                 .attr("class", "line"+k) 
                 .attr("cx", function(d) { return x_scale(d[0]); }) 
