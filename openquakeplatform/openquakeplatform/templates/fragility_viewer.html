@@ -21,20 +21,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<button type="button" id="fragility-curve">Fragility Curves</button>
 <button type="button" id="fragility-dialog">Chart Dialog</button>
-
-<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
-    <p>This layer has already been added to the map</p>
-</div>
-
-<div id="worning-duplicate-grid" title="Woops!" class="ui-helper-hidden">
-    <p>You can only load one interactive layer at a time</p>
-</div>
-
-<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
-    <p>This layer in not loaded in the map</p>
-</div>
 
 {{block.super}}
 
@@ -43,36 +30,8 @@ Explore - {{block.super}}
 
 {% block extra_script %}
     {{block.super}}
-    <!-- Category tags-->
-
-  <div id="thematicMap" title="Map Options">
-    <form id="tile-form-list">
-      <br>Category:<br>
-      <select id="layer-category">
-      </select>
-      <br>Map Layer:<br>
-      <select id="layer-list">
-      </select><br>
-      <input type="button" id="addTileLayer" value="Add Layer">
-      <input type="button" id="removeTileLayer" value="Remove Layer">
-    </form>
-  </div>
 
   <div id="chartDialog" title="Fragility Curve">
-  </div>
-
-  <div id="fragilityCurveDialog" title="Fragility Curve Options" style="overflow: hidden;">
-    <form id="tile-form-list-curves">
-      <br>Category:<br>
-      <select id="curve-category">
-      </select>
-      <br>Curve Layer:<br>
-      <select id="curve-list">
-      </select><br>
-      <input type="button" id="addTileCurve" value="Add Layer">
-      <input type="button" id="removeTileCurve" value="Remove Layer">
-    </form>
-    
   </div>
 
 
