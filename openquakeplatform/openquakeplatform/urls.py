@@ -16,7 +16,7 @@ import openquakeplatform.gemecdwebsite.casualtylevel.urls
 import openquakeplatform.gemecdwebsite.surveyvalue.urls
 import openquakeplatform.gemecdwebsite.photo.urls
 import openquakeplatform.gemecdwebsite.uploadnrml.urls
-
+#import openquakeplatform.vulnerability.views
 import photologue.urls
 
 
@@ -74,7 +74,6 @@ urlpatterns = patterns(
 
     url(r'^ecd/uploadnrml',include(openquakeplatform.gemecdwebsite.uploadnrml.urls.urlpatterns)), #display mode
 
-
     #photologue
     url(r'^photologue/', include(photologue.urls)),
 
@@ -106,6 +105,9 @@ urlpatterns = patterns(
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
+    #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
+        #name='index'),
+    (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),

@@ -19,6 +19,9 @@ SITENAME = 'openquakeplatform'
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
+SERIALIZATION_MODULES = {
+    'json': 'wadofstuff.django.serializers.json'
+}
 
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
