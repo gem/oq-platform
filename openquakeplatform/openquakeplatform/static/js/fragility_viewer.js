@@ -15,30 +15,6 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-// Some hard codded data for demo and required vars and functions for fragility curve
-var min = 0.05;
-var max = 2.5;
-var inc = ((max - min) / 100);
-var chartData = [];
-var iml = [];
-var slightY = [];
-var moderateY = [];
-var extensiveY = [];
-var collapseY = [];
-var imtTitle = "SA(0.24)";
-var plotTitle = "Fragility Model Example";
-var slightMean = 0.269319817;
-var slightStddev = 0.157809655;
-var moderate = [];
-var moderateMean = 0.429717196;
-var moderateStddev = 0.265456576;
-var extensive = [];
-var extensiveMean = 0.72847252;
-var extensiveStddev = 0.281239271;
-var collapse = [];
-var collapseMean = 1.087186036;
-var collapseStddev = 0.322411831;
-
 $(function() {
     $( "#chartDialog" ).dialog({
         autoOpen: false,
@@ -56,59 +32,198 @@ $("#fragility-curve").button().click(function() {
 /////////////////////////////////
 ////// Fragility Information ////
 /////////////////////////////////
-// the json to be expected from the other page
+// the json to be expected from the other app
 var jsonObj = {
-    "pk": 1, 
-    "model": "inhermodel.toplevel", 
-    "fields": {
-        "level_one": {
-            "pk": 1, 
-            "model": "inhermodel.levelone", 
-            "fields": {
-                "level_two": {
-                    "pk": 1, 
-                    "model": "inhermodel.leveltwo", 
-                    "fields": {
-                        "level_three": {
-                            "pk": 1, 
-                            "model": "inhermodel.levelthree", 
-                            "fields": {
-                                "name": "levelthreello", 
-                                "level": 1
+        "pk": 1, 
+        "model": "vulnerability.generalinformation", 
+        "fields": {
+            "category": "Structure class", 
+            "article_title": "The title", 
+            "name": "Sample name", 
+            "publication_conference_name": "GEM Conference", 
+            "fragility_func": {
+                "pk": 1, 
+                "model": "vulnerability.fragilityfunc", 
+                "fields": {
+                    "analytical_model_info": {
+                        "pk": 1, 
+                        "model": "vulnerability.analyticalmodelinfo", 
+                        "fields": {
+                            "damage_to_loss_func": null, 
+                            "capacity_curve_func": null, 
+                            "fragility_func": 1, 
+                            "model_type": 2, 
+                            "vulnerability_func": null, 
+                            "analysis_type": {
+                                "pk": 2, 
+                                "model": "vulnerability.analysistype", 
+                                "fields": {
+                                    "name": "sample analysis type"
+                                }
+                            }, 
+                            "method_uncert_propag": 2, 
+                            "models_num": 2
+                        }
+                    }, 
+                    "func_distr_frag_cont": {
+                        "pk": 1, 
+                        "model": "vulnerability.funcdistrfragcont", 
+                        "fields": {
+                            "coeff_variation_std_dev": "", 
+                            "predictor_var_corr_matrix": "", 
+                            "fragility_func": 1, 
+                            "coeff_variation_mean": "", 
+                            "std_dev": "0.157809655; 0.265456576; 0.281239271; 0.322411831", 
+                            "func_distr_shape": {
+                                "pk": 1, 
+                                "model": "vulnerability.funcdistrshape", 
+                                "fields": {
+                                    "name": "Lognormal"
+                                }
+                            }, 
+                            "mean": "0.269319817; 0.429717196; 0.72847252; 1.087186036"
+                        }
+                    }, 
+                    "general_information": 1, 
+                    "predictor_var": {
+                        "pk": 1, 
+                        "model": "vulnerability.predictorvar", 
+                        "fields": {
+                            "minimum_im": 0.05, 
+                            "intensity_measure_type": 4, 
+                            "fragility_func": 1, 
+                            "vulnerability_func": null, 
+                            "maximum_im": 2.5, 
+                            "intensity_measure_unit": 1, 
+                            "evaluation_of_im": 3
+                        }
+                    }, 
+                    "limit_states_desc": "slight; moderate; extensive; complete", 
+                    "damage_scale": 2, 
+                    "engineering_demand_par": {
+                        "pk": 2, 
+                        "model": "vulnerability.engineeringdemandpar", 
+                        "fields": {
+                            "name": "sample engineering demand parameter"
+                        }
+                    }, 
+                    "method_of_estimation": 1, 
+                    "func_distr_type": 2, 
+                    "stat_info": {
+                        "pk": 1, 
+                        "model": "vulnerability.statisticalinformation", 
+                        "fields": {
+                            "damage_to_loss_func": null, 
+                            "capacity_curve_func": null, 
+                            "stat_model": {
+                                "pk": 3, 
+                                "model": "vulnerability.statmodel", 
+                                "fields": {
+                                    "name": "sample stat model"
+                                }
+                            }, 
+                            "fit_assessment_goodness": {
+                                "pk": 2, 
+                                "model": "vulnerability.fitassessmentgoodness", 
+                                "fields": {
+                                    "name": "sample goodness of fit assessment"
+                                }
+                            }, 
+                            "fragility_func": 1, 
+                            "stat_model_fitting_method": {
+                                "pk": 2, 
+                                "model": "vulnerability.statmodelfittingmethod", 
+                                "fields": {
+                                    "name": "sample stat model fitting method"
+                                }
+                            }, 
+                            "vulnerability_func": null, 
+                            "proc_constr_pred_int": {
+                                "pk": 4, 
+                                "model": "vulnerability.procconstrint", 
+                                "fields": {
+                                    "name": "sample proc for constuct of pred interv"
+                                }
+                            }, 
+                            "model_fitting_method_assumptions": 2, 
+                            "proc_constr_conf_int": {
+                                "pk": 3, 
+                                "model": "vulnerability.procconstrint", 
+                                "fields": {
+                                    "name": "sample proc for contruct of conf interv"
+                                }
                             }
-                        }, 
-                        "name": "leveltwollo", 
-                        "level": 1
-                    }
-                }, 
-                "name": "levelonno", 
-                "level": 1
-            }
-        }, 
-        "name": "toppo"
-    }
-};
-
-console.log(jsonObj);
-
-function getKeys(keys, obj, path) {
-    for(key in obj) {
-        var currpath = path+'/'+key;
-        keys.push([key, currpath]);
-        if(typeof(obj[key]) == 'object' && !(obj[key] instanceof Array))
-            getKeys(keys, obj[key], currpath);
-    }
-}
-
-var keys = [];
-getKeys(keys, jsonObj, '');
-for(var i=0; i<keys.length; i++)
-    console.log(keys[i][0] + '=' + keys[i][1]);
-
+                        }
+                    }, 
+                    "limit_states_num": 4
+                }
+            }, 
+            "type_of_assessment": "Fragility", 
+            "year": 2014, 
+            "web_link": "http://www.google.it/", 
+            "general_comments": "", 
+            "use_case_information": "", 
+            "authors": "Ben, Michele, Paolo", 
+            "taxonomy_type": {
+                "pk": 1, 
+                "model": "vulnerability.taxonomytype", 
+                "fields": {
+                    "name": "TaxT"
+                }
+            }, 
+            "taxonomy_text": "RC_1_PC"
+        }
+    };
 
 /////////////////////////////////
 /// Create Fragility Curves /////
 /////////////////////////////////
+
+// Get values out of JSON
+var dataObj = {};
+var chartData = [];
+var iml = [];
+
+var plotTitle = jsonObj.fields.article_title;
+var min = jsonObj.fields.fragility_func.fields.predictor_var.fields.minimum_im;
+var max = jsonObj.fields.fragility_func.fields.predictor_var.fields.maximum_im;
+var imtTitle = jsonObj.fields.name;
+var inc = ((max - min) / 100);
+var limitStatesArray =  jsonObj.fields.fragility_func.fields.limit_states_desc;
+limitStatesArray = limitStatesArray.split(";");
+
+for (var i = 0; i < limitStatesArray.length; i++)
+    limitStatesArray[i] = limitStatesArray[i].trim();
+
+var meanArray = jsonObj.fields.fragility_func.fields.func_distr_frag_cont.fields.mean;
+meanArray = meanArray.split(";");
+
+var stddevArray = jsonObj.fields.fragility_func.fields.func_distr_frag_cont.fields.std_dev;
+stddevArray = stddevArray.split(";");
+
+for (var i = 0; i < limitStatesArray.length; i++) {
+    dataObj[limitStatesArray[i]] = [];
+};
+
+for (var i = 0; i < limitStatesArray.length; i++) {
+    dataObj[limitStatesArray[i]] = [parseFloat(meanArray[i]), parseFloat(stddevArray[i])];
+};
+
+// create the x axis values
+for(var i=min; i<max;i=i+inc) {
+    iml.push(Math.round(i*1000) / 1000);
+}
+iml.push(max);
+
+for (var k in dataObj) {
+    var tmp = makeFragilityFunctionContinuous(dataObj[k][0], dataObj[k][1]);
+    chartData[k] = [];
+    for (var i = 0; i < iml.length; i++) {
+        var val = tmp(iml[i]);
+        chartData[k].push([iml[i], val]);
+    };
+}
+
 // create the x axis values
 for(var i=min; i<max;i=i+inc) {
     iml.push(Math.round(i*1000) / 1000);
@@ -147,34 +262,18 @@ function makeFragilityFunctionContinuous(mean, stddev) {
        return normalCumulativeProbability((Math.log(iml / mu)) / sigma);
     };
 };
-// To make all this work, this tempObj needs to be created somehow...
-var tempObj = {};
-tempObj.slightFragility = [0.269319817, 0.157809655];
-tempObj.moderateFragility = [0.429717196, 0.265456576];
-tempObj.extensiveFragility = [0.72847252, 0.281239271];
-tempObj.collapseFragility = [1.087186036, 0.322411831];
-for (var k in tempObj) {
-    var tmp = makeFragilityFunctionContinuous(tempObj[k][0], tempObj[k][1]);
-    chartData[k] = [];
-    for (var i = 0; i < iml.length; i++) {
-        var val = tmp(iml[i]);
-        chartData[k].push([iml[i], val]);
-    };
-    
-}
+
 $("#fragility-dialog").button().click(function() {
     $("#chartDialog").dialog("open");
     buildMixedD3Chart(chartData);
 });
-
 
 /////////////////////////////////////////////
 ///////////// Fragility Chart ///////////////
 /////////////////////////////////////////////
 function buildMixedD3Chart(chartData) {
     var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
-    console.log(chartData);
-    //var lon = lng;
+
     // grid line functions
     function make_x_axis() {        
         return d3.svg.axis()
