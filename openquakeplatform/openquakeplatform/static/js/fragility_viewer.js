@@ -39,7 +39,12 @@ var collapse = [];
 var collapseMean = 1.087186036;
 var collapseStddev = 0.322411831;
 
-var startApp = function() {
+//var baseMapUrl = (
+ //   "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
+//);
+//var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+
+//var startApp = function() {
 
     $(function() {
         $( "#chartDialog" ).dialog({
@@ -54,9 +59,49 @@ var startApp = function() {
     $("#fragility-curve").button().click(function() {
         $("#fragilityCurveDialog").dialog("open");
     });
+
+    /////////////////////////////////
+    ////// Fragility Information ////
+    /////////////////////////////////
+
+    // the json to be expected from the other page
+    var json = {
+        "pk": 1, 
+        "model": "inhermodel.toplevel", 
+        "fields": {
+            "level_one": {
+                "pk": 1, 
+                "model": "inhermodel.levelone", 
+                "fields": {
+                    "level_two": {
+                        "pk": 1, 
+                        "model": "inhermodel.leveltwo", 
+                        "fields": {
+                            "level_three": {
+                                "pk": 1, 
+                                "model": "inhermodel.levelthree", 
+                                "fields": {
+                                    "name": "levelthreello", 
+                                    "level": 1
+                                }
+                            }, 
+                            "name": "leveltwollo", 
+                            "level": 1
+                        }
+                    }, 
+                    "name": "levelonno", 
+                    "level": 1
+                }
+            }, 
+            "name": "toppo"
+        }
+    };
+
+    var jsonObj = $.parseJSON(json);
+    console.log(jsonObj);
     
     /////////////////////////////////
-    /////// Fragility Stuff /////////
+    /// Create Fragility Curves /////
     /////////////////////////////////
 
     // create the x axis values
@@ -117,6 +162,7 @@ var startApp = function() {
     }
 
     $("#fragility-dialog").button().click(function() {
+        console.log("hello");
         $("#chartDialog").dialog("open");
         buildMixedD3Chart(chartData);
     });
@@ -365,5 +411,6 @@ var startApp = function() {
         });
     } // End Chart
 
-}; // End startApp
+//}; // End startApp
 
+//app.initialize(startApp);

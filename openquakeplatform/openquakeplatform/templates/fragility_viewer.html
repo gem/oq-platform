@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
-{% extends "fragility_viewer_base.html" %}
+{% extends "site_base_data.html" %}
 
 {% block title %}
 Explore - {{block.super}}
@@ -34,6 +34,11 @@ Explore - {{block.super}}
   <div id="chartDialog" title="Fragility Curve">
   </div>
 
+  	<link rel="stylesheet" href="{{ STATIC_URL }}lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.css" />
 
+  	<script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>
+    <script src="{{ STATIC_URL }}js/d3.js"></script>
     <script src="{{ STATIC_URL }}js/fragility_viewer.js"></script>
 {% endblock extra_script %}
