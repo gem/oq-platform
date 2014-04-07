@@ -46,8 +46,6 @@ var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
 );
 
-var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
-
 var startApp = function() {
 
     $(function() {
@@ -59,17 +57,6 @@ var startApp = function() {
             position: {at: "right bottom"}
         });
     });
-
-    app.createMap();
-
-    layers = {};
-
-    layerControl = L.control.layers(app.baseLayers);
-    map.panTo(new L.LatLng(10, 10));
-    map.setZoom(2);
-    map.scrollWheelZoom.enable();
-    map.options.maxBounds = null;
-    map.addControl(layerControl.setPosition("topleft"));
 
     $("#fragility-curve").button().click(function() {
         $("#fragilityCurveDialog").dialog("open");
@@ -387,4 +374,3 @@ var startApp = function() {
 
 }; // End startApp
 
-app.initialize(startApp);
