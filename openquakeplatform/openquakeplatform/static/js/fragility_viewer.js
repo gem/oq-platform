@@ -15,9 +15,6 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var utfGrid = new Object;
-var layerControl;
-
 // Some hard codded data for demo and required vars and functions for fragility curve
 var min = 0.05;
 var max = 2.5;
@@ -41,10 +38,6 @@ var extensiveStddev = 0.281239271;
 var collapse = [];
 var collapseMean = 1.087186036;
 var collapseStddev = 0.322411831;
-
-var baseMapUrl = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
-);
 
 var startApp = function() {
 
