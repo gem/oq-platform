@@ -15,8 +15,27 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+/////////////////////////////////
+/////////// Jquery Stuff ////////
+/////////////////////////////////
+
 $(function() {
-    $( "#chartDialog" ).dialog({
+    $( "#accordion" ).accordion();
+    collapsible: true
+});
+
+$(function() {
+    $("#chartDialog").dialog({
+        autoOpen: false,
+        height: 520,
+        width: 500,
+        closeOnEscape: true,
+        position: {at: "right bottom"}
+    });
+});
+
+$(function() {
+    $("#fragilityDataDialog").dialog({
         autoOpen: false,
         height: 520,
         width: 500,
@@ -29,151 +48,131 @@ $("#fragility-curve").button().click(function() {
     $("#fragilityCurveDialog").dialog("open");
 });
 
+$("#fragility-dialog").button().click(function() {
+    $("#chartDialog").empty();
+    $("#chartDialog").dialog("open");
+    buildMixedD3Chart(chartData);
+});
+
+$("#fragility-data").button().click(function() {
+    $("#fragilityDataDialog").empty();
+    $("#fragilityDataDialog").dialog("open");
+    fragilityData();
+});
+
 /////////////////////////////////
 ////// Fragility Information ////
 /////////////////////////////////
 // the json to be expected from the other app
-var jsonObj = {
-        "pk": 1, 
-        "model": "vulnerability.generalinformation", 
-        "fields": {
-            "category": "Structure class", 
-            "article_title": "The title", 
-            "name": "Sample name", 
-            "publication_conference_name": "GEM Conference", 
-            "fragility_func": {
-                "pk": 1, 
-                "model": "vulnerability.fragilityfunc", 
-                "fields": {
-                    "analytical_model_info": {
-                        "pk": 1, 
-                        "model": "vulnerability.analyticalmodelinfo", 
-                        "fields": {
-                            "damage_to_loss_func": null, 
-                            "capacity_curve_func": null, 
-                            "fragility_func": 1, 
-                            "model_type": 2, 
-                            "vulnerability_func": null, 
-                            "analysis_type": {
-                                "pk": 2, 
-                                "model": "vulnerability.analysistype", 
-                                "fields": {
-                                    "name": "sample analysis type"
-                                }
-                            }, 
-                            "method_uncert_propag": 2, 
-                            "models_num": 2
-                        }
-                    }, 
-                    "func_distr_frag_cont": {
-                        "pk": 1, 
-                        "model": "vulnerability.funcdistrfragcont", 
-                        "fields": {
-                            "coeff_variation_std_dev": "", 
-                            "predictor_var_corr_matrix": "", 
-                            "fragility_func": 1, 
-                            "coeff_variation_mean": "", 
-                            "std_dev": "0.157809655; 0.265456576; 0.281239271; 0.322411831", 
-                            "func_distr_shape": {
-                                "pk": 1, 
-                                "model": "vulnerability.funcdistrshape", 
-                                "fields": {
-                                    "name": "Lognormal"
-                                }
-                            }, 
-                            "mean": "0.269319817; 0.429717196; 0.72847252; 1.087186036"
-                        }
-                    }, 
-                    "general_information": 1, 
-                    "predictor_var": {
-                        "pk": 1, 
-                        "model": "vulnerability.predictorvar", 
-                        "fields": {
-                            "minimum_im": 0.05, 
-                            "intensity_measure_type": 4, 
-                            "fragility_func": 1, 
-                            "vulnerability_func": null, 
-                            "maximum_im": 2.5, 
-                            "intensity_measure_unit": 1, 
-                            "evaluation_of_im": 3
-                        }
-                    }, 
-                    "limit_states_desc": "slight; moderate; extensive; complete", 
-                    "damage_scale": 2, 
-                    "engineering_demand_par": {
-                        "pk": 2, 
-                        "model": "vulnerability.engineeringdemandpar", 
-                        "fields": {
-                            "name": "sample engineering demand parameter"
-                        }
-                    }, 
-                    "method_of_estimation": 1, 
-                    "func_distr_type": 2, 
-                    "stat_info": {
-                        "pk": 1, 
-                        "model": "vulnerability.statisticalinformation", 
-                        "fields": {
-                            "damage_to_loss_func": null, 
-                            "capacity_curve_func": null, 
-                            "stat_model": {
-                                "pk": 3, 
-                                "model": "vulnerability.statmodel", 
-                                "fields": {
-                                    "name": "sample stat model"
-                                }
-                            }, 
-                            "fit_assessment_goodness": {
-                                "pk": 2, 
-                                "model": "vulnerability.fitassessmentgoodness", 
-                                "fields": {
-                                    "name": "sample goodness of fit assessment"
-                                }
-                            }, 
-                            "fragility_func": 1, 
-                            "stat_model_fitting_method": {
-                                "pk": 2, 
-                                "model": "vulnerability.statmodelfittingmethod", 
-                                "fields": {
-                                    "name": "sample stat model fitting method"
-                                }
-                            }, 
-                            "vulnerability_func": null, 
-                            "proc_constr_pred_int": {
-                                "pk": 4, 
-                                "model": "vulnerability.procconstrint", 
-                                "fields": {
-                                    "name": "sample proc for constuct of pred interv"
-                                }
-                            }, 
-                            "model_fitting_method_assumptions": 2, 
-                            "proc_constr_conf_int": {
-                                "pk": 3, 
-                                "model": "vulnerability.procconstrint", 
-                                "fields": {
-                                    "name": "sample proc for contruct of conf interv"
-                                }
-                            }
-                        }
-                    }, 
-                    "limit_states_num": 4
-                }
-            }, 
-            "type_of_assessment": "Fragility", 
-            "year": 2014, 
-            "web_link": "http://www.google.it/", 
-            "general_comments": "", 
-            "use_case_information": "", 
-            "authors": "Ben, Michele, Paolo", 
-            "taxonomy_type": {
-                "pk": 1, 
-                "model": "vulnerability.taxonomytype", 
-                "fields": {
-                    "name": "TaxT"
-                }
-            }, 
-            "taxonomy_text": "RC_1_PC"
-        }
+var jsonObj = {"pk": 1, "model": "vulnerability.generalinformation", "fields": {"category": "Structure class", "article_title": "The title", "name": "Sample name", "publication_conference_name": "GEM Conference", "fragility_func": {"pk": 1, "model": "vulnerability.fragilityfunc", "fields": {"analytical_model_info": {"pk": 1, "model": "vulnerability.analyticalmodelinfo", "fields": {"damage_to_loss_func": null, "capacity_curve_func": null, "fragility_func": 1, "model_type": "2D element-by-element", "vulnerability_func": null, "analysis_type": {"pk": 2, "model": "vulnerability.analysistype", "fields": {"name": "sample analysis type"}}, "method_uncert_propag": "Set of index buildings", "models_num": 2}}, "func_distr_frag_cont": {"pk": 1, "model": "vulnerability.funcdistrfragcont", "fields": {"coeff_variation_std_dev": "", "predictor_var_corr_matrix": "", "fragility_func": 1, "coeff_variation_mean": "", "std_dev": "0.157809655; 0.265456576; 0.281239271; 0.322411831", "func_distr_shape": {"pk": 1, "model": "vulnerability.funcdistrshape", "fields": {"name": "Lognormal"}}, "mean": "0.269319817; 0.429717196; 0.72847252; 1.087186036"}}, "general_information": 1, "predictor_var": {"pk": 1, "model": "vulnerability.predictorvar", "fields": {"minimum_im": 0.05, "intensity_measure_type": "Sa(T)", "fragility_func": 1, "vulnerability_func": null, "maximum_im": 2.5, "intensity_measure_unit": "Acceleration (g)", "evaluation_of_im": "Natural Accelerograms"}}, "limit_states_desc": "slight; moderate; extensive; complete", "damage_scale": "EMS98", "engineering_demand_par": {"pk": 2, "model": "vulnerability.engineeringdemandpar", "fields": {"name": "sample engineering demand parameter"}}, "method_of_estimation": "Analytical", "func_distr_type": "Continuous", "stat_info": {"pk": 1, "model": "vulnerability.statisticalinformation", "fields": {"damage_to_loss_func": null, "capacity_curve_func": null, "stat_model": {"pk": 3, "model": "vulnerability.statmodel", "fields": {"name": "sample stat model"}}, "fit_assessment_goodness": {"pk": 2, "model": "vulnerability.fitassessmentgoodness", "fields": {"name": "sample goodness of fit assessment"}}, "fragility_func": 1, "stat_model_fitting_method": {"pk": 2, "model": "vulnerability.statmodelfittingmethod", "fields": {"name": "sample stat model fitting method"}}, "vulnerability_func": null, "proc_constr_pred_int": {"pk": 4, "model": "vulnerability.procconstrint", "fields": {"name": "sample proc for constuct of pred interv"}}, "model_fitting_method_assumptions": 2, "proc_constr_conf_int": {"pk": 3, "model": "vulnerability.procconstrint", "fields": {"name": "sample proc for contruct of conf interv"}}}}, "limit_states_num": 4}}, "type_of_assessment": "Fragility", "year": 2014, "web_link": "http://www.google.it/", "general_comments": "", "use_case_information": "", "authors": "Ben, Matteo, Paolo", "taxonomy_type": {"pk": 1, "model": "vulnerability.taxonomytype", "fields": {"name": "TaxT"}}, "taxonomy_text": "RC_1_PC"}};
+
+/////////////////////////////////
+/// Create Fragility Metadata ///
+/////////////////////////////////
+
+var assessmentType = jsonObj.fields.type_of_assessment;
+var id = jsonObj.fields.name;
+var year = jsonObj.fields.year;
+var webLink = jsonObj.fields.web_link;
+var genComments = jsonObj.fields.general_comments;
+var useCase = jsonObj.fields.use_case_information;
+var authors = jsonObj.fields.authors;
+var taxType = jsonObj.fields.taxonomy_type.fields.name;
+var taxText = jsonObj.fields.taxonomy_text;
+var category = jsonObj.fields.category;
+var publication = jsonObj.fields.publication;
+var geoApp = "temp";
+var method = jsonObj.fields.fragility_func.fields.method_of_estimation;
+
+// Generral information
+$("#genInfo").append('<p>Assessment Type: '+assessmentType+'</p>');
+$("#genInfo").append('<p>ID: '+id+'</p>');
+$("#genInfo").append('<p>Category: '+category+' '+taxType+'</p>');
+$("#genInfo").append('<p>Publication: '+publication+'</p>');
+$("#genInfo").append('<p>Geographical Applicability: '+geoApp+'</p>');
+$("#genInfo").append('<p>Methodology: '+method+'</p>');
+
+
+/*
+$(".content-wrap").append('<p>Year: '+year+'</p>');
+$(".content-wrap").append('<p>Web Link: <a href="'+webLink+'">'+webLink+'</a></p>');
+$(".content-wrap").append('<p>Authors: '+authors+'</p>');
+$(".content-wrap").append('<p>Taxonomy Type: '+taxType+'</p>');
+$(".content-wrap").append('<p>General Comments: '+genComments+'</p>');
+$(".content-wrap").append('<p>Use Case Information: '+useCase+'</p>');
+*/
+
+// Modelling information
+var analysisType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.analysis_type.fields.name;
+if (analysisType != undefined) {
+    $("#modellingInfo").append('<p>Analysis Type: '+analysisType+'</p>');
+};
+
+var modelType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.model_type;
+if (modelType != undefined) {
+    $("#modellingInfo").append('<p>Model Type: '+modelType+'</p>');
+};
+
+var methodUncertPropag = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.method_uncert_propag;
+if (methodUncertPropag != undefined) {
+    $("#modellingInfo").append('<p>Method of Uncertainty Propagation: '+methodUncertPropag+'</p>');
+};
+
+var modelsNum = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.models_num;
+if (modelsNum != undefined) {
+    $("#modellingInfo").append('<p>Number of Distinct Structural Models Analysed: '+modelsNum+'</p>');
+};
+
+if (jsonObj.fields.fragility_func.fields.empirical_model_info != undefined) {
+    var empiricalDataSrc = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.empirical_data_src;
+    if (empiricalDataSrc != undefined) {
+        $("#modellingInfo").append('<p>Source of Empirical Data: '+empiricalDataSrc+'</p>');
     };
+
+    var buildingAggr = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.building_aggr;
+    if (buildingAggr != undefined) {
+        $("#modellingInfo").append('<p>Building Aggregation: '+buildingAggr+'</p>');
+    };
+
+    var aggrUnitDef = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.aggr_unit_def;
+    if (aggrUnitDef != undefined) {
+        $("#modellingInfo").append('<p>Definitions of Aggregated Units: '+aggrUnitDef+'</p>');
+    };
+};
+
+// Statistical Information
+var statModel = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model.fields.name;
+if (statModel != undefined) {
+    $("#statInfo").append('<p>Statistical Model: '+statModel+'</p>');
+};
+
+var statModelFittingMethod = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model_fitting_method.fields.name;
+if (statModelFittingMethod != undefined) {
+    $("#statInfo").append('<p>Statistical model fitting method: '+statModelFittingMethod+'</p>');
+};
+
+var modelFittingMethodAssumptions = jsonObj.fields.fragility_func.fields.stat_info.fields.model_fitting_method_assumptions;
+if (modelFittingMethodAssumptions != undefined) {
+    $("#statInfo").append('<p>Model Fitting Method Assumption: '+modelFittingMethodAssumptions+'</p>');
+};
+
+var fitAssessmentGoodness = jsonObj.fields.fragility_func.fields.stat_info.fields.fit_assessment_goodness.fields.name;
+if (fitAssessmentGoodness != undefined) {
+    $("#statInfo").append('<p>Goodness of fit assessment (GLM/GAM): '+fitAssessmentGoodness+'</p>');
+};
+
+var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
+if (procConstrPredInt != undefined) {
+    $("#statInfo").append('<p>Procedure for the Construction of Prediction Intervals: '+procConstrPredInt+'</p>');
+};
+
+// Quality rating system
+//???????
+//var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
+//if (procConstrPredInt != undefined) {
+  //  $("#QualitySys").append('<p>Procedure for the Construction of Prediction Intervals: '+procConstrPredInt+'</p>');
+//};
+
 
 /////////////////////////////////
 /// Create Fragility Curves /////
@@ -183,11 +182,10 @@ var jsonObj = {
 var dataObj = {};
 var chartData = [];
 var iml = [];
-
 var plotTitle = jsonObj.fields.article_title;
 var min = jsonObj.fields.fragility_func.fields.predictor_var.fields.minimum_im;
 var max = jsonObj.fields.fragility_func.fields.predictor_var.fields.maximum_im;
-var imtTitle = jsonObj.fields.name;
+var imtTitle = jsonObj.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
 var inc = ((max - min) / 100);
 var limitStatesArray =  jsonObj.fields.fragility_func.fields.limit_states_desc;
 limitStatesArray = limitStatesArray.split(";");
@@ -263,10 +261,18 @@ function makeFragilityFunctionContinuous(mean, stddev) {
     };
 };
 
-$("#fragility-dialog").button().click(function() {
-    $("#chartDialog").dialog("open");
-    buildMixedD3Chart(chartData);
-});
+function capitalize(str) {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+function fragilityData() {
+    $("#fragilityDataDialog").append("<b>Limit States, Mean, Stddev: </b></br>");
+    for (var i = 0; i < limitStatesArray.length; i++) {
+        var ls = capitalize(limitStatesArray[i]);
+        $("#fragilityDataDialog").append(ls +", "+ meanArray[i] +", "+ stddevArray[i] +"</br>");
+    };
+    
+}
 
 /////////////////////////////////////////////
 ///////////// Fragility Chart ///////////////
