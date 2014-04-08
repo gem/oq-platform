@@ -83,12 +83,12 @@ var geoApp = "temp";
 var method = jsonObj.fields.fragility_func.fields.method_of_estimation;
 
 // Generral information
-$("#genInfo").append('<p>Assessment Type: '+assessmentType+'</p>');
-$("#genInfo").append('<p>ID: '+id+'</p>');
-$("#genInfo").append('<p>Category: '+category+' '+taxType+'</p>');
-$("#genInfo").append('<p>Publication: '+publication+'</p>');
-$("#genInfo").append('<p>Geographical Applicability: '+geoApp+'</p>');
-$("#genInfo").append('<p>Methodology: '+method+'</p>');
+$("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
+$("#genInfo").append('<p><b>ID: </b>'+id+'</p>');
+$("#genInfo").append('<p><b>Category: </b>'+category+' '+taxType+'</p>');
+$("#genInfo").append('<p><b>Publication: </b>'+publication+'</p>');
+$("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
+$("#genInfo").append('<p><b>Methodology: </b>'+method+'</p>');
 
 
 /*
@@ -103,72 +103,72 @@ $(".content-wrap").append('<p>Use Case Information: '+useCase+'</p>');
 // Modelling information
 var analysisType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.analysis_type.fields.name;
 if (analysisType != undefined) {
-    $("#modellingInfo").append('<p>Analysis Type: '+analysisType+'</p>');
+    $("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
 };
 
 var modelType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.model_type;
 if (modelType != undefined) {
-    $("#modellingInfo").append('<p>Model Type: '+modelType+'</p>');
+    $("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
 };
 
 var methodUncertPropag = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.method_uncert_propag;
 if (methodUncertPropag != undefined) {
-    $("#modellingInfo").append('<p>Method of Uncertainty Propagation: '+methodUncertPropag+'</p>');
+    $("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
 };
 
 var modelsNum = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.models_num;
 if (modelsNum != undefined) {
-    $("#modellingInfo").append('<p>Number of Distinct Structural Models Analysed: '+modelsNum+'</p>');
+    $("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
 };
 
 if (jsonObj.fields.fragility_func.fields.empirical_model_info != undefined) {
     var empiricalDataSrc = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.empirical_data_src;
     if (empiricalDataSrc != undefined) {
-        $("#modellingInfo").append('<p>Source of Empirical Data: '+empiricalDataSrc+'</p>');
+        $("#modellingInfo").append('<p><b>Source of Empirical Data: </b>'+empiricalDataSrc+'</p>');
     };
 
     var buildingAggr = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.building_aggr;
     if (buildingAggr != undefined) {
-        $("#modellingInfo").append('<p>Building Aggregation: '+buildingAggr+'</p>');
+        $("#modellingInfo").append('<p><b>Building Aggregation: </b>'+buildingAggr+'</p>');
     };
 
     var aggrUnitDef = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.aggr_unit_def;
     if (aggrUnitDef != undefined) {
-        $("#modellingInfo").append('<p>Definitions of Aggregated Units: '+aggrUnitDef+'</p>');
+        $("#modellingInfo").append('<p><b>Definitions of Aggregated Units: </b>'+aggrUnitDef+'</p>');
     };
 };
 
 // Statistical Information
 var statModel = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model.fields.name;
 if (statModel != undefined) {
-    $("#statInfo").append('<p>Statistical Model: '+statModel+'</p>');
+    $("#statInfo").append('<p><b>Statistical Model: </b>'+statModel+'</p>');
 };
 
 var statModelFittingMethod = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model_fitting_method.fields.name;
 if (statModelFittingMethod != undefined) {
-    $("#statInfo").append('<p>Statistical model fitting method: '+statModelFittingMethod+'</p>');
+    $("#statInfo").append('<p><b>Statistical model fitting method: </b>'+statModelFittingMethod+'</p>');
 };
 
 var modelFittingMethodAssumptions = jsonObj.fields.fragility_func.fields.stat_info.fields.model_fitting_method_assumptions;
 if (modelFittingMethodAssumptions != undefined) {
-    $("#statInfo").append('<p>Model Fitting Method Assumption: '+modelFittingMethodAssumptions+'</p>');
+    $("#statInfo").append('<p><b>Model Fitting Method Assumption: </b>'+modelFittingMethodAssumptions+'</p>');
 };
 
 var fitAssessmentGoodness = jsonObj.fields.fragility_func.fields.stat_info.fields.fit_assessment_goodness.fields.name;
 if (fitAssessmentGoodness != undefined) {
-    $("#statInfo").append('<p>Goodness of fit assessment (GLM/GAM): '+fitAssessmentGoodness+'</p>');
+    $("#statInfo").append('<p><b>Goodness of fit assessment (GLM/GAM): </b>'+fitAssessmentGoodness+'</p>');
 };
 
 var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
 if (procConstrPredInt != undefined) {
-    $("#statInfo").append('<p>Procedure for the Construction of Prediction Intervals: '+procConstrPredInt+'</p>');
+    $("#statInfo").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
 };
 
 // Quality rating system
 //???????
 //var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
 //if (procConstrPredInt != undefined) {
-  //  $("#QualitySys").append('<p>Procedure for the Construction of Prediction Intervals: '+procConstrPredInt+'</p>');
+  //  $("#QualitySys").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
 //};
 
 
@@ -274,9 +274,42 @@ function fragilityData() {
 
 buildMixedD3Chart(chartData);
 
+/////////////////////////////////
+///// Fragility Data Table //////
+/////////////////////////////////
+
+$(document).ready(function() {
+    var aaData = [];
+        
+    for (var i = 0; i < limitStatesArray.length; i++) {
+        var tmp = [];
+        tmp.push(limitStatesArray[i]);
+        tmp.push(meanArray[i]);
+        tmp.push(stddevArray[i]);
+        aaData.push(tmp);
+    };
+
+    $('#fragility-table').dataTable({
+        "aaData": aaData,
+        // TODO make thias dynamic
+        "aoColumns": [
+            {"sTitle": "Limit State"},
+            {"sTitle": "Mean"},
+            {"sTitle": "Standard Deviation"}
+        ],
+        "aaSorting": [ [0,'asc'], [1,'asc'] ],
+        "sPaginationType": "full_numbers",
+        //"aoColumnDefs": [
+          //  { "sWidth": "20%", "aTargets": [ 0 ] }
+        //],
+    });
+});
+
+
 /////////////////////////////////////////////
 ///////////// Fragility Chart ///////////////
 /////////////////////////////////////////////
+
 function buildMixedD3Chart(chartData) {
     var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
