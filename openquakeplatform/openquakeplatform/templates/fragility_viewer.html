@@ -21,7 +21,6 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<button type="button" id="fragility-dialog">Fragility Chart</button>
 <button type="button" id="fragility-data">Fragility Data</button>
 
 {{block.super}}
@@ -35,22 +34,21 @@ Explore - {{block.super}}
   		<div id="statInfo"></div>
   		<h3>Quality Rating System</h3>
   		<div id="QualitySys"></div>
-
-
   	</div>
+
+<div id="fragilityChart"></div>
 
 {% endblock %}
 
 
 {% block extra_script %}
     {{block.super}}
-
-  	<div id="chartDialog" title="Fragility Curve"></div>
   	<div id="fragilityDataDialog" title="Fragility Data"></div>
 
 
   	<link rel="stylesheet" href="{{ STATIC_URL }}lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/fragility.css" />
 
   	<script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>

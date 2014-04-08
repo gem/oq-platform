@@ -1,0 +1,14 @@
+
+#accordion {
+  float:left;
+  display: block;
+  position: relative;
+  margin: 20px;
+  width: 400px;
+}
+
+#fragilityChart {
+  float:left;
+  display: block;
+  position: relative;
+}

@@ -16,11 +16,14 @@
 */
 
 /////////////////////////////////
-/////////// Jquery Stuff ////////
+//////// Jquery Stuff ///////////
 /////////////////////////////////
 
+// Remove GeoNode artifact
+$(".span12").remove();
+
 $(function() {
-    $( "#accordion" ).accordion();
+    $("#accordion").accordion();
     collapsible: true
 });
 
@@ -48,11 +51,6 @@ $("#fragility-curve").button().click(function() {
     $("#fragilityCurveDialog").dialog("open");
 });
 
-$("#fragility-dialog").button().click(function() {
-    $("#chartDialog").empty();
-    $("#chartDialog").dialog("open");
-    buildMixedD3Chart(chartData);
-});
 
 $("#fragility-data").button().click(function() {
     $("#fragilityDataDialog").empty();
@@ -274,6 +272,8 @@ function fragilityData() {
     
 }
 
+buildMixedD3Chart(chartData);
+
 /////////////////////////////////////////////
 ///////////// Fragility Chart ///////////////
 /////////////////////////////////////////////
@@ -347,7 +347,7 @@ function buildMixedD3Chart(chartData) {
         .y(function(d) {
             return y_scale(d[1]); 
         });
-    var svg = d3.select("#chartDialog").append("svg")
+    var svg = d3.select("#fragilityChart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
