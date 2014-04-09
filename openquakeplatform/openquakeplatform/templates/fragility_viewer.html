@@ -21,7 +21,6 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<button type="button" id="fragility-data">Fragility Data</button>
 
 {{block.super}}
 
@@ -38,7 +37,7 @@ Explore - {{block.super}}
 
 <div id="fragilityChart"></div>
 
-<div id="dialog-datagrid" style="height: 250px; width: 100%; overflow: scroll;">
+<div id="dialog-datagrid">
 	<table id="fragility-table">
     	<thead id="tablehead"><tr><th>Limit State</th><th>Mean</th><th>Standard Dev</th></tr></thead>
     	<tbody id="tableBody">
@@ -61,7 +60,6 @@ Explore - {{block.super}}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/fragility.css" />
 
   	<script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>
     <script src="{{ STATIC_URL }}js/d3.js"></script>
     <script src="{{ STATIC_URL }}js/fragility_viewer.js"></script>
 {% endblock extra_script %}

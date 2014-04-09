@@ -37,39 +37,19 @@ $(function() {
     });
 });
 
-$(function() {
-    $("#fragilityDataDialog").dialog({
-        autoOpen: false,
-        height: 520,
-        width: 500,
-        closeOnEscape: true,
-        position: {at: "right bottom"}
-    });
-});
-
-$("#fragility-curve").button().click(function() {
-    $("#fragilityCurveDialog").dialog("open");
-});
-
-
-$("#fragility-data").button().click(function() {
-    $("#fragilityDataDialog").empty();
-    $("#fragilityDataDialog").dialog("open");
-    fragilityData();
-});
-
 /////////////////////////////////
 ////// Fragility Information ////
 /////////////////////////////////
 // the json to be expected from the other app
-var jsonObj = {"pk": 1, "model": "vulnerability.generalinformation", "fields": {"category": "Structure class", "article_title": "The title", "name": "Sample name", "publication_conference_name": "GEM Conference", "fragility_func": {"pk": 1, "model": "vulnerability.fragilityfunc", "fields": {"analytical_model_info": {"pk": 1, "model": "vulnerability.analyticalmodelinfo", "fields": {"damage_to_loss_func": null, "capacity_curve_func": null, "fragility_func": 1, "model_type": "2D element-by-element", "vulnerability_func": null, "analysis_type": {"pk": 2, "model": "vulnerability.analysistype", "fields": {"name": "sample analysis type"}}, "method_uncert_propag": "Set of index buildings", "models_num": 2}}, "func_distr_frag_cont": {"pk": 1, "model": "vulnerability.funcdistrfragcont", "fields": {"coeff_variation_std_dev": "", "predictor_var_corr_matrix": "", "fragility_func": 1, "coeff_variation_mean": "", "std_dev": "0.157809655; 0.265456576; 0.281239271; 0.322411831", "func_distr_shape": {"pk": 1, "model": "vulnerability.funcdistrshape", "fields": {"name": "Lognormal"}}, "mean": "0.269319817; 0.429717196; 0.72847252; 1.087186036"}}, "general_information": 1, "predictor_var": {"pk": 1, "model": "vulnerability.predictorvar", "fields": {"minimum_im": 0.05, "intensity_measure_type": "Sa(T)", "fragility_func": 1, "vulnerability_func": null, "maximum_im": 2.5, "intensity_measure_unit": "Acceleration (g)", "evaluation_of_im": "Natural Accelerograms"}}, "limit_states_desc": "slight; moderate; extensive; complete", "damage_scale": "EMS98", "engineering_demand_par": {"pk": 2, "model": "vulnerability.engineeringdemandpar", "fields": {"name": "sample engineering demand parameter"}}, "method_of_estimation": "Analytical", "func_distr_type": "Continuous", "stat_info": {"pk": 1, "model": "vulnerability.statisticalinformation", "fields": {"damage_to_loss_func": null, "capacity_curve_func": null, "stat_model": {"pk": 3, "model": "vulnerability.statmodel", "fields": {"name": "sample stat model"}}, "fit_assessment_goodness": {"pk": 2, "model": "vulnerability.fitassessmentgoodness", "fields": {"name": "sample goodness of fit assessment"}}, "fragility_func": 1, "stat_model_fitting_method": {"pk": 2, "model": "vulnerability.statmodelfittingmethod", "fields": {"name": "sample stat model fitting method"}}, "vulnerability_func": null, "proc_constr_pred_int": {"pk": 4, "model": "vulnerability.procconstrint", "fields": {"name": "sample proc for constuct of pred interv"}}, "model_fitting_method_assumptions": 2, "proc_constr_conf_int": {"pk": 3, "model": "vulnerability.procconstrint", "fields": {"name": "sample proc for contruct of conf interv"}}}}, "limit_states_num": 4}}, "type_of_assessment": "Fragility", "year": 2014, "web_link": "http://www.google.it/", "general_comments": "", "use_case_information": "", "authors": "Ben, Matteo, Paolo", "taxonomy_type": {"pk": 1, "model": "vulnerability.taxonomytype", "fields": {"name": "TaxT"}}, "taxonomy_text": "RC_1_PC"}};
+var jsonObj = {"pk": 1, "model": "vulnerability.generalinformation", "fields": {"category": "Structure class", "article_title": "Reinforced concrete buildings", "name": "RC_LR_High_code", "publication_conference_name": "RISK-UE", "fragility_func": {"pk": 1, "model": "vulnerability.fragilityfunc", "fields": {"analytical_model_info": {"pk": 1, "model": "vulnerability.analyticalmodelinfo", "fields": {"damage_to_loss_func": null, "capacity_curve_func": null, "fragility_func": 1, "model_type": "2D element-by-element", "vulnerability_func": null, "analysis_type": {"pk": 1, "model": "vulnerability.analysistype", "fields": {"name": "Nonlinear dynamic analysis (NLD)"}}, "method_uncert_propag": "Random Monte-Carlo or Latin Hypercube sampling", "models_num": null}}, "func_distr_frag_cont": {"pk": 1, "model": "vulnerability.funcdistrfragcont", "fields": {"coeff_variation_std_dev": "", "predictor_var_corr_matrix": "", "fragility_func": 1, "coeff_variation_mean": "", "std_dev": "0.006; 0.064; 0.140; 0.215; 0.277", "func_distr_shape": {"pk": 1, "model": "vulnerability.funcdistrshape", "fields": {"name": "Lognormal"}}, "mean": "0.008; 0.076; 0.166; 0.255; 0.328"}}, "general_information": 1, "qrs_analytical": {"pk": 1, "model": "vulnerability.qrsanalytical", "fields": {"structural_details": "Average", "documentation_quality": "Superior", "hazard_model": "Average", "model_completeness": "Superior", "documentation_type": "Superior", "fragility_func": 1, "site_specific": "Average", "vulnerability_func": null, "seismic_demand": "Average", "typology_repr": "Superior", "overall_rating": null}}, "predictor_var": {"pk": 1, "model": "vulnerability.predictorvar", "fields": {"minimum_im": 0.0, "intensity_measure_type": "PGA", "fragility_func": 1, "vulnerability_func": null, "maximum_im": 1.5, "intensity_measure_unit": "Acceleration (g)", "evaluation_of_im": "Natural Accelerograms"}}, "limit_states_desc": "DS1; DS2; DS3; DS4; DS5", "damage_scale": "EMS98", "engineering_demand_par": {"pk": 1, "model": "vulnerability.engineeringdemandpar", "fields": {"name": "Interstory drift"}}, "method_of_estimation": "Analytical", "func_distr_type": "Continuous", "limit_states_num": 5}}, "type_of_assessment": "Fragility", "year": 2003, "web_link": "", "general_comments": "Sample Data: earthquake damaged greek buildings + a large number of building types are modeled and analysed. Seismic Hazard: real earthquakes (1978 Thessaloniki earthquake) and 16 accelerograms.", "use_case_information": "", "authors": "Kappos et al.", "taxonomy_type": {"pk": 1, "model": "vulnerability.taxonomytype", "fields": {"name": "PAGER"}}, "taxonomy_text": "C1L"}};
 
 /////////////////////////////////
 /// Create Fragility Metadata ///
 /////////////////////////////////
 
 var assessmentType = jsonObj.fields.type_of_assessment;
-var id = jsonObj.fields.name;
+var id = jsonObj.fields.fragility_func.fields.general_information;
+var name = jsonObj.fields.name;
 var year = jsonObj.fields.year;
 var webLink = jsonObj.fields.web_link;
 var genComments = jsonObj.fields.general_comments;
@@ -78,17 +58,21 @@ var authors = jsonObj.fields.authors;
 var taxType = jsonObj.fields.taxonomy_type.fields.name;
 var taxText = jsonObj.fields.taxonomy_text;
 var category = jsonObj.fields.category;
-var publication = jsonObj.fields.publication;
+var publication = jsonObj.fields.publication_conference_name;
 var geoApp = "temp";
 var method = jsonObj.fields.fragility_func.fields.method_of_estimation;
+var articleTitle = jsonObj.fields.article_title;
 
 // Generral information
 $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
-$("#genInfo").append('<p><b>ID: </b>'+id+'</p>');
-$("#genInfo").append('<p><b>Category: </b>'+category+' '+taxType+'</p>');
-$("#genInfo").append('<p><b>Publication: </b>'+publication+'</p>');
-$("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
+$("#genInfo").append('<p><b>Name: </b>'+name+' ('+id+')</p>');
+$("#genInfo").append('<p><b>Category: </b>'+category+'</p>');
+$("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
+$("#genInfo").append('<p><b>Publication: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
+//$("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
+$("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
 $("#genInfo").append('<p><b>Methodology: </b>'+method+'</p>');
+
 
 
 /*
@@ -101,25 +85,29 @@ $(".content-wrap").append('<p>Use Case Information: '+useCase+'</p>');
 */
 
 // Modelling information
-var analysisType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.analysis_type.fields.name;
-if (analysisType != undefined) {
-    $("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
+if (jsonObj.fields.fragility_func.fields.analytical_model_info != undefined) {
+    var analysisType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.analysis_type.fields.name;
+    if (analysisType != undefined) {
+        $("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
+    };
+    
+    var modelType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.model_type;
+    if (modelType != undefined) {
+        $("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
+    };
+    
+    var methodUncertPropag = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.method_uncert_propag;
+    if (methodUncertPropag != undefined) {
+        $("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
+    };
+    
+    var modelsNum = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.models_num;
+    if (modelsNum != undefined) {
+        $("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
+    };
+
 };
 
-var modelType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.model_type;
-if (modelType != undefined) {
-    $("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
-};
-
-var methodUncertPropag = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.method_uncert_propag;
-if (methodUncertPropag != undefined) {
-    $("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
-};
-
-var modelsNum = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.models_num;
-if (modelsNum != undefined) {
-    $("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
-};
 
 if (jsonObj.fields.fragility_func.fields.empirical_model_info != undefined) {
     var empiricalDataSrc = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.empirical_data_src;
@@ -139,33 +127,37 @@ if (jsonObj.fields.fragility_func.fields.empirical_model_info != undefined) {
 };
 
 // Statistical Information
-var statModel = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model.fields.name;
-if (statModel != undefined) {
-    $("#statInfo").append('<p><b>Statistical Model: </b>'+statModel+'</p>');
+if (jsonObj.fields.fragility_func.fields.stat_info != undefined) {
+    var statModel = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model.fields.name;
+    if (statModel != undefined) {
+        $("#statInfo").append('<p><b>Statistical Model: </b>'+statModel+'</p>');
+    };
+    
+    var statModelFittingMethod = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model_fitting_method.fields.name;
+    if (statModelFittingMethod != undefined) {
+        $("#statInfo").append('<p><b>Statistical model fitting method: </b>'+statModelFittingMethod+'</p>');
+    };
+    
+    var modelFittingMethodAssumptions = jsonObj.fields.fragility_func.fields.stat_info.fields.model_fitting_method_assumptions;
+    if (modelFittingMethodAssumptions != undefined) {
+        $("#statInfo").append('<p><b>Model Fitting Method Assumption: </b>'+modelFittingMethodAssumptions+'</p>');
+    };
+    
+    var fitAssessmentGoodness = jsonObj.fields.fragility_func.fields.stat_info.fields.fit_assessment_goodness.fields.name;
+    if (fitAssessmentGoodness != undefined) {
+        $("#statInfo").append('<p><b>Goodness of fit assessment (GLM/GAM): </b>'+fitAssessmentGoodness+'</p>');
+    };
+    
+    var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
+    if (procConstrPredInt != undefined) {
+        $("#statInfo").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
+    };
 };
 
-var statModelFittingMethod = jsonObj.fields.fragility_func.fields.stat_info.fields.stat_model_fitting_method.fields.name;
-if (statModelFittingMethod != undefined) {
-    $("#statInfo").append('<p><b>Statistical model fitting method: </b>'+statModelFittingMethod+'</p>');
-};
 
-var modelFittingMethodAssumptions = jsonObj.fields.fragility_func.fields.stat_info.fields.model_fitting_method_assumptions;
-if (modelFittingMethodAssumptions != undefined) {
-    $("#statInfo").append('<p><b>Model Fitting Method Assumption: </b>'+modelFittingMethodAssumptions+'</p>');
-};
-
-var fitAssessmentGoodness = jsonObj.fields.fragility_func.fields.stat_info.fields.fit_assessment_goodness.fields.name;
-if (fitAssessmentGoodness != undefined) {
-    $("#statInfo").append('<p><b>Goodness of fit assessment (GLM/GAM): </b>'+fitAssessmentGoodness+'</p>');
-};
-
-var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
-if (procConstrPredInt != undefined) {
-    $("#statInfo").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
-};
 
 // Quality rating system
-//???????
+// TODO add Quality rating information when it is avalable.
 //var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
 //if (procConstrPredInt != undefined) {
   //  $("#QualitySys").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
@@ -297,11 +289,8 @@ $(document).ready(function() {
             {"sTitle": "Mean"},
             {"sTitle": "Standard Deviation"}
         ],
-        "aaSorting": [ [0,'asc'], [1,'asc'] ],
-        "sPaginationType": "full_numbers",
-        //"aoColumnDefs": [
-          //  { "sWidth": "20%", "aTargets": [ 0 ] }
-        //],
+        "bLengthChange": false,
+        "bFilter": false
     });
 });
 
@@ -337,13 +326,15 @@ function buildMixedD3Chart(chartData) {
             .attr("class", "line"+k) 
             .attr("cx", function(d) { return x_scale(d[0]); }) 
             .attr("cy", function(d) { return y_scale(d[1]); }) 
-            .attr("r", 2.5)
+            .attr("r", 6.5)
             .style("fill", color)
+            .style("opacity", 0)
             .on("mouseover", function() {
                 d3.select(this)
                     .attr('r', 6)
                     .text(circleX + ", " + circleY)
-                    .style("fill", "gray");
+                    .style("fill", color)
+                    .style("opacity", 1)
                 var circleX = d3.select(this.__data__[0]);
                 circleX = circleX.toString();
                 circleX = circleX.split(","[0]);
@@ -357,6 +348,7 @@ function buildMixedD3Chart(chartData) {
             }).on("mouseout", function() {
                 d3.select(this)
                     .attr('r', 2.5)
+                    .style("opacity", 0)
                     .style("fill", color);
             });
     }
@@ -413,20 +405,21 @@ function buildMixedD3Chart(chartData) {
             ++count;
         }
         colors = [
-            "darkred", 
+            "darkred",
             "blue",
-            "green", 
-            "orange", 
-            "red", 
-            "sandybrown", 
-            "yellowgreen", 
-            "darksalmon", 
+            "green",
+            "orange",
+            "darksalmon",
+            "red",
+            //"sandybrown",
+            //"yellowgreen",
             "lightseagreen",
             "skyblue"
         ];
         var gray = "A0A0A0";
-        $(".line"+k).css({'fill':'none','opacity':'0.7', 'stroke':gray});
+        
         var color = colors[count % colors.length];
+        $(".line"+k).css({'fill': "none",'opacity':'1', 'stroke':color});
         var data = chartData[k];
         var curveTitle = k;
         curveTitle = capitalise(curveTitle);
@@ -472,7 +465,7 @@ function buildMixedD3Chart(chartData) {
             .attr("dy", ".35em")
             //.style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(plotTitle);
+            .text(assessmentType+ ' ' +name);
             
         textTop = svg.append("text")
             .attr("x", 0)
