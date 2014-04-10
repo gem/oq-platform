@@ -38,10 +38,9 @@ var jsonObj = {"pk": 2, "model": "vulnerability.generalinformation", "fields": {
 /// Create Damage Metadata //////
 /////////////////////////////////
 
-//var methodOfEstimation = jsonObj.fields.damage_to_loss_func.fields.method_of_estimation;
 var respVar = jsonObj.fields.damage_to_loss_func.fields.resp_var;
 var typeOfAssessment = jsonObj.fields.type_of_assessment;
-var name = jsonObj.fields.name;
+var dlName = jsonObj.fields.name;
 var taxText = jsonObj.fields.taxonomy_text;
 var taxType = jsonObj.fields.taxonomy_type.fields.name
 var publication = jsonObj.fields.publication_conference_name;
@@ -50,18 +49,13 @@ var authors = jsonObj.fields.authors;
 var generalComments = jsonObj.fields.general_comments;
 var year = jsonObj.fields.year;
 
-
 $("#genInfo").append('<p><b>Assessment Type: </b>'+typeOfAssessment+'</p>');
 $("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
-$("#genInfo").append('<p><b>Name: </b>'+name+'</p>');
+$("#genInfo").append('<p><b>Name: </b>'+dlName+'</p>');
 $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
 $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
 $("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
-$("#genInfo").append('<p><b>Taxonomy: </b>'+generalComments+'</p>');
-
-
-//$("#genInfo").append('<p><b>Method of Estimation: </b>'+methodOfEstimation+'</p>');
-
+$("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
 
 /////////////////////////////////
 /// Create Fragility Curves /////
@@ -81,7 +75,7 @@ var chartData = [];
 for (var i = 0; i < limitStates.length; i++) {
     var dataObj = {};
     dataObj["mean"] = parseFloat(meanDamage[i]);
-    dataObj["coeff"] = parseFloat(coeff[i]);
+    //dataObj["coeff"] = parseFloat(coeff[i]);
     dataObj["name"] = limitStates[i];
     chartData.push(dataObj);
 };
@@ -123,9 +117,9 @@ $(document).ready(function() {
 
 function buildMixedD3Chart(chartData) {
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    var margin = {top: 60, right: 20, bottom: 30, left: 40},
         width = 480 - margin.left - margin.right,
-        height = 380 - margin.top - margin.bottom;
+        height = 420 - margin.top - margin.bottom;
     
     var x0 = d3.scale.ordinal()
         .rangeRoundBands([0, width], .1);
@@ -176,6 +170,7 @@ function buildMixedD3Chart(chartData) {
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
+        .attr("x", -50)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .text(respVar);
@@ -195,6 +190,14 @@ function buildMixedD3Chart(chartData) {
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.name); });
 
+     textTopLable = svg.append("text")
+        .attr("x", 0)
+        .attr("y", -35)
+        .attr("dy", ".35em")
+        .style("font-weight", "bold")
+        .attr("font-size","14px")
+        .text(typeOfAssessment+ ' ' +dlName);
+
     var legend = svg.selectAll(".legend")
         .data(ageNames.slice().reverse())
       .enter().append("g")
@@ -202,14 +205,15 @@ function buildMixedD3Chart(chartData) {
         .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
     legend.append("rect")
-        .attr("x", width - 18)
+        .attr("x", width - 28)
         .attr("width", 18)
         .attr("height", 18)
+        .attr("y", -30)
         .style("fill", color);
 
     legend.append("text")
-        .attr("x", width - 24)
-        .attr("y", 9)
+        .attr("x", width - 34)
+        .attr("y", -20)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
