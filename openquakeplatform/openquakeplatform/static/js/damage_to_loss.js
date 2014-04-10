@@ -38,14 +38,29 @@ var jsonObj = {"pk": 2, "model": "vulnerability.generalinformation", "fields": {
 /// Create Damage Metadata //////
 /////////////////////////////////
 
-var methodOfEstimation = jsonObj.fields.damage_to_loss_func.fields.method_of_estimation;
+//var methodOfEstimation = jsonObj.fields.damage_to_loss_func.fields.method_of_estimation;
 var respVar = jsonObj.fields.damage_to_loss_func.fields.resp_var;
-//var funcDistrType = jsonObj.fields.damage_to_loss_func.fields.func_distr_type;
+var typeOfAssessment = jsonObj.fields.type_of_assessment;
+var name = jsonObj.fields.name;
+var taxText = jsonObj.fields.taxonomy_text;
+var taxType = jsonObj.fields.taxonomy_type.fields.name
+var publication = jsonObj.fields.publication_conference_name;
+var articleTitle = jsonObj.fields.article_title;
+var authors = jsonObj.fields.authors;
+var generalComments = jsonObj.fields.general_comments;
+var year = jsonObj.fields.year;
 
 
-$("#genInfo").append('<p><b>Method of Estimation: </b>'+methodOfEstimation+'</p>');
+$("#genInfo").append('<p><b>Assessment Type: </b>'+typeOfAssessment+'</p>');
 $("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
-//$("#genInfo").append('<p><b>Function Distribution Type: </b>'+funcDistrType+'</p>');
+$("#genInfo").append('<p><b>Name: </b>'+name+'</p>');
+$("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
+$("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
+$("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
+$("#genInfo").append('<p><b>Taxonomy: </b>'+generalComments+'</p>');
+
+
+//$("#genInfo").append('<p><b>Method of Estimation: </b>'+methodOfEstimation+'</p>');
 
 
 /////////////////////////////////
@@ -163,7 +178,7 @@ function buildMixedD3Chart(chartData) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Some Lable");
+        .text(respVar);
 
     var name = svg.selectAll(".name")
         .data(data)

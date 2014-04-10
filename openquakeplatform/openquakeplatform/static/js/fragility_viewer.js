@@ -58,11 +58,11 @@ $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
 $("#genInfo").append('<p><b>Name: </b>'+name+' ('+id+')</p>');
 $("#genInfo").append('<p><b>Category: </b>'+category+'</p>');
 $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
-$("#genInfo").append('<p><b>Publication: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
+$("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
 //$("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
 $("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
 $("#genInfo").append('<p><b>Methodology: </b>'+method+'</p>');
-
+$("#genInfo").append('<p><b>General Comments: </b>'+genComments+'</p>');
 
 
 /*
@@ -70,7 +70,6 @@ $(".content-wrap").append('<p>Year: '+year+'</p>');
 $(".content-wrap").append('<p>Web Link: <a href="'+webLink+'">'+webLink+'</a></p>');
 $(".content-wrap").append('<p>Authors: '+authors+'</p>');
 $(".content-wrap").append('<p>Taxonomy Type: '+taxType+'</p>');
-$(".content-wrap").append('<p>General Comments: '+genComments+'</p>');
 $(".content-wrap").append('<p>Use Case Information: '+useCase+'</p>');
 */
 
