@@ -27,16 +27,6 @@ $(function() {
     collapsible: true
 });
 
-$(function() {
-    $("#chartDialog").dialog({
-        autoOpen: false,
-        height: 520,
-        width: 500,
-        closeOnEscape: true,
-        position: {at: "right bottom"}
-    });
-});
-
 /////////////////////////////////
 ////// Fragility Information ////
 /////////////////////////////////
