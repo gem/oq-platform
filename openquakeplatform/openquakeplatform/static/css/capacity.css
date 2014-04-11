@@ -1,26 +1,24 @@
 
-#accordion {
-  	float:left;
-  	display: block;
-  	position: relative;
-  	margin: 20px;
-  	width: 400px;
+#capAccordion {
+  float:left;
+ 	display: block;
+ 	position: relative;
+ 	margin: 20px;
+ 	width: 400px;
 }
 
-#fragilityChart {
-  	float:left;
-  	display: block;
-  	position: relative;
-  	padding-top: 30px;
+#capacityChart {
+ 	float:left;
+ 	display: block;
+ 	position: relative;
+ 	padding-top: 30px;
 }
 
 #dialog-datagrid {
-	display: block;
-	position: relative;
-	padding-top: 30px;
+  display: block;
+	padding: 30px;
 	height: 250px; 
-	width: 100%; 
-	overflow: scroll
+	width: 350px;
 }
 
 .line {
@@ -28,3 +26,4 @@
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+

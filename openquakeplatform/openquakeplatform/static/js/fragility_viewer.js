@@ -23,8 +23,9 @@
 $(".span12").remove();
 
 $(function() {
-    $("#accordion").accordion();
-    collapsible: true
+    $("#fraAccordion").accordion({
+        collapsible: true
+    });
 });
 
 /////////////////////////////////
@@ -63,6 +64,7 @@ $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year
 $("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
 $("#genInfo").append('<p><b>Methodology: </b>'+method+'</p>');
 $("#genInfo").append('<p><b>General Comments: </b>'+genComments+'</p>');
+$("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
 
 // Modelling information
 if (jsonObj.fields.fragility_func.fields.analytical_model_info != undefined) {
@@ -303,7 +305,7 @@ function buildMixedD3Chart(chartData) {
                     .attr('r', 6)
                     .text(circleX + ", " + circleY)
                     .style("fill", color)
-                    .style("opacity", 1)
+                    .style("opacity", 0.6)
                 var circleX = d3.select(this.__data__[0]);
                 circleX = circleX.toString();
                 circleX = circleX.split(","[0]);
@@ -323,7 +325,7 @@ function buildMixedD3Chart(chartData) {
     }
     var margin = {top: 55, right: 100, bottom: 80, left: 60},
     width = 480 - margin.left - margin.right,
-    height = 380 - margin.top - margin.bottom;
+    height = 440 - margin.top - margin.bottom;
     var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(iml), d3.max(iml)]);
     var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
     var xAxis = d3.svg.axis()
@@ -388,7 +390,7 @@ function buildMixedD3Chart(chartData) {
         var gray = "A0A0A0";
         
         var color = colors[count % colors.length];
-        $(".line"+k).css({'fill': "none",'opacity':'1', 'stroke':color});
+        $(".line"+k).css({'fill': "none",'opacity':'0.6', 'stroke-width': '3', 'stroke':color});
         var data = chartData[k];
         var curveTitle = k;
         curveTitle = capitalise(curveTitle);
@@ -404,6 +406,7 @@ function buildMixedD3Chart(chartData) {
             .attr("cy", 20*(count))
             .attr("cx", 330)
             .attr("r", 3)
+            .attr("opacity", 0.6)
             .style("fill", color)
         svg.append("g")
             .attr("class", "x axis")
@@ -414,7 +417,8 @@ function buildMixedD3Chart(chartData) {
             .attr("y", 30)
             .attr("dy", ".71em")
             .attr("text-anchor", "middle")
-            .style("font-size","12px")
+            .style("font-size","14px")
+            .style("font-weight", "bold")
             .text(imtTitle);
             
         svg.append("g")
@@ -425,7 +429,8 @@ function buildMixedD3Chart(chartData) {
             .attr("y", -60)
             .attr("x", -20)
             .attr("dy", ".71em")
-            .style("font-size","12px")
+            .style("font-size","14px")
+            .style("font-weight", "bold")
             .style("text-anchor", "end")
             .text("Probabability of exceedance");
         textTopLable = svg.append("text")

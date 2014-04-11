@@ -23,15 +23,56 @@
 $(".span12").remove();
 
 $(function() {
-    $("#accordion").accordion();
-    collapsible: true
+    $("#capAccordion").accordion({
+        collapsible: true
+    });
 });
 
 /////////////////////////////////
 ////// Capacity Information ////
 /////////////////////////////////
 // the json to be expected from the other app
-var jsonObj = {"pk": 5, "model": "vulnerability.generalinformation", "fields": {"category": "Structure specific", "article_title": "Curva de capacidad como ejemplo para la IGU que est\u00e1 haciendo Ben", "name": "RC Low-rise bare frame in Quito", "capacity_curve_func": {"pk": 1, "model": "vulnerability.capacitycurvefunc", "fields": {"analytical_model_info": {"pk": 2, "model": "vulnerability.analyticalmodelinfo", "fields": {"damage_to_loss_func": null, "capacity_curve_func": 1, "fragility_func": null, "model_type": "2D story-by-story", "vulnerability_func": null, "analysis_type": {"pk": 2, "model": "vulnerability.analysistype", "fields": {"name": "Static analysis"}}, "method_uncert_propag": "Single index building", "models_num": 5}}, "general_information": 5, "resp_var_units": "kN", "resp_var_par": "Base shear", "resp_var_val": "0; 90; 135; 175; 199; 216;\t247;\t255;\t267;\t286;\t292;\t298;\t301;\t303;\t297;\t276;\t255;\t245;\t233;\t218;\t217;\t212;\t211;\t210;\t206", "cc_predictor_var": {"pk": 1, "model": "vulnerability.cc_predictorvar", "fields": {"pred_var_units": "m", "engineering_demand_param": {"pk": 1, "model": "vulnerability.cc_engineeringdemandpar", "fields": {"name": "Top displacement"}}, "pred_var_val": "0; 0.025;\t0.05;\t0.075; 0.1; 0.125;\t0.15; 0.175\t0.2\t0.225\t0.25\t0.275\t0.3\t0.325\t0.35\t0.375\t0.4\t0.425\t0.45\t0.475\t0.5\t0.525\t0.55\t0.575\t0.6", "capacity_curve_func": 1, "data_pts_num": 25}}}}, "publication_conference_name": "GEM Foundation, Global Component Report ", "type_of_assessment": "Capacity curve", "year": 2014, "web_link": "http://www.nexus.globalquakemodel.org/gem-vulnerability/posts/existing-empirical-vulnerability-and-fragility-relationships-compendium-and-guide-for-selection", "general_comments": "Para la taxonom\u00eda del edificio se tom\u00f3 como referencia una de las tipolog\u00edas de edificios en Ecuador, seg\u00fan el Workshop en Medell\u00edn", "use_case_information": "Este es un ejemplo utilizando informaci\u00f3n general para crear una entrada en la GVD.", "authors": "Catalina Mu\u00f1oz C\u00e1rdenas", "taxonomy_type": {"pk": 2, "model": "vulnerability.taxonomytype", "fields": {"name": "GEM Taxonomy"}}, "taxonomy_text": "DX+PF/MUR//DY+OF/CR+CIP/LFM+DUC/HBET:1,12+HBAPP:1+HFAPP:2.7/YBET:1960,2014/MIX+MIX2//PLFR/IRIR+IRPP:TOR/EWMA/RSH1+RMN+RC+RC1+RWCP/FC+FC1+FWCP/FOSSL"}};
+var jsonObj = {"pk": 5, "model": "vulnerability.generalinformation", "fields": {"category": "Structure specific", "article_title": "Curva de capacidad como ejemplo para la IGU que est\u00e1 haciendo Ben", "name": "RC Low-rise bare frame in Quito", "capacity_curve_func": {"pk": 1, "model": "vulnerability.capacitycurvefunc", "fields": {"analytical_model_info": {"pk": 2, "model": "vulnerability.analyticalmodelinfo", "fields": {"damage_to_loss_func": null, "capacity_curve_func": 1, "fragility_func": null, "model_type": "2D story-by-story", "vulnerability_func": null, "analysis_type": {"pk": 2, "model": "vulnerability.analysistype", "fields": {"name": "Static analysis"}}, "method_uncert_propag": "Single index building", "models_num": 5}}, "general_information": 5, "resp_var_units": "kN", "resp_var_par": "Base shear", "resp_var_val": "0; 90; 135; 175; 199; 216; 247; 255; 267; 286; 292; 298; 301; 303; 297; 276; 255; 245; 233; 218; 217; 212; 211; 210; 206", "cc_predictor_var": {"pk": 1, "model": "vulnerability.cc_predictorvar", "fields": {"pred_var_units": "m", "engineering_demand_param": {"pk": 1, "model": "vulnerability.cc_engineeringdemandpar", "fields": {"name": "Top displacement"}}, "pred_var_val": "0; 0.025; 0.05; 0.075; 0.1; 0.125; 0.15; 0.175; 0.2; 0.225; 0.25; 0.275; 0.3; 0.325; 0.35; 0.375; 0.4; 0.425; 0.45; 0.475; 0.5; 0.525; 0.55; 0.575; 0.6", "capacity_curve_func": 1, "data_pts_num": 25}}}}, "publication_conference_name": "GEM Foundation, Global Component Report ", "type_of_assessment": "Capacity curve", "year": 2014, "web_link": "http://www.nexus.globalquakemodel.org/gem-vulnerability/posts/existing-empirical-vulnerability-and-fragility-relationships-compendium-and-guide-for-selection", "general_comments": "Para la taxonom\u00eda del edificio se tom\u00f3 como referencia una de las tipolog\u00edas de edificios en Ecuador, seg\u00fan el Workshop en Medell\u00edn", "use_case_information": "Este es un ejemplo utilizando informaci\u00f3n general para crear una entrada en la GVD.", "authors": "Catalina Mu\u00f1oz C\u00e1rdenas", "taxonomy_type": {"pk": 2, "model": "vulnerability.taxonomytype", "fields": {"name": "GEM Taxonomy"}}, "taxonomy_text": "DX+PF/MUR//DY+OF/CR+CIP/LFM+DUC/HBET:1,12+HBAPP:1+HFAPP:2.7/YBET:1960,2014/MIX+MIX2//PLFR/IRIR+IRPP:TOR/EWMA/RSH1+RMN+RC+RC1+RWCP/FC+FC1+FWCP/FOSSL"}};
+
+
+/////////////////////////////////
+/// Create Capacity Metadata ///
+/////////////////////////////////
+
+var capName = jsonObj.fields.name;
+
+var typeOfAssessment = jsonObj.fields.type_of_assessment;
+var dlName = jsonObj.fields.name;
+var taxText = jsonObj.fields.taxonomy_text;
+var taxType = jsonObj.fields.taxonomy_type.fields.name
+var publication = jsonObj.fields.publication_conference_name;
+var articleTitle = jsonObj.fields.article_title;
+var authors = jsonObj.fields.authors;
+var generalComments = jsonObj.fields.general_comments;
+var year = jsonObj.fields.year;
+var analysisType = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.analysis_type.fields.name;
+var modelType = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.model_type;
+var methodUncertPropag = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.method_uncert_propag;
+var useCase = jsonObj.fields.use_case_information;
+var modelsNum = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.models_num;
+
+$("#genInfo").append('<p><b>Assessment Type: </b>'+typeOfAssessment+'</p>');
+//$("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
+$("#genInfo").append('<p><b>Name: </b>'+capName+'</p>');
+$("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
+$("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
+$("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
+$("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
+$("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
+
+$("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
+$("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
+$("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
+$("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
+
+/////////////////////////////////
+/// Create Capacity Curves /////
+/////////////////////////////////
 
 var respVarUnits = jsonObj.fields.capacity_curve_func.fields.resp_var_val;
 respVarUnits = respVarUnits.split(";");
@@ -40,7 +81,6 @@ for (var i = 0; i < respVarUnits.length; i++)
 for (var i = 0; i < respVarUnits.length; i++) {
     respVarUnits[i] = parseFloat(respVarUnits[i]);
 };
-console.log(respVarUnits);
 
 var predVarVal = jsonObj.fields.capacity_curve_func.fields.cc_predictor_var.fields.pred_var_val
 predVarVal = predVarVal.split(";");
@@ -49,7 +89,6 @@ for (var i = 0; i < predVarVal.length; i++)
 for (var i = 0; i < predVarVal.length; i++) {
     predVarVal[i] = parseFloat(predVarVal[i]);
 };
-console.log(predVarVal);
 
 var chartData = [];
 
@@ -57,52 +96,34 @@ for (var i = 0; i < predVarVal.length; i++) {
     chartData.push([predVarVal[i], respVarUnits[i]]);
 };
 
-console.log(chartData);
-
-
-/////////////////////////////////
-/// Create Capacity Metadata ///
-/////////////////////////////////
-
-
-
-
-
-/////////////////////////////////
-/// Create Capacity Curves /////
-/////////////////////////////////
-
-
 buildMixedD3Chart(chartData);
 
 /////////////////////////////////
 ///// Capacity Data Table //////
 /////////////////////////////////
-/*
+
 $(document).ready(function() {
     var aaData = [];
         
-    for (var i = 0; i < limitStatesArray.length; i++) {
+    for (var i = 0; i < respVarUnits.length; i++) {
         var tmp = [];
-        tmp.push(limitStatesArray[i]);
-        tmp.push(meanArray[i]);
-        tmp.push(stddevArray[i]);
+        tmp.push(predVarVal[i]);
+        tmp.push(respVarUnits[i]);
         aaData.push(tmp);
     };
 
     $('#capacity-table').dataTable({
         "aaData": aaData,
-        // TODO make thias dynamic
         "aoColumns": [
-            {"sTitle": "Limit State"},
-            {"sTitle": "Mean"},
-            {"sTitle": "Standard Deviation"}
+            {"sTitle": "Lateral Roof Displacement ( m)"},
+            {"sTitle": "Base Shear (kN)"}
+            
         ],
         "bLengthChange": false,
         "bFilter": false
     });
 });
-*/
+
 
 /////////////////////////////////////////////
 ///////////// Capacity Chart ///////////////
@@ -127,7 +148,7 @@ function buildMixedD3Chart(chartData) {
     function capitalise(string) {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     }
-    function makeCircles(data, curveTitle) {
+    function makeCircles(data) {
         // Points along the line
         svg.selectAll("circle.line") 
             .data(data) 
@@ -152,7 +173,7 @@ function buildMixedD3Chart(chartData) {
                 circleY = circleY.toString();
                 circleY = circleY.split(","[0]);
 
-                textTop.text(curveTitle+" point value (x/y): " + Math.round(circleX * 1000) / 1000 + ", " + Math.round(circleY * 1000) / 1000);
+                textTop.text("Point value (x/y): " + Math.round(circleX * 1000) / 1000 + ", " + Math.round(circleY * 1000) / 1000);
 
             }).on("mouseout", function() {
                 d3.select(this)
@@ -163,7 +184,7 @@ function buildMixedD3Chart(chartData) {
     }
     var margin = {top: 55, right: 100, bottom: 80, left: 60},
     width = 480 - margin.left - margin.right,
-    height = 380 - margin.top - margin.bottom;
+    height = 440 - margin.top - margin.bottom;
 
     var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(predVarVal), d3.max(predVarVal)]);
     var y_scale = d3.scale.linear().range([0, height]).domain([d3.max(respVarUnits), d3.min(respVarUnits)]);
@@ -177,7 +198,6 @@ function buildMixedD3Chart(chartData) {
         .orient("left");
     var line = d3.svg.line()
         .x(function(d) {
-            console.log(x_scale(d[0]));
             return x_scale(d[0]); 
         })
         .y(function(d) {
@@ -214,9 +234,8 @@ function buildMixedD3Chart(chartData) {
         .attr("d", line);
         
     var data = chartData;
-    
-    curveTitle = "temmp"
-    makeCircles(data, curveTitle);
+
+    makeCircles(data);
    
     svg.append("g")
         .attr("class", "x axis")
@@ -227,8 +246,9 @@ function buildMixedD3Chart(chartData) {
         .attr("y", 30)
         .attr("dy", ".71em")
         .attr("text-anchor", "middle")
-        .style("font-size","12px")
-        .text("imtTitle");
+        .style("font-weight", "bold")
+        .attr("font-size","14px")
+        .text("Lateral roof displacement (m)");
         
     svg.append("g")
         .attr("class", "y axis")
@@ -238,16 +258,17 @@ function buildMixedD3Chart(chartData) {
         .attr("y", -60)
         .attr("x", -20)
         .attr("dy", ".71em")
-        .style("font-size","12px")
         .style("text-anchor", "end")
-        .text("Probabability of exceedance");
+        .style("font-weight", "bold")
+        .attr("font-size","14px")
+        .text("Base Shear (kN)");
     textTopLable = svg.append("text")
         .attr("x", 0)
         .attr("y", -35)
         .attr("dy", ".35em")
-        //.style("font-weight", "bold")
+        .style("font-weight", "bold")
         .attr("font-size","14px")
-        .text("temp");
+        .text(typeOfAssessment +' '+ capName);
         
     textTop = svg.append("text")
         .attr("x", 0)

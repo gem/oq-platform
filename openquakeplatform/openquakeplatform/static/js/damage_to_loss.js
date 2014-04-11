@@ -23,10 +23,10 @@
 $(".span12").remove();
 
 $(function() {
-    $("#accordion").accordion();
-    collapsible: true
+    $("#damageAccordion").accordion({
+        collapsible: true
+    });
 });
-
 
 /////////////////////////////////
 ////// Damage Information ///////
@@ -48,6 +48,7 @@ var articleTitle = jsonObj.fields.article_title;
 var authors = jsonObj.fields.authors;
 var generalComments = jsonObj.fields.general_comments;
 var year = jsonObj.fields.year;
+var useCase = jsonObj.fields.use_case_information;
 
 $("#genInfo").append('<p><b>Assessment Type: </b>'+typeOfAssessment+'</p>');
 $("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
@@ -56,6 +57,7 @@ $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
 $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
 $("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
 $("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
+$("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
 
 /////////////////////////////////
 /// Create Fragility Curves /////
@@ -141,7 +143,7 @@ function buildMixedD3Chart(chartData) {
         .orient("left")
         .tickFormat(d3.format(".2s"));
     
-    var svg = d3.select("#chart").append("svg")
+    var svg = d3.select("#damageChart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -173,6 +175,8 @@ function buildMixedD3Chart(chartData) {
         .attr("x", -50)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
+        .style("font-weight", "bold")
+        .attr("font-size","14px")
         .text(respVar);
 
     var name = svg.selectAll(".name")

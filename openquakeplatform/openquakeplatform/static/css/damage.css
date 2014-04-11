@@ -1,24 +1,22 @@
 
-#accordion {
-  	float:left;
-  	display: block;
-  	position: relative;
-  	margin: 20px;
-  	width: 400px;
+#damageAccordion {
+  float:left;
+  display: block;
+  position: relative;
+  margin: 20px;
+  width: 400px;
 }
 
-#fragilityChart {
-  	float:left;
-  	display: block;
-  	position: relative;
-  	padding-top: 30px;
+#damageChart {
+  float:left;
+  display: block;
+  position: relative;
+  padding-top: 30px;
 }
 
 #dialog-datagrid {
-	display: block;
-	position: relative;
-	padding-top: 30px;
-	height: 250px; 
-	width: 100%; 
-	overflow: scroll
+  display: block;
+  padding: 30px;
+  height: 250px; 
+  width: 350px;
 }
