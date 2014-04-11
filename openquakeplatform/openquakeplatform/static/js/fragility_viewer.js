@@ -64,15 +64,6 @@ $("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
 $("#genInfo").append('<p><b>Methodology: </b>'+method+'</p>');
 $("#genInfo").append('<p><b>General Comments: </b>'+genComments+'</p>');
 
-
-/*
-$(".content-wrap").append('<p>Year: '+year+'</p>');
-$(".content-wrap").append('<p>Web Link: <a href="'+webLink+'">'+webLink+'</a></p>');
-$(".content-wrap").append('<p>Authors: '+authors+'</p>');
-$(".content-wrap").append('<p>Taxonomy Type: '+taxType+'</p>');
-$(".content-wrap").append('<p>Use Case Information: '+useCase+'</p>');
-*/
-
 // Modelling information
 if (jsonObj.fields.fragility_func.fields.analytical_model_info != undefined) {
     var analysisType = jsonObj.fields.fragility_func.fields.analytical_model_info.fields.analysis_type.fields.name;
@@ -96,7 +87,6 @@ if (jsonObj.fields.fragility_func.fields.analytical_model_info != undefined) {
     };
 
 };
-
 
 if (jsonObj.fields.fragility_func.fields.empirical_model_info != undefined) {
     var empiricalDataSrc = jsonObj.fields.fragility_func.fields.empirical_model_info.fields.empirical_data_src;
@@ -142,16 +132,6 @@ if (jsonObj.fields.fragility_func.fields.stat_info != undefined) {
         $("#statInfo").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
     };
 };
-
-
-
-// Quality rating system
-// TODO add Quality rating information when it is avalable.
-//var procConstrPredInt = jsonObj.fields.fragility_func.fields.stat_info.fields.proc_constr_pred_int.fields.name;
-//if (procConstrPredInt != undefined) {
-  //  $("#QualitySys").append('<p><b>Procedure for the Construction of Prediction Intervals: </b>'+procConstrPredInt+'</p>');
-//};
-
 
 /////////////////////////////////
 /// Create Fragility Curves /////
@@ -462,41 +442,5 @@ function buildMixedD3Chart(chartData) {
             .attr("dy", ".35em")
             .text("");
     }
-    $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
-    $('#downloadCurve').on("hover", function(){
-        $(this).css("cursor", "pointer");
-    });
-    var h = $("#chartDialog").height();
-    h = h + 20;
-    $("#chartDialog").css({"height": h+"px"});
-    // Prep data for download to CSV
-    $('#downloadCurve').click(function(event) {
-        var csvData = [];
-        csvData = csvData.concat("prob");
-        csvData = csvData.concat("iml");
-        csvData = csvData.concat("investigationTime");
-        csvData = csvData.concat("lon");
-        csvData = csvData.concat("lat");
-        csvData = JSON.stringify(csvData);
-        var lineBreak = "lineBreak";
-        csvData = csvData.concat(lineBreak);
-        var quotationMark = '"';
-        csvData = csvData.concat('"');
-        csvData = csvData.concat(probArray);
-        csvData = csvData.concat('","');
-        csvData = csvData.concat(imlArray);
-        csvData = csvData.concat('",');
-        csvData = csvData.concat(invest_time);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lon);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lat);
-        csvData = csvData
-            .replace(/lineBreak/, '\r\n')
-            .replace(/\[/g, '')
-            .replace(/\]/g, '')
-            .replace(/""/g, '","');
-        console.log(csvData);
-        downloadJSON2CSV(csvData);
-    });
+
 } // End Chart
