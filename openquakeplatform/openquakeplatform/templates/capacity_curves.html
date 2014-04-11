@@ -1,0 +1,62 @@
+<!--
+Copyright (c) 2013, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "site_base_data.html" %}
+
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
+
+{% block body_outer %}
+
+{{block.super}}
+
+  	<div id="accordion">
+  		<h3>General Information</h3>
+  		<div id="genInfo"></div>
+  		<h3>Modelling Information</h3>
+  		<div id="modellingInfo"></div>
+  		<h3>Statistical Information</h3>
+  		<div id="statInfo"></div>
+  		<h3>Quality Rating System</h3>
+  		<div id="QualitySys"></div>
+  	</div>
+
+<div id="capacityChart"></div>
+
+<div id="dialog-datagrid">
+	<table id="capacity-table">
+    	<thead id="tablehead"><tr><th>Limit State</th><th>Mean</th><th>Standard Dev</th></tr></thead>
+    	<tbody id="tableBody">
+        	<tr><td>
+        	</td></tr>
+    	</tbody>
+	</table>
+</div>
+
+{% endblock %}
+
+
+{% block extra_script %}
+    {{block.super}}
+  	<link rel="stylesheet" href="{{ STATIC_URL }}lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/capacity.css" />
+
+  	<script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="{{ STATIC_URL }}js/d3.js"></script>
+    <script src="{{ STATIC_URL }}js/capacity_curves.js"></script>
+{% endblock extra_script %}

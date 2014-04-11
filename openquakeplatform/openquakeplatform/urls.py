@@ -105,6 +105,8 @@ urlpatterns = patterns(
         template_name="fragility_viewer.html"), name='fragility_viewer'),
     url(r'^damage_to_loss/$', TemplateView.as_view(
         template_name="damage_to_loss.html"), name='damage_to_loss'),
+    url(r'^capacity_curves/$', TemplateView.as_view(
+        template_name="capacity_curves.html"), name='capacity_curves'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
