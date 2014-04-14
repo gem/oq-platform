@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -50,7 +50,7 @@ var taxType = jsonObj.fields.taxonomy_type.fields.name;
 var taxText = jsonObj.fields.taxonomy_text;
 var category = jsonObj.fields.category;
 var publication = jsonObj.fields.publication_conference_name;
-var geoApp = "temp";
+var geoApp = "Mediterranean";
 var method = jsonObj.fields.fragility_func.fields.method_of_estimation;
 var articleTitle = jsonObj.fields.article_title;
 
@@ -60,8 +60,7 @@ $("#genInfo").append('<p><b>Name: </b>'+name+' ('+id+')</p>');
 $("#genInfo").append('<p><b>Category: </b>'+category+'</p>');
 $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
 $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
-//$("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
-$("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
+$("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
 $("#genInfo").append('<p><b>Methodology: </b>'+method+'</p>');
 $("#genInfo").append('<p><b>General Comments: </b>'+genComments+'</p>');
 $("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
@@ -87,7 +86,6 @@ if (jsonObj.fields.fragility_func.fields.analytical_model_info != undefined) {
     if (modelsNum != undefined) {
         $("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
     };
-
 };
 
 if (jsonObj.fields.fragility_func.fields.empirical_model_info != undefined) {
@@ -143,7 +141,6 @@ if (jsonObj.fields.fragility_func.fields.stat_info != undefined) {
 var dataObj = {};
 var chartData = [];
 var iml = [];
-var plotTitle = jsonObj.fields.article_title;
 var min = jsonObj.fields.fragility_func.fields.predictor_var.fields.minimum_im;
 var max = jsonObj.fields.fragility_func.fields.predictor_var.fields.maximum_im;
 var imtTitle = jsonObj.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
@@ -231,8 +228,7 @@ function fragilityData() {
     for (var i = 0; i < limitStatesArray.length; i++) {
         var ls = capitalize(limitStatesArray[i]);
         $("#fragilityDataDialog").append(ls +", "+ meanArray[i] +", "+ stddevArray[i] +"</br>");
-    };
-    
+    };   
 }
 
 buildMixedD3Chart(chartData);
@@ -271,8 +267,6 @@ $(document).ready(function() {
 /////////////////////////////////////////////
 
 function buildMixedD3Chart(chartData) {
-    var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
-
     // grid line functions
     function make_x_axis() {        
         return d3.svg.axis()
@@ -305,7 +299,7 @@ function buildMixedD3Chart(chartData) {
                     .attr('r', 6)
                     .text(circleX + ", " + circleY)
                     .style("fill", color)
-                    .style("opacity", 0.6)
+                    .style("opacity", 1)
                 var circleX = d3.select(this.__data__[0]);
                 circleX = circleX.toString();
                 circleX = circleX.split(","[0]);
@@ -330,7 +324,6 @@ function buildMixedD3Chart(chartData) {
     var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
     var xAxis = d3.svg.axis()
         .scale(x_scale)
-        //.ticks(4)
         .tickFormat(function (d) { return d; })
         .orient("bottom");
     var yAxis = d3.svg.axis()
@@ -382,12 +375,11 @@ function buildMixedD3Chart(chartData) {
             "orange",
             "darksalmon",
             "red",
-            //"sandybrown",
-            //"yellowgreen",
             "lightseagreen",
-            "skyblue"
+            "skyblue",
+            "sandybrown",
+            "yellowgreen"
         ];
-        var gray = "A0A0A0";
         
         var color = colors[count % colors.length];
         $(".line"+k).css({'fill': "none",'opacity':'0.6', 'stroke-width': '3', 'stroke':color});
@@ -402,7 +394,6 @@ function buildMixedD3Chart(chartData) {
             .attr("dy", ".35em")
             .text(curveTitle);
         svg.append("svg:circle")
-            //.attr("cx", 50)
             .attr("cy", 20*(count))
             .attr("cx", 330)
             .attr("r", 3)
@@ -427,7 +418,7 @@ function buildMixedD3Chart(chartData) {
             .append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", -60)
-            .attr("x", -20)
+            .attr("x", -60)
             .attr("dy", ".71em")
             .style("font-size","14px")
             .style("font-weight", "bold")
@@ -438,7 +429,7 @@ function buildMixedD3Chart(chartData) {
             .attr("y", -35)
             .attr("dy", ".35em")
             //.style("font-weight", "bold")
-            .attr("font-size","14px")
+            .attr("font-size"," 14px")
             .text(assessmentType+ ' ' +name);
             
         textTop = svg.append("text")
@@ -447,5 +438,4 @@ function buildMixedD3Chart(chartData) {
             .attr("dy", ".35em")
             .text("");
     }
-
 } // End Chart

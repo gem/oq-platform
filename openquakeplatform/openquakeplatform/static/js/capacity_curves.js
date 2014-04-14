@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -130,8 +130,6 @@ $(document).ready(function() {
 /////////////////////////////////////////////
 
 function buildMixedD3Chart(chartData) {
-    var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
-
     // grid line functions
     function make_x_axis() {        
         return d3.svg.axis()
@@ -190,7 +188,6 @@ function buildMixedD3Chart(chartData) {
     var y_scale = d3.scale.linear().range([0, height]).domain([d3.max(respVarUnits), d3.min(respVarUnits)]);
     var xAxis = d3.svg.axis()
         .scale(x_scale)
-        //.ticks(4)
         .tickFormat(function (d) { return d; })
         .orient("bottom");
     var yAxis = d3.svg.axis()
@@ -256,7 +253,7 @@ function buildMixedD3Chart(chartData) {
         .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", -60)
-        .attr("x", -20)
+        .attr("x", -90)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .style("font-weight", "bold")
@@ -275,6 +272,4 @@ function buildMixedD3Chart(chartData) {
         .attr("y", -15)
         .attr("dy", ".35em")
         .text("");
-
-
 } // End Chart

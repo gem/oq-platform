@@ -27,3 +27,20 @@
   stroke-width: 1.5px;
 }
 
+.axis line, .axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff;
+  cursor: move;
+}
+
+.grid .tick {
+    stroke: lightgray;
+}
+.grid path {
+      stroke-width: 0;
+}

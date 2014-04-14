@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -60,7 +60,7 @@ $("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
 $("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
 
 /////////////////////////////////
-/// Create Fragility Curves /////
+/// Create Damage Curves /////
 /////////////////////////////////
 
 var meanDamage = jsonObj.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_mean_val;
@@ -172,7 +172,7 @@ function buildMixedD3Chart(chartData) {
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
-        .attr("x", -50)
+        .attr("x", -90)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .style("font-weight", "bold")
