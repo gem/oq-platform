@@ -168,6 +168,7 @@ INSTALLED_APPS = (
 
     # Third party apps
     'photologue',
+    'chained_selectbox',
 
     # Utility
     'pagination',
