@@ -609,7 +609,9 @@ LOCKDOWN_GEONODE = True
 AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
-                    '/vulnerability/engineering_demand_csc?.*')
+                    '/vulnerability/engineering_demand_csc?.*',
+                    '/vulnerability/resp_var_par_csc?.*',
+                    '/vulnerability/resp_var_units_csc?.*')
 
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
