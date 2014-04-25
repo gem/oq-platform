@@ -1,10 +1,10 @@
 
 #capAccordion {
-  float:left;
- 	display: block;
- 	position: relative;
- 	margin: 20px;
- 	width: 400px;
+	float:left;
+	display: block;
+	position: relative;
+	margin: 20px;
+	width: 400px;
 }
 
 #capacityChart {
@@ -15,27 +15,31 @@
 }
 
 #dialog-datagrid {
-  display: block;
+	display: block;
 	padding: 30px;
 	height: 250px; 
 	width: 350px;
 }
 
+#capacity-table_paginate {
+	padding-bottom: 10px;
+}
+
 .line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
 }
 
 .axis line, .axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
 }
 
 .axis text {
-  text-shadow: 0 1px 0 #fff;
-  cursor: move;
+	text-shadow: 0 1px 0 #fff;
+	cursor: move;
 }
 
 .grid .tick {

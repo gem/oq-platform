@@ -341,6 +341,7 @@ function buildMixedD3Chart(chartData) {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
     // grid lines
     svg.append("g")         
         .attr("class", "grid")
@@ -364,6 +365,7 @@ function buildMixedD3Chart(chartData) {
             .data([chartData[k]])
             .attr("class", "line"+k)
             .attr("d", line);
+
         // Update the css for each line
         if (chartData.hasOwnProperty(k)) {
             ++count;
@@ -387,12 +389,14 @@ function buildMixedD3Chart(chartData) {
         var curveTitle = k;
         curveTitle = capitalise(curveTitle);
         makeCircles(data, k, color, curveTitle);
+
         // Curve lables
         svg.append("text")
             .attr("x", 340)
             .attr("y", 20*(count))
             .attr("dy", ".35em")
             .text(curveTitle);
+            
         svg.append("svg:circle")
             .attr("cy", 20*(count))
             .attr("cx", 330)
@@ -424,6 +428,7 @@ function buildMixedD3Chart(chartData) {
             .style("font-weight", "bold")
             .style("text-anchor", "end")
             .text("Probabability of exceedance");
+
         textTopLable = svg.append("text")
             .attr("x", 0)
             .attr("y", -35)

@@ -259,6 +259,7 @@ function buildMixedD3Chart(chartData) {
         .style("font-weight", "bold")
         .attr("font-size","14px")
         .text("Base Shear (kN)");
+        
     textTopLable = svg.append("text")
         .attr("x", 0)
         .attr("y", -35)
