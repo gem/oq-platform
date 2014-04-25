@@ -616,7 +616,6 @@ var startApp = function() {
 
                     for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
                         var elementName = pdTempPrimaryIndicator[i].toLowerCase();
-                        //console.log(elementName);
                         tmpPI = e.data[pdTempPrimaryIndicator[i].toLowerCase()];
 
                         if (tmpPI != undefined) {
@@ -635,9 +634,9 @@ var startApp = function() {
                                     pos = parentChildKey[ep].indexOf(elementName);
                                     if (!~pos) {
                                         parentChildKey[ep].push(elementName);
-                                    }
-                                }
-                            }
+                                    };
+                                };
+                            };
                             
                             tmp[elementName] = parseFloat(tmpPI[m]);
                             tmp.municipality = municipality[m];
@@ -658,14 +657,86 @@ var startApp = function() {
                 var sessionPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
                 
                 // Multiply the copy of primary indicator data by the weighted value
-                for(var p1 in sessionPrimaryIndicator){
-                    for(var p2 in sessionPrimaryIndicator[p1]){
-                        if(tempWeight.hasOwnProperty(p2)){
+                for(var p1 in sessionPrimaryIndicator) {
+                    for(var p2 in sessionPrimaryIndicator[p1]) {
+                        if(tempWeight.hasOwnProperty(p2)) {
                             sessionPrimaryIndicator[p1][p2] *= tempWeight[p2];
-                        }
-                    }
-                }
+                        };
+                    };
+                };
+                ///////////////
+                //// Scale ////
+                ///////////////
+
+                var keys = Object.keys(sessionPrimaryIndicator[0]);
                 
+                for (var i = 0; i < keys.length; i++) {
+                    // .... TODO iterate of every sessionPrimaryIndicator[k] element
+                    // and scale each value...
+                }
+
+                // NOTE, currently the scale code below is working, but for only the crimerate element..
+
+                // Scale each primary indicator value from 0 to 1
+                // First find the min and max of each primary indicator per municipality
+                var tempValues = [];
+                var scaleValue = [];
+                //console.log(parentChildKey);
+
+                // Define the method to get values out of the sessionPrimaryIndicator object
+                function getValues() {
+                    tempValues.push(this.crimerate);
+                }
+
+                // Associate the getValues method with the sessionPrimaryIndicator object
+                for(var k in sessionPrimaryIndicator) {
+                    sessionPrimaryIndicator[k].getPIValues = getValues;
+                };
+
+                // Call the getValues method
+                for(var k in sessionPrimaryIndicator) {
+                    sessionPrimaryIndicator[k].getPIValues();
+                };
+
+                var tempMin = Math.min.apply(null, tempValues),
+                    tempMax = Math.max.apply(null, tempValues);
+
+                //console.log(tempValues);
+                //console.log(tempMin);
+                //console.log(tempMax);
+
+                // Scale the values
+                for (var i = 0; i < tempValues.length; i++) {
+                    //console.log( (tempValues[i] - tempMin) / (tempMax - tempMin) );
+                    scaleValue.push( (tempValues[i] - tempMin) / (tempMax - tempMin) );
+                };
+
+                //console.log(tempValues);
+                console.log(scaleValue);
+
+                // Pass scaled values back to the sessionPrimaryIndicator object
+                function applyScaledValues(number) {
+                    
+                        //console.log(scaleValue[i]);
+                        return scaleValue[number];
+                    
+                }
+
+                // Associate the applyScaledValues method with the sessionPrimaryIndicator object
+                for(var k  in sessionPrimaryIndicator) {
+                    sessionPrimaryIndicator[k].scalePIValues = applyScaledValues;
+                };
+
+                // Call the applyScaledValues method
+                
+                for(var k in sessionPrimaryIndicator) {
+                    console.log(k);
+                   sessionPrimaryIndicator[k].crimerate = sessionPrimaryIndicator[k].scalePIValues(k);
+                 
+                }
+
+                console.log(sessionPrimaryIndicator);
+
                 /////////////////////////////////////////////
                 /// Create the category indicator objects ///
                 /////////////////////////////////////////////
@@ -728,6 +799,7 @@ var startApp = function() {
                     }
                 }
 
+                console.log(sessionCatIndicator);
                 /////////////////////////////////////////////
                 /////////// Create the svi object ///////////
                 /////////////////////////////////////////////
