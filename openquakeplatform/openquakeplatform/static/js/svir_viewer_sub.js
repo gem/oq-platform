@@ -668,24 +668,19 @@ var startApp = function() {
                 //// Scale ////
                 ///////////////
 
-                var keys = Object.keys(sessionPrimaryIndicator[0]);
-                
-                for (var i = 0; i < keys.length; i++) {
-                    // .... TODO iterate of every sessionPrimaryIndicator[k] element
-                    // and scale each value...
-                }
-
-                // NOTE, currently the scale code below is working, but for only the crimerate element..
-
                 // Scale each primary indicator value from 0 to 1
-                // First find the min and max of each primary indicator per municipality
+
                 var tempValues = [];
-                var scaleValue = [];
-                //console.log(parentChildKey);
+                var scaleValues = [];
 
                 // Define the method to get values out of the sessionPrimaryIndicator object
-                function getValues() {
-                    tempValues.push(this.crimerate);
+                function getValues(munic) {
+                    tempValues.push(this[munic]);
+                }
+
+                // Pass scaled values back to the sessionPrimaryIndicator object
+                function applyScaledValues(j) {
+                    return scaleValues[j];
                 }
 
                 // Associate the getValues method with the sessionPrimaryIndicator object
@@ -693,47 +688,39 @@ var startApp = function() {
                     sessionPrimaryIndicator[k].getPIValues = getValues;
                 };
 
-                // Call the getValues method
-                for(var k in sessionPrimaryIndicator) {
-                    sessionPrimaryIndicator[k].getPIValues();
-                };
-
-                var tempMin = Math.min.apply(null, tempValues),
-                    tempMax = Math.max.apply(null, tempValues);
-
-                //console.log(tempValues);
-                //console.log(tempMin);
-                //console.log(tempMax);
-
-                // Scale the values
-                for (var i = 0; i < tempValues.length; i++) {
-                    //console.log( (tempValues[i] - tempMin) / (tempMax - tempMin) );
-                    scaleValue.push( (tempValues[i] - tempMin) / (tempMax - tempMin) );
-                };
-
-                //console.log(tempValues);
-                console.log(scaleValue);
-
-                // Pass scaled values back to the sessionPrimaryIndicator object
-                function applyScaledValues(number) {
-                    
-                        //console.log(scaleValue[i]);
-                        return scaleValue[number];
-                    
-                }
-
                 // Associate the applyScaledValues method with the sessionPrimaryIndicator object
-                for(var k  in sessionPrimaryIndicator) {
+                for(var k in sessionPrimaryIndicator) {
                     sessionPrimaryIndicator[k].scalePIValues = applyScaledValues;
                 };
 
-                // Call the applyScaledValues method
-                
-                for(var k in sessionPrimaryIndicator) {
-                    console.log(k);
-                   sessionPrimaryIndicator[k].crimerate = sessionPrimaryIndicator[k].scalePIValues(k);
-                 
-                }
+                var keys = Object.keys(sessionPrimaryIndicator[0]);
+
+                // Iterate over all the municipalities
+                for (var i = 0; i < keys.length; i++) {
+                    tempValues = [];
+                    scaleValues = [];
+
+                    if (keys[i] != "municipality" && keys[i] != "getPIValues" && keys[i] != "scalePIValues") {
+                        
+                        // Call the getValues method
+                        for(var y in sessionPrimaryIndicator) {
+                            sessionPrimaryIndicator[y].getPIValues(keys[i]);
+                        };
+
+                        var tempMin = Math.min.apply(null, tempValues),
+                            tempMax = Math.max.apply(null, tempValues);
+
+                        // Scale the values
+                        for (var j = 0; j < tempValues.length; j++) {
+                            scaleValues.push( (tempValues[j] - tempMin) / (tempMax - tempMin) );
+                        };
+
+                        // Call the applyScaledValues method
+                        for(var l in sessionPrimaryIndicator) {
+                            sessionPrimaryIndicator[l][keys[i]] = sessionPrimaryIndicator[l].scalePIValues(l);
+                        };
+                    };
+                };
 
                 console.log(sessionPrimaryIndicator);
 
