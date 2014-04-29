@@ -97,7 +97,8 @@ def export_sv_category_names(request):
         writer.writerow(["THEME"])
         sv_items = util._get_sv_themes()
     for sv_item in sv_items:
-        writer.writerow(sv_item)
+        encoded_sv_item = tuple([col.encode('utf-8') for col in sv_item])
+        writer.writerow(encoded_sv_item)
     return response
 
 
