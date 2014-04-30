@@ -417,7 +417,7 @@ oq_platform_install () {
 
 usage() {
     local com="$1" ret="$2"
-    echo "${com} <--host|-h> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>]"
+    echo "${com} <--help|-p> <--host|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>]"
     exit $ret
 }
 
@@ -427,7 +427,7 @@ usage() {
 wai="$(whoami)"
 
 if [ "$wai" = "root" ]; then
-    parsargs "norm_user|U:,norm_dir|D:,host|h:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:" "$@"
+    parsargs "norm_user|U:,norm_dir|D:,help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:" "$@"
     if [ "${globargs['host']}" == "" ]; then
         usage "$0" 1
     fi
@@ -435,9 +435,9 @@ if [ "$wai" = "root" ]; then
     oq_platform_install
     exit $?
 else
-    parsargs "host|h:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:" "$@"
+    parsargs "help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:" "$@"
 
-    if [ "${globargs['host']}" == "" ]; then
+    if [ "${globargs['host']}" == "" -o "${globargs['help']}" ]; then
         usage "$0" 1
     fi
 
