@@ -424,6 +424,17 @@ usage() {
 #
 #  MAIN
 #
+
+# check the current path
+fil_inode="$(ls -i "$0" | cut -d ' ' -f 1)"
+ext_inode="$(ls -i "$PWD/oq-platform/openquakeplatform/bin/deploy.sh" 2>/dev/null | cut -d ' ' -f 1)"
+
+if [ "$fil_inode" != "$ext_inode" ]; then
+    echo "  This script must be run from the parent directory of oq-platform repository."
+    echo "  Change the current directory and run ./oq-platform/openquakeplatform/bin/deploy.sh script again."
+    exit 1
+fi
+
 wai="$(whoami)"
 
 if [ "$wai" = "root" ]; then
