@@ -277,7 +277,7 @@ db_user_create () {
         return 1
     fi
 
-    su - -c "echo \"CREATE ROLE ${db_user} ENCRYPTED PASSWORD '${db_pass}' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN;\" | psql" postgres
+    su - -c "echo \"CREATE ROLE ${db_user} ENCRYPTED PASSWORD '${db_pass}' NOSUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN;\" | psql" postgres
 }
 
 #
