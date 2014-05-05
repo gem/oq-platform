@@ -721,7 +721,6 @@ var startApp = function() {
                 };
 
 
-
                 /////////////////////////////////////////////
                 /// Create the category indicator objects ///
                 /////////////////////////////////////////////
@@ -729,38 +728,36 @@ var startApp = function() {
                 // The category indicator is the average value of it's children
                 // and then multiplyed by its respective weight value
 
-                var mainObj = {};
-                
+                var catIndicator = {};
+
+                // Build the catIndicator object on each iteration
+                function newValues(j, econ, edu, m, pop, inf, gov) {
+                    catIndicator[j] = {
+                        economy: econ,
+                        education: edu,
+                        municipality: m,
+                        population: pop,
+                        infrastructure: inf,
+                        governance: gov
+                    };
+                }
+
+                // Associate the newValues method with the category indicator object
+                catIndicator.newCatObj = newValues;
 
                 for (k in parentChildKey) {
                     tempParentChildKey.push(k);
                 };
-                console.log(parentChildKey);
-
-                console.log(tempParentChildKey); //["population", "economy", "education", "infrastructure", "governance"] 
-
-                //for (var i = 0; i < tempParentChildKey.length; i++) {
-                  //  catIndicator[tempParentChildKey[i]] = []; // to be removed
-
-                //};
-
-                //console.log(sessionPrimaryIndicator);
-
+                
                 for (var j = 0; j < municipality.length; j++) {
-                    var subObj = {};
+                    var tempCIValues = [];
 
                     for (var key in sessionPrimaryIndicator) {
 
                         for (var i = 0; i < tempParentChildKey.length; i++) {
                             tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
 
-                            // This function is needed to provide 'i' with its own scope
-                            //function scopeForCatIteration(i) {
-                            
-                            
                             var obj = sessionPrimaryIndicator[key];
-                            //console.log(obj); //a single obj from sessionPrimaryIndicator
-                            //var prObj = [];
                             var piArray = []; // array of values from a single sessionPrimaryIndicator obj
                             var mun = sessionPrimaryIndicator[key].municipality;
 
@@ -774,54 +771,28 @@ var startApp = function() {
 
                             // The category value (without weight)
                             average = (average / piArray.length);
-                            //prObj[mun] = average;
-                            //catIndicator[tempParentChildKey[i]].push(prObj); // Raw value with no weight applied
-                            //tempCategory = tempParentChildKey[i];
 
-                            subObj[tempParentChildKey[i]] = average; // NEW
-                            //console.log(mun);
-                            subObj["municipality"] = mun; // NEW
-                            console.log(subObj);
+                            tempCIValues[tempParentChildKey[i]] = average;
+                            tempCIValues["municipality"] = mun;
 
                             // Multiply the category indicator data by the weighted value
-                            for (var k in subObj) {
+                            for (var k in tempCIValues) {
                                 for (var p in tempCatWeight) {
                                     if (k == p) {
-                                        subObj[k] = (subObj[k] * tempCatWeight[k]);
+                                        tempCIValues[k] = (tempCIValues[k] * tempCatWeight[k]);
                                     };
                                 };
-                            };
-
-                            console.log(subObj);
-                            foo.push(o);
-                                
+                            };      
                         };
-                        mainObj[j] = subObj;
-                        console.log(mainObj);
 
-                            //console.log(subObj); // ***** each iteration is overwriting this object...
-                            
-                            // maybe add an object method inside mainObj and then have the values written to it as they are created 
-
-                            //foo.push(o);
-
-                            
-                        //} //end function
-    
-                        //scopeForCatIteration(i);
+                        catIndicator.newCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
                     };
-    
-    
 
 
-                    
+                }// end scopeForCatIteration function
+                console.log(catIndicator);       
 
-
-                };
-                //console.log(subObj);
-                //console.log(mainObj);
-
-                //var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
+                var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
 
                 ///////////////
                 //// Scale ////
