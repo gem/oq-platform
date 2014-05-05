@@ -953,7 +953,6 @@ var startApp = function() {
 
                 sviIndicator.plotElement = "svi"; // Lable within the object
 
-                console.log(sviIndicator);
 
                 //////////////////////////////////////////////
                 /////////// Create the PRI object ////////////
@@ -980,9 +979,39 @@ var startApp = function() {
                     var aalValue = 0;
                     aalValue = (value * tempAalWeight);
                     aalIndicator[key] = aalValue;
-                })
+                });
+
+                ///////////////
+                //// Scale ////
+                ///////////////
+
+                // Scale the pri values
+                var aalValueArray = [];
+                var scaleAALvalues = [];
+
+                for (var v in aalIndicator) {
+                    aalValueArray.push(aalIndicator[v]);
+                };
+
+                aalValueArray.shift();
+
+                var tempAALmin = Math.min.apply(null, aalValueArray),
+                    tempAALmax = Math.max.apply(null, aalValueArray);
+
+                for (var j = 0; j < aalValueArray.length; j++) {
+                    scaleAALvalues.push( (aalValueArray[j] - tempAALmin) / (tempAALmax - tempAALmin) );
+                };
+
+                var tempKeys = Object.keys(aalIndicator);
+                tempKeys.pop();
+
+                for (var i = 0; i < tempKeys.length; i++) {
+                    aalIndicator[tempKeys[i]] = scaleAALvalues[i];
+                };
 
                 aalIndicator.plotElement = "aal"; // Lable within the object
+
+                console.log(aalIndicator);
 
                 //////////////////////////////////////////////
                 // Create the IRI category indicator object //
@@ -1027,6 +1056,8 @@ var startApp = function() {
             iriPcpData.push(aalIndicator);
             //buildD3SpiderChart(iriPcpData);
             buildD3SpiderChart(iriPcpData);
+
+            console.log(iriIndicator);
         });
     }
 
