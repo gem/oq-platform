@@ -668,54 +668,54 @@ var startApp = function() {
 
                 // Scale each primary indicator value from 0 to 1
 
-                var tempPIValues = [];
-                var scalePIValues = [];
+                var tempPIvalues = [];
+                var scalePIvalues = [];
 
                 // Define the method to get values out of the sessionPrimaryIndicator object
-                function getPIValues(munic) {
-                    tempPIValues.push(this[munic]);
+                function getPIvalues(munic) {
+                    tempPIvalues.push(this[munic]);
                 }
 
                 // Pass scaled values back to the sessionPrimaryIndicator object
-                function applyScaledPIValues(j) {
-                    return scalePIValues[j];
+                function applyScaledPIvalues(j) {
+                    return scalePIvalues[j];
                 }
 
                 // Associate the getValues method with the sessionPrimaryIndicator object
                 for (var k in sessionPrimaryIndicator) {
-                    sessionPrimaryIndicator[k].getPIValues = getPIValues;
+                    sessionPrimaryIndicator[k].getPIvalues = getPIvalues;
                 };
 
                 // Associate the applyScaledValues method with the sessionPrimaryIndicator object
                 for (var k in sessionPrimaryIndicator) {
-                    sessionPrimaryIndicator[k].scalePIValues = applyScaledPIValues;
+                    sessionPrimaryIndicator[k].scalePIvalues = applyScaledPIvalues;
                 };
 
                 var PIkeys = Object.keys(sessionPrimaryIndicator[0]);
 
                 // Iterate over all the municipalities
                 for (var i = 0; i < PIkeys.length; i++) {
-                    tempPIValues = [];
-                    scalePIValues = [];
+                    tempPIvalues = [];
+                    scalePIvalues = [];
 
-                    if (PIkeys[i] != "municipality" && PIkeys[i] != "getPIValues" && PIkeys[i] != "scalePIValues") {
+                    if (PIkeys[i] != "municipality" && PIkeys[i] != "getPIvalues" && PIkeys[i] != "scalePIvalues") {
                         
                         // Call the getValues method
                         for (var y in sessionPrimaryIndicator) {
-                            sessionPrimaryIndicator[y].getPIValues(PIkeys[i]);
+                            sessionPrimaryIndicator[y].getPIvalues(PIkeys[i]);
                         };
 
-                        var tempPIMin = Math.min.apply(null, tempPIValues),
-                            tempPIMax = Math.max.apply(null, tempPIValues);
+                        var tempPIMin = Math.min.apply(null, tempPIvalues),
+                            tempPIMax = Math.max.apply(null, tempPIvalues);
 
                         // Scale the values
-                        for (var j = 0; j < tempPIValues.length; j++) {
-                            scalePIValues.push( (tempPIValues[j] - tempPIMin) / (tempPIMax - tempPIMin) );
+                        for (var j = 0; j < tempPIvalues.length; j++) {
+                            scalePIvalues.push( (tempPIvalues[j] - tempPIMin) / (tempPIMax - tempPIMin) );
                         };
 
                         // Call the applyScaledValues method
                         for (var l in sessionPrimaryIndicator) {
-                            sessionPrimaryIndicator[l][PIkeys[i]] = sessionPrimaryIndicator[l].scalePIValues(l);
+                            sessionPrimaryIndicator[l][PIkeys[i]] = sessionPrimaryIndicator[l].scalePIvalues(l);
                         };
                     };
                 };
@@ -789,8 +789,7 @@ var startApp = function() {
                     };
 
 
-                }// end scopeForCatIteration function
-                console.log(catIndicator);       
+                }// end scopeForCatIteration function      
 
                 var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
 
@@ -798,7 +797,7 @@ var startApp = function() {
                 //// Scale ////
                 ///////////////
 
-                // Scale each primary indicator value from 0 to 1
+                // Scale each category indicator values from 0 to 1
 
                 var tempCIvalues = [];
                 var scaleCIvalues = [];
@@ -860,58 +859,80 @@ var startApp = function() {
                 /////////////////////////////////////////////
 
                 var sviIndicator = {};
+
+                function newSVIvalues(SVIaverage, tempMunic) {
+                    //console.log(sviIndicator)
+                    //var tmp = [];
+                    //tmp[tempMunic] = SVIaverage;
+                    //console.log(tmp);
+                    sviIndicator[tempMunic] = SVIaverage;
+                }
+
+                // Associate the newSVIvalues method with the svi object
+                sviIndicator.SVIvalues = newSVIvalues;
+
+
                 var tempSviParentChildKey = [];
                 var tempSviIndicator = {};
                 //var strName, strValue, tempIndicatorKey, tempIndicatorValue; //move these vars into for loop below
                 for (var i = 0; i < municipality.length; i++) {
                     tempSviIndicator[municipality[i]] = [];
                 };
+                // tempSviIndicator is correct
 
                 tempSviSearchElements = Object.keys(sessionCatIndicator);
+                tempSviSearchElements.pop();
+                console.log(tempSviSearchElements);
 
-                var sessionKey = "";
-                for(var k in sessionCatIndicator) {
-                    sessionKey = k;
-                }
-
-                function sc() {
-                    if (tempIndicatorKey = strName) {
-                        tempSviIndicator[tempIndicatorKey].push(strValue);
-                    };
-                };
-
+                var sessionKey = Object.keys(sessionCatIndicator[tempSviSearchElements[0]]);
+                sessionKey.pop();
+                sessionKey.pop();
+                
                 for (var i = 0; i < tempSviSearchElements.length; i++) {
-                    if (sessionKey = tempSviSearchElements[i]) {
-                        for (var j = 0; j < sessionCatIndicator[sessionKey].length; j++) {
-                            var strName, strValue, tempIndicatorKey, tempIndicatorValue;
+                    var tempArray = [];
 
-                            for(strName in sessionCatIndicator[sessionKey][j]) {
-                                strValue = sessionCatIndicator[sessionKey][j][strName];
-                                
-                                $.each(tempSviIndicator, function(key, value){
-                                    tempIndicatorKey = key;
-                                    tempIndicatorValue = value;
-                                });
-                            }
-                            sc();
-                        };  
+                    // Grab the municipality of the iteration
+                    var tempMunic = sessionCatIndicator[i]["municipality"];
+
+                    // Remove the municipality from the sessionkey array
+                    var index = sessionKey.indexOf("municipality");
+                    if (index > -1) {
+                        sessionKey.splice(index, 1);
                     };
+
+                    // Build the temp object
+                    for (var j = 0; j < sessionKey.length; j++) {
+                        tempArray.push(sessionCatIndicator[i][sessionKey[j]]);
+                    };
+
+                    var SVIaverage = 0;
+                    $.each(tempArray,function() {
+                        SVIaverage += this;
+                    });
+                    SVIaverage = (SVIaverage / tempArray.length);
+                    console.log(SVIaverage);
+                    console.log(tempMunic);
+                    sviIndicator.SVIvalues(SVIaverage, tempMunic);
                 };
 
-                sviIndicator = jQuery.extend(true, {}, tempSviIndicator);
+
+                var tempSviIndicator = jQuery.extend(true, {}, sviIndicator);
+
+                console.log(sviIndicator);
+                console.log(tempSviIndicator);
+                console.log(tempSviWeight);
 
                 // Multiply the svi value by the weighted value
                 $.each(sviIndicator, function(key, value) {
-                    var sviAverage = 0;
-                    var sviValue = 0;
-                    $.each(value, function() {
-                        sviAverage =+ (this / value.length);
-                        sviValue = (sviAverage * tempSviWeight);
-                    });
-                    sviIndicator[key] = sviValue;
-                })
+                    if (key != "SVIvalues") {
+                        var sviValue = (value * tempSviWeight);
+                        sviIndicator[key] = sviValue;
+                    };
+                });
 
                 sviIndicator.plotElement = "svi"; // Lable within the object
+
+                console.log(sviIndicator);
 
                 //////////////////////////////////////////////
                 /////////// Create the PRI object ////////////
