@@ -622,9 +622,7 @@ var startApp = function() {
                             tmpPI = tmpPI.split(',');
                             
                             // Check and see what category the tmpPI belongs to
-                            var elementsParent =  checkElementCategory(elementName);
-
-                            //console.log(elementsParent);
+                            var elementsParent = checkElementCategory(elementName);
 
                             // Keep track of parents and their respective children
                             for (var k in parentChildKey) {
@@ -670,59 +668,59 @@ var startApp = function() {
 
                 // Scale each primary indicator value from 0 to 1
 
-                var tempValues = [];
-                var scaleValues = [];
+                var tempPIValues = [];
+                var scalePIValues = [];
 
                 // Define the method to get values out of the sessionPrimaryIndicator object
-                function getValues(munic) {
-                    tempValues.push(this[munic]);
+                function getPIValues(munic) {
+                    tempPIValues.push(this[munic]);
                 }
 
                 // Pass scaled values back to the sessionPrimaryIndicator object
-                function applyScaledValues(j) {
-                    return scaleValues[j];
+                function applyScaledPIValues(j) {
+                    return scalePIValues[j];
                 }
 
                 // Associate the getValues method with the sessionPrimaryIndicator object
-                for(var k in sessionPrimaryIndicator) {
-                    sessionPrimaryIndicator[k].getPIValues = getValues;
+                for (var k in sessionPrimaryIndicator) {
+                    sessionPrimaryIndicator[k].getPIValues = getPIValues;
                 };
 
                 // Associate the applyScaledValues method with the sessionPrimaryIndicator object
-                for(var k in sessionPrimaryIndicator) {
-                    sessionPrimaryIndicator[k].scalePIValues = applyScaledValues;
+                for (var k in sessionPrimaryIndicator) {
+                    sessionPrimaryIndicator[k].scalePIValues = applyScaledPIValues;
                 };
 
-                var keys = Object.keys(sessionPrimaryIndicator[0]);
+                var PIkeys = Object.keys(sessionPrimaryIndicator[0]);
 
                 // Iterate over all the municipalities
-                for (var i = 0; i < keys.length; i++) {
-                    tempValues = [];
-                    scaleValues = [];
+                for (var i = 0; i < PIkeys.length; i++) {
+                    tempPIValues = [];
+                    scalePIValues = [];
 
-                    if (keys[i] != "municipality" && keys[i] != "getPIValues" && keys[i] != "scalePIValues") {
+                    if (PIkeys[i] != "municipality" && PIkeys[i] != "getPIValues" && PIkeys[i] != "scalePIValues") {
                         
                         // Call the getValues method
-                        for(var y in sessionPrimaryIndicator) {
-                            sessionPrimaryIndicator[y].getPIValues(keys[i]);
+                        for (var y in sessionPrimaryIndicator) {
+                            sessionPrimaryIndicator[y].getPIValues(PIkeys[i]);
                         };
 
-                        var tempMin = Math.min.apply(null, tempValues),
-                            tempMax = Math.max.apply(null, tempValues);
+                        var tempPIMin = Math.min.apply(null, tempPIValues),
+                            tempPIMax = Math.max.apply(null, tempPIValues);
 
                         // Scale the values
-                        for (var j = 0; j < tempValues.length; j++) {
-                            scaleValues.push( (tempValues[j] - tempMin) / (tempMax - tempMin) );
+                        for (var j = 0; j < tempPIValues.length; j++) {
+                            scalePIValues.push( (tempPIValues[j] - tempPIMin) / (tempPIMax - tempPIMin) );
                         };
 
                         // Call the applyScaledValues method
-                        for(var l in sessionPrimaryIndicator) {
-                            sessionPrimaryIndicator[l][keys[i]] = sessionPrimaryIndicator[l].scalePIValues(l);
+                        for (var l in sessionPrimaryIndicator) {
+                            sessionPrimaryIndicator[l][PIkeys[i]] = sessionPrimaryIndicator[l].scalePIValues(l);
                         };
                     };
                 };
 
-                console.log(sessionPrimaryIndicator);
+
 
                 /////////////////////////////////////////////
                 /// Create the category indicator objects ///
@@ -731,31 +729,44 @@ var startApp = function() {
                 // The category indicator is the average value of it's children
                 // and then multiplyed by its respective weight value
 
+                var mainObj = {};
+                
+
                 for (k in parentChildKey) {
                     tempParentChildKey.push(k);
                 };
+                console.log(parentChildKey);
 
-                for (var i = 0; i < tempParentChildKey.length; i++) {
-                    catIndicator[tempParentChildKey[i]] = [];
-                };
+                console.log(tempParentChildKey); //["population", "economy", "education", "infrastructure", "governance"] 
 
-                for (var i = 0; i < tempParentChildKey.length; i++) {
-                    tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
+                //for (var i = 0; i < tempParentChildKey.length; i++) {
+                  //  catIndicator[tempParentChildKey[i]] = []; // to be removed
 
-                    // This function is needed to provide 'i' with its own scope
-                    function scopeForCatIteration(i) {
-                        //console.log(sessionPrimaryIndicator);
-                        for (var key in sessionPrimaryIndicator) {
+                //};
+
+                //console.log(sessionPrimaryIndicator);
+
+                for (var j = 0; j < municipality.length; j++) {
+                    var subObj = {};
+
+                    for (var key in sessionPrimaryIndicator) {
+
+                        for (var i = 0; i < tempParentChildKey.length; i++) {
+                            tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
+
+                            // This function is needed to provide 'i' with its own scope
+                            //function scopeForCatIteration(i) {
+                            
+                            
                             var obj = sessionPrimaryIndicator[key];
-                            var prObj = [];
-                            var piArray = [];
+                            //console.log(obj); //a single obj from sessionPrimaryIndicator
+                            //var prObj = [];
+                            var piArray = []; // array of values from a single sessionPrimaryIndicator obj
                             var mun = sessionPrimaryIndicator[key].municipality;
-
 
                             for (var n = 0; n < tempCatSearchElements.length; n++) {
                                 piArray.push(obj[tempCatSearchElements[n]]);
                             };
-
                             var average = 0;
                             $.each(piArray,function() {
                                 average += this;
@@ -763,29 +774,138 @@ var startApp = function() {
 
                             // The category value (without weight)
                             average = (average / piArray.length);
-                            prObj[mun] = average;
-                            catIndicator[tempParentChildKey[i]].push(prObj); // Raw value with no weight applied
-                            tempCategory = tempParentChildKey[i];
-                        }; 
+                            //prObj[mun] = average;
+                            //catIndicator[tempParentChildKey[i]].push(prObj); // Raw value with no weight applied
+                            //tempCategory = tempParentChildKey[i];
+
+                            subObj[tempParentChildKey[i]] = average; // NEW
+                            //console.log(mun);
+                            subObj["municipality"] = mun; // NEW
+                            console.log(subObj);
+
+                            // Multiply the category indicator data by the weighted value
+                            for (var k in subObj) {
+                                for (var p in tempCatWeight) {
+                                    if (k == p) {
+                                        subObj[k] = (subObj[k] * tempCatWeight[k]);
+                                    };
+                                };
+                            };
+
+                            console.log(subObj);
+                            foo.push(o);
+                                
+                        };
+                        mainObj[j] = subObj;
+                        console.log(mainObj);
+
+                            //console.log(subObj); // ***** each iteration is overwriting this object...
+                            
+                            // maybe add an object method inside mainObj and then have the values written to it as they are created 
+
+                            //foo.push(o);
+
+                            
+                        //} //end function
     
-                    } //end function
+                        //scopeForCatIteration(i);
+                    };
+    
+    
 
-                    scopeForCatIteration(i);
+
+                    
+
+
                 };
+                //console.log(subObj);
+                //console.log(mainObj);
 
-                var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
+                //var sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
 
-                // Multiply the category indicator data by the weighted value
-                for(var p1 in sessionCatIndicator){
-                    for (var i = 0; i < sessionCatIndicator[p1].length; i++) {
-                        for(prop in sessionCatIndicator[p1][i]) {
-                            if(sessionCatIndicator[p1][i].hasOwnProperty(prop)){
-                                sessionCatIndicator[p1][i][prop] *= tempCatWeight[p1];
-                            }
-                        }
-                    }
+                ///////////////
+                //// Scale ////
+                ///////////////
+
+                // Scale each category indicator value from 0 to 1
+
+                var tempCIValues = [];
+                var scaleCIValues = [];
+
+                // Define the method to get values out of the sessionCatIndicator object
+                function getCIValues(i) {
+                    for (var value in this[i]) {
+                        var values = this[i][value];
+                        tempCIValues.push(values);
+                    };
                 }
 
+                // Pass scaled values back to the sessionCatIndicator object
+                function applyScaledCIValues(j) {
+                    console.log(scaleCIValues);
+                    console.log(j);
+                    return scaleCIValues[j];
+                }
+
+                // Associate the getValues method with the sessionCatIndicator object
+                for (var k in sessionCatIndicator) {
+                    sessionCatIndicator[k].getCIValues = getCIValues;
+                };
+
+                // Associate the applyScaledValues method with the sessionCatIndicator object
+                for (var k in sessionCatIndicator) {
+                    sessionCatIndicator[k].scaleCIValues = applyScaledCIValues;
+                };
+                
+                console.log(municipality);
+
+         
+
+                // Iterate over all the municipalities
+                for (var i = 0; i < municipality.length; i++) {
+                    tempCIValues = [];
+                    scaleCIValues = [];
+
+                    // Call the getValues method
+                    for (var m in sessionCatIndicator) {
+                        sessionCatIndicator[m].getCIValues(i);
+                    };
+                    
+                    var tempCIMin = Math.min.apply(null, tempCIValues),
+                        tempCIMax = Math.max.apply(null, tempCIValues);
+
+                    // Scale the values
+                    for (var j = 0; j < tempCIValues.length; j++) {
+                        scaleCIValues.push( (tempCIValues[j] - tempCIMin) / (tempCIMax - tempCIMin) );
+                    };
+
+                    //console.log(sessionCatIndicator);
+                    //console.log(tempCIValues);
+                    //console.log(scaleCIValues);
+
+                    // Call the applyScaledValues method
+
+/*
+
+                    for (var k in sessionCatIndicator) {
+                        for (var l = 0; l < scaleCIValues.length; l++) {
+                            console.log(sessionCatIndicator[k][i]);
+                            console.log(scaleCIValues);
+                            console.log(scaleCIValues[l]);
+                            //console.log(k);
+                            //console.log(i);
+                            //console.log(l);
+                            //foo[k][l] = scaleCIValues[l];
+                            //funtime.push(reallyfuntyimes);
+                            sessionCatIndicator[k][i] = sessionCatIndicator[k].scaleCIValues(l);
+                            //fun.push(fin);
+                        };
+                    };
+
+*/
+
+                };
+ 
                 console.log(sessionCatIndicator);
                 /////////////////////////////////////////////
                 /////////// Create the svi object ///////////
