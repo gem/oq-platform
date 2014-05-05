@@ -915,20 +915,41 @@ var startApp = function() {
                     sviIndicator.SVIvalues(SVIaverage, tempMunic);
                 };
 
-
-                var tempSviIndicator = jQuery.extend(true, {}, sviIndicator);
-
-                console.log(sviIndicator);
-                console.log(tempSviIndicator);
-                console.log(tempSviWeight);
-
-                // Multiply the svi value by the weighted value
+                // Multiply the svi values by the weighted value
                 $.each(sviIndicator, function(key, value) {
                     if (key != "SVIvalues") {
                         var sviValue = (value * tempSviWeight);
                         sviIndicator[key] = sviValue;
                     };
                 });
+
+                ///////////////
+                //// Scale ////
+                ///////////////
+
+                // Scale the svi values
+                var valueArray = [];
+                var scaleSVIvalues = [];
+
+                for (var v in sviIndicator) {
+                    valueArray.push(sviIndicator[v]);
+                };
+
+                valueArray.shift();
+
+                var tempSVImin = Math.min.apply(null, valueArray),
+                    tempSVImax = Math.max.apply(null, valueArray);
+
+                for (var j = 0; j < valueArray.length; j++) {
+                    scaleSVIvalues.push( (valueArray[j] - tempSVImin) / (tempSVImax - tempSVImin) );
+                };
+
+                var tempKeys = Object.keys(sviIndicator);
+                tempKeys.pop();
+
+                for (var i = 0; i < tempKeys.length; i++) {
+                    sviIndicator[tempKeys[i]] = scaleSVIvalues[i];
+                };
 
                 sviIndicator.plotElement = "svi"; // Lable within the object
 
