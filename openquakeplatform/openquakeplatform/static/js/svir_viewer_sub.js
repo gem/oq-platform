@@ -798,85 +798,62 @@ var startApp = function() {
                 //// Scale ////
                 ///////////////
 
-                // Scale each category indicator value from 0 to 1
+                // Scale each primary indicator value from 0 to 1
 
-                var tempCIValues = [];
-                var scaleCIValues = [];
+                var tempCIvalues = [];
+                var scaleCIvalues = [];
 
                 // Define the method to get values out of the sessionCatIndicator object
-                function getCIValues(i) {
-                    for (var value in this[i]) {
-                        var values = this[i][value];
-                        tempCIValues.push(values);
+                function getCIvalues(element) {
+                    if (this[element] != undefined) {
+                        tempCIvalues.push(this[element]);
                     };
                 }
 
                 // Pass scaled values back to the sessionCatIndicator object
-                function applyScaledCIValues(j) {
-                    console.log(scaleCIValues);
-                    console.log(j);
-                    return scaleCIValues[j];
+                function applyScaledCIvalues(j) {
+                    return scaleCIvalues[j];
                 }
 
                 // Associate the getValues method with the sessionCatIndicator object
                 for (var k in sessionCatIndicator) {
-                    sessionCatIndicator[k].getCIValues = getCIValues;
+                    sessionCatIndicator[k].getCIvalues = getCIvalues;
                 };
 
                 // Associate the applyScaledValues method with the sessionCatIndicator object
                 for (var k in sessionCatIndicator) {
-                    sessionCatIndicator[k].scaleCIValues = applyScaledCIValues;
+                    sessionCatIndicator[k].scaleCIvalues = applyScaledCIvalues;
                 };
-                
-                console.log(municipality);
 
-         
+                var CIkeys = Object.keys(sessionCatIndicator[0]);
 
                 // Iterate over all the municipalities
-                for (var i = 0; i < municipality.length; i++) {
-                    tempCIValues = [];
-                    scaleCIValues = [];
+                for (var i = 0; i < CIkeys.length; i++) {
+                    tempCIvalues = [];
+                    scaleCIvalues = [];
 
-                    // Call the getValues method
-                    for (var m in sessionCatIndicator) {
-                        sessionCatIndicator[m].getCIValues(i);
-                    };
-                    
-                    var tempCIMin = Math.min.apply(null, tempCIValues),
-                        tempCIMax = Math.max.apply(null, tempCIValues);
+                    if (CIkeys[i] != "municipality" && CIkeys[i] != "getCIvalues" && CIkeys[i] != "scaleCIvalues" && CIkeys[i] != "newCatObj") {
+                        
+                        // Call the getValues method
+                        for (var y in sessionCatIndicator) {
+                            sessionCatIndicator[y].getCIvalues(CIkeys[i]);
+                        };
 
-                    // Scale the values
-                    for (var j = 0; j < tempCIValues.length; j++) {
-                        scaleCIValues.push( (tempCIValues[j] - tempCIMin) / (tempCIMax - tempCIMin) );
-                    };
+                        var tempCImin = Math.min.apply(null, tempCIvalues),
+                            tempCImax = Math.max.apply(null, tempCIvalues);
 
-                    //console.log(sessionCatIndicator);
-                    //console.log(tempCIValues);
-                    //console.log(scaleCIValues);
+                        // Scale the values
+                        for (var j = 0; j < tempCIvalues.length; j++) {
+                            scaleCIvalues.push( (tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin) );
+                        };
 
-                    // Call the applyScaledValues method
-
-/*
-
-                    for (var k in sessionCatIndicator) {
-                        for (var l = 0; l < scaleCIValues.length; l++) {
-                            console.log(sessionCatIndicator[k][i]);
-                            console.log(scaleCIValues);
-                            console.log(scaleCIValues[l]);
-                            //console.log(k);
-                            //console.log(i);
-                            //console.log(l);
-                            //foo[k][l] = scaleCIValues[l];
-                            //funtime.push(reallyfuntyimes);
-                            sessionCatIndicator[k][i] = sessionCatIndicator[k].scaleCIValues(l);
-                            //fun.push(fin);
+                        // Call the applyScaledValues method
+                        for (var l in sessionCatIndicator) {
+                            sessionCatIndicator[l][CIkeys[i]] = sessionCatIndicator[l].scaleCIvalues(l);
                         };
                     };
-
-*/
-
                 };
- 
+
                 console.log(sessionCatIndicator);
                 /////////////////////////////////////////////
                 /////////// Create the svi object ///////////
@@ -891,7 +868,6 @@ var startApp = function() {
                 };
 
                 tempSviSearchElements = Object.keys(sessionCatIndicator);
-                console.log(tempSviSearchElements);
 
                 var sessionKey = "";
                 for(var k in sessionCatIndicator) {
@@ -1002,13 +978,11 @@ var startApp = function() {
                 };
 
                 iriIndicator.plotElement = "iri"; // Lable within the object
-                console.log(iriIndicator);
             }
             var iriPcpData = [];
             iriPcpData.push(iriIndicator);
             iriPcpData.push(sviIndicator);
             iriPcpData.push(aalIndicator);
-            console.log(iriPcpData);
             //buildD3SpiderChart(iriPcpData);
             buildD3SpiderChart(iriPcpData);
         });
@@ -1093,7 +1067,7 @@ var startApp = function() {
                 .data(iriPcpData)
                 .enter().append("svg:path")
                 .attr("d", path)
-                .attr("class", function(d) { console.log(d); return d.plotElement; });
+                .attr("class", function(d) { return d.plotElement; });
           
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
