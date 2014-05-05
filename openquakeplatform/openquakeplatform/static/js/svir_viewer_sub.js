@@ -1011,7 +1011,6 @@ var startApp = function() {
 
                 aalIndicator.plotElement = "aal"; // Lable within the object
 
-                console.log(aalIndicator);
 
                 //////////////////////////////////////////////
                 // Create the IRI category indicator object //
@@ -1048,16 +1047,50 @@ var startApp = function() {
                     }
                 };
 
+                var foo = {};
+                foo = jQuery.extend(true, {}, iriIndicator);
+                console.log(foo);
+
+                ///////////////
+                //// Scale ////
+                ///////////////
+
+                // Scale the iri values
+                var iriValueArray = [];
+                var scaleIRIvalues = [];
+
+                for (var v in iriIndicator) {
+                    iriValueArray.push(iriIndicator[v]);
+                };
+
+                iriValueArray.shift();
+
+                var tempIRImin = Math.min.apply(null, iriValueArray),
+                    tempIRImax = Math.max.apply(null, iriValueArray);
+
+                for (var j = 0; j < iriValueArray.length; j++) {
+                    scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
+                };
+
+                var tempKeys = Object.keys(iriIndicator);
+                tempKeys.pop();
+
+                for (var i = 0; i < tempKeys.length; i++) {
+                    iriIndicator[tempKeys[i]] = scaleIRIvalues[i];
+                };
+
                 iriIndicator.plotElement = "iri"; // Lable within the object
+
+                console.log(iriIndicator);
             }
             var iriPcpData = [];
             iriPcpData.push(iriIndicator);
             iriPcpData.push(sviIndicator);
             iriPcpData.push(aalIndicator);
-            //buildD3SpiderChart(iriPcpData);
+
             buildD3SpiderChart(iriPcpData);
 
-            console.log(iriIndicator);
+            
         });
     }
 
