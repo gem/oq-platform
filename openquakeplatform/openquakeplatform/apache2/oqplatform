@@ -13,9 +13,8 @@ WSGIDaemonProcess openquakeplatform user=www-data threads=15 processes=2
 
     <Directory "/var/www/openquake/platform/">
        Order allow,deny
-        Options Indexes FollowSymLinks
+        Options -Indexes FollowSymLinks
         Allow from all
-        IndexOptions FancyIndexing
     </Directory>
 
     Alias /static/ /var/www/openquake/platform/static/
