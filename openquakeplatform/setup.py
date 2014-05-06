@@ -81,6 +81,7 @@ setup(
         "Django==1.5.5",
         "GeoNode==2.0",
         "django-photologue==2.6.1",
+        "requests==0.8.2",
         "fabric"
     ],
     include_package_data=True,
