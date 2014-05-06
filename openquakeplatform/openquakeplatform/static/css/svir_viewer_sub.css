@@ -32,16 +32,10 @@ svg {
   font: 10px sans-serif;
 }
 
-.background path {
-  fill: none;
-  stroke: #ccc;
-  stroke-opacity: .4;
-  shape-rendering: crispEdges;
-}
 
 .foreground path {
   fill: none;
-  stroke: steelblue;
+  stroke: gray;
   stroke-opacity: .7;
 }
 
@@ -60,4 +54,3 @@ svg {
 .axis text {
   text-shadow: 0 1px 0 #fff;
 }
-

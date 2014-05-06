@@ -48,8 +48,7 @@ function Category_PCP_Chart(catIndicator, municipality) {
     }
     console.log(bar);
 
-
-    var margin = {top: 30, right: 10, bottom: 10, left: 10},
+    var margin = {top: 60, right: 10, bottom: 10, left: 10},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
     
@@ -64,71 +63,83 @@ function Category_PCP_Chart(catIndicator, municipality) {
     var svg = d3.select("#iri-pcp-chart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+        .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      // Extract the list of dimensions and create a scale for each.
-      x.domain(dimensions = d3.keys(data[0]).filter(function(d) {
+    // Extract the list of dimensions and create a scale for each.
+    x.domain(dimensions = d3.keys(data[0]).filter(function(d) {
         return d != "municipality" && d != "getCIvalues" &&  d != "scaleCIvalues" && (y[d] = d3.scale.linear()
             .domain(d3.extent(data, function(p) { return +p[d]; }))
             .range([height, 0]));
-      }));
+    }));
     
-      // Add grey background lines for context.
-      background = svg.append("g")
-          .attr("class", "background")
+
+    // Add blue foreground lines for focus.
+    foreground = svg.append("g")
+        .attr("class", "foreground")
         .selectAll("path")
-          .data(data)
+        .data(data)
         .enter().append("path")
-          .attr("d", path);
-    
-      // Add blue foreground lines for focus.
-      foreground = svg.append("g")
-          .attr("class", "foreground")
-        .selectAll("path")
-          .data(data)
-        .enter().append("path")
-          .attr("d", path);
-    
-      // Add a group element for each dimension.
-      var g = svg.selectAll(".dimension")
-          .data(dimensions)
+        .attr("d", path)
+        .attr("id", function(d) { return d.municipality; })
+        .on("mouseover", function() {
+            d3.select(this)
+                .style('stroke-width', 6)
+                .style("stroke", "steelblue");
+            textTop.text("Municipality: " + this.id);
+        }).on("mouseout", function() {
+            d3.select(this)
+                .style('stroke-width', 1)
+                .style("stroke", "gray");
+            textTop.text("");
+        });
+
+    // Add a group element for each dimension.
+    var g = svg.selectAll(".dimension")
+        .data(dimensions)
         .enter().append("g")
-          .attr("class", "dimension")
-          .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+        .attr("class", "dimension")
+        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
     
-      // Add an axis and title.
-      g.append("g")
-          .attr("class", "axis")
-          .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+    // Add an axis and title.
+    g.append("g")
+        .attr("class", "axis")
+        .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
         .append("text")
-          .style("text-anchor", "middle")
-          .attr("y", -9)
-          .text(function(d) { return d; });
+        .style("text-anchor", "middle")
+        .attr("y", -9)
+        .text(function(d) { return d; });
     
-      // Add and store a brush for each axis.
-      g.append("g")
-          .attr("class", "brush")
-          .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
+    // Add and store a brush for each axis.
+    g.append("g")
+        .attr("class", "brush")
+        .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
         .selectAll("rect")
-          .attr("x", -8)
-          .attr("width", 16);
-    //});
+        .attr("x", -8)
+        .attr("width", 16);
+
+    textTop = svg.append("text")
+        .attr("x", 70)
+        .attr("y", -35)
+        .attr("dy", ".35em")
+        .style("font-size","14px")
+        .style("font-style", "bold")
+        .text("");
     
     // Returns the path for a given data point.
     function path(d) {
-      return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+        return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
     
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
-      var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
-          extents = actives.map(function(p) { return y[p].brush.extent(); });
-      foreground.style("display", function(d) {
-        return actives.every(function(p, i) {
-          return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-        }) ? null : "none";
-      });
+        var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
+            extents = actives.map(function(p) { return y[p].brush.extent(); });
+            foreground.style("display", function(d) {
+                return actives.every(function(p, i) {
+                return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+            }) ? null : "none";
+        });
     }
 }
 
