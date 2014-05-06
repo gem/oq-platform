@@ -178,11 +178,21 @@ var startApp = function() {
     });
 
     //  IRI PCP dialog
-    $("#iri-pcp-chart").dialog({
+    $("#pcp-charts").dialog({
         autoOpen: false,
-        height: 500,
-        width: 800,
-        modal: false
+        height: 660,
+        width: 1100,
+        modal: false,
+        open: function() {
+            $('#chart-tabs').tabs({
+                create: function(e, ui) {
+                    $('#closeBtn').click(function() {
+                        $('#pcp-charts').dialog('close');
+                    });
+                }
+            });
+            $(this).parent().children('.ui-tabs-close-button').remove();
+        }
     });
 
     $("#project-definition").button().click(function() {
@@ -569,7 +579,7 @@ var startApp = function() {
 
     var utfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function(e) {
-            $("#iri-pcp-chart").dialog("open");
+            $("#pcp-charts").dialog("open");
             // Get the SVIR data from the utfGrid
             var tmpIri = {};
             var tmpPI;
@@ -760,7 +770,7 @@ var startApp = function() {
 
 
                             var obj = sessionPrimaryIndicator[key];
-                            
+
                             var piArray = []; // array of values from a single sessionPrimaryIndicator obj
                             var mun = sessionPrimaryIndicator[key].municipality;
 
@@ -1078,7 +1088,7 @@ var startApp = function() {
             iriPcpData.push(sviIndicator);
             iriPcpData.push(aalIndicator);
 
-            //IRI_PCP_Chart(iriPcpData);
+            IRI_PCP_Chart(iriPcpData);
             
         });
     }

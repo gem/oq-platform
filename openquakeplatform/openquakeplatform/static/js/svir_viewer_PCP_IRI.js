@@ -35,8 +35,8 @@ function IRI_PCP_Chart(iriPcpData) {
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient("left"),
         foreground;
-    $("#iri-pcp-chart").empty();
-    var svg = d3.select("#iri-pcp-chart").append("svg")
+    $("#tab-iri-chart").empty();
+    var svg = d3.select("#tab-iri-chart").append("svg")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
         .append("svg:g")

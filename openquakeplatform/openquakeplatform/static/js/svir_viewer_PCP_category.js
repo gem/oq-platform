@@ -49,8 +49,8 @@ function Category_PCP_Chart(catIndicator, municipality) {
     console.log(bar);
 
     var margin = {top: 60, right: 10, bottom: 10, left: 10},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 990 - margin.left - margin.right,
+        height = 590 - margin.top - margin.bottom;
     
     var x = d3.scale.ordinal().rangePoints([0, width], 1),
         y = {};
@@ -60,7 +60,7 @@ function Category_PCP_Chart(catIndicator, municipality) {
         background,
         foreground;
     
-    var svg = d3.select("#iri-pcp-chart").append("svg")
+    var svg = d3.select("#tab-categroy-chart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")

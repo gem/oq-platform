@@ -36,12 +36,23 @@ Explore - {{block.super}}
   </form>
 </div>
 
-<div id="iri-chart">
-  <div id="iri-pcp-chart" >
-    
+
+  <div id="pcp-charts">
+    <div id="chart-tabs">
+      <ul>
+        <li><a href="#tab-iri-chart">IRI Chart</a></li>
+        <li><a href="#tab-categroy-chart">Category Chart</a></li>
+        <li class="ui-tabs-close-button"><button id="closeBtn">X</button></li>
+      </ul>
+
+      <div id="tab-iri-chart">
+      </div>
+      <div id="tab-categroy-chart">
+      </div>
+    </div>
   </div>
-  <br><br>
-</div>
+
+
 
 <div id="projectDefDialog" title="Project Definition">
   <p> You first need to <b>load a Project</b> to be able to view a project definition</p>
