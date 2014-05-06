@@ -861,28 +861,21 @@ var startApp = function() {
                 var sviIndicator = {};
 
                 function newSVIvalues(SVIaverage, tempMunic) {
-                    //console.log(sviIndicator)
-                    //var tmp = [];
-                    //tmp[tempMunic] = SVIaverage;
-                    //console.log(tmp);
                     sviIndicator[tempMunic] = SVIaverage;
                 }
 
                 // Associate the newSVIvalues method with the svi object
                 sviIndicator.SVIvalues = newSVIvalues;
 
-
                 var tempSviParentChildKey = [];
                 var tempSviIndicator = {};
-                //var strName, strValue, tempIndicatorKey, tempIndicatorValue; //move these vars into for loop below
+
                 for (var i = 0; i < municipality.length; i++) {
                     tempSviIndicator[municipality[i]] = [];
                 };
-                // tempSviIndicator is correct
 
                 tempSviSearchElements = Object.keys(sessionCatIndicator);
                 tempSviSearchElements.pop();
-                console.log(tempSviSearchElements);
 
                 var sessionKey = Object.keys(sessionCatIndicator[tempSviSearchElements[0]]);
                 sessionKey.pop();
@@ -930,7 +923,7 @@ var startApp = function() {
                 // Scale the svi values
                 var valueArray = [];
                 var scaleSVIvalues = [];
-
+                
                 for (var v in sviIndicator) {
                     valueArray.push(sviIndicator[v]);
                 };
@@ -945,13 +938,15 @@ var startApp = function() {
                 };
 
                 var tempKeys = Object.keys(sviIndicator);
-                tempKeys.pop();
+                tempKeys.shift();
 
                 for (var i = 0; i < tempKeys.length; i++) {
                     sviIndicator[tempKeys[i]] = scaleSVIvalues[i];
                 };
 
                 sviIndicator.plotElement = "svi"; // Lable within the object
+                console.log("svi: ");
+                console.log(sviIndicator);
 
 
                 //////////////////////////////////////////////
@@ -1010,6 +1005,8 @@ var startApp = function() {
                 };
 
                 aalIndicator.plotElement = "aal"; // Lable within the object
+                console.log("aal: ");
+                console.log(aalIndicator);
 
 
                 //////////////////////////////////////////////
@@ -1047,10 +1044,6 @@ var startApp = function() {
                     }
                 };
 
-                var foo = {};
-                foo = jQuery.extend(true, {}, iriIndicator);
-                console.log(foo);
-
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -1081,6 +1074,7 @@ var startApp = function() {
 
                 iriIndicator.plotElement = "iri"; // Lable within the object
 
+                console.log("iri: ");
                 console.log(iriIndicator);
             }
             var iriPcpData = [];
