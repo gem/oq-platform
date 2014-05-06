@@ -758,7 +758,9 @@ var startApp = function() {
                         for (var i = 0; i < tempParentChildKey.length; i++) {
                             tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
 
+
                             var obj = sessionPrimaryIndicator[key];
+                            
                             var piArray = []; // array of values from a single sessionPrimaryIndicator obj
                             var mun = sessionPrimaryIndicator[key].municipality;
 
@@ -855,6 +857,9 @@ var startApp = function() {
                 };
                 console.log("category indicator");
                 console.log(sessionCatIndicator);
+                console.log(municipality);
+
+                Category_PCP_Chart(sessionCatIndicator, municipality);
 
                 /////////////////////////////////////////////
                 /////////// Create the svi object ///////////
@@ -905,8 +910,6 @@ var startApp = function() {
                         SVIaverage += this;
                     });
                     SVIaverage = (SVIaverage / tempArray.length);
-                    console.log(SVIaverage);
-                    console.log(tempMunic);
                     sviIndicator.SVIvalues(SVIaverage, tempMunic);
                 };
 
@@ -1060,7 +1063,6 @@ var startApp = function() {
                 };
 
                 var tempKeys = Object.keys(iriIndicator);
-                tempKeys.pop();
 
                 for (var i = 0; i < tempKeys.length; i++) {
                     iriIndicator[tempKeys[i]] = scaleIRIvalues[i];
@@ -1076,7 +1078,7 @@ var startApp = function() {
             iriPcpData.push(sviIndicator);
             iriPcpData.push(aalIndicator);
 
-            buildD3SpiderChart(iriPcpData);
+            //IRI_PCP_Chart(iriPcpData);
             
         });
     }

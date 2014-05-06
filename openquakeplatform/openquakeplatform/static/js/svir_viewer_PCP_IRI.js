@@ -19,8 +19,8 @@
 ////// IRI Parallel Coordinates Chart //////
 ////////////////////////////////////////////
 
-function buildD3SpiderChart(iriPcpData) {
-    var plotElements = ["iri", "svi", "aal"]; //need to add these lables into the respective objects
+function IRI_PCP_Chart(iriPcpData) {
+    var plotElements = ["iri", "svi", "aal"];
     var keys = [];
     for (var k in iriPcpData) {
         keys.push(k);
