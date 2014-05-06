@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -662,6 +662,7 @@ var startApp = function() {
                         };
                     };
                 };
+
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -852,8 +853,9 @@ var startApp = function() {
                         };
                     };
                 };
-
+                console.log("category indicator");
                 console.log(sessionCatIndicator);
+
                 /////////////////////////////////////////////
                 /////////// Create the svi object ///////////
                 /////////////////////////////////////////////
@@ -916,11 +918,6 @@ var startApp = function() {
                     };
                 });
 
-                var tom = {};
-                tom = jQuery.extend(true, {}, sviIndicator);
-                console.log("svi not scaled: ");
-                console.log(tom)
-
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -950,8 +947,6 @@ var startApp = function() {
                 };
 
                 sviIndicator.plotElement = "svi"; // Lable within the object
-                console.log("svi: ");
-                console.log(sviIndicator);
 
 
                 //////////////////////////////////////////////
@@ -981,11 +976,6 @@ var startApp = function() {
                     aalIndicator[key] = aalValue;
                 });
 
-                var foo = {};
-                foo = jQuery.extend(true, {}, aalIndicator);
-                console.log("aal not scaled: ");
-                console.log(foo);
-
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -997,9 +987,6 @@ var startApp = function() {
                 for (var v in aalIndicator) {
                     aalValueArray.push(aalIndicator[v]);
                 };
-
-                //aalValueArray.shift();
-                console.log(aalValueArray);
 
                 var tempAALmin = Math.min.apply(null, aalValueArray),
                     tempAALmax = Math.max.apply(null, aalValueArray);
@@ -1016,8 +1003,6 @@ var startApp = function() {
                 };
 
                 aalIndicator.plotElement = "aal"; // Lable within the object
-                console.log("aal: ");
-                console.log(aalIndicator);
 
 
                 //////////////////////////////////////////////
@@ -1054,11 +1039,6 @@ var startApp = function() {
                         iriIndicator[k] = tmp;
                     }
                 };
-
-                var bar = {};
-                bar = jQuery.extend(true, {}, iriIndicator);
-                console.log("iri not scaled: ");
-                console.log(bar)
 
                 ///////////////
                 //// Scale ////
@@ -1097,357 +1077,9 @@ var startApp = function() {
             iriPcpData.push(aalIndicator);
 
             buildD3SpiderChart(iriPcpData);
-
             
         });
     }
-
-    ////////////////////////////////////////////
-    ////// IRI Parallel Coordinates Chart //////
-    ////////////////////////////////////////////
-
-    function buildD3SpiderChart(iriPcpData) {
-
-        var plotElements = ["iri", "svi", "aal"]; //need to add these lables into the respective objects
-
-        var keys = [];
-        for (var k in iriPcpData) {
-            keys.push(k);
-        }
-
-        var m = [80, 160, 200, 160],
-            w = 1480 - m[1] - m[3],
-            h = 500 - m[0] - m[2];
-        
-        var x = d3.scale.ordinal().domain(municipality).rangePoints([0, w]),
-            y = {};
-        
-        var line = d3.svg.line(),
-            axis = d3.svg.axis().orient("left"),
-            foreground;
-
-        $("#iri-pcp-chart").empty();
-
-        var svg = d3.select("#iri-pcp-chart").append("svg")
-            .attr("width", w + m[1] + m[3])
-            .attr("height", h + m[0] + m[2])
-            .append("svg:g")
-            .attr("transform", "translate(" + m[3] + ",5)");
-        
-        
-            // Create a scale and brush for each trait.
-            municipality.forEach(function(d) {
-                // Coerce values to numbers.
-                iriPcpData.forEach(function(p) { p[d] = +p[d]; });
-
-                y[d] = d3.scale.linear()
-                    .domain(d3.extent(iriPcpData, function(p) { return p[d]; }))
-                    .range([h, 0]);
-          
-                y[d].brush = d3.svg.brush()
-                    .y(y[d])
-                    .on("brush", brush);
-            });
-
-            // Add a legend.
-            var legend = svg.selectAll("g.legend")
-                .data(plotElements)
-                .enter().append("svg:g")
-                .attr("class", "legend")
-          
-            legend.append("svg:line")
-                .attr("class", String)
-                .attr("x2", -28)
-                .attr("y2", 0)
-                .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
-
-            legend.append("svg:text")
-                .attr("x", -125)
-                .attr("y", -510)
-                .attr("dy", ".31em")
-                .text("test");
-
-            legend.append("svg:text")
-                .attr("x", -125)
-                .attr("y", -510)
-                .attr("dy", ".31em")
-                .text(function(d) { return d; })
-                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
-          
-            // Add foreground lines.
-            foreground = svg.append("svg:g")
-                .attr("class", "foreground")
-                .selectAll("path")
-                .data(iriPcpData)
-                .enter().append("svg:path")
-                .attr("d", path)
-                .attr("class", function(d) { return d.plotElement; });
-          
-            // Add a group element for each trait.
-            var g = svg.selectAll(".trait")
-                .data(municipality)
-                .enter().append("svg:g")
-                .attr("class", "trait")
-                .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-                .call(d3.behavior.drag()
-                .origin(function(d) { return {x: x(d)}; })
-                .on("dragstart", dragstart)
-                .on("drag", drag)
-                .on("dragend", dragend));
-          
-            // Add an axis and title.
-            g.append("svg:g")
-                .attr("class", "axis")
-                .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-                .append("svg:text")
-                .attr("id", "attrLable")
-                .attr("text-anchor", "left")
-                .attr("y", 160)
-                .attr("x", 160)
-                .text(String);
-          
-            // Add a brush for each axis.
-            g.append("svg:g")
-                .attr("class", "brush")
-                .each(function(d) { d3.select(this).call(y[d].brush); })
-                .selectAll("rect")
-                .attr("x", -8)
-                .attr("width", 16);
-          
-            function dragstart(d) {
-                i = keys.indexOf(d);
-            }
-          
-            function drag(d) {
-                x.range()[i] = d3.event.x;
-                keys.sort(function(a, b) { return x(a) - x(b); });
-                g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-                foreground.attr("d", path);
-            }
-          
-            function dragend(d) {
-                x.domain(keys).rangePoints([0, w]);
-                var t = d3.transition().duration(500);
-                t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-                t.selectAll(".foreground path").attr("d", path);
-            }
-
-            
-
-        // Update the css for each plotElements
-        $("."+plotElements[0]).css('stroke', 'red');
-        $("."+plotElements[1]).css('stroke', 'blue');
-        $("."+plotElements[2]).css('stroke', 'green');
-        $("."+plotElements[3]).css('stroke', 'orange');
-        $("."+plotElements[4]).css('stroke', 'purple');
-        $("."+plotElements[5]).css('stroke', 'black');
-        $("."+plotElements[6]).css('stroke', 'gray');
-        $("."+plotElements[7]).css('stroke', 'pink');
-        $("."+plotElements[8]).css('stroke', 'teal');
-        $("."+plotElements[9]).css('stroke', 'DarkBlue');
-        $("."+plotElements[10]).css('stroke', 'DarkCyan');
-        $("."+plotElements[11]).css('stroke', 'Crimson');
-        $("."+plotElements[12]).css('stroke', 'Coral');
-        $("."+plotElements[13]).css('stroke', 'DarkGoldenRod');
-        $("."+plotElements[14]).css('stroke', 'MediumPurple');
-        $("."+plotElements[15]).css('stroke', 'MediumSlateBlue');
-        $("."+plotElements[16]).css('stroke', 'MediumSeaGreen');
-        $("."+plotElements[17]).css('stroke', 'MidnightBlue');
-        $("."+plotElements[18]).css('stroke', 'Maroon');
-
-        // Returns the path for a given data point.
-        
-        function path(d) {
-            return line(municipality.map(function(p) { return [x(p), y[p](d[p])]; }));
-        }
-
-        // Handles a brush event, toggling the display of foreground lines.
-        function brush() {
-            var actives = municipality.filter(function(p) { return !y[p].brush.empty(); }),
-                extents = actives.map(function(p) { return y[p].brush.extent(); });
-            foreground.classed("fade", function(d) {
-                return !actives.every(function(p, i) {
-                    return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-                });
-            });
-        }
-    } // End PCP Chart
-
-    // Change the utfgrid layer when the tabs are clicked
-    $("#econ").click(function(){ 
-        dataCat = "econ-table";
-        chartCat = "econ-chart";
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    $("#pop").click(function(){
-        dataCat = "pop-table";
-        chartCat = "pop-chart";
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    $("#health").click(function(){
-        dataCat = "health-table";
-        chartCat = "health-chart";
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    $("#infra").click(function(){
-        dataCat = "infra-table";
-        chartCat = "infra-chart";
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    $("#gov").click(function(){
-        dataCat = "gov-table";
-        chartCat = "gov-chart";
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    $("#edu").click(function(){
-        dataCat = "edu-table";
-        chartCat = "edu-chart";
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    // This layer is used for the visual representation of the data
-    //var portugal = L.tileLayer('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.png');
-    //layerControl.addOverlay(portugal, "svir-portugal");
-    //map.addLayer(portugal);
-
-    //var utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/svir-portugal/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-    //map.addLayer(utfGrid);
-/*
-    var utfGridClickEvent = function(dataCat, chartCat) {
-        utfGrid.on('click', function (e) {
-            // TODO allow the user to control the number of countries/attributes to interrogate
-
-            $("#"+chartCat+"-bar").empty();
-            svirRankValues = [];
-            svirRankKeys = [];
-            svirRegionRankValues = [];
-            svirRegionRankKeys = [];
-            svirBarArray = [];
-            // When the map is clikced the table needs to be cleared out and recreated 
-            var countryTable = $("#"+dataCat).dataTable();
-            countryTable.fnClearTable();
-            buildDataTable(e, dataCat);
-
-            if (e.data) {
-
-                // Populate a drop down list so the user can select attributes to be used in the spider chart
-                var values = [];
-                for (var d in e.data) {
-                    values.push(e.data[d]);
-                }
-                var keys = Object.keys(e.data);
-
-                $(function() {
-                    var max = 6;
-                    var checkboxes = $('input[type="checkbox"]');
-                    checkboxes.change(function() {
-                        var current = checkboxes.filter(':checked').length;
-                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
-                    });
-                });
-
-                if(attrSelection.length == 0) {
-                    attrSelectionArray = $('.attributeOption:checkbox:checked');
-                    for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
-                        attrSelection[i] = attrSelectionArray[i].name;
-                    };
-                }
-    
-                var distName = e.data.DISTRICT;
-                var ec = (e.data.economic).split(",");
-                var ed = (e.data.education).split(",");
-                var g = (e.data.gov).split(",");
-                var h = (e.data.health).split(",");
-                var inf = (e.data.infrastruc).split(",");
-                var s = (e.data.social).split(",");
-
-                var econ = [];
-                for (var i = 0; i < ec.length; i++) {
-                    econ[i] = parseFloat(ec[i]);
-                };
-                var edu = [];
-                for (var i = 0; i < ed.length; i++) {
-                    edu[i] = parseFloat(ed[i]);
-                };
-                var gov = [];
-                for (var i = 0; i < ed.length; i++) {
-                    gov[i] = parseFloat(ed[i]);
-                };
-                var health = [];
-                for (var i = 0; i < h.length; i++) {
-                    health[i] = parseFloat(h[i]);
-                };
-                var infra = [];
-                for (var i = 0; i < inf.length; i++) {
-                    infra[i] = parseFloat(inf[i]);
-                };
-                var social = [];
-                for (var i = 0; i < s.length; i++) {
-                    social[i] = parseFloat(s[i]);
-                };
-
-                // give weight to the categories
-                var svirData = e.data;
-                var econWeight = ($( "#econ-weight" ).val() / 100);
-
-                //var a = econ.map(function(x) x * 5);
-
-                var a = econ.map(function(x) { return x * econWeight; });
-                var b = edu.map(function(x) { return x * ((1 - econWeight) / 5)});
-                var c = gov.map(function(x) { return x * ((1 - econWeight) / 5)});
-                var d = health.map(function(x) { return x * ((1 - econWeight) / 5)});
-                var f = infra.map(function(x) { return x * ((1 - econWeight) / 5)});
-                var g = social.map(function(x) { return x * ((1 - econWeight) / 5)});
-
-                econ = a;
-                edu = b;
-                gov = c;
-                health = d;
-                infra = f;
-                social = g;
-                    
-                var keys = Object.keys(e.data);
-                keys.shift();
-                keys.splice(5, 2);
-
-
-                var distAttrString = e.data.municipo;
-                var distAttr = distAttrString.split(",");
-
-                // TODO: use a 2d array instead of several selectedValue<x> arrays
-                buildD3SpiderChart(keys, distName, econ, edu, gov, health, infra, social, distAttr);
-                
-            } else {
-                document.getElementById('click').innerHTML = 'click: nothing';
-            }
-        }); // End utfGrid click
-    } // End utfGridClickEvent
-    */
 };
-
-
 
 app.initialize(startApp);
