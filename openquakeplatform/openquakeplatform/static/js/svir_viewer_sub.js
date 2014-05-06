@@ -916,6 +916,11 @@ var startApp = function() {
                     };
                 });
 
+                var tom = {};
+                tom = jQuery.extend(true, {}, sviIndicator);
+                console.log("svi not scaled: ");
+                console.log(tom)
+
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -923,7 +928,7 @@ var startApp = function() {
                 // Scale the svi values
                 var valueArray = [];
                 var scaleSVIvalues = [];
-                
+
                 for (var v in sviIndicator) {
                     valueArray.push(sviIndicator[v]);
                 };
@@ -976,6 +981,11 @@ var startApp = function() {
                     aalIndicator[key] = aalValue;
                 });
 
+                var foo = {};
+                foo = jQuery.extend(true, {}, aalIndicator);
+                console.log("aal not scaled: ");
+                console.log(foo);
+
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -988,7 +998,8 @@ var startApp = function() {
                     aalValueArray.push(aalIndicator[v]);
                 };
 
-                aalValueArray.shift();
+                //aalValueArray.shift();
+                console.log(aalValueArray);
 
                 var tempAALmin = Math.min.apply(null, aalValueArray),
                     tempAALmax = Math.max.apply(null, aalValueArray);
@@ -1044,6 +1055,11 @@ var startApp = function() {
                     }
                 };
 
+                var bar = {};
+                bar = jQuery.extend(true, {}, iriIndicator);
+                console.log("iri not scaled: ");
+                console.log(bar)
+
                 ///////////////
                 //// Scale ////
                 ///////////////
@@ -1055,8 +1071,6 @@ var startApp = function() {
                 for (var v in iriIndicator) {
                     iriValueArray.push(iriIndicator[v]);
                 };
-
-                iriValueArray.shift();
 
                 var tempIRImin = Math.min.apply(null, iriValueArray),
                     tempIRImax = Math.max.apply(null, iriValueArray);
