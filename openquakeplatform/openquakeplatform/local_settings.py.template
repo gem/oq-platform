@@ -14,6 +14,8 @@ DATABASES = {
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
         'PASSWORD': '%(db_pass)s',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     },
     # vector datastore for uploads
     'datastore' : {
@@ -21,8 +23,8 @@ DATABASES = {
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
         'PASSWORD': '%(db_pass)s',
-        'HOST' : 'localhost',
-        'PORT' : '5432',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 

@@ -33,13 +33,13 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': "oqplatform",
         'USER': 'oqplatform',
-        'PASSWORD': 'openquake'
+        'PASSWORD': 'openquake',
     },
     'geonode': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': "geonode",
         'USER': 'oqplatform',
-        'PASSWORD': 'openquake'
+        'PASSWORD': 'openquake',
     },
 }
 
