@@ -154,6 +154,7 @@ s@</VirtualHost>@\
 #
 # geonode local config file fix
 sed -i "s@\([ 	]*SITEURL *= *['\"]\)https\?://\([^'\"]*[^'\"]\)@\1https://\2@g" "$GEM_GN_LOCSET"
+echo "AVATAR_GRAVATAR_SSL = True" >> "$GEM_GN_LOCSET"
 
 #
 # geoserver config configuration
