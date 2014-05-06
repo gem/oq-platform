@@ -563,6 +563,8 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "group": "background"
     }, {
+    "source": {"ptype": "gxp_tilestreamsource" },
+    }, {
     "source": {"ptype": "gxp_mapboxsource"},
     }, {
     "source": {"ptype": "gxp_olsource"},
