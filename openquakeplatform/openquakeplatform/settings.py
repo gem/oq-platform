@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    'chained_multi_checkboxes',
 
     # Development
     # 'devserver',
