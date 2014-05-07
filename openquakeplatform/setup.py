@@ -27,6 +27,7 @@ setup(
               'openquakeplatform.gaf_viewer',
               'openquakeplatform.faulted_earth',
               'openquakeplatform.geodetic',
+              'openquakeplatform.exposure',
               'openquakeplatform.icebox',
               'openquakeplatform.econd',
               'openquakeplatform.gemecdwebsite',
