@@ -29,6 +29,7 @@ setup(
               'openquakeplatform.geodetic',
               'openquakeplatform.exposure',
               'openquakeplatform.icebox',
+              'openquakeplatform.svir',
               'openquakeplatform.econd',
               'openquakeplatform.gemecdwebsite',
               'openquakeplatform.gemecdwebsite.eventsmap',
