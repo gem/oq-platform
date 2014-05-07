@@ -3,6 +3,7 @@
   <type>VECTOR</type>
   <defaultStyle>
     <name>faulted_earth_faultsource</name>
+    <workspace>oqplatform</workspace>
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/styles/faulted_earth_faultsource.xml" type="application/xml"/>
   </defaultStyle>
   <resource class="featureType">

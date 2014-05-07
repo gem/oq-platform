@@ -1,5 +1,5 @@
 import os
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 def read(*rnames):
@@ -20,8 +20,32 @@ setup(
     ],
     license="BSD",
     keywords="openquakeplatform geonode django",
-    url='https://github.com/oq-platform/openquakeplatform',
-    packages=['openquakeplatform'],
+    url='https://github.com/gem/oq-platform',
+    packages=['openquakeplatform',
+              'openquakeplatform.isc_viewer',
+              'openquakeplatform.ghec_viewer',
+              'openquakeplatform.gaf_viewer',
+              'openquakeplatform.faulted_earth',
+              'openquakeplatform.geodetic',
+              'openquakeplatform.exposure',
+              'openquakeplatform.icebox',
+              'openquakeplatform.econd',
+              'openquakeplatform.gemecdwebsite',
+              'openquakeplatform.gemecdwebsite.eventsmap',
+              'openquakeplatform.gemecdwebsite.casualtylevel',
+              'openquakeplatform.gemecdwebsite.damagelevel',
+              'openquakeplatform.gemecdwebsite.eventdetails',
+              'openquakeplatform.gemecdwebsite.eventoverview',
+              'openquakeplatform.gemecdwebsite.eventsmap',
+              'openquakeplatform.gemecdwebsite.home',
+              'openquakeplatform.gemecdwebsite.inventoryclass',
+              'openquakeplatform.gemecdwebsite.location',
+              'openquakeplatform.gemecdwebsite.photo',
+              'openquakeplatform.gemecdwebsite.surveyvalue',
+              'openquakeplatform.gemecdwebsite.uploadnrml',
+              'openquakeplatform.weblib',
+              'openquakeplatform.weblib.baseclasses'
+             ],
     install_requires=[
         "agon-ratings==0.2",
         "beautifulsoup4==4.1.0",
@@ -58,6 +82,7 @@ setup(
         "Django==1.5.5",
         "GeoNode==2.0",
         "django-photologue==2.6.1",
+        "requests==0.8.2",
         "fabric"
     ],
     include_package_data=True,

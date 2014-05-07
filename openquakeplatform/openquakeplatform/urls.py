@@ -27,7 +27,6 @@ from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
 
-
 # Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()

@@ -86,6 +86,10 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
 
         archive = request.FILES['calc_archive']
         try:
+            hazard_output_id = ("" if request.POST.get('hazard_output_id') == None
+                                else request.POST.get('hazard_output_id'))
+            hazard_calculation_id = ("" if request.POST.get('hazard_calculation_id') == None
+                                     else request.POST.get('hazard_calculation_id'))
             requests.post(
                 url,
                 data=dict(
@@ -95,9 +99,8 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
                             "calculation", args=(calculation.pk,))),
                     foreign_calculation_id=calculation.pk,
                     # Risk only
-                    hazard_output_id=request.POST.get('hazard_output_id'),
-                    hazard_calculation_id=request.POST.get(
-                        'hazard_calculation_id')),
+                    hazard_output_id=hazard_output_id,
+                    hazard_calculation_id=hazard_calculation_id),
                 files=dict(archive=archive))
         except requests.exceptions.RequestException as e:
             logger.error(

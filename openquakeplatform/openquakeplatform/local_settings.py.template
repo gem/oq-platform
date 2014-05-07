@@ -2,17 +2,44 @@ import os
 import geonode
 import openquakeplatform
 
-GEONODE_ROOT = os.path.dirname(geonode.__file__)
-OQP_ROOT = os.path.dirname(openquakeplatform.__file__)
+SITENAME = 'Openquake Platform'
+SITEURL = 'http://%(host)s/'
+
+OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
+GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': '%(dbname)s',
-        'USER': '%(dbuser)s',
-        'PASSWORD': '%(dbpassword)s'
+        'NAME': '%(db_name)s',
+        'USER': '%(db_user)s',
+        'PASSWORD': '%(db_pass)s',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     },
+    # vector datastore for uploads
+    'datastore' : {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '%(db_name)s',
+        'USER': '%(db_user)s',
+        'PASSWORD': '%(db_pass)s',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
 }
+
+MEDIA_ROOT = '%(mediaroot)s'
+STATIC_ROOT = '%(staticroot)s'
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    '/etc/openquake/platform/media',
+    os.path.join(OQPLATFORM_ROOT, 'static'),
+    '/etc/geonode/media',
+    os.path.join(GEONODE_ROOT, 'static')
+]
+
+ALLOWED_HOSTS=['%(host)s', 'localhost']
 
 try:
     from openquakeplatform import ged_settings
@@ -22,21 +49,17 @@ except ImportError:
     warnings.warn('Global Exposure Database (GED) configuration not found!',
                   ImportWarning)
 
-SITEURL = '%(siteurl)s'
-
 # Additional directories which hold static files
 STATICFILES_DIRS = [
-    os.path.join(OQP_ROOT, 'static'),
+    os.path.join(OQPLATFORM_ROOT, 'static'),
     os.path.join(GEONODE_ROOT, 'static'),
-    '/etc/geonode/static.apps',
-    '/etc/geonode/static',
     '/etc/geonode/media',
 ]
 
 TEMPLATE_DIRS = (
-    os.path.join(OQP_ROOT, 'templates'),
-    os.path.join(OQP_ROOT, 'gemecdwebsite'),
-    os.path.join(OQP_ROOT, 'gemecdwebsite/templates'),
+    os.path.join(OQPLATFORM_ROOT, 'templates'),
+    os.path.join(OQPLATFORM_ROOT, 'gemecdwebsite'),
+    os.path.join(OQPLATFORM_ROOT, 'gemecdwebsite/templates'),
     os.path.join(GEONODE_ROOT, 'templates'),
 )
 
@@ -45,11 +68,13 @@ OQ_ENGINE_SERVER_URLS = {
     'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/hazard/run',  # i.e. : 'http://oq-platform:8800'
     'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/risk/run',        # i.e. : 'http://oq-platform:8800'
 }
+
 THIRD_PARTY_URLS = {
     'leaflet_base_map': (
         'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
     ),
 }
+
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {

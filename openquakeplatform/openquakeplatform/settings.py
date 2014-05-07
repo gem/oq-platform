@@ -33,13 +33,13 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': "oqplatform",
         'USER': 'oqplatform',
-        'PASSWORD': 'openquake'
+        'PASSWORD': 'openquake',
     },
     'geonode': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': "geonode",
         'USER': 'oqplatform',
-        'PASSWORD': 'openquake'
+        'PASSWORD': 'openquake',
     },
 }
 
@@ -197,6 +197,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
+    'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
     'geonode.social',
@@ -240,7 +241,7 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -563,7 +564,7 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "group": "background"
     }, {
-    "source": {"ptype": "gxp_tilestreamsource" }
+    "source": {"ptype": "gxp_tilestreamsource" },
     }, {
     "source": {"ptype": "gxp_mapboxsource"},
     }, {
