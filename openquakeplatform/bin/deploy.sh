@@ -312,10 +312,10 @@ db_gis_create () {
 
 deps_info () {
         cat <<EOF
-    apt-get install imagemagick xmlstarlet
+    sudo apt-get install imagemagick xmlstarlet
     sudo pip install Pillow==2.3.1 --no-deps
-    sudo pip install django-photologue==2.6.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
+    sudo pip install django-photologue==2.6.1 --no-deps
 EOF
 }
 
