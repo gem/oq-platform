@@ -86,21 +86,23 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
 
         archive = request.FILES['calc_archive']
         try:
-            hazard_output_id = ("" if request.POST.get('hazard_output_id') == None
-                                else request.POST.get('hazard_output_id'))
-            hazard_calculation_id = ("" if request.POST.get('hazard_calculation_id') == None
-                                     else request.POST.get('hazard_calculation_id'))
+            hazard_output_id = request.POST.get('hazard_output_id')
+            hazard_calculation_id = request.POST.get('hazard_calculation_id')
+
+            post_data=dict(
+                database=settings.OQ_ENGINE_SERVER_DATABASE,
+                callback_url="%s%s" % (
+                    settings.SITEURL.rstrip("/"), reverse(
+                        "calculation", args=(calculation.pk,))),
+                foreign_calculation_id=calculation.pk)
+            # Risk only
+            if hazard_output_id:
+                post_data['hazard_output_id'] = hazard_output_id
+            if hazard_calculation_id:
+                post_data['hazard_calculation_id'] = hazard_calculation_id
             requests.post(
                 url,
-                data=dict(
-                    database=settings.OQ_ENGINE_SERVER_DATABASE,
-                    callback_url="%s%s" % (
-                        settings.SITEURL.rstrip("/"), reverse(
-                            "calculation", args=(calculation.pk,))),
-                    foreign_calculation_id=calculation.pk,
-                    # Risk only
-                    hazard_output_id=hazard_output_id,
-                    hazard_calculation_id=hazard_calculation_id),
+                data=post_data,
                 files=dict(archive=archive))
         except requests.exceptions.RequestException as e:
             logger.error(
