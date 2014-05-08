@@ -28,15 +28,20 @@ input {
   float:left;	
 }
 
+
 svg {
   font: 10px sans-serif;
 }
 
+.background path {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
 
 .foreground path {
   fill: none;
-  stroke: gray;
-  stroke-opacity: .7;
+  stroke: steelblue;
 }
 
 .brush .extent {
@@ -45,12 +50,13 @@ svg {
   shape-rendering: crispEdges;
 }
 
-.axis line, .axis path {
+.axis line,
+.axis path {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
 .axis text {
-  text-shadow: 0 1px 0 #fff;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
