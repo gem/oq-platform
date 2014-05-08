@@ -193,7 +193,9 @@ econd_dataloader () {
         mkdir -p /var/www/openquake/platform/uploaded/
         oq-platform/openquakeplatform/openquakeplatform/econd/bin/photo_synt.sh oq-platform/openquakeplatform/openquakeplatform/econd/data/photo_synt_list.csv oq-platform/openquakeplatform/openquakeplatform/econd/data/placeholder.png /var/www/openquake/platform/uploaded
     fi
-    chown -R www-data.www-data /var/www/openquake/platform/uploaded/
+    if [ -d /var/www/openquake/platform/uploaded/ ]; then
+        chown -R www-data.www-data /var/www/openquake/platform/uploaded/
+    fi
 }
 
 econd_fixtureupdate () {
@@ -441,6 +443,7 @@ oq_platform_install () {
     ${oqpdir}/bin/oq-gs-builder.sh populate "$oqpdir" "$oqpdir" "${oqpdir}/bin" "$GEM_GS_WS_NAME" "$GEM_GS_DS_NAME" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${GEM_GS_DATADIR}" "${GEM_APP_LIST[@]}"
 
     openquakeplatform updatelayers
+    chown -R www-data.www-data /var/www/openquake
 }
 
 
