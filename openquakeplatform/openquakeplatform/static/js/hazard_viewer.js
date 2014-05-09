@@ -30,17 +30,25 @@ var gridList;
 // Make a list of categories
 var mapCategoryList = [];
 var curveCategoryList = [];
+var uhsCategoryList = [];
 var mapLayerGrids = [];
 var curveLayerGrids = [];
+var uhsLayerGrids = [];
 var mapLayersByCat = {};
 var curveLayersByCat = {};
+var uhsLayersByCat = {};
 var mapLayerNames = {};
 var curveLayerNames = {};
+var uhsLayerNames = {};
 var layerGrid = {};
-var layersByInvestMixed = {};
+var curvesByInvestMixed = {};
+var uhsByInvestMixed = {};
 var curvesAvailable = {};
-var layersByInvestSingle = {};
+var uhsAvailable = {};
+var curvesByInvestSingle = {};
+var uhsByInvestSingle = {};
 var selectedCurves = [];
+var selectedUhs = [];
 
 var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
@@ -71,6 +79,14 @@ var startApp = function() {
     map.setZoom(2);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
+
+    function capitalize(str) {
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
+
+    function unCapitalize(str) {
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toLowerCase() + txt.substr(1).toLowerCase();});
+    }
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -160,7 +176,9 @@ var startApp = function() {
     var selLayer = document.getElementById('layer-list');
 
     var selCurveCat = document.getElementById('curve-category');
+    var selUhsCat = document.getElementById('curve-category');
     var selCurve = document.getElementById('curve-list');
+    var selUhs = document.getElementById('uhs-list');
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
@@ -171,6 +189,11 @@ var startApp = function() {
     var catCurveMenuHeader = document.createElement('option');
     catCurveMenuHeader.innerHTML = "Category:";
     selCurveCat.appendChild(catCurveMenuHeader);
+
+    // Create a header for the menu uhs drop down
+    var catUhsMenuHeader = document.createElement('option');
+    selUhsCat.appendChild(catUhsMenuHeader);
+    $('#curve-category option:empty').remove();
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
@@ -183,13 +206,22 @@ var startApp = function() {
             var grids = json[i].grids;
             var invest = json[i].investigationTime;
 
-            if (type == "hazard-curve") {
+            if (type == "curve-hc") {
                 curveCategoryList.push(cat);
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
                 var grid = grids.toString();
                 var gridName = grid.split("/")[4];
                 curveLayerGrids.push(gridName);
+            }
+
+            if (type == "curve-uhs") {
+                uhsCategoryList.push(cat);
+                uhsLayersByCat[cat] = [];
+                uhsLayerNames[name] = [];
+                var grid = grids.toString();
+                var gridName = grid.split("/")[4];
+                uhsLayerGrids.push(gridName);
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -222,20 +254,36 @@ var startApp = function() {
             template = template.replace(/{{{/g, "").replace(/}}}/g, "");
             template = template.substring(0, template.indexOf('{{'));
 
-            if (type == "hazard-curve") {
+            if (type == "curve-hc") {
                 var curveLayerId = json[i].id;
-                curveLayerTitle = json[i].mapped_value;
+                var curveLayerTitle = json[i].mapped_value;
                 curveLayerNames[name].push(curveLayerId);
                 curveLayersByCat[cat].push(curveLayerTitle);
             }
 
-            if (type == "hazard-curve" && invest == "mixed") {
-                layersByInvestMixed[i] = name;
+            if (type == "curve-hc" && invest == "mixed") {
+                curvesByInvestMixed[i] = name;
                 curvesAvailable[i] = template;
             }
 
-            if (type == "hazard-curve" && invest != "mixed") {
-                layersByInvestSingle[i] = name;
+            if (type == "curve-hc" && invest != "mixed") {
+                curvesByInvestSingle[i] = name;
+            }
+
+            if (type == "curve-uhs") {
+                var uhsLayerId = json[i].id;
+                var uhsLayerTitle = json[i].mapped_value;
+                uhsLayerNames[name].push(uhsLayerId);
+                uhsLayersByCat[cat].push(uhsLayerTitle);
+            }
+
+            if (type == "curve-uhs" && invest == "mixed") {
+                uhsByInvestMixed[i] = name;
+                uhsAvailable[i] = template;
+            }
+
+            if (type == "curve-uhs" && invest != "mixed") {
+                uhsByInvestSingle[i] = name;
             }
 
             if (invest == undefined && cat != undefined && type == "hazard") {
@@ -254,6 +302,10 @@ var startApp = function() {
     
         var curveCategoryUnique = curveCategoryList.filter(function(itm,i,curveCategoryList){
             return i == curveCategoryList.indexOf(itm);
+        });
+
+        var uhsCategoryUnique = uhsCategoryList.filter(function(itm,i,uhsCategoryList){
+            return i == uhsCategoryList.indexOf(itm);
         });
 
         for (var i in mapCategoryUnique) {
@@ -277,18 +329,35 @@ var startApp = function() {
             // Append layer list to dowpdown
             var layerCurveOpt = document.createElement('option');
         }
+
+        for (var i in curveCategoryUnique) {
+            // Append category names to uhs dropdown list
+            var uhsCategoryTitle = curveCategoryUnique[i];
+            var uhsOpt = document.createElement('option');
+            uhsOpt.innerHTML = uhsCategoryTitle;
+            uhsOpt.value = uhsCategoryTitle;
+            selUhsCat.appendChild(curveOpt);
+            // Append layer list to dowpdown
+            var layeruhsOpt = document.createElement('option');
+        }
     }); //end getjson
 
     $("#addTileCurve").click(function() {
+        $('#addTileUhs').attr("disabled", true);
+        $('#removeTileUhs').attr("disabled", true);
+
         var e = document.getElementById("curve-list");
         var option = e.options[e.selectedIndex].value;
-        var investType = checkCurveType(layersByInvestMixed, layersByInvestSingle, option);
+        var investType = checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option);
+        var curvesListCap = [];
+        var curveType = "hc";
 
         if (investType.indexOf("mixed") == 1 ) {
-            // Use investType to find the key in layersByInvestMixed
+            // Use investType to find the key in curvesByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available curves in curvesAvailable
             var curvesList = curvesAvailable[layerKey].split(" ");
+
             // Remove items that are not curves
             var index = curvesList.indexOf("iml");
             if (index > -1) {
@@ -310,7 +379,14 @@ var startApp = function() {
             if (index > -1) {
                 curvesList.splice(index, 1);
             }
-            var curvesList = curvesList.filter(function(v){return v!==''});
+            
+            // remove _ and capotolise the values in the curvesList 
+            for (var i = 0; i < curvesList.length; i++) {
+                var b = curvesList[i].replace(/_/g, " ");
+                b = capitalize(b);
+                //  curvesListCap.push(b);
+            };
+
             // Provide the user with the curves that are available in the dialog
             $('#hazardCurveDialog').append('<div id="curve-check-box" Select curves to be ploted in the chart:<br></div>');
             for (var i = 0; i < curvesList.length; i++) {
@@ -322,9 +398,9 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             };
-            hazardCurveDialog.dialog("option", "height", (300 + (selectedCurves.length * 10)));
+            hazardCurveDialog.dialog("option", "height", (420 + (selectedCurves.length * 10)));
             $('.curve-list').prop('checked', true);
-            mixedCurve();
+            mixedCurve(curveType);
 
         } else if (investType.indexOf("single") == 0 ) {
             singleCurve();
@@ -332,23 +408,112 @@ var startApp = function() {
             alert("Whoops, there is an issue with the curve you are trying to load,"
                 +" One thing I can think of is some metadata that is required by this app is missing");
         }
-    });
+    }); //end add tile curve
+
+    $("#addTileUhs").click(function() {
+        $('#addTileCurve').attr("disabled", true);
+        $('#removeTileCurve').attr("disabled", true);
+
+        var e = document.getElementById("uhs-list");
+        var option = e.options[e.selectedIndex].value;
+        var investType = checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option);
+        var curveType = "uhs";
+
+        if (investType.indexOf("mixed") == 1 ) {
+            // Use investType to find the key in uhsByInvestMixed
+            var layerKey = investType.shift();
+            // Use that key to look up available uhs in uhsAvailable
+            var uhsList = uhsAvailable[layerKey].split(" ");
+            var uhsListCap = [];
+
+            // Remove items that are not uhs
+            index = uhsList.indexOf("lat");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("lon");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("invest_time");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("periods");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+            index = uhsList.indexOf("poe");
+            if (index > -1) {
+                uhsList.splice(index, 1);
+            }
+
+            // remove _ and capotolise the values in the uhsList 
+            for (var i = 0; i < uhsList.length; i++) {
+                var b = uhsList[i].replace(/_/g, " ");
+                b = capitalize(b);
+                //uhsListCap.push(b);
+            };
+        
+            // Provide the user with the uhs that are available in the dialog
+            $('#hazardCurveDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
+            for (var i = 0; i < uhsList.length; i++) {
+                var checkbox = '<input type="checkbox" id="'+uhsList[i]+'" class="curve-list" value=" '
+                    + uhsList[i]
+                    + '">'
+                    + uhsList[i]
+                    + '<br>';
+
+                $('#curve-check-box').append(checkbox);
+            };
+            hazardCurveDialog.dialog("option", "height", (420 + (selectedUhs.length * 10)));
+            $('.curve-list').prop('checked', true);
+            mixedCurve(curveType);
+
+        } else if (investType.indexOf("single") == 0 ) {
+            singleCurve();
+        } else {
+            alert("Whoops, there is an issue with the curve you are trying to load,"
+                +" One thing I can think of is some metadata that is required by this app is missing");
+        }
+    }); // end add uhs curve
 
     // Check to see if the curve has an investigation time 'mixed'
-    function checkCurveType(layersByInvestMixed, layersByInvestSingle, option) {
-        for (key in layersByInvestMixed) {
-            if (!layersByInvestMixed.hasOwnProperty(key)) 
+    function checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option) {
+        for (key in curvesByInvestMixed) {
+            if (!curvesByInvestMixed.hasOwnProperty(key)) 
                 continue;
-            if (layersByInvestMixed[key] === option) {
+            if (curvesByInvestMixed[key] === option) {
                 var key  = key;
                 var mixed = "mixed";
                 return [key, mixed];
             }
         }
-        for (key in layersByInvestSingle) {
-            if (!layersByInvestSingle.hasOwnProperty(key)) 
+        for (key in curvesByInvestSingle) {
+            if (!curvesByInvestSingle.hasOwnProperty(key)) 
                 continue;
-            if (layersByInvestSingle[key] === option) {
+            if (curvesByInvestSingle[key] === option) {
+                var single = "single";
+                return [single];
+            }
+        }
+    }
+
+    // Check to see if the uhs has an investigation time 'mixed'
+    function checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option) {
+        for (key in uhsByInvestMixed) {
+            if (!uhsByInvestMixed.hasOwnProperty(key)) 
+                continue;
+            if (uhsByInvestMixed[key] === option) {
+                var key  = key;
+                var mixed = "mixed";
+                return [key, mixed];
+            }
+        }
+        for (key in uhsByInvestSingle) {
+            if (!uhsByInvestSingle.hasOwnProperty(key)) 
+                continue;
+            if (uhsByInvestSingle[key] === option) {
                 var single = "single";
                 return [single];
             }
@@ -388,6 +553,24 @@ var startApp = function() {
             curveOpt.innerHTML = layers;
             curveOpt.valuse = layers;
             selCurve.appendChild(curveOpt);
+        }
+    });
+
+    // Create dynamic categorized uhs layer dialog
+    $("#curve-category").change(function() {
+        // Remove the layer list element
+        document.getElementById("uhs-list").options.length = 0;
+
+       // Create the layer list based on the category selected
+        var e = document.getElementById("curve-category");
+        var strUser = e.options[e.selectedIndex].value;
+        var layersArray = uhsLayersByCat[strUser];
+        for (var i in layersArray) {
+            var layers = layersArray[i];
+            var uhsOpt = document.createElement('option');
+            uhsOpt.innerHTML = layers;
+            uhsOpt.valuse = layers;
+            selUhs.appendChild(uhsOpt);
         }
     });
 
@@ -476,25 +659,41 @@ var startApp = function() {
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
-                //TODO create a seperate function to handle curves with invest type mixed
-                //if ()
+
                 utfGridClickEvent(utfGrid);
-                
-                //TODO render D3 chart for hazard curves
             };
         }
     }
 
     // Add mixed curve layers form tilestream list
-    function mixedCurve() {
-        // Remove any existing UtfGrid layers in order to avoid conflict
-        var e = document.getElementById("curve-list");
-        var curveLayerId = e.options[e.selectedIndex].value;
+    function mixedCurve(curveType) {
 
-        // Look up the layer id using the layer name
-        var curveLayerIdArray = curveLayerNames[curveLayerId];
-        var selectedLayer = curveLayerIdArray.toString();
-        var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+        if (curveType == "hc") {
+
+            // Remove any existing UtfGrid layers in order to avoid conflict
+            // this is only needed in the case when the user adds the same curve twice
+            var e = document.getElementById("curve-list");
+            var curveLayerId = e.options[e.selectedIndex].value;
+            //curveLayerId = unCapitalize(curveLayerId);
+            //curveLayerId = curveLayerId.replace(/ /g, "_");
+
+            //TODO make sure that the curveLayerNames[curveLayerId] are in all lowwer case and are seperated by _
+            // Look up the layer id using the layer name
+            var curveLayerIdArray = curveLayerNames[curveLayerId];
+
+            var selectedLayer = curveLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+
+        } 
+        else if (curveType == "uhs") {
+            var e = document.getElementById("uhs-list");
+            var uhsLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
+            var selectedLayer = uhsLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
+        };
 
         // Check for duplicae layes
         if (selectedLayer in layers) {
@@ -522,7 +721,7 @@ var startApp = function() {
                     + selectedLayer
                     + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(utfGrid);
-                utfGridClickEventMixed(utfGrid);
+                utfGridClickEventMixed(utfGrid, curveType);
             };
         }
     }
@@ -558,6 +757,9 @@ var startApp = function() {
     // Remove curve layers from tilestream
     $(document).ready(function() {
         $('#removeTileCurve').click(function() {
+            $('#addTileUhs').attr("disabled", false);
+            $('#removeTileUhs').attr("disabled", false);
+
             $("#curve-check-box").remove();
             gridList = 0;
             map.removeLayer(utfGrid);
@@ -584,6 +786,38 @@ var startApp = function() {
         });
     });
 
+    // Remove uhs layers from tilestream
+    $(document).ready(function() {
+        $('#removeTileUhs').click(function() {
+            $('#addTileCurve').attr("disabled", false);
+            $('#removeTileCurve').attr("disabled", false);
+
+            $("#curve-check-box").remove();
+            gridList = 0;
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            utfGridClickEvent(utfGrid);
+            var e = document.getElementById("uhs-list");
+            var mapLayerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var mapLayerIdArray = uhsLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
+    
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+        });
+    });
+
     // Map options selection dialog
     $("#thematicMap").dialog({
         autoOpen: false,
@@ -595,8 +829,8 @@ var startApp = function() {
     // Map options selection dialog
     var hazardCurveDialog = $("#hazardCurveDialog").dialog({
         autoOpen: false,
-        height: 220,
-        width: 350,
+        height: 420,
+        width: 400,
         modal: true
     });
 
@@ -661,12 +895,18 @@ var startApp = function() {
         }); // End utfGrid click
     } // End utfGridClickEvent
     
-    var utfGridClickEventMixed = function(utfGrid) {
+    var utfGridClickEventMixed = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             // Get the selected curves
             selectedCurves = [];
-            selectedCurves.push("iml");
-            var sc = $('.curve-list:checkbox:checked');
+            if (curveType == 'hc') {
+               selectedCurves.push("iml"); 
+               var sc = $('.curve-list:checkbox:checked');
+            } else if (curveType == 'uhs') {
+                selectedCurves.push('periods');
+                var sc = $('.curve-list:checkbox:checked');
+            };
+
             for (var i = 0; i < sc.length; i++) {
                 selectedCurves.push(sc[i].defaultValue);
             };
@@ -678,7 +918,7 @@ var startApp = function() {
             if (e.data) {
                 var chartData = e.data;
                 //invest_time = e.data.invest_tim
-                buildMixedD3Chart(chartData, selectedCurves);
+                buildMixedD3Chart(chartData, selectedCurves, curveType);
             } else {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
@@ -848,8 +1088,8 @@ var startApp = function() {
     ////////////// Mixed Chart //////////////////
     /////////////////////////////////////////////
 
-    function buildMixedD3Chart(chartData, selectedCurves) {
-        var lat, lon, iml, curve_vals, curve_coup, curve_name, legend, colors;
+    function buildMixedD3Chart(chartData, selectedCurves, curveType) {
+        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = "", max_value = -1, max_value_k = "";
 
         /* associative array of arrays of values */
@@ -860,24 +1100,37 @@ var startApp = function() {
         /* associative array of curves produced with d3.line */
         lat = chartData["lat"];
         lon = chartData["lon"];
-        invest_time = chartData["invest_time"];
+        if (curveType == 'uhs') {
+            poe = chartData['poe'];
+        };
 
-        // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
-        // SA-0.1 = Spectral Acceleration (0.1 s)
-        imt = chartData["imt"];
-        if (imt.indexOf("SA-") == 0 ) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Spectral Acceleration (" + imtValue + " s)";
-        } else if (imt.indexOf("PGA-") == 0) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Acceleration (" + imtValue + " s)";
-        } else if (imt.indexOf("PGV-") == 0) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Velocity (" + imtValue + " s)";
-        } else if (imt.indexOf("PGD-") == 0) {
-            var imtValue = imt.substring(imt.indexOf("-") + 1);
-            imt = "Peak Ground Displacement (" + imtValue + " s)";
-        }
+        invest_time = chartData["invest_time"];
+        if (curveType == 'hc') {
+            yAxisLable = "Probabability of exceedance in "+invest_time+" years";
+        } else if (curveType == 'uhs') {
+            yAxisLable = "Spectral acceleration (g)";
+        };
+
+        if (curveType == 'hc') {
+            // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
+            // SA-0.1 = Spectral Acceleration (0.1 s)
+            xAxisLable = chartData["imt"];
+            if (xAxisLable.indexOf("SA-") == 0 ) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Spectral Acceleration (" + xAxisLableValue + " s) [g]";
+            } else if (xAxisLable.indexOf("PGA-") == 0) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Peak Ground Acceleration [g]";
+            } else if (xAxisLable.indexOf("PGV-") == 0) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Peak Ground Velocity [cm/s]";
+            } else if (xAxisLable.indexOf("PGD-") == 0) {
+                var xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf("-") + 1);
+                xAxisLable = "Peak Ground Displacement [cm]";
+            }
+        } else if (curveType == 'uhs') {
+            xAxisLable = 'Period (s)';
+        };
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
@@ -893,27 +1146,36 @@ var startApp = function() {
             }
         }
 
+        // Set the y axis variable depending on the type of curve
+        if (curveType == 'hc') {
+            yAxisVariable = curve_vals['iml'];
+        } else if (curveType == 'uhs') {
+            yAxisVariable = curve_vals['periods'];
+        };
+
         var old_value = -100;
-        for (i = 0 ; i < curve_vals["iml"].length ; i++) {
-            if (curve_vals["iml"][i] == old_value) {
-                curve_vals["iml"].splice(i, 1);                
+        for (i = 0 ; i < yAxisVariable.length ; i++) {
+            if (yAxisVariable[i] == old_value) {
+                yAxisVariable.splice(i, 1);                
                 i--;
             }
             else {
-                old_value = curve_vals["iml"][i];
+                old_value = yAxisVariable[i];
             }
         }
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
 
-            if (curve_name == "iml")
+            if (curveType == 'hc' && curve_name == "iml")
+                continue;
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             curve_coup[curve_name] = [];
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (curve_vals['iml'][i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
-                    curve_coup[curve_name].push([ curve_vals['iml'][i], curve_vals[curve_name][i] ]);
+                if (yAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
+                    curve_coup[curve_name].push([ yAxisVariable[i], curve_vals[curve_name][i] ]);
                 }
             }
         }
@@ -922,7 +1184,9 @@ var startApp = function() {
             var curve_name = selectedCurves[k];
             var min_cur = 1000.0, max_cur = -1;
 
-            if (curve_name == "iml")
+            if (curveType == 'hc' && curve_name == "iml")
+                continue;
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
@@ -991,43 +1255,52 @@ var startApp = function() {
                 });
         }
 
-        function capitalize(str) {
-            return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-        }
-
-        var margin = {top: 40, right: 20, bottom: 45, left: 60};
+        var margin = {top: 55, right: 20, bottom: 45, left: 60};
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(curve_vals["iml"]), d3.max(curve_vals["iml"])]);
-        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        if (curveType == 'hc') {
+            var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+            var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        } else if (curveType == 'uhs') {
+            var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+            var y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
+        };
 
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
 
-        xAxis_n = parseInt(Math.ceil(curve_vals["iml"].length / 5));
+        xAxis_n = parseInt(Math.ceil(yAxisVariable.length / 5));
         if (xAxis_n > 4)
             xAxis_n = 4;
 
         for (var i = 0 ; i < xAxis_n ; i++) {
             xAxis_vals[i] = [];
-            for (var e = i ; e < curve_vals["iml"].length ; e += xAxis_n) {
-                xAxis_vals[i].push(curve_vals["iml"][e]);
+            for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
+                xAxis_vals[i].push(yAxisVariable[e]);
             }
-            xAxis[i] = d3.svg.axis()
-                .scale(x_scale)
-                .ticks(4)
-                .innerTickSize(i == 0 ? 8 : 4)
-                .outerTickSize(0)
-                .tickValues(xAxis_vals[i])
-                .orient("bottom");
+            if (curveType == 'hc') {
+                xAxis[i] = d3.svg.axis()
+                    .scale(x_scale)
+                    .ticks(4)
+                    .innerTickSize(i == 0 ? 8 : 4)
+                    .outerTickSize(0)
+                    .tickValues(xAxis_vals[i])
+                    .orient("bottom");
+
+            } else if (curveType == 'uhs') {
+                xAxis[i] = d3.svg.axis()
+                    .scale(x_scale)
+                    .ticks(4)
+                    .orient("bottom");
+            };
+
             if (i == 0) {
                 xAxis[i].tickFormat(function (d) { return d; })
             }
             else {
                 xAxis[i].tickFormat(function (d) { return ""; })
             }
-
         }
 
         var yAxis = d3.svg.axis()
@@ -1072,7 +1345,9 @@ var startApp = function() {
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
 
-            if(curve_name == "iml")
+            if (curveType == 'hc' && curve_name == "iml")
+                continue;
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             var data = curve_coup[curve_name];
@@ -1137,7 +1412,7 @@ var startApp = function() {
                 .attr("dy", ".71em")
                 .attr("text-anchor", "middle")
                 .style("font-size","12px")
-                .text(imt);
+                .text(xAxisLable);
         }
         svg.append("g")
             .attr("class", "y axis")
@@ -1149,13 +1424,21 @@ var startApp = function() {
             .attr("dy", ".71em")
             .style("font-size","12px")
             .style("text-anchor", "end")
-            .text("Probabability of exceedance in "+invest_time+" years");
+            .text(yAxisLable);
 
         textTopLonLat = svg.append("text")
             .attr("x", 0)
             .attr("y", -32)
             .attr("dy", ".35em")
             .text("Location (Lon/Lat): "+lon+", "+lat);
+
+        textTopLable = svg.append("text")
+            .attr("x", -55)
+            .attr("y", -47)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","12px")
+            .text('Investigation Time: '+invest_time+', Probability of exceedance: '+poe);
 
         textTop = svg.append("text")
             .attr("x", 0)
