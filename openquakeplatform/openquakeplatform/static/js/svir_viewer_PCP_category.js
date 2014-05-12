@@ -22,7 +22,7 @@
 
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
-function Category_PCP_Chart(catData, municipality) {
+function Category_PCP_Chart(catData, municipality, districName) {
 
  
 catData.pop();
@@ -77,7 +77,7 @@ var svg = d3.select("#tab-categroy-chart").append("svg")
         d3.select(this)
             .style('stroke-width', 6)
             .style("stroke", "steelblue");
-        textTop.text("Municipality: " + this.id);
+        textTop.text("District: " + districName + " Municipality: " + this.id);
     }).on("mouseout", function() {
         d3.select(this)
             .style('stroke-width', 1)

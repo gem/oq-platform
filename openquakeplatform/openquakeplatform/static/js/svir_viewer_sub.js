@@ -567,6 +567,7 @@ var startApp = function() {
     }
 
     function processIndicators(e) {
+        var districName = e.data.name_1;
         $("#pcp-charts").dialog("open");
         // Get the SVIR data from the utfGrid
         var tmpIri = {};
@@ -725,6 +726,16 @@ var startApp = function() {
                 tempPIvalues = [];
                 
             };
+
+            // The data passed into d3 need to be an array of objects
+            // Place the category indicator objects into an array
+            var primaryData = [];
+            for (var k in sessionPrimaryIndicator) {
+                primaryData.push(sessionPrimaryIndicator[k]);
+            };
+
+            Primary_PCP_Chart(primaryData , municipality, districName);
+
 
             /////////////////////////////////////////////
             /// Create the category indicator objects ///
@@ -897,10 +908,10 @@ var startApp = function() {
             console.log(sessionCatIndicator); //NOT adjusting to the new weight
             var catData = [];
             for (var k in sessionCatIndicator) {
-                catData .push(sessionCatIndicator[k]);
+                catData.push(sessionCatIndicator[k]);
             };
 
-            Category_PCP_Chart(catData , municipality);
+            Category_PCP_Chart(catData , municipality, districName);
 
 
             /////////////////////////////////////////////
