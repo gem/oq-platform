@@ -350,10 +350,6 @@ var startApp = function() {
             var layerIdArray = layerNames[layerId];
             var selectedLayer = layerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, layerGrids) > -1;
-            
-            console.log(selectedLayer);
-            console.log(layerGrids);
-            console.log(hasGrid);
 
             // Check for duplicae layes
             if (selectedLayer in layers) {
@@ -755,12 +751,6 @@ var startApp = function() {
 
             // Build the catIndicator object on each iteration
             function newValues(j, econ, edu, m, pop, inf, gov) {
-                /*
-                console.log("econ");
-                console.log(econ);
-                console.log("pop");
-                console.log(pop);
-                */
                 catIndicator[j] = {
                     economy: econ,
                     education: edu,
@@ -799,12 +789,6 @@ var startApp = function() {
                         average = (average / piArray.length);
                         tempCIValues[tempParentChildKey[i]] = average;
                         tempCIValues["municipality"] = mun;
-/*
-                            console.log("tempCIValues");
-                            console.log(tempCIValues);
-                            console.log("tempCatWeight");
-                            console.log(tempCatWeight);
-*/
 
                         // Multiply the category indicator data by the weighted value
                         for (var k in tempCIValues) {
@@ -815,8 +799,13 @@ var startApp = function() {
                             };
                         };      
                     };
-                    //console.log("tempCIValues");
-                    //console.log(tempCIValues);
+                    /*
+                    console.log("municipality");
+                    console.log(municipality);
+                    console.log("tempCIValues");
+                    console.log(tempCIValues);
+                    // Category indicators that have been averaged and weighted (correct)
+                    */
 
                     catIndicator.newCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
                 };
@@ -877,13 +866,13 @@ var startApp = function() {
 
                     // Scale the values
                     for (var j = 0; j < tempCIvalues.length; j++) {
-                        /*
-                        console.log(tempCImax);
-                        console.log(tempCImin);
+                        
+                        console.log("CIkeys[i]");
+                        console.log(CIkeys[i]);
                         console.log("tempCIvalues[j]");
                         console.log(tempCIvalues[j]);
                         console.log((tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin));
-                        */
+                        
                         scaleCIvalues.push( (tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin) );
                     };
 
