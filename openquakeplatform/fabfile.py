@@ -1,5 +1,8 @@
 import os
 import sys
+import string
+import random
+
 from urlparse import urljoin as _urljoin
 
 from openquakeplatform.geoserver_api import (
@@ -52,10 +55,14 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
+    oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits +
+    string.punctuation) for _ in range(50))
+
     baseenv(dbname=dbname, dbuser=dbuser, dbpass=dbpass,
             host=host, hazard_calc_addr=hazard_calc_addr,
             risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
-            mediaroot=mediaroot, staticroot=staticroot)
+            mediaroot=mediaroot, staticroot=staticroot,
+            oq_secret_key=oq_secret_key)
     # fix it in a proper way
     apps(dbname, dbuser, dbpass)
 
@@ -73,7 +80,7 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
 def baseenv(
             host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
             dbname='oqplatform', dbuser='oqplatform', dbpass=DB_PASSWORD,
-            mediaroot='/tmp', staticroot='/home'):
+            mediaroot='/tmp', staticroot='/home', oq_secret_key):
     _write_local_settings(dbname,  dbuser, dbpass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
