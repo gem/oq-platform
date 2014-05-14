@@ -15,227 +15,135 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+
 /////////////////////////////////////////////////
 ////// Category Parallel Coordinates Chart //////
 /////////////////////////////////////////////////
 
-
-
 function Primary_PCP_Chart(primaryData, municipality, districName) {
-
-      // Create an SVG for our chart.
+    
+    console.log(primaryData);
+        
+    var margin = {top: 60, right: 10, bottom: 10, left: 10},
+        width = 990 - margin.left - margin.right,
+        height = 590 - margin.top - margin.bottom;
+    
+    var x = d3.scale.ordinal().rangePoints([0, width], 1),
+        y = {};
+    
+    var line = d3.svg.line(),
+        axis = d3.svg.axis().orient("left"),
+        background,
+        foreground;
+    
+    $("#tab-primary-chart").empty();
     var svg = d3.select("#tab-primary-chart").append("svg")
-        .attr("width", 1000)
-        .attr("height", 800)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(40,10)");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
-    // Configure a chart.
-    var chart = LineChart(
-        {
-            "parent": svg,
-            "labels": [ "X", "Y" ],
-            "data"  : [[-3,9],[-2,4],[-1,1],[0,0],[1,1],[2,4],[3,9]]
+    // Extract the list of dimensions and create a scale for each.
+    x.domain(dimensions = d3.keys(primaryData[0]).filter(function(d) {
+        return d != "municipality" && d != "scalePIvalues" && d != "getPIvalues" && (y[d] = d3.scale.linear()
+            .domain(d3.extent(primaryData, function(p) { return +p[d]; }))
+            .range([height, 0]));
+    }));
+    
+      // Add grey background lines for context.
+    background = svg.append("g")
+        .attr("class", "background")
+        .selectAll("path")
+        .data(primaryData)
+        .enter().append("path")
+        .attr("d", path);
+    
+      // Add blue foreground lines for focus.
+    foreground = svg.append("g")
+        .attr("class", "foreground")
+        .selectAll("path")
+        .data(primaryData)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("id", function(d) { return d.municipality; })
+        .on("mouseover", function() {
+            d3.select(this)
+                .style('stroke-width', 6)
+                .style("stroke", "steelblue");
+                textTop.text("District: " + districName + ", Municipality: " + this.id);
+        }).on("mouseout", function() {
+            d3.select(this)
+                .style('stroke-width', 1)
+                .style("stroke", "gray");
+                textTop.text("");
+    });
+    
+    // Add a group element for each dimension.
+    var g = svg.selectAll(".dimension")
+        .data(dimensions)
+        .enter().append("g")
+        .attr("class", "dimension")
+        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+    
+    // Add an axis and title.
+    g.append("g")
+        .attr("class", "axis")
+        .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+        //.append("text")
+        .style("text-anchor", "middle")
+        .attr("y", -9)
+        .on("mouseover", function(d) {
+            textTopLabels.text("Attribute: "+ d)
+            d3.select(this)
+                .style("font-size","14px");
+        }).on("mouseout", function() {
+            textTopLabels.text("")
+            d3.select(this)
+                .style("font-size","10px");
         });
-    
-    // Render the chart.
-    chart();
+        //.text(function(d) { return d; });
 
-////
-//
-// LineChart - This function will return a reusable LineChart with the
-//             supplied configuration.
-//
-// parent     = A mandatory element indicating the parent node of this chart.
-// labels     = The labels, names or headers for the data within this chart.
-// data       = The data to be graphed in this chart.
-// width      = The width in pixels of this chart.
-// height     = The height in pixels of this chart.
-// xi         = The index within the data array for the x axis.
-// yi         = The index within the data array for the y axis.
-// xoffset    = The x offset (relative to the parent) in pixels where we will
-//              start rendering this chart.
-// yoffset    = The y offset (relative to the parent) in pixels where we will
-//              start rendering this chart.
-//
-////
+    /*
+      // Add and store a brush for each axis.
+      g.append("g")
+          .attr("class", "brush")
+          .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
+        .selectAll("rect")
+          .attr("x", -8)
+          .attr("width", 16);
+     */
 
-function LineChart(config) {
-    // The event handler for mouse over.
-    var mouseOverHandler;
+    var textTopLabels = svg.append("text")
+        .attr("x", 70)
+        .attr("y", -15)
+        .attr("dy", ".35em")
+        .style("font-size","14px")
+        .style("font-style", "bold")
+        .text("");
+
+    var textTop = svg.append("text")
+        .attr("x", 70)
+        .attr("y", -35)
+        .attr("dy", ".35em")
+        .style("font-size","14px")
+        .style("font-style", "bold")
+        .text("");
+   
     
-    // Default parameters.
-    var p =
-        {
-            parent          : null,
-            labels          : [ "X", "Y" ],
-            listeners       : [],
-            data            : [[0,0],[1,1],[2,4],[3,9],[4,16]],
-            width           : 600,
-            height          : 400,
-            xi              : 0,
-            yi              : 1,
-            xoffset         : 0,
-            yoffset         : 0
-        };
-    
-    // If we have user-defined parameters, override the defaults.
-    if (config !== "undefined")
-    {
-        for (var prop in config)
-        {
-            p[prop] = config[prop];
-        }
+    // Returns the path for a given data point.
+    function path(d) {
+        return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
     
-    // Render this chart.
-    function chart()
-    {
-        // Use a linear scale for x, map the value range to the pixel range.
-        var x = d3.scale.linear()
-            .domain(d3.extent(p.data, function(d) { return +d[p.xi]; }))
-            .range([0, p.width]);
-        
-        // Use a linear scale for y, map the value range to the pixel range.
-        var y = d3.scale.linear()
-            .domain(d3.extent(p.data, function(d) { return +d[p.yi]; }))
-            .range([p.height, 0]);
-        
-        // Create the x axis at the bottom.
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-        
-        // Create the y axis to the left.
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
-        
-        // Define a function to draw the line.
-        var line = d3.svg.line()
-            .x(function(d) { return x(+d[p.xi]); })
-            .y(function(d) { return y(+d[p.yi]); });
-        
-        // Append a graphics node to the parent, all drawing will be relative
-        // to the supplied offsets.  This encapsulating transform simplifies
-        // the offsets within the child nodes.
-        var chartContainer = p.parent.append("g")
-            .attr("transform", "translate(" + p.xoffset + "," + p.yoffset + ")");
-        
-        // Draw the x axis.
-        chartContainer.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + p.height + ")")
-            .call(xAxis);
-        
-        // Draw the y axis.
-        chartContainer.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(p.labels[p.yi]);
-        
-        // Draw the line.
-        chartContainer.append("path")
-            .datum(p.data)
-            .attr("class", "line")
-            .attr("d", line);
-        
-        // We handle mouseover with transparent rectangles.  This will calculate
-        // the width of each rectangle.
-        var rectalWidth = x(p.data[1][p.xi]) - x(p.data[0][p.xi]);
-        
-        // Add the transparent rectangles for our mouseover events.
-        chartContainer.selectAll("rect")
-            .data(p.data.map(function(d) { return d; }))
-            .enter().append("rect")
-            .attr("class", "overlay")
-            .attr("transform", function(d,i) { return "translate(" + x(d[p.xi]) + ",0)"; })
-            .attr("opacity", 0.0)
-            .attr("width", rectalWidth)
-            .attr("height", p.height)
-            .on("mouseover", function(d)
-                {
-                    mouseOverHandler(d, true);
-                });
-        
-        // This function handles the mouseover event.
-        //
-        // data will contain the row experiencing mouseover.
-        // originator will be true if this is being called by the chart which
-        //   is originating this event, false otherwise.  This is required to
-        //   avoid recursion of listeners notifying originators.
-        mouseOverHandler = function (data, originator)
-        {
-            // Remove any old circles.
-            chartContainer.selectAll("circle").remove();
-            
-            // Draw a small red circle over the mouseover point.
-            chartContainer.append("circle")
-                .attr("fill", "red")
-                .attr("r", 4)
-                .attr("cx", x(data[p.xi]))
-                .attr("cy", y(data[p.yi]));
-            
-            // If we are the originator of this event, notify our listeners to
-            // update themselves in turn.
-            if (originator)
-            {
-                for (var i=0; i < p.listeners.length; i++)
-                {
-                    p.listeners[i].onMouseover(data, false);
-                }
-            }
-        }
+    // Handles a brush event, toggling the display of foreground lines.
+    function brush() {
+        var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
+            extents = actives.map(function(p) { return y[p].brush.extent(); });
+        foreground.style("display", function(d) {
+            return actives.every(function(p, i) {
+                return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+            }) ? null : "none";
+        });
     }
-    
-    // This is the public on mouseover function which is visible to others.
-    chart.onMouseover = function(data, originator)
-    {
-        mouseOverHandler(data, originator);
-    }
-    
-    // Use this routine to retrieve and update attributes.
-    chart.attr = function(name, value)
-    {
-        // When no arguments are given, we return the current value of the
-        // attribute back to the caller.
-        if (arguments.length == 1)
-        {
-            return p[name];
-        }
-        // Given 2 arguments we set the name=value.
-        else if (arguments.length == 2)
-        {
-            p[name] = value;
-        }
-        
-        // Return the chart object back so we can chain the operations together.
-        return chart;
-    }
-    
-    // This routine supports the update operation for this chart.  This is
-    // applicable when the chart should be partially updated.
-    chart.update = function()
-    {
-    }
-    
-    // Return the instantiated chart object.
-    return chart;
 }
-
-
-
-
-
-// d3.select("body").append("span")
-//     .text("Hello, world!");
-
-
-}
-
 

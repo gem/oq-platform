@@ -557,6 +557,7 @@ var startApp = function() {
 
     function utfGridClickEvent(utfGrid) {
         utfGrid.on('click', function(e) {
+            console.log(e);
             processIndicators(e);
             selectedGrid = e;
         });
@@ -665,6 +666,8 @@ var startApp = function() {
                     };
                 };
             };
+            console.log("primaryIndicator");
+            console.log(primaryIndicator);
 
             ///////////////
             //// Scale ////
@@ -730,8 +733,9 @@ var startApp = function() {
                 primaryData.push(sessionPrimaryIndicator[k]);
             };
 
-            Primary_PCP_Chart(primaryData , municipality, districName);
-
+            Primary_PCP_Chart(primaryData, municipality, districName);
+            console.log("sessionPrimaryIndicator");
+            console.log(sessionPrimaryIndicator);
 
             /////////////////////////////////////////////
             /// Create the category indicator objects ///
@@ -770,12 +774,12 @@ var startApp = function() {
             for (var j = 0; j < municipality.length; j++) {
                 var tempCIValues = [];
 
-                for (var key in sessionPrimaryIndicator) {
+                for (var key in primaryIndicator) {
                     for (var i = 0; i < tempParentChildKey.length; i++) {
-                        tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in sessionPrimaryIndicator
-                        var obj = sessionPrimaryIndicator[key];
-                        var piArray = []; // array of values from a single sessionPrimaryIndicator obj
-                        var mun = sessionPrimaryIndicator[key].municipality;
+                        tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in primaryIndicator
+                        var obj = primaryIndicator[key];
+                        var piArray = []; // array of values from a single primaryIndicator obj
+                        var mun = primaryIndicator[key].municipality;
 
                         for (var n = 0; n < tempCatSearchElements.length; n++) {
                             piArray.push(obj[tempCatSearchElements[n]]);
@@ -866,13 +870,13 @@ var startApp = function() {
 
                     // Scale the values
                     for (var j = 0; j < tempCIvalues.length; j++) {
-                        
+                        /*
                         console.log("CIkeys[i]");
                         console.log(CIkeys[i]);
                         console.log("tempCIvalues[j]");
                         console.log(tempCIvalues[j]);
                         console.log((tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin));
-                        
+                        */
                         scaleCIvalues.push( (tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin) );
                     };
 
@@ -922,9 +926,9 @@ var startApp = function() {
             for (var i = 0; i < municipality.length; i++) {
                 tempSviIndicator[municipality[i]] = [];
             };
-            tempSviSearchElements = Object.keys(sessionCatIndicator);
+            tempSviSearchElements = Object.keys(catIndicator);
             tempSviSearchElements.pop();
-            var sessionKey = Object.keys(sessionCatIndicator[tempSviSearchElements[0]]);
+            var sessionKey = Object.keys(catIndicator[tempSviSearchElements[0]]);
             sessionKey.pop();
             sessionKey.pop();
             
@@ -932,7 +936,7 @@ var startApp = function() {
                 var tempArray = [];
 
                 // Grab the municipality of the iteration
-                var tempMunic = sessionCatIndicator[i]["municipality"];
+                var tempMunic = catIndicator[i]["municipality"];
 
                 // Remove the municipality from the sessionkey array
                 var index = sessionKey.indexOf("municipality");
@@ -943,7 +947,7 @@ var startApp = function() {
 
                 // Build the temp object
                 for (var j = 0; j < sessionKey.length; j++) {
-                    tempArray.push(sessionCatIndicator[i][sessionKey[j]]);
+                    tempArray.push(catIndicator[i][sessionKey[j]]);
                 };
                 var SVIaverage = 0;
                 $.each(tempArray,function() {
@@ -988,7 +992,8 @@ var startApp = function() {
             };
 
             sviIndicator.plotElement = "svi"; // Lable within the object
-
+            console.log("sviIndicator");
+            console.log(sviIndicator);
 
             //////////////////////////////////////////////
             /////////// Create the PRI object ////////////
