@@ -251,6 +251,19 @@ INSTALLED_APPS = (
     'openquakeplatform.gemecdwebsite',
 )
 
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'pagination.middleware.PaginationMiddleware',
+    # icebox need csrf to be disabled to work
+    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # geonode.security is enabled to lockdown the website
+    'geonode.security.middleware.LoginRequiredMiddleware',
+)
+
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
@@ -310,13 +323,6 @@ MAP_BASELAYERS = [{
     ]
 
 }]
-
-# Require users to authenticate before using Geonode
-LOCKDOWN_GEONODE = True
-
-if LOCKDOWN_GEONODE:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-        'geonode.security.middleware.LoginRequiredMiddleware',)
 
 # Add additional paths (as regular expressions) that don't require
 # authentication. This URL needs to be hit by the oq-engine-server.
