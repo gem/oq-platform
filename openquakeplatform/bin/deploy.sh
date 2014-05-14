@@ -240,7 +240,7 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
-                                   oq_secret_key=oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for _ in range(50)),
+                                   oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for _ in range(50)),
                                    mediaroot='/var/www/openquake/platform/uploaded',
                                    staticroot='/var/www/openquake/platform/static/'))"
 }
