@@ -40,7 +40,7 @@ except ImportError:
 
 TIME_ZONE = 'UTC'
 
-SECRET_KEY = 'e3enk@hpfyv)qc+_nm0mmt&hz+#l7fotm01oub*lz1^)5a*8(^'
+SECRET_KEY = '%(oq_secret_key)s'
 
 ALLOWED_HOSTS=['%(host)s', 'localhost']
 
