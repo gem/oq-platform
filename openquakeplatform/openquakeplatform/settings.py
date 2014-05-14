@@ -4,12 +4,5 @@
 import os
 import geonode
 
-try:
-    from geonode.settings import *
-except ImportError:
-    RaiseException ("Error!")
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
+from geonode.settings import *
+from local_settings import *
