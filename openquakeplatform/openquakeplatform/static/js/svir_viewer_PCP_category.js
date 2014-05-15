@@ -25,7 +25,21 @@
 function Category_PCP_Chart(catData, municipality, districName) {
   catData.pop();
   console.log(catData);
-  
+
+  var array = [];
+  var foo = [];
+  for (var i = 0; i < catData.length; i++) {
+    for (var k in catData[i]){ 
+      array.push(catData[i][k])
+    }
+  };
+  for (var i = 0; i < array.length; i++) {
+    if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
+      foo.push(array[i]);
+    };
+  };
+  var maxVal = Math.max.apply( Math, foo );
+
       
   var margin = {top: 60, right: 10, bottom: 10, left: 10},
     width = 990 - margin.left - margin.right,
@@ -49,7 +63,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
   // Extract the list of dimensions and create a scale for each.
   x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
     return d != "municipality" && d != "scaleCIvalues" && d != "getCIvalues" && (y[d] = d3.scale.linear()
-        .domain(d3.extent(catData, function(p) { return +p[d]; }))
+        .domain([0, maxVal])
         .range([height, 0]));
   }));
 
@@ -77,7 +91,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
     }).on("mouseout", function() {
         d3.select(this)
           .style('stroke-width', 1)
-          .style("stroke", "gray");
+          .style("stroke", "steelblue");
         textTop.text("");
     });
 

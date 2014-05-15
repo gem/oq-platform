@@ -23,6 +23,22 @@
 function Primary_PCP_Chart(primaryData, municipality, districName) {
     
     console.log(primaryData);
+
+    var array = [];
+    var foo = [];
+    for (var i = 0; i < primaryData.length; i++) {
+        for (var k in primaryData[i]){ 
+            array.push(primaryData[i][k])
+        }
+    };
+
+    for (var i = 0; i < array.length; i++) {
+        if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
+            foo.push(array[i]);
+        };
+    };
+
+    var maxVal = Math.max.apply( Math, foo );
         
     var margin = {top: 60, right: 10, bottom: 10, left: 10},
         width = 990 - margin.left - margin.right,
@@ -46,7 +62,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(primaryData[0]).filter(function(d) {
         return d != "municipality" && d != "scalePIvalues" && d != "getPIvalues" && (y[d] = d3.scale.linear()
-            .domain(d3.extent(primaryData, function(p) { return +p[d]; }))
+            .domain([0, maxVal])
             .range([height, 0]));
     }));
     
@@ -74,7 +90,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         }).on("mouseout", function() {
             d3.select(this)
                 .style('stroke-width', 1)
-                .style("stroke", "gray");
+                .style("stroke", "steelblue");
                 textTop.text("");
     });
     
@@ -91,15 +107,18 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
         //.append("text")
         .style("text-anchor", "middle")
+        .style("opacity", 0.5)
         .attr("y", -9)
         .on("mouseover", function(d) {
             textTopLabels.text("Attribute: "+ d)
             d3.select(this)
-                .style("font-size","14px");
+                .style("font-size","14px")
+                .style("opacity", 1);
         }).on("mouseout", function() {
             textTopLabels.text("")
             d3.select(this)
-                .style("font-size","10px");
+                .style("font-size","10px")
+                .style("opacity", 0.5);
         });
         //.text(function(d) { return d; });
 
@@ -115,7 +134,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
 
     var textTopLabels = svg.append("text")
         .attr("x", 70)
-        .attr("y", -15)
+        .attr("y", -35)
         .attr("dy", ".35em")
         .style("font-size","14px")
         .style("font-style", "bold")

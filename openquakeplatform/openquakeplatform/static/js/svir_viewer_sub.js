@@ -32,6 +32,7 @@ var svirRegionRankKeys = new Array();
 var svirRegionRankValues = new Array();
 var layerControl;
 var selectedPDef;
+var previousCatData = [];
 
 var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
 
@@ -57,12 +58,16 @@ var primaryIndicator = {};
 var categoryIndicator = {};
 var sessionPrimaryIndicator = {};
 var sessionCategoryIndicator = {};
-var defaultPrimaryIndicator = {};
+var weightedPrimaryIndicator = {};
 var catIndicator = {};
-var sessionCatIndicator = {};
-var sessionCatIndicator2 = {};
+var weightedCatIndicator = {};
+var scaledCatIndicator = {};
 var aalIndicator = {};
+var scaledAalIndicator = {};
+var weightedAalIndicator = {};
 var sviIndicator = {};
+var scaledSviIndicator = {};
+var weightedSviIndicator = {};
 var iriIndicator = {};
 
 // vars used to set the weights of the project definition json
@@ -576,6 +581,8 @@ var startApp = function() {
             findCategoryIndicators(pdData, [ci]);
             var pi = "primaryIndicator";
             findPrimaryIndicators(pdData, [pi]);
+            console.log("e.data");
+            console.log(e.data);
             var svi = "svi";
             findSvi(pdData, [svi]);
 
@@ -602,8 +609,8 @@ var startApp = function() {
             //// Create the primary indicator objects ///
             /////////////////////////////////////////////
 
-            for (var k in defaultPrimaryIndicator) {
-                delete defaultPrimaryIndicator[k];
+            for (var k in weightedPrimaryIndicator) {
+                delete weightedPrimaryIndicator[k];
             };
 
             for (var k in sessionPrimaryIndicator) {
@@ -622,9 +629,9 @@ var startApp = function() {
                 for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
                     var elementName = pdTempPrimaryIndicator[i].toLowerCase();
                     tmpPI = e.data[pdTempPrimaryIndicator[i].toLowerCase()];
+                    
                     if (tmpPI != undefined) {
                         tmpPI = tmpPI.split(',');
-                        
                         // Check and see what category the tmpPI belongs to
                         var elementsParent = checkElementCategory(elementName);
 
@@ -655,87 +662,28 @@ var startApp = function() {
 
             // Keep the primaryIndicator obj as is and make a session copy that 
             // is to be modifyed by the project definition weights 
-            var defaultPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
-            var sessionPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
+            weightedPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
+            sessionPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
             
             // Multiply the copy of primary indicator data by the weighted value
-            for(var p1 in sessionPrimaryIndicator) {
-                for(var p2 in sessionPrimaryIndicator[p1]) {
+            for(var p1 in weightedPrimaryIndicator) {
+                for(var p2 in weightedPrimaryIndicator[p1]) {
                     if(tempWeight.hasOwnProperty(p2)) {
-                        sessionPrimaryIndicator[p1][p2] *= tempWeight[p2];
+                        weightedPrimaryIndicator[p1][p2] *= tempWeight[p2];
                     };
                 };
-            };
-            console.log("primaryIndicator");
-            console.log(primaryIndicator);
-
-            ///////////////
-            //// Scale ////
-            ///////////////
-
-            // Scale each primary indicator value from 0 to 1
-            var tempPIvalues = [];
-            var scalePIvalues = [];
-
-            // Define the method to get values out of the sessionPrimaryIndicator object
-            function getPIvalues(element) {
-                tempPIvalues.push(this[element]);
-            }
-
-            // Pass scaled values back to the sessionPrimaryIndicator object
-            function applyScaledPIvalues(j) {
-                return scalePIvalues[j];
-            }
-
-            // Associate the getValues method with the sessionPrimaryIndicator object
-            for (var k in sessionPrimaryIndicator) {
-                sessionPrimaryIndicator[k].getPIvalues = getPIvalues;
-            };
-
-            // Associate the applyScaledValues method with the sessionPrimaryIndicator object
-            for (var k in sessionPrimaryIndicator) {
-                sessionPrimaryIndicator[k].scalePIvalues = applyScaledPIvalues;
-            };
-
-            var PIkeys = Object.keys(sessionPrimaryIndicator[0]);
-
-            // Iterate over all the municipalities
-            for (var i = 0; i < PIkeys.length; i++) {
-                // Call the getValues method
-                for (var y in sessionPrimaryIndicator) {
-                    sessionPrimaryIndicator[y].getPIvalues(PIkeys[i]);
-                };
-
-                if (PIkeys[i] != "municipality" && PIkeys[i] != "getPIvalues" && PIkeys[i] != "scalePIvalues") {
-
-                    var tempPImin = Math.min.apply(null, tempPIvalues),
-                        tempPImax = Math.max.apply(null, tempPIvalues);
-
-                    // Scale the values
-                    for (var j = 0; j < tempPIvalues.length; j++) {
-                        scalePIvalues.push( (tempPIvalues[j] - tempPImin) / (tempPImax - tempPImin) );
-                    };
-
-                    // Call the applyScaledValues method
-                    for (var l in sessionPrimaryIndicator) {
-                        sessionPrimaryIndicator[l][PIkeys[i]] = sessionPrimaryIndicator[l].scalePIvalues(l);
-                    };
-                };
-                scalePIvalues = [];
-                tempPIvalues = [];
-                
             };
 
             // The data passed into d3 need to be an array of objects
             // Place the category indicator objects into an array
             var primaryData = [];
-            for (var k in sessionPrimaryIndicator) {
-                primaryData.push(sessionPrimaryIndicator[k]);
+
+            // ******* bypass the scalling & weighting *****
+            for (var k in primaryIndicator) {
+                primaryData.push(primaryIndicator[k]);
             };
 
             Primary_PCP_Chart(primaryData, municipality, districName);
-            console.log("sessionPrimaryIndicator");
-            console.log(sessionPrimaryIndicator);
 
             /////////////////////////////////////////////
             /// Create the category indicator objects ///
@@ -749,8 +697,12 @@ var startApp = function() {
                 delete catIndicator[k];
             };
 
-            for (var k in sessionCatIndicator) {
-                delete sessionCatIndicator[k];
+            for (var k in scaledCatIndicator) {
+                delete scaledCatIndicator[k];
+            };
+
+            for (var k in weightedCatIndicator) {
+                delete weightedCatIndicator[k];
             };
 
             // Build the catIndicator object on each iteration
@@ -774,24 +726,72 @@ var startApp = function() {
             for (var j = 0; j < municipality.length; j++) {
                 var tempCIValues = [];
 
-                for (var key in primaryIndicator) {
+                for (var key in weightedPrimaryIndicator) {
                     for (var i = 0; i < tempParentChildKey.length; i++) {
-                        tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in primaryIndicator
-                        var obj = primaryIndicator[key];
-                        var piArray = []; // array of values from a single primaryIndicator obj
-                        var mun = primaryIndicator[key].municipality;
+                        tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in weightedPrimaryIndicator
+                        var obj = weightedPrimaryIndicator[key];
+                        var piArray = []; // array of values from a single weightedPrimaryIndicator obj
+                        var mun = weightedPrimaryIndicator[key].municipality;
 
                         for (var n = 0; n < tempCatSearchElements.length; n++) {
                             piArray.push(obj[tempCatSearchElements[n]]);
                         };
-                        var average = 0;
+
+                        var sum = 0;
                         $.each(piArray,function() {
-                            average += this;
+                            sum += this;
                         });
 
-                        // The category value (without weight)
-                        average = (average / piArray.length);
-                        tempCIValues[tempParentChildKey[i]] = average;
+                        tempCIValues[tempParentChildKey[i]] = sum;
+                        tempCIValues["municipality"] = mun;
+                    };
+
+                    catIndicator.newCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
+                };
+            }// end scopeForCatIteration function
+
+
+            ////////////////////////////////////////
+            //// Apply the weight to the values ////
+            ////////////////////////////////////////
+
+            // Build the catIndicator object on each iteration
+            function newWeightedValues(j, econ, edu, m, pop, inf, gov) {
+                weightedCatIndicator[j] = {
+                    economy: econ,
+                    education: edu,
+                    municipality: m,
+                    population: pop,
+                    infrastructure: inf,
+                    governance: gov
+                };
+            }
+
+            // Associate the newValues method with the category indicator object
+            weightedCatIndicator.newWeightedCatObj = newWeightedValues;
+            for (k in parentChildKey) {
+                tempParentChildKey.push(k);
+            };
+            for (var j = 0; j < municipality.length; j++) {
+                var tempCIValues = [];
+
+                for (var key in weightedPrimaryIndicator) {
+                    for (var i = 0; i < tempParentChildKey.length; i++) {
+                        tempCatSearchElements = parentChildKey[tempParentChildKey[i]]; //what we are looking for in weightedPrimaryIndicator
+                        var obj = weightedPrimaryIndicator[key];
+                        var piArray = []; // array of values from a single weightedPrimaryIndicator obj
+                        var mun = weightedPrimaryIndicator[key].municipality;
+
+                        for (var n = 0; n < tempCatSearchElements.length; n++) {
+                            piArray.push(obj[tempCatSearchElements[n]]);
+                        };
+
+                        var sum = 0;
+                        $.each(piArray,function() {
+                            sum += this;
+                        });
+
+                        tempCIValues[tempParentChildKey[i]] = sum;
                         tempCIValues["municipality"] = mun;
 
                         // Multiply the category indicator data by the weighted value
@@ -801,24 +801,14 @@ var startApp = function() {
                                     tempCIValues[k] = (tempCIValues[p] * tempCatWeight[k]);
                                 };
                             };
-                        };      
+                        };
                     };
-                    /*
-                    console.log("municipality");
-                    console.log(municipality);
-                    console.log("tempCIValues");
-                    console.log(tempCIValues);
-                    // Category indicators that have been averaged and weighted (correct)
-                    */
 
-                    catIndicator.newCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
+                    weightedCatIndicator.newWeightedCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
                 };
-            }// end scopeForCatIteration function
+            } // end weighting
 
-            console.log("catIndicator");
-            console.log(catIndicator); // IT IS adjusting to the new weight value
-
-            sessionCatIndicator = jQuery.extend(true, {}, catIndicator);
+            scaledCatIndicator = jQuery.extend(true, {}, catIndicator);
 
             ///////////////
             //// Scale ////
@@ -828,29 +818,29 @@ var startApp = function() {
             var tempCIvalues = [];
             var scaleCIvalues = [];
 
-            // Define the method to get values out of the sessionCatIndicator object
+            // Define the method to get values out of the scaledCatIndicator object
             function getCIvalues(element) {
                 if (this[element] != undefined) {
                     tempCIvalues.push(this[element]);
                 };
             }
 
-            // Pass scaled values back to the sessionCatIndicator object
+            // Pass scaled values back to the scaledCatIndicator object
             function applyScaledCIvalues(j) {
                 return scaleCIvalues[j];
             }
 
-            // Associate the getValues method with the sessionCatIndicator object
+            // Associate the getValues method with the scaledCatIndicator object
             for (var k in catIndicator) {
                 catIndicator[k].getCIvalues = getCIvalues;
             };
 
-            // Associate the applyScaledValues method with the sessionCatIndicator object
-            for (var k in sessionCatIndicator) {
-                sessionCatIndicator[k].scaleCIvalues = applyScaledCIvalues;
+            // Associate the applyScaledValues method with the scaledCatIndicator object
+            for (var k in scaledCatIndicator) {
+                scaledCatIndicator[k].scaleCIvalues = applyScaledCIvalues;
             };
 
-            var CIkeys = Object.keys(sessionCatIndicator[0]);
+            var CIkeys = Object.keys(scaledCatIndicator[0]);
 
             // Iterate over all the category indicators
             for (var i = 0; i < CIkeys.length; i++) {
@@ -859,10 +849,6 @@ var startApp = function() {
                     catIndicator[y].getCIvalues(CIkeys[i]);
                 };
 
-                //console.log(CIkeys[i]);
-                //console.log("tempCIvalues");
-                //console.log(tempCIvalues); // correct
-
                 if (CIkeys[i] != "municipality" && CIkeys[i] != "getCIvalues" && CIkeys[i] != "scaleCIvalues" && CIkeys[i] != "newCatObj") {
                     
                     var tempCImin = Math.min.apply(null, tempCIvalues),
@@ -870,25 +856,12 @@ var startApp = function() {
 
                     // Scale the values
                     for (var j = 0; j < tempCIvalues.length; j++) {
-                        /*
-                        console.log("CIkeys[i]");
-                        console.log(CIkeys[i]);
-                        console.log("tempCIvalues[j]");
-                        console.log(tempCIvalues[j]);
-                        console.log((tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin));
-                        */
                         scaleCIvalues.push( (tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin) );
                     };
 
-
-                //console.log("scaleCIvalues");
-                //console.log(scaleCIvalues);
-
                     // Call the applyScaledValues method
-                    for (var l in sessionCatIndicator) {
-                        //console.log(CIkeys[i]);
-                        //console.log(sessionCatIndicator[l].scaleCIvalues(l));
-                        sessionCatIndicator[l][CIkeys[i]] = sessionCatIndicator[l].scaleCIvalues(l);
+                    for (var l in scaledCatIndicator) {
+                        scaledCatIndicator[l][CIkeys[i]] = scaledCatIndicator[l].scaleCIvalues(l);
                     };
                 };
                 scaleCIvalues = [];
@@ -897,15 +870,14 @@ var startApp = function() {
 
             // The data passed into d3 need to be an array of objects
             // Place the category indicator objects into an array
-            console.log("sessionCatIndicator");
-            console.log(sessionCatIndicator); //NOT adjusting to the new weight
             var catData = [];
-            for (var k in sessionCatIndicator) {
-                catData.push(sessionCatIndicator[k]);
+
+            
+            for (var k in scaledCatIndicator) {
+                catData.push(scaledCatIndicator[k]);
             };
 
-            Category_PCP_Chart(catData , municipality, districName);
-
+            Category_PCP_Chart(catData, municipality, districName);
 
             /////////////////////////////////////////////
             /////////// Create the svi object ///////////
@@ -914,6 +886,14 @@ var startApp = function() {
             for (var k in sviIndicator) {
                 delete sviIndicator[k];
             }
+
+            for (var k in scaledSviIndicator) {
+                delete scaledSviIndicator[k];
+            };
+
+            for (var k in weightedSviIndicator) {
+                delete weightedSviIndicator[k];
+            };
 
             function newSVIvalues(SVIaverage, tempMunic) {
                 sviIndicator[tempMunic] = SVIaverage;
@@ -926,9 +906,9 @@ var startApp = function() {
             for (var i = 0; i < municipality.length; i++) {
                 tempSviIndicator[municipality[i]] = [];
             };
-            tempSviSearchElements = Object.keys(catIndicator);
+            tempSviSearchElements = Object.keys(weightedCatIndicator);
             tempSviSearchElements.pop();
-            var sessionKey = Object.keys(catIndicator[tempSviSearchElements[0]]);
+            var sessionKey = Object.keys(weightedCatIndicator[tempSviSearchElements[0]]);
             sessionKey.pop();
             sessionKey.pop();
             
@@ -936,7 +916,7 @@ var startApp = function() {
                 var tempArray = [];
 
                 // Grab the municipality of the iteration
-                var tempMunic = catIndicator[i]["municipality"];
+                var tempMunic = weightedCatIndicator[i]["municipality"];
 
                 // Remove the municipality from the sessionkey array
                 var index = sessionKey.indexOf("municipality");
@@ -947,33 +927,44 @@ var startApp = function() {
 
                 // Build the temp object
                 for (var j = 0; j < sessionKey.length; j++) {
-                    tempArray.push(catIndicator[i][sessionKey[j]]);
+                    tempArray.push(weightedCatIndicator[i][sessionKey[j]]);
                 };
-                var SVIaverage = 0;
+
+                var SVIsum = 0
                 $.each(tempArray,function() {
-                    SVIaverage += this;
+                    SVIsum += this;
                 });
-                SVIaverage = (SVIaverage / tempArray.length);
-                sviIndicator.SVIvalues(SVIaverage, tempMunic);
+
+                sviIndicator.SVIvalues(SVIsum, tempMunic);
             };
 
+
+            ////////////////////////////////////////
+            //// Apply the weights to the values ///
+            ////////////////////////////////////////
+
+            weightedSviIndicator = jQuery.extend(true, {}, sviIndicator);
+
             // Multiply the svi values by the weighted value
-            $.each(sviIndicator, function(key, value) {
+            $.each(weightedSviIndicator, function(key, value) {
                 if (key != "SVIvalues") {
                     var sviValue = (value * tempSviWeight);
-                    sviIndicator[key] = sviValue;
+                    weightedSviIndicator[key] = sviValue;
                 };
             });
+
 
             ///////////////
             //// Scale ////
             ///////////////
 
+            scaledSviIndicator = jQuery.extend(true, {}, sviIndicator);
+
             // Scale the svi values
             var valueArray = [];
             var scaleSVIvalues = [];
-            for (var v in sviIndicator) {
-                valueArray.push(sviIndicator[v]);
+            for (var v in scaledSviIndicator) {
+                valueArray.push(scaledSviIndicator[v]);
             };
 
             valueArray.shift();
@@ -984,16 +975,14 @@ var startApp = function() {
                 scaleSVIvalues.push( (valueArray[j] - tempSVImin) / (tempSVImax - tempSVImin) );
             };
 
-            var tempKeys = Object.keys(sviIndicator);
+            var tempKeys = Object.keys(scaledSviIndicator);
             tempKeys.shift();
 
             for (var i = 0; i < tempKeys.length; i++) {
-                sviIndicator[tempKeys[i]] = scaleSVIvalues[i];
+                scaledSviIndicator[tempKeys[i]] = scaleSVIvalues[i];
             };
 
-            sviIndicator.plotElement = "svi"; // Lable within the object
-            console.log("sviIndicator");
-            console.log(sviIndicator);
+            scaledSviIndicator.plotElement = "svi"; // Lable within the object
 
             //////////////////////////////////////////////
             /////////// Create the PRI object ////////////
@@ -1001,6 +990,14 @@ var startApp = function() {
 
             for (var k in aalIndicator) {
                 delete aalIndicator[k];
+            };
+
+            for (var k in scaledAalIndicator) {
+                delete scaledAalIndicator[k];
+            };
+
+            for (var k in weightedAalIndicator) {
+                delete weightedAalIndicator[k];
             };
 
             // For the sample data provided aal = pri
@@ -1018,23 +1015,32 @@ var startApp = function() {
             var aalStr = "aal";
             findAalWeight(pdData, [aalStr]);
 
+            ////////////////////////////////////////
+            //// Apply the weights to the values ///
+            ////////////////////////////////////////
+
+            weightedAalIndicator = jQuery.extend(true, {}, aalIndicator);
+
             // Multiply the aal value by the weighted value
-            $.each(aalIndicator, function(key, value) {
+            $.each(weightedAalIndicator, function(key, value) {
                 var aalValue = 0;
                 aalValue = (value * tempAalWeight);
-                aalIndicator[key] = aalValue;
+                weightedAalIndicator[key] = aalValue;
             });
 
             ///////////////
             //// Scale ////
             ///////////////
 
+            scaledAalIndicator = jQuery.extend(true, {}, aalIndicator);
+
+
             // Scale the pri values
             var aalValueArray = [];
             var scaleAALvalues = [];
 
-            for (var v in aalIndicator) {
-                aalValueArray.push(aalIndicator[v]);
+            for (var v in scaledAalIndicator) {
+                aalValueArray.push(scaledAalIndicator[v]);
             };
 
             var tempAALmin = Math.min.apply(null, aalValueArray),
@@ -1044,14 +1050,14 @@ var startApp = function() {
                 scaleAALvalues.push( (aalValueArray[j] - tempAALmin) / (tempAALmax - tempAALmin) );
             };
 
-            var tempKeys = Object.keys(aalIndicator);
+            var tempKeys = Object.keys(scaledAalIndicator);
             tempKeys.pop();
 
             for (var i = 0; i < tempKeys.length; i++) {
-                aalIndicator[tempKeys[i]] = scaleAALvalues[i];
+                scaledAalIndicator[tempKeys[i]] = scaleAALvalues[i];
             };
 
-            aalIndicator.plotElement = "aal"; // Lable within the object
+            scaledAalIndicator.plotElement = "aal"; // Lable within the object
 
 
             //////////////////////////////////////////////
@@ -1078,8 +1084,8 @@ var startApp = function() {
             // Compute IRI from PRI and SVI
             // TODO expand this to use proper IRI function...
             function getNewValues(k) {
-                aalValue = aalIndicator[k];
-                sviValue = sviIndicator[k];
+                aalValue = weightedAalIndicator[k];
+                sviValue = weightedSviIndicator[k];
             }
 
             for (var i = 0; i < municipality.length; i++) {
@@ -1116,13 +1122,12 @@ var startApp = function() {
             };
 
             iriIndicator.plotElement = "iri"; // Lable within the object
-            console.log("iri: ");
-            console.log(iriIndicator);
+
         }
         var iriPcpData = [];
         iriPcpData.push(iriIndicator);
-        iriPcpData.push(sviIndicator);
-        iriPcpData.push(aalIndicator);
+        iriPcpData.push(scaledSviIndicator);
+        iriPcpData.push(scaledAalIndicator);
         IRI_PCP_Chart(iriPcpData);
  } // End process indicators function
 };
