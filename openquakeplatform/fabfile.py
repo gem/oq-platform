@@ -273,8 +273,8 @@ def _maybe_install_postgis(db_name):
 
 
 def _add_isc_viewer():
-    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
-          ' ../oq-ui-api/data/isc_data_app.csv')
+    local('python manage.py import_isccsv ./openquakeplatform/isc_viewer/dev_data/isc_data.csv'
+          ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
 
 
 def _add_icebox():
@@ -285,14 +285,14 @@ def _add_faulted_earth():
 
 
 def _add_ghec_viewer():
-    local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
+    local('python manage.py import_gheccsv ./openquakeplatform/ghec_viewer/dev_data/ghec_data.csv')
 
 
 def _add_gaf_viewer():
     local('python manage.py import_gaf_fs_csv '
-          '../oq-ui-api/data/gaf_data_fs.csv')
+          './openquakeplatform/gaf_viewer/dev_data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '
-          '../oq-ui-api/data/gaf_data_ft.csv')
+          './openquakeplatform/gaf_viewer/dev_data/gaf_data_ft.csv')
 
 def _add_econd():
     local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
