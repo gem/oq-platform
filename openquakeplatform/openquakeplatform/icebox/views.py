@@ -40,21 +40,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def open_archive(files):
-    """
-    Create a zip archive from the given files (which are instances
-    of django.core.files.uploadedfile.InMemoryUploadedFile) and return
-    an open file object with the zipfile.
-    """
-    fd, name = tempfile.mkstemp()
-    os.close(fd)
-    archive = zipfile.ZipFile(name, 'w')
-    for f in files:
-        archive.writestr(f.name, f.read())
-    archive.close()
-    return open(name)
-
-
 #: Got from
 # https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/
 class JSONResponseMixin(object):
@@ -99,20 +84,25 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
             raise RuntimeError(
                 "Unknown calculation_type %s" % calculation_type)
 
-        archive = open_archive(request.FILES.getlist('calc_config'))
+        archive = request.FILES['calc_archive']
         try:
+            hazard_output_id = request.POST.get('hazard_output_id')
+            hazard_calculation_id = request.POST.get('hazard_calculation_id')
+
+            post_data=dict(
+                database=settings.OQ_ENGINE_SERVER_DATABASE,
+                callback_url="%s%s" % (
+                    settings.SITEURL.rstrip("/"), reverse(
+                        "calculation", args=(calculation.pk,))),
+                foreign_calculation_id=calculation.pk)
+            # Risk only
+            if hazard_output_id:
+                post_data['hazard_output_id'] = hazard_output_id
+            if hazard_calculation_id:
+                post_data['hazard_calculation_id'] = hazard_calculation_id
             requests.post(
                 url,
-                data=dict(
-                    database=settings.OQ_ENGINE_SERVER_DATABASE,
-                    callback_url="%s%s" % (
-                        settings.SITEURL.rstrip("/"), reverse(
-                            "calculation", args=(calculation.pk,))),
-                    foreign_calculation_id=calculation.pk,
-                    # Risk only
-                    hazard_output_id=request.POST.get('hazard_output_id'),
-                    hazard_calculation_id=request.POST.get(
-                        'hazard_calculation_id')),
+                data=post_data,
                 files=dict(archive=archive))
         except requests.exceptions.RequestException as e:
             logger.error(

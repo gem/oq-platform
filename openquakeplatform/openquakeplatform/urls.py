@@ -27,7 +27,6 @@ from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
 
-
 # Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()
@@ -104,6 +103,7 @@ urlpatterns = patterns(
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
+    (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
         #name='index'),

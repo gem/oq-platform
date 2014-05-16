@@ -17,6 +17,11 @@ div.spanlist div.container {
     width: auto;
 }
 
+td.cell div.container {
+    min-width: 0px;
+    width: auto;
+}
+
 html
 {
     background-color:#fff;
