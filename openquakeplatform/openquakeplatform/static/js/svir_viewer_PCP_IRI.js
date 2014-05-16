@@ -20,14 +20,18 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
+
+    console.log("iriPcpData");
+    console.log(iriPcpData);
+
     var plotElements = ["iri", "svi", "aal"];
     var keys = [];
     for (var k in iriPcpData) {
         keys.push(k);
     }
-    var m = [80, 160, 200, 160],
-        w = 1480 - m[1] - m[3],
-        h = 500 - m[0] - m[2];
+    var m = [80, 160, 10, 160],
+        w = 990 - m[1] - m[3],
+        h = 590 - m[0] - m[2];
     
     var x = d3.scale.ordinal().domain(municipality).rangePoints([0, w]),
         y = {};
@@ -35,7 +39,10 @@ function IRI_PCP_Chart(iriPcpData) {
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient("left"),
         foreground;
-    $("#tab-iri-chart").empty();
+
+    //$("#tab-iri-chart").empty();
+
+
     var svg = d3.select("#tab-iri-chart").append("svg")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
@@ -48,7 +55,7 @@ function IRI_PCP_Chart(iriPcpData) {
             // Coerce values to numbers.
             iriPcpData.forEach(function(p) { p[d] = +p[d]; });
             y[d] = d3.scale.linear()
-                .domain(d3.extent(iriPcpData, function(p) { return p[d]; }))
+                .domain([0,1])
                 .range([h, 0]);
       
             y[d].brush = d3.svg.brush()
@@ -171,7 +178,14 @@ function IRI_PCP_Chart(iriPcpData) {
             });
         });
     }
+
+    // Scroll down as a new chart is created
+    $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
+
 } // End PCP Chart
+
+
+
 // Change the utfgrid layer when the tabs are clicked
 $("#econ").click(function(){ 
     dataCat = "econ-table";
@@ -221,3 +235,5 @@ $("#edu").click(function(){
     $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
     $("#empty").remove();
 });
+
+

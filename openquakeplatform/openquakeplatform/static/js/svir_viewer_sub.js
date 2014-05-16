@@ -69,6 +69,7 @@ var sviIndicator = {};
 var scaledSviIndicator = {};
 var weightedSviIndicator = {};
 var iriIndicator = {};
+var scaledIRIindicator = {};
 
 // vars used to set the weights of the project definition json
 var data;
@@ -871,13 +872,20 @@ var startApp = function() {
             // The data passed into d3 need to be an array of objects
             // Place the category indicator objects into an array
             var catData = [];
-
             
             for (var k in scaledCatIndicator) {
                 catData.push(scaledCatIndicator[k]);
             };
+            console.log(previousCatData);
 
-            Category_PCP_Chart(catData, municipality, districName);
+            var concat = catData.concat(previousCatData);
+            console.log(concat);
+
+            Category_PCP_Chart(catData, municipality, districName, concat);
+
+            for (var k in scaledCatIndicator) {
+                previousCatData.push(scaledCatIndicator[k]);
+            };
 
             /////////////////////////////////////////////
             /////////// Create the svi object ///////////
@@ -983,6 +991,7 @@ var startApp = function() {
             };
 
             scaledSviIndicator.plotElement = "svi"; // Lable within the object
+            delete scaledSviIndicator.SVIvalues;
 
             //////////////////////////////////////////////
             /////////// Create the PRI object ////////////
@@ -1088,12 +1097,37 @@ var startApp = function() {
                 sviValue = weightedSviIndicator[k];
             }
 
+            //var iriFunction = (sviValue * aalValue);
+
             for (var i = 0; i < municipality.length; i++) {
-                tmp = 0;
+                var tempIRIfunction = 0;
                 for(var k in iriIndicator) {
                     getNewValues(k);
-                    tmp = (sviValue + aalValue);
-                    iriIndicator[k] = tmp;
+
+                    //var iriDefaultFunction
+
+                    //TODO FIX THIS*****
+                    // Allow the user to change the iri function
+                    $('select[name="select-iri-calc"]').change(function() {
+                        if ($(this).val() == 1) {
+                            console.log("option1");
+                            tempIRIfunction = (sviValue + aalValue);
+                        } 
+                        else if ($(this).val() == 2) {
+                            console.log("option2");
+                            tempIRIfunction = (sviValue * aalValue);
+                        }
+                        else if ($(this).val() == 3 ) {
+                            console.log("option3");
+                            tempIRIfunction = (aalValue * (1=sviValue));
+                        }
+                    });
+
+                    if(tempIRIfunction == 0) {
+                        tempIRIfunction = (sviValue * aalValue);
+                    };
+
+                    iriIndicator[k] = tempIRIfunction;
                 }
             };
 
@@ -1101,12 +1135,17 @@ var startApp = function() {
             //// Scale ////
             ///////////////
             // Scale the iri values
+
+            scaledIRIindicator = jQuery.extend(true, {}, iriIndicator);
+            
             var iriValueArray = [];
             var scaleIRIvalues = [];
 
-            for (var v in iriIndicator) {
-                iriValueArray.push(iriIndicator[v]);
+            for (var v in scaledIRIindicator) {
+                iriValueArray.push(scaledIRIindicator[v]);
             };
+            console.log("iriValueArray");
+            console.log(iriValueArray);
 
             var tempIRImin = Math.min.apply(null, iriValueArray),
                 tempIRImax = Math.max.apply(null, iriValueArray);
@@ -1115,17 +1154,27 @@ var startApp = function() {
                 scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
             };
 
-            var tempKeys = Object.keys(iriIndicator);
+            var tempKeys = Object.keys(scaledIRIindicator);
 
             for (var i = 0; i < tempKeys.length; i++) {
-                iriIndicator[tempKeys[i]] = scaleIRIvalues[i];
+                scaledIRIindicator[tempKeys[i]] = scaleIRIvalues[i];
             };
 
-            iriIndicator.plotElement = "iri"; // Lable within the object
+            scaledIRIindicator.plotElement = "iri"; // Lable within the object
 
         }
+
+        console.log("scaledIRIindicator");
+        console.log(scaledIRIindicator);
+        
+        console.log("scaledAalIndicator");
+        console.log(scaledAalIndicator);
+
+        console.log("scaledSviIndicator");
+        console.log(scaledSviIndicator);
+
         var iriPcpData = [];
-        iriPcpData.push(iriIndicator);
+        iriPcpData.push(scaledIRIindicator);
         iriPcpData.push(scaledSviIndicator);
         iriPcpData.push(scaledAalIndicator);
         IRI_PCP_Chart(iriPcpData);

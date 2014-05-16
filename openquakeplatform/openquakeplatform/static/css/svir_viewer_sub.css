@@ -35,19 +35,24 @@ svg {
 
 .background path {
   fill: none;
-  stroke: #ddd;
-  shape-rendering: crispEdges;
+  stroke: steelblue;
+  stock-width: 1;
 }
 
 .foreground path {
   fill: none;
   stroke: steelblue;
+  stroke-width: 4;
 }
 
 .brush .extent {
   fill-opacity: .3;
   stroke: #fff;
   shape-rendering: crispEdges;
+}
+
+.content-wrap {
+  min-height:600px;
 }
 
 .axis line,

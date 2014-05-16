@@ -25,7 +25,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     console.log(primaryData);
 
     var array = [];
-    var foo = [];
+    var tmpArray = [];
     for (var i = 0; i < primaryData.length; i++) {
         for (var k in primaryData[i]){ 
             array.push(primaryData[i][k])
@@ -34,11 +34,11 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
 
     for (var i = 0; i < array.length; i++) {
         if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
-            foo.push(array[i]);
+            tmpArray.push(array[i]);
         };
     };
 
-    var maxVal = Math.max.apply( Math, foo );
+    var maxVal = Math.max.apply( Math, tmpArray );
         
     var margin = {top: 60, right: 10, bottom: 10, left: 10},
         width = 990 - margin.left - margin.right,
@@ -66,17 +66,9 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
             .range([height, 0]));
     }));
     
-      // Add grey background lines for context.
+      // Add blue foreground lines for focus.
     background = svg.append("g")
         .attr("class", "background")
-        .selectAll("path")
-        .data(primaryData)
-        .enter().append("path")
-        .attr("d", path);
-    
-      // Add blue foreground lines for focus.
-    foreground = svg.append("g")
-        .attr("class", "foreground")
         .selectAll("path")
         .data(primaryData)
         .enter().append("path")
@@ -84,7 +76,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .attr("id", function(d) { return d.municipality; })
         .on("mouseover", function() {
             d3.select(this)
-                .style('stroke-width', 6)
+                .style('stroke-width', 4)
                 .style("stroke", "steelblue");
                 textTop.text("District: " + districName + ", Municipality: " + this.id);
         }).on("mouseout", function() {
