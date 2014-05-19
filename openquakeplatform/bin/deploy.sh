@@ -207,7 +207,7 @@ econd_fixtureupdate () {
 }
 #
 #
-passwd_create () { 
+passwd_create () {
     python -c "import string ; import random
 def id_generator(size=8, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
@@ -230,6 +230,7 @@ locset_create () {
         return 1
     fi
     python -c "
+import string, random
 local_settings = open('${oqpdir}/$GEM_LOCAL_SETTINGS_TMPL', 'r').read()
 with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
     fh.write(local_settings % dict(host='${gem_host_name}',
@@ -239,6 +240,7 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
+                                   oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits + '%$£&()=+-|#@§') for _ in range(50)),
                                    mediaroot='/var/www/openquake/platform/uploaded',
                                    staticroot='/var/www/openquake/platform/static/'))"
 }
@@ -432,7 +434,7 @@ oq_platform_install () {
 
     #
     #  database population (external datasets)
-    for app in "${GEM_APP_LIST[@]}"; do 
+    for app in "${GEM_APP_LIST[@]}"; do
         if function_exists "${app}_dataloader"; then
             "${app}_dataloader" "$oqpdir" "$gem_db_name"
         fi
