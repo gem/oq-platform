@@ -180,7 +180,7 @@ function IRI_PCP_Chart(iriPcpData) {
     }
 
     // Scroll down as a new chart is created
-    $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
+        $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
 
 } // End PCP Chart
 

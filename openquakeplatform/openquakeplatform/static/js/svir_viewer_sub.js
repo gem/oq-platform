@@ -1073,6 +1073,26 @@ var startApp = function() {
             // Create the IRI category indicator object //
             //////////////////////////////////////////////
 
+            var IRIfunctionSelection = $('select[name="select-iri-calc"]').val();
+
+            
+            // Allow the user to change the iri function
+            $('select[name="select-iri-calc"]').change(function() {
+                if ($(this).val() == 1) {
+                    IRIfunctionSelection = 1;
+                    console.log("option1");
+                } 
+                else if ($(this).val() == 2) {
+                    console.log("option2");
+                    IRIfunctionSelection = 2;
+                }
+                else if ($(this).val() == 3 ) {
+                    IRIfunctionSelection = 3;
+                    console.log("option3");   
+                }
+            });
+
+
             for (var k in iriIndicator) {
                 delete iriIndicator[k];
             };
@@ -1097,34 +1117,20 @@ var startApp = function() {
                 sviValue = weightedSviIndicator[k];
             }
 
-            //var iriFunction = (sviValue * aalValue);
-
+            // Compute the IRI based on users selection=
             for (var i = 0; i < municipality.length; i++) {
-                var tempIRIfunction = 0;
+                //var tempIRIfunction = 0;
                 for(var k in iriIndicator) {
                     getNewValues(k);
 
-                    //var iriDefaultFunction
-
-                    //TODO FIX THIS*****
-                    // Allow the user to change the iri function
-                    $('select[name="select-iri-calc"]').change(function() {
-                        if ($(this).val() == 1) {
-                            console.log("option1");
-                            tempIRIfunction = (sviValue + aalValue);
-                        } 
-                        else if ($(this).val() == 2) {
-                            console.log("option2");
-                            tempIRIfunction = (sviValue * aalValue);
-                        }
-                        else if ($(this).val() == 3 ) {
-                            console.log("option3");
-                            tempIRIfunction = (aalValue * (1=sviValue));
-                        }
-                    });
-
-                    if(tempIRIfunction == 0) {
-                        tempIRIfunction = (sviValue * aalValue);
+                    if (IRIfunctionSelection == 1) {
+                        tempIRIfunction = (aalValue + sviValue);
+                    } 
+                    else if (IRIfunctionSelection == 2) {
+                        tempIRIfunction = (aalValue * sviValue);
+                    }
+                    else if(IRIfunctionSelection == 3) {
+                        tempIRIfunction = (aalValue * (1 + sviValue));
                     };
 
                     iriIndicator[k] = tempIRIfunction;
