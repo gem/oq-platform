@@ -32,6 +32,11 @@
 	padding-left: 30px;
 }
 
+.line {
+	fill:none;
+	stroke: steelblue;
+}
+
 .axis line, .axis path {
 	fill: none;
 	stroke: #000;
