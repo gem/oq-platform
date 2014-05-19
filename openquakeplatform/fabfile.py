@@ -56,7 +56,7 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     local("which xmlstarlet")
 
     oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits +
-    '%$£&()=+-|#@§') for _ in range(50))
+    '%$&()=+-|#@?') for _ in range(50))
 
     baseenv(db_name=db_name, db_user=db_user, db_pass=db_pass,
             host=host, hazard_calc_addr=hazard_calc_addr,
