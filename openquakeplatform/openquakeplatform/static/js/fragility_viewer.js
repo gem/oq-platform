@@ -198,9 +198,9 @@ if(funcDistrType == "Continuous") {
         iml.push(Math.round(i*1000) / 1000);
     }
     iml.push(max);
+
+    console.log("iml");
     console.log(iml);
-    console.log("chartData");
-    console.log(chartData);
     
     function normalCumulativeProbability(z) {
         var b1 = 0.31938153;
@@ -254,29 +254,45 @@ if(funcDistrType == "Continuous") {
     ////////////////////////////////////////////
 
 } else if (funcDistrType == "Discrete") {
+    var chartData = [];
+
+    var limitStatesArray =  jsonObj.fields.fragility_func.fields.limit_states_desc;
+    var limitStatesArray = limitStatesArray.split(";");
+
     var limitStateVal = jsonObj.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed;
-    limitStateVal = limitStateVal.split(";");
-    for (var i = 0; i < limitStateVal.length; i++)
-        limitStateVal[i] = limitStateVal[i].trim();
-    for (var i = 0; i < limitStateVal.length; i++) {
-        limitStateVal[i] = parseFloat(limitStateVal[i]);
+    limitStateVal = limitStateVal.split('\n');
+    var bar = jsonObj.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed;
+    bar = bar.split(";");
+    // iml is used to get the max value for the chart
+    iml = [];
+    for (var i = 0; i < bar.length; i++) {
+        iml.push(parseFloat(bar[i]));
     };
-    
+
+    for (var i = 0; i < limitStateVal.length; i++) {
+        limitStateVal[limitStatesArray[i]] = limitStateVal[i].split(";");
+    };
+
     var predVarVal = jsonObj.fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
     predVarVal = predVarVal.split(";");
-    for (var i = 0; i < predVarVal.length; i++)
-        predVarVal[i] = predVarVal[i].trim();
-    for (var i = 0; i < predVarVal.length; i++) {
-        predVarVal[i] = parseFloat(predVarVal[i]);
+
+    for (var i = 0; i < limitStatesArray.length; i++) {
+        chartData[limitStatesArray[i]] = [];
     };
-    
-    var chartData = [];
-    
-    for (var i = 0; i < predVarVal.length; i++) {
-        chartData.push([predVarVal[i], limitStateVal[i]]);
+
+    for(var k in chartData) {
+        var tmp = [];
+        for (var i = 0; i < predVarVal.length; i++) {
+            var foo = [parseFloat(predVarVal[i]), parseFloat(limitStateVal[k][i])];
+            tmp.push(foo);
+
+            //dataObj[k] = [parseFloat(predVarVal[i]), parseFloat(limitStateVal[i])];
+        };
+        chartData[k] = tmp;
     };
+
     discreteTable();
-    buildDiscreteChart(chartData);
+    buildContinuousChart(chartData);
 }
 
 /////////////////////////////////
@@ -320,14 +336,11 @@ function discreteTable() {
         
     for (var i = 0; i < limitStateVal.length; i++) {
         var tmp = [];
-        tmp.push(predVarVal[i] + 0.0001 //FIX THIS);
+        tmp.push(predVarVal[i] + 0.0001);
         tmp.push(limitStateVal[i] + 0.001);
 
         aaData.push(tmp);
     };
-
-            console.log("limitStateVal");
-        console.log(limitStateVal);
 
     $('#fragility-table').dataTable({
         "aaData": aaData,
@@ -366,6 +379,41 @@ function buildContinuousChart(chartData) {
     function capitalise(string) {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     }
+    function makeCircles(chartData, color) {
+        // Points along the line
+
+        svg.selectAll("circle.line") 
+            .data(chartData) 
+            .enter().append("circle") 
+            .attr("class", "line"+k) 
+            .attr("cx", function(d) { return x_scale(d[0]); }) 
+            .attr("cy", function(d) { return y_scale(d[1]); }) 
+            .attr("r", 2.5)
+            .style("fill", color)
+            .style("opacity", 1)
+            .on("mouseover", function() {
+                d3.select(this)
+                    .attr('r', 6)
+                    .text(circleX + ", " + circleY)
+                    .style("fill", color)
+                    .style("opacity", 1)
+                var circleX = d3.select(this.__data__[0]);
+                circleX = circleX.toString();
+                circleX = circleX.split(","[0]);
+
+                var circleY = d3.select(this.__data__[1]);
+                circleY = circleY.toString();
+                circleY = circleY.split(","[0]);
+
+                textTop.text("Point value (x/y): " + Math.round(circleX * 1000) / 1000 + ", " + Math.round(circleY * 1000) / 1000);
+
+            }).on("mouseout", function() {
+                d3.select(this)
+                    .attr('r', 2.5)
+                    .style("opacity", 1)
+                    .style("fill", color);
+            });
+    }
    
     var margin = {top: 55, right: 100, bottom: 80, left: 60},
     width = 480 - margin.left - margin.right,
@@ -381,10 +429,10 @@ function buildContinuousChart(chartData) {
         .orient("left");
     var line = d3.svg.line()
         .x(function(d) {
-            return x_scale(d[0]); 
+            return x_scale(d[0]);
         })
         .y(function(d) {
-            return y_scale(d[1]); 
+            return y_scale(d[1]);
         });
     var svg = d3.select("#fragilityChart").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -410,7 +458,9 @@ function buildContinuousChart(chartData) {
     var legend = d3.select("#chartDialog").append("svg")
         .attr("height", 25);
     var count = 0;
+
     for (var k in chartData) {
+
         svg.append("path")
             .data([chartData[k]])
             .attr("class", "line"+k)
@@ -434,9 +484,13 @@ function buildContinuousChart(chartData) {
         ];
         
         var color = colors[count % colors.length];
-        $(".line"+k).css({'fill': "none",'opacity':'0.6', 'stroke-width': '3', 'stroke':color});
+        $(".line"+k).css({'fill': "none",'opacity':'0.6', 'stroke-width': '2', 'stroke':color});
         var data = chartData[k];
         var curveTitle = k;
+
+        if (funcDistrType == "Discrete") {
+            makeCircles(chartData[k], color)
+        };
         curveTitle = capitalise(curveTitle);
         
         // Curve lables
@@ -494,153 +548,3 @@ function buildContinuousChart(chartData) {
     }
 } // End Chart
 
-
-///////////////////////////////////
-///// Fragility Chart Discrete ////
-///////////////////////////////////
-
-function buildDiscreteChart(chartData) {
-    // grid line functions
-    function make_x_axis() {        
-        return d3.svg.axis()
-            .scale(x_scale)
-            .orient("bottom")
-            .ticks(5)
-    }
-    function make_y_axis() {        
-        return d3.svg.axis()
-            .scale(y_scale)
-            .orient("left")
-            .ticks(5)
-    }
-    function capitalise(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    }
-    function makeCircles(data) {
-        // Points along the line
-        svg.selectAll("circle.line") 
-            .data(data) 
-            .enter().append("circle") 
-            .attr("class", "line") 
-            .attr("cx", function(d) { return x_scale(d[0]); }) 
-            .attr("cy", function(d) { return y_scale(d[1]); }) 
-            .attr("r", 2.5)
-            .style("fill", "blue")
-            .style("opacity", 1)
-            .on("mouseover", function() {
-                d3.select(this)
-                    .attr('r', 6)
-                    .text(circleX + ", " + circleY)
-                    .style("fill", "blue")
-                    .style("opacity", 1)
-                var circleX = d3.select(this.__data__[0]);
-                circleX = circleX.toString();
-                circleX = circleX.split(","[0]);
-
-                var circleY = d3.select(this.__data__[1]);
-                circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
-
-                textTop.text("Point value (x/y): " + Math.round(circleX * 1000) / 1000 + ", " + Math.round(circleY * 1000) / 1000);
-
-            }).on("mouseout", function() {
-                d3.select(this)
-                    .attr('r', 2.5)
-                    .style("opacity", 1)
-                    .style("fill", "blue");
-            });
-    }
-    var margin = {top: 55, right: 100, bottom: 80, left: 60},
-    width = 480 - margin.left - margin.right,
-    height = 440 - margin.top - margin.bottom;
-
-    var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(predVarVal), d3.max(predVarVal)]);
-    var y_scale = d3.scale.linear().range([0, height]).domain([d3.max(limitStateVal), d3.min(limitStateVal)]);
-    var xAxis = d3.svg.axis()
-        .scale(x_scale)
-        .tickFormat(function (d) { return d; })
-        .orient("bottom");
-    var yAxis = d3.svg.axis()
-        .scale(y_scale)
-        .orient("left");
-    var line = d3.svg.line()
-        .x(function(d) {
-            return x_scale(d[0]); 
-        })
-        .y(function(d) {
-            return y_scale(d[1]); 
-        });
-    var svg = d3.select("#fragilityChart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    // grid lines
-    svg.append("g")         
-        .attr("class", "grid")
-        .attr("transform", "translate(0," + height + ")")
-        .call(make_x_axis()
-            .tickSize(-height, 0, 0)
-            .tickFormat("")
-        );
-
-    svg.append("g")         
-        .attr("class", "grid")
-        .call(make_y_axis()
-            .tickSize(-width, 0, 0)
-            .tickFormat("")
-        );
-    var legend = d3.select("#chartDialog").append("svg")
-        .attr("height", 25);
-    var count = 0;
-
-    svg.append("path")
-        .data([chartData])
-        .attr("class", "line")
-        .attr()
-        .attr("d", line);
-        
-    var data = chartData;
-
-    makeCircles(data);
-   
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .append("text")
-        .attr("x", 160)
-        .attr("y", 30)
-        .attr("dy", ".71em")
-        .attr("text-anchor", "middle")
-        .style("font-weight", "bold")
-        .attr("font-size","14px")
-        .text("Lateral roof displacement (m)");
-        
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -60)
-        .attr("x", -90)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("font-weight", "bold")
-        .attr("font-size","14px")
-        .text("Base Shear (kN)");
-        
-    textTopLable = svg.append("text")
-        .attr("x", 0)
-        .attr("y", -35)
-        .attr("dy", ".35em")
-        .style("font-weight", "bold")
-        .attr("font-size","14px")
-        //.text(typeOfAssessment +' '+ capName);
-        
-    textTop = svg.append("text")
-        .attr("x", 0)
-        .attr("y", -15)
-        .attr("dy", ".35em")
-        .text("");
-} // End Chart
