@@ -113,9 +113,9 @@ def apps(db_name, db_user, db_pass):
         else:
             add_fn()
 
-    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' '.' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
+    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
-    local('openquakeplatform/bin/oq-gs-builder.sh restore build-gs-tree')
+    local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
 
 
