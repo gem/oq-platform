@@ -44,7 +44,7 @@ from openquakeplatform import geoserver_api as geoserver
 
 logger = logging.getLogger(__name__)
 
-
+DS_NAME='icebox'
 
 class Calculation(models.Model):
     calculation_type = models.TextField(choices=(('hazard', 'hazard'),
@@ -186,7 +186,7 @@ class OutputLayer(models.Model):
 
         :param str geoserver_layer: the name of the geoserver layer
         """
-        gs_slurp(workspace=geoserver.WS_NAME, store=geoserver.DS_NAME,
+        gs_slurp(workspace=geoserver.WS_NAME, store=DS_NAME,
                  filter=geoserver_layer)
         layer = maps.Layer.objects.get(name=geoserver_layer)
         self.layer = layer
@@ -266,7 +266,7 @@ class OutputLayer(models.Model):
             geoserver.LAYER_URL % view_name, method='DELETE',
             raise_errors=False)
         geoserver.geoserver_rest(
-            geoserver.FEATURETYPE_URL % view_name, method='DELETE',
+            (geoserver.FEATURETYPE_URL % dict(ws=geoserver.WS_NAME, ds=DS_NAME)) % view_name, method='DELETE',
             raise_errors=False)
 
     @staticmethod
@@ -279,7 +279,9 @@ class OutputLayer(models.Model):
         """
         return os.path.abspath(
             os.path.join(
-                os.path.dirname(__file__), "gs_data/%s.xml" % request_type))
+                os.path.dirname(
+                    os.path.dirname(__file__)),
+            "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
 
     def create_featuretype(self, view_name):
         """
@@ -296,7 +298,8 @@ class OutputLayer(models.Model):
         geoserver.load_features(
             self.output_type.__name__,
             files=[self._xml("featuretype")],
-            substitutions=substitutions)
+            substitutions=substitutions,
+            fe_dict=dict(ws=geoserver.WS_NAME, ds=DS_NAME))
         return view_name
 
     def update_layer(self, layer_name):

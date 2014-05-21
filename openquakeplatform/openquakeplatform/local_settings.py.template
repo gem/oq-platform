@@ -1,0 +1,332 @@
+import os
+import geonode
+import openquakeplatform
+
+SITENAME = 'Openquake Platform'
+SITEURL = 'http://%(host)s/'
+
+OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
+GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
+
+ROOT_URLCONF = 'openquakeplatform.urls'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '%(db_name)s',
+        'USER': '%(db_user)s',
+        'PASSWORD': '%(db_pass)s',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    },
+    # vector datastore for uploads
+    'datastore' : {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '%(db_name)s',
+        'USER': '%(db_user)s',
+        'PASSWORD': '%(db_pass)s',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
+
+try:
+    from openquakeplatform import ged_settings
+    DATABASES.update(ged_settings.DATABASES)
+except ImportError:
+    import warnings
+    warnings.warn('Global Exposure Database (GED) configuration not found!',
+                  ImportWarning)
+
+TIME_ZONE = 'UTC'
+
+SECRET_KEY = '%(oq_secret_key)s'
+
+ALLOWED_HOSTS=['%(host)s', 'localhost']
+
+MEDIA_ROOT = '%(mediaroot)s'
+STATIC_ROOT = '%(staticroot)s'
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    '/etc/openquake/platform/media',
+    os.path.join(OQPLATFORM_ROOT, 'static'),
+    '/etc/geonode/media',
+    os.path.join(GEONODE_ROOT, 'static')
+]
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    os.path.join(OQPLATFORM_ROOT, 'static'),
+    os.path.join(GEONODE_ROOT, 'static'),
+    '/etc/geonode/media',
+]
+
+TEMPLATE_DIRS = (
+    os.path.join(OQPLATFORM_ROOT, 'templates'),
+    os.path.join(OQPLATFORM_ROOT, 'gemecdwebsite'),
+    os.path.join(OQPLATFORM_ROOT, 'gemecdwebsite/templates'),
+    os.path.join(GEONODE_ROOT, 'templates'),
+)
+
+LOCALE_PATHS = (
+    os.path.join(OQPLATFORM_ROOT, "locale"),
+    os.path.join(GEONODE_ROOT, "locale"),
+)
+
+OQ_ENGINE_SERVER_URLS = {
+    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/hazard/run',  # i.e. : 'http://oq-platform:8800'
+    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/risk/run',        # i.e. : 'http://oq-platform:8800'
+}
+
+THIRD_PARTY_URLS = {
+    'leaflet_base_map': (
+        'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
+    ),
+}
+
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default': {
+        'BACKEND': 'geonode.geoserver',
+    # Do not change the internal channel
+        'LOCATION': 'http://localhost:8080/geoserver/',
+        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
+        'USER': 'admin',
+        'PASSWORD': 'geoserver',
+        'DATASTORE': 'default',   # 'datastore',
+        'OPTIONS': {
+            'MAPFISH_PRINT_ENABLED': True,
+            'PRINTNG_ENABLED': True,
+            'GEONODE_SECURITY_ENABLED': True,
+            'GEOGIT_ENABLED': False,
+            'WMST_ENABLED': False,
+            'WPS_ENABLED': True,
+            # Set to name of database in DATABASES dictionary to enable
+        }
+    }
+}
+
+# CSW settings
+CATALOGUE = {
+    'default': {
+        # The underlying CSW implementation
+        # default is pycsw in local mode (tied directly to GeoNode Django DB)
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # pycsw in non-local mode
+        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # GeoNetwork opensource
+        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        # deegree and others
+        #'ENGINE': 'geonode.catalogue.backends.generic',
+
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'URL': '%%scatalogue/csw' %% SITEURL,
+        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
+        # login credentials (for GeoNetwork)
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+    }
+}
+
+# pycsw settings
+PYCSW = {
+    # pycsw configuration
+    'CONFIGURATION': {
+        'metadata:main': {
+            'identification_title': 'OQ Catalogue',
+            'identification_abstract': 'OQ abstract',
+            'identification_keywords': (
+                'sdi,catalogue,discovery,metadata,GeoNode'),
+            'identification_keywords_type': 'theme',
+            'identification_fees': 'None',
+            'identification_accessconstraints': 'None',
+            'provider_name': 'Organization Name',
+            'provider_url': SITEURL,
+            'contact_name': 'Lastname, Firstname',
+            'contact_position': 'Position Title',
+            'contact_address': 'Mailing Address',
+            'contact_city': 'City',
+            'contact_stateorprovince': 'Administrative Area',
+            'contact_postalcode': 'Zip or Postal Code',
+            'contact_country': 'Country',
+            'contact_phone': '+xx-xxx-xxx-xxxx',
+            'contact_fax': '+xx-xxx-xxx-xxxx',
+            'contact_email': 'Email Address',
+            'contact_url': 'Contact URL',
+            'contact_hours': 'Hours of Service',
+            'contact_instructions': 'openquake-users@google-groups.com',
+            'contact_role': 'pointOfContact',
+        },
+        'metadata:inspire': {
+            'enabled': 'true',
+            'languages_supported': 'eng,gre',
+            'default_language': 'eng',
+            'date': 'YYYY-MM-DD',
+            'gemet_keywords': 'Utility and governmental services',
+            'conformity_service': 'notEvaluated',
+            'contact_name': 'Organization Name',
+            'contact_email': 'Email Address',
+            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
+        }
+    }
+}
+
+## FIXME: this will removed after the urls.py refactoring
+DOCUMENTS_APP = True
+
+INSTALLED_APPS = (
+
+    # Apps bundled with Django
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.admin',
+    'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
+    'django.contrib.humanize',
+    'django.contrib.gis',
+
+    # Third party apps
+    'photologue',
+
+    # Utility
+    'pagination',
+    'taggit',
+    'taggit_templatetags',
+    'south',
+    'friendlytagloader',
+    'geoexplorer',
+    'django_extensions',
+
+    # Development
+    # 'devserver',
+
+    # Theme
+    "pinax_theme_bootstrap_account",
+    "pinax_theme_bootstrap",
+    'django_forms_bootstrap',
+
+    # Social
+    'account',
+    'avatar',
+    'dialogos',
+    'agon_ratings',
+    'notification',
+    'announcements',
+    'actstream',
+    'user_messages',
+
+    # GeoNode internal apps
+    'geonode.people',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
+    'geonode.proxy',
+    'geonode.security',
+    'geonode.search',
+    'geonode.social',
+    'geonode.catalogue',
+    'geonode.documents',
+    'geonode.social',
+
+    # Our apps
+    'openquakeplatform.isc_viewer',
+    'openquakeplatform.ghec_viewer',
+    'openquakeplatform.gaf_viewer',
+    'openquakeplatform.geodetic',
+    'openquakeplatform.exposure',
+    'openquakeplatform.faulted_earth',
+    'openquakeplatform.icebox',
+    'openquakeplatform.svir',
+
+    # gemecd
+    'openquakeplatform.weblib',
+    'openquakeplatform.econd',
+    'openquakeplatform.gemecdwebsite',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'pagination.middleware.PaginationMiddleware',
+    # icebox need csrf to be disabled to work
+    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # geonode.security is enabled to lockdown the website
+    'geonode.security.middleware.LoginRequiredMiddleware',
+)
+
+MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+        "restUrl": "/gs/rest"
+     }
+  },{
+    "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gxp_osmsource"},
+    "type":"OpenLayers.Layer.OSM",
+    "name":"mapnik",
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"osm",
+    "group":"background",
+    "visibility": True
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"naip",
+    "group":"background",
+    "visibility": False
+  }, {
+    "source": {"ptype": "gxp_bingsource"},
+    "name": "AerialWithLabels",
+    "fixed": True,
+    "visibility": False,
+    "group":"background"
+  },{
+    "source": {"ptype": "gxp_tilestreamsource" },
+  }, {
+    "source": {"ptype": "gxp_mapboxsource"},
+  }, {
+    "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer.WMS",
+    "group":"background",
+    "visibility": False,
+    "fixed": True,
+    "args":[
+      "bluemarble",
+      "http://maps.opengeo.org/geowebcache/service/wms",
+      {
+        "layers":["bluemarble"],
+        "format":"image/png",
+        "tiled": True,
+        "tilesOrigin": [-20037508.34, -20037508.34]
+      },
+      {"buffer": 0}
+    ]
+
+}]
+
+# Add additional paths (as regular expressions) that don't require
+# authentication. This URL needs to be hit by the oq-engine-server.
+AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)', '/geoserver/')
+
+# this value must be the same of oq-engine-server key settings
+OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
