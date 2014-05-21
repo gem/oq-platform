@@ -1,5 +1,8 @@
 import os
 import sys
+import string
+import random
+
 from urlparse import urljoin as _urljoin
 
 from openquakeplatform.geoserver_api import (
@@ -52,10 +55,15 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
+    oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits +
+    '%$&()=+-|#@?') for _ in range(50))
+
     baseenv(db_name=db_name, db_user=db_user, db_pass=db_pass,
             host=host, hazard_calc_addr=hazard_calc_addr,
             risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
-            mediaroot=mediaroot, staticroot=staticroot)
+            oq_secret_key=oq_secret_key, mediaroot=mediaroot,
+            staticroot=staticroot)
+
     # fix it in a proper way
     apps(db_name, db_user, db_pass)
 
@@ -71,10 +79,10 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
 def baseenv(
-            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
+            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key,
             db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             mediaroot='/tmp', staticroot='/home'):
-    _write_local_settings(db_name,  db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, mediaroot, staticroot)
+    _write_local_settings(db_name,  db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -148,7 +156,7 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, mediaroot, staticroot):
+def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
         fh.write(local_settings % dict(db_name=db_name,
@@ -158,6 +166,7 @@ def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, ris
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
                                        oq_engserv_key=oq_engserv_key,
+                                       oq_secret_key=oq_secret_key,
                                        mediaroot=mediaroot,
                                        staticroot=staticroot))
 
