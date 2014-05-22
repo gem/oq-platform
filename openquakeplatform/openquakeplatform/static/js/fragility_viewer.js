@@ -63,6 +63,7 @@ var geoApp = "Mediterranean";
 var method = jsonObj.fields.fragility_func.fields.method_of_estimation;
 var articleTitle = jsonObj.fields.article_title;
 var funcDistrType = jsonObj.fields.fragility_func.fields.func_distr_type;
+var imtTitle = jsonObj.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
 
 // Generral information
 $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
@@ -154,9 +155,6 @@ if(funcDistrType == "Continuous") {
     var iml = [];
     var min = jsonObj.fields.fragility_func.fields.predictor_var.fields.minimum_im;
     var max = jsonObj.fields.fragility_func.fields.predictor_var.fields.maximum_im;
-    console.log("max");
-    console.log(max);
-    var imtTitle = jsonObj.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
     var inc = ((max - min) / 100);
     var limitStatesArray =  jsonObj.fields.fragility_func.fields.limit_states_desc;
     limitStatesArray = limitStatesArray.split(";");
@@ -329,18 +327,28 @@ function continuousTable() {
 ////////////////////////////////
 
 function discreteTable() {
+    console.log("chartData");
+    console.log(chartData);
+
     var aaData = [];
 
     limitStateVal.shift();
     predVarVal.shift();
-        
-    for (var i = 0; i < limitStateVal.length; i++) {
-        var tmp = [];
-        tmp.push(predVarVal[i] + 0.0001);
-        tmp.push(limitStateVal[i] + 0.001);
+
+    for (var k in chartData) {
+        //for (var i = 0; i < limitStateVal.length; i++) {
+        var tmp = [k];
+        tmp.push(limitStateVal);
+        //tmp.push(chartData[k][1]);
 
         aaData.push(tmp);
-    };
+    //};
+    }
+        
+    
+
+    console.log("aaData");
+    console.log(aaData);
 
     $('#fragility-table').dataTable({
         "aaData": aaData,
