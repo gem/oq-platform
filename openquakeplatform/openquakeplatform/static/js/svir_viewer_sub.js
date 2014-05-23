@@ -1124,10 +1124,10 @@ var startApp = function() {
                     getNewValues(k);
 
                     if (IRIfunctionSelection == 1) {
-                        tempIRIfunction = (aalValue + sviValue);
+                        tempIRIfunction = (aalValue * sviValue);
                     } 
                     else if (IRIfunctionSelection == 2) {
-                        tempIRIfunction = (aalValue * sviValue);
+                        tempIRIfunction = (aalValue + sviValue);
                     }
                     else if(IRIfunctionSelection == 3) {
                         tempIRIfunction = (aalValue * (1 + sviValue));
