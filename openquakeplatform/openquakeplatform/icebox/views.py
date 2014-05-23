@@ -17,10 +17,14 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+import os
+import json
 import smtplib
+import zipfile
+import tempfile
+
 import requests
 from django.core.urlresolvers import reverse
-import json
 from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseServerError
 from django.conf import settings
@@ -80,28 +84,33 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
             raise RuntimeError(
                 "Unknown calculation_type %s" % calculation_type)
 
+        archive = request.FILES['calc_archive']
         try:
+            hazard_output_id = request.POST.get('hazard_output_id')
+            hazard_calculation_id = request.POST.get('hazard_calculation_id')
+
+            post_data=dict(
+                database=settings.OQ_ENGINE_SERVER_DATABASE,
+                callback_url="%s%s" % (
+                    settings.SITEURL.rstrip("/"), reverse(
+                        "calculation", args=(calculation.pk,))),
+                foreign_calculation_id=calculation.pk)
+            # Risk only
+            if hazard_output_id:
+                post_data['hazard_output_id'] = hazard_output_id
+            if hazard_calculation_id:
+                post_data['hazard_calculation_id'] = hazard_calculation_id
             requests.post(
                 url,
-                data=dict(
-                    database=settings.OQ_ENGINE_SERVER_DATABASE,
-                    callback_url="%s%s" % (
-                        settings.SITEURL.rstrip("/"), reverse(
-                        "calculation", args=(calculation.pk,))),
-                    foreign_calculation_id=calculation.pk,
-                    # Risk only
-                    hazard_output_id=request.POST.get('hazard_output_id'),
-                    hazard_calculation_id=request.POST.get(
-                        'hazard_calculation_id')),
-                files=dict(
-                    [("job_config_%d" % i, filepath)
-                     for i, filepath
-                     in enumerate(request.FILES.getlist('calc_config'))]))
+                data=post_data,
+                files=dict(archive=archive))
         except requests.exceptions.RequestException as e:
             logger.error(
                 "POST to engine server (url=%s) failed: %s" % (url, e))
             return HttpResponseServerError(
                 "An error has occurred while queing your calculation")
+        finally:
+            archive.close()
 
         return self.response_class(
             json.dumps(dict(id=calculation.id,
