@@ -22,6 +22,9 @@ var objToUrlParams = function(obj) {
 
 var app = new OQLeaflet.OQLeafletApp(THIRD_PARTY_URLS.leaflet_base_map);
 
+// Remove the top ribbon
+$('#oq-context-ribbon').remove();
+
 var startApp = function() {
     drawnItems = new L.LayerGroup();
     // draw tool

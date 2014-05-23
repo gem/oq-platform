@@ -1,0 +1,116 @@
+[
+{
+   "pk": 1,
+   "model": "maps.map",
+   "fields": {
+      "projection": "EPSG:900913",
+      "title": "Instrumental Seismic Catalogue",
+      "abstract": "",
+      "zoom": 1,
+      "center_x": 0.0,
+      "center_y": 0.0,
+      "last_modified": "2014-02-04 16:21:00",
+      "owner": 1
+   }
+},
+{
+    "pk": 1,
+    "model": "maps.maplayer",
+    "fields": {
+    	"opacity": 1.0,
+    	"map": 1,
+    	"group": null,
+    	"name": "oqplatform:isc_viewer_measure",
+    	"format": "image/png",
+    	"visibility": true,
+    	"source_params": "{\"restUrl\": \"/gs/rest\", \"title\": \"Local Geoserver\", \"baseParams\": {\"VERSION\": \"1.1.1\", \"REQUEST\": \"GetCapabilities\", \"TILED\": true, \"SERVICE\": \"WMS\"}, \"ptype\": \"gxp_wmscsource\", \"id\": \"0\"}",
+    	"layer_params": "{\"selected\": true, \"title\": \"isc_viewer_measure\", \"cached\": true, \"capability\": {\"abstract\": \"No abstract provided\", \"nestedLayers\": [], \"cascaded\": 0, \"fixedHeight\": 0, \"prefix\": \"oqplatform\", \"keywords\": [], \"noSubsets\": false, \"dimensions\": {}, \"opaque\": false, \"infoFormats\": [\"text/plain\", \"application/vnd.ogc.gml\", \"application/vnd.ogc.gml/3.1.1\", \"text/html\"], \"styles\": [{\"abstract\": \"\", \"legend\": {\"href\": \"http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=isc_viewer_measure\", \"width\": \"20\", \"format\": \"image/png\", \"height\": \"20\"}, \"name\": \"isc_viewer_measure\", \"title\": \"GeoServer SLD Cook Book: Attribute-based point\"}], \"attribution\": {\"title\": \"admin\"}, \"authorityURLs\": {}, \"bbox\": {\"EPSG:4326\": {\"srs\": \"EPSG:4326\", \"bbox\": [-180, -90, 180, 90]}}, \"fixedWidth\": 0, \"metadataURLs\": [{\"href\": \"http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=6f83ed50-1cfe-4a5f-abd4-2e02d3b724ec\", \"type\": \"TC211\", \"format\": \"text/xml\"}, {\"href\": \"http://localhost:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2Fcsdgm&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=6f83ed50-1cfe-4a5f-abd4-2e02d3b724ec\", \"type\": \"FGDC\", \"format\": \"text/xml\"}], \"name\": \"oqplatform:isc_viewer_measure\", \"identifiers\": {}, \"srs\": {\"EPSG:900913\": true}, \"formats\": [\"image/png\", \"application/atom xml\", \"application/atom+xml\", \"application/openlayers\", \"application/pdf\", \"application/rss xml\", \"application/rss+xml\", \"application/vnd.google-earth.kml\", \"application/vnd.google-earth.kml xml\", \"application/vnd.google-earth.kml+xml\", \"application/vnd.google-earth.kml+xml;mode=networklink\", \"application/vnd.google-earth.kmz\", \"application/vnd.google-earth.kmz xml\", \"application/vnd.google-earth.kmz+xml\", \"application/vnd.google-earth.kmz;mode=networklink\", \"atom\", \"image/geotiff\", \"image/geotiff8\", \"image/gif\", \"image/gif;subtype=animated\", \"image/jpeg\", \"image/png8\", \"image/png; mode=8bit\", \"image/svg\", \"image/svg xml\", \"image/svg+xml\", \"image/tiff\", \"image/tiff8\", \"kml\", \"kmz\", \"openlayers\", \"rss\"], \"title\": \"isc_viewer_measure\", \"queryable\": true, \"llbbox\": [-180, -90, 180, 90]}, \"tiled\": true}",
+    	"ows_url": "/geoserver/wms",
+    	"stack_order": 4,
+    	"styles": null,
+    	"fixed": false,
+    	"local": true,
+    	"transparent": true
+    }
+},
+{
+	"pk": 2,
+	"model": "maps.maplayer",
+	"fields": {
+    	"opacity": 1.0,
+    	"map": 1,
+    	"group": "background",
+    	"name": "OpenStreetMap",
+    	"format": null,
+    	"visibility": false,
+    	"source_params": "{\"ptype\": \"gxp_olsource\", \"id\": \"0\"}",
+    	"layer_params": "{\"selected\": false, \"args\": [\"OpenStreetMap\"], \"type\": \"OpenLayers.Layer.OSM\"}",
+    	"ows_url": null,
+    	"stack_order": 1,
+    	"styles": null,
+    	"fixed": true,
+    	"local": false,
+    	"transparent": false
+    }
+},
+{
+	"pk": 3,
+	"model": "maps.maplayer",
+	"fields": {
+		"opacity": 1.0,
+		"map": 1,
+		"group": "background",
+		"name": "osm",
+		"format": null,
+		"visibility": true,
+		"source_params": "{\"id\": \"2\", \"ptype\": \"gxp_mapquestsource\"}",
+		"layer_params": "{\"selected\": false}",
+		"ows_url": null,
+		"stack_order": 2,
+		"styles": null,
+		"fixed": true,
+		"local": false,
+		"transparent": false
+	}
+},
+{
+	"pk": 4,
+	"model": "maps.maplayer",
+	"fields": {
+		"opacity": 1.0,
+		"map": 1,
+		"group": "background",
+		"name": "bluemarble",
+		"format": null,
+		"visibility": false,
+		"source_params": "{\"id\": \"1\", \"ptype\": \"gxp_olsource\"}",
+		"layer_params": "{\"selected\": true, \"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
+		"ows_url": null,
+		"stack_order": 3,
+		"styles": null,
+		"fixed": true,
+		"local": false,
+		"transparent": false
+    }
+},
+{
+    "pk": 5,
+    "model": "maps.maplayer",
+    "fields": {
+    	"opacity": 1.0,
+    	"map": 1,
+    	"group": "background",
+    	"name": "No background",
+    	"format": null,
+    	"visibility": false,
+    	"source_params": "{\"id\": \"1\", \"ptype\": \"gxp_olsource\"}",
+    	"layer_params": "{\"selected\": false, \"args\": [\"No background\"], \"type\": \"OpenLayers.Layer\"}",
+    	"ows_url": null,
+    	"stack_order": 0,
+    	"styles": null,
+    	"fixed": true,
+    	"local": false,
+    	"transparent": false
+    }
+}
+]
