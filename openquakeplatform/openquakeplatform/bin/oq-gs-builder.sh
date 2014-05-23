@@ -942,8 +942,78 @@ all_data_restore () {
     return $ret
 }
 
+#
+#
+geoserver_population () {
+    local srcdir="$1" dstdir="$2" bindir="$3"
+#    local workspace_name="$GEM_GS_WS_NAME" datastore_name="$GEM_GS_DS_NAME"
+    local workspace_name_default="$4" datastore_name_default="$5"
+    local db_name="$6" db_user="$7" db_pass="$8" gs_datadir="$9"
+    shift 7
+    declare -a gem_app_list=("$@")
+    local workspace_name datastore_name
+
+    rm -rf "$dstdir/build-gstree"
+    mkdir -p "$dstdir/build-gs-tree"
+    mkdir -p "$dstdir/build-gs-tree/styles"
+    mkdir -p "$dstdir/build-gs-tree/layers"
+    mkdir -p "$dstdir/build-gs-tree/workspaces"
+    mkdir -p "$dstdir/build-gs-tree/workspaces/${workspace_name_default}/datastores"
+    featuretypes_dir="workspaces/${workspace_name_default}/datastores/${datastore_name_default}/featuretypes"
+    mkdir -p "$dstdir/build-gs-tree/${featuretypes_dir}"
+    cp -rn "$srcdir/common/gs_data/"* "$dstdir/build-gs-tree"
+    for app in "${gem_app_list[@]}"; do
+        workspace_name="$workspace_name_default"
+        if [ ! -d "${srcdir}/${app}/gs_data" ]; then
+            continue
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/datastores" ]; then
+            cp "${srcdir}/${app}/gs_data/datastores/"* "$dstdir/build-gs-tree/workspaces/${workspace_name}/datastores"
+            datastore_name="$(basename "${srcdir}/${app}/gs_data/datastores/"* .xml)"
+        else
+            datastore_name="$datastore_name_default"
+        fi
+        featuretypes_dir="workspaces/${workspace_name}/datastores/${datastore_name}/featuretypes"
+        if [ ! -d "$featuretypes_dir" ]; then
+            mkdir -p "$dstdir/build-gs-tree/${featuretypes_dir}"
+        fi
+
+        if [ -d "${srcdir}/${app}/gs_data/layers" ]; then
+            cp -rn "${srcdir}/${app}/gs_data/layers/"*       "${dstdir}/build-gs-tree/layers"
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/styles" ]; then
+            cp -rn "${srcdir}/${app}/gs_data/styles/"*       "${dstdir}/build-gs-tree/styles"
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/featuretypes" ]; then
+            cp -rn "${srcdir}/${app}/gs_data/featuretypes/"* "${dstdir}/build-gs-tree/${featuretypes_dir}"
+        fi
+        if [ -d "${srcdir}/${app}/gs_data/"tmpl ]; then
+            mkdir -p "${dstdir}/build-gs-tree/tmpl/${app}"
+            cp -rn "${srcdir}/${app}/gs_data/tmpl/"* "${dstdir}/build-gs-tree/tmpl/${app}"
+        fi
+    done
+
+    sed -i "s@#DB_NAME#@$db_name@g;s@#DB_USER#@$db_user@g;s@#DB_PASS#@$db_pass@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
+
+    rm -rf output
+    ${bindir}/oq-gs-builder.sh drop
+    ${bindir}/oq-gs-builder.sh restore "${dstdir}/build-gs-tree"
+
+    #
+    #  post population
+    for app in "${gem_app_list[@]}"; do
+        if [ -d "${dstdir}/build-gs-tree/tmpl/${app}/datastore" ]; then
+            cp -rn "${dstdir}/build-gs-tree/tmpl/${app}/datastore/"* "${gs_datadir}/workspaces/${workspace_name}/"
+        fi
+    done
+}
+
+
 usage () {
-    echo "TODO: USAGE"
+    echo "$0 dump"
+    echo "$0 drop"
+    echo "$0 restore <dirname>"
+    echo "$0 populate <srcdir> <dstdir> <bindir> <workspace_name_def> <datastore_name_def> <db_name> <db_user> <db_pass> <gs_datadir> <app1> [<app2> [...]]"
     }
 
 #
@@ -962,6 +1032,10 @@ case $act in
 
     restore)
         all_data_restore "$2"
+        ;;
+    populate)
+        shift
+        geoserver_population "$@"
         ;;
     *)
         usage $0

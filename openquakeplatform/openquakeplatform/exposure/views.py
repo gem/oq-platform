@@ -17,13 +17,13 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
-from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import condition
 
 from openquakeplatform.exposure import forms
+from openquakeplatform.utils import allowed_methods, sign_in_required
 from openquakeplatform.exposure import util
 
 COPYRIGHT_HEADER = """\
@@ -57,7 +57,7 @@ BLDG_ADMIN_0_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
                            'study_region, gadm_level_id, GEM_taxonomy, '
                            'time_of_day\n')
 BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-                           'study_region, gadm_level_id, GEM_taxonomy\n')
+                          'study_region, gadm_level_id, GEM_taxonomy\n')
 
 POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 
@@ -95,8 +95,8 @@ NRML_FOOTER = """
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
 
 
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def get_exposure_building_form(request):
     # get the lat long variables from the client
     lat1 = request.GET['lat1']
@@ -128,8 +128,8 @@ def get_exposure_building_form(request):
                               context_instance=RequestContext(request))
 
 
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def get_exposure_population_form(request):
     lat1 = request.GET['lat1']
     lng1 = request.GET['lng1']
@@ -145,12 +145,12 @@ def get_exposure_population_form(request):
     else:
         form = forms.PopulationExposureForm()
         return render_to_response('exposure/population_form.html',
-                              {'exposure_form': form,
-                               'lat1': lat1,
-                               'lng1': lng1,
-                               'lat2': lat2,
-                               'lng2': lng2},
-                              context_instance=RequestContext(request))
+                                  {'exposure_form': form,
+                                   'lat1': lat1,
+                                   'lng1': lng1,
+                                   'lat2': lat2,
+                                   'lng2': lng2},
+                                  context_instance=RequestContext(request))
 
 
 def _export_area_valid(lat1, lng1, lat2, lng2):
@@ -202,8 +202,8 @@ def validate_export(request):
 
 
 @condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_building(request):
     """
     Perform a streaming export of the requested exposure data.
@@ -254,8 +254,8 @@ def export_building(request):
 
 
 @condition(etag_func=None)
-@util.allowed_methods(('GET', ))
-@util.sign_in_required
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_population(request):
     """
     Perform a streaming export of the requested exposure data.
@@ -313,9 +313,9 @@ def _bldg_csv_admin0_generator(exposure_data):
     yield BLDG_ADMIN_0_CSV_HEADER
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type, dwelling_fraction,
-             day_pop_ratio, night_pop_ratio,
-             transit_pop_ratio) in exposure_data:
+         study_region_id, building_type, dwelling_fraction,
+         day_pop_ratio, night_pop_ratio,
+         transit_pop_ratio) in exposure_data:
 
         if all([x is None for x in (day_pop_ratio,
                                     night_pop_ratio,
@@ -347,9 +347,9 @@ def _bldg_nrml_admin0_generator(exposure_data):
     yield NRML_HEADER % dict(cat='buildings')
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type, dwelling_fraction,
-             day_pop_ratio, night_pop_ratio,
-             transit_pop_ratio) in exposure_data:
+         study_region_id, building_type, dwelling_fraction,
+         day_pop_ratio, night_pop_ratio,
+         transit_pop_ratio) in exposure_data:
 
         if all([x is None for x in (day_pop_ratio,
                                     night_pop_ratio,
@@ -396,8 +396,8 @@ def _bldg_csv_subnat_generator(exposure_data):
     yield BLDG_SUBNAT_CSV_HEADER
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type,
-             dwelling_fraction) in exposure_data:
+         study_region_id, building_type,
+         dwelling_fraction) in exposure_data:
         calc_pop_value = pop_value * dwelling_fraction
         row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
                country_id, building_type]
@@ -416,8 +416,8 @@ def _bldg_nrml_subnat_generator(exposure_data):
     yield NRML_HEADER % dict(cat='buildings')
 
     for (grid_id, lon, lat, pop_value, country_id, iso,
-             study_region_id, building_type,
-             dwelling_fraction) in exposure_data:
+         study_region_id, building_type,
+         dwelling_fraction) in exposure_data:
         calc_pop_value = pop_value * dwelling_fraction
 
         asset = NRML_ASSET_FMT % dict(
