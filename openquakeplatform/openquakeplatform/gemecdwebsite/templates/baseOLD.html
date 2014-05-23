@@ -1,0 +1,89 @@
+{% load comments %}
+
+<!DOCTYPE html>
+<!--[if lte IE 8]><html class="lt-ie9"  lang="en" ><![endif]-->
+<!--[if gte IE 9]><!--><html lang="en"><!--<![endif]-->
+<head>
+    {% block htmlhead %}
+
+        <meta charset="utf-8" />
+        <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css"  />
+
+        <!-- Zen for HTML5 -->
+        <style>
+            @import url("{{ STATIC_URL }}normalize.css");
+            @import url("{{ STATIC_URL }}fixed-width.css");
+        </style>
+
+        <title>{{ page_title }}</title>
+    {% endblock htmlhead %}
+
+    <script src="{{ STATIC_URL }}jquery.min.js"></script>
+    {% block javascript1 %}
+
+    {% endblock javascript1 %}
+
+    {% block javascript2 %}
+
+    {% endblock javascript2 %}
+</head>
+
+<body class="one-sidebar sidebar-first">
+<div id="page">
+    <header>
+    <div id="header">
+        {% block header %}
+            {% include "header.html" %}
+        {% endblock header %}
+    </div>
+    </header>
+
+
+    <div id="main">
+        <div id="content">
+            <div class="section">
+                <section>
+                    {% if haspageerrors %}
+                        <div class="errormessage">
+                            {{ pageerrors }}
+                        </div>
+                    {% endif %}
+                    {% block content %}
+
+                    {% endblock content %}
+                </section>
+            </div>
+            <div class="section">
+                <section>
+                    {% block comments %}
+
+                    {% endblock comments %}
+                </section>
+            </div>
+        </div>
+
+        <div id="navigation">
+            <nav>
+                {% block controlbar %}
+
+                {% endblock controlbar %}
+            </nav>
+        </div>
+
+        {% block leftsidebar %}
+
+        {% endblock leftsidebar %}
+
+        {% block rightsidebar %}
+
+        {% endblock rightsidebar %}
+    </div>
+
+    <footer id="footer">
+        {% block footer %}
+            {% include "footer.html" %}
+        {% endblock footer %}
+    </footer>
+</div><!-- /#page -->
+</body>
+</html>

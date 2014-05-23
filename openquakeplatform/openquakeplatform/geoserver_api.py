@@ -16,10 +16,9 @@ except:
 WS_NAME = 'oqplatform'
 #: GeoServer datastore name
 DS_NAME = 'oqplatform'
-FEATURETYPES_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
-                    % dict(ws=WS_NAME, ds=DS_NAME))
-FEATURETYPE_URL = ('workspaces/%(ws)s/datastores/%(ds)s/featuretypes/%%s.xml'
-                   % dict(ws=WS_NAME, ds=DS_NAME))
+FEATURETYPES_URL_DICT = dict(ws=WS_NAME, ds=DS_NAME)
+FEATURETYPES_URL = 'workspaces/%(ws)s/datastores/%(ds)s/featuretypes.xml'
+FEATURETYPE_URL = 'workspaces/%(ws)s/datastores/%(ds)s/featuretypes/%%s.xml'
 STYLE_URL = 'styles/%s.xml'
 LAYER_URL = 'layers/%(ws)s:%%s' % dict(ws=WS_NAME)
 
@@ -81,11 +80,14 @@ def _collect(directory, ext='xml'):
             if x.lower().endswith('.%s' % ext)]
 
 
-def load_features(app_name, files=None, substitutions=None):
+def load_features(app_name, files=None, substitutions=None, fe_dict=None):
+    if fe_dict is None:
+	fe_dict = FEATURETYPES_URL_DICT
+
     features_files = files or _collect('gs_data/%s/features' % app_name)
     for ff in features_files:
         geoserver_rest(
-            FEATURETYPES_URL, ff,
+            (FEATURETYPES_URL % fe_dict), ff,
             message='Creating %s layer...' % app_name,
             substitutions=substitutions)
 

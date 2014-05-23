@@ -6,13 +6,26 @@ from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 from django.views.generic import TemplateView
 
+import openquakeplatform.gemecdwebsite.eventsmap.urls
+import openquakeplatform.gemecdwebsite.eventoverview.urls
+import openquakeplatform.gemecdwebsite.eventdetails.urls
+import openquakeplatform.gemecdwebsite.location.urls
+import openquakeplatform.gemecdwebsite.inventoryclass.urls
+import openquakeplatform.gemecdwebsite.damagelevel.urls
+import openquakeplatform.gemecdwebsite.casualtylevel.urls
+import openquakeplatform.gemecdwebsite.surveyvalue.urls
+import openquakeplatform.gemecdwebsite.photo.urls
+import openquakeplatform.gemecdwebsite.uploadnrml.urls
+
+import photologue.urls
+
+
 from openquakeplatform import local_settings
 
 # TODO. Use context_processors instead of a custom TemplateView
 from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
-
 
 # Setup Django Admin
 from django.contrib import admin
@@ -32,6 +45,38 @@ sitemaps = {
 urlpatterns = patterns(
     '',
 
+    # gemecd website
+    url(r'^ecd/eventsmap/(?P<ix>.*)$', include(openquakeplatform.gemecdwebsite.eventsmap.urls.urlpatterns)),
+    url(r'^ecd/locationjson',include(openquakeplatform.gemecdwebsite.eventoverview.urls.urlpatternsjson)),
+    url(r'^ecd/eventoverview/(?P<ix>.*)$', include(openquakeplatform.gemecdwebsite.eventoverview.urls.urlpatterns)),
+
+    url(r'^ecd/eventdetails/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.eventdetails.urls.urlpatterns)), # edit mode
+    url(r'^ecd/eventdetails/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.eventdetails.urls.urlpatterns)), # display mode
+
+    url(r'^ecd/location/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.location.urls.urlpatterns)), #location edit mode
+    url(r'^ecd/location/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.location.urls.urlpatterns)), #location display mode
+
+    url(r'^ecd/inventoryclass/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.inventoryclass.urls.urlpatterns)), #edit mode
+    url(r'^ecd/inventoryclass/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.inventoryclass.urls.urlpatterns)), #display mode
+
+    url(r'^ecd/damagelevel/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.damagelevel.urls.urlpatterns)), #edit mode
+    url(r'^ecd/damagelevel/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.damagelevel.urls.urlpatterns)), #display mode
+
+    url(r'^ecd/casualtylevel/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.casualtylevel.urls.urlpatterns)), #edit mode
+    url(r'^ecd/casualtylevel/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.casualtylevel.urls.urlpatterns)), #display mode
+
+    url(r'^ecd/surveyvalue/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.surveyvalue.urls.urlpatterns)), #edit mode
+    url(r'^ecd/surveyvalue/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.surveyvalue.urls.urlpatterns)), #display mode
+
+    url(r'^ecd/photo/(?P<ix>.*)/(?P<editmode>.*)/$',include(openquakeplatform.gemecdwebsite.photo.urls.urlpatterns)), #edit mode
+    url(r'^ecd/photo/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.photo.urls.urlpatterns)), #display mode
+
+    url(r'^ecd/uploadnrml',include(openquakeplatform.gemecdwebsite.uploadnrml.urls.urlpatterns)), #display mode
+
+
+    #photologue
+    url(r'^photologue/', include(photologue.urls)),
+
     # disable open proxy provided by geonode
     #    url(r'^proxy/$', 'openquakeplatform.proxy.fake_proxy',),
     url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
@@ -43,9 +88,6 @@ urlpatterns = patterns(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
     url(r'^geodetic/$', OQTemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^explore_leaflet/$', OQTemplateView.as_view(
-        template_name="explore_leaflet.html"), name='explore_leaflet'),
-
     url(r'^geojson/$', OQTemplateView.as_view(
         template_name="geojson.html"), name='geojson'),
     url(r'^hazard_models/$', OQTemplateView.as_view(
@@ -62,6 +104,7 @@ urlpatterns = patterns(
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
+    (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
 
     # Static pages
