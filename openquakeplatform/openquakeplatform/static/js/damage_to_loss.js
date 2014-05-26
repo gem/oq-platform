@@ -232,18 +232,5 @@ function buildMixedD3Chart(chartData) {
         .attr("class", "legend")
         .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-    legend.append("rect")
-        .attr("x", width - 28)
-        .attr("width", 18)
-        .attr("height", 18)
-        .attr("y", -30)
-        .style("fill", color);
-
-    legend.append("text")
-        .attr("x", width - 34)
-        .attr("y", -20)
-        .attr("dy", ".35em")
-        .style("text-anchor", "end")
-        .text(function(d) { return d; });
     
 } // End Chart
