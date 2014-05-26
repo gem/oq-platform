@@ -41,7 +41,7 @@ var jsonObj = {"pk": 5, "model": "vulnerability.generalinformation", "fields": {
 
 var capName = jsonObj.fields.name;
 
-var typeOfAssessment = jsonObj.fields.type_of_assessment;
+var assessmentType = jsonObj.fields.type_of_assessment;
 var dlName = jsonObj.fields.name;
 var taxText = jsonObj.fields.taxonomy_text;
 var taxType = jsonObj.fields.taxonomy_type.fields.name
@@ -55,20 +55,52 @@ var modelType = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.
 var methodUncertPropag = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.method_uncert_propag;
 var useCase = jsonObj.fields.use_case_information;
 var modelsNum = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.models_num;
+var geoApp = "Mediterranean";
 
-$("#genInfo").append('<p><b>Assessment Type: </b>'+typeOfAssessment+'</p>');
-//$("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
-$("#genInfo").append('<p><b>Name: </b>'+capName+'</p>');
-$("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
-$("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
-$("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
-$("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
-$("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
+if (assessmentType != undefined && assessmentType != "") {
+    $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
+};
 
-$("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
-$("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
-$("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
-$("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
+if (assessmentType != undefined && assessmentType != "") {
+    $("#genInfo").append('<p><b>Name: </b>'+capName+'</p>');
+};
+
+if (taxText != undefined && taxText != "") {
+    $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
+};
+
+if (articleTitle != undefined && articleTitle != "") {
+    $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
+};
+
+if (geoApp != undefined && geoApp != "") {
+    $("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
+};
+
+if (generalComments != undefined && generalComments != "") {
+    $("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
+};
+
+if (useCase != undefined && useCase != "") {
+    $("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
+};
+
+if (analysisType != undefined && analysisType != "") {
+    $("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
+};
+
+if (modelType != undefined && modelType != "") {
+    $("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
+};
+
+if (methodUncertPropag != undefined && methodUncertPropag != "") {
+    $("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
+};
+
+if (modelsNum != undefined && modelsNum != "") {
+    $("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
+};
+
 
 /////////////////////////////////
 /// Create Capacity Curves /////
@@ -266,7 +298,7 @@ function buildMixedD3Chart(chartData) {
         .attr("dy", ".35em")
         .style("font-weight", "bold")
         .attr("font-size","14px")
-        .text(typeOfAssessment +' '+ capName);
+        .text(assessmentType +' '+ capName);
         
     textTop = svg.append("text")
         .attr("x", 0)
