@@ -39,7 +39,7 @@ var jsonObj = {"pk": 2, "model": "vulnerability.generalinformation", "fields": {
 /////////////////////////////////
 
 var respVar = jsonObj.fields.damage_to_loss_func.fields.resp_var;
-var typeOfAssessment = jsonObj.fields.type_of_assessment;
+var assessmentType = jsonObj.fields.type_of_assessment;
 var dlName = jsonObj.fields.name;
 var taxText = jsonObj.fields.taxonomy_text;
 var taxType = jsonObj.fields.taxonomy_type.fields.name
@@ -49,15 +49,39 @@ var authors = jsonObj.fields.authors;
 var generalComments = jsonObj.fields.general_comments;
 var year = jsonObj.fields.year;
 var useCase = jsonObj.fields.use_case_information;
+var geoApp = "Mediterranean";
 
-$("#genInfo").append('<p><b>Assessment Type: </b>'+typeOfAssessment+'</p>');
-$("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
-$("#genInfo").append('<p><b>Name: </b>'+dlName+'</p>');
-$("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
-$("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
-$("#genInfo").append('<p><b>Geographical Applicability: </b>Mediterranean</p>');
-$("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
-$("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
+if (assessmentType != undefined && assessmentType != "") {
+    $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
+};
+
+if (respVar != undefined && respVar != "") {
+    $("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
+};
+
+if (dlName != undefined && dlName != "") {
+    $("#genInfo").append('<p><b>Name: </b>'+dlName+'</p>');
+};
+
+if (taxText != undefined && taxText != "") {
+    $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
+};
+
+if (articleTitle != undefined && articleTitle != "") {
+    $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
+};
+
+if (geoApp != undefined && geoApp != "") {
+    $("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
+};
+
+if (generalComments != undefined && generalComments != "") {
+    $("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
+};
+
+if (useCase != undefined && useCase != "") {
+    $("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
+};
 
 /////////////////////////////////
 /// Create Damage Curves /////
@@ -200,7 +224,7 @@ function buildMixedD3Chart(chartData) {
         .attr("dy", ".35em")
         .style("font-weight", "bold")
         .attr("font-size","14px")
-        .text(typeOfAssessment+ ' ' +dlName);
+        .text(assessmentType+ ' ' +dlName);
 
     var legend = svg.selectAll(".legend")
         .data(ageNames.slice().reverse())
