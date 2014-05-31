@@ -28,7 +28,7 @@ if 'linux' in sys.platform:
     env.shell = '/bin/bash -c'
 
 #: Base dir for postgis extension code
-POSTGIS_DIR = '/usr/share/postgresql/9.1/contrib/postgis-1.5'
+POSTGIS_DIR = '/Applications/Postgres.app/Contents/MacOS/share/contrib/postgis-2.0'
 POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
                  ('postgis.sql', 'spatial_ref_sys.sql')]
 
@@ -68,7 +68,7 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     apps(db_name, db_user, db_pass)
 
     # Install the libs needs to `test` and `test_with_xunit`:
-    local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
+    local('ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install %s' % ' '.join(PYTHON_TEST_LIBS))
 
     # Finally, remove the superuser privileges, but only if this was a user we
     # created:
@@ -98,7 +98,7 @@ def baseenv(
     init_start()
 
 APPS_LIST=['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
-           'econd', 'weblib', 'gemecdwebsite', 'vulnerability', 'icebox']
+           'econd', 'weblib', 'gemecdwebsite', 'icebox']
 
 def apps(db_name, db_user, db_pass):
     globs = globals()
@@ -177,7 +177,7 @@ def _pgsudo(command, **kwargs):
     # Without this leading `cd /tmp && `, we get errors like this:
     # `could not change directory to "/home/lars"`
     # I observed this only on Linux, but not on OSX.
-    return sudo('cd /tmp && ' + command, user='postgres', **kwargs)
+    return sudo('cd /tmp && ' + command, user='bmwyss', **kwargs)
 
 
 def _pgquery(query):
@@ -304,7 +304,7 @@ def _add_gaf_viewer():
           './openquakeplatform/gaf_viewer/dev_data/gaf_data_ft.csv')
 
 def _add_econd():
-    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
+    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u bmwyss psql -e -U oqplatform oqplatform')
     local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
 
 def _add_weblib():
@@ -313,6 +313,3 @@ def _add_weblib():
 def _add_gemecdwebsite():
     pass
 
-def _add_vulnerability():
-    local('python manage.py import_vuln_geo_applicability_csv '
-          './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
