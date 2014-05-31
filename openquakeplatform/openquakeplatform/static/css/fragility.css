@@ -1,0 +1,51 @@
+
+#fraAccordion {
+	float:left;
+	display: block;
+	position: relative;
+	margin: 20px;
+	width: 400px;
+}
+
+#fragilityChart {
+	float:left;
+	display: block;
+	position: relative;
+	padding-top: 30px;
+}
+
+#fragility-table {
+	float:left;
+	display: block;
+	width: 350px;
+	margin: 20px;
+	padding: 20px;
+}
+
+#fragility-table_paginate {
+	float:left;
+	padding-bottom: 10px;
+}
+
+#fragility-table_info {
+	float:left;
+	padding-left: 30px;
+}
+
+.axis line, .axis path {
+	fill: none;
+	stroke: #000;
+  	shape-rendering: crispEdges;
+}
+
+.axis text {
+	text-shadow: 0 1px 0 #fff;
+	cursor: move;
+}
+
+.grid .tick {
+    stroke: lightgray;
+}
+.grid path {
+	stroke-width: 0;
+}
