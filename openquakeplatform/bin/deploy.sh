@@ -31,7 +31,7 @@ GEM_HAZARD_CALC_ADDR='http://localhost:8800'
 GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY="oq-platform"
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -176,7 +176,6 @@ isc_viewer_dataloader () {
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
 }
 
-
 #
 #
 econd_dataloader () {
@@ -198,6 +197,21 @@ econd_dataloader () {
     fi
 }
 
+#
+#
+vulnerability_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/vuln_geo_applicability_data.csv" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/vulnerability/dev_data"
+    fi
+    openquakeplatform import_vuln_geo_applicability_csv "${bdir}/vuln_geo_applicability_data.csv"
+}
+
+#
+#
 econd_fixtureupdate () {
     oqpdir="$1"
 
@@ -205,9 +219,10 @@ econd_fixtureupdate () {
         cp private_data/econd/initial_data.json ${oqpdir}/econd/fixtures
     fi
 }
+
 #
 #
-passwd_create () {
+passwd_create () { 
     python -c "import string ; import random
 def id_generator(size=8, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
