@@ -28,7 +28,6 @@ $(function() {
     });
 });
 
-
 /////////////////////////////////
 /// Create Damage Metadata //////
 /////////////////////////////////
@@ -48,35 +47,35 @@ var geoApp = "Mediterranean";
 
 if (assessmentType != undefined && assessmentType != "") {
     $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
-};
+}
 
 if (respVar != undefined && respVar != "") {
     $("#genInfo").append('<p><b>Response Variable: </b>'+respVar+'</p>');
-};
+}
 
 if (dlName != undefined && dlName != "") {
     $("#genInfo").append('<p><b>Name: </b>'+dlName+'</p>');
-};
+}
 
 if (taxText != undefined && taxText != "") {
     $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
-};
+}
 
 if (articleTitle != undefined && articleTitle != "") {
     $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
-};
+}
 
 if (geoApp != undefined && geoApp != "") {
     $("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
-};
+}
 
 if (generalComments != undefined && generalComments != "") {
     $("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
-};
+}
 
 if (useCase != undefined && useCase != "") {
     $("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
-};
+}
 
 /////////////////////////////////
 /// Create Damage Curves /////
@@ -96,10 +95,9 @@ var chartData = [];
 for (var i = 0; i < limitStates.length; i++) {
     var dataObj = {};
     dataObj["mean"] = parseFloat(meanDamage[i]);
-    //dataObj["coeff"] = parseFloat(coeff[i]);
     dataObj["name"] = limitStates[i];
     chartData.push(dataObj);
-};
+}
 
 buildMixedD3Chart(chartData);
 
@@ -114,18 +112,57 @@ $(document).ready(function() {
         var tmp = [];
         tmp.push(limitStates[i]);
         tmp.push(meanDamage[i]);
-        tmp.push(coeff[i]);
+        console.log(coeff.length);
+        if (coeff.length > 1) {
+            tmp.push(coeff[i]);
+        }
+        
         aaData.push(tmp);
-    };
+    }
+
+    var columnLS = {"sTitle": "Limit State"};
+    var columnMean = {"sTitle": "Mean"};
+    var columnCoef = {"sTitle": "Coefficient"};
+    var alColumns = [];
+
+    alColumns.push(columnLS);
+    alColumns.push(columnMean);
+    if (coeff.length > 1) {
+        alColumns.push(columnCoef);
+    }
+
+    if (coeff.length > 1) {
+        $('#damage-table').append(
+            '<thead id="tablehead">'+
+                '<tr>'+
+                    '<th>Limit State</th>'+
+                    '<th>Mean</th>'+
+                    '<th>Coefficient</th>'+
+                '</tr>'+
+            '</thead>'+
+            '<tbody id="tableBody">'+
+                '<tr><td>'+
+                '</td></tr>'+
+            '</tbody>'
+        );
+    } else {
+        $('#damage-table').append(
+            '<thead id="tablehead">'+
+                '<tr>'+
+                    '<th>Limit State</th>'+
+                    '<th>Mean</th>'+
+                '</tr>'+
+            '</thead>'+
+            '<tbody id="tableBody">'+
+                '<tr><td>'+
+                '</td></tr>'+
+            '</tbody>'
+        );
+    }
 
     $('#damage-table').dataTable({
         "aaData": aaData,
-        // TODO make thias dynamic
-        "aoColumns": [
-            {"sTitle": "Limit State"},
-            {"sTitle": "Mean"},
-            {"sTitle": "Coefficient"}
-        ],
+        "aoColumns": alColumns,
         "bLengthChange": false,
         "bFilter": false
     });
