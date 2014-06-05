@@ -32,11 +32,14 @@ $(function() {
 /// Create Damage Metadata //////
 /////////////////////////////////
 
+
 var respVar = gl.fields.damage_to_loss_func.fields.resp_var;
 var assessmentType = gl.fields.type_of_assessment;
 var dlName = gl.fields.name;
 var taxText = gl.fields.taxonomy_text;
-var taxType = gl.fields.taxonomy_type.fields.name
+if (gl.fields.taxonomy_type !== null) {
+    var taxType = gl.fields.taxonomy_type.fields.name;
+}
 var publication = gl.fields.publication_conference_name;
 var articleTitle = gl.fields.article_title;
 var authors = gl.fields.authors;
@@ -127,6 +130,7 @@ $(document).ready(function() {
 
     alColumns.push(columnLS);
     alColumns.push(columnMean);
+
     if (coeff.length > 1) {
         alColumns.push(columnCoef);
     }
