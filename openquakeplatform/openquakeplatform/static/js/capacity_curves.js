@@ -43,83 +43,100 @@ var articleTitle = gl.fields.article_title;
 var authors = gl.fields.authors;
 var generalComments = gl.fields.general_comments;
 var year = gl.fields.year;
-var analysisType = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.analysis_type.fields.name;
-var modelType = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.model_type;
-var methodUncertPropag = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.method_uncert_propag;
+//var analysisType = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.analysis_type.fields.name;
+
+
+//var modelType = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.model_type;
+
+//var methodUncertPropag = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.method_uncert_propag;
+
 var useCase = gl.fields.use_case_information;
-var modelsNum = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.models_num;
-var geoApp = "Mediterranean";
 
-if (assessmentType != undefined && assessmentType != "") {
+//var modelsNum = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.models_num;
+
+var countriesArray = [];
+var geoApp = gl.fields.geo_applicability.fields.countries;
+
+for (var i = geoApp.length - 1; i >= 0; i--) {
+    var tmp = " "+geoApp[i].fields.name;
+    countriesArray.push(tmp);
+}
+
+if (assessmentType !== undefined && assessmentType !== "") {
     $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
-};
+}
 
-if (assessmentType != undefined && assessmentType != "") {
+if (assessmentType !== undefined && assessmentType !== "") {
     $("#genInfo").append('<p><b>Name: </b>'+capName+'</p>');
-};
+}
 
-if (taxText != undefined && taxText != "") {
+if (taxText !== undefined && taxText !== "") {
     $("#genInfo").append('<p><b>Taxonomy: </b>'+taxText+' ('+taxType+')</p>');
-};
+}
 
-if (articleTitle != undefined && articleTitle != "") {
+if (articleTitle !== undefined && articleTitle !== "") {
     $("#genInfo").append('<p><b>Reference: </b>'+articleTitle+' ('+authors+', '+year+') - '+publication+'</p>');
-};
+}
 
-if (geoApp != undefined && geoApp != "") {
+if (geoApp !== undefined && geoApp !== "") {
     $("#genInfo").append('<p><b>Geographical Applicability: </b>'+geoApp+'</p>');
-};
+}
 
-if (generalComments != undefined && generalComments != "") {
+if (generalComments !== undefined && generalComments !== "") {
     $("#genInfo").append('<p><b>General Comments: </b>'+generalComments+'</p>');
-};
+}
 
-if (useCase != undefined && useCase != "") {
+if (useCase !== undefined && useCase !== "") {
     $("#genInfo").append('<p><b>Use Case Information: </b>'+useCase+'</p>');
-};
+}
 
-if (analysisType != undefined && analysisType != "") {
+if (countriesArray.length > 0) {
+    $("#genInfo").append('<p><b>Geographical Applicability: </b>'+countriesArray+'</p>');
+}
+/*
+if (analysisType !== undefined && analysisType !== "") {
     $("#modellingInfo").append('<p><b>Analysis Type: </b>'+analysisType+'</p>');
-};
+}
 
-if (modelType != undefined && modelType != "") {
+if (modelType !== undefined && modelType !== "") {
     $("#modellingInfo").append('<p><b>Model Type: </b>'+modelType+'</p>');
-};
+}
 
-if (methodUncertPropag != undefined && methodUncertPropag != "") {
+if (methodUncertPropag !== undefined && methodUncertPropag !== "") {
     $("#modellingInfo").append('<p><b>Method of Uncertainty Propagation: </b>'+methodUncertPropag+'</p>');
-};
+}
 
-if (modelsNum != undefined && modelsNum != "") {
+if (modelsNum !== undefined && modelsNum !== "") {
     $("#modellingInfo").append('<p><b>Number of Distinct Structural Models Analysed: </b>'+modelsNum+'</p>');
-};
+}
 
-
+*/
 /////////////////////////////////
 /// Create Capacity Curves /////
 /////////////////////////////////
 
-var respVarUnits = gl.fields.capacity_curve_func.fields.resp_var_val;
+var respVarUnits = gl.fields.capacity_curve_func.fields.cc_predictor_var.fields.resp_var_val;
+
 respVarUnits = respVarUnits.split(";");
 for (var i = 0; i < respVarUnits.length; i++)
     respVarUnits[i] = respVarUnits[i].trim();
 for (var i = 0; i < respVarUnits.length; i++) {
     respVarUnits[i] = parseFloat(respVarUnits[i]);
-};
+}
 
-var predVarVal = gl.fields.capacity_curve_func.fields.cc_predictor_var.fields.pred_var_val
+var predVarVal = gl.fields.capacity_curve_func.fields.cc_predictor_var.fields.pred_var_val;
 predVarVal = predVarVal.split(";");
 for (var i = 0; i < predVarVal.length; i++)
     predVarVal[i] = predVarVal[i].trim();
 for (var i = 0; i < predVarVal.length; i++) {
     predVarVal[i] = parseFloat(predVarVal[i]);
-};
+}
 
 var chartData = [];
 
 for (var i = 0; i < predVarVal.length; i++) {
     chartData.push([predVarVal[i], respVarUnits[i]]);
-};
+}
 
 buildMixedD3Chart(chartData);
 
@@ -135,7 +152,7 @@ $(document).ready(function() {
         tmp.push(predVarVal[i]);
         tmp.push(respVarUnits[i]);
         aaData.push(tmp);
-    };
+    }
 
     $('#capacity-table').dataTable({
         "aaData": aaData,
@@ -156,29 +173,29 @@ $(document).ready(function() {
 
 function buildMixedD3Chart(chartData) {
     // grid line functions
-    function make_x_axis() {        
+    function make_x_axis() {
         return d3.svg.axis()
             .scale(x_scale)
             .orient("bottom")
-            .ticks(5)
+            .ticks(5);
     }
-    function make_y_axis() {        
+    function make_y_axis() {
         return d3.svg.axis()
             .scale(y_scale)
             .orient("left")
-            .ticks(5)
+            .ticks(5);
     }
     function capitalise(string) {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     }
     function makeCircles(data) {
         // Points along the line
-        svg.selectAll("circle.line") 
-            .data(data) 
-            .enter().append("circle") 
-            .attr("class", "line") 
-            .attr("cx", function(d) { return x_scale(d[0]); }) 
-            .attr("cy", function(d) { return y_scale(d[1]); }) 
+        svg.selectAll("circle.line")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "line")
+            .attr("cx", function(d) { return x_scale(d[0]); })
+            .attr("cy", function(d) { return y_scale(d[1]); })
             .attr("r", 2.5)
             .style("fill", "blue")
             .style("opacity", 1)
@@ -187,7 +204,7 @@ function buildMixedD3Chart(chartData) {
                     .attr('r', 6)
                     .text(circleX + ", " + circleY)
                     .style("fill", "blue")
-                    .style("opacity", 1)
+                    .style("opacity", 1);
                 var circleX = d3.select(this.__data__[0]);
                 circleX = circleX.toString();
                 circleX = circleX.split(","[0]);
@@ -220,10 +237,10 @@ function buildMixedD3Chart(chartData) {
         .orient("left");
     var line = d3.svg.line()
         .x(function(d) {
-            return x_scale(d[0]); 
+            return x_scale(d[0]);
         })
         .y(function(d) {
-            return y_scale(d[1]); 
+            return y_scale(d[1]);
         });
     var svg = d3.select("#capacityChart").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -231,7 +248,7 @@ function buildMixedD3Chart(chartData) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     // grid lines
-    svg.append("g")         
+    svg.append("g")
         .attr("class", "grid")
         .attr("transform", "translate(0," + height + ")")
         .call(make_x_axis()
@@ -239,7 +256,7 @@ function buildMixedD3Chart(chartData) {
             .tickFormat("")
         );
 
-    svg.append("g")         
+    svg.append("g")
         .attr("class", "grid")
         .call(make_y_axis()
             .tickSize(-width, 0, 0)

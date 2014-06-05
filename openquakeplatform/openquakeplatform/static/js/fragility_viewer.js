@@ -322,19 +322,19 @@ if(funcDistrType === "Continuous") {
         }
 
         $('#fragility-table-continuous').append(
-            '<thead id="tablehead">'
-                + '<tr>'
-                    + '<th rowspan="1">Intensity Measure</th>'
-                    + '<th colspan="4">'+imtTitle+'('+imtUnite+')</th>'
-                +'</tr>'
-                +'<tr>'
-                    +'<th>placeHolder</th>'
-                    +'<th>placeHolder</th>'
-                    +'<th>placeHolder</th>'
-                    +'<th>placeHolder</th>'
-                    +'<th>placeHolder</th>'
-                +'</tr>'
-            +'</thead>'
+            '<thead id="tablehead">'+
+                '<tr>'+
+                    '<th rowspan="1">Intensity Measure</th>'+
+                    '<th colspan="4">'+imtTitle+'('+imtUnite+')</th>'+
+                '</tr>'+
+                '<tr>'+
+                    '<th>placeHolder</th>'+
+                    '<th>placeHolder</th>'+
+                    '<th>placeHolder</th>'+
+                    '<th>placeHolder</th>'+
+                    '<th>placeHolder</th>'+
+                '</tr>'+
+            '</thead>'
         );
     
         $('#fragility-table-continuous').dataTable({
