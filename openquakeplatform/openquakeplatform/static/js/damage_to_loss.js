@@ -46,7 +46,13 @@ var authors = gl.fields.authors;
 var generalComments = gl.fields.general_comments;
 var year = gl.fields.year;
 var useCase = gl.fields.use_case_information;
-var geoApp = "Mediterranean";
+var countriesArray = [];
+var geoApp = gl.fields.geo_applicability.fields.countries;
+
+for (var i = geoApp.length - 1; i >= 0; i--) {
+    var tmp = " "+geoApp[i].fields.name;
+    countriesArray.push(tmp);
+}
 
 if (assessmentType != undefined && assessmentType != "") {
     $("#genInfo").append('<p><b>Assessment Type: </b>'+assessmentType+'</p>');
