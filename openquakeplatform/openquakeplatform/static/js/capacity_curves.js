@@ -29,32 +29,25 @@ $(function() {
 });
 
 /////////////////////////////////
-////// Capacity Information ////
-/////////////////////////////////
-// the json to be expected from the other app
-var jsonObj = {"pk": 5, "model": "vulnerability.generalinformation", "fields": {"category": "Structure specific", "article_title": "Curva de capacidad como ejemplo para la IGU que est\u00e1 haciendo Ben", "name": "RC Low-rise bare frame in Quito", "capacity_curve_func": {"pk": 1, "model": "vulnerability.capacitycurvefunc", "fields": {"analytical_model_info": {"pk": 2, "model": "vulnerability.analyticalmodelinfo", "fields": {"damage_to_loss_func": null, "capacity_curve_func": 1, "fragility_func": null, "model_type": "2D story-by-story", "vulnerability_func": null, "analysis_type": {"pk": 2, "model": "vulnerability.analysistype", "fields": {"name": "Static analysis"}}, "method_uncert_propag": "Single index building", "models_num": 5}}, "general_information": 5, "resp_var_units": "kN", "resp_var_par": "Base shear", "resp_var_val": "0; 90; 135; 175; 199; 216; 247; 255; 267; 286; 292; 298; 301; 303; 297; 276; 255; 245; 233; 218; 217; 212; 211; 210; 206", "cc_predictor_var": {"pk": 1, "model": "vulnerability.cc_predictorvar", "fields": {"pred_var_units": "m", "engineering_demand_param": {"pk": 1, "model": "vulnerability.cc_engineeringdemandpar", "fields": {"name": "Top displacement"}}, "pred_var_val": "0; 0.025; 0.05; 0.075; 0.1; 0.125; 0.15; 0.175; 0.2; 0.225; 0.25; 0.275; 0.3; 0.325; 0.35; 0.375; 0.4; 0.425; 0.45; 0.475; 0.5; 0.525; 0.55; 0.575; 0.6", "capacity_curve_func": 1, "data_pts_num": 25}}}}, "publication_conference_name": "GEM Foundation, Global Component Report ", "type_of_assessment": "Capacity curve", "year": 2014, "web_link": "http://www.nexus.globalquakemodel.org/gem-vulnerability/posts/existing-empirical-vulnerability-and-fragility-relationships-compendium-and-guide-for-selection", "general_comments": "Para la taxonom\u00eda del edificio se tom\u00f3 como referencia una de las tipolog\u00edas de edificios en Ecuador, seg\u00fan el Workshop en Medell\u00edn", "use_case_information": "Este es un ejemplo utilizando informaci\u00f3n general para crear una entrada en la GVD.", "authors": "Catalina Mu\u00f1oz C\u00e1rdenas", "taxonomy_type": {"pk": 2, "model": "vulnerability.taxonomytype", "fields": {"name": "GEM Taxonomy"}}, "taxonomy_text": "DX+PF/MUR//DY+OF/CR+CIP/LFM+DUC/HBET:1,12+HBAPP:1+HFAPP:2.7/YBET:1960,2014/MIX+MIX2//PLFR/IRIR+IRPP:TOR/EWMA/RSH1+RMN+RC+RC1+RWCP/FC+FC1+FWCP/FOSSL"}};
-
-
-/////////////////////////////////
 /// Create Capacity Metadata ///
 /////////////////////////////////
 
-var capName = jsonObj.fields.name;
+var capName = gl.fields.name;
 
-var assessmentType = jsonObj.fields.type_of_assessment;
-var dlName = jsonObj.fields.name;
-var taxText = jsonObj.fields.taxonomy_text;
-var taxType = jsonObj.fields.taxonomy_type.fields.name
-var publication = jsonObj.fields.publication_conference_name;
-var articleTitle = jsonObj.fields.article_title;
-var authors = jsonObj.fields.authors;
-var generalComments = jsonObj.fields.general_comments;
-var year = jsonObj.fields.year;
-var analysisType = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.analysis_type.fields.name;
-var modelType = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.model_type;
-var methodUncertPropag = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.method_uncert_propag;
-var useCase = jsonObj.fields.use_case_information;
-var modelsNum = jsonObj.fields.capacity_curve_func.fields.analytical_model_info.fields.models_num;
+var assessmentType = gl.fields.type_of_assessment;
+var dlName = gl.fields.name;
+var taxText = gl.fields.taxonomy_text;
+var taxType = gl.fields.taxonomy_type.fields.name
+var publication = gl.fields.publication_conference_name;
+var articleTitle = gl.fields.article_title;
+var authors = gl.fields.authors;
+var generalComments = gl.fields.general_comments;
+var year = gl.fields.year;
+var analysisType = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.analysis_type.fields.name;
+var modelType = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.model_type;
+var methodUncertPropag = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.method_uncert_propag;
+var useCase = gl.fields.use_case_information;
+var modelsNum = gl.fields.capacity_curve_func.fields.analytical_model_info.fields.models_num;
 var geoApp = "Mediterranean";
 
 if (assessmentType != undefined && assessmentType != "") {
@@ -106,7 +99,7 @@ if (modelsNum != undefined && modelsNum != "") {
 /// Create Capacity Curves /////
 /////////////////////////////////
 
-var respVarUnits = jsonObj.fields.capacity_curve_func.fields.resp_var_val;
+var respVarUnits = gl.fields.capacity_curve_func.fields.resp_var_val;
 respVarUnits = respVarUnits.split(";");
 for (var i = 0; i < respVarUnits.length; i++)
     respVarUnits[i] = respVarUnits[i].trim();
@@ -114,7 +107,7 @@ for (var i = 0; i < respVarUnits.length; i++) {
     respVarUnits[i] = parseFloat(respVarUnits[i]);
 };
 
-var predVarVal = jsonObj.fields.capacity_curve_func.fields.cc_predictor_var.fields.pred_var_val
+var predVarVal = gl.fields.capacity_curve_func.fields.cc_predictor_var.fields.pred_var_val
 predVarVal = predVarVal.split(";");
 for (var i = 0; i < predVarVal.length; i++)
     predVarVal[i] = predVarVal[i].trim();

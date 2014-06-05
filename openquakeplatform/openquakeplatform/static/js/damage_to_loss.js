@@ -28,27 +28,22 @@ $(function() {
     });
 });
 
-/////////////////////////////////
-////// Damage Information ///////
-/////////////////////////////////
-// the json to be expected from the other app
-var jsonObj = {"pk": 2, "model": "vulnerability.generalinformation", "fields": {"category": "Structure class", "article_title": "Vulnerabilit\u00e0 funzionale ed economica degli edifici residenziali  colpiti dai recenti eventi sismici italiani", "name": "DR_Muratura_Italy", "damage_to_loss_func": {"pk": 1, "model": "vulnerability.damagetolossfunc", "fields": {"general_information": 2, "func_distr_dtl_discr": {"pk": 1, "model": "vulnerability.funcdistrdtldiscr", "fields": {"damage_to_loss_func": 1, "func_distr_shape": {"pk": 2, "model": "vulnerability.funcdistrshape", "fields": {"name": "Histogram"}}, "var_val_coeff": "1.317; 0.725; 0.515; 0.182; 0.312", "var_mean_val": "0.041; 0.218; 0.41; 0.781; 0.814"}}, "limit_states_desc": "DS1; DS2; DS3; DS4; DS5", "damage_scale": "EMS98", "method_of_estimation": "Empirical", "resp_var": "Damage factor", "limit_states_num": 5}}, "publication_conference_name": "X Congresso Nazionale \u201cL\u2019ingegneria Sismica in Italia\u201d, Potenza-Matera 9-13 settembre 2001", "type_of_assessment": "Damage-to-loss", "year": 2001, "web_link": "http://earthquake.usgs.gov/research/pager/prodandref/Jaiswal_Wald_DAyala_2011_Empirical_Collapse.pdf", "general_comments": "This is an example taken from Figure 6 in the paper: Costo relativo di riparazione medio  per diverse classi di vulnerabilit\u00e0 e per danno  medio all'edificio ", "use_case_information": "Earthquakes in Italy (Irpinia '80, Abruzzo '84, Sicilia '90)", "authors": "G. Di Pasquale e A. Goretti", "taxonomy_type": {"pk": 2, "model": "vulnerability.taxonomytype", "fields": {"name": "GEM Taxonomy"}}, "taxonomy_text": "MUR/LWAL"}};
 
 /////////////////////////////////
 /// Create Damage Metadata //////
 /////////////////////////////////
 
-var respVar = jsonObj.fields.damage_to_loss_func.fields.resp_var;
-var assessmentType = jsonObj.fields.type_of_assessment;
-var dlName = jsonObj.fields.name;
-var taxText = jsonObj.fields.taxonomy_text;
-var taxType = jsonObj.fields.taxonomy_type.fields.name
-var publication = jsonObj.fields.publication_conference_name;
-var articleTitle = jsonObj.fields.article_title;
-var authors = jsonObj.fields.authors;
-var generalComments = jsonObj.fields.general_comments;
-var year = jsonObj.fields.year;
-var useCase = jsonObj.fields.use_case_information;
+var respVar = gl.fields.damage_to_loss_func.fields.resp_var;
+var assessmentType = gl.fields.type_of_assessment;
+var dlName = gl.fields.name;
+var taxText = gl.fields.taxonomy_text;
+var taxType = gl.fields.taxonomy_type.fields.name
+var publication = gl.fields.publication_conference_name;
+var articleTitle = gl.fields.article_title;
+var authors = gl.fields.authors;
+var generalComments = gl.fields.general_comments;
+var year = gl.fields.year;
+var useCase = gl.fields.use_case_information;
 var geoApp = "Mediterranean";
 
 if (assessmentType != undefined && assessmentType != "") {
@@ -87,13 +82,13 @@ if (useCase != undefined && useCase != "") {
 /// Create Damage Curves /////
 /////////////////////////////////
 
-var meanDamage = jsonObj.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_mean_val;
+var meanDamage = gl.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_mean_val;
 meanDamage = meanDamage.split(";");
 
-var coeff = jsonObj.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_val_coeff;
+var coeff = gl.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_val_coeff;
 coeff = coeff.split(";");
 
-var limitStates = jsonObj.fields.damage_to_loss_func.fields.limit_states_desc;
+var limitStates = gl.fields.damage_to_loss_func.fields.limit_states_desc;
 limitStates = limitStates.split(";");
 
 var chartData = [];
