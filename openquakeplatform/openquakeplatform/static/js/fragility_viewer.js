@@ -25,7 +25,7 @@ $(".span12").remove();
 $(function() {
     $("#fraAccordion").accordion({
         collapsible: true,
-        //heightStyle: "fill"
+        heightStyle: "content"
     });
 });
 
