@@ -33,6 +33,7 @@ $(function() {
 /// Create Fragility Metadata ///
 /////////////////////////////////
 
+
 var assessmentType = gl.fields.type_of_assessment;
 var id = gl.fields.fragility_func.fields.general_information;
 var funcName = gl.fields.name;
@@ -175,7 +176,7 @@ if (gl.fields.fragility_func.fields.stat_info !== undefined) {
 /// Create Fragility Curves - Continuous /////
 //////////////////////////////////////////////
 
-if(funcDistrType === "Continuous") {
+if(funcDistrType == "Continuous") {
     // Get values out of JSON
     var dataObj = {};
     var chartData = [];
@@ -187,7 +188,7 @@ if(funcDistrType === "Continuous") {
 
     var lastMean = meanArray.length-1;
     var min = gl.fields.fragility_func.fields.predictor_var.fields.minimum_im;
-    if (gl.fields.fragility_func.fields.predictor_var.fields.maximum_im === undefined) {
+    if (gl.fields.fragility_func.fields.predictor_var.fields.maximum_im == undefined) {
         var max = (2 * meanArray[lastMean]);
     } else {
         var max = gl.fields.fragility_func.fields.predictor_var.fields.maximum_im;
@@ -200,34 +201,28 @@ if(funcDistrType === "Continuous") {
     for (var i = 0; i < limitStatesArray.length; i++)
         limitStatesArray[i] = limitStatesArray[i].trim();
     
-    for (var i = 0; i < limitStatesArray.length; i++) {
-        dataObj[limitStatesArray[i]] = [];
-    };
+    for (var j = 0; j < limitStatesArray.length; j++) {
+        dataObj[limitStatesArray[j]] = [];
+    }
     
-    for (var i = 0; i < limitStatesArray.length; i++) {
-        dataObj[limitStatesArray[i]] = [parseFloat(meanArray[i]), parseFloat(stddevArray[i])];
-    };
+    for (var l = 0; l < limitStatesArray.length; l++) {
+        dataObj[limitStatesArray[l]] = [parseFloat(meanArray[l]), parseFloat(stddevArray[l])];
+    }
     
     // create the x axis values
-    for(var i=min; i<max;i=i+inc) {
-        iml.push(Math.round(i*1000) / 1000);
+    for(var m=min; m<max;m=m+inc) {
+        iml.push(Math.round(m*1000) / 1000);
     }
     iml.push(max);
     
     for (var k in dataObj) {
         var tmp = makeFragilityFunctionContinuous(dataObj[k][0], dataObj[k][1]);
         chartData[k] = [];
-        for (var i = 0; i < iml.length; i++) {
-            var val = tmp(iml[i]);
-            chartData[k].push([iml[i], val]);
+        for (var n = 0; n < iml.length; n++) {
+            var val = tmp(iml[n]);
+            chartData[k].push([iml[n], val]);
         }
     }
-    
-    // create the x axis values
-    for(var i=min; i<max;i=i+inc) {
-        iml.push(Math.round(i*1000) / 1000);
-    }
-    iml.push(max);
     
     function normalCumulativeProbability(z) {
         var b1 = 0.31938153;
@@ -238,16 +233,16 @@ if(funcDistrType === "Continuous") {
         var p = 0.2316419;
         var c2 = 0.3989423;
         if (z > 6.0){
-            return 1.0};  // this guards against overflow
+            return 1.0;}  // this guards against overflow
         if (z < -6.0){
-            return 0.0};
+            return 0.0;}
         var a = Math.abs(z);
         var t = 1.0 / (1.0 + a * p);
         var b = c2 * Math.exp((-z)*(z / 2.0));
         var n = ((((b5 * t + b4) * t + b3) * t + b2) * t + b1) * t;
         var n = 1.0 - b * n;
         if (z < 0.0){
-            n = 1.0 - n};
+            n = 1.0 - n;}
         return n;
     }
     
@@ -271,7 +266,7 @@ if(funcDistrType === "Continuous") {
         for (var i = 0; i < limitStatesArray.length; i++) {
             var ls = capitalize(limitStatesArray[i]);
             $("#fragilityDataDialog").append(ls +", "+ meanArray[i] +", "+ stddevArray[i] +"</br>");
-        } 
+        }
     }
     continuousTable();
     buildChart(chartData);
@@ -296,29 +291,44 @@ if(funcDistrType === "Continuous") {
         tmp2.push("Mean");
         tmp3.push("Standard Deviation (SD)");
 
-        if(cvOfMean !== "") {
+        if(cvOfMean.length > 1) {
             tmp4.push("Coefficient of variation of the Mean");
         }
 
-        if (cvOfSD !== "") {
+        if (cvOfSD.length > 1) {
             tmp5.push("Coefficient of variation of the SD");
         }
         
         for (var i = 0; i < limitStatesArray.length; i++) {
-            //tmp.push(limitStatesArray[i]);
             tmp2.push(parseFloat(meanArray[i]));
             tmp3.push(parseFloat(stddevArray[i]));
-            tmp4.push(parseFloat(cvOfMean[i]));
-            tmp5.push(parseFloat(cvOfSD[i]));
+            if (cvOfMean.length > 1) {
+                tmp4.push(parseFloat(cvOfMean[i]));
+                tmp5.push(parseFloat(cvOfSD[i]));
+            }
         }
 
         aaData.push(tmp2, tmp3);
 
-        if(cvOfMean !== "") {
+        if(cvOfMean.length > 1) {
             aaData.push(tmp4);
         }
-        if(cvOfSD !== "") {
+        if(cvOfSD.length > 1) {
             aaData.push(tmp5);
+        }
+
+        // build the table header
+        var header = [];
+        header.push({"sTitle": "Damage State:"});
+
+        var placeHolder = "<th>place holder</th>";
+        var length = limitStatesArray.length;
+
+        for (var j = 0; j < limitStatesArray.length; j++) {
+            var tmpObj = {};
+            tmpObj.sTitle = limitStatesArray[j];
+            header.push(tmpObj);
+            placeHolder = placeHolder.concat("<th>place holder</th>");
         }
 
         $('#fragility-table-continuous').append(
@@ -328,36 +338,26 @@ if(funcDistrType === "Continuous") {
                     '<th colspan="4">'+imtTitle+'('+imtUnite+')</th>'+
                 '</tr>'+
                 '<tr>'+
-                    '<th>placeHolder</th>'+
-                    '<th>placeHolder</th>'+
-                    '<th>placeHolder</th>'+
-                    '<th>placeHolder</th>'+
-                    '<th>placeHolder</th>'+
+                    placeHolder+
                 '</tr>'+
             '</thead>'
         );
     
         $('#fragility-table-continuous').dataTable({
             "aaData": aaData,
-            "aoColumns": [
-                {"sTitle": "Damage State:"},
-                {"sTitle": limitStatesArray[0]},
-                {"sTitle": limitStatesArray[1]},
-                {"sTitle": limitStatesArray[2]},
-                {"sTitle": limitStatesArray[3]}
-            ],
-            "aaSorting": [],  
+            "aoColumns": header,
+            "aaSorting": [],
             "bLengthChange": false,
             "bFilter": false
         });
-    };
+    }
 
 
     ////////////////////////////////////////////
     /// Create Fragility Curves - Discrete /////
     ////////////////////////////////////////////
 
-} else if (funcDistrType === "Discrete") {
+} else if (funcDistrType == "Discrete") {
     var chartData = [];
 
     var limitStatesArray =  gl.fields.fragility_func.fields.limit_states_desc;
@@ -371,11 +371,12 @@ if(funcDistrType === "Continuous") {
     yAxisVals = [];
     for (var i = 0; i < bar.length; i++) {
         yAxisVals.push(parseFloat(bar[i]));
-    };
+    }
 
     for (var i = 0; i < limitStateVal.length; i++) {
         limitStateVal[limitStatesArray[i]] = limitStateVal[i].split(";");
-    };
+    }
+
     limitStateVal.shift();
     limitStateVal.shift();
     limitStateVal.shift();
@@ -386,19 +387,20 @@ if(funcDistrType === "Continuous") {
 
     for (var i = 0; i < limitStatesArray.length; i++) {
         chartData[limitStatesArray[i]] = [];
-    };
+    }
 
     for(var k in chartData) {
         var bar = [];
         for (var i = 0; i < predVarVal.length; i++) {
             var foo = [parseFloat(predVarVal[i]), parseFloat(limitStateVal[k][i])];
-            bar.push(foo);  
-        };
+            bar.push(foo);
+        }
         chartData[k] = bar;
-    };
+    }
 
-    discreteTable();
+    
     buildChart(chartData);
+    discreteTable();
 }
 
 
@@ -412,34 +414,36 @@ function discreteTable() {
     var limitState = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed;
     limitState = limitState.split('\n');
 
-    for (var i = limitState.length - 1; i >= 0; i--) {
+    for (var i = 0; i < limitState.length; i++) {
         limitState[i] = limitState[i].split(";");
-    };
+    }
 
-    if (gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed_05 !== "") {
+    if (gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed_05 != "") {
+        
         var limitState05 = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed_05;
         var limitState95 = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed_95;
         limitState05 = limitState05.split('\n');
         limitState95 = limitState95.split('\n');
 
-        for (var i = limitState05.length - 1; i >= 0; i--) {
-            limitState05[i] = limitState05[i].split(";");
-        };
+        for (var j = 0; j < limitState05.length; j++) {
+            limitState05[j] = limitState05[j].split(";");
+        }
 
-        for (var i = limitState95.length - 1; i >= 0; i--) {
-            limitState95[i] = limitState95[i].split(";");
-        };
+        for (var l = 0; l < limitState95.length; l++) {
+            limitState95[l] = limitState95[l].split(";");
+        }
 
-        for (var i = predVarVal.length - 1; i >= 0; i--) {
+        for (var m = 0; m < predVarVal.length; m++) {
             var tmp = [];
-            tmp.push(predVarVal[i]);
-            for (var j = limitState.length - 1; j >= 0; j--) {
-                tmp.push(limitState[j][i]);
-                tmp.push(limitState05[j][i]);
-                tmp.push(limitState95[j][i]);
-            };
+            tmp.push(predVarVal[m]);
+
+            for (var n = 0; n < limitState.length; n++) {
+                tmp.push(limitState[n][m]);
+                tmp.push(limitState05[n][m]);
+                tmp.push(limitState95[n][m]);
+            }
             aaData.push(tmp);
-        };
+        }
 
         // build the table header
         var header = [];
@@ -447,39 +451,39 @@ function discreteTable() {
         var placeHolder = "<th>place holder</th>";
         var length = limitStatesArray.length;
 
-        for (var i = 0; i < limitStatesArray.length; i++) {
+        for (var o = 0; o < limitStatesArray.length; o++) {
             var tmpObj = {};
-            tmpObj.sTitle = limitStatesArray[i]
+            tmpObj.sTitle = limitStatesArray[o];
             header.push(tmpObj);
             placeHolder = placeHolder.concat("<th>place holder</th>");
-        };
+        }
 
-        for (var i = 0; i < limitStatesArray.length; i++) {
+        for (var q = 0; q < limitStatesArray.length; q++) {
             var tmpObj = {};
-            tmpObj.sTitle = limitStatesArray[i]
+            tmpObj.sTitle = limitStatesArray[q];
             header.push(tmpObj);
             placeHolder = placeHolder.concat("<th>place holder</th>");
-        };
+        }
 
-        for (var i = 0; i < limitStatesArray.length; i++) {
+        for (var r = 0; r < limitStatesArray.length; r++) {
             var tmpObj = {};
-            tmpObj.sTitle = limitStatesArray[i]
+            tmpObj.sTitle = limitStatesArray[r];
             header.push(tmpObj);
             placeHolder = placeHolder.concat("<th>place holder</th>");
-        };
+        }
 
         $('#fragility-table-discrete').append(
-            '<thead id="tablehead">'
-                + '<tr>'
-                    + '<th rowspan="1">'+imtTitle+' '+imtUnite+'</th>'
-                    + '<th colspan="4">Probability of limit state exceedance</th>'
-                    + '<th colspan="4">Probability of limit state exceedance (5% prediction interval)</th>'
-                    + '<th colspan="4">Probability of limit state exceedance (95% prediction interval)</th>'
-                +'</tr>'
-                +'<tr>'
-                    +placeHolder
-                +'</tr>'
-            +'</thead>'
+            '<thead id="tablehead">'+
+                '<tr>'+
+                    '<th rowspan="1">'+imtTitle+' '+imtUnite+'</th>'+
+                    '<th colspan="4">Probability of limit state exceedance</th>'+
+                    '<th colspan="4">Probability of limit state exceedance (5% prediction interval)</th>'+
+                    '<th colspan="4">Probability of limit state exceedance (95% prediction interval)</th>'+
+                '</tr>'+
+                '<tr>'+
+                    placeHolder+
+                '</tr>'+
+            '</thead>'
         );
 
         $('#fragility-table-discrete').dataTable({
@@ -490,14 +494,14 @@ function discreteTable() {
         });
 
     } else {
-        for (var i = predVarVal.length - 1; i >= 0; i--) {
+        for (var s = 0; s < predVarVal.length; s++) {
             var tmp = [];
-            tmp.push(predVarVal[i]);
-            for (var j = limitState.length - 1; j >= 0; j--) {
-                tmp.push(limitState[j][i]);
-            };
+            tmp.push(predVarVal[s]);
+            for (var t = 0; t < limitState.length; t++) {
+                tmp.push(limitState[t][s]);
+            }
             aaData.push(tmp);
-        };
+        }
 
         predVarVal = predVarVal.map(parseFloat);
 
@@ -508,23 +512,23 @@ function discreteTable() {
         var placeHolder = "<th>place holder</th>";
         var length = limitStatesArray.length;
 
-        for (var i = 0; i < limitStatesArray.length; i++) {
+        for (var u = 0; u < limitStatesArray.length; u++) {
             var tmpObj = {};
-            tmpObj.sTitle = limitStatesArray[i]
+            tmpObj.sTitle = limitStatesArray[u];
             header.push(tmpObj);
             placeHolder = placeHolder.concat("<th>place holder</th>");
-        };
+        }
 
         $('#fragility-table-discrete').append(
-            '<thead id="tablehead">'
-                +'<tr>'
-                    +'<th rowspan="1">Intensity Measure</th>'
-                    +'<th colspan="'+length+'">Probability of limit state exceedance</th>'
-                +'</tr>'
-                +'<tr>'
-                    +placeHolder
-                +'</tr>'
-            +'</thead>'
+            '<thead id="tablehead">'+
+                '<tr>'+
+                    '<th rowspan="1">Intensity Measure</th>'+
+                    '<th colspan="'+length+'">Probability of limit state exceedance</th>'+
+                '</tr>'+
+                '<tr>'+
+                    placeHolder+
+                '</tr>'+
+            '</thead>'
         );
 
         $('#fragility-table-discrete').dataTable({
@@ -534,7 +538,7 @@ function discreteTable() {
             "bFilter": false
         });
     }
-};
+}
 
 
 ///////////////////////////
@@ -542,29 +546,29 @@ function discreteTable() {
 ///////////////////////////
 
 function buildChart(chartData) {
-
+    console.log(chartData);
     //prep the X axis lable
     var xAxisLable = "";
-    if (imtTitle === "PGA") {
+    if (imtTitle == "PGA") {
         xAxisLable = imtTitle+" ["+imtUnite+"]";
-    } else if (imtTitle === "Sa(T)") {
+    } else if (imtTitle == "Sa(T)") {
         xAxisLable = "Sa (" +typeOfPeriod+" = "+period+"s ["+imtUnite+"]";
-    } else if (imtTitle === "Sd(T)") {
+    } else if (imtTitle == "Sd(T)") {
         xAxisLable = "Sd (" +typeOfPeriod+" = "+period+"s ["+imtUnite+"]";
-    };
+    }
 
      // grid line functions
-    function make_x_axis() {        
+    function make_x_axis() {
         return d3.svg.axis()
             .scale(x_scale)
             .orient("bottom")
-            .ticks(5)
+            .ticks(5);
     }
-    function make_y_axis() {        
+    function make_y_axis() {
         return d3.svg.axis()
             .scale(y_scale)
             .orient("left")
-            .ticks(5)
+            .ticks(5);
     }
     function capitalise(string) {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -572,12 +576,12 @@ function buildChart(chartData) {
     function makeCircles(chartData, color) {
         // Points along the line
 
-        svg.selectAll("circle.line") 
-            .data(chartData) 
-            .enter().append("circle") 
-            .attr("class", "line"+k) 
-            .attr("cx", function(d) { return x_scale(d[0]); }) 
-            .attr("cy", function(d) { return y_scale(d[1]); }) 
+        svg.selectAll("circle.line")
+            .data(chartData)
+            .enter().append("circle")
+            .attr("class", "line"+k)
+            .attr("cx", function(d) { return x_scale(d[0]); })
+            .attr("cy", function(d) { return y_scale(d[1]); })
             .attr("r", 2.5)
             .style("fill", color)
             .style("opacity", 1)
@@ -586,7 +590,7 @@ function buildChart(chartData) {
                     .attr('r', 6)
                     .text(circleX + ", " + circleY)
                     .style("fill", color)
-                    .style("opacity", 1)
+                    .style("opacity", 1);
                 var circleX = d3.select(this.__data__[0]);
                 circleX = circleX.toString();
                 circleX = circleX.split(","[0]);
@@ -609,15 +613,14 @@ function buildChart(chartData) {
     width = 480 - margin.left - margin.right,
     height = 440 - margin.top - margin.bottom;
 
-    if (funcDistrType === "Continuous") {
+    if (funcDistrType == "Continuous") {
         var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(iml), d3.max(iml)]);
         var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
-    };
-
-    if(funcDistrType === "Discrete") {
+    }
+    else if (funcDistrType == "Discrete") {
         var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(predVarVal), d3.max(predVarVal)]);
         var y_scale = d3.scale.linear().range([0, height]).domain([d3.max(yAxisVals), d3.min(yAxisVals)]);
-    };
+    }
 
     var xAxis = d3.svg.axis()
         .scale(x_scale)
@@ -640,7 +643,7 @@ function buildChart(chartData) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // grid lines
-    svg.append("g")         
+    svg.append("g")
         .attr("class", "grid")
         .attr("transform", "translate(0," + height + ")")
         .call(make_x_axis()
@@ -648,7 +651,7 @@ function buildChart(chartData) {
             .tickFormat("")
         );
 
-    svg.append("g")         
+    svg.append("g")
         .attr("class", "grid")
         .call(make_y_axis()
             .tickSize(-width, 0, 0)
@@ -687,9 +690,10 @@ function buildChart(chartData) {
         var data = chartData[k];
         var curveTitle = k;
 
-        if (funcDistrType === "Discrete") {
-            makeCircles(chartData[k], color)
-        };
+        if (funcDistrType == "Discrete") {
+            makeCircles(chartData[k], color);
+        }
+
         curveTitle = capitalise(curveTitle);
         
         // Curve lables
@@ -704,7 +708,7 @@ function buildChart(chartData) {
             .attr("cx", 330)
             .attr("r", 3)
             .attr("opacity", 0.6)
-            .style("fill", color)
+            .style("fill", color);
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
