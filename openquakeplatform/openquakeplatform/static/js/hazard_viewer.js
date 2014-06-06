@@ -481,25 +481,11 @@ var startApp = function() {
             var uhsListCap = [];
 
             // Remove items that are not curves
-            index = uhsList.indexOf('lat');
-            if (index > -1) {
-                uhsList.splice(index, 1);
-            }
-            index = uhsList.indexOf('lon');
-            if (index > -1) {
-                uhsList.splice(index, 1);
-            }
-            index = uhsList.indexOf('invest_time');
-            if (index > -1) {
-                uhsList.splice(index, 1);
-            }
-            index = uhsList.indexOf('periods');
-            if (index > -1) {
-                uhsList.splice(index, 1);
-            }
-            index = uhsList.indexOf('poe');
-            if (index > -1) {
-                uhsList.splice(index, 1);
+            var removeItems = ['lat', 'lon', 'invest_time', 'periods', 'poe'];
+            for (var i = 0; i < removeItems.length; i++) {
+                if (uhsList.indexOf(removeItems[i]) > -1) {
+                    uhsList.splice(uhsList.indexOf(removeItems[i]), 1);
+                }
             }
 
             // remove _ and capotolise the values in the uhsList 
