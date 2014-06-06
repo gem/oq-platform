@@ -225,7 +225,7 @@ var startApp = function() {
             var app = json[i].application;
             var grid, gridName;
 
-            if (type === 'curve-hc' || type === 'curve-uhs' || type === 'curve-loss') {
+            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss') {
                 curveCategoryList.push(cat);
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
@@ -234,8 +234,7 @@ var startApp = function() {
                 curveLayerGrids.push(gridName);
 
             }
-
-            if (type === 'curve-uhs') {
+            if (type == 'curve-uhs') {
                 uhsCategoryList.push(cat);
                 uhsLayersByCat[cat] = [];
                 uhsLayerNames[name] = [];
@@ -243,8 +242,7 @@ var startApp = function() {
                 gridName = grid.split('/')[4];
                 uhsLayerGrids.push(gridName);
             }
-
-            if (type === 'curve-loss') {
+            if (type == 'curve-loss') {
                 lossCategoryList.push(cat);
                 lossLayersByCat[cat] = [];
                 lossLayerNames[name] = [];
@@ -252,8 +250,7 @@ var startApp = function() {
                 gridName = grid.split('/')[4];
                 lossLayerGrids.push(gridName);
             }
-
-            if (invest === undefined && cat !== undefined && type === 'hazard') {
+            if (invest == undefined && cat !== undefined && type == 'hazard') {
                 mapCategoryList.push(cat);
                 mapLayerNames[name] = [];
                 mapLayersByCat[cat] = [];
@@ -283,58 +280,50 @@ var startApp = function() {
             template = template.replace(/{{{/g, '').replace(/}}}/g, '');
             template = template.substring(0, template.indexOf('{{'));
 
-            if (type === 'curve-hc') {
-                var curveLayerId = json[i].id;
-                var curveLayerTitle = json[i].mapped_value;
+            if (type == 'curve-hc') {
+                var curveLayerId = json[j].id;
+                var curveLayerTitle = json[j].mapped_value;
                 curveLayerNames[name].push(curveLayerId);
                 curveLayersByCat[cat].push(curveLayerTitle);
+
+                if (invest != 'mixed') {
+                    curvesByInvestSingle[j] = name;
+                } 
+                else if (invest == 'mixed') {
+                    curvesByInvestMixed[j] = name;
+                    curvesAvailable[j] = template;
+                }
             }
 
-            if (type === 'curve-hc' && invest === 'mixed') {
-                curvesByInvestMixed[i] = name;
-                curvesAvailable[i] = template;
-            }
-
-            if (type === 'curve-hc' && invest != 'mixed') {
-                curvesByInvestSingle[i] = name;
-            }
-
-            if (type === 'curve-uhs') {
-                var uhsLayerId = json[i].id;
-                var uhsLayerTitle = json[i].mapped_value;
+            if (type == 'curve-uhs') {
+                var uhsLayerId = json[j].id;
+                var uhsLayerTitle = json[j].mapped_value;
                 uhsLayerNames[name].push(uhsLayerId);
                 uhsLayersByCat[cat].push(uhsLayerTitle);
+
+                if (invest == 'mixed') {
+                    uhsByInvestMixed[j] = name;
+                    uhsAvailable[j] = template;
+                } 
+                else if (invest != 'mixed') {
+                    uhsByInvestSingle[j] = name;
+                }
             }
 
-            if (type === 'curve-uhs' && invest === 'mixed') {
-                uhsByInvestMixed[i] = name;
-                uhsAvailable[i] = template;
-            }
-
-            if (type === 'curve-uhs' && invest != 'mixed') {
-                uhsByInvestSingle[i] = name;
-            }
-
-            if (type === 'curve-loss') {
-                lossLayerId = json[i].id;
-                lossLayerTitle = json[i].mapped_value;
+            if (type == 'curve-loss') {
+                lossLayerId = json[j].id;
+                lossLayerTitle = json[j].mapped_value;
                 lossLayerNames[name].push(lossLayerId);
                 lossLayersByCat[cat].push(lossLayerTitle);
+                lossByInvestMixed[j] = name;
+                lossAvailable[j] = template;
+                lossByInvestSingle[j] = name;
             }
 
-            if (type === 'curve-loss') {
-                lossByInvestMixed[i] = name;
-                lossAvailable[i] = template;
-            }
-
-            if (type === 'curve-loss') {
-                lossByInvestSingle[i] = name;
-            }
-
-            if (invest === undefined && cat !== undefined && type === 'hazard') {
-                mapLayerId = json[i].id;
-                mapLayerTitle = json[i].mapped_value;
-                layerInvest = json[i].investigationTime;
+            if (invest == undefined && cat !== undefined && type == 'hazard') {
+                mapLayerId = json[j].id;
+                mapLayerTitle = json[j].mapped_value;
+                layerInvest = json[j].investigationTime;
                 mapLayerNames[name].push(mapLayerId);
                 mapLayersByCat[cat].push(mapLayerTitle);
             }
@@ -342,19 +331,19 @@ var startApp = function() {
 
         // Get unique category names
         var mapCategoryUnique = mapCategoryList.filter(function(itm,i,mapCategoryList){
-            return i === mapCategoryList.indexOf(itm);
+            return i == mapCategoryList.indexOf(itm);
         });
     
         var curveCategoryUnique = curveCategoryList.filter(function(itm,i,curveCategoryList){
-            return i === curveCategoryList.indexOf(itm);
+            return i == curveCategoryList.indexOf(itm);
         });
 
         var uhsCategoryUnique = uhsCategoryList.filter(function(itm,i,uhsCategoryList){
-            return i === uhsCategoryList.indexOf(itm);
+            return i == uhsCategoryList.indexOf(itm);
         });
 
         var lossCategoryUnique = lossCategoryList.filter(function(itm,i,lossCategoryList){
-            return i === lossCategoryList.indexOf(itm);
+            return i == lossCategoryList.indexOf(itm);
         });
 
         for (var i in mapCategoryUnique) {
@@ -414,7 +403,7 @@ var startApp = function() {
         var curvesListCap = [];
         var curveType = 'hc';
 
-        if (investType.indexOf('mixed') === 1 ) {
+        if (investType.indexOf('mixed') == 1 ) {
             // Use investType to find the key in curvesByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available curves in curvesAvailable
@@ -465,7 +454,7 @@ var startApp = function() {
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
-        } else if (investType.indexOf('single') === 0 ) {
+        } else if (investType.indexOf('single') == 0 ) {
             singleCurve();
         } else {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
@@ -484,7 +473,7 @@ var startApp = function() {
         var investType = checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option);
         var curveType = 'uhs';
 
-        if (investType.indexOf('mixed') === 1 ) {
+        if (investType.indexOf('mixed') == 1 ) {
             // Use investType to find the key in uhsByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available uhs in uhsAvailable
@@ -554,7 +543,7 @@ var startApp = function() {
         for (var key in curvesByInvestMixed) {
             if (!curvesByInvestMixed.hasOwnProperty(key))
                 continue;
-            if (curvesByInvestMixed[key] === option) {
+            if (curvesByInvestMixed[key] == option) {
                 var mixed = 'mixed';
                 return [key, mixed];
             }
@@ -562,7 +551,7 @@ var startApp = function() {
         for (key in curvesByInvestSingle) {
             if (!curvesByInvestSingle.hasOwnProperty(key))
                 continue;
-            if (curvesByInvestSingle[key] === option) {
+            if (curvesByInvestSingle[key] == option) {
                 var single = 'single';
                 return [single];
             }
@@ -574,7 +563,7 @@ var startApp = function() {
         for (var key in uhsByInvestMixed) {
             if (!uhsByInvestMixed.hasOwnProperty(key))
                 continue;
-            if (uhsByInvestMixed[key] === option) {
+            if (uhsByInvestMixed[key] == option) {
                 var mixed = 'mixed';
                 return [key, mixed];
             }
@@ -582,7 +571,7 @@ var startApp = function() {
         for (key in uhsByInvestSingle) {
             if (!uhsByInvestSingle.hasOwnProperty(key))
                 continue;
-            if (uhsByInvestSingle[key] === option) {
+            if (uhsByInvestSingle[key] == option) {
                 var single = 'single';
                 return [single];
             }
@@ -623,7 +612,7 @@ var startApp = function() {
             curveOpt.valuse = layers;
             selCurve.appendChild(curveOpt);
         }
-        if($('#curve-list').find('option').length === 0) {
+        if($('#curve-list').find('option').length == 0) {
             $('#addTileCurve').attr('disabled', true);
             $('#removeTileCurve').attr('disabled', true);
         } else {
@@ -649,7 +638,7 @@ var startApp = function() {
             selUhs.appendChild(uhsOpt);
         }
 
-        if($('#uhs-list').find('option').length === 0) {
+        if($('#uhs-list').find('option').length == 0) {
             $('#addTileUhs').attr('disabled', true);
             $('#removeTileUhs').attr('disabled', true);
         } else {
@@ -674,7 +663,7 @@ var startApp = function() {
             lossOpt.valuse = layers;
             selLoss.appendChild(lossOpt);
         }
-        if($('#loss-list').find('option').length === 0) {
+        if($('#loss-list').find('option').length == 0) {
             $('#addTileLoss').attr('disabled', true);
             $('#removeTileLoss').attr('disabled', true);
         } else {
@@ -703,7 +692,7 @@ var startApp = function() {
             if (selectedLayer in layers) {
                 showDuplicateMsg();
             }
-            else if (hasGrid === true && gridList > 0) {
+            else if (hasGrid == true && gridList > 0) {
                 showDuplicateGridMsg();
             }
             else {
@@ -721,7 +710,7 @@ var startApp = function() {
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
                 
-                if (hasGrid === true) {
+                if (hasGrid == true) {
                     gridList = 1;
                     utfGrid = new L.UtfGrid(TILESTREAM_URL +
                         selectedLayer +
@@ -748,7 +737,7 @@ var startApp = function() {
         if (selectedLayer in layers) {
             showDuplicateMsg();
         }
-        else if (hasGrid === true && gridList > 0) {
+        else if (hasGrid == true && gridList > 0) {
             showDuplicateGridMsg();
         }
         else {
@@ -762,7 +751,7 @@ var startApp = function() {
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
             
-            if (hasGrid === true) {
+            if (hasGrid == true) {
                 gridList = 1;
                 utfGrid = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
@@ -789,7 +778,7 @@ var startApp = function() {
         if (selectedLayer in layers) {
             showDuplicateMsg();
         }
-        else if (hasGrid === true && gridList > 0) {
+        else if (hasGrid == true && gridList > 0) {
             showDuplicateGridMsg();
         }
         else {
@@ -803,7 +792,7 @@ var startApp = function() {
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
             
-            if (hasGrid === true) {
+            if (hasGrid == true) {
                 gridList = 1;
                 utfGrid = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
@@ -820,7 +809,7 @@ var startApp = function() {
 
         var selectedLayer;
 
-        if (curveType === 'hc') {
+        if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
             // this is only needed in the case when the user adds the same curve twice
             var e = document.getElementById('curve-list');
@@ -836,7 +825,7 @@ var startApp = function() {
             var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
 
         } 
-        else if (curveType === 'uhs') {
+        else if (curveType == 'uhs') {
             var e = document.getElementById('uhs-list');
             var uhsLayerId = e.options[e.selectedIndex].value;
 
@@ -850,7 +839,7 @@ var startApp = function() {
         if (selectedLayer in layers) {
             showDuplicateMsg();
         }
-        else if (hasGrid === true && gridList > 0) {
+        else if (hasGrid == true && gridList > 0) {
             showDuplicateGridMsg();
         }
         else {
@@ -866,7 +855,7 @@ var startApp = function() {
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
             
-            if (hasGrid === true) {
+            if (hasGrid == true) {
                 gridList = 1;
                 utfGrid = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
@@ -1060,18 +1049,18 @@ var startApp = function() {
                 iml = e.data.iml;
                 imlArray = iml.split(',');
                 imt = e.data.imt;
-                if(imt === 'PGA') {
+                if(imt == 'PGA') {
                     imt = 'Peak Ground Acceleration (g)';
-                } else if (imt === 'PGV') {
+                } else if (imt == 'PGV') {
                     imt = 'Peak Ground Velocity (cm/s)';
-                } else if (imt === 'PGD') {
+                } else if (imt == 'PGD') {
                     imt = 'Peak Ground Displacement (cm)';
-                } else if (imt === 'SA') {
+                } else if (imt == 'SA') {
                     imt = 'Spectral Acceleration (g)';
                 }
                 lat = e.data.lat;
                 lng = e.data.lon;
-                if (lat === undefined) {
+                if (lat == undefined) {
                     lat = e.data.YCOORD;
                     lng = e.data.XCOORD;
                 }
@@ -1088,10 +1077,10 @@ var startApp = function() {
             // Get the selected curves
             selectedCurves = [];
             var sc;
-            if (curveType === 'hc') {
+            if (curveType == 'hc') {
                selectedCurves.push('iml');
                sc = $('.curve-list:checkbox:checked');
-            } else if (curveType === 'uhs') {
+            } else if (curveType == 'uhs') {
                 selectedCurves.push('periods');
                 sc = $('.curve-list:checkbox:checked');
             }
@@ -1426,36 +1415,36 @@ var startApp = function() {
         /* associative array of curves produced with d3.line */
         lat = chartData.lat;
         lon = chartData.lon;
-        if (curveType === 'uhs') {
+        if (curveType == 'uhs') {
             poe = chartData.poe;
         }
 
         invest_time = chartData.invest_time;
-        if (curveType === 'hc') {
+        if (curveType == 'hc') {
             yAxisLable = 'Probabability of exceedance in '+invest_time+' years';
-        } else if (curveType === 'uhs') {
+        } else if (curveType == 'uhs') {
             yAxisLable = 'Spectral acceleration (g)';
         }
 
-        if (curveType === 'hc') {
+        if (curveType == 'hc') {
             // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
             // SA-0.1 = Spectral Acceleration (0.1 s)
             xAxisLable = chartData.imt;
             var xAxisLableValue;
-            if (xAxisLable.indexOf('SA-') === 0 ) {
+            if (xAxisLable.indexOf('SA-') == 0 ) {
                 xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
                 xAxisLable = 'Spectral Acceleration (' + xAxisLableValue + ' s) [g]';
-            } else if (xAxisLable.indexOf('PGA-') === 0) {
+            } else if (xAxisLable.indexOf('PGA-') == 0) {
                 xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
                 xAxisLable = 'Peak Ground Acceleration [g]';
-            } else if (xAxisLable.indexOf('PGV-') === 0) {
+            } else if (xAxisLable.indexOf('PGV-') == 0) {
                 xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
                 xAxisLable = 'Peak Ground Velocity [cm/s]';
-            } else if (xAxisLable.indexOf('PGD-') === 0) {
+            } else if (xAxisLable.indexOf('PGD-') == 0) {
                 xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
                 xAxisLable = 'Peak Ground Displacement [cm]';
             }
-        } else if (curveType === 'uhs') {
+        } else if (curveType == 'uhs') {
             xAxisLable = 'Period (s)';
         }
 
@@ -1473,15 +1462,15 @@ var startApp = function() {
         }
 
         // Set the y axis variable depending on the type of curve
-        if (curveType === 'hc') {
+        if (curveType == 'hc') {
             yAxisVariable = curve_vals.iml;
-        } else if (curveType === 'uhs') {
+        } else if (curveType == 'uhs') {
             yAxisVariable = curve_vals.periods;
         }
 
         var old_value = -100;
         for (i = 0 ; i < yAxisVariable.length ; i++) {
-            if (yAxisVariable[i] === old_value) {
+            if (yAxisVariable[i] == old_value) {
                 yAxisVariable.splice(i, 1);                
                 i--;
             }
@@ -1493,9 +1482,9 @@ var startApp = function() {
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
 
-            if (curveType === 'hc' && curve_name === 'iml')
+            if (curveType == 'hc' && curve_name == 'iml')
                 continue;
-            if (curveType === 'uhs' && curve_name === 'periods')
+            if (curveType == 'uhs' && curve_name == 'periods')
                 continue;
 
             curve_coup[curve_name] = [];
@@ -1510,13 +1499,13 @@ var startApp = function() {
             var curve_name = selectedCurves[k];
             var min_cur = 1000.0, max_cur = -1;
 
-            if (curveType === 'hc' && curve_name === 'iml')
+            if (curveType == 'hc' && curve_name == 'iml')
                 continue;
-            if (curveType === 'uhs' && curve_name === 'periods')
+            if (curveType == 'uhs' && curve_name == 'periods')
                 continue;
 
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (curve_vals[curve_name][i] === 0)
+                if (curve_vals[curve_name][i] == 0)
                     continue;
 
                 if (min_cur > curve_vals[curve_name][i])
@@ -1585,10 +1574,10 @@ var startApp = function() {
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
-        if (curveType === 'hc') {
+        if (curveType == 'hc') {
             var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
             var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
-        } else if (curveType === 'uhs') {
+        } else if (curveType == 'uhs') {
             var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
             var y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
         };
@@ -1605,23 +1594,23 @@ var startApp = function() {
             for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
                 xAxis_vals[i].push(yAxisVariable[e]);
             }
-            if (curveType === 'hc') {
+            if (curveType == 'hc') {
                 xAxis[i] = d3.svg.axis()
                     .scale(x_scale)
                     .ticks(4)
-                    .innerTickSize(i === 0 ? 8 : 4)
+                    .innerTickSize(i == 0 ? 8 : 4)
                     .outerTickSize(0)
                     .tickValues(xAxis_vals[i])
                     .orient("bottom");
 
-            } else if (curveType === 'uhs') {
+            } else if (curveType == 'uhs') {
                 xAxis[i] = d3.svg.axis()
                     .scale(x_scale)
                     .ticks(4)
                     .orient("bottom");
             };
 
-            if (i === 0) {
+            if (i == 0) {
                 xAxis[i].tickFormat(function (d) { return d; })
             }
             else {
@@ -1671,9 +1660,9 @@ var startApp = function() {
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
 
-            if (curveType === 'hc' && curve_name === "iml")
+            if (curveType == 'hc' && curve_name == "iml")
                 continue;
-            if (curveType === 'uhs' && curve_name === "periods")
+            if (curveType == 'uhs' && curve_name == "periods")
                 continue;
 
             var data = curve_coup[curve_name];
@@ -1731,7 +1720,7 @@ var startApp = function() {
             
             g.attr("transform", "translate(0," + height + ")")
             .call(xAxis[i]);
-            if (i === (xAxis_n - 1))
+            if (i == (xAxis_n - 1))
                 g.append("text")
                 .attr("x", 160)
                 .attr("y", 30)
