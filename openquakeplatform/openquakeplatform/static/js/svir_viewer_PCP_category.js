@@ -27,7 +27,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     concat.pop();
     console.log(catData);
 
-    var demoDataArray = []
+    var demoDataArray = [];
 
     var demoObj1 = {
         economy : (2,3),
@@ -49,7 +49,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     // first time the is draw this will happen
     if (concat.length == 0) {
         concat = demoDataArray;
-    };
+    }
 
     var array = [];
     var tmpArray = [];
@@ -57,13 +57,13 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         for (var k in demoDataArray[i]){ 
             array.push(demoDataArray[i][k])
         }
-    };
+    }
 
     for (var i = 0; i < array.length; i++) {
         if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
             tmpArray.push(array[i]);
-        };
-    };
+        }
+    }
 
     var maxVal = Math.max.apply( Math, tmpArray );
         
@@ -75,17 +75,17 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         y = {};
     
     var line = d3.svg.line(),
-        axis = d3.svg.axis().orient("left"),
+        axis = d3.svg.axis().orient('left'),
         background,
         foreground;
     
-    $("#tab-categroy-chart").empty();
+    $('#tab-categroy-chart').empty();
 
-    var svg = d3.select("#tab-categroy-chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select('#tab-categroy-chart').append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     
 
     ///////////////////
@@ -138,7 +138,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .attr("dy", ".35em")
         .style("font-size","14px")
         .style("font-style", "bold")
-        .text("");
+        .text('');
     
     // Returns the path for a given data point.
     function path(d) {
@@ -162,62 +162,62 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
 
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(demoDataArray[0]).filter(function(d) {
-        return d != "municipality" && d != "scaleCIvalues" && d != "getCIvalues" && (y[d] = d3.scale.linear()
+        return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
             .domain([0, maxVal])
             .range([height, 0]));
     }));
 
     // Add blue foreground lines for focus.
-    foreground = svg.append("g")
-        .attr("class", "foreground")
-        .selectAll("path")
+    foreground = svg.append('g')
+        .attr('class', 'foreground')
+        .selectAll('path')
         .data(demoDataArray)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("id", function(d) { return d.municipality; })
-            .on("mouseover", function() {
+        .enter().append('path')
+        .attr('d', path)
+        .attr('id', function(d) { return d.municipality; })
+            .on('mouseover', function() {
                 d3.select(this)
                 .style('stroke-width', 6)
-                .style("stroke", "steelblue");
-                textTop.text("District: " + districName + ", Municipality: " + this.id);
-            }).on("mouseout", function() {
+                .style('stroke', 'steelblue');
+                textTop.text('District: ' + districName + ', Municipality: ' + this.id);
+            }).on('mouseout', function() {
                 d3.select(this)
                 .style('stroke-width', 3)
-                .style("stroke", "steelblue");
-                textTop.text("");
+                .style('stroke', 'steelblue');
+                textTop.text('');
             });
 
     // Add a group element for each dimension.
-    var g = svg.selectAll(".dimension")
+    var g = svg.selectAll('.dimension')
         .data(dimensions)
-        .enter().append("g")
-        .attr("class", "dimension")
-        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+        .enter().append('g')
+        .attr('class', 'dimension')
+        .attr('transform', function(d) { return 'translate(' + x(d) + ')'; });
 
     // Add an axis and title.
-    g.append("g")
-        .attr("class", "axis")
+    g.append('g')
+        .attr('class', 'axis')
         .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-        .append("text")
-        .style("text-anchor", "middle")
-        .attr("y", -9)
+        .append('text')
+        .style('text-anchor', 'middle')
+        .attr('y', -9)
         .text(function(d) { return d; });
 
     // Add and store a brush for each axis.
-    g.append("g")
-        .attr("class", "brush")
-        .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
-        .selectAll("rect")
-        .attr("x", -8)
-        .attr("width", 16);
+    g.append('g')
+        .attr('class', 'brush')
+        .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on('brush', brush)); })
+        .selectAll('rect')
+        .attr('x', -8)
+        .attr('width', 16);
 
-    var textTop = svg.append("text")
-        .attr("x", 70)
-        .attr("y", -35)
-        .attr("dy", ".35em")
-        .style("font-size","14px")
-        .style("font-style", "bold")
-        .text("");
+    var textTop = svg.append('text')
+        .attr('x', 70)
+        .attr('y', -35)
+        .attr('dy', '.35em')
+        .style('font-size','14px')
+        .style('font-style', 'bold')
+        .text('');
     
     // Returns the path for a given data point.
     function path(d) {
@@ -228,10 +228,10 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     function brush() {
         var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
             extents = actives.map(function(p) { return y[p].brush.extent(); });
-        foreground.style("display", function(d) {
+        foreground.style('display', function(d) {
             return actives.every(function(p, i) {
                 return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-            }) ? null : "none";
+            }) ? null : 'none';
         });
     }
 } // end chart
