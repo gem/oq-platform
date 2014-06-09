@@ -15,9 +15,9 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var dataCat = "";
-var chartCat = "";
-var utfGrid = new Object;
+var dataCat = '';
+var chartCat = '';
+var utfGrid = {};
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia', 'foo', 'bar');
 var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0, 1, 1);
 var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18, 1, 1);
@@ -25,11 +25,11 @@ var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189, 1, 1);
 var selectedValue4 = new Array(1, 9.374, 4.413, 5.093, 1, 1); //TODO fix these demo numbers
 var selectedValue5 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
 var selectedValue6 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
-var attrSelection = new Array();
-var svirRankKeys = new Array();
-var svirRankValues = new Array();
-var svirRegionRankKeys = new Array();
-var svirRegionRankValues = new Array();
+var attrSelection = [];
+var svirRankKeys = [];
+var svirRankValues = [];
+var svirRegionRankKeys = [];
+var svirRegionRankValues = [];
 var layerControl;
 var selectedPDef;
 var previousCatData = [];
@@ -93,23 +93,23 @@ var pdTempCategoryIndicator = [];
 var parentChildKey = {};
 var sviParentChildKey = {};
 var pdTempCatWeight = {};
-var tempCategory = "";
-var tempSVI = "";
+var tempCategory = '';
+var tempSVI = '';
 var tempParentChildKey = [];
 var catIndicator = {};
 var tempCatSearchElements = [];
 var tempSviSearchElements = [];
-var tempSviWeight = "";
-var tempAalWeight = "";
-var tempAalValue = "";
-var tempIriWeight = "";
+var tempSviWeight = '';
+var tempAalWeight = '';
+var tempAalValue = '';
+var tempIriWeight = '';
 var municipality = [];
 
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
 
 var baseMapUrl = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
+    'ttp://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
 );
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
@@ -126,11 +126,11 @@ var startApp = function() {
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
-        $("#warning-duplicate").dialog("open");
-    };
+        $('#warning-duplicate').dialog('open');
+    }
 
     $(document).ready(function() {
-        $("#warning-duplicate").dialog({
+        $('#warning-duplicate').dialog({
             autoOpen: false,
             hieght: 300,
             width: 350,
@@ -140,26 +140,26 @@ var startApp = function() {
 
     // Slider
     $(function() {
-        $( "#slider-vertical" ).slider({
-            orientation: "vertical",
-            range: "min",
+        $( '#slider-vertical' ).slider({
+            orientation: 'vertical',
+            range: 'min',
             min: 0,
             max: 100,
             value: 16.666,
             slide: function( event, ui ) {
-                $( "#econ-weight" ).val( ui.value );
+                $( '#econ-weight' ).val( ui.value );
             }
         });
-        $( "#econ-weight" ).val( $( "#slider-vertical" ).slider( "value" ) );
+        $( '#econ-weight' ).val( $( '#slider-vertical' ).slider( 'value' ) );
     });
 
     // No Layer to remove warnning message
     function showRemoveMsg() {
-        $("#warning-no-layer").dialog("open");
-    };
+        $('#warning-no-layer').dialog('open');
+    }
 
     //  Project definition dialog
-    $("#projectDefDialog").dialog({
+    $('#projectDefDialog').dialog({
         autoOpen: false,
         height: 500,
         width: 800,
@@ -167,7 +167,7 @@ var startApp = function() {
     });
 
     //  IRI PCP dialog
-    $("#pcp-charts").dialog({
+    $('#pcp-charts').dialog({
         autoOpen: false,
         height: 660,
         width: 1100,
@@ -183,11 +183,11 @@ var startApp = function() {
         }
     });
 
-    $("#project-definition").button().click(function() {
-        $("#projectDefDialog").dialog("open");
+    $('#project-definition').button().click(function() {
+        $('#projectDefDialog').dialog('open');
     });
 
-    $("#warning-no-layer").dialog({
+    $('#warning-no-layer').dialog({
         autoOpen: false,
         hieght: 300,
         width: 350,
@@ -195,24 +195,24 @@ var startApp = function() {
     });
 
     //  New project selection dialog
-    $("#loadProjectDialog").dialog({
+    $('#loadProjectDialog').dialog({
         autoOpen: false,
         height: 220,
         width: 350,
         modal: true
     });
 
-    $("#load-project").button().click(function() {
-        $("#loadProjectDialog").dialog("open");
+    $('#load-project').button().click(function() {
+        $('#loadProjectDialog').dialog('open');
     });
 
     // Remove layer 
     var removeLayer = function () {
         // Clear the contents of the table
-        $("#tableBody").html("");
-        $("#tablehead").html("");
+        $('#tableBody').html('');
+        $('#tablehead').html('');
 
-        var e = document.getElementById("layer-list");
+        var e = document.getElementById('layer-list');
         var layerId = e.options[e.selectedIndex].value;
 
         // Look up the layer id using the layer name
@@ -231,28 +231,30 @@ var startApp = function() {
     };
 
     // Get layer names from tilestream
-    var tileStreamLayer = "";
-    var category = "";
+    var tileStreamLayer = '';
+    var category = '';
     var selCat = document.getElementById('layer-category');
     var selLayer = document.getElementById('layer-list');
 
     // Create a header for the menu drop down
     var catMenuHeader = document.createElement('option');
-    catMenuHeader.innerHTML = "Projects:";
+    catMenuHeader.innerHTML = 'Projects:';
     selCat.appendChild(catMenuHeader);
 
     $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
     function(json) {
 
+        var name, cat, type, grids, pDef;
+
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
-            var name = json[i].mapped_value;
-            var cat = json[i].category;
-            var type = json[i].type;
-            var grids = json[i].grids;
-            var pDef = json[i].project_definition;
+            name = json[i].mapped_value;
+            cat = json[i].category;
+            type = json[i].type;
+            grids = json[i].grids;
+            pDef = json[i].project_definition;
 
-            if (cat != undefined && type == "svir-qgis") {
+            if (cat != undefined && type == 'svir-qgis') {
                 categoryList.push(cat);
                 layerNames[name] = [];
                 layersByCat[cat] = [];
@@ -260,24 +262,24 @@ var startApp = function() {
 
                 if (grids != undefined) {
                     var grid = grids.toString();
-                    var gridName = grid.split("/")[4];
+                    var gridName = grid.split('/')[4];
                     layerGrids.push(gridName);
-                };
+                }
             }
             if (grids != undefined) {
                 layerNames[grids] = [];
-            };
+            }
         }
 
         // Create the category list (population the object)
-        for (var i=0; i < json.length; i++) {
-            var name = json[i].mapped_value;
-            var cat = json[i].category;
-            var type = json[i].type;
-            var grids = json[i].grids;
-            var pDef = json[i].project_definition;
+        for (var j=0; j < json.length; j++) {
+            name = json[j].mapped_value;
+            cat = json[j].category;
+            type = json[j].type;
+            grids = json[j].grids;
+            pDef = json[j].project_definition;
 
-            if (cat != undefined && type == "svir-qgis") {
+            if (cat != undefined && type == 'svir-qgis') {
                 layerId = json[i].id;
                 layerTitle = json[i].mapped_value;
                 layerNames[name].push(layerId);
@@ -291,9 +293,9 @@ var startApp = function() {
             return i==categoryList.indexOf(itm);
         });
     
-        for (var i in categoryUnique) {
+        for (var l in categoryUnique) {
             // Append category names to dropdown list
-            var categoryTitle = categoryUnique[i];
+            var categoryTitle = categoryUnique[l];
             var opt = document.createElement('option');
             opt.innerHTML = categoryTitle;
             opt.value = categoryTitle;
@@ -305,12 +307,12 @@ var startApp = function() {
     });
 
     // Create dynamic categorized layer dialog
-    $("#layer-category").change(function() {
+    $('#layer-category').change(function() {
         // Remove the layer list element
-        document.getElementById("layer-list").options.length = 0;
+        document.getElementById('layer-list').options.length = 0;
 
        // Create the layer list ibased on the category selected
-        var e = document.getElementById("layer-category");
+        var e = document.getElementById('layer-category');
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = layersByCat[strUser];
 
@@ -323,15 +325,15 @@ var startApp = function() {
         }
     });
 
-    map.addControl(layerControl.setPosition("topleft"));
+    map.addControl(layerControl.setPosition('topleft'));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
     
     
     // Add layers form tilestream list
     $(document).ready(function() {
-        $("#addLayer").click(function() {
-            var e = document.getElementById("layer-list");
+        $('#addLayer').click(function() {
+            var e = document.getElementById('layer-list');
             var layerId = e.options[e.selectedIndex].value;
 
             $('#projectDefDialog').empty();
@@ -343,7 +345,7 @@ var startApp = function() {
             // TODO remove this link and replace with Django api call
             // Link to Github is a temp proof of concept
             // Load the project definition json
-            selectedPDefStr = "https://api.github.com/repos/bwyss/oq-platform/git/blobs/9864cb7a5d36572af1451e585f4516d1d19ce568?callback=_processGithubResponse";
+            selectedPDefStr = 'https://api.github.com/repos/bwyss/oq-platform/git/blobs/9864cb7a5d36572af1451e585f4516d1d19ce568?callback=_processGithubResponse';
  
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
@@ -365,11 +367,11 @@ var startApp = function() {
                 map.removeLayer(utfGrid);
                 utfGrid = {};
 
-                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/' 
-                    + selectedLayer
-                    + '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'
-                    +selectedLayer
-                    +'.json'});
+                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/'+
+                    selectedLayer+
+                    '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'+
+                    selectedLayer+
+                    '.json'});
                 layerControl.addOverlay(tileLayer, selectedLayer);
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
@@ -377,12 +379,12 @@ var startApp = function() {
 
                 if (hasGrid == true) {
                     gridList = 1;
-                    utfGrid = new L.UtfGrid(TILESTREAM_URL
-                        + selectedLayer
-                        + '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                    utfGrid = new L.UtfGrid(TILESTREAM_URL+
+                        selectedLayer+
+                        '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                     map.addLayer(utfGrid);
                     utfGridClickEvent(utfGrid);
-                };
+                }
             }
         });
     });
@@ -397,7 +399,7 @@ var startApp = function() {
             map.addLayer(utfGrid);
             utfGridClickEvent(utfGrid);
     
-            var e = document.getElementById("layer-list");
+            var e = document.getElementById('layer-list');
             var layerId = e.options[e.selectedIndex].value;
     
             // Look up the layer id using the layer name
@@ -417,7 +419,7 @@ var startApp = function() {
     });
 
     // Map options selection dialog
-    $("#thematicMap").dialog({
+    $('#thematicMap').dialog({
         autoOpen: false,
         height: 300,
         width: 350,
@@ -425,12 +427,12 @@ var startApp = function() {
     });
 
 
-    $("#thematic-map").button().click(function() {
-        $("#thematicMap").dialog("open");
+    $('#thematic-map').button().click(function() {
+        $('#thematicMap').dialog('open');
     });
 
     $(function() {
-        $( "#categoryTabs" ).tabs({
+        $( '#categoryTabs' ).tabs({
             collapsible: true,
             selected: -1,
             active: false
@@ -440,41 +442,32 @@ var startApp = function() {
     // Set up the data tables
     $(document).ready(function() {
         $('#econ-table').dataTable({
-            "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
+            'aaSorting': [ [0,'asc'], [1,'asc'] ],
+            'sPaginationType': 'full_numbers',
+            //'aoColumnDefs': [
+              //  { 'sWidth': '20%', 'aTargets': [ 0 ] }
             //],
         });
     });
 
     $(document).ready(function() {
         $('#pop-table').dataTable({
-            "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            'aaSorting': [ [0,'asc'], [1,'asc'] ],
+            'sPaginationType': 'full_numbers',
         });
     });
 
     $(document).ready(function() {
         $('#gov-table').dataTable({
-            "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            'aaSorting': [ [0,'asc'], [1,'asc'] ],
+            'sPaginationType': 'full_numbers',
         });
     });
 
     $(document).ready(function() {
         $('#edu-table').dataTable({
-            "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            'aaSorting': [ [0,'asc'], [1,'asc'] ],
+            'sPaginationType': 'full_numbers',
         });
     });
 
@@ -491,7 +484,7 @@ var startApp = function() {
                 ]
             );
         }
-    };
+    }
 
     function findPrimaryIndicators(pdData, pi) {
         // Find all of the primary indicators
@@ -571,27 +564,27 @@ var startApp = function() {
 
     function processIndicators(e) {
         var districName = e.data.name_1;
-        $("#pcp-charts").dialog("open");
+        $('#pcp-charts').dialog('open');
         // Get the SVIR data from the utfGrid
         var tmpIri = {};
         var tmpPI;
         var tempCI;
         if (e.data) {
             // Find the variables that are primary indicators and their respecive category
-            var ci = "categoryIndicator";
+            var ci = 'categoryIndicator';
             findCategoryIndicators(pdData, [ci]);
-            var pi = "primaryIndicator";
+            var pi = 'primaryIndicator';
             findPrimaryIndicators(pdData, [pi]);
-            console.log("e.data");
+            console.log('e.data');
             console.log(e.data);
-            var svi = "svi";
+            var svi = 'svi';
             findSvi(pdData, [svi]);
 
             // Create an object for each of the category indicators
             for (var n = 0; n < pdTempCategoryIndicator.length; n++) {
                 parentChildKey[pdTempCategoryIndicator[n]] = [];
                 var category = pdTempCategoryIndicator[n];
-            };
+            }
             var iri = e.data.ir;
             iri = iri.split(',');
             var munic = e.data.municipio;
@@ -601,7 +594,7 @@ var startApp = function() {
 
             if (pri == undefined) {
                 pri = e.data.aal;
-            };
+            }
             var munic_num = e.data['municipio'].split(',').length;
             municipality = e.data['municipio'].split(',');
 
@@ -612,15 +605,15 @@ var startApp = function() {
 
             for (var k in weightedPrimaryIndicator) {
                 delete weightedPrimaryIndicator[k];
-            };
+            }
 
             for (var k in sessionPrimaryIndicator) {
                 delete sessionPrimaryIndicator[k];
-            };
+            }
 
             for (var k in primaryIndicator) {
                 delete primaryIndicator[k];
-            };
+            }
 
             for (i=0; i < municipality.length; i++)
                 municipality[i] = municipality[i].trim();
@@ -644,22 +637,22 @@ var startApp = function() {
                                 pos = parentChildKey[ep].indexOf(elementName);
                                 if (!~pos) {
                                     parentChildKey[ep].push(elementName);
-                                };
-                            };
-                        };
+                                }
+                            }
+                        }
                         
                         tmp[elementName] = parseFloat(tmpPI[m]);
                         tmp.municipality = municipality[m];
                         primaryIndicator[m] = tmp;
-                    };
-                };
-            };
+                    }
+                }
+            }
 
             // Create the primary indicators obj continued 
-            for (var i = 0; i < munic_num.length; i++) {
-                tmp.municipality = municipality[i];
-                primaryIndicator[i] = tmp;
-            };
+            for (var j = 0; j < munic_num.length; j++) {
+                tmp.municipality = municipality[j];
+                primaryIndicator[j] = tmp;
+            }
 
             // Keep the primaryIndicator obj as is and make a session copy that 
             // is to be modifyed by the project definition weights 
@@ -671,18 +664,18 @@ var startApp = function() {
                 for(var p2 in weightedPrimaryIndicator[p1]) {
                     if(tempWeight.hasOwnProperty(p2)) {
                         weightedPrimaryIndicator[p1][p2] *= tempWeight[p2];
-                    };
-                };
-            };
+                    }
+                }
+            }
 
             // The data passed into d3 need to be an array of objects
             // Place the category indicator objects into an array
             var primaryData = [];
 
             // ******* bypass the scalling & weighting *****
-            for (var k in primaryIndicator) {
-                primaryData.push(primaryIndicator[k]);
-            };
+            for (var l in primaryIndicator) {
+                primaryData.push(primaryIndicator[l]);
+            }
 
             Primary_PCP_Chart(primaryData, municipality, districName);
 
@@ -694,17 +687,17 @@ var startApp = function() {
             // and then multiplyed by its respective weight value
 
             // Clean out the objects
-            for (var k in catIndicator) {
-                delete catIndicator[k];
-            };
+            for (var q in catIndicator) {
+                delete catIndicator[q];
+            }
 
-            for (var k in scaledCatIndicator) {
-                delete scaledCatIndicator[k];
-            };
+            for (var p in scaledCatIndicator) {
+                delete scaledCatIndicator[p];
+            }
 
-            for (var k in weightedCatIndicator) {
-                delete weightedCatIndicator[k];
-            };
+            for (var o in weightedCatIndicator) {
+                delete weightedCatIndicator[o];
+            }
 
             // Build the catIndicator object on each iteration
             function newValues(j, econ, edu, m, pop, inf, gov) {
@@ -722,7 +715,7 @@ var startApp = function() {
             catIndicator.newCatObj = newValues;
             for (k in parentChildKey) {
                 tempParentChildKey.push(k);
-            };
+            }
             
             for (var j = 0; j < municipality.length; j++) {
                 var tempCIValues = [];
@@ -736,19 +729,19 @@ var startApp = function() {
 
                         for (var n = 0; n < tempCatSearchElements.length; n++) {
                             piArray.push(obj[tempCatSearchElements[n]]);
-                        };
+                        }
 
                         var sum = 0;
                         $.each(piArray,function() {
                             sum += this;
-                        });
+                        })
 
                         tempCIValues[tempParentChildKey[i]] = sum;
                         tempCIValues["municipality"] = mun;
-                    };
+                    }
 
                     catIndicator.newCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
-                };
+                }
             }// end scopeForCatIteration function
 
 
@@ -772,7 +765,7 @@ var startApp = function() {
             weightedCatIndicator.newWeightedCatObj = newWeightedValues;
             for (k in parentChildKey) {
                 tempParentChildKey.push(k);
-            };
+            }
             for (var j = 0; j < municipality.length; j++) {
                 var tempCIValues = [];
 
@@ -785,12 +778,12 @@ var startApp = function() {
 
                         for (var n = 0; n < tempCatSearchElements.length; n++) {
                             piArray.push(obj[tempCatSearchElements[n]]);
-                        };
+                        }
 
                         var sum = 0;
                         $.each(piArray,function() {
                             sum += this;
-                        });
+                        })
 
                         tempCIValues[tempParentChildKey[i]] = sum;
                         tempCIValues["municipality"] = mun;
@@ -800,10 +793,10 @@ var startApp = function() {
                             for (var p in tempCatWeight) {
                                 if (k == p) {
                                     tempCIValues[k] = (tempCIValues[p] * tempCatWeight[k]);
-                                };
-                            };
-                        };
-                    };
+                                }
+                            }
+                        }
+                    }
 
                     weightedCatIndicator.newWeightedCatObj(key, tempCIValues["economy"], tempCIValues["education"], tempCIValues["municipality"], tempCIValues["population"], tempCIValues["infrastructure"], tempCIValues["governance"] );
                 };
@@ -823,7 +816,7 @@ var startApp = function() {
             function getCIvalues(element) {
                 if (this[element] != undefined) {
                     tempCIvalues.push(this[element]);
-                };
+                }
             }
 
             // Pass scaled values back to the scaledCatIndicator object
@@ -834,12 +827,12 @@ var startApp = function() {
             // Associate the getValues method with the scaledCatIndicator object
             for (var k in catIndicator) {
                 catIndicator[k].getCIvalues = getCIvalues;
-            };
+            }
 
             // Associate the applyScaledValues method with the scaledCatIndicator object
             for (var k in scaledCatIndicator) {
                 scaledCatIndicator[k].scaleCIvalues = applyScaledCIvalues;
-            };
+            }
 
             var CIkeys = Object.keys(scaledCatIndicator[0]);
 
@@ -848,7 +841,7 @@ var startApp = function() {
                 // Call the getValues method
                 for (var y in catIndicator) {
                     catIndicator[y].getCIvalues(CIkeys[i]);
-                };
+                }
 
                 if (CIkeys[i] != "municipality" && CIkeys[i] != "getCIvalues" && CIkeys[i] != "scaleCIvalues" && CIkeys[i] != "newCatObj") {
                     
@@ -858,16 +851,16 @@ var startApp = function() {
                     // Scale the values
                     for (var j = 0; j < tempCIvalues.length; j++) {
                         scaleCIvalues.push( (tempCIvalues[j] - tempCImin) / (tempCImax - tempCImin) );
-                    };
+                    }
 
                     // Call the applyScaledValues method
                     for (var l in scaledCatIndicator) {
                         scaledCatIndicator[l][CIkeys[i]] = scaledCatIndicator[l].scaleCIvalues(l);
-                    };
-                };
+                    }
+                }
                 scaleCIvalues = [];
                 tempCIvalues = [];
-            };
+            }
 
             // The data passed into d3 need to be an array of objects
             // Place the category indicator objects into an array
@@ -875,7 +868,7 @@ var startApp = function() {
             
             for (var k in scaledCatIndicator) {
                 catData.push(scaledCatIndicator[k]);
-            };
+            }
             console.log(previousCatData);
 
             var concat = catData.concat(previousCatData);
@@ -885,7 +878,7 @@ var startApp = function() {
 
             for (var k in scaledCatIndicator) {
                 previousCatData.push(scaledCatIndicator[k]);
-            };
+            }
 
             /////////////////////////////////////////////
             /////////// Create the svi object ///////////
@@ -897,11 +890,11 @@ var startApp = function() {
 
             for (var k in scaledSviIndicator) {
                 delete scaledSviIndicator[k];
-            };
+            }
 
             for (var k in weightedSviIndicator) {
                 delete weightedSviIndicator[k];
-            };
+            }
 
             function newSVIvalues(SVIaverage, tempMunic) {
                 sviIndicator[tempMunic] = SVIaverage;
@@ -913,7 +906,7 @@ var startApp = function() {
             var tempSviIndicator = {};
             for (var i = 0; i < municipality.length; i++) {
                 tempSviIndicator[municipality[i]] = [];
-            };
+            }
             tempSviSearchElements = Object.keys(weightedCatIndicator);
             tempSviSearchElements.pop();
             var sessionKey = Object.keys(weightedCatIndicator[tempSviSearchElements[0]]);
@@ -931,12 +924,12 @@ var startApp = function() {
 
                 if (index > -1) {
                     sessionKey.splice(index, 1);
-                };
+                }
 
                 // Build the temp object
                 for (var j = 0; j < sessionKey.length; j++) {
                     tempArray.push(weightedCatIndicator[i][sessionKey[j]]);
-                };
+                }
 
                 var SVIsum = 0
                 $.each(tempArray,function() {
@@ -958,7 +951,7 @@ var startApp = function() {
                 if (key != "SVIvalues") {
                     var sviValue = (value * tempSviWeight);
                     weightedSviIndicator[key] = sviValue;
-                };
+                }
             });
 
 
@@ -973,7 +966,7 @@ var startApp = function() {
             var scaleSVIvalues = [];
             for (var v in scaledSviIndicator) {
                 valueArray.push(scaledSviIndicator[v]);
-            };
+            }
 
             valueArray.shift();
             var tempSVImin = Math.min.apply(null, valueArray),
@@ -981,14 +974,14 @@ var startApp = function() {
 
             for (var j = 0; j < valueArray.length; j++) {
                 scaleSVIvalues.push( (valueArray[j] - tempSVImin) / (tempSVImax - tempSVImin) );
-            };
+            }
 
             var tempKeys = Object.keys(scaledSviIndicator);
             tempKeys.shift();
 
             for (var i = 0; i < tempKeys.length; i++) {
                 scaledSviIndicator[tempKeys[i]] = scaleSVIvalues[i];
-            };
+            }
 
             scaledSviIndicator.plotElement = "svi"; // Lable within the object
             delete scaledSviIndicator.SVIvalues;
@@ -999,15 +992,15 @@ var startApp = function() {
 
             for (var k in aalIndicator) {
                 delete aalIndicator[k];
-            };
+            }
 
             for (var k in scaledAalIndicator) {
                 delete scaledAalIndicator[k];
-            };
+            }
 
             for (var k in weightedAalIndicator) {
                 delete weightedAalIndicator[k];
-            };
+            }
 
             // For the sample data provided aal = pri
             // However in the future this will need to be expanded
@@ -1018,7 +1011,7 @@ var startApp = function() {
 
             for (var i = 0; i < municipality.length; i++) {
                 aalIndicator[municipality[i]] = parseFloat([aalArray[i]]);
-            };
+            }
 
             aalCopy = jQuery.extend(true, {}, aalIndicator); // ** Value with no Weight
             var aalStr = "aal";
@@ -1050,21 +1043,21 @@ var startApp = function() {
 
             for (var v in scaledAalIndicator) {
                 aalValueArray.push(scaledAalIndicator[v]);
-            };
+            }
 
             var tempAALmin = Math.min.apply(null, aalValueArray),
                 tempAALmax = Math.max.apply(null, aalValueArray);
 
             for (var j = 0; j < aalValueArray.length; j++) {
                 scaleAALvalues.push( (aalValueArray[j] - tempAALmin) / (tempAALmax - tempAALmin) );
-            };
+            }
 
             var tempKeys = Object.keys(scaledAalIndicator);
             tempKeys.pop();
 
             for (var i = 0; i < tempKeys.length; i++) {
                 scaledAalIndicator[tempKeys[i]] = scaleAALvalues[i];
-            };
+            }
 
             scaledAalIndicator.plotElement = "aal"; // Lable within the object
 
@@ -1080,29 +1073,26 @@ var startApp = function() {
             $('select[name="select-iri-calc"]').change(function() {
                 if ($(this).val() == 1) {
                     IRIfunctionSelection = 1;
-                    console.log("option1");
                 } 
                 else if ($(this).val() == 2) {
-                    console.log("option2");
                     IRIfunctionSelection = 2;
                 }
                 else if ($(this).val() == 3 ) {
-                    IRIfunctionSelection = 3;
-                    console.log("option3");   
+                    IRIfunctionSelection = 3; 
                 }
             });
 
 
             for (var k in iriIndicator) {
                 delete iriIndicator[k];
-            };
+            }
 
             var iriArray = iri; // Do not use these values,
 
             // instead compute the iri from PRI and SVI
             for (var i = 0; i < municipality.length; i++) {
                 iriIndicator[municipality[i]] = "";
-            };
+            }
 
             iriCopy = jQuery.extend(true, {}, iriIndicator);
             var aalKey;
@@ -1131,11 +1121,11 @@ var startApp = function() {
                     }
                     else if(IRIfunctionSelection == 3) {
                         tempIRIfunction = (aalValue * (1 + sviValue));
-                    };
+                    }
 
                     iriIndicator[k] = tempIRIfunction;
                 }
-            };
+            }
 
             ///////////////
             //// Scale ////
@@ -1149,7 +1139,7 @@ var startApp = function() {
 
             for (var v in scaledIRIindicator) {
                 iriValueArray.push(scaledIRIindicator[v]);
-            };
+            }
             console.log("iriValueArray");
             console.log(iriValueArray);
 
@@ -1158,13 +1148,13 @@ var startApp = function() {
 
             for (var j = 0; j < iriValueArray.length; j++) {
                 scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
-            };
+            }
 
             var tempKeys = Object.keys(scaledIRIindicator);
 
             for (var i = 0; i < tempKeys.length; i++) {
                 scaledIRIindicator[tempKeys[i]] = scaleIRIvalues[i];
-            };
+            }
 
             scaledIRIindicator.plotElement = "iri"; // Lable within the object
 
