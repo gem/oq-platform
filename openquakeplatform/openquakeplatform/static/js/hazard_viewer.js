@@ -858,7 +858,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('layer-list');
@@ -892,7 +892,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('curve-list');
@@ -926,7 +926,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('uhs-list');
@@ -959,7 +959,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('loss-list');
