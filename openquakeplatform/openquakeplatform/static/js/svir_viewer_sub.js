@@ -109,7 +109,7 @@ var municipality = [];
 var selectedGrid;
 
 var baseMapUrl = (
-    'ttp://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
+    'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
 );
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
@@ -280,8 +280,8 @@ var startApp = function() {
             pDef = json[j].project_definition;
 
             if (cat != undefined && type == 'svir-qgis') {
-                layerId = json[i].id;
-                layerTitle = json[i].mapped_value;
+                layerId = json[j].id;
+                layerTitle = json[j].mapped_value;
                 layerNames[name].push(layerId);
                 layersByCat[cat].push(layerTitle);
                 projectDefinition[name].push(pDef);
@@ -491,7 +491,6 @@ var startApp = function() {
         if (pi.some(function(currentValue) {
             return (pdData.type == currentValue);
         })) {
-            //console.log(pdData);
             // Create array of primary indicators
             pdTempPrimaryIndicator.push(pdData.name);
             pdTempPrimaryIndicatorLevels[pdData.name.toLowerCase()] = (pdData.level);
@@ -556,7 +555,6 @@ var startApp = function() {
 
     function utfGridClickEvent(utfGrid) {
         utfGrid.on('click', function(e) {
-            console.log(e);
             processIndicators(e);
             selectedGrid = e;
         });
@@ -575,8 +573,6 @@ var startApp = function() {
             findCategoryIndicators(pdData, [ci]);
             var pi = 'primaryIndicator';
             findPrimaryIndicators(pdData, [pi]);
-            console.log('e.data');
-            console.log(e.data);
             var svi = 'svi';
             findSvi(pdData, [svi]);
 
@@ -589,7 +585,6 @@ var startApp = function() {
             iri = iri.split(',');
             var munic = e.data.municipio;
             munic = munic.split(',');
-            //console.log(munic);
             var pri = e.data.pri;
 
             if (pri == undefined) {
@@ -869,10 +864,9 @@ var startApp = function() {
             for (var k in scaledCatIndicator) {
                 catData.push(scaledCatIndicator[k]);
             }
-            console.log(previousCatData);
 
+            // TODO remove this concat if need be
             var concat = catData.concat(previousCatData);
-            console.log(concat);
 
             Category_PCP_Chart(catData, municipality, districName, concat);
 
@@ -1140,8 +1134,6 @@ var startApp = function() {
             for (var v in scaledIRIindicator) {
                 iriValueArray.push(scaledIRIindicator[v]);
             }
-            console.log("iriValueArray");
-            console.log(iriValueArray);
 
             var tempIRImin = Math.min.apply(null, iriValueArray),
                 tempIRImax = Math.max.apply(null, iriValueArray);
@@ -1159,15 +1151,6 @@ var startApp = function() {
             scaledIRIindicator.plotElement = "iri"; // Lable within the object
 
         }
-
-        console.log("scaledIRIindicator");
-        console.log(scaledIRIindicator);
-        
-        console.log("scaledAalIndicator");
-        console.log(scaledAalIndicator);
-
-        console.log("scaledSviIndicator");
-        console.log(scaledSviIndicator);
 
         var iriPcpData = [];
         iriPcpData.push(scaledIRIindicator);

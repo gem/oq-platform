@@ -39,8 +39,15 @@ svg {
   stock-width: 1;
 }
 
+.concatLine path {
+  fill: red;
+  stroke: red;
+  stock-width: 5;
+}
+
 .foreground path {
-  fill: none;
+  fill: red;
+  fill-opacity: 0.3;
   stroke: steelblue;
   stroke-width: 4;
 }

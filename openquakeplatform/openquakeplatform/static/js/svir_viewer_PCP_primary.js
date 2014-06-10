@@ -21,8 +21,6 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(primaryData, municipality, districName) {
-    
-    console.log(primaryData);
 
     var array = [];
     var tmpArray = [];

@@ -23,39 +23,55 @@
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
 function Category_PCP_Chart(catData, municipality, districName, concat) {
+
+    var concatPath;
+
     catData.pop();
     concat.pop();
-    console.log(catData);
 
     var demoDataArray = [];
+    var demoLine1 = [];
+    var demoLine2 = [];
 
-    var demoObj1 = {
-        economy : (2,3),
+    var demoLine11 = {
+        economy : 2,
         education : 3,
         governance : 2.5
     };
 
-    var demoObj2 = {
+    var demoLine22 = {
         economy : 3,
         education : 1.5,
         governance : 2
     };
 
-    demoDataArray.push(demoObj1);
-    demoDataArray.push(demoObj2);
-
-    console.log(demoDataArray);
+    demoLine1.push(demoLine11);
+    demoLine2.push(demoLine22);
+    demoDataArray.push(demoLine1, demoLine2);
 
     // first time the is draw this will happen
     if (concat.length == 0) {
-        concat = demoDataArray;
+        concat = demoLine1;
     }
 
     var array = [];
     var tmpArray = [];
-    for (var i = 0; i < demoDataArray.length; i++) {
-        for (var k in demoDataArray[i]){ 
-            array.push(demoDataArray[i][k])
+    for (var i = 0; i < demoLine1.length; i++) {
+        for (var k in demoLine1[i]){
+            array.push(demoLine1[i][k]);
+        }
+    }
+
+    // first time the is draw this will happen
+    if (concat.length == 0) {
+        concat = demoLine2;
+    }
+
+    var array = [];
+    var tmpArray = [];
+    for (var i = 0; i < demoLine2.length; i++) {
+        for (var k in demoLine2[i]){ 
+            array.push(demoLine2[i][k]);
         }
     }
 
@@ -76,8 +92,9 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
-        background,
-        foreground;
+        //background,
+        concatLine;
+        //foreground;
     
     $('#tab-categroy-chart').empty();
 
@@ -87,152 +104,123 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     
-
-    ///////////////////
-    // Overlay Chart //
-    ///////////////////
-
-/*
-    // Extract the list of dimensions and create a scale for each.
-    x.domain(dimensions = d3.keys(concat[0]).filter(function(d) {
-        return d != "municipality" && d != "scaleCIvalues" && d != "getCIvalues" && (y[d] = d3.scale.linear()
-            .domain([0, maxVal])
-            .range([height, 0]));
-    }));
-
-    // Add grey background lines for context.
-    background = svg.append("g")
-        .attr("class", "background")
-        .selectAll("path")
-        .data(concat)
-        .enter().append("path")
-        .attr("d", path);
-
-    // Add a group element for each dimension.
-    var g = svg.selectAll(".dimension")
-        .data(dimensions)
-        .enter().append("g")
-        .attr("class", "dimension")
-        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-
-    // Add an axis and title.
-    g.append("g")
-        .attr("class", "axis")
-        .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-        .append("text")
-        .style("text-anchor", "middle")
-        .attr("y", -9)
-        .text(function(d) { return d; });
-
-    // Add and store a brush for each axis.
-    g.append("g")
-        .attr("class", "brush")
-        .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
-        .selectAll("rect")
-        .attr("x", -8)
-        .attr("width", 16);
-
-    var textTop = svg.append("text")
-        .attr("x", 70)
-        .attr("y", -35)
-        .attr("dy", ".35em")
-        .style("font-size","14px")
-        .style("font-style", "bold")
-        .text('');
-    
-    // Returns the path for a given data point.
-    function path(d) {
-        return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
-    }
-    
-    // Handles a brush event, toggling the display of foreground lines.
-    function brush() {
-        var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
-            extents = actives.map(function(p) { return y[p].brush.extent(); });
-        foreground.style("display", function(d) {
-            return actives.every(function(p, i) {
-                return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-            }) ? null : "none";
-        });
-    }
-*/
     ////////////////
     // Base Chart //
     ////////////////
 
-    // Extract the list of dimensions and create a scale for each.
-    x.domain(dimensions = d3.keys(demoDataArray[0]).filter(function(d) {
-        return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
-            .domain([0, maxVal])
-            .range([height, 0]));
-    }));
+    for (var i = 0; i < demoDataArray.length; i++) {       
+    
+        // Extract the list of dimensions and create a scale for each.
+        x.domain(dimensions = d3.keys(demoDataArray[i][0]).filter(function(d) {
+            return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
+                .domain([0, maxVal])
+                .range([height, 0]));
+        }));
 
-    // Add blue foreground lines for focus.
-    foreground = svg.append('g')
-        .attr('class', 'foreground')
-        .selectAll('path')
-        .data(demoDataArray)
-        .enter().append('path')
-        .attr('d', path)
-        .attr('id', function(d) { return d.municipality; })
-            .on('mouseover', function() {
-                d3.select(this)
-                .style('stroke-width', 6)
-                .style('stroke', 'steelblue');
-                textTop.text('District: ' + districName + ', Municipality: ' + this.id);
-            }).on('mouseout', function() {
-                d3.select(this)
-                .style('stroke-width', 3)
-                .style('stroke', 'steelblue');
-                textTop.text('');
+        // Add grey background lines for context.
+        background1 = svg.append("g")
+            .attr("class", "background")
+            .selectAll("path")
+            .data(demoLine1)
+            .enter().append("path")
+            .attr("d", path);
+
+        // Add grey background lines for context.
+        background2 = svg.append("g")
+            .attr("class", "background")
+            .selectAll("path")
+            .data(demoLine2)
+            .enter().append("path")
+            .attr("d", path);
+    
+        // Add blue foreground lines for focus.
+        foreground = svg.append('g')
+            .attr('class', 'foreground')
+            .selectAll('path')
+            .data(demoDataArray[i])
+            .enter().append('path')
+            .attr('d', concatenatedPath)
+            .attr('id', function(d) { return d.municipality; })
+                .on('mouseover', function() {
+                    d3.select(this)
+                    .style('stroke-width', 6)
+                    .style('stroke', 'steelblue');
+                    textTop.text('District: ' + districName + ', Municipality: ' + this.id);
+                }).on('mouseout', function() {
+                    d3.select(this)
+                    .style('stroke-width', 3)
+                    .style('stroke', 'steelblue');
+                    textTop.text('');
+                });
+    
+        // Add a group element for each dimension.
+        var g = svg.selectAll('.dimension')
+            .data(dimensions)
+            .enter().append('g')
+            .attr('class', 'dimension')
+            .attr('transform', function(d) { return 'translate(' + x(d) + ')'; });
+    
+        // Add an axis and title.
+        g.append('g')
+            .attr('class', 'axis')
+            .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+            .append('text')
+            .style('text-anchor', 'middle')
+            .attr('y', -9)
+            .text(function(d) { return d; });
+    
+        // Add and store a brush for each axis.
+        g.append('g')
+            .attr('class', 'brush')
+            .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on('brush', brush)); })
+            .selectAll('rect')
+            .attr('x', -8)
+            .attr('width', 16);
+    
+        var textTop = svg.append('text')
+            .attr('x', 70)
+            .attr('y', -35)
+            .attr('dy', '.35em')
+            .style('font-size','14px')
+            .style('font-style', 'bold')
+            .text('');
+        
+        // Returns the path for a given data point.
+        function path(d) {
+            // concatenate the path of each line
+            concatPath += line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+            concatPath += ',';
+            return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+        }
+    
+        concatPath = concatPath.replace('undefined','');
+        console.log(concatPath);
+
+        // TEST
+        concatPath = 'M161.66666666666666,0'+ //beginig of second line
+            'L161.66666666666666,173.33333333333337'+ // beginig of first line
+            'L485,0'+
+            'L808.3333333333333,86.66666666666669,'+
+            'M161.66666666666666,0'+
+            'L485,260'+
+            'L808.3333333333333,173.33333333333337'+ //end of second line
+            'L808.3333333333333,86.66666666666669,'//end of fist line;
+    
+        // render the concatenated path
+        function concatenatedPath() {
+            return concatPath;
+        }
+    
+        // Handles a brush event, toggling the display of foreground lines.
+        function brush() {
+            var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
+                extents = actives.map(function(p) { return y[p].brush.extent(); });
+            foreground.style('display', function(d) {
+                return actives.every(function(p, i) {
+                    return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+                }) ? null : 'none';
             });
-
-    // Add a group element for each dimension.
-    var g = svg.selectAll('.dimension')
-        .data(dimensions)
-        .enter().append('g')
-        .attr('class', 'dimension')
-        .attr('transform', function(d) { return 'translate(' + x(d) + ')'; });
-
-    // Add an axis and title.
-    g.append('g')
-        .attr('class', 'axis')
-        .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-        .append('text')
-        .style('text-anchor', 'middle')
-        .attr('y', -9)
-        .text(function(d) { return d; });
-
-    // Add and store a brush for each axis.
-    g.append('g')
-        .attr('class', 'brush')
-        .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on('brush', brush)); })
-        .selectAll('rect')
-        .attr('x', -8)
-        .attr('width', 16);
-
-    var textTop = svg.append('text')
-        .attr('x', 70)
-        .attr('y', -35)
-        .attr('dy', '.35em')
-        .style('font-size','14px')
-        .style('font-style', 'bold')
-        .text('');
-    
-    // Returns the path for a given data point.
-    function path(d) {
-        return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
-    }
-    
-    // Handles a brush event, toggling the display of foreground lines.
-    function brush() {
-        var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
-            extents = actives.map(function(p) { return y[p].brush.extent(); });
-        foreground.style('display', function(d) {
-            return actives.every(function(p, i) {
-                return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-            }) ? null : 'none';
-        });
-    }
-} // end chart
+        } 
+        } // End demoDataArray loop
+} // End chart
 
