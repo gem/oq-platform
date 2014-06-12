@@ -24,77 +24,24 @@
 
 function Category_PCP_Chart(catData, municipality, districName, concat) {
 
-    var concatPath;
-
     catData.pop();
     concat.pop();
-
-    var demoDataArray = [];
-    var demoLine1 = [];
-    var demoLine2 = [];
-
-    var demoLine11 = {
-        economy : 2,
-        education : 3,
-        governance : 2.5
-    };
-
-    var demoLine22 = {
-        economy : 3,
-        education : 1.5,
-        governance : 2
-    };
-
-    demoLine1.push(demoLine11);
-    demoLine2.push(demoLine22);
-    demoDataArray.push(demoLine1, demoLine2);
-
-    // first time the is draw this will happen
-    if (concat.length == 0) {
-        concat = demoLine1;
-    }
-
-    var array = [];
-    var tmpArray = [];
-    for (var i = 0; i < demoLine1.length; i++) {
-        for (var k in demoLine1[i]){
-            array.push(demoLine1[i][k]);
-        }
-    }
-
-    // first time the is draw this will happen
-    if (concat.length == 0) {
-        concat = demoLine2;
-    }
-
-    var array = [];
-    var tmpArray = [];
-    for (var i = 0; i < demoLine2.length; i++) {
-        for (var k in demoLine2[i]){ 
-            array.push(demoLine2[i][k]);
-        }
-    }
-
-    for (var i = 0; i < array.length; i++) {
-        if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
-            tmpArray.push(array[i]);
-        }
-    }
-
-    var maxVal = Math.max.apply( Math, tmpArray );
         
     var margin = {top: 60, right: 10, bottom: 10, left: 10},
         width = 990 - margin.left - margin.right,
         height = 590 - margin.top - margin.bottom;
     
     var x = d3.scale.ordinal().rangePoints([0, width], 1),
-        y = {};
+        y = d3.scale.ordinal().rangePoints(0, 1);
+
+    var area = d3.svg.area()
+        .x(function(d) { return x(d.x); })
+        .y0(function(d) { return y(d.y0); })
+        .y1(function(d) { return y(d.y0 + d.y); });
     
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
-        //background,
-        concatLine;
-        //foreground;
+        foreground;
     
     $('#tab-categroy-chart').empty();
 
@@ -106,17 +53,15 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     
     ////////////////
     // Base Chart //
-    ////////////////
-
-    for (var i = 0; i < demoDataArray.length; i++) {       
+    ////////////////      
     
         // Extract the list of dimensions and create a scale for each.
-        x.domain(dimensions = d3.keys(demoDataArray[i][0]).filter(function(d) {
+        x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
             return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
-                .domain([0, maxVal])
+                .domain([0, 1])
                 .range([height, 0]));
         }));
-
+/*
         // Add grey background lines for context.
         background1 = svg.append("g")
             .attr("class", "background")
@@ -125,21 +70,15 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
             .enter().append("path")
             .attr("d", path);
 
-        // Add grey background lines for context.
-        background2 = svg.append("g")
-            .attr("class", "background")
-            .selectAll("path")
-            .data(demoLine2)
-            .enter().append("path")
-            .attr("d", path);
+*/
     
         // Add blue foreground lines for focus.
         foreground = svg.append('g')
             .attr('class', 'foreground')
             .selectAll('path')
-            .data(demoDataArray[i])
+            .data(catData)
             .enter().append('path')
-            .attr('d', concatenatedPath)
+            .attr('d', path)
             .attr('id', function(d) { return d.municipality; })
                 .on('mouseover', function() {
                     d3.select(this)
@@ -159,7 +98,12 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
             .enter().append('g')
             .attr('class', 'dimension')
             .attr('transform', function(d) { return 'translate(' + x(d) + ')'; });
-    
+/*
+        g.append("path")
+            .attr("class", "area")
+            .attr("d", function(d) { return area(d.values); })
+            .style("fill", function(d) { return color(d.name); });
+  */  
         // Add an axis and title.
         g.append('g')
             .attr('class', 'axis')
@@ -187,28 +131,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         
         // Returns the path for a given data point.
         function path(d) {
-            // concatenate the path of each line
-            concatPath += line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
-            concatPath += ',';
             return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
-        }
-    
-        concatPath = concatPath.replace('undefined','');
-        console.log(concatPath);
-
-        // TEST
-        concatPath = 'M161.66666666666666,0'+ //beginig of second line
-            'L161.66666666666666,173.33333333333337'+ // beginig of first line
-            'L485,0'+
-            'L808.3333333333333,86.66666666666669,'+
-            'M161.66666666666666,0'+
-            'L485,260'+
-            'L808.3333333333333,173.33333333333337'+ //end of second line
-            'L808.3333333333333,86.66666666666669,'//end of fist line;
-    
-        // render the concatenated path
-        function concatenatedPath() {
-            return concatPath;
         }
     
         // Handles a brush event, toggling the display of foreground lines.
@@ -221,6 +144,6 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
                 }) ? null : 'none';
             });
         } 
-        } // End demoDataArray loop
+
 } // End chart
 
