@@ -26,22 +26,41 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
 
     catData.pop();
     concat.pop();
+
+    console.log(catData);
+
+    var bar = ['1', '2', '3', '4', '5'];
+    var data = catData;
         
     var margin = {top: 60, right: 10, bottom: 10, left: 10},
         width = 990 - margin.left - margin.right,
         height = 590 - margin.top - margin.bottom;
     
-    var x = d3.scale.ordinal().rangePoints([0, width], 1),
-        y = d3.scale.ordinal().rangePoints(0, 1);
+    var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
-    var area = d3.svg.area()
-        .x(function(d) { return x(d.x); })
-        .y0(function(d) { return y(d.y0); })
-        .y1(function(d) { return y(d.y0 + d.y); });
+    var x2 = d3.scale.linear()
+    .range([0, width], 1);
+
+     var y = d3.scale.linear()
+    .range([height, 0]);
     
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
         foreground;
+
+    var stack = d3.layout.stack()
+        .offset("zero")
+        .values(function(d) { return d.values; })
+        .x(function(d) { return d.economy; })
+        .y(function(d) { return d.education; });
+    
+    var nest = d3.nest()
+        .key(function(d) { return d.key; });
+
+    var area = d3.svg.area()
+        .x(function(d) {  return x2(d.economy); })
+        .y0(function(d) {  return y(d.y0); })
+        .y1(function(d) {  return y(d.y); });
     
     $('#tab-categroy-chart').empty();
 
@@ -61,6 +80,8 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
                 .domain([0, 1])
                 .range([height, 0]));
         }));
+
+        var z = d3.scale.category20c();
 /*
         // Add grey background lines for context.
         background1 = svg.append("g")
@@ -91,6 +112,8 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
                     .style('stroke', 'steelblue');
                     textTop.text('');
                 });
+
+        var layers = stack(nest.entries(data));
     
         // Add a group element for each dimension.
         var g = svg.selectAll('.dimension')
@@ -98,12 +121,14 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
             .enter().append('g')
             .attr('class', 'dimension')
             .attr('transform', function(d) { return 'translate(' + x(d) + ')'; });
-/*
-        g.append("path")
-            .attr("class", "area")
+
+        svg.selectAll(".layer")
+            .data(layers)
+          .enter().append("path")
+            .attr("class", "layer")
             .attr("d", function(d) { return area(d.values); })
-            .style("fill", function(d) { return color(d.name); });
-  */  
+            .style("fill", function(d, i) { return z(i); });
+
         // Add an axis and title.
         g.append('g')
             .attr('class', 'axis')
