@@ -18,14 +18,20 @@
 #    <https://www.gnu.org/licenses/agpl.html>.
 
 
-from django.conf.urls.defaults import patterns
-from django.conf.urls.defaults import url
+# from django.conf.urls.defaults import patterns
+# from django.conf.urls.defaults import url
+from django.conf.urls import patterns, include, url
 from openquakeplatform.svir.views import export_sv_category_names
 from openquakeplatform.svir.views import export_sv_data_by_variables_ids
+
+# Uncomment the next two lines to enable the admin:
+from django.contrib import admin
+admin.autodiscover()
 
 
 urlpatterns = patterns(
     'geonode.svir.views',
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^export_sv_category_names', export_sv_category_names),
     url(r'^export_sv_data_by_variables_ids', export_sv_data_by_variables_ids),
 )
