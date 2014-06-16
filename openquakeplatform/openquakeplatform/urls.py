@@ -20,7 +20,7 @@ import openquakeplatform.gemecdwebsite.uploadnrml.urls
 import photologue.urls
 
 
-from openquakeplatform import local_settings
+from django.conf import settings
 
 # TODO. Use context_processors instead of a custom TemplateView
 from openquakeplatform.utils import OQTemplateView
