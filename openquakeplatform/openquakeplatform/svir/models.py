@@ -56,26 +56,26 @@ CHMAX = 200
 # )
 
 
-class Region(models.Model):
-    name = models.CharField(max_length=CHMAX)
+# class Region(models.Model):
+#     name = models.CharField(max_length=CHMAX)
 
-    def __unicode__(self):
-        return self.name
+#     def __unicode__(self):
+#         return self.name
 
 
-class Country(models.Model):
-    name = models.CharField(max_length=CHMAX)
-    region = models.ForeignKey('Region')
-    iso3 = models.CharField(max_length=3)
-    geometry = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
-    indicators = models.ManyToManyField('Indicator')
+# class Country(models.Model):
+#     name = models.CharField(max_length=CHMAX)
+#     region = models.ForeignKey('Region')
+#     iso3 = models.CharField(max_length=3)
+#     geometry = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
+#     indicators = models.ManyToManyField('Indicator')
 
-    @property
-    def data_completeness(self):
-        pass
+#     @property
+#     def data_completeness(self):
+#         pass
 
-    def __unicode__(self):
-        return '%s (%s)' % (self.name, self.iso3)
+#     def __unicode__(self):
+#         return '%s (%s)' % (self.name, self.iso3)
 
 
 class Theme(models.Model):
@@ -194,6 +194,7 @@ class Indicator(models.Model):
     periodicity = models.ForeignKey('Periodicity')
     aggregation_method = models.ForeignKey('AggregationMethod')
     additional_comments = models.CharField(max_length=1024)
+    countries = models.ManyToManyField('vulnerability.Country')
 
     @property
     def min_value(self):

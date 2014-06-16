@@ -14,12 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from models import (Region, Country, Theme, Subtheme, MeasurementType,
+from models import (Theme, Subtheme, MeasurementType,
                     StatisticalTag, Tag1, Tag2, Tag3, Tag4, Tag5, Tag6,
                     Source, Periodicity, AggregationMethod, Indicator)
 
-admin.site.register(Region)
-admin.site.register(Country)
 admin.site.register(Theme)
 admin.site.register(Subtheme)
 admin.site.register(MeasurementType)
