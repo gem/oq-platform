@@ -4,10 +4,6 @@
    width: 100%;
 }
 
-div.navbar-fixed-top {
-    position: relative;
-}
-
 #header-wrapper {
     height: 108px;
 }
@@ -300,6 +296,10 @@ footer.footer div.container {
 
 /* Remove some unneeded padding and margins around
    the element containing the main application map. */
+#oq-page-middle {
+    margin-top: 107px;
+}
+
 #oq-page-middle div.content-wrap {
     margin-bottom: 0px;
     padding-top: 0px;
