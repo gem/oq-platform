@@ -14,8 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from models import (Theme, Subtheme, MeasurementType,
-                    StatisticalTag, Tag1, Tag2, Tag3, Tag4, Tag5, Tag6,
+from models import (Theme, Subtheme, MeasurementType, StatisticalTag, Keyword,
                     Source, Periodicity, AggregationMethod, Indicator,
                     CountryIndicator)
 
@@ -23,12 +22,7 @@ admin.site.register(Theme)
 admin.site.register(Subtheme)
 admin.site.register(MeasurementType)
 admin.site.register(StatisticalTag)
-admin.site.register(Tag1)
-admin.site.register(Tag2)
-admin.site.register(Tag3)
-admin.site.register(Tag4)
-admin.site.register(Tag5)
-admin.site.register(Tag6)
+admin.site.register(Keyword)
 admin.site.register(Source)
 admin.site.register(Periodicity)
 admin.site.register(AggregationMethod)

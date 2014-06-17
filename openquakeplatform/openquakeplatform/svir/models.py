@@ -41,43 +41,6 @@ CHMAX = 200
 # )
 
 
-# THEMES = (
-#     (1, 'E'),
-# )
-
-# class PT(object):
-#     NONE = 1
-#     ANNUAL = 2
-
-
-# PERIODICITY_TYPES = (
-#     (PT.NONE, 'None'),
-#     (PT.ANNUAL, 'Annual'),
-# )
-
-
-# class Region(models.Model):
-#     name = models.CharField(max_length=CHMAX)
-
-#     def __unicode__(self):
-#         return self.name
-
-
-# class Country(models.Model):
-#     name = models.CharField(max_length=CHMAX)
-#     region = models.ForeignKey('Region')
-#     iso3 = models.CharField(max_length=3)
-#     geometry = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
-#     indicators = models.ManyToManyField('Indicator')
-
-#     @property
-#     def data_completeness(self):
-#         pass
-
-#     def __unicode__(self):
-#         return '%s (%s)' % (self.name, self.iso3)
-
-
 class Theme(models.Model):
     name = models.CharField(max_length=CHMAX)
 
@@ -92,6 +55,7 @@ class Subtheme(models.Model):
         return self.name
 
 
+# TODO Check if this name sounds fine
 class MeasurementType(models.Model):
     name = models.CharField(max_length=CHMAX)
 
@@ -99,6 +63,7 @@ class MeasurementType(models.Model):
         return self.name
 
 
+# TODO Check if we can rename this into something PCA-related
 class StatisticalTag(models.Model):
     name = models.CharField(max_length=CHMAX)
 
@@ -106,42 +71,7 @@ class StatisticalTag(models.Model):
         return self.name
 
 
-class Tag1(models.Model):
-    name = models.CharField(max_length=CHMAX)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Tag2(models.Model):
-    name = models.CharField(max_length=CHMAX)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Tag3(models.Model):
-    name = models.CharField(max_length=CHMAX)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Tag4(models.Model):
-    name = models.CharField(max_length=CHMAX)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Tag5(models.Model):
-    name = models.CharField(max_length=CHMAX)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Tag6(models.Model):
+class Keyword(models.Model):
     name = models.CharField(max_length=CHMAX)
 
     def __unicode__(self):
@@ -180,28 +110,28 @@ class CountryIndicator(models.Model):
     indicator = models.ForeignKey('Indicator')
     value = models.FloatField()
 
+    class Meta:
+        unique_together = ('country', 'indicator')
+
 
 class Indicator(models.Model):
     code = models.CharField(max_length=CHMAX)
-    old_code = models.CharField(max_length=CHMAX)
+    old_code = models.CharField(max_length=CHMAX, null=True, blank=True)
     name = models.CharField(max_length=CHMAX)
     measurement_type = models.ForeignKey('MeasurementType')
     theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
     statistical_tag = models.ForeignKey('StatisticalTag')
-    tag1 = models.ForeignKey('Tag1')
-    tag2 = models.ForeignKey('Tag2')
-    tag3 = models.ForeignKey('Tag3')
-    tag4 = models.ForeignKey('Tag4')
-    tag5 = models.ForeignKey('Tag5')
-    tag6 = models.ForeignKey('Tag6')
+    keyword = models.ManyToManyField('Keyword', null=True, blank=True)
     definition = models.CharField(max_length=CHMAX)
     source = models.ForeignKey('Source')
     periodicity = models.ForeignKey('Periodicity')
     aggregation_method = models.ForeignKey('AggregationMethod')
-    additional_comments = models.CharField(max_length=1024)
+    additional_comments = models.CharField(
+        max_length=1024, null=True, blank=True)
     countries = models.ManyToManyField(
-        'vulnerability.Country', through='CountryIndicator')
+        'vulnerability.Country', through='CountryIndicator',
+        null=True, blank=True)
 
     @property
     def min_value(self):
