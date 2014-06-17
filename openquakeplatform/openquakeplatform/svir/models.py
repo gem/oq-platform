@@ -175,6 +175,12 @@ class AggregationMethod(models.Model):
         return self.name
 
 
+class CountryIndicator(models.Model):
+    country = models.ForeignKey('vulnerability.Country')
+    indicator = models.ForeignKey('Indicator')
+    value = models.FloatField()
+
+
 class Indicator(models.Model):
     code = models.CharField(max_length=CHMAX)
     old_code = models.CharField(max_length=CHMAX)
@@ -194,7 +200,8 @@ class Indicator(models.Model):
     periodicity = models.ForeignKey('Periodicity')
     aggregation_method = models.ForeignKey('AggregationMethod')
     additional_comments = models.CharField(max_length=1024)
-    countries = models.ManyToManyField('vulnerability.Country')
+    countries = models.ManyToManyField(
+        'vulnerability.Country', through='CountryIndicator')
 
     @property
     def min_value(self):
