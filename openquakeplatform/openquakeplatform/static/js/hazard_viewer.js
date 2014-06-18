@@ -60,6 +60,9 @@ var selectedLoss = [];
 var lossLayerId = {};
 var lossLayerTitle = {};
 
+//Keep track of layer specific information
+var layerInvestigationTime, layerIml, layerImt;
+
 var baseMapUrl = (
     'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
 );
@@ -212,8 +215,7 @@ var startApp = function() {
     selLossCat.appendChild(catLossMenuHeader);
     $('#curve-category option:empty').remove();
 
-    $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
-    function(json) {
+    $.getJSON('http://tilestream.openquake.org/api/v1/Tileset', function(json) {
 
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -715,9 +717,19 @@ var startApp = function() {
         utfGrid = {};
         var e = document.getElementById('curve-list');
         var curveLayerId = e.options[e.selectedIndex].value;
+
         // Look up the layer id using the layer name
         var curveLayerIdArray = curveLayerNames[curveLayerId];
         var selectedLayer = curveLayerIdArray.toString();
+
+        // get more information about the selected layer for use in chart
+        $.getJSON('http://tilestream.openquake.org/api/v1/Tileset/'+selectedLayer, function(json) {
+            console.log(json.investigationTime);
+            layerInvestigationTime = json.investigationTime;
+            layerIml = json.iml;
+            layerImt = json.imt;
+        });
+
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
         // Check for duplicae layes
         if (selectedLayer in layers) {
@@ -1030,7 +1042,6 @@ var startApp = function() {
             var imt;
 
             if (e.data) {
-                console.log(e.data);
                 prob = e.data.prob;
                 probArray = prob.split(',');
                 iml = e.data.iml;
@@ -1190,7 +1201,7 @@ var startApp = function() {
     ////////////// Single hazard Chart /////////
     ////////////////////////////////////////////
 
-    function hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt) {
+    function hazardD3Chart(probArray, imlArray, lat, lng) {
         var lon = lng;
         // grid line functions
         function make_x_axis() {  
@@ -1207,18 +1218,25 @@ var startApp = function() {
                 .ticks(5);
         }
 
+        console.log(layerIml);
+        if (layerIml instanceof Array) {
+            //continue
+        } else {
+            layerIml = layerIml.split(',');
+        }
+        
+
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // without log values...
             // Only push into data if the values are greater then 0
-            if (parseFloat(imlArray[i]) > 0 && parseFloat(probArray[i]) > 0) {
-                data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
+            if (parseFloat(layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
+                data.push([parseFloat(layerIml[i]), parseFloat(probArray[i])]);
             };
             // with log valuse...
-            //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
+            //data.push([log(parseFloat(layerIml[i])), log(parseFloat(probArray[i]))]);
         }
 
-        console.log(data);
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
@@ -1275,6 +1293,8 @@ var startApp = function() {
         x.domain(d3.extent(data, function(d) { return d.x; }));
         y.domain(d3.extent(data, function(d) { return d.y; }));
 
+        console.log(layerInvestigationTime);
+
         svg.append('path')
             .data([data])
             .attr('class', 'line')
@@ -1289,7 +1309,7 @@ var startApp = function() {
             .attr('dy', '.71em')
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
-            .text(imt);
+            .text(layerImt);
         svg.append('g')
             .attr('class', 'y axis')
             .call(yAxis)
@@ -1300,7 +1320,7 @@ var startApp = function() {
             .attr('dy', '.71em')
             .style('font-size','12px')
             .style('text-anchor', 'end')
-            .text('Probabability of exceedance in '+invest_time+' years');
+            .text('Probabability of exceedance in '+layerInvestigationTime+' years');
 
         var legend = d3.select('#chartDialog').append('svg')
             .attr('height', 25);
@@ -1311,7 +1331,7 @@ var startApp = function() {
             .enter().append('circle')
             .attr('class', 'line')
             .attr('cx', function(d) { return x(d.x); })
-            .attr('cy', function(d) { console.log(y(d.y)); return y(d.y); })
+            .attr('cy', function(d) { return y(d.y); })
             .attr('r', 4.5)
             .style('fill', 'gray')
             .on('mouseover', function() {
@@ -1372,9 +1392,9 @@ var startApp = function() {
             csvData = csvData.concat('"');
             csvData = csvData.concat(probArray);
             csvData = csvData.concat('","');
-            csvData = csvData.concat(imlArray);
+            csvData = csvData.concat(layerIml);
             csvData = csvData.concat('",');
-            csvData = csvData.concat(invest_time);
+            csvData = csvData.concat(layerInvestigationTime);
             csvData = csvData.concat(',');
             csvData = csvData.concat(lon);
             csvData = csvData.concat(',');
