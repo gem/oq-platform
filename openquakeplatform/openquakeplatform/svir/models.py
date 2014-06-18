@@ -116,13 +116,12 @@ class CountryIndicator(models.Model):
 
 class Indicator(models.Model):
     code = models.CharField(max_length=CHMAX)
-    old_code = models.CharField(max_length=CHMAX, null=True, blank=True)
     name = models.CharField(max_length=CHMAX)
     measurement_type = models.ForeignKey('MeasurementType')
     theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
     statistical_tag = models.ForeignKey('StatisticalTag')
-    keyword = models.ManyToManyField('Keyword', null=True, blank=True)
+    keywords = models.ManyToManyField('Keyword', null=True, blank=True)
     definition = models.CharField(max_length=CHMAX)
     source = models.ForeignKey('Source')
     periodicity = models.ForeignKey('Periodicity')
