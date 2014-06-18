@@ -1030,6 +1030,7 @@ var startApp = function() {
             var imt;
 
             if (e.data) {
+                console.log(e.data);
                 prob = e.data.prob;
                 probArray = prob.split(',');
                 iml = e.data.iml;
@@ -1209,12 +1210,15 @@ var startApp = function() {
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // without log values...
-            data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
-        
+            // Only push into data if the values are greater then 0
+            if (parseFloat(imlArray[i]) > 0 && parseFloat(probArray[i]) > 0) {
+                data.push([parseFloat(imlArray[i]), parseFloat(probArray[i])]);
+            };
             // with log valuse...
             //data.push([log(parseFloat(imlArray[i])), log(parseFloat(probArray[i]))]);
         }
 
+        console.log(data);
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
@@ -1307,7 +1311,7 @@ var startApp = function() {
             .enter().append('circle')
             .attr('class', 'line')
             .attr('cx', function(d) { return x(d.x); })
-            .attr('cy', function(d) { return y(d.y); })
+            .attr('cy', function(d) { console.log(y(d.y)); return y(d.y); })
             .attr('r', 4.5)
             .style('fill', 'gray')
             .on('mouseover', function() {
