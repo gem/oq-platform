@@ -68,6 +68,7 @@ var baseMapUrl = (
 );
 
 var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
+var TILESTREAM_API_URL = 'http://tilestream.openquake.org/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -215,7 +216,7 @@ var startApp = function() {
     selLossCat.appendChild(catLossMenuHeader);
     $('#curve-category option:empty').remove();
 
-    $.getJSON('http://tilestream.openquake.org/api/v1/Tileset', function(json) {
+    $.getJSON(TILESTREAM_API_URL, function(json) {
 
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -223,7 +224,7 @@ var startApp = function() {
             var cat = json[i].category;
             var type = json[i].type;
             var grids = json[i].grids;
-            var invest = json[i].investigationTime;
+            var chartType = json[i].chartType;
             var app = json[i].application;
             var grid, gridName;
 
@@ -252,7 +253,7 @@ var startApp = function() {
                 gridName = grid.split('/')[4];
                 lossLayerGrids.push(gridName);
             }
-            if (invest == undefined && cat !== undefined && type == 'hazard') {
+            if (chartType == undefined && cat !== undefined && type == 'hazard') {
                 mapCategoryList.push(cat);
                 mapLayerNames[name] = [];
                 mapLayersByCat[cat] = [];
@@ -273,7 +274,7 @@ var startApp = function() {
             var cat = json[j].category;
             var type = json[j].type;
             var grids = json[j].grids;
-            var invest = json[j].investigationTime;
+            var chartType = json[j].chartType;
             var template = json[j].template;
             // Crazy clean up
             template = template.replace(/{{#__location__}}{{/, '');
@@ -288,10 +289,10 @@ var startApp = function() {
                 curveLayerNames[name].push(curveLayerId);
                 curveLayersByCat[cat].push(curveLayerTitle);
 
-                if (invest != 'mixed') {
+                if (chartType == 'single') {
                     curvesByInvestSingle[j] = name;
                 } 
-                else if (invest == 'mixed') {
+                else if (chartType == 'mixed') {
                     curvesByInvestMixed[j] = name;
                     curvesAvailable[j] = template;
                 }
@@ -303,11 +304,11 @@ var startApp = function() {
                 uhsLayerNames[name].push(uhsLayerId);
                 uhsLayersByCat[cat].push(uhsLayerTitle);
 
-                if (invest == 'mixed') {
+                if (chartType == 'mixed') {
                     uhsByInvestMixed[j] = name;
                     uhsAvailable[j] = template;
                 } 
-                else if (invest != 'mixed') {
+                else if (chartType == 'single') {
                     uhsByInvestSingle[j] = name;
                 }
             }
@@ -322,10 +323,10 @@ var startApp = function() {
                 lossByInvestSingle[j] = name;
             }
 
-            if (invest == undefined && cat !== undefined && type == 'hazard') {
+            if (chartType == undefined && cat !== undefined && type == 'hazard') {
                 mapLayerId = json[j].id;
                 mapLayerTitle = json[j].mapped_value;
-                layerInvest = json[j].investigationTime;
+                chartType = json[j].chartType;
                 mapLayerNames[name].push(mapLayerId);
                 mapLayersByCat[cat].push(mapLayerTitle);
             }
@@ -723,8 +724,7 @@ var startApp = function() {
         var selectedLayer = curveLayerIdArray.toString();
 
         // get more information about the selected layer for use in chart
-        $.getJSON('http://tilestream.openquake.org/api/v1/Tileset/'+selectedLayer, function(json) {
-            console.log(json.investigationTime);
+        $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
             layerInvestigationTime = json.investigationTime;
             layerIml = json.iml;
             layerImt = json.imt;
@@ -771,6 +771,14 @@ var startApp = function() {
         // Look up the layer id using the layer name
         var lossLayerIdArray = lossLayerNames[lossLayerId];
         var selectedLayer = lossLayerIdArray.toString();
+
+        // get more information about the selected layer for use in chart
+        $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+            layerInvestigationTime = json.investigationTime;
+            layerIml = json.iml;
+            layerImt = json.imt;
+        });
+
         var hasGrid = $.inArray(selectedLayer, lossLayerGrids) > -1;
         // Check for duplicae layes
         if (selectedLayer in layers) {
@@ -812,8 +820,6 @@ var startApp = function() {
             // this is only needed in the case when the user adds the same curve twice
             var e = document.getElementById('curve-list');
             var curveLayerId = e.options[e.selectedIndex].value;
-            //curveLayerId = unCapitalize(curveLayerId);
-            //curveLayerId = curveLayerId.replace(/ /g, '_');
 
             //TODO make sure that the curveLayerNames[curveLayerId] are in all lowwer case and are seperated by _
             // Look up the layer id using the layer name
@@ -821,6 +827,13 @@ var startApp = function() {
 
             selectedLayer = curveLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+            
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                layerInvestigationTime = json.investigationTime;
+                layerIml = json.iml;
+                layerImt = json.imt;
+            });
 
         } 
         else if (curveType == 'uhs') {
@@ -831,6 +844,12 @@ var startApp = function() {
             var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
+                    // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                layerInvestigationTime = json.investigationTime;
+                layerIml = json.iml;
+                layerImt = json.imt;
+            });
         }
 
         // Check for duplicae layes
@@ -1218,21 +1237,19 @@ var startApp = function() {
                 .ticks(5);
         }
 
-        console.log(layerIml);
         if (layerIml instanceof Array) {
             //continue
         } else {
             layerIml = layerIml.split(',');
         }
         
-
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // without log values...
             // Only push into data if the values are greater then 0
             if (parseFloat(layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
                 data.push([parseFloat(layerIml[i]), parseFloat(probArray[i])]);
-            };
+            }
             // with log valuse...
             //data.push([log(parseFloat(layerIml[i])), log(parseFloat(probArray[i]))]);
         }
@@ -1293,8 +1310,6 @@ var startApp = function() {
         x.domain(d3.extent(data, function(d) { return d.x; }));
         y.domain(d3.extent(data, function(d) { return d.y; }));
 
-        console.log(layerInvestigationTime);
-
         svg.append('path')
             .data([data])
             .attr('class', 'line')
@@ -1320,7 +1335,7 @@ var startApp = function() {
             .attr('dy', '.71em')
             .style('font-size','12px')
             .style('text-anchor', 'end')
-            .text('Probabability of exceedance in '+layerInvestigationTime+' years');
+            .text('Probability of exceedance in '+layerInvestigationTime+' years');
 
         var legend = d3.select('#chartDialog').append('svg')
             .attr('height', 25);
@@ -1414,8 +1429,17 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
-        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
+        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
+
+        if (layerIml instanceof Array) {
+            //continue
+        } else {
+            layerIml = layerIml.split(',');
+            for (var i = 0; i < layerIml.length; i++) {
+                layerIml[i] = parseFloat(layerIml[i]);
+            }
+        }
 
         /* associative array of arrays of values */
         curve_vals = [];
@@ -1427,11 +1451,15 @@ var startApp = function() {
         lon = chartData.lon;
         if (curveType == 'uhs') {
             poe = chartData.poe;
+            chartHeaderTest = 'Investigation Time: '+layerInvestigationTime+', Probability of exceedance: '+poe;
+        } else {
+            chartHeaderTest = 'Investigation Time: '+layerInvestigationTime;
         }
 
-        invest_time = chartData.invest_time;
+
+        invest_time = layerInvestigationTime;
         if (curveType == 'hc') {
-            yAxisLable = 'Probabability of exceedance in '+invest_time+' years';
+            yAxisLable =  'Probability of exceedance in '+layerInvestigationTime+' years';
         } else if (curveType == 'uhs') {
             yAxisLable = 'Spectral acceleration (g)';
         }
@@ -1439,7 +1467,8 @@ var startApp = function() {
         if (curveType == 'hc') {
             // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
             // SA-0.1 = Spectral Acceleration (0.1 s)
-            xAxisLable = chartData.imt;
+
+            xAxisLable = layerImt;
             var xAxisLableValue;
             if (xAxisLable.indexOf('SA-') == 0 ) {
                 xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
@@ -1473,7 +1502,7 @@ var startApp = function() {
 
         // Set the y axis variable depending on the type of curve
         if (curveType == 'hc') {
-            yAxisVariable = curve_vals.iml;
+            yAxisVariable = layerIml;
         } else if (curveType == 'uhs') {
             yAxisVariable = curve_vals.periods;
         }
@@ -1764,7 +1793,7 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","12px")
-            .text('Investigation Time: '+invest_time+', Probability of exceedance: '+poe);
+            .text(chartHeaderTest);
 
         textTop = svg.append("text")
             .attr("x", 0)
