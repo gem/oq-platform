@@ -126,7 +126,7 @@
       /* Override addOutput for the getfeatureinfo tool in order to
       parse eventual GetFeatureInfo templates and run javascript
       against them */
-      if (gxp != undefined) {
+      if (typeof(gxp) != 'undefined') {
       var originalAddOutput = gxp.plugins.WMSGetFeatureInfo.prototype.addOutput;
       Ext.override(gxp.plugins.WMSGetFeatureInfo, {
         addOutput: function(config) {
