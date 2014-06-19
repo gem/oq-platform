@@ -50,22 +50,22 @@ var startApp = function() {
      * Overlay layers *
      ******************/
 
-    var impro0 = L.tileLayer('http://tilestream.openquake.org/v2/impro-level0-bc/{z}/{x}/{y}.png');
-    var nera0 = L.tileLayer('http://tilestream.openquake.org/v2/nera-level0-bc/{z}/{x}/{y}.png');
-    var gedga2 = L.tileLayer('http://tilestream.openquake.org/v2/ged-ga-level2/{z}/{x}/{y}.png');
-    var hazus1 = L.tileLayer('http://tilestream.openquake.org/v2/ged-hazus-level1/{z}/{x}/{y}.png');
-    var hazus_bf = L.tileLayer('http://tilestream.openquake.org/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
-    var unh1 = L.tileLayer('http://tilestream.openquake.org/v2/ph-unh1-bc-ge10-z10/{z}/{x}/{y}.png');
+    var impro0 = L.tileLayer(TS_URL + 'v2/impro-level0-bc/{z}/{x}/{y}.png');
+    var nera0 = L.tileLayer(TS_URL + 'v2/nera-level0-bc/{z}/{x}/{y}.png');
+    var gedga2 = L.tileLayer(TS_URL + 'v2/ged-ga-level2/{z}/{x}/{y}.png');
+    var hazus1 = L.tileLayer(TS_URL + 'v2/ged-hazus-level1/{z}/{x}/{y}.png');
+    var hazus_bf = L.tileLayer(TS_URL + 'v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
+    var unh1 = L.tileLayer(TS_URL + 'v2/ph-unh1-bc-ge10-z10/{z}/{x}/{y}.png');
 
-    var grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
-    var grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
+    var grump_rural = L.tileLayer(TS_URL + 'v2/gdal-custom-rural/{z}/{x}/{y}.png');
+    var grump_urban = L.tileLayer(TS_URL + 'v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
     var df_admin0 = L.tileLayer(
-        'http://tilestream.openquake.org/v2/dwelling-fractions/{z}/{x}/{y}.png',
-        {wax: 'http://tilestream.openquake.org/v2/dwelling-fractions.json'}
+        TS_URL + 'v2/dwelling-fractions/{z}/{x}/{y}.png',
+        {wax: TS_URL + 'v2/dwelling-fractions.json'}
     );
     var df_port = L.tileLayer(
-        'http://tilestream.openquake.org/v2/PRT-dwelling-fractions/{z}/{x}/{y}.png',
-        {wax: 'http://tilestream.openquake.org/v2/PRT-dwelling-fractions.json'}
+        TS_URL + 'v2/PRT-dwelling-fractions/{z}/{x}/{y}.png',
+        {wax: TS_URL + 'v2/PRT-dwelling-fractions.json'}
     );
 
     var overlays = {

@@ -6,6 +6,9 @@
 {% block extra_head %}
     <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <script type="text/javascript">
+        var TS_URL = '//tilestream.openquake.org/';
+    </script>
 {% endblock extra_head %}
 
 {% block header %}
@@ -39,7 +42,7 @@
 
 {% block body_outer %}
     <div id="oq-body-wrapper">
-     {% block body %}      
+     {% block body %}
         <div class="span12">
             <div class="hero-unit">
                 <div id="oq-context-ribbon">
@@ -101,7 +104,7 @@
 				stroke-width: 1;
 				fill: none;
 			}
-			
+
 			.axis {
 			  shape-rendering: crispEdges;
 			}

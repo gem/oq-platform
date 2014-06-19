@@ -149,7 +149,7 @@
       // base layers
       naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
 
-      GEM_base = L.tileLayer('http://tilestream.openquake.org/v2/world-landmass/{z}/{x}/{y}.png');
+      GEM_base = L.tileLayer(TS_URL + 'v2/world-landmass/{z}/{x}/{y}.png');
 
       var baselayer = {
         'Natural Earth' : naturalEarth,
@@ -161,13 +161,13 @@
       osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
 
 
-      hazard_curve = L.tileLayer('http://tilestream.openquake.org/v2/hazard-curve-world/{z}/{x}/{y}.png', {
-        wax: 'http://tilestream.openquake.org/v2/hazard-curve-world.json'
+      hazard_curve = L.tileLayer(TS_URL + 'v2/hazard-curve-world/{z}/{x}/{y}.png', {
+        wax: TS_URL + 'v2/hazard-curve-world.json'
       });
 
-      grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
+      grump_rural = L.tileLayer(TS_URL + 'v2/gdal-custom-rural/{z}/{x}/{y}.png');
 
-      grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
+      grump_urban = L.tileLayer(TS_URL + 'v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
 
       var overlays = {
         "GRUMP Urban" : grump_urban,

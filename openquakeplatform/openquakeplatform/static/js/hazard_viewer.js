@@ -46,7 +46,7 @@ var baseMapUrl = (
     "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
 );
 
-var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
+var TILESTREAM_URL = TS_URL + 'v2/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -172,7 +172,7 @@ var startApp = function() {
     catCurveMenuHeader.innerHTML = "Category:";
     selCurveCat.appendChild(catCurveMenuHeader);
 
-    $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
+    $.getJSON(TS_URL + 'api/v1/Tileset',
     function(json) {
 
         // Create the category list (build the object)
@@ -533,7 +533,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TS_URL + 'v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             utfGridClickEvent(utfGrid);
             var e = document.getElementById("layer-list");
@@ -562,7 +562,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TS_URL + 'v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             utfGridClickEvent(utfGrid);
             var e = document.getElementById("curve-list");

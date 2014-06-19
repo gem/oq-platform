@@ -23,7 +23,7 @@ var startApp = function() {
      * Overlay layers *
      ******************/
 
-    var strain = L.tileLayer('http://tilestream.openquake.org/v2/strain/{z}/{x}/{y}.png');
+    var strain = L.tileLayer(TS_URL + 'v2/strain/{z}/{x}/{y}.png');
     var overlays = {
         "Geodetic-Strain" : strain,
     };
