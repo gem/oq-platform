@@ -61,7 +61,7 @@ var lossLayerId = {};
 var lossLayerTitle = {};
 
 //Keep track of layer specific information
-var layerInvestigationTime, layerIml, layerImt;
+var layerInvestigationTime, layerIml, layerImt, layerPoe;
 
 var baseMapUrl = (
     'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
@@ -847,8 +847,8 @@ var startApp = function() {
                     // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 layerInvestigationTime = json.investigationTime;
-                layerIml = json.iml;
-                layerImt = json.imt;
+                layerIml = json.periods;
+                layerPoe = json.poe;
             });
         }
 
@@ -1450,12 +1450,11 @@ var startApp = function() {
         lat = chartData.lat;
         lon = chartData.lon;
         if (curveType == 'uhs') {
-            poe = chartData.poe;
+            poe = layerPoe;
             chartHeaderTest = 'Investigation Time: '+layerInvestigationTime+', Probability of exceedance: '+poe;
         } else {
             chartHeaderTest = 'Investigation Time: '+layerInvestigationTime;
         }
-
 
         invest_time = layerInvestigationTime;
         if (curveType == 'hc') {
