@@ -21,11 +21,11 @@
         function initLeafletmap()
         {
 
-            var backgroundmap = new L.tileLayer('http://{s}.tile.cloudmade.com/4cc00f0c8a8e42f2a2693481a431870a/998/256/{z}/{x}/{y}.png', {
-                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>[…]',
+            var backgroundmap = new L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+                subdomains: ['1', '2', '3', '4'],
+                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
                 maxZoom: 18
-                });
-
+            });
             map = new L.Map('map', {
                 center: new L.LatLng(10, 10),
                 zoom: 2,
