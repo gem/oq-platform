@@ -68,7 +68,7 @@ var baseMapUrl = (
 );
 
 var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
-var TILESTREAM_API_URL = 'http://tilestream.openquake.org/api/v1/Tileset/';
+var TILESTREAM_API_URL = '//tilestream.openquake.org/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
