@@ -330,12 +330,18 @@ db_gis_create () {
 }
 
 deps_info () {
-        cat <<EOF
+    #    cat <<EOF
+    # FIXME these lines must be integrated with the oq-platform deb package
     sudo apt-get install imagemagick xmlstarlet
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
-EOF
+    # FIXME these lines must be integrated with the setup.py
+    pip install -e git+http://github.com/gem/wadofstuff-django-serializers.git#egg=wadofstuff-django-serializers-1.1.0
+    pip install -e git+http://github.com/gem/django-nested-inlines.git#egg=django-nested-inlines-0.1
+    pip install -e git+http://github.com/gem/django-chained-selectbox.git#egg=django-chained-selectbox-0.1
+    pip install -e git+http://github.com/gem/django-chained-multi-checkboxes.git#egg=django-chained-multi-checkboxes-0.3.0
+#EOF
 }
 
 #
@@ -388,35 +394,32 @@ oq_platform_install () {
     apt-get update
     apt-get install -y geonode
 
-    # check for oq-platform packaged dependencies
-    for pkg in imagemagick xmlstarlet; do
-        if [ "$(dpkg-query -W --showformat="\${Status}" "$pkg")" != "install ok installed" ]; then
-            echo "ERROR: missing Ubuntu package $pkg."
-            echo "To satisfy oq-platform dependencies perform the following commands"
-            deps_info
-        exit 1
-        fi
-    done
+    # FIXME this code will be used in the future
+    ## check for oq-platform packaged dependencies
+    #for pkg in imagemagick xmlstarlet; do
+    #    if [ "$(dpkg-query -W --showformat="\${Status}" "$pkg")" != "install ok installed" ]; then
+    #        echo "ERROR: missing Ubuntu package $pkg."
+    #        echo "To satisfy oq-platform dependencies perform the following commands"
+    #        deps_info
+    #    exit 1
+    #    fi
+    #done
 
-    # check for oq-platform external dependencies
-    check_pippkg="$(pip freeze 2>/dev/null | egrep '^django-photologue==2.6.1|^South==0.8.4|^Pillow==2.3.1' | wc -l)"
-    if [ "$check_pippkg" != "3" ]; then
-        echo "ERROR: missing pip installed packages or wrong versions."
-        echo "Current version are:"
-        pip freeze 2>/dev/null | egrep '^django-photologue==|^South==|^Pillow=='
-        echo "check Pillow, django-photologue, South, if missing perform the following commands"
-        deps_info
-        exit 1
-    fi
-    sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
+    # FIXME this code will be used in the future
+    ## check for oq-platform external dependencies
+    #check_pippkg="$(pip freeze 2>/dev/null | egrep '^django-photologue==2.6.1|^South==0.8.4|^Pillow==2.3.1' | wc -l)"
+    #if [ "$check_pippkg" != "3" ]; then
+    #    echo "ERROR: missing pip installed packages or wrong versions."
+    #    echo "Current version are:"
+    #    pip freeze 2>/dev/null | egrep '^django-photologue==|^South==|^Pillow=='
+    #    echo "check Pillow, django-photologue, South, if missing perform the following commands"
+    #    deps_info
+    #    exit 1
+    #fi
+    #sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
 
     cd oq-platform/openquakeplatform
-    # FIXME these lines must be integrated with the setup.py
-    pip install -e git+http://github.com/gem/wadofstuff-django-serializers.git#egg=wadofstuff-django-serializers-1.1.0
-    pip install -e git+http://github.com/gem/django-nested-inlines.git#egg=django-nested-inlines-0.1
-    pip install -e git+http://github.com/gem/django-chained-selectbox.git#egg=django-chained-selectbox-0.1
-    pip install -e git+http://github.com/gem/django-chained-multi-checkboxes.git#egg=django-chained-multi-checkboxes-0.3.0
-    # END
+    deps_info
     pip install . -U --no-deps
     cd -
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"
