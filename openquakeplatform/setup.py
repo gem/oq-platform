@@ -30,6 +30,7 @@ setup(
               'openquakeplatform.exposure',
               'openquakeplatform.icebox',
               'openquakeplatform.svir',
+              'openquakeplatform.vulnerability',
               'openquakeplatform.econd',
               'openquakeplatform.gemecdwebsite',
               'openquakeplatform.gemecdwebsite.eventsmap',
@@ -47,6 +48,10 @@ setup(
               'openquakeplatform.weblib',
               'openquakeplatform.weblib.baseclasses'
              ],
+    dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.0',
+                        'http://github.com/gem/django-nested-inlines/tarball/master#egg=django-nested-inlines-0.1',
+                        'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
+                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0' ],
     install_requires=[
         "agon-ratings==0.2",
         "beautifulsoup4==4.1.0",
@@ -84,7 +89,11 @@ setup(
         "GeoNode==2.0",
         "django-photologue==2.6.1",
         "requests==0.8.2",
-        "fabric"
+        "fabric",
+        "wadofstuff-django-serializers==1.1.0",
+        "django-nested-inlines==0.1",
+        "django-chained-multi-checkboxes==0.3.0",
+        "django-chained-selectbox==0.1",
     ],
     include_package_data=True,
     zip_safe=False,
