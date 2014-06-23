@@ -45,10 +45,6 @@ STATICFILES_DIRS = [
     os.path.join(GEONODE_ROOT, 'static')
 ]
 
-# FIXME production doesn't work without 'testserver'.
-# Production must be fixed and 'testserver' removed from here.
-ALLOWED_HOSTS=['%(host)s', 'testserver', 'localhost']
-
 try:
     from openquakeplatform import ged_settings
     DATABASES.update(ged_settings.DATABASES)
@@ -61,7 +57,9 @@ TIME_ZONE = 'UTC'
 
 SECRET_KEY = '%(oq_secret_key)s'
 
-ALLOWED_HOSTS=['%(host)s', 'localhost']
+# FIXME production doesn't work without 'testserver'.
+# Production must be fixed and 'testserver' removed from here.
+ALLOWED_HOSTS=['%(host)s', 'testserver', 'localhost']
 
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
