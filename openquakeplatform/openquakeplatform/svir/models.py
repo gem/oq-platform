@@ -125,6 +125,7 @@ class CountryIndicator(models.Model):
             self.indicator.measurement_type)
 
     class Meta:
+        db_table = 'svir_country_indicators'
         unique_together = ('country', 'indicator')
 
 
