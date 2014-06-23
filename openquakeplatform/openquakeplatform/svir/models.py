@@ -19,20 +19,30 @@
 
 
 from django.contrib.gis.db import models
+from fields import DictField
+
+CH_MAX = 256
 
 
-class Data(models.Model):
-    # TODO: json contianing the data
-    pass
+class Project(models.Model):
+    name = models.CharField(max_length=CH_MAX)
+    description = models.CharField(max_length=CH_MAX)
+    data = DictField(blank=True, null=True)
+    metadata = DictField(blank=True, null=True)
 
-
-class Metadata(models.Model):
-    # TODO: json contianing the metadata
-    pass
+    def __unicode__(self):
+        return self.name
 
 
 class Comment(models.Model):
-    # user = TODO: add reference to the user who writes the comment
-    # timestamp = TODO: when the comment has been saved
+    project = models.ForeignKey('Project')
+    user = models.ForeignKey('auth.User')  # FIXME Check if the reference is ok
+    # auto_now_add=True ==> Automatically set the field to now when
+    #                       the object is first created
+    # (auto_now would set the field to now every time the object is saved)
+    created = models.DateTimeField(auto_now_add=True)
     body = models.CharField(max_length=1024)
-    pass
+    parent_comment = models.ForeignKey('Comment', blank=True, null=True)
+
+    def __unicode__(self):
+        return self.body
