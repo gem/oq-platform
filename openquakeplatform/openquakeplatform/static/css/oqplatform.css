@@ -233,6 +233,7 @@ ul.social li a.gp {
 }
 
 #oq-page-footer, footer.footer {
+    z-index: 1000;
     background: #1B75A7;
     font-size: 12px;
     position: fixed;
