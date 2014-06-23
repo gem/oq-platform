@@ -16,7 +16,7 @@
 from django.contrib import admin
 from models import (Theme, Subtheme, MeasurementType, StatisticalTag, Keyword,
                     Source, Periodicity, AggregationMethod, Indicator,
-                    CountryIndicator)
+                    CountryIndicator, Zone)
 
 admin.site.register(Theme)
 admin.site.register(Subtheme)
@@ -28,3 +28,4 @@ admin.site.register(Periodicity)
 admin.site.register(AggregationMethod)
 admin.site.register(Indicator)
 admin.site.register(CountryIndicator)
+admin.site.register(Zone)

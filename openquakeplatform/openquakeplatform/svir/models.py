@@ -41,6 +41,15 @@ CHMAX = 200
 # )
 
 
+class Zone(models.Model):
+    name = models.CharField(max_length=CHMAX)
+    countries = models.ManyToManyField(
+        'vulnerability.Country', blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Theme(models.Model):
     name = models.CharField(max_length=CHMAX)
 
@@ -110,6 +119,11 @@ class CountryIndicator(models.Model):
     indicator = models.ForeignKey('Indicator')
     value = models.FloatField()
 
+    def __unicode__(self):
+        return "%s: %s = %s [%s]" % (
+            self.country, self.indicator, self.value,
+            self.indicator.measurement_type)
+
     class Meta:
         unique_together = ('country', 'indicator')
 
@@ -131,6 +145,9 @@ class Indicator(models.Model):
     countries = models.ManyToManyField(
         'vulnerability.Country', through='CountryIndicator',
         null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
     @property
     def min_value(self):
