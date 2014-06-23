@@ -329,20 +329,28 @@ db_gis_create () {
     done
 }
 
-deps_info () {
-    #    cat <<EOF
-    # FIXME these lines must be integrated with the oq-platform deb package
+deps_install () {
+    # FIXME these lines must be integrated in the oq-platform deb package
     sudo apt-get install imagemagick xmlstarlet
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
-    # FIXME these lines must be integrated with the setup.py
+    # FIXME these lines must be integrated in the setup.py
     pip install -e git+http://github.com/gem/wadofstuff-django-serializers.git#egg=wadofstuff-django-serializers-1.1.0
     pip install -e git+http://github.com/gem/django-nested-inlines.git#egg=django-nested-inlines-0.1
     pip install -e git+http://github.com/gem/django-chained-selectbox.git#egg=django-chained-selectbox-0.1
     pip install -e git+http://github.com/gem/django-chained-multi-checkboxes.git#egg=django-chained-multi-checkboxes-0.3.0
-#EOF
 }
+
+# FIXME this code will be used in the future
+#deps_info () {
+#    cat <<EOF
+#    sudo apt-get install imagemagick xmlstarlet
+#    sudo pip install Pillow==2.3.1 --no-deps
+#    sudo pip install South==0.8.4 --no-deps
+#    sudo pip install django-photologue==2.6.1 --no-deps
+#EOF
+#}
 
 #
 #
@@ -419,7 +427,7 @@ oq_platform_install () {
     #sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
 
     cd oq-platform/openquakeplatform
-    deps_info
+    deps_install
     pip install . -U --no-deps
     cd -
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"
