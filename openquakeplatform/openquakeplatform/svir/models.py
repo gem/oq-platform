@@ -202,11 +202,11 @@ class Project(models.Model):
 class Comment(models.Model):
     project = models.ForeignKey('Project')
     parent_comment = models.ForeignKey('Comment', blank=True, null=True)
-    user = models.ForeignKey('auth.User')  # FIXME Check if the reference is ok
+    created_by = models.ForeignKey('auth.User')
     # auto_now_add=True ==> Automatically set the field to now when
     #                       the object is first created
     # (auto_now would set the field to now every time the object is saved)
-    created = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
 
     def __unicode__(self):
