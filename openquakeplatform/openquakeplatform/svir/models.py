@@ -22,7 +22,7 @@ from fields import DictField
 CHMAX = 200
 
 # In the vulnerability-db application, regions are not stored in the DB and
-# they are read from a tuple to group countries in order to simplify the 
+# they are read from a tuple to group countries in order to simplify the
 # process of country selection.
 # REGIONS = (
 #     (1, 'Australia/New Zealand'),
@@ -118,6 +118,9 @@ class Periodicity(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = 'periodicities'
+
 
 class AggregationMethod(models.Model):
     name = models.CharField(max_length=CHMAX)
@@ -153,8 +156,7 @@ class Indicator(models.Model):
     source = models.ForeignKey('Source')
     periodicity = models.ForeignKey('Periodicity')
     aggregation_method = models.ForeignKey('AggregationMethod')
-    additional_comments = models.CharField(
-        max_length=1024, null=True, blank=True)
+    additional_notes = models.TextField(null=True, blank=True)
     countries = models.ManyToManyField(
         'vulnerability.Country', through='CountryIndicator',
         null=True, blank=True)
@@ -189,7 +191,7 @@ class Indicator(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=CHMAX)
-    description = models.CharField(max_length=CHMAX)
+    description = models.TextField()
     data = DictField(blank=True, null=True)
     metadata = DictField(blank=True, null=True)
 
@@ -205,7 +207,7 @@ class Comment(models.Model):
     #                       the object is first created
     # (auto_now would set the field to now every time the object is saved)
     created = models.DateTimeField(auto_now_add=True)
-    body = models.CharField(max_length=1024)
+    body = models.TextField()
 
     def __unicode__(self):
         return self.body
