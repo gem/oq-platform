@@ -67,7 +67,7 @@ var baseMapUrl = (
     'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
 );
 
-var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
+var TILESTREAM_URL = '//tilestream.openquake.org/v2/';
 var TILESTREAM_API_URL = '//tilestream.openquake.org/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
@@ -159,7 +159,7 @@ var startApp = function() {
         });
     });
 
-    // Remove layer 
+    // Remove layer
     var removeLayer = function () {
         // Clear the contents of the table
         $('#tableBody').html('');
@@ -291,7 +291,7 @@ var startApp = function() {
 
                 if (chartType == 'single') {
                     curvesByInvestSingle[j] = name;
-                } 
+                }
                 else if (chartType == 'mixed') {
                     curvesByInvestMixed[j] = name;
                     curvesAvailable[j] = template;
@@ -307,7 +307,7 @@ var startApp = function() {
                 if (chartType == 'mixed') {
                     uhsByInvestMixed[j] = name;
                     uhsAvailable[j] = template;
-                } 
+                }
                 else if (chartType == 'single') {
                     uhsByInvestSingle[j] = name;
                 }
@@ -336,7 +336,7 @@ var startApp = function() {
         var mapCategoryUnique = mapCategoryList.filter(function(itm,i,mapCategoryList){
             return i == mapCategoryList.indexOf(itm);
         });
-    
+
         var curveCategoryUnique = curveCategoryList.filter(function(itm,i,curveCategoryList){
             return i == curveCategoryList.indexOf(itm);
         });
@@ -433,8 +433,8 @@ var startApp = function() {
             if (index > -1) {
                 curvesList.splice(index, 1);
             }
-            
-            // remove _ and capotolise the values in the curvesList 
+
+            // remove _ and capotolise the values in the curvesList
             for (var i = 0; i < curvesList.length; i++) {
                 var b = curvesList[i].replace(/_/g, ' ');
                 b = capitalize(b);
@@ -491,13 +491,13 @@ var startApp = function() {
                 }
             }
 
-            // remove _ and capotolise the values in the uhsList 
+            // remove _ and capotolise the values in the uhsList
             for (var i = 0; i < uhsList.length; i++) {
                 var b = uhsList[i].replace(/_/g, ' ');
                 b = capitalize(b);
                 //uhsListCap.push(b);
             }
-        
+
             // Provide the user with the uhs that are available in the dialog
             $('#hazardCurveDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
             for (var l = 0; l < uhsList.length; l++) {
@@ -664,8 +664,8 @@ var startApp = function() {
     map.addControl(layerControl.setPosition('topleft'));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
-    
-    
+
+
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
@@ -698,7 +698,7 @@ var startApp = function() {
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
-                
+
                 if (hasGrid == true) {
                     gridList = 1;
                     utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -748,7 +748,7 @@ var startApp = function() {
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
-            
+
             if (hasGrid == true) {
                 gridList = 1;
                 utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -797,7 +797,7 @@ var startApp = function() {
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
-            
+
             if (hasGrid == true) {
                 gridList = 1;
                 utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -827,7 +827,7 @@ var startApp = function() {
 
             selectedLayer = curveLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
-            
+
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 layerInvestigationTime = json.investigationTime;
@@ -835,7 +835,7 @@ var startApp = function() {
                 layerImt = json.imt;
             });
 
-        } 
+        }
         else if (curveType == 'uhs') {
             var e = document.getElementById('uhs-list');
             var uhsLayerId = e.options[e.selectedIndex].value;
@@ -871,7 +871,7 @@ var startApp = function() {
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
-            
+
             if (hasGrid == true) {
                 gridList = 1;
                 utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -894,11 +894,11 @@ var startApp = function() {
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('layer-list');
             var mapLayerId = e.options[e.selectedIndex].value;
-    
+
             // Look up the layer id using the layer name
             var mapLayerIdArray = curveLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-    
+
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -928,11 +928,11 @@ var startApp = function() {
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('curve-list');
             var mapLayerId = e.options[e.selectedIndex].value;
-    
+
             // Look up the layer id using the layer name
             var mapLayerIdArray = curveLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-    
+
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -962,11 +962,11 @@ var startApp = function() {
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('uhs-list');
             var mapLayerId = e.options[e.selectedIndex].value;
-    
+
             // Look up the layer id using the layer name
             var mapLayerIdArray = uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-    
+
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -995,11 +995,11 @@ var startApp = function() {
             hazardCurveUtfGridClickEvent(utfGrid);
             var e = document.getElementById('loss-list');
             var mapLayerId = e.options[e.selectedIndex].value;
-    
+
             // Look up the layer id using the layer name
             var mapLayerIdArray = lossLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-    
+
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -1088,7 +1088,7 @@ var startApp = function() {
             }
         }); // End utfGrid click
     }; // End hazardCurveUtfGridClickEvent
-    
+
     var hazardCurveUtfGridClickEventMixed = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             // Get the selected curves
@@ -1129,9 +1129,9 @@ var startApp = function() {
             var losses;
             var poes;
 
-            function cleanArray(actual) { 
+            function cleanArray(actual) {
                 var newArray = [];
-                for(var i = 0; i<actual.length; i++) { 
+                for(var i = 0; i<actual.length; i++) {
                     if (actual[i]) {
                         newArray.push(actual[i]);
                     }
@@ -1143,7 +1143,7 @@ var startApp = function() {
                 asset = e.data.asset_ref;
                 asset = asset.toString();
                 asset.replace(/"/g, '');
-                
+
                 var assetArray = asset.split(',');
                 for (var i = 0; i < assetArray.length; i++) {
                     assetArray[i] = assetArray[i].replace(/"/g, '');
@@ -1198,7 +1198,7 @@ var startApp = function() {
 
     function downloadJSON2CSV(array) {
         var str = '';
-         
+
         for (var i = 0; i < array.length; i++) {
             var line = '';
             for (var index in array[i]) {
@@ -1223,14 +1223,14 @@ var startApp = function() {
     function hazardD3Chart(probArray, imlArray, lat, lng) {
         var lon = lng;
         // grid line functions
-        function make_x_axis() {  
+        function make_x_axis() {
             return d3.svg.axis()
                 .scale(x)
                 .orient('bottom')
                 .ticks(5);
         }
 
-        function make_y_axis() {        
+        function make_y_axis() {
             return d3.svg.axis()
                 .scale(y)
                 .orient('left')
@@ -1242,7 +1242,7 @@ var startApp = function() {
         } else {
             layerIml = layerIml.split(',');
         }
-        
+
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // without log values...
@@ -1286,14 +1286,14 @@ var startApp = function() {
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
         // grid lines
-        svg.append('g')         
+        svg.append('g')
             .attr('class', 'grid')
             .attr('transform', 'translate(0,' + height + ')')
             .call(make_x_axis()
                 .tickSize(-height, 0, 0)
                 .tickFormat('')
             );
-    
+
         svg.append('g')
             .attr('class', 'grid')
             .call(make_y_axis()
@@ -1509,7 +1509,7 @@ var startApp = function() {
         var old_value = -100;
         for (i = 0 ; i < yAxisVariable.length ; i++) {
             if (yAxisVariable[i] == old_value) {
-                yAxisVariable.splice(i, 1);                
+                yAxisVariable.splice(i, 1);
                 i--;
             }
             else {
@@ -1579,11 +1579,11 @@ var startApp = function() {
         function makeCircles(circleData, k, color, curveTitle) {
             // Points along the line
             svg.selectAll("circle.line")
-                .data(circleData) 
+                .data(circleData)
                 .enter().append("circle")
-                .attr("class", "line"+k) 
-                .attr("cx", function(d) { return x_scale(d[0]); }) 
-                .attr("cy", function(d) { return y_scale(d[1]); }) 
+                .attr("class", "line"+k)
+                .attr("cx", function(d) { return x_scale(d[0]); })
+                .attr("cy", function(d) { return y_scale(d[1]); })
                 .attr("r", 2.5)
                 .style("fill", color)
                 .on("mouseover", function() {
@@ -1594,13 +1594,13 @@ var startApp = function() {
                     var circleX = d3.select(this.__data__[0]);
                     circleX = circleX.toString();
                     circleX = circleX.split(","[0]);
-    
+
                     var circleY = d3.select(this.__data__[1]);
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
-    
+
                     textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
-    
+
                 }).on("mouseout", function() {
                     d3.select(this)
                         .attr('r', 2.5)
@@ -1667,7 +1667,7 @@ var startApp = function() {
             .y(function(d) {
                 return y_scale(d[1]);
             })
-        
+
         var svg = d3.select("#chartDialog").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -1675,7 +1675,7 @@ var startApp = function() {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // grid lines
-        svg.append("g")         
+        svg.append("g")
             .attr("class", "grid")
             .attr("transform", "translate(0," + height + ")")
             .attr('opacity', 0.6)
@@ -1683,8 +1683,8 @@ var startApp = function() {
                 .tickSize(-height, 0, 0)
                 .tickFormat('')
             );
-    
-        svg.append("g")         
+
+        svg.append("g")
             .attr("class", "grid")
             .attr('opacity', 0.6)
             .call(y_grid()
@@ -1712,14 +1712,14 @@ var startApp = function() {
 
             // Update the css for each line
             colors = [
-                "darkred", 
+                "darkred",
                 "blue",
-                "green", 
-                "orange", 
-                "red", 
-                "sandybrown", 
-                "yellowgreen", 
-                "darksalmon", 
+                "green",
+                "orange",
+                "red",
+                "sandybrown",
+                "yellowgreen",
+                "darksalmon",
                 "lightseagreen",
                 "skyblue"
             ];
@@ -1742,8 +1742,8 @@ var startApp = function() {
                 .text(curveTitle);
 
             legend.append("svg:circle")
-                //.attr("cx", 50) 
-                .attr("cy", 20*(k)) 
+                //.attr("cx", 50)
+                .attr("cy", 20*(k))
                 .attr("cx", 80)
                 .attr("r", 3)
                 .style("fill", color)
@@ -1755,7 +1755,7 @@ var startApp = function() {
             var g = svg.append("g");
 
             g.attr("class", "x axis")
-            
+
             g.attr("transform", "translate(0," + height + ")")
             .call(xAxis[i]);
             if (i == (xAxis_n - 1))
@@ -1875,7 +1875,7 @@ var startApp = function() {
         }
 
         var length = (curve_valsX[curve_name].length);
-        
+
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
             var i;
@@ -1934,12 +1934,12 @@ var startApp = function() {
 
         function makeCircles(circleData, k, color, curve_name) {
             // Points along the line
-            svg.selectAll("circle.line") 
-                .data(circleData) 
-                .enter().append("circle") 
-                .attr("class", "line"+k) 
-                .attr("cx", function(d) { return x_scale(d[0]); }) 
-                .attr("cy", function(d) { return y_scale(d[1]); }) 
+            svg.selectAll("circle.line")
+                .data(circleData)
+                .enter().append("circle")
+                .attr("class", "line"+k)
+                .attr("cx", function(d) { return x_scale(d[0]); })
+                .attr("cy", function(d) { return y_scale(d[1]); })
                 .attr("r", 2.5)
                 .style("fill", color)
                 .on("mouseover", function() {
@@ -1950,13 +1950,13 @@ var startApp = function() {
                     var circleX = d3.select(this.__data__[0]);
                     circleX = circleX.toString();
                     circleX = circleX.split(","[0]);
-    
+
                     var circleY = d3.select(this.__data__[1]);
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
-    
+
                     textTop.text(curve_name+" point value (x/y): " + Math.pow(10, circleX) + ", " + circleY);
-    
+
                 }).on("mouseout", function() {
                     d3.select(this)
                         .attr('r', 2.5)
@@ -1987,7 +1987,7 @@ var startApp = function() {
             .y(function(d) {
                 return y_scale(d[1]);
             })
-        
+
         var svg = d3.select("#chartDialog").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -1995,7 +1995,7 @@ var startApp = function() {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // grid lines
-        svg.append("g")         
+        svg.append("g")
             .attr("class", "grid")
             .attr("transform", "translate(0," + height + ")")
             .attr('opacity', 0.6)
@@ -2003,8 +2003,8 @@ var startApp = function() {
                 .tickSize(-height, 0, 0)
                 .tickFormat('')
             );
-    
-        svg.append("g")         
+
+        svg.append("g")
             .attr("class", "grid")
             .attr('opacity', 0.6)
             .call(y_grid()
@@ -2024,14 +2024,14 @@ var startApp = function() {
 
             // Update the css for each line
             colors = [
-                "darkred", 
+                "darkred",
                 "blue",
-                "green", 
-                "orange", 
-                "red", 
-                "sandybrown", 
-                "yellowgreen", 
-                "darksalmon", 
+                "green",
+                "orange",
+                "red",
+                "sandybrown",
+                "yellowgreen",
+                "darksalmon",
                 "lightseagreen",
                 "skyblue"
             ];
