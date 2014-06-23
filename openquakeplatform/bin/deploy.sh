@@ -31,7 +31,7 @@ GEM_HAZARD_CALC_ADDR='http://localhost:8800'
 GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY="oq-platform"
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -176,7 +176,6 @@ isc_viewer_dataloader () {
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
 }
 
-
 #
 #
 econd_dataloader () {
@@ -198,6 +197,21 @@ econd_dataloader () {
     fi
 }
 
+#
+#
+vulnerability_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/vuln_geo_applicability_data.csv" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/vulnerability/dev_data"
+    fi
+    openquakeplatform import_vuln_geo_applicability_csv "${bdir}/vuln_geo_applicability_data.csv"
+}
+
+#
+#
 econd_fixtureupdate () {
     oqpdir="$1"
 
@@ -205,6 +219,7 @@ econd_fixtureupdate () {
         cp private_data/econd/initial_data.json ${oqpdir}/econd/fixtures
     fi
 }
+
 #
 #
 passwd_create () {
@@ -396,6 +411,12 @@ oq_platform_install () {
     sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
 
     cd oq-platform/openquakeplatform
+    # FIXME these lines must be integrated with the setup.py
+    pip install -e git+http://github.com/gem/wadofstuff-django-serializers.git#egg=wadofstuff-django-serializers-1.1.0
+    pip install -e git+http://github.com/gem/django-nested-inlines.git#egg=django-nested-inlines-0.1
+    pip install -e git+http://github.com/gem/django-chained-selectbox.git#egg=django-chained-selectbox-0.1
+    pip install -e git+http://github.com/gem/django-chained-multi-checkboxes.git#egg=django-chained-multi-checkboxes-0.3.0
+    # END
     pip install . -U --no-deps
     cd -
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"

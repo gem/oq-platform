@@ -98,7 +98,7 @@ def baseenv(
     init_start()
 
 APPS_LIST=['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
-           'econd', 'weblib', 'gemecdwebsite', 'icebox']
+           'econd', 'weblib', 'gemecdwebsite', 'vulnerability', 'icebox']
 
 def apps(db_name, db_user, db_pass):
     globs = globals()
@@ -313,3 +313,6 @@ def _add_weblib():
 def _add_gemecdwebsite():
     pass
 
+def _add_vulnerability():
+    local('python manage.py import_vuln_geo_applicability_csv '
+          './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
