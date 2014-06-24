@@ -271,6 +271,12 @@ footer.footer div.container {
     width: 160px;
 }
 
+#oq-page-header {
+    height: 107px;
+    position: absolute;
+    top: 0;
+}
+
 #oq-body-content {
     font-size: 18px;
     font-family: 'Lato', sans-serif;
