@@ -18,11 +18,14 @@
 # <https://www.gnu.org/licenses/agpl.html>.
 
 import csv
+import json
 from django.http import HttpResponse
 from django.views.decorators.http import condition
+from django.core.exceptions import ValidationError
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
 from openquakeplatform.svir import util
+from openquakeplatform.svir.models import Project
 
 COPYRIGHT_HEADER = u"""\
  Version 1.0 released on 31.01.2013
@@ -50,6 +53,65 @@ COPYRIGHT_HEADER = u"""\
 
  More information on licensing: http://www.globalquakemodel.org/licensing
 """
+
+
+@condition(etag_func=None)
+@allowed_methods(('POST', ))
+@sign_in_required
+def create_project(request):
+    """
+    Create a new SVIR project, given its name and description
+    :param request:
+        A "POST" :class:`django.http.HttpRequest` object containing
+        the following parameters::
+            * 'name'
+            * 'description'
+    :return:
+        a json object containing
+            * 'project_id': the id of the new project saved (if the project is
+                            correctly saved)
+            * the names of the invalid fields, in case of validation errors
+            * a generic 'error' if the project is not saved for another reason
+    """
+    name = request.GET.get('name', None)
+    description = request.GET.get('description', None)
+    # if not name or not description:
+    #     return HttpResponse('Project name and description are mandatory')
+    try:
+        project = Project(name=name, description=description)
+        project.created_by = request.user
+        project.full_clean()
+        project.save()
+    except ValidationError, e:
+        return HttpResponse(json.dumps(e), content_type="application/json")
+    except Exception, e:
+        return HttpResponse(json.dumps(e), content_type="application/json")
+    return HttpResponse(json.dumps(dict(project_id=project.pk)),
+                        content_type="application/json")
+
+
+@condition(etag_func=None)
+@allowed_methods(('POST', ))
+@sign_in_required
+def upload_project_data(request):
+    """
+    Upload into Project a GeoJSON object containing project data
+    """
+    pass
+
+
+@condition(etag_func=None)
+@allowed_methods(('POST', ))
+@sign_in_required
+def upload_project_definition(request):
+    """
+    Upload into Project JSON object containing project definition
+    """
+    project_id = request.GET.get('project_id', None)
+    project_definition = request.GET.get('project_definition', None)
+    project = Project.objects.get(pk=project_id)
+    project.metadata = project_definition
+    project.save()
 
 
 @condition(etag_func=None)

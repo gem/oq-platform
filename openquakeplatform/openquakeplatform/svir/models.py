@@ -17,7 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 from fields import DictField
+
 
 CHMAX = 200
 
@@ -46,6 +48,32 @@ CHMAX = 200
 #     (19, 'Western Asia'),
 #     (20, 'Western Europe'),
 # )
+
+
+class UserData(models.Model):
+    # '%(class)s' is replaced by the lower-cased name of the child class
+    # that the field is used in.
+    # '%(app_label)s' is replaced by the lower-cased name of the app the
+    # child class is contained within.
+    # Each installed application name must be unique and the model class
+    # names within each app must also be unique, therefore the resulting
+    # name will end up being different.
+    created_by = models.ForeignKey(
+        User, editable=False,
+        related_name="%(app_label)s_%(class)s_created_by")
+    # auto_now_add=True ==> Automatically set the field to now
+    #                       when the object is first created
+    created_on = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_by = models.ForeignKey(
+        User, editable=False, null=True, blank=True,
+        related_name="%(app_label)s_%(class)s_updated_by")
+    # auto_now=True ==> Automatically set the field to now
+    #                   every time the object is saved
+    updated_on = models.DateTimeField(
+        auto_now=True, editable=False, null=True, blank=True)
+
+    class Meta:
+        abstract = True
 
 
 # For the svir application, we want to provide the possibility to have
@@ -189,8 +217,8 @@ class Indicator(models.Model):
         pass
 
 
-class Project(models.Model):
-    name = models.CharField(max_length=CHMAX)
+class Project(UserData):
+    name = models.CharField(max_length=CHMAX, unique=True)
     description = models.TextField()
     data = DictField(blank=True, null=True)
     metadata = DictField(blank=True, null=True)
@@ -199,14 +227,9 @@ class Project(models.Model):
         return self.name
 
 
-class Comment(models.Model):
+class Comment(UserData):
     project = models.ForeignKey('Project')
     parent_comment = models.ForeignKey('Comment', blank=True, null=True)
-    created_by = models.ForeignKey('auth.User')
-    # auto_now_add=True ==> Automatically set the field to now when
-    #                       the object is first created
-    # (auto_now would set the field to now every time the object is saved)
-    created_on = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
 
     def __unicode__(self):

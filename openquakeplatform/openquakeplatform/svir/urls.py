@@ -23,6 +23,9 @@
 from django.conf.urls import patterns, include, url
 from openquakeplatform.svir.views import export_sv_category_names
 from openquakeplatform.svir.views import export_sv_data_by_variables_ids
+from openquakeplatform.svir.views import (create_project,
+                                          upload_project_definition,
+                                          upload_project_data)
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -34,4 +37,7 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^export_sv_category_names', export_sv_category_names),
     url(r'^export_sv_data_by_variables_ids', export_sv_data_by_variables_ids),
+    url(r'^create_project', create_project),
+    url(r'^upload_project_data', upload_project_data),
+    url(r'^upload_project_definition', upload_project_definition),
 )
