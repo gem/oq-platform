@@ -1,4 +1,4 @@
-__author__ = 'Simon Ruffle, CAR'
+__author__ = 'Matteo Nastasi, GEM'
 
 from openquakeplatform.weblib.baseclasses.pagebase import Pagebase
 import openquakeplatform.econd.models
