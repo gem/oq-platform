@@ -45,6 +45,7 @@ setup(
               'openquakeplatform.gemecdwebsite.photo',
               'openquakeplatform.gemecdwebsite.surveyvalue',
               'openquakeplatform.gemecdwebsite.uploadnrml',
+              'openquakeplatform.gemecdwebsite.lookup',
               'openquakeplatform.weblib',
               'openquakeplatform.weblib.baseclasses'
              ],
