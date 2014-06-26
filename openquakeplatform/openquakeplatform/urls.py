@@ -16,6 +16,7 @@ import openquakeplatform.gemecdwebsite.casualtylevel.urls
 import openquakeplatform.gemecdwebsite.surveyvalue.urls
 import openquakeplatform.gemecdwebsite.photo.urls
 import openquakeplatform.gemecdwebsite.uploadnrml.urls
+import openquakeplatform.gemecdwebsite.lookup.urls
 #import openquakeplatform.vulnerability.views
 import photologue.urls
 
@@ -70,6 +71,11 @@ urlpatterns = patterns('',
     url(r'^ecd/photo/(?P<ix>.*)$',include(openquakeplatform.gemecdwebsite.photo.urls.urlpatterns)), #display mode
 
     url(r'^ecd/uploadnrml',include(openquakeplatform.gemecdwebsite.uploadnrml.urls.urlpatterns)), #display mode
+
+    url(r'^ecd/(?P<name>lookup.*)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+    url(r'^ecd/(?P<name>unifieddamagelevel)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+
+
 
     #photologue
     url(r'^photologue/', include(photologue.urls)),
