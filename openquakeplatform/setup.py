@@ -50,7 +50,7 @@ setup(
               'openquakeplatform.weblib.baseclasses'
              ],
     dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.0',
-                        'http://github.com/gem/django-nested-inlines/tarball/master#egg=django-nested-inlines-0.1',
+                        'git+https://github.com/gem/django-nested-inlines.git@0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
                         'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0' ],
     install_requires=[
@@ -92,7 +92,7 @@ setup(
         "requests==0.8.2",
         "fabric",
         "wadofstuff-django-serializers==1.1.0",
-        "django-nested-inlines==0.1",
+        "django-nested-inlines==0.1.4",
         "django-chained-multi-checkboxes==0.3.0",
         "django-chained-selectbox==0.1",
     ],
