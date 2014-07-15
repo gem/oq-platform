@@ -48,11 +48,12 @@ setup(
               'openquakeplatform.gemecdwebsite.lookup',
               'openquakeplatform.weblib',
               'openquakeplatform.weblib.baseclasses'
-             ],
-    dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.0',
+              ],
+    dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
                         'git+https://github.com/gem/django-nested-inlines.git@0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
-                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0' ],
+                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0'
+                        ],
     install_requires=[
         "agon-ratings==0.2",
         "beautifulsoup4==4.1.0",
@@ -91,7 +92,7 @@ setup(
         "django-photologue==2.6.1",
         "requests==0.8.2",
         "fabric",
-        "wadofstuff-django-serializers==1.1.0",
+        "wadofstuff-django-serializers==1.1.2",
         "django-nested-inlines==0.1.4",
         "django-chained-multi-checkboxes==0.3.0",
         "django-chained-selectbox==0.1",
