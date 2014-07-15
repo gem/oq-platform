@@ -208,6 +208,7 @@ vulnerability_dataloader () {
         bdir="${oqpdir}/vulnerability/dev_data"
     fi
     openquakeplatform import_vuln_geo_applicability_csv "${bdir}/vuln_geo_applicability_data.csv"
+    openquakeplatform vuln_groups_create
 }
 
 #
