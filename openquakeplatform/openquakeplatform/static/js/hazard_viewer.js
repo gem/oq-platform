@@ -1064,7 +1064,13 @@ var startApp = function() {
                 prob = e.data.prob;
                 probArray = prob.split(',');
                 iml = e.data.iml;
-                imlArray = iml.split(',');
+
+                if (iml == undefined) {
+                    iml = layerIml;
+                } else {
+                    imlArray = iml.split(',');
+                }
+                
                 imt = e.data.imt;
                 if(imt == 'PGA') {
                     imt = 'Peak Ground Acceleration (g)';
