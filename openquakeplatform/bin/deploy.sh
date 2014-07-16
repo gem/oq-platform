@@ -340,16 +340,23 @@ EOF
 }
 
 deps_install () {
+    local old_IFS pkg
     # FIXME these lines must be integrated with the oq-platform deb package
     sudo apt-get install imagemagick xmlstarlet
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
-    # FIXME these lines must be integrated with the setup.py
-    pip install -e git+http://github.com/gem/wadofstuff-django-serializers.git#egg=wadofstuff-django-serializers-1.1.0
-    pip install -e git+http://github.com/gem/django-nested-inlines.git#egg=django-nested-inlines-0.1
-    pip install -e git+http://github.com/gem/django-chained-selectbox.git#egg=django-chained-selectbox-0.1
-    pip install -e git+http://github.com/gem/django-chained-multi-checkboxes.git#egg=django-chained-multi-checkboxes-0.3.0
+
+    # FIXME currently 'pip install -U --no-deps' is used to install
+    #       openquakeplatform, until '-U --nodeps' will be removed we must install
+    #       real not-developmental dependencies manually
+    pipsrc="/usr/local/openquake/platform"
+    mkdir -p "$pipsrc"
+    old_IFS="$IFS"
+    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1); do
+        pip install "$pkg"
+    done
+    IFS="$old_IFS"
 }
 
 #
