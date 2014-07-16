@@ -1251,13 +1251,10 @@ var startApp = function() {
 
         var data = [];
         for(i=0; i<probArray.length; i++) {
-            // without log values...
             // Only push into data if the values are greater then 0
             if (parseFloat(layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
                 data.push([parseFloat(layerIml[i]), parseFloat(probArray[i])]);
             }
-            // with log valuse...
-            //data.push([log(parseFloat(layerIml[i])), log(parseFloat(probArray[i]))]);
         }
 
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
@@ -1269,12 +1266,12 @@ var startApp = function() {
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            //.ticks(4)
-            .tickFormat(function (d) { return d; })
+            //.ticks(2)
+            .tickFormat(function (d) { return Math.round(d * 100) / 100; })
             .orient('bottom');
+
         var yAxis = d3.svg.axis()
             .scale(y)
-
             .orient('left');
 
         var line = d3.svg.line()
@@ -1324,6 +1321,14 @@ var startApp = function() {
             .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(xAxis)
+            .selectAll("text")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr('x', 40)
+                .style('font-size','12px')
+                .attr("transform", function(d) {
+                    return "rotate(45)";
+                        })
             .append('text')
             .attr('x', 160)
             .attr('y', 30)
@@ -1331,6 +1336,7 @@ var startApp = function() {
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
             .text(layerImt);
+            
         svg.append('g')
             .attr('class', 'y axis')
             .call(yAxis)
