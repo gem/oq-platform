@@ -1081,12 +1081,19 @@ var startApp = function() {
                 } else if (imt == 'SA') {
                     imt = 'Spectral Acceleration (g)';
                 }
+
                 lat = e.data.lat;
                 lng = e.data.lon;
-                if (lat == undefined) {
+
+                if (e.data.YCOORD != undefined) {
                     lat = e.data.YCOORD;
                     lng = e.data.XCOORD;
                 }
+                else if(e.data.latitude != undefined) {
+                    lat = e.data.latitude;
+                    lng = e.data.longitude;
+                }
+
                 invest_time = e.data.invest_tim;
                 hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
             } else {
@@ -1182,7 +1189,16 @@ var startApp = function() {
                 }
 
                 lat = e.data.lat;
-                lon = e.data.lon;
+                lng = e.data.lon;
+
+                if (e.data.YCOORD != undefined) {
+                    lat = e.data.YCOORD;
+                    lng = e.data.XCOORD;
+                }
+                else if(e.data.latitude != undefined) {
+                    lat = e.data.latitude;
+                    lng = e.data.longitude;
+                }
 
                 var chartData = {};
 
