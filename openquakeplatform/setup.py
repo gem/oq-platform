@@ -51,7 +51,7 @@ setup(
               ],
     # Please, do not split following lines, the deploy.sh script manages them automatically.
     dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
-                        'git+https://github.com/gem/django-nested-inlines.git@0.1.4#egg=django-nested-inlines-0.1.4',
+                        'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
                         'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0'
                         ],
