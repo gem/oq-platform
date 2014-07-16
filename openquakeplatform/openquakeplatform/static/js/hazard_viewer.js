@@ -896,7 +896,7 @@ var startApp = function() {
             var mapLayerId = e.options[e.selectedIndex].value;
     
             // Look up the layer id using the layer name
-            var mapLayerIdArray = curveLayerNames[mapLayerId];
+            var mapLayerIdArray = mapLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
     
             // Check in the layer is in the map port
