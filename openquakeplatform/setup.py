@@ -53,7 +53,8 @@ setup(
     dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
                         'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
-                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0'
+                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0',
+                        'http://github.com/gem/oq-nrmllib/tarball/master#egg=oq-nrmllib-0.4.5',
                         ],
     install_requires=[
         "agon-ratings==0.2",
@@ -97,6 +98,7 @@ setup(
         "django-nested-inlines==0.1.4",
         "django-chained-multi-checkboxes==0.3.0",
         "django-chained-selectbox==0.1",
+        "oq-nrmllib==0.4.5",
     ],
     include_package_data=True,
     zip_safe=False,
