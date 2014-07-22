@@ -49,11 +49,14 @@ setup(
               'openquakeplatform.weblib',
               'openquakeplatform.weblib.baseclasses'
               ],
-    # Please, do not split following lines, the deploy.sh script manages them automatically.
+    # NOTE:  django-chained-multi-checkboxes is following the new convention: a floating tag on github v<major>.<minor> only follows
+    #        the lifecicle of all the bugfix versions of the repository and pip depends on it.
+    #        Follow the same rule for all the other gem dependencies when an update is needed.
+    # ATTENTION: Please, do not split following lines, the deploy.sh script manages them automatically.
     dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
                         'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
-                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0'
+                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/v0.4#egg=django-chained-multi-checkboxes-0.4'
                         ],
     install_requires=[
         "agon-ratings==0.2",
@@ -95,7 +98,7 @@ setup(
         "fabric",
         "wadofstuff-django-serializers==1.1.2",
         "django-nested-inlines==0.1.4",
-        "django-chained-multi-checkboxes==0.3.0",
+        "django-chained-multi-checkboxes==0.4",
         "django-chained-selectbox==0.1",
     ],
     include_package_data=True,
