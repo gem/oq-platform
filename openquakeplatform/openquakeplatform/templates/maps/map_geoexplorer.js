@@ -39,9 +39,9 @@ Ext.onReady(function() {
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",
-        {% endif %} 
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
+        {% endif %}
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
          * maps on the server for sharing and editing.
          */
         rest: "{% url "maps_browse" %}",

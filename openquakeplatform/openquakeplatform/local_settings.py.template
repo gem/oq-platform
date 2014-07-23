@@ -10,6 +10,10 @@ GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
 ROOT_URLCONF = 'openquakeplatform.urls'
 
+SERIALIZATION_MODULES = {
+    'json': 'wadofstuff.django.serializers.json'
+}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -30,6 +34,17 @@ DATABASES = {
     }
 }
 
+MEDIA_ROOT = '%(mediaroot)s'
+STATIC_ROOT = '%(staticroot)s'
+
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    '/etc/openquake/platform/media',
+    os.path.join(OQPLATFORM_ROOT, 'static'),
+    '/etc/geonode/media',
+    os.path.join(GEONODE_ROOT, 'static')
+]
+
 try:
     from openquakeplatform import ged_settings
     DATABASES.update(ged_settings.DATABASES)
@@ -42,7 +57,9 @@ TIME_ZONE = 'UTC'
 
 SECRET_KEY = '%(oq_secret_key)s'
 
-ALLOWED_HOSTS=['%(host)s', 'localhost']
+# FIXME production doesn't work without 'testserver'.
+# Production must be fixed and 'testserver' removed from here.
+ALLOWED_HOSTS=['%(host)s', 'testserver', 'localhost']
 
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
@@ -184,6 +201,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'nested_inlines',  # it must be BEFORE django.contrib.admin
     'django.contrib.admin',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
@@ -193,6 +211,7 @@ INSTALLED_APPS = (
 
     # Third party apps
     'photologue',
+    'chained_selectbox',
 
     # Utility
     'pagination',
@@ -202,6 +221,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    'chained_multi_checkboxes',
 
     # Development
     # 'devserver',
@@ -243,6 +263,7 @@ INSTALLED_APPS = (
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
     'openquakeplatform.icebox',
+    'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
 
     # gemecd
@@ -326,7 +347,13 @@ MAP_BASELAYERS = [{
 
 # Add additional paths (as regular expressions) that don't require
 # authentication. This URL needs to be hit by the oq-engine-server.
-AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)', '/geoserver/')
+AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)',
+                    '/geoserver/',
+                    '/vulnerability/intensity_measure_csc?.*',
+                    '/vulnerability/engineering_demand_csc?.*',
+                    '/vulnerability/resp_var_par_csc?.*',
+                    '/vulnerability/resp_var_units_csc?.*')
+
 
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"

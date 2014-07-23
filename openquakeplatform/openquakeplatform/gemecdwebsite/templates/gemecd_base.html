@@ -309,9 +309,8 @@
 
         //resize the main and map div
         $(document).ready(function() {
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25;
-            //$('#main').css("height",main_height + "px");
+            var main_height = $(window).height() - $("#oq-page-header").height() - $("#oq-page-footer").height();
+            var map_height = $(window).height() - $("#oq-page-header").height() - $("#oq-page-footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25
             $('#map').css("height",map_height + "px");
             map.invalidateSize(false);
         });

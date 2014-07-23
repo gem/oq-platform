@@ -16,11 +16,12 @@ import openquakeplatform.gemecdwebsite.casualtylevel.urls
 import openquakeplatform.gemecdwebsite.surveyvalue.urls
 import openquakeplatform.gemecdwebsite.photo.urls
 import openquakeplatform.gemecdwebsite.uploadnrml.urls
-
+import openquakeplatform.gemecdwebsite.lookup.urls
+#import openquakeplatform.vulnerability.views
 import photologue.urls
 
 
-from openquakeplatform import local_settings
+from django.conf import settings
 
 # TODO. Use context_processors instead of a custom TemplateView
 from openquakeplatform.utils import OQTemplateView
@@ -71,6 +72,10 @@ urlpatterns = patterns('',
 
     url(r'^ecd/uploadnrml',include(openquakeplatform.gemecdwebsite.uploadnrml.urls.urlpatterns)), #display mode
 
+    url(r'^ecd/(?P<name>lookup.*)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+    url(r'^ecd/(?P<name>unifieddamagelevel)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+
+
 
     #photologue
     url(r'^photologue/', include(photologue.urls)),
@@ -99,6 +104,9 @@ urlpatterns = patterns('',
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
+    #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
+        #name='index'),
+    (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),

@@ -232,31 +232,9 @@ ul.social li a.gp {
     margin-top: -5px;
 }
 
-#oq-page-footer, footer.footer {
-    background: #1B75A7;
-    font-size: 12px;
-    position: fixed;
-    height: 45px;
-    bottom: 0;
-    padding-top: 0px;
-    padding-left: 10%;
-    padding-right: 10%;
-    float: left;
-    width: 80%;
-}
-
-footer.footer div.container {
-    /* Make the footer content align nicely, and not so close to the
-       top of the bar */
-    margin-top: 10px;
-}
-
-#oq-page-footer, footer.footer form label {
-    color: #FFFFFF;
-}
-
 .oq-btns {
     margin-left: 25px;
+    margin-bottom: 50px;
 }
 
 .oq-btns .btn {
@@ -267,6 +245,12 @@ footer.footer div.container {
     font-size: 20px;
     margin: 0 0 15px;
     width: 160px;
+}
+
+#oq-page-header {
+    height: 107px;
+    position: absolute;
+    top: 0;
 }
 
 #oq-body-content {
@@ -294,8 +278,6 @@ footer.footer div.container {
     width: 30%;
 }
 
-/* Remove some unneeded padding and margins around
-   the element containing the main application map. */
 #oq-page-middle {
     margin-top: 107px;
 }
@@ -313,6 +295,30 @@ footer.footer div.container {
 
 #oq-page-middle div.content-wrap div.container div.row {
     margin-left: 0px;
+}
+
+#oq-page-footer, footer.footer {
+    z-index: 1000;
+    background: #1B75A7;
+    font-size: 12px;
+    position: fixed;
+    height: 45px;
+    bottom: 0;
+    padding-top: 0px;
+    padding-left: 10%;
+    padding-right: 10%;
+    float: left;
+    width: 80%;
+}
+
+footer.footer div.container {
+    /* Make the footer content align nicely, and not so close to the
+       top of the bar */
+    margin-top: 10px;
+}
+
+#oq-page-footer, footer.footer form label {
+    color: #FFFFFF;
 }
 
 #my-calculations.well{
