@@ -67,8 +67,8 @@ var baseMapUrl = (
     'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
 );
 
-var TILESTREAM_URL = '//tilestream.openquake.org/v2/';
-var TILESTREAM_API_URL = '//tilestream.openquake.org/api/v1/Tileset/';
+var TILESTREAM_URL = TS_URL + '/v2/';
+var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
