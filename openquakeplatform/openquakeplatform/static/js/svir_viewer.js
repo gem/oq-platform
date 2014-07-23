@@ -215,9 +215,9 @@ var startApp = function() {
                 showDuplicateMsg();
             }
             else {
-                var tileLayer = L.tileLayer(TS_URL + 'v2/' 
+                var tileLayer = L.tileLayer(TS_URL + '/v2/' 
                     + selectedLayer
-                    + '/{z}/{x}/{y}.png',{wax: TS_URL + 'v2/'
+                    + '/{z}/{x}/{y}.png',{wax: TS_URL + '/v2/'
                     +selectedLayer
                     +'.json'});
                 layerControl.addOverlay(tileLayer, selectedLayer);
@@ -557,7 +557,7 @@ var startApp = function() {
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + 'v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -569,7 +569,7 @@ var startApp = function() {
         dataCat = "pop-table";
         chartCat = "pop-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + 'v2/svir_standized_pop/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_pop/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -581,7 +581,7 @@ var startApp = function() {
         dataCat = "health-table";
         chartCat = "health-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + 'v2/svir_standized_health/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_health/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -593,7 +593,7 @@ var startApp = function() {
         dataCat = "infra-table";
         chartCat = "infra-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + 'v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -605,7 +605,7 @@ var startApp = function() {
         dataCat = "gov-table";
         chartCat = "gov-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + 'v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -617,7 +617,7 @@ var startApp = function() {
         dataCat = "edu-table";
         chartCat = "edu-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + 'v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();

@@ -44,15 +44,15 @@ var startApp = function() {
     map.scrollWheelZoom.enable();
 
     // This layer is used for the visual representation of the data
-    var hazus = L.tileLayer(TS_URL + 'v2/ged-hazus-level1/{z}/{x}/{y}.png');
+    var hazus = L.tileLayer(TS_URL + '/v2/ged-hazus-level1/{z}/{x}/{y}.png');
     layerControl.addOverlay(hazus, "Hazus Level 1 Building Fractions");
     map.addLayer(hazus);
 
-    var building_fractions = L.tileLayer(TS_URL + 'v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
+    var building_fractions = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
     layerControl.addOverlay(building_fractions, "US Counties");
     map.addLayer(building_fractions);
 
-    utfGrid = new L.UtfGrid(TS_URL + 'v2/hazus_US_building_fractions/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    utfGrid = new L.UtfGrid(TS_URL + '/v2/hazus_US_building_fractions/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
     map.addLayer(utfGrid);
 

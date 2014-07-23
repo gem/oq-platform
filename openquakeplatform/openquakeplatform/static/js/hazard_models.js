@@ -22,8 +22,8 @@ var startApp = function() {
     /******************
      * Overlay layers *
      ******************/
-    grump_rural = L.tileLayer(TS_URL + 'v2/gdal-custom-rural/{z}/{x}/{y}.png');
-    grump_urban = L.tileLayer(TS_URL + 'v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
+    grump_rural = L.tileLayer(TS_URL + '/v2/gdal-custom-rural/{z}/{x}/{y}.png');
+    grump_urban = L.tileLayer(TS_URL + '/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
 
     var overlays = {
         "GRUMP Urban" : grump_urban,
