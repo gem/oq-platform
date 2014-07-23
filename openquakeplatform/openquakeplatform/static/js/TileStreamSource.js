@@ -102,7 +102,7 @@ var tilestreamPlugin = {
 
         var layers = new Array();
 
-        $.getJSON(TS_URL + 'api/v1/Tileset',
+        $.getJSON(TS_URL + '/api/v1/Tileset',
         function(json) {
             for (var i=0; i < json.length; i++) {
                 // Get the tile name and zoom level from the tilestream API

@@ -97,7 +97,7 @@ var startApp = function() {
         });
     });
 
-    // Remove layer 
+    // Remove layer
     var removeLayer = function () {
         // Clear the contents of the table
         $("#tableBody").html("");
@@ -132,7 +132,7 @@ var startApp = function() {
     catMenuHeader.innerHTML = "Category:";
     selCat.appendChild(catMenuHeader);
 
-    $.getJSON(TS_URL + 'api/v1/Tileset',
+    $.getJSON(TS_URL + '/api/v1/Tileset',
     function(json) {
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -198,8 +198,8 @@ var startApp = function() {
     map.addControl(layerControl.setPosition("topleft"));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
-    
-    
+
+
     // Add layers form tilestream list
     $(document).ready(function() {
         $("#addTileLayer").click(function() {
@@ -215,7 +215,7 @@ var startApp = function() {
                 showDuplicateMsg();
             }
             else {
-                var tileLayer = L.tileLayer(TS_URL + '/v2/' 
+                var tileLayer = L.tileLayer(TS_URL + '/v2/'
                     + selectedLayer
                     + '/{z}/{x}/{y}.png',{wax: TS_URL + '/v2/'
                     +selectedLayer
@@ -231,14 +231,14 @@ var startApp = function() {
     // Remove layers from tilestream
     $(document).ready(function() {
         $('#removeTileLayer').click(function() {
-    
+
             var e = document.getElementById("layer-list");
             var layerId = e.options[e.selectedIndex].value;
-    
+
             // Look up the layer id using the layer name
             var layerIdArray = layerNames[layerId];
             var selectedLayer = layerIdArray.toString();
-    
+
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -398,7 +398,7 @@ var startApp = function() {
         obj5[attrSelection[4]] = selectedValue5[5];
         obj5[attrSelection[5]] = selectedValue6[5];
 
-        chartArray.splice(0,10);        
+        chartArray.splice(0,10);
 
         for (var i=0; i<numberOfCountries; i++) {
             chartArray[i] = window["obj" + i];
@@ -406,7 +406,7 @@ var startApp = function() {
 
         var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
             attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
- 
+
         for (var i=0; i<numberOfCountries; i++) {
             country.splice(numberOfCountries,10);
         }
@@ -414,10 +414,10 @@ var startApp = function() {
         var m = [80, 160, 200, 160],
             w = 1280 - m[1] - m[3],
             h = 500 - m[0] - m[2];
-        
+
         var x = d3.scale.ordinal().domain(attributes).rangePoints([0, w]),
             y = {};
-        
+
         var line = d3.svg.line(),
             axis = d3.svg.axis().orient("left"),
             foreground;
@@ -429,7 +429,7 @@ var startApp = function() {
             .attr("height", h + m[0] + m[2])
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
-        
+
             // Create a scale and brush for each trait.
             attributes.forEach(function(d) {
                 // Coerce values to numbers.
@@ -438,7 +438,7 @@ var startApp = function() {
                 y[d] = d3.scale.linear()
                     .domain(d3.extent(chartArray, function(p) { return p[d]; }))
                     .range([h, 0]);
-          
+
                 y[d].brush = d3.svg.brush()
                     .y(y[d])
                     .on("brush", brush);
@@ -449,7 +449,7 @@ var startApp = function() {
                 .data(country)
                 .enter().append("svg:g")
                 .attr("class", "legend")
-          
+
             legend.append("svg:line")
                 .attr("class", String)
                 .attr("x2", -28)
@@ -468,7 +468,7 @@ var startApp = function() {
                 .attr("dy", ".31em")
                 .text(function(d) { return d; })
                 .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
-          
+
             // Add foreground lines.
             foreground = svg.append("svg:g")
                 .attr("class", "foreground")
@@ -477,7 +477,7 @@ var startApp = function() {
                 .enter().append("svg:path")
                 .attr("d", path)
                 .attr("class", function(d) { return d.country; });
-          
+
             // Add a group element for each trait.
             var g = svg.selectAll(".trait")
                 .data(attributes)
@@ -489,7 +489,7 @@ var startApp = function() {
                 .on("dragstart", dragstart)
                 .on("drag", drag)
                 .on("dragend", dragend));
-          
+
             // Add an axis and title.
             g.append("svg:g")
                 .attr("class", "axis")
@@ -500,7 +500,7 @@ var startApp = function() {
                 .attr("y", 160)
                 .attr("x", 160)
                 .text(String);
-          
+
             // Add a brush for each axis.
             g.append("svg:g")
                 .attr("class", "brush")
@@ -508,18 +508,18 @@ var startApp = function() {
                 .selectAll("rect")
                 .attr("x", -8)
                 .attr("width", 16);
-          
+
             function dragstart(d) {
                 i = attributes.indexOf(d);
             }
-          
+
             function drag(d) {
                 x.range()[i] = d3.event.x;
                 attributes.sort(function(a, b) { return x(a) - x(b); });
                 g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
                 foreground.attr("d", path);
             }
-          
+
             function dragend(d) {
                 x.domain(attributes).rangePoints([0, w]);
                 var t = d3.transition().duration(500);
@@ -534,12 +534,12 @@ var startApp = function() {
         $("."+countriesArray[3]).css('stroke', 'orange');
         $("."+countriesArray[4]).css('stroke', 'purple');
         $("."+countriesArray[5]).css('stroke', 'black');
-        
+
         // Returns the path for a given data point.
         function path(d) {
             return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
-        
+
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
             var actives = attributes.filter(function(p) { return !y[p].brush.empty(); }),
@@ -553,7 +553,7 @@ var startApp = function() {
     }
 
     // Change the utfgrid layer when the tabs are clicked
-    $("#econ").click(function(){ 
+    $("#econ").click(function(){
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
@@ -637,12 +637,12 @@ var startApp = function() {
             svirRegionRankValues = [];
             svirRegionRankKeys = [];
             svirBarArray = [];
-            // When the map is clikced the table needs to be cleared out and recreated 
+            // When the map is clikced the table needs to be cleared out and recreated
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
-    
+
             buildDataTable(e, dataCat);
-    
+
             if (e.data) {
 
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
@@ -664,9 +664,9 @@ var startApp = function() {
                     };
                 }
 
-                $('.attributeOption:lt(6)').prop('checked', true);  
+                $('.attributeOption:lt(6)').prop('checked', true);
                 $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
-                
+
                 $("#chartOptionsButton").click(function(){
                     $('#chartOptions').dialog('close');
                     // Grab the check box values to be used in the chart
@@ -676,9 +676,9 @@ var startApp = function() {
                         });
                         if (attrSelection > 6) {
                             attrSelection.pop();
-                        } 
+                        }
                 });
-                
+
 
                 $(function() {
                     var max = 6;
@@ -706,17 +706,17 @@ var startApp = function() {
                 if (selectedValue1.length > 6) {
                     selectedValue1.pop();
                 }
-                
+
                 selectedValue2.unshift(parseFloat(dataFormated[attrSelection[1]]));
                 if (selectedValue2.length > 6) {
                     selectedValue2.pop();
                 }
-    
+
                 selectedValue3.unshift(parseFloat(dataFormated[attrSelection[2]]));
                 if (selectedValue3.length > 6) {
                     selectedValue3.pop();
                 }
-    
+
                 selectedValue4.unshift(parseFloat(dataFormated[attrSelection[3]]));
                 if (selectedValue4.length > 6) {
                     selectedValue4.pop();
@@ -731,20 +731,20 @@ var startApp = function() {
                 if (selectedValue6.length > 6) {
                     selectedValue6.pop();
                 }
-                
+
                 var countryName = e.data.country;
                 // Indicate the country name for the table header
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
-    
+
                 countriesArray.unshift(countryName);
-    
+
                 if (countriesArray.length > 6) {
                     countriesArray.pop();
                 }
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
-                
+
             } else {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
