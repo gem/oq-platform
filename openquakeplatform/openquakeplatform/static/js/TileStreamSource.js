@@ -112,7 +112,7 @@ var tilestreamPlugin = {
                 // Build the list of layers
                 var newLayer = new OpenLayers.Layer.XYZ(
                     tileStreamLayerName,
-                    [TS_URL + "v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],
+                    [TS_URL + "/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],
                     OpenLayers.Util.applyDefaults({
                         layername: tileStreamLayerName,
                         numZoomLevels: tileMaxZoom
