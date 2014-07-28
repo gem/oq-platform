@@ -178,7 +178,7 @@ var startApp = function() {
                 var b = e.data.bf_json;
                 var bfClean = b.replace(/[\{\}\/"]/g, "");
 
-                console.log(bfClean);
+                // console.log(bfClean);
 
                 var data = eval('({' + bfClean + '})');
                 var keys = [];

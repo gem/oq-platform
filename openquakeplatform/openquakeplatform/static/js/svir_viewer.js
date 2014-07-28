@@ -700,7 +700,7 @@ var startApp = function() {
                         });
                 };
 
-                console.log(attrSelection);
+                //console.log(attrSelection);
 
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {
