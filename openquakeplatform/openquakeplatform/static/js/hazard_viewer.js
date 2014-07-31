@@ -400,6 +400,8 @@ var startApp = function() {
         $('#addTileLoss').attr('disabled', true);
         $('#removeTileLoss').attr('disabled', true);
 
+        console.log(curvesByInvestMixed);
+
         var e = document.getElementById('curve-list');
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option);
@@ -512,6 +514,10 @@ var startApp = function() {
             hazardCurveDialog.dialog('option', 'height', (500 + (uhsList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
+
+        } else if ($.inArray('single', investType) > -1) {
+            singleCurve();
+
         } else {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
