@@ -217,6 +217,7 @@ var startApp = function() {
     $('#curve-category option:empty').remove();
 
     $.getJSON(TILESTREAM_API_URL, function(json) {
+            $('#hazard-curve').attr('disabled', true);
 
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -392,7 +393,9 @@ var startApp = function() {
             // Append layer list to dowpdown
             var layerlossOpt = document.createElement('option');
         }
-    }); //end getjson
+    }).done(function() {
+        $('#hazard-curve').attr('disabled', false);
+        });
 
     $('#addTileCurve').click(function() {
         $('#addTileUhs').attr('disabled', true);
