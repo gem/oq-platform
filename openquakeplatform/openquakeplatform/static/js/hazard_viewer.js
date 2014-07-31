@@ -400,8 +400,6 @@ var startApp = function() {
         $('#addTileLoss').attr('disabled', true);
         $('#removeTileLoss').attr('disabled', true);
 
-        console.log(curvesByInvestMixed);
-
         var e = document.getElementById('curve-list');
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option);
@@ -460,7 +458,7 @@ var startApp = function() {
             mixedCurve(curveType);
 
         } else if (investType.indexOf('single') == 0 ) {
-            singleCurve();
+            singleCurve(curveType);
         } else {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
@@ -516,7 +514,7 @@ var startApp = function() {
             mixedCurve(curveType);
 
         } else if ($.inArray('single', investType) > -1) {
-            singleCurve();
+            singleCurve(curveType);
 
         } else {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
@@ -718,23 +716,43 @@ var startApp = function() {
     });
 
     // Add single curve layers form tilestream list
-    function singleCurve() {
-        // Remove any existing UtfGrid layers in order to avoid conflict
-        map.removeLayer(utfGrid);
-        utfGrid = {};
-        var e = document.getElementById('curve-list');
-        var curveLayerId = e.options[e.selectedIndex].value;
+    function singleCurve(curveType) {
+        if (curveType == 'hc') {
 
-        // Look up the layer id using the layer name
-        var curveLayerIdArray = curveLayerNames[curveLayerId];
-        var selectedLayer = curveLayerIdArray.toString();
+            // Remove any existing UtfGrid layers in order to avoid conflict
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            var e = document.getElementById('curve-list');
+            var curveLayerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var curveLayerIdArray = curveLayerNames[curveLayerId];    
+            var selectedLayer = curveLayerIdArray.toString();
+    
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                layerInvestigationTime = json.investigationTime;
+                layerIml = json.iml;
+                layerImt = json.imt;
+            });
+        } else if (curveType == 'uhs') {
+            var e = document.getElementById('uhs-list');
+            console.log("e");
+            console.log(e);
 
-        // get more information about the selected layer for use in chart
-        $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-            layerInvestigationTime = json.investigationTime;
-            layerIml = json.iml;
-            layerImt = json.imt;
-        });
+            var uhsLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
+            var selectedLayer = uhsLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
+                    // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                layerInvestigationTime = json.investigationTime;
+                layerIml = json.periods;
+                layerPoe = json.poe;
+            });
+        }
 
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
         // Check for duplicae layes
@@ -745,12 +763,16 @@ var startApp = function() {
             showDuplicateGridMsg();
         }
         else {
+            console.log("selectedLayer");
+            console.log(selectedLayer);
             var tileLayer = L.tileLayer(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
                 selectedLayer +
                 '.json'});
             layerControl.addOverlay(tileLayer, selectedLayer);
+            console.log("tileLayer");
+            console.log(tileLayer);
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
@@ -961,6 +983,8 @@ var startApp = function() {
 
             $('#curve-check-box').remove();
             gridList = 0;
+            console.log("utfGrid");
+            console.log(utfGrid);
             map.removeLayer(utfGrid);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
@@ -972,6 +996,12 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var mapLayerIdArray = uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
+
+            console.log("selectedLayer");
+            console.log(selectedLayer);
+
+            console.log("layers");
+            console.log(layers);
 
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
