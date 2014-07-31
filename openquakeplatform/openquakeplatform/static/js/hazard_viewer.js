@@ -737,16 +737,13 @@ var startApp = function() {
             });
         } else if (curveType == 'uhs') {
             var e = document.getElementById('uhs-list');
-            console.log("e");
-            console.log(e);
-
             var uhsLayerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
-                    // get more information about the selected layer for use in chart
+            // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.periods;
@@ -763,16 +760,13 @@ var startApp = function() {
             showDuplicateGridMsg();
         }
         else {
-            console.log("selectedLayer");
-            console.log(selectedLayer);
             var tileLayer = L.tileLayer(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
                 selectedLayer +
                 '.json'});
             layerControl.addOverlay(tileLayer, selectedLayer);
-            console.log("tileLayer");
-            console.log(tileLayer);
+
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
@@ -983,8 +977,7 @@ var startApp = function() {
 
             $('#curve-check-box').remove();
             gridList = 0;
-            console.log("utfGrid");
-            console.log(utfGrid);
+
             map.removeLayer(utfGrid);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
@@ -996,12 +989,6 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var mapLayerIdArray = uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-
-            console.log("selectedLayer");
-            console.log(selectedLayer);
-
-            console.log("layers");
-            console.log(layers);
 
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
