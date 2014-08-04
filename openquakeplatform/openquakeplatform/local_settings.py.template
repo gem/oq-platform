@@ -65,6 +65,8 @@ SECRET_KEY = '%(oq_secret_key)s'
 # Production must be fixed and 'testserver' removed from here.
 ALLOWED_HOSTS=['%(host)s', 'testserver', 'localhost']
 
+PROXY_ALLOWED_HOSTS=('%(host)s', 'localhost')
+
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
 
