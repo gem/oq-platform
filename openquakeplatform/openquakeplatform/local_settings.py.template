@@ -45,6 +45,10 @@ STATICFILES_DIRS = [
     os.path.join(GEONODE_ROOT, 'static')
 ]
 
+ALLOWED_DOCUMENT_TYPES  = ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg',
+'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'tar', 'tgz', 'tbz', 'tar.gz', 'tar.bz2']
+MAX_DOCUMENT_SIZE = 100
+
 try:
     from openquakeplatform import ged_settings
     DATABASES.update(ged_settings.DATABASES)
