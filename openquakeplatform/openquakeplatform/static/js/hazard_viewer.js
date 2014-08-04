@@ -67,8 +67,8 @@ var baseMapUrl = (
     'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
 );
 
-var TILESTREAM_URL = '//tilestream.openquake.org/v2/';
-var TILESTREAM_API_URL = '//tilestream.openquake.org/api/v1/Tileset/';
+var TILESTREAM_URL = TS_URL + '/v2/';
+var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -1070,7 +1070,7 @@ var startApp = function() {
                 } else {
                     imlArray = iml.split(',');
                 }
-                
+
                 imt = e.data.imt;
                 if(imt == 'PGA') {
                     imt = 'Peak Ground Acceleration (g)';
@@ -1352,7 +1352,7 @@ var startApp = function() {
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
             .text(layerImt);
-            
+
         svg.append('g')
             .attr('class', 'y axis')
             .call(yAxis)
