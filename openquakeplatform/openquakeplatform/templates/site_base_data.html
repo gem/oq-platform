@@ -18,12 +18,7 @@
 {% endblock header %}
 
 {% block extra-nav %}
-<li class="oqp-menu-item"><a href="{% url 'home' %}">Home</a></li>
-<li class="oqp-menu-item"><a href="{% url 'layer_browse' %}">Data</a></li>
-<li class="oqp-menu-item"><a href="{% url 'maps_browse' %}">Maps</a></li>
-<li class="oqp-menu-item"><a href="{% url 'tools' %}">Tools</a></li>
-<li class="oqp-menu-item"><a href="{% url 'profile_browse' %}">People</a></li>
-<li class="oqp-menu-item"><a href="{% url 'documents_browse' %}">Documents</a></li>
+{% include "extra-nav.html" %}
 {% endblock extra-nav %}
 
 {% block middle %}
