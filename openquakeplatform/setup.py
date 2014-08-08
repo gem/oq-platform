@@ -53,7 +53,8 @@ setup(
     #        the lifecicle of all the bugfix versions of the repository and pip depends on it.
     #        Follow the same rule for all the other gem dependencies when an update is needed.
     # ATTENTION: Please, do not split following lines, the deploy.sh script manages them automatically.
-    dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
+    dependency_links = ['http://github.com/gem/django-extras/tarball/master#egg=django-extras-0.3',
+                        'http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
                         'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
                         'http://github.com/gem/django-chained-multi-checkboxes/tarball/v0.4#egg=django-chained-multi-checkboxes-0.4'
@@ -96,6 +97,7 @@ setup(
         "django-photologue==2.6.1",
         "requests==0.8.2",
         "fabric",
+        "django-extras==0.3",
         "wadofstuff-django-serializers==1.1.2",
         "django-nested-inlines==0.1.4",
         "django-chained-multi-checkboxes==0.4",
