@@ -31,7 +31,7 @@ GEM_HAZARD_CALC_ADDR='http://localhost:8800'
 GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY="oq-platform"
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -176,7 +176,6 @@ isc_viewer_dataloader () {
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
 }
 
-
 #
 #
 econd_dataloader () {
@@ -198,6 +197,22 @@ econd_dataloader () {
     fi
 }
 
+#
+#
+vulnerability_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/vuln_geo_applicability_data.csv" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/vulnerability/dev_data"
+    fi
+    openquakeplatform import_vuln_geo_applicability_csv "${bdir}/vuln_geo_applicability_data.csv"
+    openquakeplatform vuln_groups_create
+}
+
+#
+#
 econd_fixtureupdate () {
     oqpdir="$1"
 
@@ -205,6 +220,7 @@ econd_fixtureupdate () {
         cp private_data/econd/initial_data.json ${oqpdir}/econd/fixtures
     fi
 }
+
 #
 #
 passwd_create () {
@@ -323,6 +339,26 @@ deps_info () {
 EOF
 }
 
+deps_install () {
+    local old_IFS pkg
+    # FIXME these lines must be integrated with the oq-platform deb package
+    sudo apt-get install imagemagick xmlstarlet
+    sudo pip install Pillow==2.3.1 --no-deps
+    sudo pip install South==0.8.4 --no-deps
+    sudo pip install django-photologue==2.6.1 --no-deps
+
+    # FIXME currently 'pip install -U --no-deps' is used to install
+    #       openquakeplatform, until '-U --nodeps' will be removed we must install
+    #       real not-developmental dependencies manually
+    pipsrc="/usr/local/openquake/platform"
+    mkdir -p "$pipsrc"
+    old_IFS="$IFS"
+    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1); do
+        pip install "$pkg"
+    done
+    IFS="$old_IFS"
+}
+
 #
 #
 oq_platform_install () {
@@ -373,29 +409,32 @@ oq_platform_install () {
     apt-get update
     apt-get install -y geonode
 
-    # check for oq-platform packaged dependencies
-    for pkg in imagemagick xmlstarlet; do
-        if [ "$(dpkg-query -W --showformat="\${Status}" "$pkg")" != "install ok installed" ]; then
-            echo "ERROR: missing Ubuntu package $pkg."
-            echo "To satisfy oq-platform dependencies perform the following commands"
-            deps_info
-        exit 1
-        fi
-    done
+    # FIXME this code will be used in the future
+    ## check for oq-platform packaged dependencies
+    #for pkg in imagemagick xmlstarlet; do
+    #    if [ "$(dpkg-query -W --showformat="\${Status}" "$pkg")" != "install ok installed" ]; then
+    #        echo "ERROR: missing Ubuntu package $pkg."
+    #        echo "To satisfy oq-platform dependencies perform the following commands"
+    #        deps_info
+    #    exit 1
+    #    fi
+    #done
 
-    # check for oq-platform external dependencies
-    check_pippkg="$(pip freeze 2>/dev/null | egrep '^django-photologue==2.6.1|^South==0.8.4|^Pillow==2.3.1' | wc -l)"
-    if [ "$check_pippkg" != "3" ]; then
-        echo "ERROR: missing pip installed packages or wrong versions."
-        echo "Current version are:"
-        pip freeze 2>/dev/null | egrep '^django-photologue==|^South==|^Pillow=='
-        echo "check Pillow, django-photologue, South, if missing perform the following commands"
-        deps_info
-        exit 1
-    fi
-    sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
+    # FIXME this code will be used in the future
+    ## check for oq-platform external dependencies
+    #check_pippkg="$(pip freeze 2>/dev/null | egrep '^django-photologue==2.6.1|^South==0.8.4|^Pillow==2.3.1' | wc -l)"
+    #if [ "$check_pippkg" != "3" ]; then
+    #    echo "ERROR: missing pip installed packages or wrong versions."
+    #    echo "Current version are:"
+    #    pip freeze 2>/dev/null | egrep '^django-photologue==|^South==|^Pillow=='
+    #    echo "check Pillow, django-photologue, South, if missing perform the following commands"
+    #    deps_info
+    #    exit 1
+    #fi
+    #sed -i 's@<baseUrl>[^<]*</baseUrl>@<baseUrl>http://localhost:80/</baseUrl>@g' /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml
 
     cd oq-platform/openquakeplatform
+    deps_install
     pip install . -U --no-deps
     cd -
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"
