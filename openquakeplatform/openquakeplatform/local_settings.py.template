@@ -244,7 +244,7 @@ INSTALLED_APPS = (
     'openquakeplatform.faulted_earth',
     'openquakeplatform.icebox',
     'openquakeplatform.svir',
-    'openquakeplatform.oqp_maps',
+    'openquakeplatform.maps_viewer',
 
     # gemecd
     'openquakeplatform.weblib',
