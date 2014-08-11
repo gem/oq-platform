@@ -40,25 +40,34 @@
             The OpenQuake Platform includes a number of tool for contributing to the existing datasets. 
             <br><br>
 
-            <b>Hazard</b> 
-              <ul>
-                <li>
-                  <a href="{% url 'faulted_earth' %}">The Faulted Earth </a> tool allows users to input fault information</li>
-               
-              </ul>
+            <b>Data Capture/Collection</b> 
+            <ul>
+              <li>
+                <a href="{% url 'faulted_earth' %}">The Faulted Earth </a> tool allows users to input fault information
+              </li>
+              <li>
+                IDCT Android
+              </li>
+              <li>
+                SIDD
+              </li>
+              <li>
+                <a href="/admin/vulnerability/generalinformation/">The vulnerability suite</a>  is a set of tool that allow users to explore and contribute to a comprehensive global vulnerability database that includes fragility, vulnerability, damage-to-loss functions and capacity curves for different types of structure
+              </li>
+            </ul>
 
-            <b>Risk:</b> 
-              <ul>
-                <li>
-                  <a href="/admin/vulnerability/generalinformation/">The vulnerability suite</a>  is a set of tool that allow users to explore and contribute to a comprehensive global vulnerability database that includes fragility, vulnerability, damage-to-loss functions and capacity curves for different types of structure
-                </li>
-              </ul>
+            <b>Taxonomy:</b>
+            <ul>
+              <li>
+                <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
+              </li>
+            </ul>
 
             <b>Upload:</b> 
-              <ul>
-                <li><a href="{% url "document_upload" %}">Documents</a></li>
-                <li><a href="{% url "layer_upload" %}">Layers</a></li>
-              </ul>
+            <ul>
+              <li><a href="{% url "document_upload" %}">Documents</a></li>
+              <li><a href="{% url "layer_upload" %}">Layers</a></li>
+            </ul>
 
           </div>
         {% endblock oq_body_content %}

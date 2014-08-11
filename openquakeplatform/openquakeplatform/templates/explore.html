@@ -48,11 +48,19 @@
 
             <b>Data Sets:</b> 
             <ul>
-              <li><a href="{% url 'exposure' %}">Exposure</a></li>
+              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
+              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
               <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
               <li><a href="{% url 'svir_viewer' %}">SVIR</a></li>
               <li><a href="/vulnerability/list/">Vulnerability</a></li>
               <!-- TODO add links to the inst cat, hist cat, active faults and geo strain map layers here-->
+            </ul>
+
+            <b>Taxonomy:</b>
+            <ul>
+              <li>
+                <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
+              </li>
             </ul>
             
           </div>
