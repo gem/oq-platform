@@ -39,18 +39,18 @@
 
             <b>Explore:</b> 
             <ul>
+              <li><a href="{% url 'documents_browse' %}">Documents</a></li>
               <li><a href="{% url "layer_browse" %}">Layers</a></li>
               <li><a href="{% url "maps_browse" %}">Maps</a></li>
               <li><a href="{% url 'hazard_viewer' %}">Models</a></li>
-              <li><a href="{% url 'documents_browse' %}">Documents</a></li>
               <li><a href="{% url 'profile_browse' %}">People</a></li>
             </ul>
 
             <b>Data Sets:</b> 
             <ul>
-              <li><a href="{% url 'svir_viewer' %}">SVIR</a></li>
               <li><a href="{% url 'exposure' %}">Exposure</a></li>
               <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
+              <li><a href="{% url 'svir_viewer' %}">SVIR</a></li>
               <li><a href="/vulnerability/list/">Vulnerability</a></li>
               <!-- TODO add links to the inst cat, hist cat, active faults and geo strain map layers here-->
             </ul>
