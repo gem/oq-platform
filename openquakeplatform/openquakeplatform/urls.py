@@ -115,6 +115,7 @@ urlpatterns = patterns('',
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
     url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
+    url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
 
     # Layer views
