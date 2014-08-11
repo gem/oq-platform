@@ -19,7 +19,7 @@
       </div>
       <div id="oq-body-heading">
         {% block oq_body_heading %}
-          <h1>{% trans "Welcome to OpenQuake" %}</h1>
+          <h1>{% trans "The OpenQuake Platform" %}</h1>
           <br />
         {% endblock oq_body_heading %}
       </div>
@@ -27,28 +27,52 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
-            The OpenQuake Platform brings a great variety of options together for assessing and understanding risk. Many of these need expert knowledge, to be sure that hazard and risk are assessed the right way. But there will also be many results and datasets available that facilitate all of our stakeholders in exploring, understanding and improving decision-making.<br/><br/>
+            Welcome to the OpenQuake Platform. This web-based risk assessment platform offers an interactive environment for modeling, viewing, exploring, and managing earthquake risk. User can access, manipulate, share and add data, models and tools for integrated assessment of earthquake risk.
+            
+            <br/><br/>
 
-            <h2><img src="static/img/OQ-Suite-Calculate.png" width="120px">Calculate</h2>
-            Powered by the OpenQuake Engine, users will be able to carry out seismic hazard, physical and integrated risk assessment in a variety of ways. This way they can explore hazard and risk under different assumptions.<br/><br/>
+            <img src="http://www.globalquakemodel.org/media/cms_page_media/15/OQ-workflows_1.png.1280x1024_q85.jpg" width="620px">
+            This platform has been created by the <a href="http://www.globalquakemodel.org/">GEM Foundation</a>.<br><br>
 
-            <h2><img src="static/img/OQ-Suite-View.png" width="120px">View</h2>
-            OpenQuake will facilitate a user in viewing user-developed and uploaded information. At the same time OpenQuake is going to allow a user to dynamically visualise GEM datasets, models and pre-calculated outputs (maps, graphs, etc.).<br/><br/>
 
-            <h2><img src="static/img/OQ-Suite-Explore.png" width="120px">Explore</h2>
-            Users will be able to develop customised risk maps, to use for improved risk awareness, understanding and decision-making.<br/><br/>
+  {% block mainbody %}
+  <div class="container">
+    <div class="row">
+    {% with facet_type='home' %}
+      <div class="col-md-4">
+        <p class="text-center"><i class="fa fa-square-o fa-5x rotate-45"></i></p>
+        <h2 class="text-center">{{ facets.layer|default:"No" }} Layer{{ facets.layer|pluralize }}</h2>
 
-            <h2><img src="static/img/OQ-Suite-Model.png" width="120px">Model</h2>
-            Users will be able to prepare data and develop PSHA-input models, exposure models, physical vulnerability models, and composite index models. For state-of-practice hazard model building there are tools for catalogue homogenisation, declustering and completeness analysis, calculation of activity rates, computation of activity rates from geologic information, reconciliation of geological, seismological and geodetic information.<br/><br/>
+        <p class="text-center">{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p> 
+        <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore Layers" %} &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <p class="text-center"><i class="fa fa-map-marker fa-5x"></i></p>
+        <h2 class="text-center">{{ facets.map|default:"No" }} Map{{ facets.map|pluralize }}</h2>
+        <p class="text-center">{% trans "Data is available for browsing, aggregating and styling to generate maps which can be shared publicly or restricted to specific users only." %}</p>
+        <p class="text-center"><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <p class="text-center"><i class="fa fa-cloud-upload fa-5x"></i></p>
+        <h2 class="text-center">{{ facets.user|default:"No" }} User{{ facets.user|pluralize }}</h2>
+        <p class="text-center">{% trans "GeoNode allows registered users to easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
+        <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Share data" %} &raquo;</a></p>
+      </div>
+    {% endwith %}
+    </div>
+  </div>
+  {% verbatim %}
+  <div ng-app="featured">
+    <div ng-repeat="item in featured">
+      <!--{{ item.title }}-->
+    </div>
+  </div>
+  {% endverbatim %}
+  {% endblock %}
 
-            <h2><img src="static/img/OQ-Suite-Capture.png" width="120px">Capture</h2>
-            Users will capture new data both for their own use, as well as for inclusion in the global databases. There will be tools for capturing data on buildings, both from satellite imagery using remote sensing and through building-by-building observation with (mobile) field tools. Geologists can capture data on faults by drawing their features on a map and adding relevant attributes to the database.<br/><br/>
 
-            <br/><br>
-            <!-- Nice big OpenQuake logo here -->
-            <!-- calculate, share, explore -->
-            <img src="static/img/OQ-header-Logo.png">
-            <br/>
+
+
           </div>
         {% endblock oq_body_content %}
       </div>
@@ -62,7 +86,6 @@
             <a class="btn btn-large" href="{% url "maps_browse" %}">
               {% trans "Explore Maps" %}
             </a>
-            <img src="static/img/OQ-screens.png" width="195px">
           </div>
         {% endblock oq_body_sidebar %}
       </div>
