@@ -117,11 +117,11 @@ def apps(db_name, db_user, db_pass):
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
+    local('python manage.py map_title')
     local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/isc_map_layer.json')
     local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/ghec_map_layer.json')
     local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/gaf_map_layer.json')
     local('python manage.py loaddata openquakeplatform/oqp-maps/fixtures/topic_categories.json')
-    local('python manage.py map_title')
 
 def clean(db_name='oqplatform', db_user='oqplatform'):
     with settings(warn_only=True):
