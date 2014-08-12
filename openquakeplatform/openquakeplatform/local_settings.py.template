@@ -24,7 +24,7 @@ DATABASES = {
         'PORT': '5432',
     },
     # vector datastore for uploads
-    'datastore' : {
+    'datastore': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
@@ -45,6 +45,13 @@ STATICFILES_DIRS = [
     os.path.join(GEONODE_ROOT, 'static')
 ]
 
+ALLOWED_DOCUMENT_TYPES = [
+    'doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg',
+    'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'tar',
+    'tgz', 'tbz', 'tar.gz', 'tar.bz2'
+]
+MAX_DOCUMENT_SIZE = 100
+
 try:
     from openquakeplatform import ged_settings
     DATABASES.update(ged_settings.DATABASES)
@@ -59,7 +66,9 @@ SECRET_KEY = '%(oq_secret_key)s'
 
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
-ALLOWED_HOSTS=['%(host)s', 'testserver', 'localhost']
+ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']
+
+PROXY_ALLOWED_HOSTS = ('%(host)s', 'localhost')
 
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
@@ -108,7 +117,7 @@ OGC_SERVER = {
         'BACKEND': 'geonode.geoserver',
     # Do not change the internal channel
         'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
+        'PUBLIC_LOCATION': SITEURL + 'geoserver/',
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'DATASTORE': 'default',   # 'datastore',
@@ -265,6 +274,7 @@ INSTALLED_APPS = (
     'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
+    'openquakeplatform.maps_viewer',
 
     # gemecd
     'openquakeplatform.weblib',
