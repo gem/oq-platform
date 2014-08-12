@@ -31,7 +31,7 @@ GEM_HAZARD_CALC_ADDR='http://localhost:8800'
 GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY="oq-platform"
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -174,6 +174,16 @@ isc_viewer_dataloader () {
         bdir="${oqpdir}/isc_viewer/dev_data"
     fi
     openquakeplatform import_isccsv "${bdir}/isc_data.csv" "${bdir}/isc_data_app.csv"
+}
+
+#
+#
+maps_viewer_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    bdir="${oqpdir}/maps_viewer/fixtures"
+    openquakeplatform map_title
+    openquakeplatform loaddata "${bdir}/*.json"
 }
 
 #
