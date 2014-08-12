@@ -62,10 +62,7 @@ var lossLayerTitle = {};
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
-
-var baseMapUrl = (
-    'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
-);
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
@@ -84,7 +81,34 @@ var startApp = function() {
         });
     });
 
-    app.createMap();
+    // switch base maps
+    $('#base-map').change(function() {
+        var baseMapSelection = document.getElementById('base-map').value;
+        map.removeLayer(baseMapUrl);
+
+        if (baseMapSelection == 1) {
+            baseMapUrl = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if(baseMapSelection == 2) {
+            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 3) {
+            baseMapUrl = new L.BingLayer("AmbgPUJJByKdD-s9oyBkyHOE7VeRPdRZUA_0t9CYCB9E5uZMI2QalDuCAxS3t-8n");
+            console.log("baseMapUrl");
+            console.log(baseMapUrl);
+            map.addLayer(baseMapUrl);
+        }
+
+        
+    });
+
+    var map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        //loadingControl: true
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
 

@@ -26,6 +26,12 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+<select id="base-map">
+  <option value="1">MapQuest Openstreet</option>
+  <option value="2">Blue Marble</option>
+  <option value="3">Bing</option>
+  <option value="4">Atlas</option>
+</select>
 <button type="button" id="thematic-map">Load Maps</button>
 <button type="button" id="hazard-curve">Load Models</button>
 <button type="button" id="hazard-dialog">Chart Dialog</button>
