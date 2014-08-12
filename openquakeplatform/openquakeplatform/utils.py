@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 
 SIGN_IN_REQUIRED = ('You must be signed into the OpenQuake Platform to use '
                     'this feature.')
@@ -20,6 +21,12 @@ class OQTemplateView(TemplateView):
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
         return context
 
+    # Access variables from local_settings
+    def get_bing_key(self, **kwargs):
+        key = super(OQTemplateView, self).get_bing_key(**kwargs)
+
+        key['secret_bing_key'] = settings.SECRET_BING_KEY
+        return key
 
 class allowed_methods(object):
     def __init__(self, methods):

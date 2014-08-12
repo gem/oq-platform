@@ -68,6 +68,8 @@ var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+var bing_key = SECRET_BING_KEY.bing_key;
+console.log(SECRET_BING_KEY);
 
 var startApp = function() {
 
@@ -93,13 +95,11 @@ var startApp = function() {
             baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 3) {
-            baseMapUrl = new L.BingLayer("AmbgPUJJByKdD-s9oyBkyHOE7VeRPdRZUA_0t9CYCB9E5uZMI2QalDuCAxS3t-8n");
+            baseMapUrl = new L.BingLayer(bing_key);
             console.log("baseMapUrl");
             console.log(baseMapUrl);
             map.addLayer(baseMapUrl);
         }
-
-        
     });
 
     var map = new L.Map('map', {
