@@ -68,8 +68,7 @@ var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
-var bing_key = SECRET_BING_KEY.bing_key;
-console.log(SECRET_BING_KEY);
+var bing_key = BING_KEY.bing_key;
 
 var startApp = function() {
 
@@ -96,8 +95,6 @@ var startApp = function() {
             map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 3) {
             baseMapUrl = new L.BingLayer(bing_key);
-            console.log("baseMapUrl");
-            console.log(baseMapUrl);
             map.addLayer(baseMapUrl);
         }
     });

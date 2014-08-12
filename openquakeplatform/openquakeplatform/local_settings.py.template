@@ -64,9 +64,9 @@ TIME_ZONE = 'UTC'
 
 SECRET_KEY = '%(oq_secret_key)s'
 
-SECRET_BING_KEY = {
+BING_KEY = {
     'bing_key': (
-        '%(oq_secret_bing_key)s'
+        '%(oq_bing_key)s'
     ),
 }
 

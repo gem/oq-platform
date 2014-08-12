@@ -72,14 +72,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
     {% endfor %}
 
-    console.log(THIRD_PARTY_URLS);
-
-    var SECRET_BING_KEY = {};
-    {% for k, v in secret_bing_key.iteritems %}
-    SECRET_BING_KEY.{{ k }} = "{{ v }}";
+    var BING_KEY = {};
+    {% for k, v in bing_key.iteritems %}
+    BING_KEY.{{ k }} = "{{ v }}";
     {% endfor %}
-
-    console.log(SECRET_BING_KEY);
 
     var CURRENT_USER = "{{request.user}}";
 

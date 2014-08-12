@@ -19,14 +19,9 @@ class OQTemplateView(TemplateView):
         context = super(OQTemplateView, self).get_context_data(**kwargs)
 
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
+        context['bing_key'] = settings.BING_KEY
+
         return context
-
-    # Access variables from local_settings
-    def get_bing_key(self, **kwargs):
-        key = super(OQTemplateView, self).get_bing_key(**kwargs)
-
-        key['secret_bing_key'] = settings.SECRET_BING_KEY
-        return key
 
 class allowed_methods(object):
     def __init__(self, methods):
