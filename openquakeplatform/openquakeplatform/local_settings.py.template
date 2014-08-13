@@ -111,13 +111,15 @@ THIRD_PARTY_URLS = {
     ),
 }
 
+GEOSERVER_URL = '/geoserver/'
+
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
     # Do not change the internal channel
         'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION': SITEURL + 'geoserver/',
+        'PUBLIC_LOCATION' : GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'DATASTORE': 'default',   # 'datastore',
@@ -298,7 +300,7 @@ MIDDLEWARE_CLASSES = (
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+        "url": GEOSERVER_URL + "wms",
         "restUrl": "/gs/rest"
      }
   },{
