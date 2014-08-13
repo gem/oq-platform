@@ -16,7 +16,7 @@
 */
 
 var layerControl;
-var utfGrid = new Object;
+var utfGrid = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -100,8 +100,8 @@ var startApp = function() {
         data = [];
 
         for (var i = 0; i < values.length; i++) {
-           data[i] = {"label":keys[i], "value":values[i]}; 
-        };
+           data[i] = {"label":keys[i], "value":values[i]};
+        }
         
         var total = d3.sum(data, function(d) {
             return d3.sum(d3.values(d));
@@ -113,7 +113,7 @@ var startApp = function() {
             .attr("width", w)
             .attr("height", h)
             .append("svg:g")
-            .attr("transform", "translate(" + r * 1.1 + "," + r * 1.1 + ")")
+            .attr("transform", "translate(" + r * 1.1 + "," + r * 1.1 + ")");
         
         var textTop = vis.append("text")
             .attr("dy", ".35em")
@@ -130,8 +130,8 @@ var startApp = function() {
             .attr("y", 10);
 
         vis.append("text")
-            .attr("text-anchor", "left")  
-            .style("font-size", "16px") 
+            .attr("text-anchor", "left")
+            .style("font-size", "16px")
             .text(name)
             .attr("y", -185)
             .attr("x", -195);
@@ -155,7 +155,7 @@ var startApp = function() {
                     .on("mouseover", function(d) {
                         d3.select(this).select("path").transition()
                             .duration(200)
-                            .attr("d", arcOver)
+                            .attr("d", arcOver);
                         
                         textTop.text(d3.select(this).datum().data.label)
                             .attr("y", -10);
@@ -171,7 +171,6 @@ var startApp = function() {
                             .attr("y", -10);
                         textBottom.text(total.toFixed(2));
                     });
-
         
         arcs.append("svg:path")
             .attr("fill", function(d, i) { return color(i); } )
@@ -196,7 +195,6 @@ var startApp = function() {
             .attr("y", 30)
             .attr("dy", ".35em")
             .text(function(d) { return d.label; });
-
     }
 
     var utfGridClickEvent = function() {
@@ -206,9 +204,6 @@ var startApp = function() {
             if (e.data) {
                 var b = e.data.bf_json;
                 var bfClean = b.replace(/[\{\}\/"]/g, "");
-
-                // console.log(bfClean);
-
                 var data = eval('({' + bfClean + '})');
                 var keys = [];
                 var values = [];
@@ -218,16 +213,11 @@ var startApp = function() {
                     keys.push(prop);
                     values.push(data[prop]);
                 }
-           
                 buildD3PieChart(keys, values, name);
-
-                //document.getElementById('dialog').innerHTML = "<b>" + e.data.name + " </b><br>"+ bfClean;
-            } else {
-                //document.getElementById('dialog').innerHTML = 'hover: nothing';
             }
         });
 
-    }
+    };
     utfGridClickEvent();
 };
 
