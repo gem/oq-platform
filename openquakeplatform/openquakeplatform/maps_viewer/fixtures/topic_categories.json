@@ -1,0 +1,42 @@
+[
+{
+   "pk": 1,
+   "model": "base.topiccategory",
+   "fields": {
+      "identifier": "data",
+      "description": "GEM data sets",
+      "gn_description": "Data",
+      "is_choice": true
+    }
+},
+{
+   "pk": 2,
+   "model": "base.topiccategory",
+   "fields": {
+      "identifier": "hazard",
+      "description": "some hazard description",
+      "gn_description": "Hazard",
+      "is_choice": true
+    }
+},
+{
+   "pk": 3,
+   "model": "base.topiccategory",
+   "fields": {
+      "identifier": "risk",
+      "description": "some risk description",
+      "gn_description": "Risk",
+      "is_choice": true
+    }
+},
+{
+   "pk": 4,
+   "model": "base.topiccategory",
+   "fields": {
+      "identifier": "svir",
+      "description": "some svir description",
+      "gn_description": "SVIR",
+      "is_choice": true
+    }
+}
+]
