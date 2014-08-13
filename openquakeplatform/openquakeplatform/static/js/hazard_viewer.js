@@ -86,15 +86,20 @@ var startApp = function() {
     $('#base-map').change(function() {
         var baseMapSelection = document.getElementById('base-map').value;
         map.removeLayer(baseMapUrl);
-
-        if (baseMapSelection == 1) {
-            baseMapUrl = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if(baseMapSelection == 2) {
-            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
+        if (baseMapSelection == 4) {
+            baseMapUrl = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 3) {
-            baseMapUrl = new L.BingLayer(bing_key);
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if(baseMapSelection == 1) {
+            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 2) {
+            baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 5) {
+            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
         }
     });
@@ -102,7 +107,6 @@ var startApp = function() {
     var map = new L.Map('map', {
         minZoom: 2,
         attributionControl: false,
-        //loadingControl: true
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
