@@ -236,7 +236,7 @@ var startApp = function() {
         };
         if (typeof options.title === 'undefined') {
             // Use a default title
-            options.title = 'Woops!'
+            options.title = 'Woops!';
         }
         $("#error-dialog").append(message);
         $("#error-dialog").dialog(options);
