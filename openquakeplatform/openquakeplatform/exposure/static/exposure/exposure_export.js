@@ -1,12 +1,35 @@
+/*
+   Copyright (c) 2014, GEM Foundation.
+
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as
+      published by the Free Software Foundation, either version 3 of the
+      License, or (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU Affero General Public License for more details.
+
+      You should have received a copy of the GNU Affero General Public License
+      along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+*/
+
 // vars for storing lon/lat of the bounding box selection
 var latlonTopLeft;
 var latlonBottomRight;
 
 var drawnItems;
 var drawControl;
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+
+try {
+    var bing_key = BING_KEY.bing_key;
+} catch(e) {
+    // continue
+}
 
 var DRAW_TOOL_COLOR = '#FFA54F';
-
 var AJAX_SPINNER = '/static/img/ajax-loader.gif';
 
 var objToUrlParams = function(obj) {
@@ -81,7 +104,39 @@ var startApp = function() {
         "UN Habitat Level 1 Building Counts" : unh1
     };
 
-    app.createMap();
+    // switch base maps
+    $('#base-map-menu').change(function() {
+        var baseMapSelection = document.getElementById('base-map-menu').value;
+        map.removeLayer(baseMapUrl);
+        if (baseMapSelection == 4) {
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 3) {
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if(baseMapSelection == 1) {
+            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 2) {
+            if (bing_key == undefined) {
+                alert("A bing maps API key has not been added to this platform, please refer to the installation instructions for details");
+            }
+            baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 5) {
+            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        }
+    });
+
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
+
+    var map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
     map.addLayer(drawnItems);
 
     map.addControl(drawControl);
