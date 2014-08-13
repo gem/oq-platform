@@ -83,8 +83,8 @@ var startApp = function() {
     });
 
     // switch base maps
-    $('#base-map').change(function() {
-        var baseMapSelection = document.getElementById('base-map').value;
+    $('#base-map-menu').change(function() {
+        var baseMapSelection = document.getElementById('base-map-menu').value;
         map.removeLayer(baseMapUrl);
         if (baseMapSelection == 4) {
             baseMapUrl = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
@@ -103,6 +103,8 @@ var startApp = function() {
             map.addLayer(baseMapUrl);
         }
     });
+
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
     var map = new L.Map('map', {
         minZoom: 2,
