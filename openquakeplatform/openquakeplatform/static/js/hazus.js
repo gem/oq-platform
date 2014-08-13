@@ -16,7 +16,7 @@
 */
 
 var layerControl;
-var utfGrid = [];
+var utfGrid = {};
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -37,7 +37,7 @@ var startApp = function() {
         var baseMapSelection = document.getElementById('base-map-menu').value;
         map.removeLayer(baseMapUrl);
         if (baseMapSelection == 4) {
-            baseMapUrl = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 3) {
             baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');

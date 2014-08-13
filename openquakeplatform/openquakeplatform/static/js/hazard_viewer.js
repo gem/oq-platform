@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -63,11 +63,10 @@ var lossLayerTitle = {};
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
-
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+
 try {
     var bing_key = BING_KEY.bing_key;
 } catch(e) {
@@ -91,7 +90,7 @@ var startApp = function() {
         var baseMapSelection = document.getElementById('base-map-menu').value;
         map.removeLayer(baseMapUrl);
         if (baseMapSelection == 4) {
-            baseMapUrl = new L.TileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 3) {
             baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
