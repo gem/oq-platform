@@ -114,16 +114,13 @@ var startApp = function() {
 
     var map = new L.Map('map', {
         minZoom: 2,
-        attributionControl: false,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+        //maxBounds: new L.LatLngBounds(new L.LatLng(-120, -250), new L.LatLng(120, 250)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
 
     layerControl = L.control.layers(app.baseLayers);
-    map.panTo(new L.LatLng(10, 10));
-    map.setZoom(2);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
 
@@ -222,9 +219,9 @@ var startApp = function() {
     var selCat = document.getElementById('layer-category');
     var selLayer = document.getElementById('layer-list');
 
-    var selCurveCat = document.getElementById('curve-category');
-    var selUhsCat = document.getElementById('curve-category');
-    var selLossCat = document.getElementById('curve-category');
+    var selCurveCat = document.getElementById('hazard-curve-category');
+    var selUhsCat = document.getElementById('hazard-curve-category');
+    var selLossCat = document.getElementById('risk-curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
     var selLoss = document.getElementById('loss-list');
@@ -242,15 +239,16 @@ var startApp = function() {
     // Create a header for the menu drop down
     var catUhsMenuHeader = document.createElement('option');
     selUhsCat.appendChild(catUhsMenuHeader);
-    $('#curve-category option:empty').remove();
+    $('#hazard-curve-category option:empty').remove();
 
     // Create a header for the menu drop down
     var catLossMenuHeader = document.createElement('option');
+    catLossMenuHeader.innerHTML = 'Category:';
     selLossCat.appendChild(catLossMenuHeader);
-    $('#curve-category option:empty').remove();
+    $('#risk-curve-category option:empty').remove();
 
     $.getJSON(TILESTREAM_API_URL, function(json) {
-            $('#hazard-curve').attr('disabled', true);
+            $('#hazard-data').attr('disabled', true);
 
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -427,7 +425,7 @@ var startApp = function() {
             var layerlossOpt = document.createElement('option');
         }
     }).done(function() {
-        $('#hazard-curve').attr('disabled', false);
+        $('#hazard-data').attr('disabled', false);
         });
 
     $('#addTileCurve').click(function() {
@@ -478,7 +476,7 @@ var startApp = function() {
             }
 
             // Provide the user with the curves that are available in the dialog
-            $('#hazardCurveDialog').append('<div id="curve-check-box"<p><b>Select curves to be ploted in the chart:</b></p></div>');
+            $('#hazardDataDialog').append('<div id="curve-check-box"<p><b>Select curves to be ploted in the chart:</b></p></div>');
             for (var j = 0; j < curvesList.length; j++) {
                 var checkbox = '<input type="checkbox" id="'+curvesList[j]+'" class="curve-list" value=" ' +
                     curvesList[j] +
@@ -489,7 +487,7 @@ var startApp = function() {
                 $('#curve-check-box').append(checkbox);
             }
 
-            hazardCurveDialog.dialog('option', 'height', (500 + (curvesList.length * 10)));
+            hazardDataDialog.dialog('option', 'height', (500 + (curvesList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -535,7 +533,7 @@ var startApp = function() {
             }
 
             // Provide the user with the uhs that are available in the dialog
-            $('#hazardCurveDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
+            $('#hazardDataDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
             for (var l = 0; l < uhsList.length; l++) {
                 var checkbox = '<input type="checkbox" id="'+uhsList[l]+'" class="curve-list" value=" ' +
                     uhsList[l] +
@@ -545,7 +543,7 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             }
-            hazardCurveDialog.dialog('option', 'height', (500 + (uhsList.length * 10)));
+            hazardDataDialog.dialog('option', 'height', (500 + (uhsList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -626,12 +624,12 @@ var startApp = function() {
     });
 
     // Create dynamic categorized curve layer dialog
-    $('#curve-category').change(function() {
+    $('#hazard-curve-category').change(function() {
         // Remove the layer list element
         document.getElementById('curve-list').options.length = 0;
 
        // Create the layer list based on the category selected
-        var e = document.getElementById('curve-category');
+        var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = curveLayersByCat[strUser];
         for (var i in layersArray) {
@@ -651,12 +649,12 @@ var startApp = function() {
     });
 
     // Create dynamic categorized uhs layer dialog
-    $('#curve-category').change(function() {
+    $('#hazard-curve-category').change(function() {
         // Remove the layer list element
         document.getElementById('uhs-list').options.length = 0;
 
         // Create the layer list based on the category selected
-        var e = document.getElementById('curve-category');
+        var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = uhsLayersByCat[strUser];
         for (var i in layersArray) {
@@ -677,12 +675,12 @@ var startApp = function() {
     });
 
     // Create dynamic categorized loss layer dialog
-    $('#curve-category').change(function() {
+    $('#risk-form-list-curves').change(function() {
         // Remove the layer list element
         document.getElementById('loss-list').options.length = 0;
 
        // Create the layer list based on the category selected
-        var e = document.getElementById('curve-category');
+        var e = document.getElementById('risk-curve-category');
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = lossLayersByCat[strUser];
         for (var i in layersArray) {
@@ -1071,32 +1069,30 @@ var startApp = function() {
         });
     });
 
-    // Map options selection dialog
-    $('#thematicMap').dialog({
-        autoOpen: false,
-        height: 300,
-        width: 350,
-        modal: true
-    });
-
-    // Map options selection dialog
-    var hazardCurveDialog = $('#hazardCurveDialog').dialog({
+    var riskDataDialog = $('#riskDataDialog').dialog({
         autoOpen: false,
         height: 420,
         width: 400,
         modal: true
     });
 
-    $('#thematic-map').button().click(function() {
-        $('#thematicMap').dialog('open');
+    $('#riskDataDialog').css({ 'overflow' : 'auto' });
+
+    $('#risk-data').button().click(function() {
+        $('#riskDataDialog').dialog('open');
     });
 
-    $('#hazard-curve').button().click(function() {
-        $('#hazardCurveDialog').dialog('open');
+    var hazardDataDialog = $('#hazardDataDialog').dialog({
+        autoOpen: false,
+        height: 420,
+        width: 400,
+        modal: true
     });
 
-    $('#hazard-dialog').button().click(function() {
-        $('#chartDialog').dialog('open');
+    $('#hazardDataDialog').css({ 'overflow' : 'auto' });
+
+    $('#hazard-data').button().click(function() {
+        $('#hazardDataDialog').dialog('open');
     });
 
     $(function() {
@@ -1110,6 +1106,7 @@ var startApp = function() {
     var hazardCurveUtfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
+            $('#chartDialog').open();
             var prob;
             var iml;
             var probArray = [];
@@ -1155,8 +1152,6 @@ var startApp = function() {
 
                 invest_time = e.data.invest_tim;
                 hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt);
-            } else {
-                //document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
     }; // End hazardCurveUtfGridClickEvent
@@ -1181,6 +1176,7 @@ var startApp = function() {
                 selectedCurves[i] = selectedCurves[i].trim();
 
             $('#chartDialog').empty();
+            $('#chartDialog').open();
 
             if (e.data) {
                 var chartData = e.data;
@@ -1195,6 +1191,7 @@ var startApp = function() {
     var lossCurveUtfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
+            $('#chartDialog').open();
             var asset;
             var lat;
             var lon;

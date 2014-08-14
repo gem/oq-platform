@@ -33,9 +33,8 @@ Explore - {{block.super}}
   <option value="4" selected>MapQuest Openstreet</option>
   <option value="5">Openstreetmap</option>
 </select>
-<button type="button" id="thematic-map">Load Maps</button>
-<button type="button" id="hazard-curve">Load Models</button>
-<button type="button" id="hazard-dialog">Chart Dialog</button>
+<button type="button" id="hazard-data">Load Hazard Data</button>
+<button type="button" id="risk-data">Load Hazard Data</button>
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
@@ -58,48 +57,42 @@ Explore - {{block.super}}
     {{block.super}}
     <!-- Category tags-->
 
-  <div id="thematicMap" title="Map Options">
-    <form id="tile-form-list">
-      <br>Category:<br>
-      <select id="layer-category">
-      </select>
+  <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">
+
+    <form id="tile-form-list-curves">
+      <br>Map Category:<br>
+      <select id="layer-category"></select>
       <br>Map Layer:<br>
-      <select id="layer-list">
-      </select><br>
+      <select id="layer-list"></select><br>
       <input type="button" id="addTileLayer" value="Add Layer">
       <input type="button" id="removeTileLayer" value="Remove Layer">
+      <br/><br/>
+
+      <br>Hazard Models:<br>
+      <select id="hazard-curve-category"></select>
+      <br>Hazard Curves:<br>
+      <select id="curve-list"></select><br>
+      <input type="button" id="addTileCurve" value="Add Layer">
+      <input type="button" id="removeTileCurve" value="Remove Layer">
+      <br/><br/>
+
+      <br>Uniform Hazard Spectra:<br>
+      <select id="uhs-list"></select><br>
+      <input type="button" id="addTileUhs" value="Add Layer">
+      <input type="button" id="removeTileUhs" value="Remove Layer">
     </form>
   </div>
 
-  <div id="chartDialog" title="Models">
-  </div>
-
-  <div id="hazardCurveDialog" title="Curve Options" style="overflow: hidden;">
-    <form id="tile-form-list-curves">
-      <br>Hazard Models:<br>
-      <select id="curve-category">
-      </select>
-      <br>Hazard Curves:<br>
-      <select id="curve-list">
-      </select><br>
-      <input type="button" id="addTileCurve" value="Add Layer">
-      <input type="button" id="removeTileCurve" value="Remove Layer">
-      <br/>
-      <br>Uniform Hazard Spectra:<br>
-      <select id="uhs-list">
-      </select><br>
-      <input type="button" id="addTileUhs" value="Add Layer">
-      <input type="button" id="removeTileUhs" value="Remove Layer">
-      <br/>
+  <div id="riskDataDialog" title="Risk Data" style="overflow: hidden;">
+    <form id="risk-form-list-curves">
+      <br>Risk Models:<br>
+      <select id="risk-curve-category"></select>
       <br>Loss Curves:<br>
-      <select id="loss-list">
-      </select><br>
+      <select id="loss-list"></select><br>
       <input type="button" id="addTileLoss" value="Add Layer">
       <input type="button" id="removeTileLoss" value="Remove Layer">
     </form>
-    
   </div>
-
 
     <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
 {% endblock extra_script %}
