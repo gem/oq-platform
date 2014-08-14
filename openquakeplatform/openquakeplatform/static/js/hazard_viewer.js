@@ -76,7 +76,7 @@ try {
 var startApp = function() {
 
     $(function() {
-        $( '#chartDialog' ).dialog({
+        $('#chartDialog').dialog({
             autoOpen: false,
             height: 520,
             width: 520,
@@ -1106,7 +1106,7 @@ var startApp = function() {
     var hazardCurveUtfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
-            $('#chartDialog').open();
+            $('#chartDialog').dialog('open');
             var prob;
             var iml;
             var probArray = [];
@@ -1176,7 +1176,7 @@ var startApp = function() {
                 selectedCurves[i] = selectedCurves[i].trim();
 
             $('#chartDialog').empty();
-            $('#chartDialog').open();
+            $('#chartDialog').dialog('open');
 
             if (e.data) {
                 var chartData = e.data;
@@ -1191,7 +1191,7 @@ var startApp = function() {
     var lossCurveUtfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
-            $('#chartDialog').open();
+            $('#chartDialog').dialog('open');
             var asset;
             var lat;
             var lon;
