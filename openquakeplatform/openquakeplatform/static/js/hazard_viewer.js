@@ -216,7 +216,6 @@ var startApp = function() {
     // Get layer names from tilestream
     var tileStreamLayer = '';
     var category = '';
-    var selCat = document.getElementById('layer-category');
     var selLayer = document.getElementById('layer-list');
 
     var selCurveCat = document.getElementById('hazard-curve-category');
@@ -229,7 +228,6 @@ var startApp = function() {
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
     catMenuHeader.innerHTML = 'Category:';
-    selCat.appendChild(catMenuHeader);
 
     // Create a header for the menu drop down
     var catCurveMenuHeader = document.createElement('option');
@@ -387,7 +385,6 @@ var startApp = function() {
             var opt = document.createElement('option');
             opt.innerHTML = mapCategoryTitle;
             opt.value = mapCategoryTitle;
-            selCat.appendChild(opt);
             // Append layer list to dowpdown
             var layerOpt = document.createElement('option');
         }
@@ -606,12 +603,12 @@ var startApp = function() {
     }
 
     // Create dynamic categorized map layer dialog
-    $('#layer-category').change(function() {
+    $('#hazard-curve-category').change(function() {
         // Remove the layer list element
         document.getElementById('layer-list').options.length = 0;
 
        // Create the layer list based on the category selected
-        var e = document.getElementById('layer-category');
+        var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = mapLayersByCat[strUser];
         for (var i in layersArray) {
@@ -1004,7 +1001,7 @@ var startApp = function() {
     // Remove uhs layers from tilestream
     $(document).ready(function() {
         $('#removeTileUhs').click(function() {
-            $('#addTileCurve').attr(':disabled', false);
+            $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
             $('#addTileLoss').attr('disabled', false);
             $('#removeTileLoss').attr('disabled', false);
