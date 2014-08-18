@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 set -e
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
@@ -22,7 +22,11 @@ export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
 openquakeplatform/openquakeplatform/static/wax"
 
-GEM_IS_INSTALL=n
+if [ -f /etc/openquake/platform/local_settings.py ]; then
+    GEM_IS_INSTALL=n
+else
+    GEM_IS_INSTALL=y
+fi
 
 GEM_DB_NAME='oqplatform'
 GEM_DB_USER='oqplatform'
@@ -268,7 +272,17 @@ function_exists () {
 #
 #
 locset_create () {
-    local oqpdir="$1" gem_host_name="$2" gem_db_name="$3" gem_db_user="$4" gem_db_pass="$5" gem_hazard_calc_addr="$6" gem_risk_calc_addr="$7" gem_oq_engserv_key="$8"
+    local oqpdir gem_host_name gem_secr_key gem_db_name gem_db_user gem_db_pass
+    local gem_hazard_calc_addr gem_risk_calc_addr gem_oq_engserv_key
+    oqpdir="$1" ; shift
+    gem_host_name="$1" ; shift
+    gem_secr_key="$1" ; shift
+    gem_db_name="$1" ; shift
+    gem_db_user="$1" ; shift
+    gem_db_pass="$1" ; shift
+    gem_hazard_calc_addr="$1" ; shift
+    gem_risk_calc_addr="$1" ; shift
+    gem_oq_engserv_key="$1"
 
     if [ -f "$GEM_LOCAL_SETTINGS" ]; then
         return 1
@@ -284,7 +298,7 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
-                                   oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits + '%$&()=+-|#@?') for _ in range(50)),
+                                   oq_secret_key='${gem_secr_key}',
                                    mediaroot='/var/www/openquake/platform/uploaded',
                                    staticroot='/var/www/openquake/platform/static/'))"
 }
@@ -396,7 +410,6 @@ oq_platform_install () {
     if [ "${globargs['norm_user']}" == "" -o "${globargs['norm_dir']}" == ""  -o "${globargs['host']}" == "" ]; then
         usage "$0" 1
     fi
-
     norm_user="${globargs['norm_user']}"
     norm_dir="${globargs['norm_dir']}"
     gem_host_name="${globargs['host']}"
@@ -416,8 +429,10 @@ oq_platform_install () {
     # switch to false to extract previous password value
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         gem_db_pass="$(passwd_create)"
+        gem_secr_key="$(python -c "import string, random ; print ''.join(random.choice(string.ascii_letters + string.digits + '%$&()=+-|#@?') for _ in range(50))")"
     else
         gem_db_pass="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print DATABASES['default']['PASSWORD']" )" ;
+        gem_secr_key="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print SECRET_KEY" )" ;
     fi
 
     # reset and install disabled
@@ -469,6 +484,8 @@ oq_platform_install () {
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"
 
     if [ "$GEM_IS_INSTALL" != "y" ]; then
+        rm -rf output.bak
+        rm -rf geoserver.dump.bak
         if [ -e output ]; then
             mv output output.bak
         fi
@@ -483,7 +500,7 @@ oq_platform_install () {
         mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.orig
     fi
 
-    locset_create "$oqpdir" "$gem_host_name" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"
+    locset_create "$oqpdir" "$gem_host_name" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"
 
     if [ "$GEM_IS_INSTALL" != "y" ]; then
 	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
