@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -x
+set -x
 set -e
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
@@ -22,7 +22,7 @@ export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
 openquakeplatform/openquakeplatform/static/wax"
 
-GEM_IS_REINSTALL=n
+GEM_IS_INSTALL=n
 
 GEM_DB_NAME='oqplatform'
 GEM_DB_USER='oqplatform'
@@ -193,17 +193,31 @@ econd_dataloader () {
 
     cat oq-platform/openquakeplatform/openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e "$db_name"
 
-    if [ -d "private_data/econd/pictures" ]; then
-        if [ -d "/var/www/openquake/platform/uploaded/" ]; then
-            rm -rf "/var/www/openquake/platform/uploaded/"
+    if [ "$GEM_IS_INSTALL" != "y" ]; then
+        if ls /var/www/openquake/platform/uploaded/*.jpg >/dev/null 2>&1 ; then
+            echo "WARNING: all images of ecd application will be overwritten by images from private_data/econd/pictures or created syntetically."
+            while [ true ]; do
+                read -p "Do you want to preserve them (y/n): " qvest
+                qvest="$(echo "$qvest" | tr 'A-Z' 'a-z')"
+                if [ "$qvest" == "y" -o "$qvest" == "n"  ]; then
+                    break
+                fi
+            done
         fi
-        cp -r private_data/econd/pictures /var/www/openquake/platform/uploaded
-    else
-        mkdir -p /var/www/openquake/platform/uploaded/
-        oq-platform/openquakeplatform/openquakeplatform/econd/bin/photo_synt.sh oq-platform/openquakeplatform/openquakeplatform/econd/data/photo_synt_list.csv oq-platform/openquakeplatform/openquakeplatform/econd/data/placeholder.png /var/www/openquake/platform/uploaded
     fi
-    if [ -d /var/www/openquake/platform/uploaded/ ]; then
-        chown -R www-data.www-data /var/www/openquake/platform/uploaded/
+    if [ "$qvest" != "y" ]; then
+        if [ -d "private_data/econd/pictures" ]; then
+            if [ -d "/var/www/openquake/platform/uploaded/" ]; then
+                rm -rf "/var/www/openquake/platform/uploaded/"
+            fi
+            cp -r private_data/econd/pictures /var/www/openquake/platform/uploaded
+        else
+            mkdir -p /var/www/openquake/platform/uploaded/
+            oq-platform/openquakeplatform/openquakeplatform/econd/bin/photo_synt.sh oq-platform/openquakeplatform/openquakeplatform/econd/data/photo_synt_list.csv oq-platform/openquakeplatform/openquakeplatform/econd/data/placeholder.png /var/www/openquake/platform/uploaded
+        fi
+        if [ -d /var/www/openquake/platform/uploaded/ ]; then
+            chown -R www-data.www-data /var/www/openquake/platform/uploaded/
+        fi
     fi
 }
 
@@ -212,12 +226,16 @@ econd_dataloader () {
 vulnerability_dataloader () {
     local oqpdir="$1" db_name="$2" bdir
 
-    if [ -f "private_data/vuln_geo_applicability_data.csv" ]; then
-        bdir="private_data"
-    else
-        bdir="${oqpdir}/vulnerability/dev_data"
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        # if it is an update we assume an already populated set of curves.
+        # Changing the country table produce with high probability a corruption of the db.
+        if [ -f "private_data/vuln_geo_applicability_data.csv" ]; then
+            bdir="private_data"
+        else
+            bdir="${oqpdir}/vulnerability/dev_data"
+        fi
+        openquakeplatform import_vuln_geo_applicability_csv "${bdir}/vuln_geo_applicability_data.csv"
     fi
-    openquakeplatform import_vuln_geo_applicability_csv "${bdir}/vuln_geo_applicability_data.csv"
     openquakeplatform vuln_groups_create
 }
 
@@ -378,6 +396,7 @@ oq_platform_install () {
     if [ "${globargs['norm_user']}" == "" -o "${globargs['norm_dir']}" == ""  -o "${globargs['host']}" == "" ]; then
         usage "$0" 1
     fi
+
     norm_user="${globargs['norm_user']}"
     norm_dir="${globargs['norm_dir']}"
     gem_host_name="${globargs['host']}"
@@ -395,14 +414,14 @@ oq_platform_install () {
     norm_home="$(grep "$norm_user" /etc/passwd | cut -d ":" -f 6)"
 
     # switch to false to extract previous password value
-    if [ 1 -eq 1 ]; then
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
         gem_db_pass="$(passwd_create)"
     else
         gem_db_pass="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print DATABASES['default']['PASSWORD']" )" ;
     fi
 
     # reset and install disabled
-    if [ "$GEM_IS_REINSTALL" = "y" ]; then
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
         service tomcat7 stop                       || true
         sleep 5                                    || true
         pip uninstall -y openquakeplatform         || true
@@ -449,8 +468,30 @@ oq_platform_install () {
     cd -
     oqpdir="$(python -c "import openquakeplatform;import os;print os.path.dirname(openquakeplatform.__file__)")"
 
+    if [ "$GEM_IS_INSTALL" != "y" ]; then
+        if [ -e output ]; then
+            mv output output.bak
+        fi
+        if [ -e geoserver.dump ]; then
+            mv geoserver.dump geoserver.dump.bak
+        fi
+        ${oqpdir}/bin/oq-gs-builder.sh dump
+        mv output geoserver.dump
+    fi
     mkdir -p /etc/openquake/platform
+    if [ "$GEM_IS_INSTALL" != "y" ]; then
+        mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.orig
+    fi
+
     locset_create "$oqpdir" "$gem_host_name" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"
+
+    if [ "$GEM_IS_INSTALL" != "y" ]; then
+	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
+	mv /etc/openquake/platform/local_settings.py.orig /etc/openquake/platform/local_settings.py
+        diff -u /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new || true
+        read -p "Ctrl+C to interrupt or open a new terminal and edit /etc/openquake/platform/local_settings.py.new, then press <enter> to continue: " qvest
+        mv /etc/openquake/platform/local_settings.py.new /etc/openquake/platform/local_settings.py
+    fi
 
     cp "${oqpdir}/apache2/oqplatform" /etc/apache2/sites-available/
     ln -sf /etc/openquake/platform/local_settings.py "${oqpdir}"
@@ -462,9 +503,11 @@ oq_platform_install () {
     chmod a+x "/usr/sbin/openquakeplatform"
     mkdir -p /etc/openquake/platform/media
 
-    db_user_create "$gem_db_user" "$gem_db_pass"
-    db_base_create "$gem_db_name" "$gem_db_user"
-    db_gis_create  "$gem_db_name"
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        db_user_create "$gem_db_user" "$gem_db_pass"
+        db_base_create "$gem_db_name" "$gem_db_user"
+        db_gis_create  "$gem_db_name"
+    fi
 
     #
     #  database population (fixtures)
@@ -474,10 +517,21 @@ oq_platform_install () {
         fi
     done
 
-    openquakeplatform syncdb --all --noinput
+    if [ "$GEM_IS_INSTALL" != "y" ]; then
+        echo "WARNING: this operation could be destructive for the current version of oqplatform database schema, do proper backup before proceeding."
+        read -p "Open a new terminal, migrate the application database schema manually and then press <enter> to continue: " qvest
+    fi
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        openquakeplatform syncdb --all --noinput
+    else
+        openquakeplatform syncdb --noinput
+    fi
+
     openquakeplatform collectstatic --noinput
 
-    openquakeplatform createsuperuser --username=the_user --email=the_mail@openquake.org --noinput
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        openquakeplatform createsuperuser --username=the_user --email=the_mail@openquake.org --noinput
+    fi
 
     service apache2 restart
 
@@ -491,6 +545,10 @@ oq_platform_install () {
 
     #
     #  geoserver structure population
+    rm -rf "${oqpdir}/build-gs-tree"
+    if [ "$GEM_IS_INSTALL" != "y" ]; then
+        cp -r geoserver.dump "${oqpdir}/build-gs-tree"
+    fi
     ${oqpdir}/bin/oq-gs-builder.sh populate "$oqpdir" "$oqpdir" "${oqpdir}/bin" "$GEM_GS_WS_NAME" "$GEM_GS_DS_NAME" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${GEM_GS_DATADIR}" "${GEM_APP_LIST[@]}"
 
     openquakeplatform updatelayers
@@ -538,7 +596,7 @@ else
     echo "You are running the openquake platform installation script."
     echo
     echo "During this operation some git repositories will be downloaded into the current"
-    echo "directory $PWD."
+    echo "directory $PWD ."
     echo
     read -p "press ENTER to continue or CTRL+C to abort:" a
     echo
