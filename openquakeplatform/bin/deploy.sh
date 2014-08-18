@@ -505,8 +505,16 @@ oq_platform_install () {
     if [ "$GEM_IS_INSTALL" != "y" ]; then
 	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
 	mv /etc/openquake/platform/local_settings.py.orig /etc/openquake/platform/local_settings.py
-        diff -u /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new || true
-        read -p "Ctrl+C to interrupt or open a new terminal and edit /etc/openquake/platform/local_settings.py.new, then press <enter> to continue: " qvest
+
+        while [ true ]; do
+            diff -u /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new || true
+            read -p "Ctrl+C to interrupt or open a new terminal and edit /etc/openquake/platform/local_settings.py.new, then type 'y' to continue or press <enter> to update the diff output: " qvest
+            qvest="$(echo "$qvest" | tr 'A-Z' 'a-z')"
+            if [ "$qvest" == "y" ]; then
+                break
+            fi
+        done
+
         mv /etc/openquake/platform/local_settings.py.new /etc/openquake/platform/local_settings.py
     fi
 
