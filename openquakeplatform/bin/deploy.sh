@@ -621,7 +621,7 @@ else
     echo "You are running the openquake platform installation script."
     echo
     echo "During this operation some git repositories will be downloaded into the current"
-    echo "directory $PWD ."
+    echo "directory $PWD"
     echo
     read -p "press ENTER to continue or CTRL+C to abort:" a
     echo
