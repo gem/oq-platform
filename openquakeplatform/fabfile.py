@@ -1,5 +1,8 @@
 import os
 import sys
+import string
+import random
+
 from urlparse import urljoin as _urljoin
 
 from openquakeplatform.geoserver_api import (
@@ -38,24 +41,31 @@ PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage' ]
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
-def bootstrap(dbname='oqplatform', dbuser='oqplatform',
-              dbpassword=DB_PASSWORD, siteurl='http://oq-platform/',
+def bootstrap(db_name='oqplatform', db_user='oqplatform',
+              db_pass=DB_PASSWORD, host='oq-platform',
               hazard_calc_addr='http://oq-platform:8800',
               risk_calc_addr='http://oq-platform:8800',
-              oq_engserv_key='oq-platform'):
+              oq_engserv_key='oq-platform',
+              mediaroot='/tmp', staticroot='/home'):
 
     """
-    :param str dbpassword:
+    :param str db_pass:
         Should match the one in settings.py.
     """
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
-    baseenv(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword,
-            siteurl=siteurl, hazard_calc_addr=hazard_calc_addr,
-            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key)
+    oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits +
+    '%$&()=+-|#@?') for _ in range(50))
+
+    baseenv(db_name=db_name, db_user=db_user, db_pass=db_pass,
+            host=host, hazard_calc_addr=hazard_calc_addr,
+            risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
+            oq_secret_key=oq_secret_key, mediaroot=mediaroot,
+            staticroot=staticroot)
+
     # fix it in a proper way
-    apps()
+    apps(db_name, db_user, db_pass)
 
     # Install the libs needs to `test` and `test_with_xunit`:
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
@@ -66,78 +76,55 @@ def bootstrap(dbname='oqplatform', dbuser='oqplatform',
     # We need to deal with this in production. For a dev install,
     # leave the user with superuser privs.
     #if user_created:
-    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % dbuser)
+    #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
-def baseenv(siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
-            dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
-    _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key)
+def baseenv(
+            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key,
+            db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
+            mediaroot='/tmp', staticroot='/home'):
+    _write_local_settings(db_name,  db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
-    user_created = _maybe_createuser(dbuser, dbpassword)
+    user_created = _maybe_createuser(db_user, db_pass)
     # Add database
-    _maybe_createdb(dbname)
+    _maybe_createdb(db_name)
     # Add postgis
-    _maybe_install_postgis(dbname)
+    _maybe_install_postgis(db_name)
     # Install geonode/geoserver and syncdb for oq-platform apps
     setup()
 
     # We need to start geoserver
     init_start()
 
-    geoserver_init(dbname=dbname, dbuser=dbuser, dbpassword=dbpassword)
+APPS_LIST=['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
+           'maps_viewer', 'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
+           'icebox']
 
-
-def geoserver_init(dbname='oqplatform', dbuser='oqplatform', dbpassword=DB_PASSWORD):
-    # GeoServer: create workspace
-    _geoserver_api(
-        'workspaces.xml',
-        '<workspace><name>%s</name></workspace>' % WS_NAME,
-        message='Creating workspace...'
-    )
-    # GeoServer: create store
-    store_content = """\
-<dataStore>
-<name>%(dsname)s</name>
-<connectionParameters>
-     <host>localhost</host>
-     <port>5432</port>
-     <database>%(dbname)s</database>
-     <schema>public</schema>
-     <user>%(dbuser)s</user>
-     <passwd>%(dbpassword)s</passwd>
-     <dbtype>postgis</dbtype>
-</connectionParameters>
-</dataStore>"""
-    store_content %= dict(dsname=DS_NAME, dbname=dbname, dbuser=dbuser,
-                          dbpassword=dbpassword)
-
-    _geoserver_api(
-        'workspaces/%s/datastores.xml' % WS_NAME,
-        store_content, message='Creating workspace...'
-    )
-
-
-def apps():
+def apps(db_name, db_user, db_pass):
+    globs = globals()
+    apps_list=""
     # Add the apps
-    _add_isc_viewer()
-    _add_faulted_earth()
-    _add_ghec_viewer()
-    _add_gaf_viewer()
-    _add_econd()
-    _add_weblib()
-    _add_gemecdwebsite()
-    add_icebox()
+    for app in APPS_LIST:
+        apps_list += " '"+app+"'"
+        try:
+            add_fn = globs["_add_" + app]
+        except KeyError:
+            pass
+        else:
+            add_fn()
 
+    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
-    local('openquakeplatform/bin/oq-gs-builder.sh restore gs_data')
+    local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
+    local('python manage.py map_title')
+    local('python manage.py loaddata openquakeplatform/maps_viewer/fixtures/*.json')
 
-
-def clean(dbname='oqplatform', dbuser='oqplatform'):
+def clean(db_name='oqplatform', db_user='oqplatform'):
     with settings(warn_only=True):
-        _pgsudo('dropdb %s' % dbname)
-        _pgsudo('dropuser %s' % dbuser)
+        _pgsudo('dropdb %s' % db_name)
+        _pgsudo('dropuser %s' % db_user)
         local('rm -r geoserver')
 
 
@@ -171,16 +158,19 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(dbname, dbuser, dbpassword, siteurl, hazard_calc_addr, risk_calc_addr, oq_engserv_key):
+def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
-        fh.write(local_settings % dict(dbname=dbname,
-                                       dbuser=dbuser,
-                                       dbpassword=dbpassword,
-                                       siteurl=siteurl,
+        fh.write(local_settings % dict(db_name=db_name,
+                                       db_user=db_user,
+                                       db_pass=db_pass,
+                                       host=host,
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
-                                       oq_engserv_key=oq_engserv_key))
+                                       oq_engserv_key=oq_engserv_key,
+                                       oq_secret_key=oq_secret_key,
+                                       mediaroot=mediaroot,
+                                       staticroot=staticroot))
 
 
 def _pgsudo(command, **kwargs):
@@ -226,48 +216,48 @@ def _do_curl(cmd):
         print(resp)
 
 
-def _maybe_createuser(dbuser, dbpassword):
+def _maybe_createuser(db_user, db_pass):
     """
-    Returns `True` if the specified database user ``dbuser`` is create, `False`
+    Returns `True` if the specified database user ``db_user`` is create, `False`
     if it already exists.
 
     Note: The user will be created with superuser privileges, needed for
     syncdb, etc.
     """
-    dbuser_exists = _pgsudo(
-        "psql -c '\du' | awk '{print $1}' | grep %s | wc -l" % dbuser
+    db_user_exists = _pgsudo(
+        "psql -c '\du' | awk '{print $1}' | grep %s | wc -l" % db_user
     )
-    dbuser_exists = int(dbuser_exists)
-    if dbuser_exists:
-        print('Database user "%s" already exists!' % dbuser)
+    db_user_exists = int(db_user_exists)
+    if db_user_exists:
+        print('Database user "%s" already exists!' % db_user)
         return False
     else:
-        print('Creating user "%(dbuser)s" with password "%(dbpassword)s.'
-              % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
-        _pgquery("CREATE ROLE %(dbuser)s ENCRYPTED PASSWORD '%(dbpassword)s' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN" % dict(dbuser=dbuser, dbpassword=DB_PASSWORD))
+        print('Creating user "%(db_user)s" with password "%(db_pass)s.'
+              % dict(db_user=db_user, db_pass=DB_PASSWORD))
+        _pgquery("CREATE ROLE %(db_user)s ENCRYPTED PASSWORD '%(db_pass)s' SUPERUSER CREATEDB NOCREATEROLE INHERIT LOGIN" % dict(db_user=db_user, db_pass=DB_PASSWORD))
         return True
 
 
-def _maybe_createdb(dbname):
+def _maybe_createdb(db_name):
     """
-    Returns `True` if the specified database ``dbname`` is created, `False` if
+    Returns `True` if the specified database ``db_name`` is created, `False` if
     it already exists.
     """
     dbs = _pgquery('SELECT datname FROM pg_database')
     dbs = dbs.split('\n')
     dbs = [x.strip() for x in dbs]
-    if dbname in dbs:
-        print('Database "%s" already exists!' % dbname)
+    if db_name in dbs:
+        print('Database "%s" already exists!' % db_name)
         return False
     else:
-        _pgsudo('createdb %s' % dbname)
+        _pgsudo('createdb %s' % db_name)
         return True
 
 
-def _maybe_install_postgis(dbname):
+def _maybe_install_postgis(db_name):
     """
     Return `True` if this function decides to install PostGIS, `False` if they
-    are already installed for the given ``dbname``.
+    are already installed for the given ``db_name``.
     """
     # Check if postgis is installed:
     with settings(warn_only=True):
@@ -276,46 +266,44 @@ def _maybe_install_postgis(dbname):
     if 'error' in postgis_version.lower():
         # No PostGIS installed
         print('PostGIS extensions are not installed in database "%s"!'
-              ' Installing...' % dbname)
+              ' Installing...' % db_name)
         if not all([os.path.exists(f) for f in POSTGIS_FILES]):
             # If postgis extensions are not found, raise and error
             raise RuntimeError('PostGIS extensions not found in "%s"!'
                                % POSTGIS_DIR)
         for postgis_file in POSTGIS_FILES:
             _pgsudo(
-                'psql -f %(file)s -d %(dbname)s -q' %
-                dict(file=postgis_file, dbname=dbname)
+                'psql -f %(file)s -d %(db_name)s -q' %
+                dict(file=postgis_file, db_name=db_name)
             )
         return True
     else:
         print('PostGIS extensions are already installed in database "%s"!'
-              % dbname)
+              % db_name)
         return False
 
 
 def _add_isc_viewer():
-    local('python manage.py import_isccsv ../oq-ui-api/data/isc_data.csv'
-          ' ../oq-ui-api/data/isc_data_app.csv')
+    local('python manage.py import_isccsv ./openquakeplatform/isc_viewer/dev_data/isc_data.csv'
+          ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
 
 
-def add_icebox():
-    local('mkdir -p ./geoserver/data/templates/')
-    local('cp ./gs_data/icebox/content.ftl ./geoserver/data/templates/')
-
+def _add_icebox():
+    pass
 
 def _add_faulted_earth():
     pass
 
 
 def _add_ghec_viewer():
-    local('python manage.py import_gheccsv ../oq-ui-api/data/ghec_data.csv')
+    local('python manage.py import_gheccsv ./openquakeplatform/ghec_viewer/dev_data/ghec_data.csv')
 
 
 def _add_gaf_viewer():
     local('python manage.py import_gaf_fs_csv '
-          '../oq-ui-api/data/gaf_data_fs.csv')
+          './openquakeplatform/gaf_viewer/dev_data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '
-          '../oq-ui-api/data/gaf_data_ft.csv')
+          './openquakeplatform/gaf_viewer/dev_data/gaf_data_ft.csv')
 
 def _add_econd():
     local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
@@ -327,3 +315,7 @@ def _add_weblib():
 def _add_gemecdwebsite():
     pass
 
+def _add_vulnerability():
+    local('python manage.py import_vuln_geo_applicability_csv '
+          './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
+    local('python manage.py vuln_groups_create')

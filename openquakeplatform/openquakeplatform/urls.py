@@ -16,17 +16,17 @@ import openquakeplatform.gemecdwebsite.casualtylevel.urls
 import openquakeplatform.gemecdwebsite.surveyvalue.urls
 import openquakeplatform.gemecdwebsite.photo.urls
 import openquakeplatform.gemecdwebsite.uploadnrml.urls
-
+import openquakeplatform.gemecdwebsite.lookup.urls
+#import openquakeplatform.vulnerability.views
 import photologue.urls
 
 
-from openquakeplatform import local_settings
+from django.conf import settings
 
 # TODO. Use context_processors instead of a custom TemplateView
 from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
-
 
 # Setup Django Admin
 from django.contrib import admin
@@ -42,9 +42,7 @@ sitemaps = {
     "map": MapSitemap
 }
 
-
-urlpatterns = patterns(
-    '',
+urlpatterns = patterns('',
 
     # gemecd website
     url(r'^ecd/eventsmap/(?P<ix>.*)$', include(openquakeplatform.gemecdwebsite.eventsmap.urls.urlpatterns)),
@@ -74,14 +72,13 @@ urlpatterns = patterns(
 
     url(r'^ecd/uploadnrml',include(openquakeplatform.gemecdwebsite.uploadnrml.urls.urlpatterns)), #display mode
 
+    url(r'^ecd/(?P<name>lookup.*)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+    url(r'^ecd/(?P<name>unifieddamagelevel)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+
+
 
     #photologue
     url(r'^photologue/', include(photologue.urls)),
-
-    # disable open proxy provided by geonode
-    #    url(r'^proxy/$', 'openquakeplatform.proxy.fake_proxy',),
-    url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
-        name="geoserver"),
 
     url(r'^isc_viewer/$', OQTemplateView.as_view(
         template_name="isc_viewer.html"), name='isc_viewer'),
@@ -95,31 +92,35 @@ urlpatterns = patterns(
         template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', OQTemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^svir_viewer/$', TemplateView.as_view(
+    url(r'^svir_viewer/$', OQTemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
+
     url(r'^svir_viewer_sub/$', TemplateView.as_view(
         template_name="svir_viewer_sub.html"), name='svir_viewer_sub'),
-    url(r'^hazus/$', TemplateView.as_view(
+
+    url(r'^hazus/$', OQTemplateView.as_view(
+
         template_name="hazus.html"), name='hazus'),
-    url(r'^hazard_viewer/$', TemplateView.as_view(
+    url(r'^hazard_viewer/$', OQTemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
-    (r'^icebox/', include('openquakeplatform.icebox.urls')),
+    (r'^svir/', include('openquakeplatform.svir.urls')),
+    #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
+        #name='index'),
+    (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
     url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
     url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
-
-    # Temporary pages TODO remove these when the customizable categories can be implemented
-    url(r'^temp_maps/$', TemplateView.as_view(template_name='temp_maps.html'), name='temp_maps'),
-    url(r'^temp_data/$', TemplateView.as_view(template_name='temp_data.html'), name='temp_data'),
-
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
+    url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
+    url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
+    url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
@@ -136,6 +137,9 @@ urlpatterns = patterns(
     # Upload views
     (r'^upload/', include('geonode.upload.urls')),
 
+    # GeoServer Helper Views
+    (r'^gs/', include('geonode.geoserver.urls')),
+
     # Social views
     (r"^account/", include("account.urls")),
     (r'^people/', include('geonode.people.urls')),
@@ -147,31 +151,26 @@ urlpatterns = patterns(
     #(r'^notifications/', include('notification.urls')),
     (r'^messages/', include('user_messages.urls')),
     (r'^social/', include('geonode.social.urls')),
-
     # Accounts
     url(r'^account/ajax_login$', 'geonode.views.ajax_login',
-        name='account_ajax_login'),
+                                       name='account_ajax_login'),
     url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
-        name='account_ajax_lookup'),
+                                       name='account_ajax_lookup'),
 
     # Meta
-    url(r'^lang\.js$',
-        TemplateView.as_view(
-            template_name='lang.js', content_type='text/javascript'),
-        name='lang'),
+    url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'), name='lang'),
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog',
-        js_info_dict, name='jscat'),
+                                  js_info_dict, name='jscat'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
-        {'sitemaps': sitemaps}, name='sitemap'),
+                                  {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
 
     )
 
 #Documents views
-if settings.DOCUMENTS_APP:
-    urlpatterns += patterns(
-        '',
+if 'geonode.documents' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
         (r'^documents/', include('geonode.documents.urls')),
     )
 
@@ -180,3 +179,4 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+handler403 = 'geonode.views.err403'

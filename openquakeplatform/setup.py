@@ -1,5 +1,5 @@
 import os
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 def read(*rnames):
@@ -20,8 +20,46 @@ setup(
     ],
     license="BSD",
     keywords="openquakeplatform geonode django",
-    url='https://github.com/oq-platform/openquakeplatform',
-    packages=['openquakeplatform'],
+    url='https://github.com/gem/oq-platform',
+    packages=['openquakeplatform',
+              'openquakeplatform.isc_viewer',
+              'openquakeplatform.ghec_viewer',
+              'openquakeplatform.gaf_viewer',
+              'openquakeplatform.maps_viewer',
+              'openquakeplatform.faulted_earth',
+              'openquakeplatform.geodetic',
+              'openquakeplatform.exposure',
+              'openquakeplatform.icebox',
+              'openquakeplatform.svir',
+              'openquakeplatform.vulnerability',
+              'openquakeplatform.econd',
+              'openquakeplatform.gemecdwebsite',
+              'openquakeplatform.gemecdwebsite.eventsmap',
+              'openquakeplatform.gemecdwebsite.casualtylevel',
+              'openquakeplatform.gemecdwebsite.damagelevel',
+              'openquakeplatform.gemecdwebsite.eventdetails',
+              'openquakeplatform.gemecdwebsite.eventoverview',
+              'openquakeplatform.gemecdwebsite.eventsmap',
+              'openquakeplatform.gemecdwebsite.home',
+              'openquakeplatform.gemecdwebsite.inventoryclass',
+              'openquakeplatform.gemecdwebsite.location',
+              'openquakeplatform.gemecdwebsite.photo',
+              'openquakeplatform.gemecdwebsite.surveyvalue',
+              'openquakeplatform.gemecdwebsite.uploadnrml',
+              'openquakeplatform.gemecdwebsite.lookup',
+              'openquakeplatform.weblib',
+              'openquakeplatform.weblib.baseclasses'
+              ],
+    # NOTE:  django-chained-multi-checkboxes is following the new convention: a floating tag on github v<major>.<minor> only follows
+    #        the lifecicle of all the bugfix versions of the repository and pip depends on it.
+    #        Follow the same rule for all the other gem dependencies when an update is needed.
+    # ATTENTION: Please, do not split following lines, the deploy.sh script manages them automatically.
+    dependency_links = ['http://github.com/gem/django-extras/tarball/master#egg=django-extras-0.3',
+                        'http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
+                        'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
+                        'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
+                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/v0.4#egg=django-chained-multi-checkboxes-0.4'
+                        ],
     install_requires=[
         "agon-ratings==0.2",
         "beautifulsoup4==4.1.0",
@@ -58,7 +96,13 @@ setup(
         "Django==1.5.5",
         "GeoNode==2.0",
         "django-photologue==2.6.1",
-        "fabric"
+        "requests==0.8.2",
+        "fabric",
+        "django-extras==0.3",
+        "wadofstuff-django-serializers==1.1.2",
+        "django-nested-inlines==0.1.4",
+        "django-chained-multi-checkboxes==0.4",
+        "django-chained-selectbox==0.1",
     ],
     include_package_data=True,
     zip_safe=False,

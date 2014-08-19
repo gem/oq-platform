@@ -1,9 +1,3 @@
-/* On the index page, let the footer sink to the bottom of the page,
-   and don't always fix it to the bottom of the window */
-#oq-page-footer, footer.footer {
-    position: static;
-}
-
 #oq-context-ribbon {
     display: none;
 }

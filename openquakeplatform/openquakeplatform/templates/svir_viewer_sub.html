@@ -22,7 +22,6 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 <button type="button" id="load-project">Load Project</button>
-<button type="button" id="project-definition">Project Definition</button>
 <div id="loadProjectDialog" title="Load Project">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -36,43 +35,6 @@ Explore - {{block.super}}
   </form>
 </div>
 
-
-  <div id="pcp-charts">
-    <div id="chart-tabs">
-      <ul>
-        <li><a href="#tab-iri-chart">IRI Chart</a></li>
-        <li><a href="#tab-categroy-chart">Category Chart</a></li>
-        <li><a href="#tab-primary-chart">Primary Chart</a></li>
-      </ul>
-
-      <div id="tab-iri-chart">
-        <div id="iri-calc">
-          <ul id="menu">
-            <h4> IRI function</h4>
-            <li>
-              <div id="iri-calc-drop">
-                <select name="select-iri-calc">
-                  <option id="calc-sum" value="1">IRI = AAL + SVI</option>
-                  <option id="calc-times" value="2">IRI = AAL x SVI</option>
-                  <option id="calc-times1" value="3">IRI = AAL (1+SVI)</option>
-                </select>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div id="tab-categroy-chart">
-      </div>
-      <div id="tab-primary-chart">
-      </div>
-    </div>
-  </div>
-
-
-
-<div id="projectDefDialog" title="Project Definition">
-  <p> You first need to <b>load a Project</b> to be able to view a project definition</p>
-</div>
 
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
@@ -96,138 +58,21 @@ Explore - {{block.super}}
     <!-- Category tags-->
 <div id="categoryTabs">
   <ul>
-    <li id="econ"><a href="#economy">Economy</a></li>
-    <li id="pop"><a href="#population">Population</a></li>
-    <li id="health"><a href="#heal">Health</a></li>
-    <li id="infra"><a href="#infrastructure">Infrastructure</a></li>
-    <li id="gov"><a href="#governance">Governance</a></li>
-    <li id="edu"><a href="#education">Education</a></li>
+    <li ><a href="#foo">Project Def</a></li>
+    <li ><a href="#bar">IRI Chart</a></li>
+    <li ><a href="#bob">Category Chart</a></li>
+    <li ><a href="#tom">Primary Chart</a></li>
+
   </ul>
 
-    <br>
-    <button type="button" id="thematic-map">Map Options</button> 
-
-  <div id="economy">
- 
-    <div id="econ-chart-spider" style="display:inline-block;" >
-      <svg></svg>
-
+  <div id="foo">
+    <div id="projectDefDialog" title="Project Definition">
+      <p> You first need to <b>load a Project</b> to be able to view a project definition</p>
     </div>
-    <p>
-  <label for="econ-weight">Volume:</label>
-  <input type="text" id="econ-weight" style="border:0; color:#f6931f; font-weight:bold;">
-</p>
- 
-<div id="slider-vertical" style="height:200px;"></div>
-  
-    <div style="display:inline-block;" id='econ-chart-bar'></div>
- <!--
-    <div id="example" class="parcoords" style="width:960px;height:200px;"></div>
-      -->
-    <table id="econ-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index </th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
   </div>
-
-
-  <div id="population">
-    <div id="pop-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='pop-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="pop-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="heal">
-    <div id="health-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='health-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="health-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="infrastructure">
-    <div id="infra-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='infra-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="infra-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="governance">
-    <div id="gov-chart-spider">
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='gov-chart-bar'></div>
-
-    <div class="table-header"></div>
-
-    <table id="gov-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
-  <div id="education">
-    <div id="edu-chart-spider">
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='edu-chart-bar'></div>
-
-    <div class="table-header"></div>
-
-    <table id="edu-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
+  <div id="bar"></div>
+  <div id="bob"></div>
+  <div id="tom"></div>
 
   <!-- TODO fix this-->
   <div id="empty" style="height:500px;">

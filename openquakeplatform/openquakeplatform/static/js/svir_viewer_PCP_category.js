@@ -62,9 +62,9 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .y0(function(d) {  return y(d.y0); })
         .y1(function(d) {  return y(d.y); });
     
-    $('#tab-categroy-chart').empty();
+    $('#bob').empty();
 
-    var svg = d3.select('#tab-categroy-chart').append('svg')
+    var svg = d3.select('#bob').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -121,14 +121,14 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
             .enter().append('g')
             .attr('class', 'dimension')
             .attr('transform', function(d) { return 'translate(' + x(d) + ')'; });
-
+/*
         svg.selectAll(".layer")
             .data(layers)
           .enter().append("path")
             .attr("class", "layer")
             .attr("d", function(d) { return area(d.values); })
             .style("fill", function(d, i) { return z(i); });
-
+*/
         // Add an axis and title.
         g.append('g')
             .attr('class', 'axis')

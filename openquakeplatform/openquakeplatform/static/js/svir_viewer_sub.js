@@ -107,16 +107,45 @@ var municipality = [];
 
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
-
-var baseMapUrl = (
-    'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
-);
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
 
-    app.createMap();
+        // switch base maps
+    $('#base-map-menu').change(function() {
+        var baseMapSelection = document.getElementById('base-map-menu').value;
+        map.removeLayer(baseMapUrl);
+        if (baseMapSelection == 4) {
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 3) {
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if(baseMapSelection == 1) {
+            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 2) {
+            if (bing_key == undefined) {
+                alert("A bing maps API key has not been added to this platform, please refer to the installation instructions for details");
+            }
+            baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 5) {
+            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        }
+    });
+
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
+
+    var map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
 
@@ -157,7 +186,7 @@ var startApp = function() {
     function showRemoveMsg() {
         $('#warning-no-layer').dialog('open');
     }
-
+/*
     //  Project definition dialog
     $('#projectDefDialog').dialog({
         autoOpen: false,
@@ -165,7 +194,8 @@ var startApp = function() {
         width: 800,
         modal: false
     });
-
+*/
+/*
     //  IRI PCP dialog
     $('#pcp-charts').dialog({
         autoOpen: false,
@@ -182,10 +212,10 @@ var startApp = function() {
             });
         }
     });
-
-    $('#project-definition').button().click(function() {
-        $('#projectDefDialog').dialog('open');
-    });
+*/
+    //$('#project-definition').button().click(function() {
+       // $('#projectDefDialog').dialog('open');
+    //});
 
     $('#warning-no-layer').dialog({
         autoOpen: false,
@@ -336,7 +366,7 @@ var startApp = function() {
             var e = document.getElementById('layer-list');
             var layerId = e.options[e.selectedIndex].value;
 
-            $('#projectDefDialog').empty();
+            $('#foo').empty();
 
             // Look up the project definition layer id using the layer name
             var selectedPDefArray = projectDefinition[layerId];
@@ -562,7 +592,7 @@ var startApp = function() {
 
     function processIndicators(e) {
         var districName = e.data.name_1;
-        $('#pcp-charts').dialog('open');
+        //$('#pcp-charts').dialog('open');
         // Get the SVIR data from the utfGrid
         var tmpIri = {};
         var tmpPI;
@@ -1117,7 +1147,7 @@ var startApp = function() {
                         tempIRIfunction = (aalValue * (1 + sviValue));
                     }
 
-                    iriIndicator[k] = tempIRIfunction;
+                    //iriIndicator[k] = tempIRIfunction;
                 }
             }
 

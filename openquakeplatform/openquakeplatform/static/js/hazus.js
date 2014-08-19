@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -16,16 +16,15 @@
 */
 
 var layerControl;
-var utfGrid = new Object;
-
-// Keep track of the layer names
-var layers;
-
-var baseMapUrl = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
-);
-
+var utfGrid = {};
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+
+try {
+    var bing_key = BING_KEY.bing_key;
+} catch(e) {
+    // continue
+}
 
 var startApp = function() {
 
@@ -33,9 +32,39 @@ var startApp = function() {
         $( "#dialog" ).dialog({height: 520, width: 430, position: {at: "right bottom"}});
     });
 
-    app.createMap();
+    // switch base maps
+    $('#base-map-menu').change(function() {
+        var baseMapSelection = document.getElementById('base-map-menu').value;
+        map.removeLayer(baseMapUrl);
+        if (baseMapSelection == 4) {
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 3) {
+            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if(baseMapSelection == 1) {
+            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 2) {
+            if (bing_key == undefined) {
+                alert("A bing maps API key has not been added to this platform, please refer to the installation instructions for details");
+            }
+            baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
+            map.addLayer(baseMapUrl);
+        } else if (baseMapSelection == 5) {
+            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+            map.addLayer(baseMapUrl);
+        }
+    });
 
-    layers = {};
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
+
+    var map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layerControl = L.control.layers(app.baseLayers);
 
@@ -44,15 +73,15 @@ var startApp = function() {
     map.scrollWheelZoom.enable();
 
     // This layer is used for the visual representation of the data
-    var hazus = L.tileLayer('http://tilestream.openquake.org/v2/ged-hazus-level1/{z}/{x}/{y}.png');
+    var hazus = L.tileLayer(TS_URL + '/v2/ged-hazus-level1/{z}/{x}/{y}.png');
     layerControl.addOverlay(hazus, "Hazus Level 1 Building Fractions");
     map.addLayer(hazus);
 
-    var building_fractions = L.tileLayer('http://tilestream.openquake.org/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
+    var building_fractions = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
     layerControl.addOverlay(building_fractions, "US Counties");
     map.addLayer(building_fractions);
 
-    utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/hazus_US_building_fractions/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+    utfGrid = new L.UtfGrid(TS_URL + '/v2/hazus_US_building_fractions/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
     map.addLayer(utfGrid);
 
@@ -71,8 +100,8 @@ var startApp = function() {
         data = [];
 
         for (var i = 0; i < values.length; i++) {
-           data[i] = {"label":keys[i], "value":values[i]}; 
-        };
+           data[i] = {"label":keys[i], "value":values[i]};
+        }
         
         var total = d3.sum(data, function(d) {
             return d3.sum(d3.values(d));
@@ -84,7 +113,7 @@ var startApp = function() {
             .attr("width", w)
             .attr("height", h)
             .append("svg:g")
-            .attr("transform", "translate(" + r * 1.1 + "," + r * 1.1 + ")")
+            .attr("transform", "translate(" + r * 1.1 + "," + r * 1.1 + ")");
         
         var textTop = vis.append("text")
             .attr("dy", ".35em")
@@ -101,8 +130,8 @@ var startApp = function() {
             .attr("y", 10);
 
         vis.append("text")
-            .attr("text-anchor", "left")  
-            .style("font-size", "16px") 
+            .attr("text-anchor", "left")
+            .style("font-size", "16px")
             .text(name)
             .attr("y", -185)
             .attr("x", -195);
@@ -126,7 +155,7 @@ var startApp = function() {
                     .on("mouseover", function(d) {
                         d3.select(this).select("path").transition()
                             .duration(200)
-                            .attr("d", arcOver)
+                            .attr("d", arcOver);
                         
                         textTop.text(d3.select(this).datum().data.label)
                             .attr("y", -10);
@@ -142,7 +171,6 @@ var startApp = function() {
                             .attr("y", -10);
                         textBottom.text(total.toFixed(2));
                     });
-
         
         arcs.append("svg:path")
             .attr("fill", function(d, i) { return color(i); } )
@@ -167,7 +195,6 @@ var startApp = function() {
             .attr("y", 30)
             .attr("dy", ".35em")
             .text(function(d) { return d.label; });
-
     }
 
     var utfGridClickEvent = function() {
@@ -177,9 +204,6 @@ var startApp = function() {
             if (e.data) {
                 var b = e.data.bf_json;
                 var bfClean = b.replace(/[\{\}\/"]/g, "");
-
-                console.log(bfClean);
-
                 var data = eval('({' + bfClean + '})');
                 var keys = [];
                 var values = [];
@@ -189,16 +213,11 @@ var startApp = function() {
                     keys.push(prop);
                     values.push(data[prop]);
                 }
-           
                 buildD3PieChart(keys, values, name);
-
-                //document.getElementById('dialog').innerHTML = "<b>" + e.data.name + " </b><br>"+ bfClean;
-            } else {
-                //document.getElementById('dialog').innerHTML = 'hover: nothing';
             }
         });
 
-    }
+    };
     utfGridClickEvent();
 };
 

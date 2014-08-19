@@ -1,0 +1,90 @@
+<!--********
+  *********
+  *********
+  This is a temporary pages TODO remove it when the customizable
+  categories can be implemented
+  *********
+  *********
+-->
+
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
+
+{% block extra_head %}
+    {{block.super}}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+{% endblock extra_head %}
+
+{% block body %}
+  <div class="span12">
+    <div class="hero-unit">
+      <div id="oq-context-ribbon">
+        {% block oq_context_ribbon %}
+          <!-- Subtemplates can add context-sensitive components to the page-->
+        {% endblock oq_context_ribbon %}
+      </div>
+      <div id="oq-body-heading">
+        {% block oq_body_heading %}
+          <h1>{% trans "OpenQuake Explore" %}</h1>
+          <br />
+        {% endblock oq_body_heading %}
+      </div>
+      <div id="oq-body-content">
+        {% block oq_body_content %}
+          <div class="oq-intro">
+            <!-- Main page content goes here -->
+
+            <b>Explore:</b> 
+            <ul>
+              <li><a href="{% url 'documents_browse' %}">Documents</a></li>
+              <li><a href="{% url "layer_browse" %}">Layers</a></li>
+              <li><a href="{% url "maps_browse" %}">Maps</a></li>
+              <li><a href="{% url 'hazard_viewer' %}">Models</a></li>
+              <li><a href="{% url 'profile_browse' %}">People</a></li>
+            </ul>
+
+            <b>Data Sets:</b> 
+            <ul>
+              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
+              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
+              <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
+              <li><a href="{% url 'svir_viewer' %}">SVIR</a></li>
+              <li><a href="/vulnerability/list/">Vulnerability</a></li>
+              <!-- TODO add links to the inst cat, hist cat, active faults and geo strain map layers here-->
+            </ul>
+
+            <b>Taxonomy:</b>
+            <ul>
+              <li>
+                <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
+              </li>
+            </ul>
+            
+          </div>
+        {% endblock oq_body_content %}
+      </div>
+      <div id="oq-body-sidebar">
+        {% block oq_body_sidebar %}
+          <div class="oq-btns">
+            <img src="../static/img/OQ-logo-blue.png"><br/><br/>
+            <a class="btn btn-large" href="{% url "layer_browse" %}">
+              {% trans "Explore Layers" %}
+            </a>
+            <a class="btn btn-large" href="{% url "maps_browse" %}">
+              {% trans "Explore Maps" %}
+            </a>
+            
+          </div>
+        {% endblock oq_body_sidebar %}
+      </div>
+    </div>
+  </div>
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+    {% include 'search_scripts.html' %}
+{% endblock extra_script %}

@@ -21,24 +21,28 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(primaryData, municipality, districName) {
-
+    var allPaths = [];
+    var steps = [];
+    var paths = [];
+    var meanLine = [0,0];
     var array = [];
+    var i,j,temparray,chunk = 10;
     var tmpArray = [];
     for (var i = 0; i < primaryData.length; i++) {
-        for (var k in primaryData[i]){ 
-            array.push(primaryData[i][k])
+        for (var k in primaryData[i]){
+            array.push(primaryData[i][k]);
         }
-    };
+    }
 
     for (var i = 0; i < array.length; i++) {
         if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
             tmpArray.push(array[i]);
-        };
-    };
+        }
+    }
 
     var maxVal = Math.max.apply( Math, tmpArray );
         
-    var margin = {top: 60, right: 10, bottom: 10, left: 10},
+    var margin = {top: 60, right: 10, bottom: 10, left: 50},
         width = 990 - margin.left - margin.right,
         height = 590 - margin.top - margin.bottom;
     
@@ -49,9 +53,18 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         axis = d3.svg.axis().orient("left"),
         background,
         foreground;
+
+    function make_y_axis() {
+        return d3.svg.axis()
+            .scale(y_scale)
+            .orient("left")
+            .ticks(10);
+    }
+
+    var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
     
-    $("#tab-primary-chart").empty();
-    var svg = d3.select("#tab-primary-chart").append("svg")
+    $("#tom").empty();
+    var svg = d3.select("#tom").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -64,7 +77,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
             .range([height, 0]));
     }));
     
-      // Add blue foreground lines for focus.
+    // Add blue foreground lines for focus.
     background = svg.append("g")
         .attr("class", "background")
         .selectAll("path")
@@ -85,12 +98,33 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     });
     
     // Add a group element for each dimension.
+    /*
     var g = svg.selectAll(".dimension")
         .data(dimensions)
         .enter().append("g")
         .attr("class", "dimension")
         .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-    
+*/
+    var g = svg.selectAll(".dimension")
+        .data(dimensions)
+        .enter().append("g");
+        //.attr("class", "dimension")
+        //.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+
+    svg.append("g")
+        .data(dimensions)
+        .enter().append("g")
+        .attr("class", "dimension")
+        .attr("x2", 600)
+        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+
+    svg.append("g")
+        .attr("class", "grid")
+        .call(make_y_axis()
+            .tickSize(-width, 0, 0)
+            .tickFormat("")
+        );
+
     // Add an axis and title.
     g.append("g")
         .attr("class", "axis")
@@ -100,7 +134,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .style("opacity", 0.5)
         .attr("y", -9)
         .on("mouseover", function(d) {
-            textTopLabels.text("Attribute: "+ d)
+            textTopLabels.text("Attribute: "+ d);
             d3.select(this)
                 .style("font-size","14px")
                 .style("opacity", 1);
@@ -137,13 +171,63 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .style("font-size","14px")
         .style("font-style", "bold")
         .text("");
+
+    var foo = [];
+
+    console.log("primaryData");
+    console.log(primaryData);
+
+
+    for(var k in primaryData[0] ) {
+        console.log("k");
+        console.log(k);
+        steps.push(k);
+    }
+
+    console.log("steps.length");
+    console.log(steps.length);
    
-    
+    for (var i = 0; i < primaryData.length; i++) {
+        bar = [0, 0];
+        foo.push(bar);
+    }
+
+
+//    console.log(foo);
     // Returns the path for a given data point.
     function path(d) {
-        return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+
+        return line(dimensions.map(function(p) {  allPaths.push([x(p), y[p](d[p])]); return [x(p), y[p](d[p])]; }));
+    }
+
+    console.log(allPaths);
+
+    
+    for (i=0,j=allPaths.length; i<j; i+=steps.length) {
+        temparray = allPaths.slice(i,i+steps.length);
+        console.log("temparray");
+        console.log(temparray);
+        console.log("i");
+        console.log(i);
+        paths[i] = temparray;
+        //paths += temparray;
+    }
+
+    for (var l in paths) {
+        console.log("l");
+        console.log(l);
+        for (var i = 0; i < paths[l].length; i++) {
+            console.log("paths[l][i]");
+            console.log(paths[l][i]);
+            var foo = [meanLine += paths[l][i]];
+            console.log(foo);
+            meanLine.push(foo);
+            //meanLine.push("hi");
+        }
     }
     
+    console.log("meanLine");
+    console.log(meanLine);
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
         var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
