@@ -21,12 +21,15 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(primaryData, municipality, districName) {
-    var allPaths = [];
-    var steps = [];
-    var paths = [];
+    var everyThing = [];
+    var outlierPath;
+    var allPaths = {};
+    var sum = {};
+    var sumMean = {};
+    var outlier = [];
     var meanLine = [0,0];
     var array = [];
-    var i,j,temparray,chunk = 10;
+    var i,j,temparray;
     var tmpArray = [];
     for (var i = 0; i < primaryData.length; i++) {
         for (var k in primaryData[i]){
@@ -52,7 +55,8 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient("left"),
         background,
-        foreground;
+        meanPath,
+        outlierArray;
 
     function make_y_axis() {
         return d3.svg.axis()
@@ -76,35 +80,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
             .domain([0, maxVal])
             .range([height, 0]));
     }));
-    
-    // Add blue foreground lines for focus.
-    background = svg.append("g")
-        .attr("class", "background")
-        .selectAll("path")
-        .data(primaryData)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("id", function(d) { return d.municipality; })
-        .on("mouseover", function() {
-            d3.select(this)
-                .style('stroke-width', 4)
-                .style("stroke", "steelblue");
-                textTop.text("District: " + districName + ", Municipality: " + this.id);
-        }).on("mouseout", function() {
-            d3.select(this)
-                .style('stroke-width', 1)
-                .style("stroke", "steelblue");
-                textTop.text("");
-    });
-    
-    // Add a group element for each dimension.
-    /*
-    var g = svg.selectAll(".dimension")
-        .data(dimensions)
-        .enter().append("g")
-        .attr("class", "dimension")
-        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-*/
+  
     var g = svg.selectAll(".dimension")
         .data(dimensions)
         .enter().append("g");
@@ -139,22 +115,11 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
                 .style("font-size","14px")
                 .style("opacity", 1);
         }).on("mouseout", function() {
-            textTopLabels.text("")
+            textTopLabels.text("");
             d3.select(this)
                 .style("font-size","10px")
                 .style("opacity", 0.5);
         });
-        //.text(function(d) { return d; });
-
-    /*
-      // Add and store a brush for each axis.
-      g.append("g")
-          .attr("class", "brush")
-          .each(function(d) { d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
-        .selectAll("rect")
-          .attr("x", -8)
-          .attr("width", 16);
-     */
 
     var textTopLabels = svg.append("text")
         .attr("x", 70)
@@ -164,75 +129,118 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .style("font-style", "bold")
         .text("");
 
-    var textTop = svg.append("text")
+    var textTopDist = svg.append("text")
         .attr("x", 70)
-        .attr("y", -35)
+        .attr("y", 80)
+        .attr("class", "textTop")
         .attr("dy", ".35em")
-        .style("font-size","14px")
+        .style("font-size","53px")
+        .style("font-style", "bold")
+        .text("");
+
+    var textTopMunc = svg.append("text")
+        .attr("x", 70)
+        .attr("y", 140)
+        .attr("class", "textTop")
+        .attr("dy", ".35em")
+        .style("font-size","53px")
         .style("font-style", "bold")
         .text("");
 
     var foo = [];
 
-    console.log("primaryData");
-    console.log(primaryData);
-
-
-    for(var k in primaryData[0] ) {
-        console.log("k");
-        console.log(k);
-        steps.push(k);
+    //build skeleton array NEW
+    for (var t in primaryData[0]) {
+        sum[t] = 0;
     }
 
-    console.log("steps.length");
-    console.log(steps.length);
-   
-    for (var i = 0; i < primaryData.length; i++) {
-        bar = [0, 0];
-        foo.push(bar);
-    }
-
-
-//    console.log(foo);
     // Returns the path for a given data point.
     function path(d) {
-
-        return line(dimensions.map(function(p) {  allPaths.push([x(p), y[p](d[p])]); return [x(p), y[p](d[p])]; }));
+        return line(dimensions.map(function(p) {  everyThing.push([x(p), y[p](d[p])]); return [x(p), y[p](d[p])]; }));
     }
 
-    console.log(allPaths);
-
-    
-    for (i=0,j=allPaths.length; i<j; i+=steps.length) {
-        temparray = allPaths.slice(i,i+steps.length);
-        console.log("temparray");
-        console.log(temparray);
-        console.log("i");
-        console.log(i);
-        paths[i] = temparray;
-        //paths += temparray;
-    }
-
-    for (var l in paths) {
-        console.log("l");
-        console.log(l);
-        for (var i = 0; i < paths[l].length; i++) {
-            console.log("paths[l][i]");
-            console.log(paths[l][i]);
-            var foo = [meanLine += paths[l][i]];
-            console.log(foo);
-            meanLine.push(foo);
-            //meanLine.push("hi");
+    //sum all the paths NEW
+    for (var g = 0; g < primaryData.length; g++) {
+        for (var n in primaryData[g]) {
+            sum[n] += primaryData[g][n];
         }
     }
-    
-    console.log("meanLine");
-    console.log(meanLine);
-    // Handles a brush event, toggling the display of foreground lines.
+
+    // get the mean NEW
+    for (var f in sum) {
+        var foo = sum[f];
+        sumMean[f] = (foo / primaryData.length);
+    }
+
+    // find outlier
+    for (var s = 0; s < primaryData.length; s++) {
+        for (var r in primaryData[s]) {
+            var foo = sumMean[r] + 0.7;
+            if (primaryData[s][r] > foo) {
+                outlier.push(primaryData[s]);
+            }
+        }
+    }
+
+    var sumMeanArray = [];
+    sumMeanArray.push(sumMean);
+
+// Add blue meanPath lines for focus.
+    background = svg.append("g")
+        .attr("class", "background")
+        .selectAll("path")
+        .data(primaryData)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("id", function(d) { return d.municipality; })
+        .on("mouseover", function() {
+            d3.select(this)
+                .style('stroke-width', 4)
+                .style("opacity", 1);
+                textTopDist.html("District: " + districName);
+                textTopMunc.html("Municipality: " + this.id);
+        }).on("mouseout", function() {
+            d3.select(this)
+                .style('stroke-width', 2)
+                .style("opacity", 0.3);
+                textTopDist.text("");
+                textTopMunc.text("");
+    });
+
+    meanPath = svg.append("g")
+        .attr("class", "meanPath")
+        .selectAll("path")
+        .data(sumMeanArray)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("id", function(d) { return d.municipality; });
+
+    outlierPath = svg.append("g")
+        .attr("class", "outlierPath")
+        .selectAll("path")
+        .data(outlier)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("id", function(d) { return d.municipality; })
+        .on("mouseover", function() {
+            d3.select(this)
+                .style('stroke-width', 4)
+                .style("opacity", 1);
+                textTopDist.html("District: " + districName);
+                textTopMunc.html("Municipality: " + this.id);
+        }).on("mouseout", function() {
+            d3.select(this)
+                .style('stroke-width', 3)
+                .style("opacity", 0.2);
+                textTopDist.text("");
+                textTopMunc.text("");
+    });
+
+    // Handles a brush event, toggling the display of meanPath lines.
     function brush() {
         var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
             extents = actives.map(function(p) { return y[p].brush.extent(); });
-        foreground.style("display", function(d) {
+        meanPath.style("display", function(d) {
             return actives.every(function(p, i) {
                 return extents[i][0] <= d[p] && d[p] <= extents[i][1];
             }) ? null : "none";

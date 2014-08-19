@@ -33,22 +33,42 @@ svg {
   font: 10px sans-serif;
 }
 
+.tom {
+  width:50%;
+  height:50%;
+  border: 1px dotted silver;
+}
+
 .background path {
   fill: none;
-  stroke: steelblue;
-  stock-width: 1;
+  stroke: #FF931E;
+  stroke-width: 2;
+  opacity: 0.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.meanPath path {
+  fill: none;
+  stroke: grey;
+  stroke-width: 15;
+  opacity: 0.3;
+  stroke-linecap: round;
+}
+
+.outlierPath path {
+  fill: none;
+  stroke: #FF1D25;
+  stroke-width: 3;
+  opacity: 0.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .concatLine path {
   fill: red;
   stroke: red;
-  stock-width: 5;
-}
-
-.foreground path {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 4;
+  stroke-width: 5;
 }
 
 .brush .extent {
@@ -70,4 +90,16 @@ svg {
 
 .axis text {
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.textTop {
+  opacity: 0.9;
+  font-family: sans-serif !important;
+}
+
+.ticks {
+  opacity: 0.9;
+  font-family: sans-serif !important;
+  font-weight: bold;
+  fill: blue;
 }
