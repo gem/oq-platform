@@ -20,7 +20,7 @@
 ////// Category Parallel Coordinates Chart //////
 /////////////////////////////////////////////////
 
-function Primary_PCP_Chart(primaryData, municipality, districName) {
+function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint) {
     var everyThing = [];
     var outlierPath;
     var allPaths = {};
@@ -68,6 +68,8 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
     
     $("#primary-chart").empty();
+    console.log("new chart");
+
     var svg = d3.select("#primary-chart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -173,12 +175,24 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     // find outlier
     for (var s = 0; s < primaryData.length; s++) {
         for (var r in primaryData[s]) {
-            var outlierLimit = sumMean[r] + 0.7;
+            var outlierLimit = sumMean[r] + outlierBreakPoint;
             if (primaryData[s][r] > outlierLimit) {
                 outlier.push(primaryData[s]);
             }
         }
+        
+        for (var r in primaryData[s]) {
+            var outlierLimit = sumMean[r] - outlierBreakPoint;
+            if (primaryData[s][r] < outlierLimit) {
+                outlier.push(primaryData[s]);
+            }
+        }
+        
     }
+
+    console.log("outlier");
+    console.log(outlier);
+    
 
     var sumMeanArray = [];
     sumMeanArray.push(sumMean);

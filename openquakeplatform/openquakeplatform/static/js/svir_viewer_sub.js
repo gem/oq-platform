@@ -104,6 +104,7 @@ var tempAalWeight = '';
 var tempAalValue = '';
 var tempIriWeight = '';
 var municipality = [];
+var outlierBreakPoint = 0.75;
 
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
@@ -701,8 +702,26 @@ var startApp = function() {
             for (var l in primaryIndicator) {
                 primaryData.push(primaryIndicator[l]);
             }
+            
+            // Allow the user to modify the outlier break point
+            $('#outlier-limit').spinner({
+                stop:function(e,ui){
+                    outlierBreakPoint = document.getElementById('outlier-limit').value;
+                    outlierBreakPoint = parseFloat(outlierBreakPoint);
+                    Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint);
+                }
+            });
 
-            Primary_PCP_Chart(primaryData, municipality, districName);
+            $(function() {
+                $("#outlier-limit").width(100).spinner({
+                    min: 0,
+                    max: 1,
+                    step: 0.05,
+                    numberFormat: "n",
+                });
+            });
+
+            Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint);
 
             /////////////////////////////////////////////
             /// Create the category indicator objects ///

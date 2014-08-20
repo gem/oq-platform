@@ -61,7 +61,7 @@ Explore - {{block.super}}
     <li ><a href="#project-def">Project Def</a></li>
     <li ><a href="#iri-chart">IRI Chart</a></li>
     <li ><a href="#cat-chart">Category Chart</a></li>
-    <li ><a href="#primary-chart">Primary Chart</a></li>
+    <li ><a href="#primary-tab">Primary Chart</a></li>
 
   </ul>
 
@@ -72,28 +72,19 @@ Explore - {{block.super}}
   </div>
   <div id="iri-chart"></div>
   <div id="cat-chart"></div>
-  <div id="primary-chart"></div>
+  <div id="primary-tab">
+    <div id="primary-limit">
+      <p>
+        <label for="outlier-limit"> Outlier Break Point </label>
+        <input id="outlier-limit" name="outlier-limit" value="0.7">
+      </p>
+    </div>
+    <div id="primary-chart"></div>
+  </div>
 
   <!-- TODO fix this-->
   <div id="empty" style="height:500px;">
   </div>
-
-          <div id="csv" type="text/csv">key,value,date
-Group1,37,04/23/12
-Group2,12,04/23/12
-Group3,46,04/23/12
-Group1,32,04/24/12
-Group2,19,04/24/12
-Group3,42,04/24/12
-Group1,45,04/25/12
-Group2,16,04/25/12
-Group3,44,04/25/12
-Group1,24,04/26/12
-Group2,52,04/26/12
-Group3,64,04/26/12
-</div>
-
-
 
 </div>
     <script src="{{ STATIC_URL }}js/svir_viewer_sub.js"></script>
