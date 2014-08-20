@@ -37,15 +37,6 @@ function IRI_PCP_Chart(iriPcpData) {
         axis = d3.svg.axis().orient("left"),
         foreground;
 
-    function make_y_axis() {
-        return d3.svg.axis()
-            .scale(y_scale)
-            .orient("left")
-            .ticks(10);
-    }
-
-    var y_scale = d3.scale.linear().range([0, h]).domain([1, 0]);
-
     $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
@@ -110,15 +101,7 @@ function IRI_PCP_Chart(iriPcpData) {
             .on("dragstart", dragstart)
             .on("drag", drag)
             .on("dragend", dragend));
-
-        // Add a grid
-        svg.append("g")
-            .attr("class", "grid")
-            .call(make_y_axis()
-                .tickSize(-w, 0, 0)
-                .tickFormat("")
-            );
-
+      
         // Add an axis and title.
         g.append("svg:g")
             .attr("class", "axis")
@@ -126,8 +109,8 @@ function IRI_PCP_Chart(iriPcpData) {
             .append("svg:text")
             .attr("id", "attrLable")
             .attr("text-anchor", "left")
-            .attr("y", 160)
-            .attr("x", 160)
+            .attr("y", 355)
+            .attr("x", 355)
             .text(String);
       
         // Add a brush for each axis.

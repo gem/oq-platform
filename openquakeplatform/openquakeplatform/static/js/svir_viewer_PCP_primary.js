@@ -21,6 +21,8 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint) {
+    console.log("primaryData");
+    console.log(primaryData);
     var everyThing = [];
     var outlierPath;
     var allPaths = {};
