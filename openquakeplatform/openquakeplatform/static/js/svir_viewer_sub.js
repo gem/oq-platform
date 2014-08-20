@@ -1114,33 +1114,16 @@ var startApp = function() {
             // Create the IRI category indicator object //
             //////////////////////////////////////////////
 
-            var IRIfunctionSelection = $('select[name="select-iri-calc"]').val();
-
-            
-            // Allow the user to change the iri function
-            $('select[name="select-iri-calc"]').change(function() {
-                if ($(this).val() == 1) {
-                    IRIfunctionSelection = 1;
-                } 
-                else if ($(this).val() == 2) {
-                    IRIfunctionSelection = 2;
-                }
-                else if ($(this).val() == 3 ) {
-                    IRIfunctionSelection = 3; 
-                }
-            });
-
-
             for (var k in iriIndicator) {
                 delete iriIndicator[k];
-            }
+            };
 
             var iriArray = iri; // Do not use these values,
 
             // instead compute the iri from PRI and SVI
             for (var i = 0; i < municipality.length; i++) {
                 iriIndicator[municipality[i]] = "";
-            }
+            };
 
             iriCopy = jQuery.extend(true, {}, iriIndicator);
             var aalKey;
@@ -1151,65 +1134,60 @@ var startApp = function() {
             // Compute IRI from PRI and SVI
             // TODO expand this to use proper IRI function...
             function getNewValues(k) {
-                aalValue = weightedAalIndicator[k];
-                sviValue = weightedSviIndicator[k];
+                aalValue = aalIndicator[k];
+                sviValue = sviIndicator[k];
             }
 
-            // Compute the IRI based on users selection=
             for (var i = 0; i < municipality.length; i++) {
-                //var tempIRIfunction = 0;
+                tmp = 0;
                 for(var k in iriIndicator) {
                     getNewValues(k);
-
-                    if (IRIfunctionSelection == 1) {
-                        tempIRIfunction = (aalValue * sviValue);
-                    } 
-                    else if (IRIfunctionSelection == 2) {
-                        tempIRIfunction = (aalValue + sviValue);
-                    }
-                    else if(IRIfunctionSelection == 3) {
-                        tempIRIfunction = (aalValue * (1 + sviValue));
-                    }
-
-                    //iriIndicator[k] = tempIRIfunction;
+                    tmp = (sviValue * aalValue);
+                    iriIndicator[k] = tmp;
                 }
-            }
+            };
 
             ///////////////
             //// Scale ////
             ///////////////
             // Scale the iri values
-
-            scaledIRIindicator = jQuery.extend(true, {}, iriIndicator);
-            
             var iriValueArray = [];
             var scaleIRIvalues = [];
 
-            for (var v in scaledIRIindicator) {
-                iriValueArray.push(scaledIRIindicator[v]);
-            }
+            for (var v in iriIndicator) {
+                iriValueArray.push(iriIndicator[v]);
+            };
 
             var tempIRImin = Math.min.apply(null, iriValueArray),
                 tempIRImax = Math.max.apply(null, iriValueArray);
 
             for (var j = 0; j < iriValueArray.length; j++) {
                 scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
-            }
+            };
 
-            var tempKeys = Object.keys(scaledIRIindicator);
+            var tempKeys = Object.keys(iriIndicator);
 
             for (var i = 0; i < tempKeys.length; i++) {
-                scaledIRIindicator[tempKeys[i]] = scaleIRIvalues[i];
-            }
+                iriIndicator[tempKeys[i]] = scaleIRIvalues[i];
+            };
 
-            scaledIRIindicator.plotElement = "iri"; // Lable within the object
-
+            iriIndicator.plotElement = "iri"; // Lable within the object
+            console.log("iri: ");
+            console.log(iriIndicator);
         }
 
         var iriPcpData = [];
-        iriPcpData.push(scaledIRIindicator);
+        iriPcpData.push(iriIndicator);
         iriPcpData.push(scaledSviIndicator);
         iriPcpData.push(scaledAalIndicator);
+
+        console.log("scaledIRIindicator");
+        console.log(scaledIRIindicator);
+
+        console.log("iriPcpData");
+        console.log(iriPcpData);
+
+
         IRI_PCP_Chart(iriPcpData);
  } // End process indicators function
 };

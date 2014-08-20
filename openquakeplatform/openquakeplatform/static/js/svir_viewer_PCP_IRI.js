@@ -37,8 +37,16 @@ function IRI_PCP_Chart(iriPcpData) {
         axis = d3.svg.axis().orient("left"),
         foreground;
 
-    $("#iri-chart").empty();
+    function make_y_axis() {
+        return d3.svg.axis()
+            .scale(y_scale)
+            .orient("left")
+            .ticks(10);
+    }
 
+    var y_scale = d3.scale.linear().range([0, h]).domain([1, 0]);
+
+    $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
         .attr("width", w + m[1] + m[3])
@@ -63,7 +71,7 @@ function IRI_PCP_Chart(iriPcpData) {
         var legend = svg.selectAll("g.legend")
             .data(plotElements)
             .enter().append("svg:g")
-            .attr("class", "legend")
+            .attr("class", "legend");
       
         legend.append("svg:line")
             .attr("class", String)
@@ -102,7 +110,15 @@ function IRI_PCP_Chart(iriPcpData) {
             .on("dragstart", dragstart)
             .on("drag", drag)
             .on("dragend", dragend));
-      
+
+        // Add a grid
+        svg.append("g")
+            .attr("class", "grid")
+            .call(make_y_axis()
+                .tickSize(-w, 0, 0)
+                .tickFormat("")
+            );
+
         // Add an axis and title.
         g.append("svg:g")
             .attr("class", "axis")
@@ -184,7 +200,7 @@ function IRI_PCP_Chart(iriPcpData) {
 
 
 // Change the utfgrid layer when the tabs are clicked
-$("#econ").click(function(){ 
+$("#econ").click(function(){
     dataCat = "econ-table";
     chartCat = "econ-chart";
     utfGridClickEvent(dataCat, chartCat);
