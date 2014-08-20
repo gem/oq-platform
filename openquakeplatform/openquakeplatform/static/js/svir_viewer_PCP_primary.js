@@ -68,7 +68,6 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
     
     $("#primary-chart").empty();
-    console.log("new chart");
 
     var svg = d3.select("#primary-chart").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -189,10 +188,6 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
         }
         
     }
-
-    console.log("outlier");
-    console.log(outlier);
-    
 
     var sumMeanArray = [];
     sumMeanArray.push(sumMean);

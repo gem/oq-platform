@@ -109,6 +109,11 @@ var outlierBreakPoint = 0.75;
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+try {
+    var bing_key = BING_KEY.bing_key;
+} catch(e) {
+    // continue
+}
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
