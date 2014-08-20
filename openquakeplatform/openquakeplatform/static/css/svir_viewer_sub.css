@@ -33,13 +33,19 @@ svg {
   font: 10px sans-serif;
 }
 
-.tom {
-  width:50%;
-  height:50%;
-  border: 1px dotted silver;
-}
+ .background path {
+   fill: none;
+   stroke: steelblue;
+   stroke-width: 1;
+ }
 
-.background path {
+ .foreground path {
+   fill: none;
+   stroke: steelblue;
+   stroke-width: 4;
+ }
+
+.PI-background path {
   fill: none;
   stroke: #FF931E;
   stroke-width: 2;
@@ -48,7 +54,7 @@ svg {
   stroke-linejoin: round;
 }
 
-.meanPath path {
+.PI-meanPath path {
   fill: none;
   stroke: grey;
   stroke-width: 15;
@@ -56,7 +62,7 @@ svg {
   stroke-linecap: round;
 }
 
-.outlierPath path {
+.PI-outlierPath path {
   fill: none;
   stroke: #FF1D25;
   stroke-width: 3;

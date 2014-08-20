@@ -67,8 +67,8 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
 
     var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
     
-    $("#tom").empty();
-    var svg = d3.select("#tom").append("svg")
+    $("#primary-chart").empty();
+    var svg = d3.select("#primary-chart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -147,9 +147,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .style("font-style", "bold")
         .text("");
 
-    var foo = [];
-
-    //build skeleton array NEW
+    //build skeleton array
     for (var t in primaryData[0]) {
         sum[t] = 0;
     }
@@ -159,24 +157,24 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         return line(dimensions.map(function(p) {  everyThing.push([x(p), y[p](d[p])]); return [x(p), y[p](d[p])]; }));
     }
 
-    //sum all the paths NEW
+    //sum all the paths
     for (var g = 0; g < primaryData.length; g++) {
         for (var n in primaryData[g]) {
             sum[n] += primaryData[g][n];
         }
     }
 
-    // get the mean NEW
+    // get the mean
     for (var f in sum) {
-        var foo = sum[f];
-        sumMean[f] = (foo / primaryData.length);
+        var thisSum = sum[f];
+        sumMean[f] = (thisSum / primaryData.length);
     }
 
     // find outlier
     for (var s = 0; s < primaryData.length; s++) {
         for (var r in primaryData[s]) {
-            var foo = sumMean[r] + 0.7;
-            if (primaryData[s][r] > foo) {
+            var outlierLimit = sumMean[r] + 0.7;
+            if (primaryData[s][r] > outlierLimit) {
                 outlier.push(primaryData[s]);
             }
         }
@@ -185,9 +183,9 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     var sumMeanArray = [];
     sumMeanArray.push(sumMean);
 
-// Add blue meanPath lines for focus.
+    // Add blue meanPath lines for focus
     background = svg.append("g")
-        .attr("class", "background")
+        .attr("class", "PI-background")
         .selectAll("path")
         .data(primaryData)
         .enter().append("path")
@@ -208,7 +206,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
     });
 
     meanPath = svg.append("g")
-        .attr("class", "meanPath")
+        .attr("class", "PI-meanPath")
         .selectAll("path")
         .data(sumMeanArray)
         .enter().append("path")
@@ -216,7 +214,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName) {
         .attr("id", function(d) { return d.municipality; });
 
     outlierPath = svg.append("g")
-        .attr("class", "outlierPath")
+        .attr("class", "PI-outlierPath")
         .selectAll("path")
         .data(outlier)
         .enter().append("path")
