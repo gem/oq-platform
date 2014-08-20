@@ -95,6 +95,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
         .attr("x2", 600)
         .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
 
+    // Add a grid
     svg.append("g")
         .attr("class", "grid")
         .call(make_y_axis()

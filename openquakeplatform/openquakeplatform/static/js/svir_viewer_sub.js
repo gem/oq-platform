@@ -1116,14 +1116,14 @@ var startApp = function() {
 
             for (var k in iriIndicator) {
                 delete iriIndicator[k];
-            };
+            }
 
             var iriArray = iri; // Do not use these values,
 
             // instead compute the iri from PRI and SVI
             for (var i = 0; i < municipality.length; i++) {
                 iriIndicator[municipality[i]] = "";
-            };
+            }
 
             iriCopy = jQuery.extend(true, {}, iriIndicator);
             var aalKey;
@@ -1145,35 +1145,35 @@ var startApp = function() {
                     tmp = (sviValue * aalValue);
                     iriIndicator[k] = tmp;
                 }
-            };
+            }
 
             ///////////////
             //// Scale ////
             ///////////////
+
             // Scale the iri values
             var iriValueArray = [];
             var scaleIRIvalues = [];
 
             for (var v in iriIndicator) {
                 iriValueArray.push(iriIndicator[v]);
-            };
+            }
 
             var tempIRImin = Math.min.apply(null, iriValueArray),
                 tempIRImax = Math.max.apply(null, iriValueArray);
 
             for (var j = 0; j < iriValueArray.length; j++) {
                 scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
-            };
+            }
 
             var tempKeys = Object.keys(iriIndicator);
 
             for (var i = 0; i < tempKeys.length; i++) {
                 iriIndicator[tempKeys[i]] = scaleIRIvalues[i];
-            };
+            }
 
             iriIndicator.plotElement = "iri"; // Lable within the object
-            console.log("iri: ");
-            console.log(iriIndicator);
+
         }
 
         var iriPcpData = [];
@@ -1181,15 +1181,8 @@ var startApp = function() {
         iriPcpData.push(scaledSviIndicator);
         iriPcpData.push(scaledAalIndicator);
 
-        console.log("scaledIRIindicator");
-        console.log(scaledIRIindicator);
-
-        console.log("iriPcpData");
-        console.log(iriPcpData);
-
-
         IRI_PCP_Chart(iriPcpData);
- } // End process indicators function
+    } // End process indicators function
 };
 
 app.initialize(startApp);
