@@ -21,9 +21,6 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint) {
-    console.log("primaryData");
-    console.log(primaryData);
-
     var everyThing = [];
     var outlierPath;
     var allPaths = {};
@@ -78,18 +75,16 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
 
     var svg = d3.select("#primary-chart").append("svg")
         .attr("viewBox", "-30 110 1100 590")
-        .attr("id", "chart")
+        .attr("id", "PI-svg-element")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
-
     var windowWidth = $(window).width();
     var windowHeight = $(window).height();
-
     var aspect = windowWidth / windowHeight,
-        chart = $("#chart");
+        chart = $("#PI-svg-element");
 
     resize();
 
@@ -102,7 +97,6 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     $(window).on("resize", function() {
         resize();
     });
-
 
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(primaryData[0]).filter(function(d) {

@@ -104,7 +104,7 @@ var tempAalWeight = '';
 var tempAalValue = '';
 var tempIriWeight = '';
 var municipality = [];
-var outlierBreakPoint = 0.75;
+var outlierBreakPoint = 0.75; // used for the primary indicator outlier
 
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
