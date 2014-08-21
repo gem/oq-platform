@@ -77,7 +77,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     $("#primary-chart").empty();
 
     var svg = d3.select("#primary-chart").append("svg")
-        .attr("viewBox", "-30 150 1100 590")
+        .attr("viewBox", "-30 110 1100 590")
         .attr("id", "chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -164,19 +164,19 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
 
     var textTopDist = svg.append("text")
         .attr("x", 70)
-        .attr("y", 80)
+        .attr("y", 40)
         .attr("class", "textTop")
         .attr("dy", ".35em")
-        .style("font-size","53px")
+        .style("font-size","30px")
         .style("font-style", "bold")
         .text("");
 
     var textTopMunc = svg.append("text")
         .attr("x", 70)
-        .attr("y", 140)
+        .attr("y", 70)
         .attr("class", "textTop")
         .attr("dy", ".35em")
-        .style("font-size","53px")
+        .style("font-size","30px")
         .style("font-style", "bold")
         .text("");
 
