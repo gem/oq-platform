@@ -23,6 +23,7 @@
 function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint) {
     console.log("primaryData");
     console.log(primaryData);
+
     var everyThing = [];
     var outlierPath;
     var allPaths = {};
@@ -47,7 +48,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
 
     var maxVal = Math.max.apply( Math, tmpArray );
         
-    var margin = {top: 60, right: 10, bottom: 10, left: 50},
+    var margin = {top: 100, right: 40, bottom: 10, left: 50},
         width = 990 - margin.left - margin.right,
         height = 590 - margin.top - margin.bottom;
     
@@ -60,15 +61,19 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
         meanPath,
         outlierArray;
 
-    function make_y_axis() {
+    var x_scale = d3.scale.linear().domain([0, width]).range([0, width]);
+    var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
+
+    function yAxis() {
         return d3.svg.axis()
             .scale(y_scale)
             .orient("left")
             .ticks(10);
     }
 
-    var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
-    
+    var xAxis = d3.svg.axis()
+        .scale(x);
+
     $("#primary-chart").empty();
 
     var svg = d3.select("#primary-chart").append("svg")
@@ -100,7 +105,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     // Add a grid
     svg.append("g")
         .attr("class", "grid")
-        .call(make_y_axis()
+        .call(yAxis()
             .tickSize(-width, 0, 0)
             .tickFormat("")
         );
@@ -124,6 +129,19 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
                 .style("font-size","10px")
                 .style("opacity", 0.5);
         });
+
+    svg.append("g")
+        .attr("class", "x-axis")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "start")
+        .attr('y', -10)
+        .attr('x', 10)
+        .style('font-size','12px')
+        .attr("transform", function(d) {
+            return "rotate(-45)";
+                })
+        .append('text');
 
     var textTopLabels = svg.append("text")
         .attr("x", 70)

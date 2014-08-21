@@ -33,17 +33,21 @@ svg {
   font: 10px sans-serif;
 }
 
- .background path {
-   fill: none;
-   stroke: steelblue;
-   stroke-width: 1;
- }
+.domain {
+  opacity:0;
+}
 
- .foreground path {
-   fill: none;
-   stroke: steelblue;
-   stroke-width: 4;
- }
+.background path {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1;
+}
+
+.foreground path {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 4;
+}
 
 .PI-background path {
   fill: none;
