@@ -26,7 +26,7 @@ function IRI_PCP_Chart(iriPcpData) {
     for (var k in iriPcpData) {
         keys.push(k);
     }
-    var m = [80, 160, 10, 160],
+    var m = [80, 10, 10, 120],
         w = 990 - m[1] - m[3],
         h = 590 - m[0] - m[2];
     
@@ -37,107 +37,127 @@ function IRI_PCP_Chart(iriPcpData) {
         axis = d3.svg.axis().orient("left"),
         foreground;
 
+    var x_scale = d3.scale.linear().domain([0, w]).range([0, w]);
+    var y_scale = d3.scale.linear().range([0, h]).domain([1, 0]);
+
+    function yAxis() {
+        return d3.svg.axis()
+            .scale(y_scale)
+            .orient("left")
+            .ticks(10);
+    }
+
+    var xAxis = d3.svg.axis()
+        .scale(x);
+
     $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
+        .attr("viewBox", "-30 110 1100 590")
+        .attr("id", "IRI-svg-element")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + ",5)");
     
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+    var aspect = windowWidth / windowHeight,
+        chart = $("#IRI-svg-element");
+
+    function resize() {
+        var targetWidth = chart.parent().width();
+        chart.attr("width", targetWidth);
+        chart.attr("height", targetWidth / aspect);
+    }
+
+    resize();
+
+    $(window).on("resize", function() {
+        resize();
+    });
     
-        // Create a scale and brush for each trait.
-        municipality.forEach(function(d) {
-            // Coerce values to numbers.
-            iriPcpData.forEach(function(p) { p[d] = +p[d]; });
-            y[d] = d3.scale.linear()
-                .domain([0,1])
-                .range([h, 0]);
-      
-            y[d].brush = d3.svg.brush()
-                .y(y[d])
-                .on("brush", brush);
-        });
-        // Add a legend.
-        var legend = svg.selectAll("g.legend")
-            .data(plotElements)
-            .enter().append("svg:g")
-            .attr("class", "legend");
-      
-        legend.append("svg:line")
-            .attr("class", String)
-            .attr("x2", -28)
-            .attr("y2", 0)
-            .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
-        legend.append("svg:text")
-            .attr("x", -125)
-            .attr("y", -510)
-            .attr("dy", ".31em")
-            .text("test");
-        legend.append("svg:text")
-            .attr("x", -125)
-            .attr("y", -510)
-            .attr("dy", ".31em")
-            .text(function(d) { return d; })
-            .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
-      
-        // Add foreground lines.
-        foreground = svg.append("svg:g")
-            .attr("class", "foreground")
-            .selectAll("path")
-            .data(iriPcpData)
-            .enter().append("svg:path")
-            .attr("d", path)
-            .attr("class", function(d) { return d.plotElement; });
-      
-        // Add a group element for each trait.
-        var g = svg.selectAll(".trait")
-            .data(municipality)
-            .enter().append("svg:g")
-            .attr("class", "trait")
-            .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-            .call(d3.behavior.drag()
-            .origin(function(d) { return {x: x(d)}; })
-            .on("dragstart", dragstart)
-            .on("drag", drag)
-            .on("dragend", dragend));
-      
-        // Add an axis and title.
-        g.append("svg:g")
-            .attr("class", "axis")
-            .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-            .append("svg:text")
-            .attr("id", "attrLable")
-            .attr("text-anchor", "left")
-            .attr("y", 355)
-            .attr("x", 355)
-            .text(String);
-      
-        // Add a brush for each axis.
-        g.append("svg:g")
-            .attr("class", "brush")
-            .each(function(d) { d3.select(this).call(y[d].brush); })
-            .selectAll("rect")
-            .attr("x", -8)
-            .attr("width", 16);
-      
-        function dragstart(d) {
-            i = keys.indexOf(d);
-        }
-      
-        function drag(d) {
-            x.range()[i] = d3.event.x;
-            keys.sort(function(a, b) { return x(a) - x(b); });
-            g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-            foreground.attr("d", path);
-        }
-      
-        function dragend(d) {
-            x.domain(keys).rangePoints([0, w]);
-            var t = d3.transition().duration(500);
-            t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-            t.selectAll(".foreground path").attr("d", path);
-        }
+    // Create a scale and brush for each trait.
+    municipality.forEach(function(d) {
+        // Coerce values to numbers.
+        iriPcpData.forEach(function(p) { p[d] = +p[d]; });
+        y[d] = d3.scale.linear()
+            .domain([0,1])
+            .range([h, 0]);
+  
+        y[d].brush = d3.svg.brush()
+            .y(y[d])
+            .on("brush", brush);
+    });
+
+    // Add a legend.
+    var legend = svg.selectAll("g.legend")
+        .data(plotElements)
+        .enter().append("svg:g")
+        .style("font-size","14px")
+        .style("font-style", "bold")
+        .attr("class", "legend");
+  
+    legend.append("svg:line")
+        .attr("class", String)
+        .attr("x2", -28)
+        .attr("y2", 0)
+        .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
+
+    legend.append("svg:text")
+        .attr("x", -125)
+        .attr("y", -510)
+        .attr("dy", ".31em")
+        .text(function(d) { return d; })
+        .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
+  
+    // Add foreground lines.
+    foreground = svg.append("svg:g")
+        .attr("class", "foreground")
+        .selectAll("path")
+        .data(iriPcpData)
+        .enter().append("svg:path")
+        .attr("d", path)
+        .attr("class", function(d) { return d.plotElement; });
+
+    // Add a grid
+    svg.append("g")
+        .attr("class", "grid")
+        .call(yAxis()
+            .tickSize(-w, 0, 0)
+            .tickFormat("")
+        );
+  
+    var g = svg.selectAll(".dimension")
+        .data(dimensions)
+        .enter().append("g");
+
+    // Add an axis and title.
+    g.append("svg:g")
+        .attr("class", "axis")
+        .each(function(d) { d3.select(this).call(axis.scale(y_scale)); })
+        .append("svg:text")
+        .style("text-anchor", "middle")
+        .style("opacity", 0.5)
+        .attr("y", -9);
+
+    function dragstart(d) {
+        i = keys.indexOf(d);
+    }
+  
+    function drag(d) {
+        x.range()[i] = d3.event.x;
+        keys.sort(function(a, b) { return x(a) - x(b); });
+        g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+        foreground.attr("d", path);
+    }
+  
+    function dragend(d) {
+        x.domain(keys).rangePoints([0, w]);
+        var t = d3.transition().duration(500);
+        t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+        t.selectAll(".foreground path").attr("d", path);
+    }
         
     // Update the css for each plotElements
     $("."+plotElements[0]).css('stroke', 'red');
