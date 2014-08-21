@@ -48,9 +48,9 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
 
     var maxVal = Math.max.apply( Math, tmpArray );
         
-    var margin = {top: 100, right: 40, bottom: 10, left: 50},
+    var margin = {top: 100, right: 50, bottom: 10, left: 50},
         width = 990 - margin.left - margin.right,
-        height = 590 - margin.top - margin.bottom;
+        height = 500 - margin.top - margin.bottom;
     
     var x = d3.scale.ordinal().rangePoints([0, width], 1),
         y = {};
@@ -77,11 +77,33 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     $("#primary-chart").empty();
 
     var svg = d3.select("#primary-chart").append("svg")
+        .attr("viewBox", "-30 150 1100 590")
+        .attr("id", "chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
+
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+
+    var aspect = windowWidth / windowHeight,
+        chart = $("#chart");
+
+    resize();
+
+    function resize() {
+        var targetWidth = chart.parent().width();
+        chart.attr("width", targetWidth);
+        chart.attr("height", targetWidth / aspect);
+    }
+
+    $(window).on("resize", function() {
+        resize();
+    });
+
+
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(primaryData[0]).filter(function(d) {
         return d != "municipality" && d != "scalePIvalues" && d != "getPIvalues" && (y[d] = d3.scale.linear()
@@ -117,18 +139,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
         //.append("text")
         .style("text-anchor", "middle")
         .style("opacity", 0.5)
-        .attr("y", -9)
-        .on("mouseover", function(d) {
-            textTopLabels.text("Attribute: "+ d);
-            d3.select(this)
-                .style("font-size","14px")
-                .style("opacity", 1);
-        }).on("mouseout", function() {
-            textTopLabels.text("");
-            d3.select(this)
-                .style("font-size","10px")
-                .style("opacity", 0.5);
-        });
+        .attr("y", -9);
 
     svg.append("g")
         .attr("class", "x-axis")
