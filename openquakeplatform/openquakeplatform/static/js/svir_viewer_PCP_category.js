@@ -27,9 +27,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     catData.pop();
     concat.pop();
 
-    var bar = ['1', '2', '3', '4', '5'];
     var data = catData;
-        
     var margin = {top: 60, right: 10, bottom: 10, left: 10},
         width = 990 - margin.left - margin.right,
         height = 590 - margin.top - margin.bottom;
@@ -63,14 +61,29 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     $('#cat-chart').empty();
 
     var svg = d3.select('#cat-chart').append('svg')
+        .attr("viewBox", "-30 110 1100 590")
+        .attr("id", "CI-svg-element")
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    
-    ////////////////
-    // Base Chart //
-    ////////////////      
+
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+    var aspect = windowWidth / windowHeight,
+        chart = $("#CI-svg-element");
+
+    resize();
+
+    function resize() {
+        var targetWidth = chart.parent().width();
+        chart.attr("width", targetWidth);
+        chart.attr("height", targetWidth / aspect);
+    }
+
+    $(window).on("resize", function() {
+        resize();
+    });
     
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
@@ -79,16 +92,6 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
             .range([height, 0]));
     }));
     var z = d3.scale.category20c();
-/*
-        // Add grey background lines for context.
-        background1 = svg.append("g")
-            .attr("class", "background")
-            .selectAll("path")
-            .data(demoLine1)
-            .enter().append("path")
-            .attr("d", path);
-
-*/
     
     // Add blue foreground lines for focus.
     foreground = svg.append('g')
