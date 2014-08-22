@@ -34,7 +34,10 @@ svg {
 }
 
 .domain {
-  opacity:0.4;
+  stroke: gray;
+  stroke-width: 2;
+  stroke-opacity:0.4;
+  fill-opacity:0;
 }
 
 .background path {

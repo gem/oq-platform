@@ -96,24 +96,28 @@ function IRI_PCP_Chart(iriPcpData) {
     // grid line functions
     function x_grid() {
         return d3.svg.axis()
-            .scale(x_scale)
-            .orient('bottom')
-            .ticks(5);
+            .scale(x)
+            .orient('bottom');
+    }
+
+    function y_grid() {
+        return d3.svg.axis()
+            .scale(y_scale)
+            .orient('left');
     }
 
     // Add a grid
-
     svg.append("g")
         .attr("class", "grid")
         .call(x_grid()
-            .tickSize(w, 0, 0)
+            .tickSize(h, 0, 0)
             .tickFormat("")
         );
 
 
     svg.append("g")
         .attr("class", "grid")
-        .call(yAxis()
+        .call(y_grid()
             .tickSize(-w, 0, 0)
             .tickFormat("")
         );
