@@ -148,6 +148,7 @@ var startApp = function() {
 
     var map = new L.Map('map', {
         minZoom: 2,
+        scrollWheelZoom: false,
         attributionControl: false,
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
@@ -192,36 +193,6 @@ var startApp = function() {
     function showRemoveMsg() {
         $('#warning-no-layer').dialog('open');
     }
-/*
-    //  Project definition dialog
-    $('#projectDefDialog').dialog({
-        autoOpen: false,
-        height: 500,
-        width: 800,
-        modal: false
-    });
-*/
-/*
-    //  IRI PCP dialog
-    $('#pcp-charts').dialog({
-        autoOpen: false,
-        height: 660,
-        width: 1100,
-        modal: false,
-        open: function() {
-            $('#chart-tabs').tabs({
-                create: function(e, ui) {
-                    $('#closeBtn').click(function() {
-                        $('#pcp-charts').dialog('close');
-                    });
-                }
-            });
-        }
-    });
-*/
-    //$('#project-definition').button().click(function() {
-       // $('#projectDefDialog').dialog('open');
-    //});
 
     $('#warning-no-layer').dialog({
         autoOpen: false,
