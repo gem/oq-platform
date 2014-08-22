@@ -26,10 +26,6 @@ var selectedValue4 = new Array(1, 9.374, 4.413, 5.093, 1, 1); //TODO fix these d
 var selectedValue5 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
 var selectedValue6 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
 var attrSelection = [];
-var svirRankKeys = [];
-var svirRankValues = [];
-var svirRegionRankKeys = [];
-var svirRegionRankValues = [];
 var layerControl;
 var selectedPDef;
 var previousCatData = [];
