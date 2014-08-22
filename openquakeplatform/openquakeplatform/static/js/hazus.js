@@ -48,9 +48,10 @@ var startApp = function() {
         } else if (baseMapSelection == 2) {
             if (bing_key == undefined) {
                 alert("A bing maps API key has not been added to this platform, please refer to the installation instructions for details");
+            } else {
+                baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
+                map.addLayer(baseMapUrl);
             }
-            baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
-            map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 5) {
             baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
