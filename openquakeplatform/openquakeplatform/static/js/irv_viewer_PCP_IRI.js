@@ -51,7 +51,6 @@ function IRI_PCP_Chart(iriPcpData) {
         .scale(x);
 
     $("#iri-chart").empty();
-    console.log($("#iri-chart").val);
 
     var svg = d3.select("#iri-chart").append("svg")
         .attr("viewBox", "-30 130 1100 300")
@@ -60,8 +59,6 @@ function IRI_PCP_Chart(iriPcpData) {
         .attr("height", h + m[0] + m[2])
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + ",5)");
-
-        console.log($("#iri-chart").val);
     
     var windowWidth = $(window).width();
     var windowHeight = $(window).height();

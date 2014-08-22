@@ -115,6 +115,16 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
 
+    // TODO fix this, this is a work around needed becasue the
+    // resize does not respect itself
+    $('#categoryTabs').tabs({
+        activate: function(event,ui) {
+        console.log("fire me NOW");
+        $('#IRI-svg-element').empty();
+        $('#CI-svg-element').empty();
+        }
+    });
+    
         // switch base maps
     $('#base-map-menu').change(function() {
         var baseMapSelection = document.getElementById('base-map-menu').value;
@@ -338,8 +348,6 @@ var startApp = function() {
         $('#addLayer').click(function() {
             var e = document.getElementById('layer-list');
             var layerId = e.options[e.selectedIndex].value;
-
-            $('#foo').empty();
 
             // Look up the project definition layer id using the layer name
             var selectedPDefArray = projectDefinition[layerId];

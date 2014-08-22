@@ -74,7 +74,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     $("#primary-chart").empty();
 
     var svg = d3.select("#primary-chart").append("svg")
-        .attr("viewBox", "-30 150 1100 590")
+        .attr("viewBox", "-30 80 1100 590")
         .attr("id", "PI-svg-element")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
