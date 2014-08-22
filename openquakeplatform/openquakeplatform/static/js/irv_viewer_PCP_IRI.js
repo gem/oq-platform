@@ -54,7 +54,7 @@ function IRI_PCP_Chart(iriPcpData) {
     console.log($("#iri-chart").val);
 
     var svg = d3.select("#iri-chart").append("svg")
-        .attr("viewBox", "-30 200 1100 300")
+        .attr("viewBox", "-30 130 1100 300")
         .attr("id", "IRI-svg-element")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
@@ -93,7 +93,24 @@ function IRI_PCP_Chart(iriPcpData) {
             .on("brush", brush);
     });
 
+    // grid line functions
+    function x_grid() {
+        return d3.svg.axis()
+            .scale(x_scale)
+            .orient('bottom')
+            .ticks(5);
+    }
+
     // Add a grid
+
+    svg.append("g")
+        .attr("class", "grid")
+        .call(x_grid()
+            .tickSize(w, 0, 0)
+            .tickFormat("")
+        );
+
+
     svg.append("g")
         .attr("class", "grid")
         .call(yAxis()
@@ -111,7 +128,7 @@ function IRI_PCP_Chart(iriPcpData) {
   
     legend.append("svg:line")
         .attr("class", String)
-        .attr("x2", -28)
+        .attr("x2", -18)
         .attr("y2", 0)
         .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
 
@@ -143,6 +160,19 @@ function IRI_PCP_Chart(iriPcpData) {
         .style("text-anchor", "middle")
         .style("opacity", 0.5)
         .attr("y", -9);
+
+    svg.append("g")
+        .attr("class", "x-axis")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "start")
+        .attr('y', -10)
+        .attr('x', 10)
+        .style('font-size','12px')
+        .attr("transform", function(d) {
+            return "rotate(-45)";
+                })
+        .append('text');
 
     function dragstart(d) {
         i = keys.indexOf(d);
