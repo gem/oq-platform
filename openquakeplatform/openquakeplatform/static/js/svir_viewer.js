@@ -425,14 +425,7 @@ var startApp = function() {
         obj5[attrSelection[4]] = selectedValue5[5];
         obj5[attrSelection[5]] = selectedValue6[5];
 
-<<<<<<< HEAD
-        console.log(attrSelection[0]);
-        console.log(selectedValue1[5]);
-
         chartArray.splice(0,10);        
-=======
-        chartArray.splice(0,10);
->>>>>>> consistent-base-maps
 
         for (var i=0; i<numberOfCountries; i++) {
             chartArray[i] = window["obj" + i];
@@ -440,11 +433,6 @@ var startApp = function() {
 
         var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
             attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
-<<<<<<< HEAD
-        console.log(chartArray);
-        console.log(attributes);
-=======
->>>>>>> consistent-base-maps
 
         for (var i=0; i<numberOfCountries; i++) {
             country.splice(numberOfCountries,10);
@@ -577,11 +565,6 @@ var startApp = function() {
         $("."+countriesArray[4]).css('stroke', 'purple');
         $("."+countriesArray[5]).css('stroke', 'black');
 
-<<<<<<< HEAD
-        console.log(countriesArray);
-        
-=======
->>>>>>> consistent-base-maps
         // Returns the path for a given data point.
         function path(d) {
             return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
@@ -780,11 +763,6 @@ var startApp = function() {
 
                 countriesArray.unshift(countryName);
 
-<<<<<<< HEAD
-                console.log(selectedValue1);
-    
-=======
->>>>>>> consistent-base-maps
                 if (countriesArray.length > 6) {
                     countriesArray.pop();
                 }
