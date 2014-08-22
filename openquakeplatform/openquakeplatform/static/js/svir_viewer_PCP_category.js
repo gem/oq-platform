@@ -61,7 +61,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     $('#cat-chart').empty();
 
     var svg = d3.select('#cat-chart').append('svg')
-        .attr("viewBox", "0 200 950 300")
+        .attr("viewBox", "0 170 950 300")
         .attr("id", "CI-svg-element")
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)

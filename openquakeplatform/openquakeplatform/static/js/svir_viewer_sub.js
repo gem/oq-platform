@@ -1152,6 +1152,19 @@ var startApp = function() {
         iriPcpData.push(scaledSviIndicator);
         iriPcpData.push(scaledAalIndicator);
 
+            var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+    var aspect = windowWidth / windowHeight,
+        chart = $("#IRI-svg-element");
+
+    function resize() {
+        var targetWidth = chart.parent().width();
+        chart.attr("width", targetWidth);
+        chart.attr("height", targetWidth / aspect);
+    }
+
+    resize();
+
         IRI_PCP_Chart(iriPcpData);
     } // End process indicators function
 };
