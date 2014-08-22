@@ -94,9 +94,8 @@ urlpatterns = patterns('',
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^grv_viewer/$', OQTemplateView.as_view(
         template_name="grv_viewer.html"), name='grv_viewer'),
-
-    url(r'^svir_viewer_sub/$', OQTemplateView.as_view(
-        template_name="svir_viewer_sub.html"), name='svir_viewer_sub'),
+    url(r'^irv_viewer/$', OQTemplateView.as_view(
+        template_name="irv_viewer.html"), name='irv_viewer'),
 
     url(r'^hazus/$', OQTemplateView.as_view(
 
