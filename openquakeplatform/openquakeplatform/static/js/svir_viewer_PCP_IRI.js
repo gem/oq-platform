@@ -28,7 +28,7 @@ function IRI_PCP_Chart(iriPcpData) {
     }
     var m = [80, 10, 10, 120],
         w = 990 - m[1] - m[3],
-        h = 590 - m[0] - m[2];
+        h = 300 - m[0] - m[2];
     
     var x = d3.scale.ordinal().domain(municipality).rangePoints([0, w]),
         y = {};
@@ -53,7 +53,7 @@ function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
-        .attr("viewBox", "-30 110 1100 590")
+        .attr("viewBox", "-30 200 1100 300")
         .attr("id", "IRI-svg-element")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
@@ -65,7 +65,10 @@ function IRI_PCP_Chart(iriPcpData) {
     var aspect = windowWidth / windowHeight,
         chart = $("#IRI-svg-element");
 
+    console.log("check the size:" + windowHeight+ " " + windowWidth);
+
     function resize() {
+        console.log("runnthe resize function NOW MOTHER  FUCKER");
         var targetWidth = chart.parent().width();
         chart.attr("width", targetWidth);
         chart.attr("height", targetWidth / aspect);
@@ -89,6 +92,14 @@ function IRI_PCP_Chart(iriPcpData) {
             .y(y[d])
             .on("brush", brush);
     });
+
+    // Add a grid
+    svg.append("g")
+        .attr("class", "grid")
+        .call(yAxis()
+            .tickSize(-w, 0, 0)
+            .tickFormat("")
+        );
 
     // Add a legend.
     var legend = svg.selectAll("g.legend")
@@ -119,14 +130,6 @@ function IRI_PCP_Chart(iriPcpData) {
         .enter().append("svg:path")
         .attr("d", path)
         .attr("class", function(d) { return d.plotElement; });
-
-    // Add a grid
-    svg.append("g")
-        .attr("class", "grid")
-        .call(yAxis()
-            .tickSize(-w, 0, 0)
-            .tickFormat("")
-        );
   
     var g = svg.selectAll(".dimension")
         .data(dimensions)
