@@ -85,7 +85,6 @@ var startApp = function() {
         });
     });
 
-
     $(function() {
         $('#transparency-slider').slider({
             min: 0,
@@ -436,6 +435,9 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
+        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog('option', 'title', 'Plot');
+        $('#chartDialog').empty();
         $('#addTileUhs').attr('disabled', true);
         $('#removeTileUhs').attr('disabled', true);
         $('#addTileLoss').attr('disabled', true);
@@ -507,6 +509,9 @@ var startApp = function() {
     }); //end add tile curve
 
     $('#addTileUhs').click(function() {
+        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog('option', 'title', 'Plot');
+        $('#chartDialog').empty();
         $('#addTileCurve').attr('disabled', true);
         $('#removeTileCurve').attr('disabled', true);
         $('#addTileLoss').attr('disabled', true);
@@ -564,6 +569,9 @@ var startApp = function() {
     }); // end add uhs curve
 
     $('#addTileLoss').click(function() {
+        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog('option', 'title', 'Plot');
+        $('#chartDialog').empty();
         $('#addTileCurve').attr('disabled', true);
         $('#removeTileCurve').attr('disabled', true);
         $('#addTileUhs').attr('disabled', true);
@@ -714,13 +722,17 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
+
             var e = document.getElementById('layer-list');
             var mapLayerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
-            var mapLayerIdArray = mapLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
+            var selectedLayer = mapLayerNames[mapLayerId];
+            var selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
+
+            console.log("selectedLayer");
+            console.log(selectedLayer);
 
             // Check for duplicae layes
             if (selectedLayer in layers) {
@@ -751,6 +763,13 @@ var startApp = function() {
                         '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                     map.addLayer(utfGrid);
                     hazardCurveUtfGridClickEvent(utfGrid);
+                    $("#chartDialog ").dialog({width: 200,height:150});
+                    $('#chartDialog').dialog('option', 'title', 'Map Value');
+
+                    utfGrid.on('mouseover', function (e) {
+                        $('#chartDialog').empty();
+                        $('#chartDialog').append(e.data.VAL);
+                    });
                 }
                 Transparency(tileLayer);
             }
