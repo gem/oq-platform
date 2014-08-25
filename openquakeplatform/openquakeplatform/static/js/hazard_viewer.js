@@ -731,9 +731,6 @@ var startApp = function() {
             var selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 
-            console.log("selectedLayer");
-            console.log(selectedLayer);
-
             // Check for duplicae layes
             if (selectedLayer in layers) {
                 showDuplicateMsg();
@@ -771,6 +768,14 @@ var startApp = function() {
                         $('#chartDialog').append(e.data.VAL);
                     });
                 }
+
+                // get more information about the selected layer
+                $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                    var bounds = json.bounds;
+                    console.log(bounds);
+                    map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+                });
+
                 Transparency(tileLayer);
             }
         });
