@@ -57,15 +57,53 @@ var chart;
 
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 
+// var's for bing
+var count_down = 50;
+var bing;
+var bing_key;
+
 try {
-    var bing_key = BING_KEY.bing_key;
+    bing_key = BING_KEY.bing_key;
 } catch(e) {
-    // continue
+    bing_key = null;
 }
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
+
+    var map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+
+    layers = {};
+
+    layerControl = L.control.layers(app.baseLayers);
+
+
+    var bingMapApiStatus;
+
+    if (bing_key != null) {
+        bing = new L.BingLayer(bing_key);
+        setTimeout(function () { checkBingApi(bing); }, 100);
+    }
+
+    function checkBingApi(binz) {
+        if (typeof(binz.meta.statusCode) == 'undefined') {
+            count_down--;
+            setTimeout(function () { checkBingApi(binz); }, 100);
+            return;
+            }
+        if (binz.meta.statusCode == 200) {
+            bingMapApiStatus = true;
+        }
+        else {
+            bingMapApiStatus = false;
+            }
+    }
 
     // switch base maps
     $('#base-map-menu').change(function() {
@@ -81,11 +119,11 @@ var startApp = function() {
             baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
             map.addLayer(baseMapUrl);
         } else if (baseMapSelection == 2) {
-            if (bing_key == undefined) {
-                alert("A bing maps API key has not been added to this platform, please refer to the installation instructions for details");
-            } else {
+            if (bingMapApiStatus == true) {
                 baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
                 map.addLayer(baseMapUrl);
+            } else if (bingMapApiStatus == false) {
+                alert("The Bing maps API key is either invalid or expired");
             }
         } else if (baseMapSelection == 5) {
             baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
@@ -94,17 +132,6 @@ var startApp = function() {
     });
 
     $('#base-map-menu').css({ 'margin-bottom' : 0 });
-
-    var map = new L.Map('map', {
-        minZoom: 2,
-        attributionControl: false,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
-    });
-    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
-
-    layers = {};
-
-    layerControl = L.control.layers(app.baseLayers);
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {

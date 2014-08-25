@@ -67,6 +67,9 @@ var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
+// var's for bing
+var count_down = 50;
+var bing;
 var bing_key;
 
 try {
@@ -74,9 +77,6 @@ try {
 } catch(e) {
     bing_key = null;
 }
-
-var count_down = 50;
-var bing;
 
 var startApp = function() {
     $(function() {
@@ -88,8 +88,6 @@ var startApp = function() {
             position: {at: 'right bottom'}
         });
     });
-
-    $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
     var map = new L.Map('map', {
         minZoom: 2,
@@ -152,6 +150,8 @@ var startApp = function() {
             map.addLayer(baseMapUrl);
         }
     });
+
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
