@@ -85,6 +85,16 @@ var startApp = function() {
         });
     });
 
+
+    $(function() {
+        $('#transparency-slider').slider({
+            min: 0,
+            max: 1,
+            step: 0.1,
+            value: 1
+        });
+    });
+
     // switch base maps
     $('#base-map-menu').change(function() {
         var baseMapSelection = document.getElementById('base-map-menu').value;
@@ -742,9 +752,19 @@ var startApp = function() {
                     map.addLayer(utfGrid);
                     hazardCurveUtfGridClickEvent(utfGrid);
                 }
+                Transparency(tileLayer);
             }
         });
     });
+
+    function Transparency(tileLayer) {
+        $('#transparency-slider').slider({
+            change: function( event, ui) {
+                var val = $('#transparency-slider').slider("option", "value");
+                tileLayer.setOpacity(val);
+            }
+        });
+    }
 
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
