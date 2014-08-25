@@ -28,9 +28,9 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     concat.pop();
 
     var data = catData;
-    var margin = {top: 120, right: 10, bottom: 10, left: 10},
+    var margin = {top: 50, right: 10, bottom: 10, left: 10},
         width = 990 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        height = 350 - margin.top - margin.bottom;
     
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
@@ -61,7 +61,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     $('#cat-chart').empty();
 
     var svg = d3.select('#cat-chart').append('svg')
-        .attr("viewBox", "0 250 950 300")
+        .attr("viewBox", "0 0 950 300")
         .attr("id", "CI-svg-element")
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)

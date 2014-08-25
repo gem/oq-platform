@@ -53,7 +53,7 @@ function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
-        .attr("viewBox", "-30 130 1100 300")
+        .attr("viewBox", "-30 0 1100 300")
         .attr("id", "IRI-svg-element")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
