@@ -750,6 +750,8 @@ var startApp = function() {
                     '.json'});
                 layerControl.addOverlay(tileLayer, selectedLayer);
                 map.addLayer(tileLayer);
+                var val = $('#transparency-slider').slider("option", "value");
+                tileLayer.setOpacity(val);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
 
@@ -772,7 +774,6 @@ var startApp = function() {
                 // get more information about the selected layer
                 $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                     var bounds = json.bounds;
-                    console.log(bounds);
                     map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
                 });
 
