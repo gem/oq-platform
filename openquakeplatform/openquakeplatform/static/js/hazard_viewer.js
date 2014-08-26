@@ -728,7 +728,7 @@ var startApp = function() {
 
             // Look up the layer id using the layer name
             var selectedLayer = mapLayerNames[mapLayerId];
-            var selectedLayer = selectedLayer.toString();
+            selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 
             // Check for duplicae layes
@@ -1441,7 +1441,7 @@ var startApp = function() {
                 .attr('x', 40)
                 .style('font-size','12px')
                 .attr("transform", function(d) {
-                    return "rotate(45)";
+                    return "rotate(90)";
                         })
             .append('text')
             .attr('x', 160)
