@@ -722,7 +722,6 @@ var startApp = function() {
                 });
             }
 
-            console.log("hi there?!?!");
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 var bounds = json.bounds;
@@ -762,6 +761,9 @@ var startApp = function() {
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.iml;
                 layerImt = json.imt;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+
             });
         } else if (curveType == 'uhs') {
             var e = document.getElementById('uhs-list');
@@ -776,6 +778,8 @@ var startApp = function() {
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.periods;
                 layerPoe = json.poe;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
         }
 
@@ -819,6 +823,8 @@ var startApp = function() {
             layerInvestigationTime = json.investigationTime;
             layerIml = json.iml;
             layerImt = json.imt;
+            var bounds = json.bounds;
+            map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
         var hasGrid = $.inArray(selectedLayer, lossLayerGrids) > -1;
@@ -865,6 +871,8 @@ var startApp = function() {
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.iml;
                 layerImt = json.imt;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
 
         }
@@ -876,11 +884,13 @@ var startApp = function() {
             var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
             var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
-                    // get more information about the selected layer for use in chart
+            // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.periods;
                 layerPoe = json.poe;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
         }
 
