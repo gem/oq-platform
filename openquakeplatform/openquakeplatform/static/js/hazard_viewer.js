@@ -59,6 +59,7 @@ var selectedUhs = [];
 var selectedLoss = [];
 var lossLayerId = {};
 var lossLayerTitle = {};
+var tileLayer = {};
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
@@ -140,34 +141,6 @@ var startApp = function() {
     function unCapitalize(str) {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toLowerCase() + txt.substr(1).toLowerCase();});
     }
-
-    // Duplicate layer warnning message
-    function showDuplicateMsg() {
-        $('#worning-duplicate').dialog('open');
-    }
-
-    $(document).ready(function() {
-        $('#worning-duplicate').dialog({
-            autoOpen: false,
-            height: 100,
-            width: 350,
-            modal: true
-        });
-    });
-
-    // Duplicate grid warnning message
-    function showDuplicateGridMsg() {
-        $('#worning-duplicate-grid').dialog('open');
-    }
-
-    $(document).ready(function() {
-        $('#worning-duplicate-grid').dialog({
-            autoOpen: false,
-            height: 300,
-            width: 350,
-            modal: true
-        });
-    });
 
     // Slider
     $(function() {
@@ -438,11 +411,6 @@ var startApp = function() {
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
-        $('#addTileUhs').attr('disabled', true);
-        $('#removeTileUhs').attr('disabled', true);
-        $('#addTileLoss').attr('disabled', true);
-        $('#removeTileLoss').attr('disabled', true);
-
         var e = document.getElementById('curve-list');
         var option = e.options[e.selectedIndex].value;
         var investType = checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option);
@@ -512,10 +480,6 @@ var startApp = function() {
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
-        $('#addTileCurve').attr('disabled', true);
-        $('#removeTileCurve').attr('disabled', true);
-        $('#addTileLoss').attr('disabled', true);
-        $('#removeTileLoss').attr('disabled', true);
 
         var e = document.getElementById('uhs-list');
         var option = e.options[e.selectedIndex].value;
@@ -572,10 +536,6 @@ var startApp = function() {
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
-        $('#addTileCurve').attr('disabled', true);
-        $('#removeTileCurve').attr('disabled', true);
-        $('#addTileUhs').attr('disabled', true);
-        $('#removeTileUhs').attr('disabled', true);
 
         lossCurve();
     }); // end add loss curve
@@ -731,54 +691,45 @@ var startApp = function() {
             selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 
-            // Check for duplicae layes
-            if (selectedLayer in layers) {
-                showDuplicateMsg();
-            }
-            else if (hasGrid == true && gridList > 0) {
-                showDuplicateGridMsg();
-            }
-            else {
-                // Remove any existing UtfGrid layers in order to avoid conflict
-                map.removeLayer(utfGrid);
-                utfGrid = {};
 
-                var tileLayer = L.tileLayer(TILESTREAM_URL +
+            // Remove any existing UtfGrid layers in order to avoid conflict
+            map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+            utfGrid = {};
+            tileLayer = L.tileLayer(TILESTREAM_URL +
+                selectedLayer +
+                '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+                selectedLayer +
+                '.json'});
+            layerControl.addOverlay(tileLayer, selectedLayer);
+            map.addLayer(tileLayer);
+            var val = $('#transparency-slider').slider("option", "value");
+            tileLayer.setOpacity(val);
+            // Keep track of layers that have been added
+            layers[selectedLayer] = tileLayer;
+            if (hasGrid == true) {
+                gridList = 1;
+                utfGrid = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
-                    '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-                    selectedLayer +
-                    '.json'});
-                layerControl.addOverlay(tileLayer, selectedLayer);
-                map.addLayer(tileLayer);
-                var val = $('#transparency-slider').slider("option", "value");
-                tileLayer.setOpacity(val);
-                // Keep track of layers that have been added
-                layers[selectedLayer] = tileLayer;
-
-                if (hasGrid == true) {
-                    gridList = 1;
-                    utfGrid = new L.UtfGrid(TILESTREAM_URL +
-                        selectedLayer +
-                        '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                    map.addLayer(utfGrid);
-                    hazardCurveUtfGridClickEvent(utfGrid);
-                    $("#chartDialog ").dialog({width: 200,height:150});
-                    $('#chartDialog').dialog('option', 'title', 'Map Value');
-
-                    utfGrid.on('mouseover', function (e) {
-                        $('#chartDialog').empty();
-                        $('#chartDialog').append(e.data.VAL);
-                    });
-                }
-
-                // get more information about the selected layer
-                $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                    var bounds = json.bounds;
-                    map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+                    '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                map.addLayer(utfGrid);
+                hazardCurveUtfGridClickEvent(utfGrid);
+                $("#chartDialog ").dialog({width: 200,height:150});
+                $('#chartDialog').dialog('option', 'title', 'Map Value');
+                utfGrid.on('mouseover', function (e) {
+                    $('#chartDialog').empty();
+                    $('#chartDialog').append(e.data.VAL);
                 });
-
-                Transparency(tileLayer);
             }
+
+            console.log("hi there?!?!");
+            // get more information about the selected layer
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+            });
+            Transparency(tileLayer);
+        
         });
     });
 
@@ -794,9 +745,10 @@ var startApp = function() {
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
         if (curveType == 'hc') {
-
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+
             utfGrid = {};
             var e = document.getElementById('curve-list');
             var curveLayerId = e.options[e.selectedIndex].value;
@@ -828,41 +780,33 @@ var startApp = function() {
         }
 
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
-        // Check for duplicae layes
-        if (selectedLayer in layers) {
-            showDuplicateMsg();
-        }
-        else if (hasGrid == true && gridList > 0) {
-            showDuplicateGridMsg();
-        }
-        else {
-            var tileLayer = L.tileLayer(TILESTREAM_URL +
+
+        tileLayer = L.tileLayer(TILESTREAM_URL +
+            selectedLayer +
+            '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+            selectedLayer +
+            '.json'});
+        layerControl.addOverlay(tileLayer, selectedLayer);
+        console.log(tileLayer);
+        map.addLayer(tileLayer);
+        // Keep track of layers that have been added
+        layers[selectedLayer] = tileLayer;
+        if (hasGrid == true) {
+            gridList = 1;
+            utfGrid = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
-                '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-                selectedLayer +
-                '.json'});
-            layerControl.addOverlay(tileLayer, selectedLayer);
-
-            map.addLayer(tileLayer);
-            // Keep track of layers that have been added
-            layers[selectedLayer] = tileLayer;
-
-            if (hasGrid == true) {
-                gridList = 1;
-                utfGrid = new L.UtfGrid(TILESTREAM_URL +
-                    selectedLayer +
-                    '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                map.addLayer(utfGrid);
-
-                hazardCurveUtfGridClickEvent(utfGrid);
-            }
+                '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid, curveType);
         }
+        
     }
 
     // Add loss curve layers form tilestream list
     function lossCurve() {
         // Remove any existing UtfGrid layers in order to avoid conflict
         map.removeLayer(utfGrid);
+        map.removeLayer(tileLayer);
         utfGrid = {};
         var e = document.getElementById('loss-list');
         var lossLayerId = e.options[e.selectedIndex].value;
@@ -878,33 +822,23 @@ var startApp = function() {
         });
 
         var hasGrid = $.inArray(selectedLayer, lossLayerGrids) > -1;
-        // Check for duplicae layes
-        if (selectedLayer in layers) {
-            showDuplicateMsg();
-        }
-        else if (hasGrid == true && gridList > 0) {
-            showDuplicateGridMsg();
-        }
-        else {
-            var tileLayer = L.tileLayer(TILESTREAM_URL +
-                selectedLayer +
-                '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-                selectedLayer +
-                '.json'});
-            layerControl.addOverlay(tileLayer, selectedLayer);
-            map.addLayer(tileLayer);
-            // Keep track of layers that have been added
-            layers[selectedLayer] = tileLayer;
 
-            if (hasGrid == true) {
-                gridList = 1;
-                utfGrid = new L.UtfGrid(TILESTREAM_URL +
-                    selectedLayer +
-                    '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                map.addLayer(utfGrid);
-
-                lossCurveUtfGridClickEvent(utfGrid);
-            }
+        tileLayer = L.tileLayer(TILESTREAM_URL +
+            selectedLayer +
+            '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+            selectedLayer +
+            '.json'});
+        layerControl.addOverlay(tileLayer, selectedLayer);
+        map.addLayer(tileLayer);
+        // Keep track of layers that have been added
+        layers[selectedLayer] = tileLayer;
+        if (hasGrid == true) {
+            gridList = 1;
+            utfGrid = new L.UtfGrid(TILESTREAM_URL +
+                selectedLayer +
+                '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            lossCurveUtfGridClickEvent(utfGrid);
         }
     }
 
@@ -950,34 +884,25 @@ var startApp = function() {
             });
         }
 
-        // Check for duplicae layes
-        if (selectedLayer in layers) {
-            showDuplicateMsg();
-        }
-        else if (hasGrid == true && gridList > 0) {
-            showDuplicateGridMsg();
-        }
-        else {
-            map.removeLayer(utfGrid);
-            utfGrid = {};
-            var tileLayer = L.tileLayer(TILESTREAM_URL +
+        map.removeLayer(utfGrid);
+        map.removeLayer(tileLayer);
+        utfGrid = {};
+        tileLayer = L.tileLayer(TILESTREAM_URL +
+            selectedLayer +
+            '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+            selectedLayer +
+            '.json'});
+        layerControl.addOverlay(tileLayer, selectedLayer);
+        map.addLayer(tileLayer);
+        // Keep track of layers that have been added
+        layers[selectedLayer] = tileLayer;
+        if (hasGrid == true) {
+            gridList = 1;
+            utfGrid = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
-                '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-                selectedLayer +
-                '.json'});
-            layerControl.addOverlay(tileLayer, selectedLayer);
-            map.addLayer(tileLayer);
-            // Keep track of layers that have been added
-            layers[selectedLayer] = tileLayer;
-
-            if (hasGrid == true) {
-                gridList = 1;
-                utfGrid = new L.UtfGrid(TILESTREAM_URL +
-                    selectedLayer +
-                    '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                map.addLayer(utfGrid);
-                hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
-            }
+                '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
         }
     }
 
@@ -986,10 +911,11 @@ var startApp = function() {
         $('#removeTileLayer').click(function() {
             gridList = 0;
             map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            hazardCurveUtfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid, curveType);
             var e = document.getElementById('layer-list');
             var mapLayerId = e.options[e.selectedIndex].value;
 
@@ -1016,21 +942,19 @@ var startApp = function() {
             $('#removeTileUhs').attr('disabled', false);
             $('#addTileLoss').attr('disabled', false);
             $('#removeTileLoss').attr('disabled', false);
-
             $('#curve-check-box').remove();
             gridList = 0;
             map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            hazardCurveUtfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid, curveType);
             var e = document.getElementById('curve-list');
             var mapLayerId = e.options[e.selectedIndex].value;
-
             // Look up the layer id using the layer name
             var mapLayerIdArray = curveLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -1055,10 +979,11 @@ var startApp = function() {
             gridList = 0;
 
             map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            hazardCurveUtfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid, curveType);
             var e = document.getElementById('uhs-list');
             var mapLayerId = e.options[e.selectedIndex].value;
 
@@ -1088,10 +1013,11 @@ var startApp = function() {
             $('#curve-check-box').remove();
             gridList = 0;
             map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            hazardCurveUtfGridClickEvent(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid, curveType);
             var e = document.getElementById('loss-list');
             var mapLayerId = e.options[e.selectedIndex].value;
 
@@ -1145,7 +1071,7 @@ var startApp = function() {
         });
     });
 
-    var hazardCurveUtfGridClickEvent = function(utfGrid) {
+    var hazardCurveUtfGridClickEvent = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
             $('#chartDialog').dialog('open');
@@ -1158,10 +1084,17 @@ var startApp = function() {
             var invest_time;
             var imt;
 
-            if (e.data) {
+            if (curveType == 'uhs') {
+                prob = e.data.poe;
+            } else if (curveType == 'hc') {
                 prob = e.data.prob;
+            }
+
+            if (e.data) {
                 probArray = prob.split(',');
                 iml = e.data.iml;
+
+                if (prob) {};
 
                 if (iml == undefined) {
                     iml = layerIml;
