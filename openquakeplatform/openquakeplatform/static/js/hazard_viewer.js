@@ -65,6 +65,7 @@ var layerInvestigationTime, layerIml, layerImt, layerPoe;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
+var TILESTACHE_URL = TS_URL + ':7890/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
@@ -181,6 +182,55 @@ var startApp = function() {
             showRemoveMsg();
         }
     };
+
+    /***** leaflet TileLayer GeoJson TEST ******/
+
+    var style = {
+        "clickable": true,
+        "color": "#00D",
+        "fillColor": "#00D",
+        "weight": 1.0,
+        "opacity": 0.3,
+        "fillOpacity": 0.2
+    };
+    var hoverStyle = {
+        "fillOpacity": 0.5
+    };
+
+    var geojsonURL = TILESTACHE_URL + 'vector-layer/{z}/{x}/{y}.geojson';
+    var geojsonTileLayer = new L.TileLayer.GeoJSON(geojsonURL, {
+            clipTiles: true,
+            unique: function (feature) {
+                return feature.id;
+            }
+        }, {
+            style: style,
+            onEachFeature: function (feature, layer) {
+                if (feature.properties) {
+                    var popupString = '<div class="popup">';
+                    for (var k in feature.properties) {
+                        var v = feature.properties[k];
+                        popupString += k + ': ' + v + '<br />';
+                    }
+                    popupString += '</div>';
+                    layer.bindPopup(popupString);
+                }
+                if (!(layer instanceof L.Point)) {
+                    layer.on('mouseover', function () {
+                        layer.setStyle(hoverStyle);
+                    });
+                    layer.on('mouseout', function () {
+                        layer.setStyle(style);
+                    });
+                }
+            }
+        }
+    );
+    map.addLayer(geojsonTileLayer);
+
+
+    /***** END TEST *****/
+
 
     // Get layer names from tilestream
     var tileStreamLayer = '';
