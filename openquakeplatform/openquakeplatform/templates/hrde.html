@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 {% block extra_head %}
     {{block.super}}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/hazard_viewer.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/hrde.css" />
 {% endblock extra_head %}
 
 {% block title %}
@@ -38,7 +38,6 @@ Explore - {{block.super}}
 <div id="worning-duplicate-grid" title="Woops!" class="ui-helper-hidden">
     <p>You can only load one interactive layer at a time</p>
 </div>
->>>>>>> master
 
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>
@@ -98,7 +97,7 @@ Explore - {{block.super}}
     </form>
   </div>
 
-    <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
+    <script src="{{ STATIC_URL }}js/hrde.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
     
 {% endblock extra_script %}

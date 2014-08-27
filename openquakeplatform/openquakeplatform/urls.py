@@ -96,8 +96,8 @@ urlpatterns = patterns('',
         template_name="svir_viewer.html"), name='svir_viewer'),
     url(r'^hazus/$', OQTemplateView.as_view(
         template_name="hazus.html"), name='hazus'),
-    url(r'^hazard_viewer/$', OQTemplateView.as_view(
-        template_name="hazard_viewer.html"), name='hazard_viewer'),
+    url(r'^hrde/$', OQTemplateView.as_view(
+        template_name="hrde.html"), name='hrde'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
