@@ -21,6 +21,8 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+{% include "base_map_options.html" %}
+
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -197,4 +199,5 @@ Explore - {{block.super}}
 
 </div>
     <script src="{{ STATIC_URL }}js/svir_viewer.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 {% endblock extra_script %}

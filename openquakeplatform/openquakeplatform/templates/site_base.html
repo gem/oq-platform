@@ -67,6 +67,11 @@
     THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
     {% endfor %}
 
+    var BING_KEY = {};
+    {% for k, v in bing_key.iteritems %}
+    BING_KEY.{{ k }} = "{{ v }}";
+    {% endfor %}
+
     var CURRENT_USER = "{{request.user}}";
 
     </script>

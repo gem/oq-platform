@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -62,18 +62,12 @@ var lossLayerTitle = {};
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
-
-var baseMapUrl = (
-    'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
-);
-
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
-
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
-
     $(function() {
         $( '#chartDialog' ).dialog({
             autoOpen: false,
@@ -84,7 +78,12 @@ var startApp = function() {
         });
     });
 
-    app.createMap();
+    map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
 
