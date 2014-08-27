@@ -675,9 +675,6 @@ var startApp = function() {
     });
 
     map.addControl(layerControl.setPosition('topleft'));
-    // TODO set the map max zoom to 9
-    // The interactivity of the map/charts will not work with a map zoom greater then 9
-
 
     // Add map layers form tilestream list
     $(document).ready(function() {
@@ -691,32 +688,28 @@ var startApp = function() {
             selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 
-
-            // Remove any existing UtfGrid layers in order to avoid conflict
-            map.removeLayer(utfGrid);
-            map.removeLayer(tileLayer);
-            utfGrid = {};
-            tileLayer = L.tileLayer(TILESTREAM_URL +
+            utfGridMap = {};
+            tileLayerMap = L.tileLayer(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
                 selectedLayer +
                 '.json'});
-            layerControl.addOverlay(tileLayer, selectedLayer);
-            map.addLayer(tileLayer);
+            layerControl.addOverlay(tileLayerMap, selectedLayer);
+            map.addLayer(tileLayerMap);
             var val = $('#transparency-slider').slider("option", "value");
-            tileLayer.setOpacity(val);
+            tileLayerMap.setOpacity(val);
             // Keep track of layers that have been added
-            layers[selectedLayer] = tileLayer;
+            layers[selectedLayer] = tileLayerMap;
             if (hasGrid == true) {
                 gridList = 1;
-                utfGrid = new L.UtfGrid(TILESTREAM_URL +
+                utfGridMap = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                map.addLayer(utfGrid);
-                hazardCurveUtfGridClickEvent(utfGrid);
+                map.addLayer(utfGridMap);
+                hazardCurveUtfGridClickEvent(utfGridMap);
                 $("#chartDialog ").dialog({width: 200,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
-                utfGrid.on('mouseover', function (e) {
+                utfGridMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
                     $('#chartDialog').append(e.data.VAL);
                 });
@@ -727,7 +720,7 @@ var startApp = function() {
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
-            Transparency(tileLayer);
+            Transparency(tileLayerMap);
         
         });
     });
@@ -746,7 +739,8 @@ var startApp = function() {
         if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
-            map.removeLayer(tileLayer);
+            map.removeLayer(utfGridMap);
+            //map.removeLayer(tileLayer);
 
             utfGrid = {};
             var e = document.getElementById('curve-list');
@@ -920,8 +914,8 @@ var startApp = function() {
     $(document).ready(function() {
         $('#removeTileLayer').click(function() {
             gridList = 0;
-            map.removeLayer(utfGrid);
-            map.removeLayer(tileLayer);
+            map.removeLayer(utfGridMap);
+            map.removeLayer(tileLayerMap);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
