@@ -114,7 +114,6 @@ var startApp = function() {
     // resize does not respect itself
     $('#categoryTabs').tabs({
         activate: function(event,ui) {
-        console.log("fire me NOW");
         $('#IRI-svg-element').empty();
         $('#CI-svg-element').empty();
         }
