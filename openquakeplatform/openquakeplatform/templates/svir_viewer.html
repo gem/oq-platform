@@ -21,13 +21,8 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<select id="base-map-menu">
-  <option value="1">Blue Marble</option>
-  <option value="2">Bing</option>
-  <option value="3">MapQuest Imagery</option>
-  <option value="4" selected>MapQuest Openstreet</option>
-  <option value="5">Openstreetmap</option>
-</select>
+{% include "base_map_options.html" %}
+
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -204,4 +199,5 @@ Explore - {{block.super}}
 
 </div>
     <script src="{{ STATIC_URL }}js/svir_viewer.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 {% endblock extra_script %}

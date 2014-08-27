@@ -1,3 +1,6 @@
+
+// This file is from: https://gist.github.com/pagameba/1221998
+
 /* global console: true */
 L.BingLayer = L.TileLayer.extend({
   options: {
