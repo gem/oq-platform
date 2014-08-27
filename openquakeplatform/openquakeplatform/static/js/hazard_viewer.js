@@ -91,8 +91,12 @@ var startApp = function() {
             min: 0,
             max: 1,
             step: 0.1,
-            value: 1
+            value: 1,
+            slide: function( event, ui ) {
+                $( "#amount" ).val( ui.value );
+            }
         });
+        $('#amount').val( $('#transparency-slider').slider('value') );
     });
 
     // switch base maps
@@ -739,7 +743,13 @@ var startApp = function() {
         if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
-            map.removeLayer(utfGridMap);
+
+            try {
+                map.removeLayer(utfGridMap);
+            } catch (e) {
+                // continue
+            }
+            
             //map.removeLayer(tileLayer);
 
             utfGrid = {};
@@ -1056,9 +1066,10 @@ var startApp = function() {
 
     var hazardDataDialog = $('#hazardDataDialog').dialog({
         autoOpen: false,
-        height: 420,
+        height: 480,
         width: 400,
-        modal: true
+        modal: true,
+        position: [100,150]
     });
 
     $('#hazardDataDialog').css({ 'overflow' : 'auto' });
@@ -1097,8 +1108,6 @@ var startApp = function() {
             if (e.data) {
                 probArray = prob.split(',');
                 iml = e.data.iml;
-
-                if (prob) {};
 
                 if (iml == undefined) {
                     iml = layerIml;
