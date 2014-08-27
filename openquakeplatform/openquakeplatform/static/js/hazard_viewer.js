@@ -67,17 +67,6 @@ var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
-// var's for bing
-var count_down = 50;
-var bing;
-var bing_key;
-
-try {
-    bing_key = BING_KEY.bing_key;
-} catch(e) {
-    bing_key = null;
-}
-
 var startApp = function() {
     $(function() {
         $( '#chartDialog' ).dialog({
@@ -89,7 +78,7 @@ var startApp = function() {
         });
     });
 
-    var map = new L.Map('map', {
+    map = new L.Map('map', {
         minZoom: 2,
         attributionControl: false,
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
@@ -103,55 +92,6 @@ var startApp = function() {
     map.setZoom(2);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
-
-    var bingMapApiStatus;
-
-    if (bing_key != null) {
-        bing = new L.BingLayer(bing_key);
-        setTimeout(function () { checkBingApi(bing); }, 100);
-    }
-
-    function checkBingApi(binz) {
-        if (typeof(binz.meta.statusCode) == 'undefined') {
-            count_down--;
-            setTimeout(function () { checkBingApi(binz); }, 100);
-            return;
-            }
-        if (binz.meta.statusCode == 200) {
-            bingMapApiStatus = true;
-        }
-        else {
-            bingMapApiStatus = false;
-            }
-    }
-
-    // switch base maps
-    $('#base-map-menu').change(function() {
-        var baseMapSelection = document.getElementById('base-map-menu').value;
-        map.removeLayer(baseMapUrl);
-        if (baseMapSelection == 4) {
-            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if (baseMapSelection == 3) {
-            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if(baseMapSelection == 1) {
-            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if (baseMapSelection == 2) {
-            if (bingMapApiStatus == true) {
-                baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
-                map.addLayer(baseMapUrl);
-            } else if (bingMapApiStatus == false) {
-                alert("The Bing maps API key is either invalid or expired");
-            }
-        } else if (baseMapSelection == 5) {
-            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        }
-    });
-
-    $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});

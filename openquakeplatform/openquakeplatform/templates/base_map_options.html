@@ -14,28 +14,15 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
-{% extends "data_viewer_base.html" %}
-
-{% block title %}
-Explore - {{block.super}}
-{% endblock %}
 
 {% block body_outer %}
-{% include "base_map_options.html" %}
-
-{{block.super}}
-
-    <div id="dialog" title="Hazus Building Fractions">
-    	<svg></svg>
-    </div>
+<select id="base-map-menu">
+  <option value="1">Blue Marble</option>
+  <option value="2">Bing</option>
+  <option value="3">MapQuest Imagery</option>
+  <option value="4" selected>MapQuest Openstreet</option>
+  <option value="5">Openstreetmap</option>
+</select>
 
 {% endblock %}
 
-
-{% block extra_script %}
-    {{block.super}}
-    <!-- Category tags-->
-
-    <script src="{{ STATIC_URL }}js/hazus.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
-{% endblock extra_script %}

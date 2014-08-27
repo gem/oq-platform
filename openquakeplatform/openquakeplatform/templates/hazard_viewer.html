@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2013, GEM Foundation.
+Copyright (c) 2014, GEM Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -26,13 +26,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<select id="base-map-menu">
-  <option value="1">Blue Marble</option>
-  <option value="2">Bing</option>
-  <option value="3">MapQuest Imagery</option>
-  <option value="4" selected>MapQuest Openstreet</option>
-  <option value="5">Openstreetmap</option>
-</select>
+{% include "base_map_options.html" %}
 <button type="button" id="thematic-map">Load Maps</button>
 <button type="button" id="hazard-curve">Load Models</button>
 <button type="button" id="hazard-dialog">Chart Dialog</button>
@@ -99,7 +93,7 @@ Explore - {{block.super}}
     </form>
     
   </div>
-
-
     <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
+    
 {% endblock extra_script %}
