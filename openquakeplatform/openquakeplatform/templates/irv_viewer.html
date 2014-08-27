@@ -21,13 +21,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<select id="base-map-menu">
-  <option value="1">Blue Marble</option>
-  <option value="2">Bing</option>
-  <option value="3">MapQuest Imagery</option>
-  <option value="4" selected>MapQuest Openstreet</option>
-  <option value="5">Openstreetmap</option>
-</select>
+{% include "base_map_options.html" %}
 
 <button type="button" id="load-project">Load Project</button>
 <div id="loadProjectDialog" title="Load Project">
@@ -99,6 +93,6 @@ Explore - {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
     
-
 {% endblock extra_script %}

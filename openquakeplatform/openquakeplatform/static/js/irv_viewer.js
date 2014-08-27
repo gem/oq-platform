@@ -105,11 +105,6 @@ var outlierBreakPoint = 0.75; // used for the primary indicator outlier
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-try {
-    var bing_key = BING_KEY.bing_key;
-} catch(e) {
-    // continue
-}
 
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -124,35 +119,8 @@ var startApp = function() {
         $('#CI-svg-element').empty();
         }
     });
-    
-        // switch base maps
-    $('#base-map-menu').change(function() {
-        var baseMapSelection = document.getElementById('base-map-menu').value;
-        map.removeLayer(baseMapUrl);
-        if (baseMapSelection == 4) {
-            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if (baseMapSelection == 3) {
-            baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if(baseMapSelection == 1) {
-            baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        } else if (baseMapSelection == 2) {
-            if (bing_key == undefined) {
-                alert("A bing maps API key has not been added to this platform, please refer to the installation instructions for details");
-            }
-            baseMapUrl = new L.BingLayer(bing_key); // TODO change the api to point to bing api key aerial with labels
-            map.addLayer(baseMapUrl);
-        } else if (baseMapSelection == 5) {
-            baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-            map.addLayer(baseMapUrl);
-        }
-    });
 
-    $('#base-map-menu').css({ 'margin-bottom' : 0 });
-
-    var map = new L.Map('map', {
+    map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
         attributionControl: false,
