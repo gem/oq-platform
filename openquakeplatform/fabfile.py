@@ -316,6 +316,8 @@ def _add_gemecdwebsite():
     pass
 
 def _add_vulnerability():
+    local('python manage.py loaddata '
+          './openquakeplatform/vulnerability/post_fixtures/initial_data.json' )
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
