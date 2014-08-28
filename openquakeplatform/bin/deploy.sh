@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 set -e
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
@@ -35,8 +35,7 @@ GEM_HAZARD_CALC_ADDR='http://localhost:8800'
 GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY="oq-platform"
 
-# GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -183,12 +182,12 @@ isc_viewer_dataloader () {
 
 #
 #
-maps_viewer_dataloader () {
+maps_viewer_postlayers () {
     local oqpdir="$1" db_name="$2" bdir
 
-    bdir="${oqpdir}/maps_viewer/fixtures"
-    openquakeplatform map_title
+    bdir="${oqpdir}/maps_viewer/post_fixtures"
     openquakeplatform loaddata "${bdir}/*.json"
+    openquakeplatform map_title
 }
 
 #
@@ -580,6 +579,15 @@ oq_platform_install () {
 
     openquakeplatform updatelayers
     chown -R www-data.www-data /var/www/openquake
+
+    #
+    #  post layers creation apps customizations
+    for app in "${GEM_APP_LIST[@]}"; do
+        if function_exists "${app}_postlayers"; then
+            "${app}_postlayers" "$oqpdir" "$gem_db_name"
+        fi
+    done
+
 }
 
 
