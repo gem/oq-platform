@@ -100,19 +100,17 @@ var startApp = function() {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toLowerCase() + txt.substr(1).toLowerCase();});
     }
 
-    // Slider
     $(function() {
-        $( '#slider-vertical' ).slider({
-            orientation: 'vertical',
-            range: 'min',
+        $('#transparency-slider').slider({
             min: 0,
-            max: 100,
-            value: 16.666,
+            max: 1,
+            step: 0.1,
+            value: 1,
             slide: function( event, ui ) {
-                $( '#econ-weight' ).val( ui.value );
+                $( "#amount" ).val( ui.value );
             }
         });
-        $( '#econ-weight' ).val( $( '#slider-vertical' ).slider( 'value' ) );
+        $('#amount').val( $('#transparency-slider').slider('value') );
     });
 
     // No Layer to remove warnning message
@@ -697,21 +695,19 @@ var startApp = function() {
         if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
-
+            map.removeLayer(tileLayer);
             try {
                 map.removeLayer(utfGridMap);
             } catch (e) {
                 // continue
             }
-            
-            //map.removeLayer(tileLayer);
 
             utfGrid = {};
             var e = document.getElementById('curve-list');
             var curveLayerId = e.options[e.selectedIndex].value;
     
             // Look up the layer id using the layer name
-            var curveLayerIdArray = curveLayerNames[curveLayerId];    
+            var curveLayerIdArray = curveLayerNames[curveLayerId];
             var selectedLayer = curveLayerIdArray.toString();
     
             // get more information about the selected layer for use in chart
@@ -749,7 +745,6 @@ var startApp = function() {
             selectedLayer +
             '.json'});
         layerControl.addOverlay(tileLayer, selectedLayer);
-        console.log(tileLayer);
         map.addLayer(tileLayer);
         // Keep track of layers that have been added
         layers[selectedLayer] = tileLayer;
@@ -761,7 +756,6 @@ var startApp = function() {
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
         }
-        
     }
 
     // Add loss curve layers form tilestream list

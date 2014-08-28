@@ -27,17 +27,8 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 {% include "base_map_options.html" %}
-<button type="button" id="thematic-map">Load Maps</button>
-<button type="button" id="hazard-curve">Load Models</button>
-<button type="button" id="hazard-dialog">Chart Dialog</button>
-
-<div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
-    <p>This layer has already been added to the map</p>
-</div>
-
-<div id="worning-duplicate-grid" title="Woops!" class="ui-helper-hidden">
-    <p>You can only load one interactive layer at a time</p>
-</div>
+<button type="button" id="hazard-data">Load Hazard Data</button>
+<button type="button" id="risk-data">Load Hazard Data</button>
 
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>
