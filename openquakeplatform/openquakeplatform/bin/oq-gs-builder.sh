@@ -523,6 +523,8 @@ all_data_manage() {
 
     IFS="$NL"
 
+    fname="tmp/reset.post.xml"
+    web_post "$fname" "text/xml" "" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/reset.xml" 200
     #
     # manage layergroups
     fname="tmp/layergroups-list.get.xml"
@@ -953,7 +955,7 @@ geoserver_population () {
     declare -a gem_app_list=("$@")
     local workspace_name datastore_name
 
-    rm -rf "$dstdir/build-gstree"
+    # moved outside rm -rf "$dstdir/build-gs-tree"
     mkdir -p "$dstdir/build-gs-tree"
     mkdir -p "$dstdir/build-gs-tree/styles"
     mkdir -p "$dstdir/build-gs-tree/layers"

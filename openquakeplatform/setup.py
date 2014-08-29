@@ -25,6 +25,7 @@ setup(
               'openquakeplatform.isc_viewer',
               'openquakeplatform.ghec_viewer',
               'openquakeplatform.gaf_viewer',
+              'openquakeplatform.maps_viewer',
               'openquakeplatform.faulted_earth',
               'openquakeplatform.geodetic',
               'openquakeplatform.exposure',
@@ -49,11 +50,15 @@ setup(
               'openquakeplatform.weblib',
               'openquakeplatform.weblib.baseclasses'
               ],
-    # Please, do not split following lines, the deploy.sh script manages them automatically.
-    dependency_links = ['http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
+    # NOTE:  django-chained-multi-checkboxes is following the new convention: a floating tag on github v<major>.<minor> only follows
+    #        the lifecicle of all the bugfix versions of the repository and pip depends on it.
+    #        Follow the same rule for all the other gem dependencies when an update is needed.
+    # ATTENTION: Please, do not split following lines, the deploy.sh script manages them automatically.
+    dependency_links = ['http://github.com/gem/django-extras/tarball/master#egg=django-extras-0.3',
+                        'http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
                         'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
-                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/master#egg=django-chained-multi-checkboxes-0.3.0',
+                        'http://github.com/gem/django-chained-multi-checkboxes/tarball/v0.4#egg=django-chained-multi-checkboxes-0.4',
                         'http://github.com/gem/oq-nrmllib/tarball/master#egg=oq-nrmllib-0.4.5',
                         ],
     install_requires=[
@@ -94,9 +99,10 @@ setup(
         "django-photologue==2.6.1",
         "requests==0.8.2",
         "fabric",
+        "django-extras==0.3",
         "wadofstuff-django-serializers==1.1.2",
         "django-nested-inlines==0.1.4",
-        "django-chained-multi-checkboxes==0.3.0",
+        "django-chained-multi-checkboxes==0.4",
         "django-chained-selectbox==0.1",
         "oq-nrmllib==0.4.5",
     ],

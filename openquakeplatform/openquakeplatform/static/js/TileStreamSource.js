@@ -102,7 +102,7 @@ var tilestreamPlugin = {
 
         var layers = new Array();
 
-        $.getJSON('//tilestream.openquake.org/api/v1/Tileset',
+        $.getJSON(TS_URL + '/api/v1/Tileset',
         function(json) {
             for (var i=0; i < json.length; i++) {
                 // Get the tile name and zoom level from the tilestream API
@@ -112,7 +112,7 @@ var tilestreamPlugin = {
                 // Build the list of layers
                 var newLayer = new OpenLayers.Layer.XYZ(
                     tileStreamLayerName,
-                    ["http://tilestream.openquake.org/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],
+                    [TS_URL + "/v2/" + tileStreamLayerName + "/${z}/${x}/${y}.png"],
                     OpenLayers.Util.applyDefaults({
                         layername: tileStreamLayerName,
                         numZoomLevels: tileMaxZoom

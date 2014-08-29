@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2013, GEM Foundation.
+Copyright (c) 2014, GEM Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+{% include "base_map_options.html" %}
 <button type="button" id="thematic-map">Load Maps</button>
 <button type="button" id="hazard-curve">Load Models</button>
 <button type="button" id="hazard-dialog">Chart Dialog</button>
@@ -39,7 +40,7 @@ Explore - {{block.super}}
 </div>
 
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
-    <p>This layer in not loaded in the map</p>
+    <p>This layer is not loaded in the map</p>
 </div>
 
 {{block.super}}
@@ -92,7 +93,7 @@ Explore - {{block.super}}
     </form>
     
   </div>
-
-
     <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
+    
 {% endblock extra_script %}

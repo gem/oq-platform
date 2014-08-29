@@ -6,6 +6,9 @@
 {% block extra_head %}
     <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <script type="text/javascript">
+        var TS_URL = '//tilestream.openquake.org';
+    </script>
 {% endblock extra_head %}
 
 {% block header %}
@@ -15,20 +18,7 @@
 {% endblock header %}
 
 {% block extra-nav %}
-<li class="oqp-menu-item"><a href="{% url 'home' %}">Home</a></li>
-<!-- TODO place this back when the customizable categories can be implemented
-<li class="oqp-menu-item"><a href="{% url 'layer_browse' %}">Data</a></li>
--->
-<li class="oqp-menu-item"><a href="{% url 'temp_data' %}">Data</a></li>
-
-<!-- TODO place this back when the customizable categories can be implemented
-<li class="oqp-menu-item"><a href="{% url 'maps_browse' %}">Maps</a></li>
--->
-<li class="oqp-menu-item"><a href="{% url 'temp_maps' %}">Maps</a></li>
-
-<li class="oqp-menu-item"><a href="{% url 'tools' %}">Tools</a></li>
-<li class="oqp-menu-item"><a href="{% url 'profile_browse' %}">People</a></li>
-<li class="oqp-menu-item"><a href="{% url 'documents_browse' %}">Documents</a></li>
+{% include "extra-nav.html" %}
 {% endblock extra-nav %}
 
 {% block middle %}
@@ -39,7 +29,7 @@
 
 {% block body_outer %}
     <div id="oq-body-wrapper">
-     {% block body %}      
+     {% block body %}
         <div class="span12">
             <div class="hero-unit">
                 <div id="oq-context-ribbon">
@@ -77,6 +67,11 @@
     THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
     {% endfor %}
 
+    var BING_KEY = {};
+    {% for k, v in bing_key.iteritems %}
+    BING_KEY.{{ k }} = "{{ v }}";
+    {% endfor %}
+
     var CURRENT_USER = "{{request.user}}";
 
     </script>
@@ -86,7 +81,9 @@
 
 {% block footer %}
     <div id="oq-page-footer">
+
     {{block.super}}
+
     </div>
 {% endblock footer %}
 
@@ -101,7 +98,7 @@
 				stroke-width: 1;
 				fill: none;
 			}
-			
+
 			.axis {
 			  shape-rendering: crispEdges;
 			}
@@ -125,6 +122,13 @@
       /* Override addOutput for the getfeatureinfo tool in order to
       parse eventual GetFeatureInfo templates and run javascript
       against them */
+
+      // remove the upload alt icon from the header
+      $('.icon-upload-alt').remove();
+
+      // remove the language dropdown from the footer
+      $('.form-inline').remove();
+
       if (typeof(gxp) != 'undefined') {
       var originalAddOutput = gxp.plugins.WMSGetFeatureInfo.prototype.addOutput;
       Ext.override(gxp.plugins.WMSGetFeatureInfo, {

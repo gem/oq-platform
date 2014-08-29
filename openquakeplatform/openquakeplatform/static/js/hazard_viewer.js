@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -62,18 +62,12 @@ var lossLayerTitle = {};
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
-
-var baseMapUrl = (
-    'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
-);
-
-var TILESTREAM_URL = '//tilestream.openquake.org/v2/';
-var TILESTREAM_API_URL = '//tilestream.openquake.org/api/v1/Tileset/';
-
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+var TILESTREAM_URL = TS_URL + '/v2/';
+var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
-
     $(function() {
         $( '#chartDialog' ).dialog({
             autoOpen: false,
@@ -84,7 +78,12 @@ var startApp = function() {
         });
     });
 
-    app.createMap();
+    map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
 
@@ -217,6 +216,7 @@ var startApp = function() {
     $('#curve-category option:empty').remove();
 
     $.getJSON(TILESTREAM_API_URL, function(json) {
+            $('#hazard-curve').attr('disabled', true);
 
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -392,7 +392,9 @@ var startApp = function() {
             // Append layer list to dowpdown
             var layerlossOpt = document.createElement('option');
         }
-    }); //end getjson
+    }).done(function() {
+        $('#hazard-curve').attr('disabled', false);
+        });
 
     $('#addTileCurve').click(function() {
         $('#addTileUhs').attr('disabled', true);
@@ -458,7 +460,7 @@ var startApp = function() {
             mixedCurve(curveType);
 
         } else if (investType.indexOf('single') == 0 ) {
-            singleCurve();
+            singleCurve(curveType);
         } else {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
@@ -512,6 +514,10 @@ var startApp = function() {
             hazardCurveDialog.dialog('option', 'height', (500 + (uhsList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
+
+        } else if ($.inArray('single', investType) > -1) {
+            singleCurve(curveType);
+
         } else {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
@@ -712,23 +718,40 @@ var startApp = function() {
     });
 
     // Add single curve layers form tilestream list
-    function singleCurve() {
-        // Remove any existing UtfGrid layers in order to avoid conflict
-        map.removeLayer(utfGrid);
-        utfGrid = {};
-        var e = document.getElementById('curve-list');
-        var curveLayerId = e.options[e.selectedIndex].value;
+    function singleCurve(curveType) {
+        if (curveType == 'hc') {
 
-        // Look up the layer id using the layer name
-        var curveLayerIdArray = curveLayerNames[curveLayerId];
-        var selectedLayer = curveLayerIdArray.toString();
+            // Remove any existing UtfGrid layers in order to avoid conflict
+            map.removeLayer(utfGrid);
+            utfGrid = {};
+            var e = document.getElementById('curve-list');
+            var curveLayerId = e.options[e.selectedIndex].value;
+    
+            // Look up the layer id using the layer name
+            var curveLayerIdArray = curveLayerNames[curveLayerId];    
+            var selectedLayer = curveLayerIdArray.toString();
+    
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                layerInvestigationTime = json.investigationTime;
+                layerIml = json.iml;
+                layerImt = json.imt;
+            });
+        } else if (curveType == 'uhs') {
+            var e = document.getElementById('uhs-list');
+            var uhsLayerId = e.options[e.selectedIndex].value;
 
-        // get more information about the selected layer for use in chart
-        $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-            layerInvestigationTime = json.investigationTime;
-            layerIml = json.iml;
-            layerImt = json.imt;
-        });
+            // Look up the layer id using the layer name
+            var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
+            var selectedLayer = uhsLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                layerInvestigationTime = json.investigationTime;
+                layerIml = json.periods;
+                layerPoe = json.poe;
+            });
+        }
 
         var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
         // Check for duplicae layes
@@ -745,6 +768,7 @@ var startApp = function() {
                 selectedLayer +
                 '.json'});
             layerControl.addOverlay(tileLayer, selectedLayer);
+
             map.addLayer(tileLayer);
             // Keep track of layers that have been added
             layers[selectedLayer] = tileLayer;
@@ -955,6 +979,7 @@ var startApp = function() {
 
             $('#curve-check-box').remove();
             gridList = 0;
+
             map.removeLayer(utfGrid);
             utfGrid = {};
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
@@ -1070,7 +1095,7 @@ var startApp = function() {
                 } else {
                     imlArray = iml.split(',');
                 }
-                
+
                 imt = e.data.imt;
                 if(imt == 'PGA') {
                     imt = 'Peak Ground Acceleration (g)';
@@ -1352,7 +1377,7 @@ var startApp = function() {
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
             .text(layerImt);
-            
+
         svg.append('g')
             .attr('class', 'y axis')
             .call(yAxis)
