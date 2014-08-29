@@ -1042,6 +1042,42 @@ var startApp = function() {
 
     // Remove uhs layers from tilestream
     $(document).ready(function() {
+        $('#removeTileImput').click(function() {
+            $('#addTileCurve').attr('disabled', false);
+            $('#removeTileCurve').attr('disabled', false);
+            $('#addTileLoss').attr('disabled', false);
+            $('#removeTileLoss').attr('disabled', false);
+
+            $('#curve-check-box').remove();
+            gridList = 0;
+
+            map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+            utfGrid = {};
+            utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            hazardCurveUtfGridClickEvent(utfGrid, curveType);
+            var e = document.getElementById('imput-list');
+            var mapLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var mapLayerIdArray = uhsLayerNames[mapLayerId];
+            var selectedLayer = mapLayerIdArray.toString();
+
+            // Check in the layer is in the map port
+            if (selectedLayer in layers) {
+                layerControl.removeLayer(layers[selectedLayer]);
+                map.removeLayer(layers[selectedLayer]);
+                delete layers[selectedLayer];
+            }
+            else {
+                showRemoveMsg();
+            }
+        });
+    });
+
+    // Remove uhs layers from tilestream
+    $(document).ready(function() {
         $('#removeTileUhs').click(function() {
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
