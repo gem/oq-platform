@@ -183,51 +183,44 @@ var startApp = function() {
         }
     };
 
-    /***** leaflet TileLayer GeoJson TEST ******/
+    /***** leaflet TileLayer GeoJson TEST SMALL Vector ******/
 
-    var style = {
-        "clickable": true,
-        "color": "#00D",
-        "fillColor": "#00D",
-        "weight": 1.0,
-        "opacity": 0.3,
-        "fillOpacity": 0.2
-    };
-    var hoverStyle = {
-        "fillOpacity": 0.5
-    };
-
-    var geojsonURL = TILESTACHE_URL + 'vector-layer/{z}/{x}/{y}.geojson';
-    var geojsonTileLayer = new L.TileLayer.GeoJSON(geojsonURL, {
-            clipTiles: true,
-            unique: function (feature) {
-                return feature.id;
-            }
-        }, {
-            style: style,
-            onEachFeature: function (feature, layer) {
-                if (feature.properties) {
-                    var popupString = '<div class="popup">';
-                    for (var k in feature.properties) {
-                        var v = feature.properties[k];
-                        popupString += k + ': ' + v + '<br />';
-                    }
-                    popupString += '</div>';
-                    layer.bindPopup(popupString);
-                }
-                if (!(layer instanceof L.Point)) {
-                    layer.on('mouseover', function () {
-                        layer.setStyle(hoverStyle);
-                    });
-                    layer.on('mouseout', function () {
-                        layer.setStyle(style);
-                    });
-                }
-            }
+    var myGeoJsonLayer = L.geoJsonTileLayer(TILESTACHE_URL + 'vector-small-test/{z}/{x}/{y}.geojson', {
+        cache: false,
+        dataType: 'jsonp',
+        maxZoom: 8,
+        style: {
+            'fillColor': '#8A8680',
+            'fillOpacity': 1,
+            'color': '#F1EFEE',
+            'weight': 1,
+            'opacity': 1
         }
-    );
-    map.addLayer(geojsonTileLayer);
+    }).addTo(map);
 
+
+    /***** END TEST *****/
+
+
+    /***** leaflet TileLayer GeoJson TEST BIG Vector ******/
+
+    // kills the browser because it adds 180,000 points to the map
+    /*
+    var myGeoJsonLayer = L.geoJsonTileLayer(TILESTACHE_URL + 'vector-big-test/{z}/{x}/{y}.geojson', {
+        cache: false,
+        dataType: 'jsonp',
+        maxZoom: 8,
+        style: {
+            'radius': 8,
+            'fillColor': '#8A8680',
+            'fillOpacity': 1,
+            'color': '#F1EFEE',
+            'weight': 1,
+            'opacity': 1
+        }
+
+    }).addTo(map);
+*/
 
     /***** END TEST *****/
 
