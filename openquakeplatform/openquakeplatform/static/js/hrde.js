@@ -60,6 +60,15 @@ var selectedLoss = [];
 var lossLayerId = {};
 var lossLayerTitle = {};
 var tileLayer = {};
+var imputLayerId = {};
+var imputLayerTitle = {};
+var imputLayerNames = {};
+var imputLayersByCat = {};
+var imputByInvestMixed = {};
+var imputAvailable = {};
+var imputByInvestSingle = {};
+var imputCategoryList = [];
+var imputLayerGrids = [];
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
@@ -159,9 +168,11 @@ var startApp = function() {
     var selCurveCat = document.getElementById('hazard-curve-category');
     var selUhsCat = document.getElementById('hazard-curve-category');
     var selLossCat = document.getElementById('risk-curve-category');
+    var selImputCat = document.getElementById('hazard-curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
     var selLoss = document.getElementById('loss-list');
+    var selImput = document.getElementById('imput-list');
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
@@ -177,6 +188,10 @@ var startApp = function() {
     selUhsCat.appendChild(catUhsMenuHeader);
     $('#hazard-curve-category option:empty').remove();
 
+    var catImputMenuHeader = document.createElement('option');
+    selImputCat.appendChild(catImputMenuHeader);
+    $('#hazard-curve-category option:empty').remove();
+
     // Create a header for the menu drop down
     var catLossMenuHeader = document.createElement('option');
     catLossMenuHeader.innerHTML = 'Category:';
@@ -184,7 +199,7 @@ var startApp = function() {
     $('#risk-curve-category option:empty').remove();
 
     $.getJSON(TILESTREAM_API_URL, function(json) {
-            $('#hazard-data').attr('disabled', true);
+        $('#hazard-data').attr('disabled', true);
 
         // Create the category list (build the object)
         for (var i=0; i < json.length; i++) {
@@ -196,7 +211,7 @@ var startApp = function() {
             var app = json[i].application;
             var grid, gridName;
 
-            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss') {
+            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'imput-mfds') {
                 curveCategoryList.push(cat);
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
@@ -221,6 +236,16 @@ var startApp = function() {
                 gridName = grid.split('/')[4];
                 lossLayerGrids.push(gridName);
             }
+            
+            if (type == 'imput-mfds') {                
+                imputCategoryList.push(cat);
+                imputLayersByCat[cat] = [];
+                imputLayerNames[name] = [];
+                grid = grids.toString();
+                gridName = grid.split('/')[4];
+                imputLayerGrids.push(gridName);
+            }
+          
             if (chartType == undefined && cat !== undefined && type == 'hazard') {
                 mapCategoryList.push(cat);
                 mapLayerNames[name] = [];
@@ -291,6 +316,21 @@ var startApp = function() {
                 lossByInvestSingle[j] = name;
             }
 
+            if (type == 'imput-mfds') {
+                var imputLayerId = json[j].id;
+                var imputLayerTitle = json[j].mapped_value;
+                imputLayerNames[name].push(imputLayerId);
+                imputLayersByCat[cat].push(imputLayerTitle);
+
+                if (chartType == 'mixed') {
+                    imputByInvestMixed[j] = name;
+                    imputAvailable[j] = template;
+                }
+                else if (chartType == 'single') {
+                    imputByInvestSingle[j] = name;
+                }
+            }
+
             if (chartType == undefined && cat !== undefined && type == 'hazard') {
                 mapLayerId = json[j].id;
                 mapLayerTitle = json[j].mapped_value;
@@ -311,6 +351,10 @@ var startApp = function() {
 
         var uhsCategoryUnique = uhsCategoryList.filter(function(itm,i,uhsCategoryList){
             return i == uhsCategoryList.indexOf(itm);
+        });
+
+        var imputCategoryUnique = imputCategoryList.filter(function(itm,i,imputCategoryList){
+            return i == imputCategoryList.indexOf(itm);
         });
 
         var lossCategoryUnique = lossCategoryList.filter(function(itm,i,lossCategoryList){
@@ -347,6 +391,18 @@ var startApp = function() {
             selUhsCat.appendChild(curveOpt);
             // Append layer list to dowpdown
             var layeruhsOpt = document.createElement('option');
+        }
+
+        for (var i in curveCategoryUnique) {
+            // Append category names to imput dropdown list
+            var imputCategoryTitle = curveCategoryUnique[i];
+
+            var imputOpt = document.createElement('option');
+            imputOpt.innerHTML = imputCategoryTitle;
+            imputOpt.value = imputCategoryTitle;
+            selImputCat.appendChild(curveOpt);
+            // Append layer list to dowpdown
+            var layerImputOpt = document.createElement('option');
         }
 
         for (var i in curveCategoryUnique) {
@@ -431,6 +487,19 @@ var startApp = function() {
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
     }); //end add tile curve
+
+    $('#addTileImput').click(function() {
+        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog('option', 'title', 'Plot');
+        $('#chartDialog').empty();
+
+        var e = document.getElementById('imput-list');
+        var option = e.options[e.selectedIndex].value;
+        //var investType = checkImputType(imputByInvestMixed, imputByInvestSingle, option);
+        var curveType = 'imput';
+        singleCurve(curveType);
+    }); // end add imput curve
+
 
     $('#addTileUhs').click(function() {
         $("#chartDialog ").dialog({width: 520,height:520});
@@ -576,6 +645,32 @@ var startApp = function() {
         } else {
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
+        }
+    });
+
+    // Create dynamic categorized imput layer dialog
+    $('#hazard-curve-category').change(function() {
+        // Remove the layer list element
+        document.getElementById('imput-list').options.length = 0;
+
+        // Create the layer list based on the category selected
+        var e = document.getElementById('hazard-curve-category');
+        var strUser = e.options[e.selectedIndex].value;
+        var layersArray = imputLayersByCat[strUser];
+        for (var i in layersArray) {
+            var layers = layersArray[i];
+            var imputOpt = document.createElement('option');
+            imputOpt.innerHTML = layers;
+            imputOpt.valuse = layers;
+            selImput.appendChild(imputOpt);
+        }
+
+        if($('#imput-list').find('option').length == 0) {
+            $('#addTileImput').attr('disabled', true);
+            $('#removeTileImput').attr('disabled', true);
+        } else {
+            $('#addTileImput').attr('disabled', false);
+            $('#removeTileImput').attr('disabled', false);
         }
     });
 
@@ -732,6 +827,22 @@ var startApp = function() {
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.periods;
                 layerPoe = json.poe;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+            });
+        } else if (curveType == 'imput') {
+            var e = document.getElementById('imput-list');
+            var imputLayerId = e.options[e.selectedIndex].value;
+
+            // Look up the layer id using the layer name
+            var imputLayerIdArray = imputLayerNames[imputLayerId];
+            var selectedLayer = imputLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, imputLayerGrids) > -1;
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                //layerInvestigationTime = json.investigationTime;
+                //layerIml = json.periods;
+                //layerPoe = json.poe;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
