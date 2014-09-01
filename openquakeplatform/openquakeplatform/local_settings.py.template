@@ -64,6 +64,12 @@ TIME_ZONE = 'UTC'
 
 SECRET_KEY = '%(oq_secret_key)s'
 
+BING_KEY = {
+    'bing_key': (
+        '%(oq_bing_key)s'
+    ),
+}
+
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
 ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']

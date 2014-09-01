@@ -92,11 +92,11 @@ urlpatterns = patterns('',
         template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', OQTemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^svir_viewer/$', TemplateView.as_view(
+    url(r'^svir_viewer/$', OQTemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
-    url(r'^hazus/$', TemplateView.as_view(
+    url(r'^hazus/$', OQTemplateView.as_view(
         template_name="hazus.html"), name='hazus'),
-    url(r'^hazard_viewer/$', TemplateView.as_view(
+    url(r'^hazard_viewer/$', OQTemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),

@@ -1,12 +1,28 @@
+/*
+   Copyright (c) 2014, GEM Foundation.
+
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as
+      published by the Free Software Foundation, either version 3 of the
+      License, or (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU Affero General Public License for more details.
+
+      You should have received a copy of the GNU Affero General Public License
+      along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+*/
+
 // vars for storing lon/lat of the bounding box selection
 var latlonTopLeft;
 var latlonBottomRight;
 
 var drawnItems;
 var drawControl;
-
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var DRAW_TOOL_COLOR = '#FFA54F';
-
 var AJAX_SPINNER = '/static/img/ajax-loader.gif';
 
 var objToUrlParams = function(obj) {
@@ -81,7 +97,12 @@ var startApp = function() {
         "UN Habitat Level 1 Building Counts" : unh1
     };
 
-    app.createMap();
+    map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
     map.addLayer(drawnItems);
 
     map.addControl(drawControl);
@@ -181,7 +202,7 @@ var startApp = function() {
         };
         if (typeof options.title === 'undefined') {
             // Use a default title
-            options.title = 'Woops!'
+            options.title = 'Woops!';
         }
         $("#error-dialog").append(message);
         $("#error-dialog").dialog(options);

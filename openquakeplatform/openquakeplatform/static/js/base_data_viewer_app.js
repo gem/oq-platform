@@ -56,9 +56,10 @@ var OQLeaflet = {
 
             //$('#oq-body-sidebar').height(barHeight);
         };
+        /*
         OQLeafletApp.prototype.createMap = function() {
             this.baseLayers = {
-                'Base Map' : new L.TileLayer(this.baseMapUrl,
+                'BaseMap' : new L.TileLayer(this.baseMapUrl,
                                              {subdomains: ['a', 'b', 'c', 'd'],
                                               noWrap: true})
             };
@@ -68,10 +69,11 @@ var OQLeaflet = {
                 zoom: 3,
                 maxZoom: this.MAX_ZOOM_LEVEL,
                 maxBounds: new L.LatLngBounds(new L.LatLng(-90, -185), new L.LatLng(90, 185)),
-                layers: [this.baseLayers['Base Map']],
+                layers: [this.baseLayers['BaseMap']],
                 attributionControl: false,
             });
         };
+        */
         OQLeafletApp.prototype.initialize = function(startFunc) {
 
             // Hook map and sidebar sizing, so the map and the rest of the UI

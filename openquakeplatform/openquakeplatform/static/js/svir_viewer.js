@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,7 @@
 
 var dataCat = "";
 var chartCat = "";
-var utfGrid = new Object;
+var utfGrid = {};
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia', 'foo', 'bar');
 var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0, 1, 1);
 var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18, 1, 1);
@@ -25,11 +25,11 @@ var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189, 1, 1);
 var selectedValue4 = new Array(1, 9.374, 4.413, 5.093, 1, 1); //TODO fix these demo numbers
 var selectedValue5 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
 var selectedValue6 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
-var attrSelection = new Array();
-var svirRankKeys = new Array();
-var svirRankValues = new Array();
-var svirRegionRankKeys = new Array();
-var svirRegionRankValues = new Array();
+var attrSelection = [];
+var svirRankKeys = [];
+var svirRankValues = [];
+var svirRegionRankKeys = [];
+var svirRegionRankValues = [];
 var layerControl;
 
 // An object of all attributes and values to be used for the checkbox selection
@@ -54,16 +54,17 @@ var obj3 = {};
 var obj4 = {};
 var obj5 = {};
 var chart;
-
-var baseMapUrl = (
-    "http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png"
-);
-
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
 
-    app.createMap();
+    map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
 
@@ -72,7 +73,7 @@ var startApp = function() {
     // Duplicate layer warnning message
     function showDuplicateMsg() {
         $("#worning-duplicate").dialog("open");
-    };
+    }
 
     $(document).ready(function() {
         $("#worning-duplicate").dialog({
@@ -86,7 +87,7 @@ var startApp = function() {
     // No Layer to remove warnning message
     function showRemoveMsg() {
         $("#worning-no-layer").dialog("open");
-    };
+    }
 
     $(document).ready(function() {
         $("#worning-no-layer").dialog({
@@ -159,22 +160,22 @@ var startApp = function() {
             }
         }
 
-    // Get unique category names
-    var categoryUnique = categoryList.filter(function(itm,i,categoryList){
-        return i==categoryList.indexOf(itm);
-    });
-
-    for (var i in categoryUnique) {
-        // Append category names to dropdown list
-        var categoryTitle = categoryUnique[i];
-        var opt = document.createElement('option');
-        opt.innerHTML = categoryTitle;
-        opt.value = categoryTitle;
-        selCat.appendChild(opt);
-        // Append layer list to dowpdown
-        var layerOpt = document.createElement('option');
-    }
-
+        // Get unique category names
+        var categoryUnique = categoryList.filter(function(itm,i,categoryList){
+            return i==categoryList.indexOf(itm);
+        });
+    
+        for (var i in categoryUnique) {
+            // Append category names to dropdown list
+            var categoryTitle = categoryUnique[i];
+            var opt = document.createElement('option');
+            opt.innerHTML = categoryTitle;
+            opt.value = categoryTitle;
+            selCat.appendChild(opt);
+            // Append layer list to dowpdown
+            var layerOpt = document.createElement('option');
+        }
+    
     });
 
     // Create dynamic categorized layer dialog
@@ -198,8 +199,6 @@ var startApp = function() {
     map.addControl(layerControl.setPosition("topleft"));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
-
-
     // Add layers form tilestream list
     $(document).ready(function() {
         $("#addTileLayer").click(function() {
@@ -287,40 +286,28 @@ var startApp = function() {
     $(document).ready(function() {
         $('#econ-table').dataTable({
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            "sPaginationType": "full_numbers"
         });
     });
 
     $(document).ready(function() {
         $('#pop-table').dataTable({
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            "sPaginationType": "full_numbers"
         });
     });
 
     $(document).ready(function() {
         $('#gov-table').dataTable({
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            "sPaginationType": "full_numbers"
         });
     });
 
     $(document).ready(function() {
         $('#edu-table').dataTable({
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
-            "sPaginationType": "full_numbers",
-            //"aoColumnDefs": [
-              //  { "sWidth": "20%", "aTargets": [ 0 ] }
-            //],
+            "sPaginationType": "full_numbers"
         });
     });
 
@@ -337,7 +324,7 @@ var startApp = function() {
                 ]
             );
         }
-    };
+    }
 
 
     ////////////////////////////////////////////
@@ -448,7 +435,7 @@ var startApp = function() {
             var legend = svg.selectAll("g.legend")
                 .data(country)
                 .enter().append("svg:g")
-                .attr("class", "legend")
+                .attr("class", "legend");
 
             legend.append("svg:line")
                 .attr("class", String)
@@ -651,8 +638,6 @@ var startApp = function() {
                     values.push(e.data[d]);
                 }
                 var keys = Object.keys(e.data);
-                //console.log(keys);
-
 
                 for (var i in values) {
                     if (keys[i] != "country" && keys[i] != "region") {
@@ -661,7 +646,7 @@ var startApp = function() {
                         dataFormated[c] = values[i];
                         var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
                         $('#chartOptions').append(chartDropDown);
-                    };
+                    }
                 }
 
                 $('.attributeOption:lt(6)').prop('checked', true);
@@ -679,7 +664,6 @@ var startApp = function() {
                         }
                 });
 
-
                 $(function() {
                     var max = 6;
                     var checkboxes = $('input[type="checkbox"]');
@@ -693,14 +677,12 @@ var startApp = function() {
                     attrSelectionArray = $('.attributeOption:checkbox:checked');
                     for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
                         attrSelection[i] = attrSelectionArray[i].name;
-                    };
+                    }
                 } else {
                     attrSelection = attrSelection = $('#chartOptions input[class="attributeOption"]:checked').map(function(){
                             return this.name;
                         });
-                };
-
-                //console.log(attrSelection);
+                }
 
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {
@@ -749,7 +731,7 @@ var startApp = function() {
                 document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
-    } // End utfGridClickEvent
+    }; // End utfGridClickEvent
 };
 
 app.initialize(startApp);
