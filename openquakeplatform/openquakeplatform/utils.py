@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 
 SIGN_IN_REQUIRED = ('You must be signed into the OpenQuake Platform to use '
                     'this feature.')
@@ -18,8 +19,10 @@ class OQTemplateView(TemplateView):
         context = super(OQTemplateView, self).get_context_data(**kwargs)
 
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
-        return context
+        context['tilestream_url'] = settings.TILESTREAM_URL
+        context['bing_key'] = settings.BING_KEY
 
+        return context
 
 class allowed_methods(object):
     def __init__(self, methods):

@@ -64,6 +64,12 @@ TIME_ZONE = 'UTC'
 
 SECRET_KEY = '%(oq_secret_key)s'
 
+BING_KEY = {
+    'bing_key': (
+        '%(oq_bing_key)s'
+    ),
+}
+
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
 ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']
@@ -110,6 +116,8 @@ THIRD_PARTY_URLS = {
         'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
     ),
 }
+
+TILESTREAM_URL = '//tilestream.openquake.org'
 
 GEOSERVER_URL = '/geoserver/'
 
