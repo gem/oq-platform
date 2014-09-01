@@ -117,6 +117,8 @@ THIRD_PARTY_URLS = {
     ),
 }
 
+TILESTREAM_URL = '//tilestream.openquake.org'
+
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {

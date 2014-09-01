@@ -19,6 +19,7 @@ class OQTemplateView(TemplateView):
         context = super(OQTemplateView, self).get_context_data(**kwargs)
 
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
+        context['tilestream_url'] = settings.TILESTREAM_URL
         context['bing_key'] = settings.BING_KEY
 
         return context
