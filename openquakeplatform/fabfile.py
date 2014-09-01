@@ -46,6 +46,7 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
               hazard_calc_addr='http://oq-platform:8800',
               risk_calc_addr='http://oq-platform:8800',
               oq_engserv_key='oq-platform',
+              oq_bing_key='',
               mediaroot='/tmp', staticroot='/home'):
 
     """
@@ -79,10 +80,10 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
 def baseenv(
-            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key,
+            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key='',
             db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             mediaroot='/tmp', staticroot='/home'):
-    _write_local_settings(db_name,  db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, mediaroot, staticroot)
+    _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -158,7 +159,7 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, mediaroot, staticroot):
+def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
         fh.write(local_settings % dict(db_name=db_name,
@@ -169,6 +170,7 @@ def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, ris
                                        risk_calc_addr=risk_calc_addr,
                                        oq_engserv_key=oq_engserv_key,
                                        oq_secret_key=oq_secret_key,
+                                       oq_bing_key=oq_bing_key,
                                        mediaroot=mediaroot,
                                        staticroot=staticroot))
 
