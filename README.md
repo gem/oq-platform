@@ -6,4 +6,4 @@ User can access, manipulate, share and add data, models and tools for integrated
 
 ![OpenQuake](http://www.globalquakemodel.org/media/cms_page_media/15/OQ-workflows_1.png.530x400_q85_crop.jpg)
 
-(http://www.globalquakemodel.org/openquake/about/)
+Read nore at http://www.globalquakemodel.org/openquake/about/
