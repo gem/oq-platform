@@ -2,6 +2,8 @@ import os
 import geonode
 import openquakeplatform
 
+from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
+
 SITENAME = 'Openquake Platform'
 SITEURL = 'http://%(host)s/'
 
@@ -116,6 +118,12 @@ THIRD_PARTY_URLS = {
         'http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png'
     ),
 }
+
+TILESTREAM_URL = '//tilestream.openquake.org'
+
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'openquakeplatform.utils.oq_context_processor',
+)
 
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
