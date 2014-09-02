@@ -1,4 +1,4 @@
-Openquake Platform
+OpenQuake Platform
 ==================
 
 A web-based risk assessment platform which offers an interactive environment for modeling, viewing, exploring, and managing earthquake risk.
