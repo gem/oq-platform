@@ -60,15 +60,15 @@ var selectedLoss = [];
 var lossLayerId = {};
 var lossLayerTitle = {};
 var tileLayer = {};
-var imputLayerId = {};
-var imputLayerTitle = {};
-var imputLayerNames = {};
-var imputLayersByCat = {};
-var imputByInvestMixed = {};
-var imputAvailable = {};
-var imputByInvestSingle = {};
-var imputCategoryList = [];
-var imputLayerGrids = [];
+var inputLayerId = {};
+var inputLayerTitle = {};
+var inputLayerNames = {};
+var inputLayersByCat = {};
+var inputByInvestMixed = {};
+var inputAvailable = {};
+var inputByInvestSingle = {};
+var inputCategoryList = [];
+var inputLayerGrids = [];
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
@@ -168,11 +168,11 @@ var startApp = function() {
     var selCurveCat = document.getElementById('hazard-curve-category');
     var selUhsCat = document.getElementById('hazard-curve-category');
     var selLossCat = document.getElementById('risk-curve-category');
-    var selImputCat = document.getElementById('hazard-curve-category');
+    var selInputCat = document.getElementById('hazard-curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
     var selLoss = document.getElementById('loss-list');
-    var selImput = document.getElementById('imput-list');
+    var selInput = document.getElementById('input-list');
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
@@ -188,8 +188,8 @@ var startApp = function() {
     selUhsCat.appendChild(catUhsMenuHeader);
     $('#hazard-curve-category option:empty').remove();
 
-    var catImputMenuHeader = document.createElement('option');
-    selImputCat.appendChild(catImputMenuHeader);
+    var catInputMenuHeader = document.createElement('option');
+    selInputCat.appendChild(catInputMenuHeader);
     $('#hazard-curve-category option:empty').remove();
 
     // Create a header for the menu drop down
@@ -211,7 +211,7 @@ var startApp = function() {
             var app = json[i].application;
             var grid, gridName;
 
-            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'imput-mfds') {
+            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds') {
                 curveCategoryList.push(cat);
                 curveLayersByCat[cat] = [];
                 curveLayerNames[name] = [];
@@ -237,13 +237,13 @@ var startApp = function() {
                 lossLayerGrids.push(gridName);
             }
             
-            if (type == 'imput-mfds') {                
-                imputCategoryList.push(cat);
-                imputLayersByCat[cat] = [];
-                imputLayerNames[name] = [];
+            if (type == 'input-mfds') {                
+                inputCategoryList.push(cat);
+                inputLayersByCat[cat] = [];
+                inputLayerNames[name] = [];
                 grid = grids.toString();
                 gridName = grid.split('/')[4];
-                imputLayerGrids.push(gridName);
+                inputLayerGrids.push(gridName);
             }
           
             if (chartType == undefined && cat !== undefined && type == 'hazard') {
@@ -316,18 +316,18 @@ var startApp = function() {
                 lossByInvestSingle[j] = name;
             }
 
-            if (type == 'imput-mfds') {
-                var imputLayerId = json[j].id;
-                var imputLayerTitle = json[j].mapped_value;
-                imputLayerNames[name].push(imputLayerId);
-                imputLayersByCat[cat].push(imputLayerTitle);
+            if (type == 'input-mfds') {
+                var inputLayerId = json[j].id;
+                var inputLayerTitle = json[j].mapped_value;
+                inputLayerNames[name].push(inputLayerId);
+                inputLayersByCat[cat].push(inputLayerTitle);
 
                 if (chartType == 'mixed') {
-                    imputByInvestMixed[j] = name;
-                    imputAvailable[j] = template;
+                    inputByInvestMixed[j] = name;
+                    inputAvailable[j] = template;
                 }
                 else if (chartType == 'single') {
-                    imputByInvestSingle[j] = name;
+                    inputByInvestSingle[j] = name;
                 }
             }
 
@@ -353,8 +353,8 @@ var startApp = function() {
             return i == uhsCategoryList.indexOf(itm);
         });
 
-        var imputCategoryUnique = imputCategoryList.filter(function(itm,i,imputCategoryList){
-            return i == imputCategoryList.indexOf(itm);
+        var inputCategoryUnique = inputCategoryList.filter(function(itm,i,inputCategoryList){
+            return i == inputCategoryList.indexOf(itm);
         });
 
         var lossCategoryUnique = lossCategoryList.filter(function(itm,i,lossCategoryList){
@@ -394,15 +394,15 @@ var startApp = function() {
         }
 
         for (var i in curveCategoryUnique) {
-            // Append category names to imput dropdown list
-            var imputCategoryTitle = curveCategoryUnique[i];
+            // Append category names to input dropdown list
+            var inputCategoryTitle = curveCategoryUnique[i];
 
-            var imputOpt = document.createElement('option');
-            imputOpt.innerHTML = imputCategoryTitle;
-            imputOpt.value = imputCategoryTitle;
-            selImputCat.appendChild(curveOpt);
+            var inputOpt = document.createElement('option');
+            inputOpt.innerHTML = inputCategoryTitle;
+            inputOpt.value = inputCategoryTitle;
+            selInputCat.appendChild(curveOpt);
             // Append layer list to dowpdown
-            var layerImputOpt = document.createElement('option');
+            var layerInputOpt = document.createElement('option');
         }
 
         for (var i in curveCategoryUnique) {
@@ -488,17 +488,17 @@ var startApp = function() {
         }
     }); //end add tile curve
 
-    $('#addTileImput').click(function() {
+    $('#addTileInput').click(function() {
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        var e = document.getElementById('imput-list');
+        var e = document.getElementById('input-list');
         var option = e.options[e.selectedIndex].value;
-        //var investType = checkImputType(imputByInvestMixed, imputByInvestSingle, option);
-        var curveType = 'imput';
-        singleCurve(curveType);
-    }); // end add imput curve
+        //var investType = checkInputType(inputByInvestMixed, inputByInvestSingle, option);
+        var curveType = 'input';
+        inputCurve(curveType);
+    }); // end add input curve
 
 
     $('#addTileUhs').click(function() {
@@ -648,29 +648,29 @@ var startApp = function() {
         }
     });
 
-    // Create dynamic categorized imput layer dialog
+    // Create dynamic categorized input layer dialog
     $('#hazard-curve-category').change(function() {
         // Remove the layer list element
-        document.getElementById('imput-list').options.length = 0;
+        document.getElementById('input-list').options.length = 0;
 
         // Create the layer list based on the category selected
         var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
-        var layersArray = imputLayersByCat[strUser];
+        var layersArray = inputLayersByCat[strUser];
         for (var i in layersArray) {
             var layers = layersArray[i];
-            var imputOpt = document.createElement('option');
-            imputOpt.innerHTML = layers;
-            imputOpt.valuse = layers;
-            selImput.appendChild(imputOpt);
+            var inputOpt = document.createElement('option');
+            inputOpt.innerHTML = layers;
+            inputOpt.valuse = layers;
+            selInput.appendChild(inputOpt);
         }
 
-        if($('#imput-list').find('option').length == 0) {
-            $('#addTileImput').attr('disabled', true);
-            $('#removeTileImput').attr('disabled', true);
+        if($('#input-list').find('option').length == 0) {
+            $('#addTileInput').attr('disabled', true);
+            $('#removeTileInput').attr('disabled', true);
         } else {
-            $('#addTileImput').attr('disabled', false);
-            $('#removeTileImput').attr('disabled', false);
+            $('#addTileInput').attr('disabled', false);
+            $('#removeTileInput').attr('disabled', false);
         }
     });
 
@@ -830,14 +830,14 @@ var startApp = function() {
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
-        } else if (curveType == 'imput') {
-            var e = document.getElementById('imput-list');
-            var imputLayerId = e.options[e.selectedIndex].value;
+        } else if (curveType == 'input') {
+            var e = document.getElementById('input-list');
+            var inputLayerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
-            var imputLayerIdArray = imputLayerNames[imputLayerId];
-            var selectedLayer = imputLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, imputLayerGrids) > -1;
+            var inputLayerIdArray = inputLayerNames[inputLayerId];
+            var selectedLayer = inputLayerIdArray.toString();
+            var hasGrid = $.inArray(selectedLayer, inputLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 //layerInvestigationTime = json.investigationTime;
@@ -866,6 +866,87 @@ var startApp = function() {
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
+        }
+    }
+
+    // add input curve layers from tilestream
+    function inputCurve(curveType) {
+        var e = document.getElementById('input-list');
+        var inputLayerId = e.options[e.selectedIndex].value;
+        // Look up the layer id using the layer name
+        var inputLayerIdArray = inputLayerNames[inputLayerId];
+        var selectedLayer = inputLayerIdArray.toString();
+        var hasGrid = $.inArray(selectedLayer, inputLayerGrids) > -1;
+        // get more information about the selected layer for use in chart
+        $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+            var bounds = json.bounds;
+            map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+        });
+
+        var hasGrid = $.inArray(selectedLayer, curveLayerGrids) > -1;
+
+        tileLayer = L.tileLayer(TILESTREAM_URL +
+            selectedLayer +
+            '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
+            selectedLayer +
+            '.json'});
+        layerControl.addOverlay(tileLayer, selectedLayer);
+        map.addLayer(tileLayer);
+        // Keep track of layers that have been added
+        layers[selectedLayer] = tileLayer;
+        if (hasGrid == true) {
+            gridList = 1;
+            utfGrid = new L.UtfGrid(TILESTREAM_URL +
+                selectedLayer +
+                '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(utfGrid);
+            //hazardCurveUtfGridClickEvent(utfGrid, curveType);
+            utfGrid.on('click', function (e) {
+                $('#chartDialog').empty();
+                $('#chartDialog').dialog('open');
+                //{{{mfds}}} {{{bin_width}}} {{{min_mag}}} {{{occur_rate}}}
+                var mfds, srcIds, binWidth, minMag, occurRate, lat, lng, magnitude, average;
+                var sum = 0;
+
+                if (e.data) {
+
+                    mfds = e.data.mfds;
+                    srcIds = e.data.src_ids;
+                    console.log("mfds");
+                    console.log(mfds);
+                    console.log("srcIds");
+                    console.log(srcIds);
+                    var mfdsJsonObj = $.parseJSON(mfds);
+
+                    var inputObj = {};
+                    
+                    for (var k in mfdsJsonObj) {
+                        
+                        
+                        binWidth = mfdsJsonObj[k].bin_width;
+                        minMag = mfdsJsonObj[k].min_mag;
+                        occurRate = mfdsJsonObj[k].occur_rates;
+                        
+                        var sum = 0;
+                    
+                        $.each(occurRate, function() {
+                            sum += this;
+                        });
+
+                        var average = sum / occurRate.length;
+                        var mags = (binWidth + minMag) * average;
+                        inputObj[k] = mags;
+                    
+                    }
+                    console.log("inputObj");
+                    console.log(inputObj);
+
+                    console.log("occurRate");
+                    console.log(occurRate);
+                    
+                    hazardInputD3Chart(inputObj, occurRate);
+                }
+            }); // End utfGrid click
         }
     }
 
@@ -1042,7 +1123,7 @@ var startApp = function() {
 
     // Remove uhs layers from tilestream
     $(document).ready(function() {
-        $('#removeTileImput').click(function() {
+        $('#removeTileInput').click(function() {
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
             $('#addTileLoss').attr('disabled', false);
@@ -1057,7 +1138,7 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            var e = document.getElementById('imput-list');
+            var e = document.getElementById('input-list');
             var mapLayerId = e.options[e.selectedIndex].value;
 
             // Look up the layer id using the layer name
@@ -1383,6 +1464,251 @@ var startApp = function() {
 
     function hazardD3Chart(probArray, imlArray, lat, lng) {
         var lon = lng;
+        // grid line functions
+        function make_x_axis() {
+            return d3.svg.axis()
+                .scale(x)
+                .orient('bottom')
+                .ticks(5);
+        }
+
+        function make_y_axis() {
+            return d3.svg.axis()
+                .scale(y)
+                .orient('left')
+                .ticks(5);
+        }
+
+        if (layerIml instanceof Array) {
+            //continue
+        } else {
+            layerIml = layerIml.split(',');
+        }
+
+        var data = [];
+        for(i=0; i<probArray.length; i++) {
+            // Only push into data if the values are greater then 0
+            if (parseFloat(layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
+                data.push([parseFloat(layerIml[i]), parseFloat(probArray[i])]);
+            }
+        }
+
+        var margin = {top: 20, right: 20, bottom: 80, left: 60},
+        width = 400 - margin.left - margin.right,
+        height = 380 - margin.top - margin.bottom;
+
+        var x = d3.scale.log().range([0, width]);
+        var y = d3.scale.log().range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            //.ticks(2)
+            .tickFormat(function (d) { return Math.round(d * 100) / 100; })
+            .orient('bottom');
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient('left');
+
+        var line = d3.svg.line()
+            .x(function(d) {
+                return x(d.x);
+            })
+            .y(function(d) {
+                return y(d.y);
+            });
+
+        var svg = d3.select('#chartDialog').append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        // grid lines
+        svg.append('g')
+            .attr('class', 'grid')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(make_x_axis()
+                .tickSize(-height, 0, 0)
+                .tickFormat('')
+            );
+
+        svg.append('g')
+            .attr('class', 'grid')
+            .call(make_y_axis()
+                .tickSize(-width, 0, 0)
+                .tickFormat('')
+            );
+
+        var dataCallback = function(d) {
+            d.x = +d[0];
+            d.y = +d[1];
+        };
+
+        console.log("single chart data");
+        console.log(data);
+
+        data.forEach(dataCallback);
+        x.domain(d3.extent(data, function(d) { return d.x; }));
+        y.domain(d3.extent(data, function(d) { return d.y; }));
+
+        svg.append('path')
+            .data([data])
+            .attr('class', 'line')
+            .attr('d', line);
+        svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(xAxis)
+            .selectAll("text")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr('x', 40)
+                .style('font-size','12px')
+                .attr("transform", function(d) {
+                    return "rotate(90)";
+                        })
+            .append('text')
+            .attr('x', 160)
+            .attr('y', 30)
+            .attr('dy', '.71em')
+            .attr('text-anchor', 'middle')
+            .style('font-size','12px')
+            .text(layerImt);
+
+        svg.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis)
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -60)
+            .attr('x', -20)
+            .attr('dy', '.71em')
+            .style('font-size','12px')
+            .style('text-anchor', 'end')
+            .text('Probability of exceedance in '+layerInvestigationTime+' years');
+
+        var legend = d3.select('#chartDialog').append('svg')
+            .attr('height', 25);
+
+        // points along the line
+        svg.selectAll('circle.line')
+            .data(data)
+            .enter().append('circle')
+            .attr('class', 'line')
+            .attr('cx', function(d) { return x(d.x); })
+            .attr('cy', function(d) { return y(d.y); })
+            .attr('r', 4.5)
+            .style('fill', 'gray')
+            .on('mouseover', function() {
+                d3.select(this)
+                    .attr('r', 6.6)
+                    .text(circleX + ', ' + circleY)
+                    .style('fill', 'red');
+                var circleX = d3.select(this.__data__.x);
+                circleX = circleX.toString();
+                circleX = circleX.split(','[0]);
+
+                var circleY = d3.select(this.__data__.y);
+                circleY = circleY.toString();
+                circleY = circleY.split(','[0]);
+
+                textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
+
+            }).on('mouseout', function() {
+                d3.select(this)
+                    .attr('r', 4.5)
+                    .style('fill', 'gray');
+            });
+
+        legend.append('text')
+            .attr('x', 60)
+            .attr('y', 7)
+            .attr('dy', '.35em')
+            .text('Location (Lon/Lat): '+lng+', '+lat);
+
+        textBottom = svg.append('text')
+            .attr('x', 0)
+            .attr('y', 340)
+            .attr('dy', '.35em')
+            .text('');
+
+        $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+        $('#downloadCurve').on('hover', function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        var h = $('#chartDialog').height();
+        h = h + 20;
+        $('#chartDialog').css({'height': h+'px'});
+
+        // Prep data for download to CSV
+        $('#downloadCurve').click(function(event) {
+            var csvData = [];
+            csvData = csvData.concat('prob');
+            csvData = csvData.concat('iml');
+            csvData = csvData.concat('investigationTime');
+            csvData = csvData.concat('lon');
+            csvData = csvData.concat('lat');
+            csvData = JSON.stringify(csvData);
+            var lineBreak = 'lineBreak';
+            csvData = csvData.concat(lineBreak);
+            var quotationMark = '"';
+
+            csvData = csvData.concat('"');
+            csvData = csvData.concat(probArray);
+            csvData = csvData.concat('","');
+            csvData = csvData.concat(layerIml);
+            csvData = csvData.concat('",');
+            csvData = csvData.concat(layerInvestigationTime);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(lon);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(lat);
+            csvData = csvData
+                .replace(/lineBreak/, '\r\n')
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/''/g, '","');
+            downloadJSON2CSV(csvData);
+        });
+    } // End Chart
+
+
+    ////////////////////////////////////////////
+    //////// Single Input hazard Chart /////////
+    ////////////////////////////////////////////
+
+    function hazardInputD3Chart(inputObj, occurRate) {
+
+        console.log("inputObj");
+        console.log(inputObj);
+        console.log("occurRate length");
+        console.log(occurRate.length);
+
+        var mfds = [];
+        var dataXAxis = [];
+        var data = [];
+
+        for(var k in inputObj) {
+            console.log(k);
+            mfds.push(k);
+            dataXAxis.push(inputObj[k]);
+        }
+
+        for (var i = 0; i < occurRate.length; i++) {
+            var temp = [];
+            temp.push(occurRate[i]);
+            temp.push(dataXAxis[i]);
+            console.log(temp);
+            data.push(temp);
+        }
+
+        console.log("mfds");
+        console.log(mfds);
+        console.log("deta");
+        console.log(data);
+
         // grid line functions
         function make_x_axis() {
             return d3.svg.axis()
