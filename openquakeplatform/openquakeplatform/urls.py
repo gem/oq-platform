@@ -163,10 +163,17 @@ urlpatterns = patterns('',
 
     )
 
-#Documents views
+# Documents views
 if 'geonode.documents' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
         (r'^documents/', include('geonode.documents.urls')),
+    )
+# Enable internal geoserver proxy in development mode.
+# In production it must be done by apache/nginx, not by Django
+if settings.debug:
+    urlpatterns += patterns('',
+        url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
+            name="geoserver"),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
