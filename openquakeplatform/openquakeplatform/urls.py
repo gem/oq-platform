@@ -169,7 +169,7 @@ if 'geonode.documents' in settings.INSTALLED_APPS:
         (r'^documents/', include('geonode.documents.urls')),
     )
 # Enable internal geoserver proxy in development mode.
-# In production it must be done by apache/nginx, not by Django
+# In production it must be done by Apache/Nginx, not by Django
 if settings.debug:
     urlpatterns += patterns('',
         url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
