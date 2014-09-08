@@ -105,6 +105,7 @@ setup(
         "django-chained-multi-checkboxes==0.4",
         "django-chained-selectbox==0.1",
         "oq-nrmllib==0.4.5",
+        "scipy==0.9.0",
     ],
     include_package_data=True,
     zip_safe=False,
