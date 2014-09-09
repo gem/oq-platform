@@ -57,7 +57,9 @@
                     <div class="infocontainerwide">
                         <h1>{{ paneltitle }}</h1>
                         <div class="overview">{% formviewastable field_structure=eventoverviewfields %}</div>
-                        <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
+                        {% if iconicimage != "" %}
+                            <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
+                        {% endif %}
                     </div>
 
                     <div class="infocontainerwide">
