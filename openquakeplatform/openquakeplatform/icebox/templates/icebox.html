@@ -90,7 +90,7 @@ Calculate - {{block.super}}
             <a href="/maps/<%= calc.get('map') %>" class="btn btn-success">Open</a>
           <% } %>
 
-          <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed') { %>
+          <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed' || calc.get('status') == 'queued') { %>
             <% if(calc.get('status') == 'failed') { %>
               <% traceback = calc.get('einfo') %>
               <button class="btn" onclick="popup_error_traceback(traceback)">Traceback</button>
