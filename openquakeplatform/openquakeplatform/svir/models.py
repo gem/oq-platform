@@ -76,18 +76,94 @@ class UserData(models.Model):
         abstract = True
 
 
+class Project(UserData):
+    name = models.CharField(max_length=CHMAX, unique=True)
+    description = models.TextField()
+    # FIXME: If we are uploading data through the geonode web interface, we
+    # don-t need to store the layer here
+    # data = DictField(blank=True, null=True)
+
+    # The project definition json, containing indicators, weights and operators
+    metadata = DictField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+# FIXME: Check this. We are commenting this out, because we decided to
+# upload layers through geonode and add comments directly to layers
+# class Comment(UserData):
+#     project = models.ForeignKey('Project')
+#     parent_comment = models.ForeignKey('Comment', blank=True, null=True)
+#     body = models.TextField()
+
+#     def __unicode__(self):
+#         return self.body
+
+
+class Indicator(models.Model):
+    code = models.CharField(max_length=CHMAX)
+    theme = models.ForeignKey('Theme')
+    subtheme = models.ForeignKey('Subtheme')
+    # ~"Variable Name"
+    name = models.CharField(max_length=CHMAX)
+    # ~"Unit of Measurement"
+    measurement_type = models.ForeignKey('MeasurementType')
+    # ~"Variable Description"
+    description = models.CharField(max_length=CHMAX)
+    source = models.ForeignKey('Source')
+    keywords = models.ManyToManyField('Keyword', null=True, blank=True)
+    update_periodicity = models.ForeignKey('Periodicity')
+    aggregation_method = models.ForeignKey('AggregationMethod')
+    internal_consistency_metric = models.ForeignKey(
+        'InternalConsistencyMetric')
+    # FIXME: instead of vulnerability.Country, use a dedicated app
+    # countries = models.ManyToManyField(
+    #     'vulnerability.Country', through='CountryIndicator',
+    #     null=True, blank=True)
+    additional_notes = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def min_value(self):
+        # TODO: Check if we want this considering the whole set of countries,
+        # or a subset (e.g. a zone)
+        pass
+
+    @property
+    def max_value(self):
+        # TODO: Check if we want this considering the whole set of countries,
+        # or a subset (e.g. a zone)
+        pass
+
+    @property
+    def mean_value(self):
+        # TODO: Check if we want this considering the whole set of countries,
+        # or a subset (e.g. a zone)
+        pass
+
+    @property
+    def data_completeness(self):
+        # TODO: Check if we want this considering the whole set of countries,
+        # or a subset (e.g. a zone)
+        pass
+
+
 # For the svir application, we want to provide the possibility to have
 # user-defined zones in a many-to-many relationship with countries, in order to
 # be able to select countries by different kinds of zones (e.g. a group of
 # countries that share the same currency, regardless from their geographical
 # location)
-class Zone(models.Model):
-    name = models.CharField(max_length=CHMAX)
-    countries = models.ManyToManyField(
-        'vulnerability.Country', blank=True, null=True)
+# class CustomRegion(models.Model):
+#     name = models.CharField(max_length=CHMAX)
+#     # FIXME: Instead of vulnerability.Country, use a dedicated app
+#     # countries = models.ManyToManyField(
+#     #     'vulnerability.Country')
 
-    def __unicode__(self):
-        return self.name
+#     def __unicode__(self):
+#         return self.name
 
 
 class Theme(models.Model):
@@ -104,7 +180,6 @@ class Subtheme(models.Model):
         return self.name
 
 
-# TODO Check if this name sounds fine
 class MeasurementType(models.Model):
     name = models.CharField(max_length=CHMAX)
 
@@ -112,8 +187,7 @@ class MeasurementType(models.Model):
         return self.name
 
 
-# TODO Check if we can rename this into something PCA-related
-class StatisticalTag(models.Model):
+class InternalConsistencyMetric(models.Model):
     name = models.CharField(max_length=CHMAX)
 
     def __unicode__(self):
@@ -151,86 +225,26 @@ class Periodicity(models.Model):
 
 
 class AggregationMethod(models.Model):
+
     name = models.CharField(max_length=CHMAX)
 
     def __unicode__(self):
         return self.name
 
 
-class CountryIndicator(models.Model):
-    country = models.ForeignKey('vulnerability.Country')
-    indicator = models.ForeignKey('Indicator')
-    value = models.FloatField()
+# FIXME: instead of vulnerability.Country, use a dedicated app
+# class CountryIndicator(models.Model):
+#     country = models.ForeignKey('vulnerability.Country')
+#     indicator = models.ForeignKey('Indicator')
+#     value = models.FloatField()
 
-    def __unicode__(self):
-        return "%s: %s = %s [%s]" % (
-            self.country, self.indicator, self.value,
-            self.indicator.measurement_type)
+#     def __unicode__(self):
+#         return "%s: %s = %s [%s]" % (
+#             self.country, self.indicator, self.value,
+#             self.indicator.measurement_type)
 
-    class Meta:
-        db_table = 'svir_country_indicators'
-        unique_together = ('country', 'indicator')
-
-
-class Indicator(models.Model):
-    code = models.CharField(max_length=CHMAX)
-    name = models.CharField(max_length=CHMAX)
-    measurement_type = models.ForeignKey('MeasurementType')
-    theme = models.ForeignKey('Theme')
-    subtheme = models.ForeignKey('Subtheme')
-    statistical_tag = models.ForeignKey('StatisticalTag')
-    keywords = models.ManyToManyField('Keyword', null=True, blank=True)
-    definition = models.CharField(max_length=CHMAX)
-    source = models.ForeignKey('Source')
-    periodicity = models.ForeignKey('Periodicity')
-    aggregation_method = models.ForeignKey('AggregationMethod')
-    additional_notes = models.TextField(null=True, blank=True)
-    countries = models.ManyToManyField(
-        'vulnerability.Country', through='CountryIndicator',
-        null=True, blank=True)
-
-    def __unicode__(self):
-        return self.name
-
-    @property
-    def min_value(self):
-        # TODO: Check if we want this considering the whole set of countries,
-        # or a subset (e.g. a zone)
-        pass
-
-    @property
-    def max_value(self):
-        # TODO: Check if we want this considering the whole set of countries,
-        # or a subset (e.g. a zone)
-        pass
-
-    @property
-    def mean_value(self):
-        # TODO: Check if we want this considering the whole set of countries,
-        # or a subset (e.g. a zone)
-        pass
-
-    @property
-    def data_completeness(self):
-        # TODO: Check if we want this considering the whole set of countries,
-        # or a subset (e.g. a zone)
-        pass
+#     class Meta:
+#         db_table = 'svir_country_indicators'
+#         unique_together = ('country', 'indicator')
 
 
-class Project(UserData):
-    name = models.CharField(max_length=CHMAX, unique=True)
-    description = models.TextField()
-    data = DictField(blank=True, null=True)
-    metadata = DictField(blank=True, null=True)
-
-    def __unicode__(self):
-        return self.name
-
-
-class Comment(UserData):
-    project = models.ForeignKey('Project')
-    parent_comment = models.ForeignKey('Comment', blank=True, null=True)
-    body = models.TextField()
-
-    def __unicode__(self):
-        return self.body
