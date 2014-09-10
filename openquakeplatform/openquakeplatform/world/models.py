@@ -26,10 +26,14 @@ class Country(models.Model):
     class Meta:
         verbose_name_plural = "countries"
 
-    name = models.CharField(max_length=50)
-    iso3 = models.CharField(max_length=3)
-    the_geom = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
-    is_visible = models.BooleanField(default=True)
+    name = models.CharField(max_length=150)
+    iso3 = models.CharField(max_length=6)
+    # the_geom = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
+    # is_visible = models.BooleanField(default=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.iso3)
+
+    class Meta:
+        managed = False
+        dbtable = 'ged2.gadm_country'
