@@ -93,6 +93,7 @@ urlpatterns = patterns('',
     url(r'^hazard_viewer/$', TemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
 
+    (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
