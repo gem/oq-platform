@@ -1,12 +1,3 @@
-<!--********
-  *********
-  *********
-  This is a temporary pages TODO remove it when the customizable 
-  categories can be implemented
-  *********
-  *********
--->
-
 {% extends "site_base.html" %}
 {% load i18n %}
 {% load url from future %}
@@ -28,7 +19,7 @@
       </div>
       <div id="oq-body-heading">
         {% block oq_body_heading %}
-          <h1>{% trans "OpenQuake Maps" %}</h1>
+          <h1>{% trans "OpenQuake Share" %}</h1>
           <br />
         {% endblock oq_body_heading %}
       </div>
@@ -37,8 +28,37 @@
           <div class="oq-intro">
             <!-- Main page content goes here -->
 
-            <a href="{% url 'hazard_models' %}">Hazard Models</a></li> <br/>
-            <br/><br/>
+            The OpenQuake Platform includes a number of tool for contributing to the existing datasets. 
+            <br><br>
+
+            <b>Data Capture/Collection</b> 
+            <ul>
+              <li>
+                <a href="{% url 'faulted_earth' %}">The Faulted Earth </a> tool allows users to input fault information
+              </li>
+              <li>
+                IDCT Android
+              </li>
+              <li>
+                SIDD
+              </li>
+              <li>
+                <a href="/admin/vulnerability/generalinformation/">The vulnerability suite</a>  is a set of tool that allow users to explore and contribute to a comprehensive global vulnerability database that includes fragility, vulnerability, damage-to-loss functions and capacity curves for different types of structure
+              </li>
+            </ul>
+
+            <b>Taxonomy:</b>
+            <ul>
+              <li>
+                <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
+              </li>
+            </ul>
+
+            <b>Upload:</b> 
+            <ul>
+              <li><a href="{% url "document_upload" %}">Documents</a></li>
+              <li><a href="{% url "layer_upload" %}">Layers</a></li>
+            </ul>
 
           </div>
         {% endblock oq_body_content %}
@@ -53,7 +73,7 @@
             <a class="btn btn-large" href="{% url "maps_browse" %}">
               {% trans "Explore Maps" %}
             </a>
-            <img src="../static/img/OQ-screens.png" width="195px">
+            
           </div>
         {% endblock oq_body_sidebar %}
       </div>

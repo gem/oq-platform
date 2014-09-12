@@ -309,9 +309,8 @@
 
         //resize the main and map div
         $(document).ready(function() {
-            var main_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height();
-            var map_height = $(window).height() - $("#header-wrapper").height() - $("#footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25;
-            //$('#main').css("height",main_height + "px");
+            var main_height = $(window).height() - $("#oq-page-header").height() - $("#oq-page-footer").height();
+            var map_height = $(window).height() - $("#oq-page-header").height() - $("#oq-page-footer").height() - $("#tooltip").height() - $("#ecd-filterbar").height() - 25
             $('#map').css("height",map_height + "px");
             map.invalidateSize(false);
         });
@@ -376,7 +375,7 @@
         // The map
         // base layers
         naturalEarth = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.natural-earth-2/{z}/{x}/{y}.png'),
-        GEM_base = L.tileLayer('http://tilestream.openquake.org/v2/world-landmass/{z}/{x}/{y}.png');
+        GEM_base = L.tileLayer(TS_URL + '/v2/world-landmass/{z}/{x}/{y}.png');
         GEM_base2 = new L.tileLayer("http://{s}.tiles.mapbox.com/v3/unhcr.map-8bkai3wa/{z}/{x}/{y}.png",
                                    {subdomains: ['a', 'b', 'c', 'd'], noWrap: true});
 
@@ -397,9 +396,9 @@
 
         osm = L.tileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.world-bank-borders-en/{z}/{x}/{y}.png'),
 
-        grump_rural = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-rural/{z}/{x}/{y}.png');
+        grump_rural = L.tileLayer(TS_URL + '/v2/gdal-custom-rural/{z}/{x}/{y}.png');
 
-        grump_urban = L.tileLayer('http://tilestream.openquake.org/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
+        grump_urban = L.tileLayer(TS_URL + '/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
 </script>
         {% block gemecd_map %}
 

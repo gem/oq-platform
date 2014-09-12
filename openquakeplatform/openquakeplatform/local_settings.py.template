@@ -2,6 +2,8 @@ import os
 import geonode
 import openquakeplatform
 
+from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
+
 SITENAME = 'Openquake Platform'
 SITEURL = 'http://%(host)s/'
 
@@ -24,7 +26,7 @@ DATABASES = {
         'PORT': '5432',
     },
     # vector datastore for uploads
-    'datastore' : {
+    'datastore': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
@@ -45,6 +47,13 @@ STATICFILES_DIRS = [
     os.path.join(GEONODE_ROOT, 'static')
 ]
 
+ALLOWED_DOCUMENT_TYPES = [
+    'doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg',
+    'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'tar',
+    'tgz', 'tbz', 'tar.gz', 'tar.bz2'
+]
+MAX_DOCUMENT_SIZE = 100
+
 try:
     from openquakeplatform import ged_settings
     DATABASES.update(ged_settings.DATABASES)
@@ -57,9 +66,17 @@ TIME_ZONE = 'UTC'
 
 SECRET_KEY = '%(oq_secret_key)s'
 
+BING_KEY = {
+    'bing_key': (
+        '%(oq_bing_key)s'
+    ),
+}
+
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
-ALLOWED_HOSTS=['%(host)s', 'testserver', 'localhost']
+ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']
+
+PROXY_ALLOWED_HOSTS = ('%(host)s', 'localhost')
 
 MEDIA_ROOT = '%(mediaroot)s'
 STATIC_ROOT = '%(staticroot)s'
@@ -102,13 +119,21 @@ THIRD_PARTY_URLS = {
     ),
 }
 
+TILESTREAM_URL = '//tilestream.openquake.org'
+
+GEOSERVER_URL = '/geoserver/'
+
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'openquakeplatform.utils.oq_context_processor',
+)
+
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
     # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
+        'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
+        'PUBLIC_LOCATION' : GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'DATASTORE': 'default',   # 'datastore',
@@ -265,6 +290,7 @@ INSTALLED_APPS = (
     'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
+    'openquakeplatform.maps_viewer',
 
     # gemecd
     'openquakeplatform.weblib',

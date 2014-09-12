@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2013, GEM Foundation.
+Copyright (c) 2014, GEM Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
+{% include "base_map_options.html" %}
 
 {{block.super}}
 
@@ -35,7 +36,6 @@ Explore - {{block.super}}
     {{block.super}}
     <!-- Category tags-->
 
-
-
     <script src="{{ STATIC_URL }}js/hazus.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 {% endblock extra_script %}

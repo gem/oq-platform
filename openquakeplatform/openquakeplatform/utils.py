@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 
 SIGN_IN_REQUIRED = ('You must be signed into the OpenQuake Platform to use '
                     'this feature.')
@@ -10,7 +11,14 @@ class OQTemplateView(TemplateView):
     """
     A view utility which renders templates and allows for injection of
     additional context variables.
+
+    This utility is deprecated and it's replaced by oq_context_processor
     """
+
+    # FIXME(dv). This class has been superseded by the oq_context_processor
+    # and the TEMPLATE_CONTEXT_PROCESSORS setting.
+    # It's still present to keep backward compability and it will removed
+    # after urls.py refactoring.
 
     # FIXME(lp). In order to avoid duplication in view code, use a
     # custom django context processor
@@ -18,8 +26,10 @@ class OQTemplateView(TemplateView):
         context = super(OQTemplateView, self).get_context_data(**kwargs)
 
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
-        return context
+        context['tilestream_url'] = settings.TILESTREAM_URL
+        context['bing_key'] = settings.BING_KEY
 
+        return context
 
 class allowed_methods(object):
     def __init__(self, methods):
@@ -33,6 +43,19 @@ class allowed_methods(object):
                 return func(request)
         return wrapped
 
+def oq_context_processor(request):
+    """
+    A custom context processor which allows injection of additional
+    context variables.
+    """
+
+    context = {}
+
+    context['third_party_urls'] = settings.THIRD_PARTY_URLS
+    context['tilestream_url'] = settings.TILESTREAM_URL
+    context['bing_key'] = settings.BING_KEY
+
+    return context
 
 def sign_in_required(func):
     """

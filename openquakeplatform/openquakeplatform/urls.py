@@ -16,6 +16,7 @@ import openquakeplatform.gemecdwebsite.casualtylevel.urls
 import openquakeplatform.gemecdwebsite.surveyvalue.urls
 import openquakeplatform.gemecdwebsite.photo.urls
 import openquakeplatform.gemecdwebsite.uploadnrml.urls
+import openquakeplatform.gemecdwebsite.lookup.urls
 #import openquakeplatform.vulnerability.views
 import photologue.urls
 
@@ -71,6 +72,11 @@ urlpatterns = patterns('',
 
     url(r'^ecd/uploadnrml',include(openquakeplatform.gemecdwebsite.uploadnrml.urls.urlpatterns)), #display mode
 
+    url(r'^ecd/(?P<name>lookup.*)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+    url(r'^ecd/(?P<name>unifieddamagelevel)/(?P<ix>.*)/$',include(openquakeplatform.gemecdwebsite.lookup.urls.urlpatterns)), #display mode
+
+
+
     #photologue
     url(r'^photologue/', include(photologue.urls)),
 
@@ -86,11 +92,11 @@ urlpatterns = patterns('',
         template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', OQTemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^svir_viewer/$', TemplateView.as_view(
+    url(r'^svir_viewer/$', OQTemplateView.as_view(
         template_name="svir_viewer.html"), name='svir_viewer'),
-    url(r'^hazus/$', TemplateView.as_view(
+    url(r'^hazus/$', OQTemplateView.as_view(
         template_name="hazus.html"), name='hazus'),
-    url(r'^hazard_viewer/$', TemplateView.as_view(
+    url(r'^hazard_viewer/$', OQTemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
 
     (r'^world/', include('openquakeplatform.world.urls')),
@@ -98,7 +104,6 @@ urlpatterns = patterns('',
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
-    (r'^icebox/', include('openquakeplatform.icebox.urls')),
     #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
         #name='index'),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
@@ -109,10 +114,9 @@ urlpatterns = patterns('',
     url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
-
-    # Temporary pages TODO remove these when the customizable categories can be implemented
-    url(r'^temp_maps/$', TemplateView.as_view(template_name='temp_maps.html'), name='temp_maps'),
-    url(r'^temp_data/$', TemplateView.as_view(template_name='temp_data.html'), name='temp_data'),
+    url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
+    url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
+    url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
@@ -160,10 +164,17 @@ urlpatterns = patterns('',
 
     )
 
-#Documents views
+# Documents views
 if 'geonode.documents' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
         (r'^documents/', include('geonode.documents.urls')),
+    )
+# Enable internal geoserver proxy in development mode.
+# In production it must be done by Apache/Nginx, not by Django
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
+            name="geoserver"),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns

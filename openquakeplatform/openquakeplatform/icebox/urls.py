@@ -26,8 +26,8 @@ from openquakeplatform.utils import OQTemplateView
 
 urlpatterns = patterns(
     'geonode.icebox.views',
-    url(r'^$', OQTemplateView.as_view(template_name="calculate.html"),
-        name="calculate"),
+    url(r'^$', OQTemplateView.as_view(template_name="icebox.html"),
+        name="icebox"),
     url(r'^calculations$', views.CalculationsView.as_view(),
         name="calculations"),
     url(r'^outputs$', views.OutputsView.as_view(), name="outputs"),

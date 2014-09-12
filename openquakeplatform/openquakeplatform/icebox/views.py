@@ -87,7 +87,7 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         archive = request.FILES['calc_archive']
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
-            hazard_calculation_id = request.POST.get('hazard_calculation_id')
+            hazard_job_id = request.POST.get('hazard_job_id')
 
             post_data=dict(
                 database=settings.OQ_ENGINE_SERVER_DATABASE,
@@ -98,8 +98,8 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
             # Risk only
             if hazard_output_id:
                 post_data['hazard_output_id'] = hazard_output_id
-            if hazard_calculation_id:
-                post_data['hazard_calculation_id'] = hazard_calculation_id
+            if hazard_job_id:
+                post_data['hazard_job_id'] = hazard_job_id
             requests.post(
                 url,
                 data=post_data,

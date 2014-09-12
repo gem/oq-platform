@@ -22,7 +22,7 @@ def iteratetable(queryset,columnnameslist):
             column_list.append(token)
 
         tuple = dict()
-        if hasattr(record, 'id'):
+        if hasattr(record, 'id') and isinstance(record.id, int):
             indent = record.id
 
         tuple[str(ident)] = column_list;
@@ -97,6 +97,16 @@ def iteratefieldstructure(field_structure, context):
 
         if 'tagclass' in field_structure['params']:
             tagclass = field_structure['params']['tagclass']
+    else:
+        if 'foreignkeylinkprefix' in field_structure:
+            linkprefix = field_structure['foreignkeylinkprefix']
+
+        if 'linksuffix' in field_structure:
+            linksuffix = field_structure['linksuffix']
+
+        if 'tagclass' in field_structure:
+            tagclass = field_structure['tagclass']
+
 
     for field in field_structure['fields']:
         columnname = str(field[0].keys()[0])
@@ -174,7 +184,7 @@ def iteratefieldstructure(field_structure, context):
         # create a tuple with the record id and the render_record
         tuple = dict()
 
-        if hasattr(record,'id'):
+        if hasattr(record, 'id') and isinstance(record.id, int):
             ident = record.id
         tuple[str(ident)] = render_record;
         render_structure.append(tuple)
