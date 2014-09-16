@@ -905,46 +905,31 @@ var startApp = function() {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
                 //{{{mfds}}} {{{bin_width}}} {{{min_mag}}} {{{occur_rate}}}
-                var mfds, srcIds, binWidth, minMag, occurRate, lat, lng, magnitude, average;
-                var sum = 0;
+                var mfds, srcIds, binWidth, minMag, occurRate, lat, lng;
 
                 if (e.data) {
 
                     mfds = e.data.mfds;
                     srcIds = e.data.src_ids;
-                    console.log("mfds");
-                    console.log(mfds);
+
                     console.log("srcIds");
                     console.log(srcIds);
                     var mfdsJsonObj = $.parseJSON(mfds);
-
-                    var inputObj = {};
+                    var inputArray = [];
                     
-                    for (var k in mfdsJsonObj) {
-                        
-                        
+                    for (var k in mfdsJsonObj) {    
                         binWidth = mfdsJsonObj[k].bin_width;
                         minMag = mfdsJsonObj[k].min_mag;
-                        occurRate = mfdsJsonObj[k].occur_rates;
-                        
-                        var sum = 0;
-                    
-                        $.each(occurRate, function() {
-                            sum += this;
-                        });
-
-                        var average = sum / occurRate.length;
-                        var mags = (binWidth + minMag) * average;
-                        inputObj[k] = mags;
-                    
+                        occurRate = mfdsJsonObj[k].occur_rates;                    
                     }
-                    console.log("inputObj");
-                    console.log(inputObj);
 
-                    console.log("occurRate");
-                    console.log(occurRate);
-                    
-                    hazardInputD3Chart(inputObj, occurRate);
+                    for (var i = 0; i < occurRate.length; i++) {
+                        var mags = minMag + (binWidth * i);
+                        var mags = Math.round(mags * 100) / 100
+                        inputArray.push([mags, occurRate[i]])
+                    }
+
+                    hazardInputD3Chart(inputArray);
                 }
             }); // End utfGrid click
         }
@@ -1493,6 +1478,9 @@ var startApp = function() {
             }
         }
 
+        console.log('data');
+        console.log(data);
+
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
@@ -1679,35 +1667,17 @@ var startApp = function() {
     //////// Single Input hazard Chart /////////
     ////////////////////////////////////////////
 
-    function hazardInputD3Chart(inputObj, occurRate) {
-
-        console.log("inputObj");
-        console.log(inputObj);
-        console.log("occurRate length");
-        console.log(occurRate.length);
+    function hazardInputD3Chart(inputArray) {
+        console.log("inputArray");
+        console.log(inputArray);
 
         var mfds = [];
         var dataXAxis = [];
-        var data = [];
+        var data;
 
-        for(var k in inputObj) {
-            console.log(k);
-            mfds.push(k);
-            dataXAxis.push(inputObj[k]);
+        for (var i = 0; i < inputArray.length; i++) {
+            dataXAxis.push(inputArray[i][0])
         }
-
-        for (var i = 0; i < occurRate.length; i++) {
-            var temp = [];
-            temp.push(occurRate[i]);
-            temp.push(dataXAxis[i]);
-            console.log(temp);
-            data.push(temp);
-        }
-
-        console.log("mfds");
-        console.log(mfds);
-        console.log("deta");
-        console.log(data);
 
         // grid line functions
         function make_x_axis() {
@@ -1724,31 +1694,20 @@ var startApp = function() {
                 .ticks(5);
         }
 
-        if (layerIml instanceof Array) {
-            //continue
-        } else {
-            layerIml = layerIml.split(',');
-        }
-
-        var data = [];
-        for(i=0; i<probArray.length; i++) {
-            // Only push into data if the values are greater then 0
-            if (parseFloat(layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
-                data.push([parseFloat(layerIml[i]), parseFloat(probArray[i])]);
-            }
-        }
+        var data = inputArray;
 
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
-        height = 380 - margin.top - margin.bottom;
+        height = 390 - margin.top - margin.bottom;
 
-        var x = d3.scale.log().range([0, width]);
+        var x = d3.scale.linear().range([0, width]);
         var y = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
+            //.tickFormat(function (d) { return d; })
             //.ticks(2)
-            .tickFormat(function (d) { return Math.round(d * 100) / 100; })
+            //.tickFormat(function (d) { return Math.round(d * 100) / 100; })
             .orient('bottom');
 
         var yAxis = d3.svg.axis()
@@ -1811,12 +1770,6 @@ var startApp = function() {
                     return "rotate(90)";
                         })
             .append('text')
-            .attr('x', 160)
-            .attr('y', 30)
-            .attr('dy', '.71em')
-            .attr('text-anchor', 'middle')
-            .style('font-size','12px')
-            .text(layerImt);
 
         svg.append('g')
             .attr('class', 'y axis')
@@ -1824,11 +1777,11 @@ var startApp = function() {
             .append('text')
             .attr('transform', 'rotate(-90)')
             .attr('y', -60)
-            .attr('x', -20)
+            .attr('x', -150)
             .attr('dy', '.71em')
             .style('font-size','12px')
-            .style('text-anchor', 'end')
-            .text('Probability of exceedance in '+layerInvestigationTime+' years');
+            .style('text-anchor', 'middle')
+            .text('Number of events / year');
 
         var legend = d3.select('#chartDialog').append('svg')
             .attr('height', 25);
@@ -1863,17 +1816,17 @@ var startApp = function() {
                     .style('fill', 'gray');
             });
 
-        legend.append('text')
-            .attr('x', 60)
-            .attr('y', 7)
-            .attr('dy', '.35em')
-            .text('Location (Lon/Lat): '+lng+', '+lat);
-
         textBottom = svg.append('text')
             .attr('x', 0)
-            .attr('y', 340)
+            .attr('y', 360)
             .attr('dy', '.35em')
             .text('');
+
+        xAxisLables = svg.append('text')
+            .attr('y', 350)
+            .attr("x", width / 2 )
+            .style("text-anchor", "middle")
+            .text('Magnitude');
 
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
         $('#downloadCurve').on('hover', function(){
