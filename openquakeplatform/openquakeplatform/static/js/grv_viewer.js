@@ -384,7 +384,7 @@ var startApp = function() {
         obj5[attrSelection[4]] = selectedValue5[5];
         obj5[attrSelection[5]] = selectedValue6[5];
 
-        chartArray.splice(0,10);        
+        chartArray.splice(0,10);
 
         for (var i=0; i<numberOfCountries; i++) {
             chartArray[i] = window["obj" + i];

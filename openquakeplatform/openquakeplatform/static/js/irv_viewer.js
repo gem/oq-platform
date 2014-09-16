@@ -191,10 +191,6 @@ var startApp = function() {
 
     // Remove layer 
     var removeLayer = function () {
-        // Clear the contents of the table
-        $('#tableBody').html('');
-        $('#tablehead').html('');
-
         var e = document.getElementById('layer-list');
         var layerId = e.options[e.selectedIndex].value;
 
@@ -419,53 +415,6 @@ var startApp = function() {
             active: false
         });
     });
-
-    // Set up the data tables
-    $(document).ready(function() {
-        $('#econ-table').dataTable({
-            'aaSorting': [ [0,'asc'], [1,'asc'] ],
-            'sPaginationType': 'full_numbers',
-            //'aoColumnDefs': [
-              //  { 'sWidth': '20%', 'aTargets': [ 0 ] }
-            //],
-        });
-    });
-
-    $(document).ready(function() {
-        $('#pop-table').dataTable({
-            'aaSorting': [ [0,'asc'], [1,'asc'] ],
-            'sPaginationType': 'full_numbers',
-        });
-    });
-
-    $(document).ready(function() {
-        $('#gov-table').dataTable({
-            'aaSorting': [ [0,'asc'], [1,'asc'] ],
-            'sPaginationType': 'full_numbers',
-        });
-    });
-
-    $(document).ready(function() {
-        $('#edu-table').dataTable({
-            'aaSorting': [ [0,'asc'], [1,'asc'] ],
-            'sPaginationType': 'full_numbers',
-        });
-    });
-
-    function buildDataTable(e, dataCat) {
-        var values = [];
-        for (var d in e.data) {
-            values.push(e.data[d]);
-        }
-        var keys = Object.keys(e.data);
-        for (var i=0, il=values.length; i<il; i++){
-            $('#'+dataCat).dataTable().fnAddData( [
-                keys[i],
-                values[i]
-                ]
-            );
-        }
-    }
 
     function findPrimaryIndicators(pdData, pi) {
         // Find all of the primary indicators
