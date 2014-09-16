@@ -15,28 +15,13 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var dataCat = '';
-var chartCat = '';
 var utfGrid = {};
-var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia', 'foo', 'bar');
-var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0, 1, 1);
-var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18, 1, 1);
-var selectedValue3 = new Array(34.32, 72.306, 59.216, 64.189, 1, 1);
-var selectedValue4 = new Array(1, 9.374, 4.413, 5.093, 1, 1); //TODO fix these demo numbers
-var selectedValue5 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
-var selectedValue6 = new Array(1, 9.374, 4.413, 5.093, 1, 1);
-var attrSelection = [];
 var layerControl;
 var selectedPDef;
 var previousCatData = [];
 
-var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
-
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
-
-// An object of all attributes and values to be used for the checkbox selection
-var dataFormated = {};
 
 // Keep track of the layer names
 var layers;
@@ -47,10 +32,6 @@ var layersByCat = {};
 var layerNames = {};
 var layerGrids = [];
 var projectDefinition = {};
-
-// Three PCP charts
-var iriChart = {};
-var categoryChart = {};
 
 // Indicators for the PCP charts
 var primaryIndicator = {};
@@ -68,23 +49,13 @@ var sviIndicator = {};
 var scaledSviIndicator = {};
 var weightedSviIndicator = {};
 var iriIndicator = {};
-var scaledIRIindicator = {};
 
 // vars used to set the weights of the project definition json
-var data;
 var pdData;
-var pdName;
-var pdWeight;
-var pdLevel;
-var pdParent;
 
 // Keep track of project definition elements whos weights have been changes
 var tempWeight = {};
 var tempCatWeight = {};
-var pdTempWeights = [];
-var pdTempWeightsComputed = [];
-var pdTempSpinnerIds = [];
-var pdTempIds = [];
 var pdTempPrimaryIndicator = [];
 var pdTempPrimaryIndicatorLevels = [];
 var pdTempPILevel = {};
@@ -92,8 +63,6 @@ var pdTempCategoryIndicator = [];
 var parentChildKey = {};
 var sviParentChildKey = {};
 var pdTempCatWeight = {};
-var tempCategory = '';
-var tempSVI = '';
 var tempParentChildKey = [];
 var catIndicator = {};
 var tempCatSearchElements = [];
