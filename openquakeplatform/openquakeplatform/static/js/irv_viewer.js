@@ -32,6 +32,9 @@ var previousCatData = [];
 
 var TILESTREAM_URL = 'http://tilestream.openquake.org/v2/';
 
+var TILESTREAM_URL = TS_URL + '/v2/';
+var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
+
 // An object of all attributes and values to be used for the checkbox selection
 var dataFormated = {};
 
@@ -221,7 +224,7 @@ var startApp = function() {
     catMenuHeader.innerHTML = 'Projects:';
     selCat.appendChild(catMenuHeader);
 
-    $.getJSON('http://tilestream.openquake.org/api/v1/Tileset',
+    $.getJSON(TILESTREAM_API_URL,
     function(json) {
 
         var name, cat, type, grids, pDef;
@@ -345,9 +348,9 @@ var startApp = function() {
                 map.removeLayer(utfGrid);
                 utfGrid = {};
 
-                var tileLayer = L.tileLayer('http://tilestream.openquake.org/v2/'+
+                var tileLayer = L.tileLayer(TILESTREAM_URL+
                     selectedLayer+
-                    '/{z}/{x}/{y}.png',{wax: 'http://tilestream.openquake.org/v2/'+
+                    '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL+
                     selectedLayer+
                     '.json'});
                 layerControl.addOverlay(tileLayer, selectedLayer);
@@ -373,7 +376,7 @@ var startApp = function() {
             gridList = 0;
             map.removeLayer(utfGrid);
             utfGrid = {};
-            utfGrid = new L.UtfGrid('http://tilestream.openquake.org/v2/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.UtfGrid(TILESTREAM_URL+'/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             utfGridClickEvent(utfGrid);
     
