@@ -80,7 +80,8 @@ class Project(UserData):
     name = models.CharField(max_length=CHMAX, unique=True)
     description = models.TextField()
     # FIXME: If we are uploading data through the geonode web interface, we
-    # don-t need to store the layer here
+    # don-t need to store the layer here (but perhaps we should have some kind
+    # of link to the geonode layer?)
     # data = DictField(blank=True, null=True)
 
     # The project definition json, containing indicators, weights and operators
@@ -90,7 +91,7 @@ class Project(UserData):
         return self.name
 
 
-# FIXME: Check this. We are commenting this out, because we decided to
+# FIXME: Check about this. We are commenting this out, because we decided to
 # upload layers through geonode and add comments directly to layers
 # class Comment(UserData):
 #     project = models.ForeignKey('Project')
@@ -156,14 +157,12 @@ class Indicator(models.Model):
 # be able to select countries by different kinds of zones (e.g. a group of
 # countries that share the same currency, regardless from their geographical
 # location)
-# class CustomRegion(models.Model):
-#     name = models.CharField(max_length=CHMAX)
-#     # FIXME: Instead of vulnerability.Country, use a dedicated app
-#     # countries = models.ManyToManyField(
-#     #     'vulnerability.Country')
+class CustomRegion(models.Model):
+    name = models.CharField(max_length=CHMAX)
+    countries = models.ManyToManyField('world.Country')
 
-#     def __unicode__(self):
-#         return self.name
+    def __unicode__(self):
+        return self.name
 
 
 class Theme(models.Model):

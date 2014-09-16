@@ -17,23 +17,14 @@ from django.contrib.gis.db import models
 # from django.db import models
 
 
-class CustomRegion(models.Model):
-    name = models.CharField(max_length=50)
-    countries = models.ManyToManyField('Country')
-
-
 class Country(models.Model):
     class Meta:
         verbose_name_plural = "countries"
 
     name = models.CharField(max_length=150)
-    iso = models.CharField(max_length=6)
+    iso3 = models.CharField(max_length=6)
     # the_geom = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
     # is_visible = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s (%s)' % (self.name, self.iso)
-
-    class Meta:
-        managed = False
-        db_table = u'gadm_countries'
+        return '%s (%s)' % (self.name, self.iso3)
