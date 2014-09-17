@@ -925,8 +925,6 @@ var startApp = function() {
                     for (var i = 0; i < tempOccurRate.length; i++) {
                         occurRateArray.push(i);
                     }
-                    console.log("occurRateArray");
-                    console.log(occurRateArray);
                     
                     for (var k in mfdsJsonObj) {    
                         binWidth = mfdsJsonObj[k].bin_width;
@@ -939,34 +937,9 @@ var startApp = function() {
 
                     }
 
-                    console.log("mfdsJsonObj");
-                    console.log(mfdsJsonObj);
-
-                    //inputObject.mags = magsArray;
-
-                    console.log("inputObject");
-                    console.log(inputObject);
-
                     hazardInputD3Chart(mfdsJsonObj);
                 }
             }); // End utfGrid click
-        }
-    }
-
-    function foo(minMag, binWidth, occurRate) {
-        console.log("occurRate");
-        console.log(occurRate);
-
-        for (var i = 0; i < occurRate.length; i++) {
-            console.log("occurRate i");
-            console.log(occurRate[i]);
-            console.log(i);
-            console.log(minMag + (binWidth * i));
-            mags = minMag + (binWidth * i);
-            mags = Math.round(mags * 100) / 100;
-            console.log("mags");
-            console.log(mags);
-            return [occurRate[i], mags];
         }
     }
 
@@ -1513,9 +1486,6 @@ var startApp = function() {
             }
         }
 
-        console.log('data');
-        console.log(data);
-
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
@@ -1567,9 +1537,6 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
-
-        console.log("single chart data");
-        console.log(data);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -1712,9 +1679,9 @@ var startApp = function() {
         /* associative array of arrays [ x, y ] to describe the curve on the plane */
         curve_coup = [];
 
-        chartHeaderTest = 'TEMP';
-        yAxisLable = 'TEMP y lable';
-        xAxisLable = 'TEMP v lable';
+        chartHeaderTest = 'Input Model Plot';
+        yAxisLable = 'Number of events / years';
+        xAxisLable = 'Magnitude';
 
         for (var k in mfdsJsonObj) {
             curve_name = k;
@@ -1804,8 +1771,8 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 55, right: 20, bottom: 45, left: 60};
-        var width = 400 - margin.left - margin.right;
+        var margin = {top: 55, right: 80, bottom: 45, left: 60};
+        var width = 480 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
       
@@ -1840,12 +1807,6 @@ var startApp = function() {
                 xAxis[i].tickFormat(function (d) { return ''; })
             }
         }
-
-        console.log("curve_coup[curve_name]");
-        console.log(curve_coup[curve_name]);
-
-        console.log("curve_coup");
-        console.log(curve_coup);
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
@@ -1883,9 +1844,6 @@ var startApp = function() {
                 .tickFormat('')
             );
 
-        legend = d3.select("#chartDialog").append("svg")
-            .attr("height", 25*(selectedCurves.length - 1));
-
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
 
@@ -1921,16 +1879,16 @@ var startApp = function() {
 
             makeCircles(data, k, color, curveTitle);
 
-            legend.append("text")
-                .attr("x", 90)
-                .attr("y", 20*(k))
+            svg.append("text")
+                .attr("x", 360)
+                .attr("y", 0+(k*20))
                 .attr("dy", ".35em")
                 .text(curveTitle);
 
-            legend.append("svg:circle")
+            svg.append("svg:circle")
                 //.attr("cx", 50)
-                .attr("cy", 20*(k))
-                .attr("cx", 80)
+                .attr("cy", 0+(k*20))
+                .attr("cx", 350)
                 .attr("r", 3)
                 .style("fill", color)
 
@@ -1993,6 +1951,10 @@ var startApp = function() {
         $('#downloadCurve').click(function(event) {
             var csvHeader = selectedCurves;
             var csvData = [];
+
+            console.log("csvData");
+            console.log(csvData);
+
             csvData = csvData.concat(csvHeader);
             csvData = csvData.concat("investigationTime");
             csvData = csvData.concat("poE");
@@ -2034,8 +1996,6 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
-        console.log("chartData");
-        console.log(chartData);
         var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
@@ -2098,10 +2058,6 @@ var startApp = function() {
             curve_vals[curve_name] = chartData[curve_name].split(',');
         }
 
-        console.log("curve_vals");
-        console.log(curve_vals);
-
-
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
             var i;
@@ -2116,8 +2072,6 @@ var startApp = function() {
         } else if (curveType == 'uhs') {
             yAxisVariable = curve_vals.periods;
         }
-        console.log("yAxisVariable");
-        console.log(yAxisVariable);
 
         var old_value = -100;
         for (i = 0 ; i < yAxisVariable.length ; i++) {
@@ -2145,21 +2099,6 @@ var startApp = function() {
                 }
             }
         }
-
-        console.log("curve_coup");
-        console.log(curve_coup);
-
-        console.log("selectedCurves");
-        console.log(selectedCurves);
-
-        console.log("yAxisVariable");
-        console.log(yAxisVariable);
-
-        console.log("curve_coup[curve_name]");
-        console.log(curve_coup[curve_name]);
-
-        console.log("curve_coup");
-        console.log(curve_coup);
 
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
