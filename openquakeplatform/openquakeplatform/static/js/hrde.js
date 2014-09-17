@@ -871,6 +871,8 @@ var startApp = function() {
 
     // add input curve layers from tilestream
     function inputCurve(curveType) {
+        map.removeLayer(tileLayer);
+        map.removeLayer(utfGrid);
         var e = document.getElementById('input-list');
         var inputLayerId = e.options[e.selectedIndex].value;
         // Look up the layer id using the layer name
@@ -905,33 +907,66 @@ var startApp = function() {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
                 //{{{mfds}}} {{{bin_width}}} {{{min_mag}}} {{{occur_rate}}}
-                var mfds, srcIds, binWidth, minMag, occurRate, lat, lng;
+                var mfds, binWidth, minMag, occurRate, mags;
 
                 if (e.data) {
 
                     mfds = e.data.mfds;
-                    srcIds = e.data.src_ids;
-
-                    console.log("srcIds");
-                    console.log(srcIds);
                     var mfdsJsonObj = $.parseJSON(mfds);
-                    var inputArray = [];
+                    var inputObject = {};
+                    var magsArray = [];
+                    var occurRateArray = [];
+                    var tempOccurRate = [];
+
+                    for(var g in mfdsJsonObj) {
+                        tempOccurRate = mfdsJsonObj[g].occur_rates;
+                    }
+
+                    for (var i = 0; i < tempOccurRate.length; i++) {
+                        occurRateArray.push(i);
+                    }
+                    console.log("occurRateArray");
+                    console.log(occurRateArray);
                     
                     for (var k in mfdsJsonObj) {    
                         binWidth = mfdsJsonObj[k].bin_width;
                         minMag = mfdsJsonObj[k].min_mag;
-                        occurRate = mfdsJsonObj[k].occur_rates;                    
+                        occurRate = mfdsJsonObj[k].occur_rates;
+
+                        mags = occurRateArray.map(function(x) { return Math.round((minMag + binWidth * x) * 100) / 100; });
+
+                        mfdsJsonObj[k].mags = mags;
+
                     }
 
-                    for (var i = 0; i < occurRate.length; i++) {
-                        var mags = minMag + (binWidth * i);
-                        var mags = Math.round(mags * 100) / 100
-                        inputArray.push([mags, occurRate[i]])
-                    }
+                    console.log("mfdsJsonObj");
+                    console.log(mfdsJsonObj);
 
-                    hazardInputD3Chart(inputArray);
+                    //inputObject.mags = magsArray;
+
+                    console.log("inputObject");
+                    console.log(inputObject);
+
+                    hazardInputD3Chart(mfdsJsonObj);
                 }
             }); // End utfGrid click
+        }
+    }
+
+    function foo(minMag, binWidth, occurRate) {
+        console.log("occurRate");
+        console.log(occurRate);
+
+        for (var i = 0; i < occurRate.length; i++) {
+            console.log("occurRate i");
+            console.log(occurRate[i]);
+            console.log(i);
+            console.log(minMag + (binWidth * i));
+            mags = minMag + (binWidth * i);
+            mags = Math.round(mags * 100) / 100;
+            console.log("mags");
+            console.log(mags);
+            return [occurRate[i], mags];
         }
     }
 
@@ -1663,199 +1698,323 @@ var startApp = function() {
     } // End Chart
 
 
-    ////////////////////////////////////////////
-    //////// Single Input hazard Chart /////////
-    ////////////////////////////////////////////
+    /////////////////////////////////////
+    //////// Input hazard Chart /////////
+    /////////////////////////////////////
 
-    function hazardInputD3Chart(inputArray) {
-        console.log("inputArray");
-        console.log(inputArray);
+    function hazardInputD3Chart(mfdsJsonObj) {
 
-        var mfds = [];
-        var dataXAxis = [];
-        var data;
+        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
+        var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
+        var selectedCurves = [];
+        /* associative array of arrays of values */
+        curve_vals = [];
+        /* associative array of arrays [ x, y ] to describe the curve on the plane */
+        curve_coup = [];
 
-        for (var i = 0; i < inputArray.length; i++) {
-            dataXAxis.push(inputArray[i][0])
+        chartHeaderTest = 'TEMP';
+        yAxisLable = 'TEMP y lable';
+        xAxisLable = 'TEMP v lable';
+
+        for (var k in mfdsJsonObj) {
+            curve_name = k;
+            curve_vals[curve_name] = mfdsJsonObj[k].occur_rates;
+            selectedCurves.push(k);
+            yAxisVariable = mfdsJsonObj[k].mags;
+        }
+
+        for (var k in selectedCurves) {
+            curve_name = selectedCurves[k];
+
+            curve_coup[curve_name] = [];
+            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
+                if (yAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
+                    curve_coup[curve_name].push([ yAxisVariable[i], curve_vals[curve_name][i] ]);
+                }
+            }
+        }
+
+        for (var k in selectedCurves) {
+            var curve_name = selectedCurves[k];
+            var min_cur = 1000.0, max_cur = -1;
+
+            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
+                if (curve_vals[curve_name][i] == 0)
+                    continue;
+
+                if (min_cur > curve_vals[curve_name][i])
+                    min_cur = curve_vals[curve_name][i];
+                if (max_cur < curve_vals[curve_name][i])
+                    max_cur = curve_vals[curve_name][i];
+            }
+            if (max_value < max_cur) {
+                max_value = max_cur;
+                max_value_k = curve_name;
+            }
+            if (min_value > min_cur) {
+                min_value = min_cur;
+                min_value_k = curve_name;
+            }
         }
 
         // grid line functions
-        function make_x_axis() {
+        function x_grid() {
             return d3.svg.axis()
-                .scale(x)
+                .scale(x_scale)
                 .orient('bottom')
                 .ticks(5);
         }
 
-        function make_y_axis() {
+        function y_grid() {
             return d3.svg.axis()
-                .scale(y)
+                .scale(y_scale)
                 .orient('left')
                 .ticks(5);
         }
 
-        var data = inputArray;
+        function makeCircles(circleData, k, color, curveTitle) {
+            // Points along the line
+            svg.selectAll("circle.line")
+                .data(circleData)
+                .enter().append("circle")
+                .attr("class", "line"+k)
+                .attr("cx", function(d) { return x_scale(d[0]); })
+                .attr("cy", function(d) { return y_scale(d[1]); })
+                .attr("r", 2.5)
+                .style("fill", color)
+                .on("mouseover", function() {
+                    d3.select(this)
+                        .attr('r', 6)
+                        .text(circleX + ", " + circleY)
+                        .style("fill", "gray");
+                    var circleX = d3.select(this.__data__[0]);
+                    circleX = circleX.toString();
+                    circleX = circleX.split(","[0]);
 
-        var margin = {top: 20, right: 20, bottom: 80, left: 60},
-        width = 400 - margin.left - margin.right,
-        height = 390 - margin.top - margin.bottom;
+                    var circleY = d3.select(this.__data__[1]);
+                    circleY = circleY.toString();
+                    circleY = circleY.split(","[0]);
 
-        var x = d3.scale.linear().range([0, width]);
-        var y = d3.scale.log().range([height, 0]);
+                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            //.tickFormat(function (d) { return d; })
-            //.ticks(2)
-            //.tickFormat(function (d) { return Math.round(d * 100) / 100; })
-            .orient('bottom');
+                }).on("mouseout", function() {
+                    d3.select(this)
+                        .attr('r', 2.5)
+                        .style("fill", color);
+                });
+        }
+
+        var margin = {top: 55, right: 20, bottom: 45, left: 60};
+        var width = 400 - margin.left - margin.right;
+        var height = 380 - margin.top - margin.bottom;
+
+      
+        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+
+        var xAxis = [], xAxis_n = 1;
+        var xAxis_vals = [];
+
+        xAxis_n = parseInt(Math.ceil(yAxisVariable.length / 5));
+        if (xAxis_n > 4)
+            xAxis_n = 4;
+
+        for (var i = 0 ; i < xAxis_n ; i++) {
+            xAxis_vals[i] = [];
+            for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
+                xAxis_vals[i].push(yAxisVariable[e]);
+            }
+            
+            xAxis[i] = d3.svg.axis()
+                .scale(x_scale)
+                .ticks(4)
+                .innerTickSize(i == 0 ? 8 : 4)
+                .outerTickSize(0)
+                .tickValues(xAxis_vals[i])
+                .orient("bottom");
+
+            if (i == 0) {
+                xAxis[i].tickFormat(function (d) { return d; })
+            }
+            else {
+                xAxis[i].tickFormat(function (d) { return ''; })
+            }
+        }
+
+        console.log("curve_coup[curve_name]");
+        console.log(curve_coup[curve_name]);
+
+        console.log("curve_coup");
+        console.log(curve_coup);
 
         var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient('left');
+            .scale(y_scale)
+            .orient("left");
 
         var line = d3.svg.line()
-            .x(function(d) {
-                return x(d.x);
+            .x(function(d,i) {
+                return x_scale(d[0]);
             })
             .y(function(d) {
-                return y(d.y);
-            });
+                return y_scale(d[1]);
+            })
 
-        var svg = d3.select('#chartDialog').append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
-            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        var svg = d3.select("#chartDialog").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // grid lines
-        svg.append('g')
-            .attr('class', 'grid')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(make_x_axis()
+        svg.append("g")
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .attr('opacity', 0.6)
+            .call(x_grid()
                 .tickSize(-height, 0, 0)
                 .tickFormat('')
             );
 
-        svg.append('g')
-            .attr('class', 'grid')
-            .call(make_y_axis()
+        svg.append("g")
+            .attr("class", "grid")
+            .attr('opacity', 0.6)
+            .call(y_grid()
                 .tickSize(-width, 0, 0)
                 .tickFormat('')
             );
 
-        var dataCallback = function(d) {
-            d.x = +d[0];
-            d.y = +d[1];
-        };
+        legend = d3.select("#chartDialog").append("svg")
+            .attr("height", 25*(selectedCurves.length - 1));
 
-        data.forEach(dataCallback);
-        x.domain(d3.extent(data, function(d) { return d.x; }));
-        y.domain(d3.extent(data, function(d) { return d.y; }));
+        for (k in selectedCurves) {
+            var curve_name = selectedCurves[k];
 
-        svg.append('path')
-            .data([data])
-            .attr('class', 'line')
-            .attr('d', line);
-        svg.append('g')
-            .attr('class', 'x axis')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(xAxis)
-            .selectAll("text")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr('x', 40)
-                .style('font-size','12px')
-                .attr("transform", function(d) {
-                    return "rotate(90)";
-                        })
-            .append('text')
+            var data = curve_coup[curve_name];
 
-        svg.append('g')
-            .attr('class', 'y axis')
+            svg.append("path")
+                .data([curve_coup[curve_name]])
+                .attr("class", "line"+k)
+                .attr("d", line);
+
+            // Update the css for each line
+            colors = [
+                "darkred",
+                "blue",
+                "green",
+                "orange",
+                "red",
+                "sandybrown",
+                "yellowgreen",
+                "darksalmon",
+                "lightseagreen",
+                "skyblue"
+            ];
+
+            var gray = "A0A0A0";
+            $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
+
+            var color = colors[k % colors.length];
+
+            var str = selectedCurves[k];
+            str = str.replace(/_/g, " ");
+            var curveTitle = capitalize(str)
+
+            makeCircles(data, k, color, curveTitle);
+
+            legend.append("text")
+                .attr("x", 90)
+                .attr("y", 20*(k))
+                .attr("dy", ".35em")
+                .text(curveTitle);
+
+            legend.append("svg:circle")
+                //.attr("cx", 50)
+                .attr("cy", 20*(k))
+                .attr("cx", 80)
+                .attr("r", 3)
+                .style("fill", color)
+
+            $("."+selectedCurves[k]).css({'stroke':colors[k]});
+        }
+
+        for (i = 0 ; i < xAxis_n ; i++) {
+            var g = svg.append("g");
+
+            g.attr("class", "x axis")
+
+            g.attr("transform", "translate(0," + height + ")")
+            .call(xAxis[i]);
+            if (i == (xAxis_n - 1))
+                g.append("text")
+                .attr("x", 160)
+                .attr("y", 30)
+                .attr("dy", ".71em")
+                .attr("text-anchor", "middle")
+                .style("font-size","12px")
+                .text(xAxisLable);
+        }
+        svg.append("g")
+            .attr("class", "y axis")
             .call(yAxis)
-            .append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', -60)
-            .attr('x', -150)
-            .attr('dy', '.71em')
-            .style('font-size','12px')
-            .style('text-anchor', 'middle')
-            .text('Number of events / year');
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -60)
+            .attr("x", -20)
+            .attr("dy", ".71em")
+            .style("font-size","12px")
+            .style("text-anchor", "end")
+            .text(yAxisLable);
 
-        var legend = d3.select('#chartDialog').append('svg')
-            .attr('height', 25);
+        textTopLable = svg.append("text")
+            .attr("x", -55)
+            .attr("y", -47)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","12px")
+            .text(chartHeaderTest);
 
-        // points along the line
-        svg.selectAll('circle.line')
-            .data(data)
-            .enter().append('circle')
-            .attr('class', 'line')
-            .attr('cx', function(d) { return x(d.x); })
-            .attr('cy', function(d) { return y(d.y); })
-            .attr('r', 4.5)
-            .style('fill', 'gray')
-            .on('mouseover', function() {
-                d3.select(this)
-                    .attr('r', 6.6)
-                    .text(circleX + ', ' + circleY)
-                    .style('fill', 'red');
-                var circleX = d3.select(this.__data__.x);
-                circleX = circleX.toString();
-                circleX = circleX.split(','[0]);
-
-                var circleY = d3.select(this.__data__.y);
-                circleY = circleY.toString();
-                circleY = circleY.split(','[0]);
-
-                textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
-
-            }).on('mouseout', function() {
-                d3.select(this)
-                    .attr('r', 4.5)
-                    .style('fill', 'gray');
-            });
-
-        textBottom = svg.append('text')
-            .attr('x', 0)
-            .attr('y', 360)
-            .attr('dy', '.35em')
+        textTop = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -15)
+            .attr("dy", ".35em")
+            .style("font-size","11px")
             .text('');
 
-        xAxisLables = svg.append('text')
-            .attr('y', 350)
-            .attr("x", width / 2 )
-            .style("text-anchor", "middle")
-            .text('Magnitude');
-
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
-        $('#downloadCurve').on('hover', function(){
-            $(this).css('cursor', 'pointer');
+        $('#downloadCurve').on("hover", function(){
+            $(this).css("cursor", "pointer");
         });
 
-        var h = $('#chartDialog').height();
-        h = h + 20;
-        $('#chartDialog').css({'height': h+'px'});
+        var h = $("#chartDialog").height();
+        h = h + 40;
+        $("#chartDialog").css({"height": h+"px"});
 
         // Prep data for download to CSV
         $('#downloadCurve').click(function(event) {
+            var csvHeader = selectedCurves;
             var csvData = [];
-            csvData = csvData.concat('prob');
-            csvData = csvData.concat('iml');
-            csvData = csvData.concat('investigationTime');
-            csvData = csvData.concat('lon');
-            csvData = csvData.concat('lat');
+            csvData = csvData.concat(csvHeader);
+            csvData = csvData.concat("investigationTime");
+            csvData = csvData.concat("poE");
+            csvData = csvData.concat("lon");
+            csvData = csvData.concat("lat");
             csvData = JSON.stringify(csvData);
-            var lineBreak = 'lineBreak';
+            var lineBreak = "lineBreak";
             csvData = csvData.concat(lineBreak);
             var quotationMark = '"';
 
-            csvData = csvData.concat('"');
-            csvData = csvData.concat(probArray);
-            csvData = csvData.concat('","');
-            csvData = csvData.concat(layerIml);
-            csvData = csvData.concat('",');
-            csvData = csvData.concat(layerInvestigationTime);
+            for (var k in selectedCurves) {
+                curve_name = selectedCurves[k];
+                var curveValue = chartData[curve_name];
+                csvData = csvData.concat(quotationMark);
+                csvData = csvData.concat(curveValue);
+                csvData = csvData.concat(quotationMark);
+            }
+
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(invest_time);
+            csvData = csvData.concat(',');
+            csvData = csvData.concat(poe);
             csvData = csvData.concat(',');
             csvData = csvData.concat(lon);
             csvData = csvData.concat(',');
@@ -1867,7 +2026,7 @@ var startApp = function() {
                 .replace(/''/g, '","');
             downloadJSON2CSV(csvData);
         });
-    } // End Chart
+    } //End chart
 
 
     /////////////////////////////////////////////
@@ -1875,6 +2034,8 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
+        console.log("chartData");
+        console.log(chartData);
         var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
@@ -1937,6 +2098,10 @@ var startApp = function() {
             curve_vals[curve_name] = chartData[curve_name].split(',');
         }
 
+        console.log("curve_vals");
+        console.log(curve_vals);
+
+
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
             var i;
@@ -1951,6 +2116,8 @@ var startApp = function() {
         } else if (curveType == 'uhs') {
             yAxisVariable = curve_vals.periods;
         }
+        console.log("yAxisVariable");
+        console.log(yAxisVariable);
 
         var old_value = -100;
         for (i = 0 ; i < yAxisVariable.length ; i++) {
@@ -1978,6 +2145,21 @@ var startApp = function() {
                 }
             }
         }
+
+        console.log("curve_coup");
+        console.log(curve_coup);
+
+        console.log("selectedCurves");
+        console.log(selectedCurves);
+
+        console.log("yAxisVariable");
+        console.log(yAxisVariable);
+
+        console.log("curve_coup[curve_name]");
+        console.log(curve_coup[curve_name]);
+
+        console.log("curve_coup");
+        console.log(curve_coup);
 
         for (var k in selectedCurves) {
             var curve_name = selectedCurves[k];
