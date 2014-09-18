@@ -28,6 +28,7 @@ class OQTemplateView(TemplateView):
         context['third_party_urls'] = settings.THIRD_PARTY_URLS
         context['tilestream_url'] = settings.TILESTREAM_URL
         context['bing_key'] = settings.BING_KEY
+        context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
 
         return context
 
@@ -54,6 +55,7 @@ def oq_context_processor(request):
     context['third_party_urls'] = settings.THIRD_PARTY_URLS
     context['tilestream_url'] = settings.TILESTREAM_URL
     context['bing_key'] = settings.BING_KEY
+    context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
 
     return context
 

@@ -301,7 +301,9 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    oq_engserv_key='${gem_oq_engserv_key}',
                                    oq_secret_key='${gem_secr_key}',
                                    mediaroot='/var/www/openquake/platform/uploaded',
-                                   staticroot='/var/www/openquake/platform/static/'))"
+                                   staticroot='/var/www/openquake/platform/static/',
+                                   is_gem_experimental=False,
+                                   ))"
 }
 
 #
