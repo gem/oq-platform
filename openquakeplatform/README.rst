@@ -6,14 +6,14 @@ Development Installation
 
 Install the following dependencies::
 
-    for Ubuntu: build-essential python-dev python-virtualenv virtualenvwrapper git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet
+    for Ubuntu: build-essential python-dev python-virtualenv virtualenvwrapper git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet gfortran
 Create a virtual environment::
 
     $ mkvirtualenv platform  # or whatever you want to call it
 
 Clone the git repo::
 
-    $ git clone https://github.com/gem/oq-platform -b geonode2-integration
+    $ git clone https://github.com/gem/oq-platform
 
 Change directory to the downloaded repository directory::
 
