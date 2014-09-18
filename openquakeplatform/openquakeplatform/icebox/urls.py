@@ -19,14 +19,13 @@
 
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
+from django.views.generic import TemplateView
 from openquakeplatform.icebox import views
-# TODO. Use context_processors instead of a custom TemplateView
-from openquakeplatform.utils import OQTemplateView
 
 
 urlpatterns = patterns(
     'geonode.icebox.views',
-    url(r'^$', OQTemplateView.as_view(template_name="icebox.html"),
+    url(r'^$', TemplateView.as_view(template_name="icebox.html"),
         name="icebox"),
     url(r'^calculations$', views.CalculationsView.as_view(),
         name="calculations"),
