@@ -94,8 +94,6 @@ urlpatterns = patterns('',
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^grv_viewer/$', OQTemplateView.as_view(
         template_name="grv_viewer.html"), name='grv_viewer'),
-    url(r'^irv_viewer/$', OQTemplateView.as_view(
-        template_name="irv_viewer.html"), name='irv_viewer'),
 
     url(r'^hazus/$', OQTemplateView.as_view(
 
@@ -165,6 +163,12 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
 
+    )
+
+if settings.GEM_EXPERIMENTAL:
+    urlpatterns += patterns('',
+        url(r'^irv_viewer/$', OQTemplateView.as_view(
+            template_name="irv_viewer.html"), name='irv_viewer'),
     )
 
 # Documents views
