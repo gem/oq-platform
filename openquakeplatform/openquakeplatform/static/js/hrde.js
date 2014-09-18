@@ -1856,19 +1856,24 @@ var startApp = function() {
 
             // Update the css for each line
             colors = [
-                "darkred",
-                "blue",
-                "green",
-                "orange",
-                "red",
-                "sandybrown",
-                "yellowgreen",
-                "darksalmon",
-                "lightseagreen",
-                "skyblue"
+                "#4020F7",
+                "#1869DB",
+                "#158406",
+                "#08A100",
+                "#99C400",
+                "#E76F00",
+                "#FF3F00",
+                "#FFFA00",
+                "#4CFF06",
+                "#29FF89",
+                "#51DFFF",
+                "#7782FF",
+                "#DA97FF",
+                "#FFBDE5",
+                "#377CFC"
             ];
 
-            var gray = "A0A0A0";
+            var gray = "darkGray";
             $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
 
             var color = colors[k % colors.length];
@@ -1955,37 +1960,49 @@ var startApp = function() {
             console.log("csvData");
             console.log(csvData);
 
-            csvData = csvData.concat(csvHeader);
-            csvData = csvData.concat("investigationTime");
-            csvData = csvData.concat("poE");
-            csvData = csvData.concat("lon");
-            csvData = csvData.concat("lat");
+            //csvData = csvData.concat(csvHeader);
+            csvData = csvData.concat("mfds");
+            csvData = csvData.concat("binWidth");
+            csvData = csvData.concat("minMag");
+            csvData = csvData.concat("occurRate");
+            csvData = csvData.concat("mags");
             csvData = JSON.stringify(csvData);
             var lineBreak = "lineBreak";
             csvData = csvData.concat(lineBreak);
             var quotationMark = '"';
 
-            for (var k in selectedCurves) {
-                curve_name = selectedCurves[k];
-                var curveValue = chartData[curve_name];
-                csvData = csvData.concat(quotationMark);
-                csvData = csvData.concat(curveValue);
-                csvData = csvData.concat(quotationMark);
-            }
-
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(invest_time);
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(poe);
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(lon);
-            csvData = csvData.concat(',');
-            csvData = csvData.concat(lat);
             csvData = csvData
                 .replace(/lineBreak/, '\r\n')
                 .replace(/\[/g, '')
                 .replace(/\]/g, '')
-                .replace(/''/g, '","');
+                .replace(/","/g, ',')
+                .replace(/"/g, '');
+
+            for (var k in selectedCurves) {
+                curve_name = selectedCurves[k];
+                var curveValue = mfdsJsonObj[curve_name];
+
+                csvData = csvData.concat(curve_name);
+                csvData = csvData.concat(',');
+                
+                csvData = csvData.concat(curveValue.bin_width);
+                csvData = csvData.concat(',');
+
+                csvData = csvData.concat(curveValue.min_mag);
+                csvData = csvData.concat(',');
+
+                csvData = csvData.concat(quotationMark);
+                csvData = csvData.concat(curveValue.occur_rates);
+                csvData = csvData.concat(quotationMark);
+                csvData = csvData.concat(',');
+
+                csvData = csvData.concat(quotationMark);
+                csvData = csvData.concat(curveValue.mags);
+                csvData = csvData.concat(quotationMark);
+                csvData = csvData.concat('\r\n');
+            }
+
+
             downloadJSON2CSV(csvData);
         });
     } //End chart
@@ -2394,6 +2411,8 @@ var startApp = function() {
             for (var k in selectedCurves) {
                 curve_name = selectedCurves[k];
                 var curveValue = chartData[curve_name];
+                console.log("curveValue");
+                console.log(curveValue);
                 csvData = csvData.concat(quotationMark);
                 csvData = csvData.concat(curveValue);
                 csvData = csvData.concat(quotationMark);
