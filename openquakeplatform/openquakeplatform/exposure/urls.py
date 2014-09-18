@@ -26,12 +26,11 @@ from openquakeplatform.exposure.views import export_population
 from openquakeplatform.exposure.views import get_exposure_building_form
 from openquakeplatform.exposure.views import get_exposure_population_form
 from openquakeplatform.exposure.views import validate_export
-from openquakeplatform.utils import OQTemplateView
 
 
 urlpatterns = patterns(
     'geonode.exposure.views',
-    url(r'^$', OQTemplateView.as_view(
+    url(r'^$', TemplateView.as_view(
         template_name="exposure/export.html"), name='exposure'),
     url(r'^validate_export', validate_export),
     url(r'^get_exposure_building_form', get_exposure_building_form),
