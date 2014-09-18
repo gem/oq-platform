@@ -2,6 +2,8 @@ import os
 import geonode
 import openquakeplatform
 
+from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
+
 SITENAME = 'Openquake Platform'
 SITEURL = 'http://%(host)s/'
 
@@ -117,13 +119,21 @@ THIRD_PARTY_URLS = {
     ),
 }
 
+TILESTREAM_URL = '//tilestream.openquake.org'
+
+GEOSERVER_URL = '/geoserver/'
+
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'openquakeplatform.utils.oq_context_processor',
+)
+
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
     # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION': SITEURL + 'geoserver/',
+        'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
+        'PUBLIC_LOCATION' : GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
         'DATASTORE': 'default',   # 'datastore',

@@ -1,2 +1,0 @@
-Openquake Platform
-==================
