@@ -882,6 +882,10 @@ var startApp = function() {
         // get more information about the selected layer for use in chart
         $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
             var bounds = json.bounds;
+            var htmlLegend = json.html_legend;
+            $('#legendDialog').empty();
+            $('#legendDialog').dialog('open');
+            $('#legendDialog').append(htmlLegend);
             map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
@@ -1245,6 +1249,18 @@ var startApp = function() {
 
     $('#hazard-data').button().click(function() {
         $('#hazardDataDialog').dialog('open');
+    });
+
+    var legendDialog = $('#legendDialog').dialog({
+        autoOpen: false,
+        height: 230,
+        width: 200,
+        modal: false,
+        position: [20,650]
+    });
+
+    $('#legend').button().click(function() {
+        $('#legendDialog').dialog('open');
     });
 
     $(function() {
