@@ -172,7 +172,9 @@ def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, ris
                                        oq_secret_key=oq_secret_key,
                                        oq_bing_key=oq_bing_key,
                                        mediaroot=mediaroot,
-                                       staticroot=staticroot))
+                                       staticroot=staticroot,
+                                       is_gem_experimental=True,
+                                       ))
 
 
 def _pgsudo(command, **kwargs):

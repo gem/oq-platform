@@ -12,6 +12,9 @@ GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
 ROOT_URLCONF = 'openquakeplatform.urls'
 
+# GEM Experimental apps enabled
+GEM_EXPERIMENTAL = %(is_gem_experimental)s
+
 SERIALIZATION_MODULES = {
     'json': 'wadofstuff.django.serializers.json'
 }
