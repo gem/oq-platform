@@ -132,20 +132,20 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
-    'default' : {
-        'BACKEND' : 'geonode.geoserver',
+    'default': {
+        'BACKEND': 'geonode.geoserver',
          # Do not change the internal channel
         'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
-        'PUBLIC_LOCATION' : GEOSERVER_URL,
-        'USER' : 'admin',
-        'PASSWORD' : 'geoserver',
-        'MAPFISH_PRINT_ENABLED' : True,
-        'PRINTNG_ENABLED' : True,
-        'GEONODE_SECURITY_ENABLED' : True,
-        'GEOGIT_ENABLED' : False,
-        'WMST_ENABLED' : False,
+        'PUBLIC_LOCATION': GEOSERVER_URL,
+        'USER': 'admin',
+        'PASSWORD': 'geoserver',
+        'MAPFISH_PRINT_ENABLED': True,
+        'PRINTNG_ENABLED': True,
+        'GEONODE_SECURITY_ENABLED': True,
+        'GEOGIT_ENABLED': False,
+        'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED' : True,
+        'WPS_ENABLED': True,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
     }
