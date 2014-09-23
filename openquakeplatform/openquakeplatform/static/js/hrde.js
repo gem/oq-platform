@@ -420,6 +420,15 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
+        // try to remove any existing UtfGrids
+        try {
+            map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+            map.removeLayer(utfGridMap);
+        } catch (e) {
+            // continue
+        }
+        
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -489,6 +498,15 @@ var startApp = function() {
     }); //end add tile curve
 
     $('#addTileInput').click(function() {
+        // try to remove any existing UtfGrids
+        try {
+            map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+            map.removeLayer(utfGridMap);
+        } catch (e) {
+            // continue
+        }
+
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -502,6 +520,16 @@ var startApp = function() {
 
 
     $('#addTileUhs').click(function() {
+
+        // try to remove any existing UtfGrids
+        try {
+            map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+            map.removeLayer(utfGridMap);
+        } catch (e) {
+            // continue
+        }
+
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -558,6 +586,15 @@ var startApp = function() {
     }); // end add uhs curve
 
     $('#addTileLoss').click(function() {
+        // try to remove any existing UtfGrids
+        try {
+            map.removeLayer(utfGrid);
+            map.removeLayer(tileLayer);
+            map.removeLayer(utfGridMap);
+        } catch (e) {
+            // continue
+        }
+
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -793,6 +830,7 @@ var startApp = function() {
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
         if (curveType == 'hc') {
+            console.log("single curve");
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
@@ -997,6 +1035,14 @@ var startApp = function() {
 
     // Add mixed curve layers form tilestream list
     function mixedCurve(curveType) {
+        console.log("mixed curve");
+        map.removeLayer(utfGrid);
+        map.removeLayer(tileLayer);
+        try {
+            map.removeLayer(utfGridMap);
+        } catch (e) {
+            // continue
+        }
 
         var selectedLayer;
 
@@ -1041,8 +1087,6 @@ var startApp = function() {
             });
         }
 
-        map.removeLayer(utfGrid);
-        map.removeLayer(tileLayer);
         utfGrid = {};
         tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
@@ -1493,6 +1537,8 @@ var startApp = function() {
                 .orient('left')
                 .ticks(5);
         }
+
+        console.log(layerIml);
 
         if (layerIml instanceof Array) {
             //continue
