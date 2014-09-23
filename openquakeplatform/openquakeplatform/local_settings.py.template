@@ -205,9 +205,6 @@ PYCSW = {
     }
 }
 
-## FIXME: this will removed after the urls.py refactoring
-DOCUMENTS_APP = True
-
 INSTALLED_APPS = (
 
     # Apps bundled with Django
