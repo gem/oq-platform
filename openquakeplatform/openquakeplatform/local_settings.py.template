@@ -134,45 +134,31 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-    # Do not change the internal channel
+         # Do not change the internal channel
         'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
-        'PUBLIC_LOCATION' : GEOSERVER_URL,
+        'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
-        'DATASTORE': 'default',   # 'datastore',
-        'OPTIONS': {
-            'MAPFISH_PRINT_ENABLED': True,
-            'PRINTNG_ENABLED': True,
-            'GEONODE_SECURITY_ENABLED': True,
-            'GEOGIT_ENABLED': False,
-            'WMST_ENABLED': False,
-            'WPS_ENABLED': True,
-            # Set to name of database in DATABASES dictionary to enable
-        }
+        'MAPFISH_PRINT_ENABLED': True,
+        'PRINTNG_ENABLED': True,
+        'GEONODE_SECURITY_ENABLED': True,
+        'GEOGIT_ENABLED': False,
+        'WMST_ENABLED': False,
+        'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED': True,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
     }
 }
 
 # CSW settings
 CATALOGUE = {
     'default': {
-        # The underlying CSW implementation
-        # default is pycsw in local mode (tied directly to GeoNode Django DB)
+        # The underlying CSW backend
+        # ("pycsw_http", "pycsw_local", "geonetwork", "deegree")
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-        # pycsw in non-local mode
-        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
-        # GeoNetwork opensource
-        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
-        # deegree and others
-        #'ENGINE': 'geonode.catalogue.backends.generic',
-
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%%scatalogue/csw' %% SITEURL,
-        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-
-        # login credentials (for GeoNetwork)
-        'USER': 'admin',
-        'PASSWORD': 'admin',
     }
 }
 
@@ -218,9 +204,6 @@ PYCSW = {
         }
     }
 }
-
-## FIXME: this will removed after the urls.py refactoring
-DOCUMENTS_APP = True
 
 INSTALLED_APPS = (
 
