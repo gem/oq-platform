@@ -797,6 +797,7 @@ var startApp = function() {
                 hazardCurveUtfGridClickEvent(utfGridMap);
                 $("#chartDialog ").dialog({width: 200,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
+                $('#chartDialog').dialog('open');
                 utfGridMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
                     $('#chartDialog').append(e.data.VAL);
@@ -1324,7 +1325,10 @@ var startApp = function() {
     var hazardCurveUtfGridClickEvent = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
-            $('#chartDialog').dialog('open');
+            if ($("#chartDialog").dialog( "isOpen" ) == false) {
+                $('#chartDialog').dialog('open');
+            }
+            
             var prob;
             var iml;
             var probArray = [];
