@@ -474,6 +474,7 @@ var startApp = function() {
             }
 
             // Provide the user with the curves that are available in the dialog
+            $('#curve-check-box').remove();
             $('#hazardDataDialog').append('<div id="curve-check-box"<p><b>Select curves to be ploted in the chart:</b></p></div>');
             for (var j = 0; j < curvesList.length; j++) {
                 var checkbox = '<input type="checkbox" id="'+curvesList[j]+'" class="curve-list" value=" ' +
@@ -562,6 +563,7 @@ var startApp = function() {
             }
 
             // Provide the user with the uhs that are available in the dialog
+            $('#curve-check-box').remove();
             $('#hazardDataDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
             for (var l = 0; l < uhsList.length; l++) {
                 var checkbox = '<input type="checkbox" id="'+uhsList[l]+'" class="curve-list" value=" ' +
