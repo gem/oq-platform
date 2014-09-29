@@ -17,14 +17,10 @@ import openquakeplatform.gemecdwebsite.surveyvalue.urls
 import openquakeplatform.gemecdwebsite.photo.urls
 import openquakeplatform.gemecdwebsite.uploadnrml.urls
 import openquakeplatform.gemecdwebsite.lookup.urls
-#import openquakeplatform.vulnerability.views
 import photologue.urls
 
 
 from django.conf import settings
-
-# TODO. Use context_processors instead of a custom TemplateView
-from openquakeplatform.utils import OQTemplateView
 
 import geonode.proxy.urls
 
@@ -80,24 +76,25 @@ urlpatterns = patterns('',
     #photologue
     url(r'^photologue/', include(photologue.urls)),
 
-    url(r'^isc_viewer/$', OQTemplateView.as_view(
+    url(r'^isc_viewer/$', TemplateView.as_view(
         template_name="isc_viewer.html"), name='isc_viewer'),
-    url(r'^ghec_viewer/$', OQTemplateView.as_view(
+    url(r'^ghec_viewer/$', TemplateView.as_view(
         template_name="ghec_viewer.html"), name='ghec_viewer'),
-    url(r'^geodetic/$', OQTemplateView.as_view(
+    url(r'^geodetic/$', TemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^geojson/$', OQTemplateView.as_view(
+    url(r'^geojson/$', TemplateView.as_view(
         template_name="geojson.html"), name='geojson'),
-    url(r'^hazard_models/$', OQTemplateView.as_view(
+    url(r'^hazard_models/$', TemplateView.as_view(
         template_name="hazard_models.html"), name='hazard_models'),
-    url(r'^gaf_viewer/$', OQTemplateView.as_view(
+    url(r'^gaf_viewer/$', TemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^svir_viewer/$', OQTemplateView.as_view(
-        template_name="svir_viewer.html"), name='svir_viewer'),
-    url(r'^hazus/$', OQTemplateView.as_view(
+    url(r'^grv_viewer/$', TemplateView.as_view(
+        template_name="grv_viewer.html"), name='grv_viewer'),
+    url(r'^hazus/$', TemplateView.as_view(
         template_name="hazus.html"), name='hazus'),
-    url(r'^hrde/$', OQTemplateView.as_view(
+    url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde.html"), name='hrde'),
+
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
@@ -163,10 +160,23 @@ urlpatterns = patterns('',
 
     )
 
-#Documents views
+if settings.GEM_EXPERIMENTAL:
+    urlpatterns += patterns('',
+        url(r'^irv_viewer/$', TemplateView.as_view(
+            template_name="irv_viewer.html"), name='irv_viewer'),
+    )
+
+# Documents views
 if 'geonode.documents' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
         (r'^documents/', include('geonode.documents.urls')),
+    )
+# Enable internal geoserver proxy in development mode.
+# In production it must be done by Apache/Nginx, not by Django
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^geoserver/', 'openquakeplatform.proxy.geoserver',
+            name="geoserver"),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns

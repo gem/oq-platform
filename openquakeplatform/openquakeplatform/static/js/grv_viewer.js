@@ -334,7 +334,6 @@ var startApp = function() {
     function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
 
         var numberOfCountries = $("#chart-var-numb option:selected").val();
-
         obj0.country = countriesArray[0];
         obj0[attrSelection[0]] = selectedValue1[0];
         obj0[attrSelection[1]] = selectedValue2[0];

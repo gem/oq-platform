@@ -27,12 +27,18 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 {% include "base_map_options.html" %}
-<button type="button" id="hazard-data">Load Hazard Data</button>
-<button type="button" id="risk-data">Load Risk Data</button>
-<button type="button" id="legend">Legend</button>
-
-<div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
-    <p>This layer is not loaded in the map</p>
+<div ng-app="testApp">
+  <div ng-controller="MainCtrl">
+    <h2>{{hello}}</h2>
+    
+  </div>
+  <button type="button" id="hazard-data">Load Hazard Data</button>
+  <button type="button" id="risk-data">Load Risk Data</button>
+  <button type="button" id="legend">Legend</button>
+  
+  <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
+      <p>This layer is not loaded in the map</p>
+  </div>
 </div>
 
 {{block.super}}
@@ -43,6 +49,7 @@ Explore - {{block.super}}
 {% block extra_script %}
     {{block.super}}
     <!-- Category tags-->
+
   <div id="chartDialog" title="Plot" style="overflow: hidden;"></div>
   <div id="legendDialog" title="Legend" style="overflow: hidden;"></div>
   <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">
@@ -96,7 +103,7 @@ Explore - {{block.super}}
       <input type="button" id="removeTileLoss" value="Remove Layer">
     </form>
   </div>
-
+    <script src="{{ STATIC_URL }}js/hrdeTestApp.js"></script>
     <script src="{{ STATIC_URL }}js/hrde.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
     

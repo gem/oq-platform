@@ -182,12 +182,12 @@ isc_viewer_dataloader () {
 
 #
 #
-maps_viewer_dataloader () {
+maps_viewer_postlayers () {
     local oqpdir="$1" db_name="$2" bdir
 
-    bdir="${oqpdir}/maps_viewer/fixtures"
-    openquakeplatform map_title
+    bdir="${oqpdir}/maps_viewer/post_fixtures"
     openquakeplatform loaddata "${bdir}/*.json"
+    openquakeplatform map_title
 }
 
 #
@@ -230,6 +230,7 @@ econd_dataloader () {
 vulnerability_dataloader () {
     local oqpdir="$1" db_name="$2" bdir
 
+    openquakeplatform loaddata ${oqpdir}/vulnerability/post_fixtures/initial_data.json
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # if it is an update we assume an already populated set of curves.
         # Changing the country table produce with high probability a corruption of the db.
@@ -300,7 +301,9 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    oq_engserv_key='${gem_oq_engserv_key}',
                                    oq_secret_key='${gem_secr_key}',
                                    mediaroot='/var/www/openquake/platform/uploaded',
-                                   staticroot='/var/www/openquake/platform/static/'))"
+                                   staticroot='/var/www/openquake/platform/static/',
+                                   is_gem_experimental=False,
+                                   ))"
 }
 
 #
@@ -578,6 +581,15 @@ oq_platform_install () {
 
     openquakeplatform updatelayers
     chown -R www-data.www-data /var/www/openquake
+
+    #
+    #  post layers creation apps customizations
+    for app in "${GEM_APP_LIST[@]}"; do
+        if function_exists "${app}_postlayers"; then
+            "${app}_postlayers" "$oqpdir" "$gem_db_name"
+        fi
+    done
+
 }
 
 

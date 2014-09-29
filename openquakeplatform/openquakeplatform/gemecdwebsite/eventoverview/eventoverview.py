@@ -1,5 +1,6 @@
 __author__ = 'Simon Ruffle, CAR'
 
+import os
 import platform
 from openquakeplatform.weblib.baseclasses.pagebase import Pagebase
 import urllib2
@@ -12,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm
 from django.db.models import get_model
 from openquakeplatform import settings
+from openquakeplatform.settings import STATICFILES_DIRS
 from openquakeplatform.econd.models import EventsQuick, LocationsForJSON, LocationsForJSONAggregated,Study
 from openquakeplatform.econd.event_models import Event
 from openquakeplatform.econd.sql_views import LocationsQuick
@@ -369,7 +371,14 @@ class EventOverview (Pagebase):
         self.page_context['eventform'] = eventForm # for editing
 
         # iconic image
-        self.page_context['iconicimage'] = 'event' + str(eventid) + '.jpg'
+        fname = 'event' + str(eventid) + '.jpg'
+        for dir in STATICFILES_DIRS:
+            fullname = dir + '/gemecdeventicons/' + fname
+            if os.path.exists(fullname):
+                self.page_context['iconicimage'] = fname
+                break
+        else:
+            self.page_context['iconicimage'] = ''
 
         ###############
         # POST

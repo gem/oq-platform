@@ -1,5 +1,6 @@
 __author__ = 'Simon Ruffle, CAR'
 
+import os
 import platform
 from openquakeplatform.weblib.baseclasses.pagebase import Pagebase
 import urllib2
@@ -8,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from datetime import datetime
 from django.forms import ModelForm
+from openquakeplatform.settings import STATICFILES_DIRS
 from openquakeplatform.econd.event_models import Event
 from openquakeplatform.econd.models import Study, Location, Locations, Inventoryclass, Surveyvalue, Damagelevel, Casualtylevel
 from openquakeplatform.econd.sql_views import LocationsQuick
@@ -239,7 +241,15 @@ class EventDetailsPage (Pagebase):
         # set up the filter string for returns
         self.page_context['filterstring'] = '?&studyid=' + str(studyid) + '&f_b=' + str(filter_buildings) + '&f_c=' + str(filter_casualty) + '&f_i=' + str(filter_infrastructure) + '&f_p=' + str(filter_photos) + '&f_s=' + str(filter_socioeconomic) + '&all=' + str(filter_all)
 
-        self.page_context['iconicimage'] = 'event' + str(eventid) + '.jpg'
+        # iconic image
+        fname = 'event' + str(eventid) + '.jpg'
+        for dir in STATICFILES_DIRS:
+            fullname = dir + '/gemecdeventicons/' + fname
+            if os.path.exists(fullname):
+                self.page_context['iconicimage'] = fname
+                break
+        else:
+            self.page_context['iconicimage'] = ''
 
         ###############
         # GET

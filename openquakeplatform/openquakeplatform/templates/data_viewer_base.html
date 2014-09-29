@@ -36,6 +36,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 {% block extra_script %}
     {{block.super}}
+    <script src="{{ STATIC_URL }}js/jquery.mousewheel.js"></script>
     <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>
     <script src="{{ STATIC_URL }}Leaflet/dist/leaflet.js"></script>
@@ -49,6 +50,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}js/jquery.dataTables.js"></script>
     <script src="{{ STATIC_URL }}js/d3.js"></script>
     <script src="{{ STATIC_URL }}js/bing.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
 
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the

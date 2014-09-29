@@ -7,22 +7,6 @@ SIGN_IN_REQUIRED = ('You must be signed into the OpenQuake Platform to use '
                     'this feature.')
 
 
-class OQTemplateView(TemplateView):
-    """
-    A view utility which renders templates and allows for injection of
-    additional context variables.
-    """
-
-    # FIXME(lp). In order to avoid duplication in view code, use a
-    # custom django context processor
-    def get_context_data(self, **kwargs):
-        context = super(OQTemplateView, self).get_context_data(**kwargs)
-
-        context['third_party_urls'] = settings.THIRD_PARTY_URLS
-        context['bing_key'] = settings.BING_KEY
-
-        return context
-
 class allowed_methods(object):
     def __init__(self, methods):
         self.methods = methods
@@ -35,6 +19,20 @@ class allowed_methods(object):
                 return func(request)
         return wrapped
 
+def oq_context_processor(request):
+    """
+    A custom context processor which allows injection of additional
+    context variables.
+    """
+
+    context = {}
+
+    context['third_party_urls'] = settings.THIRD_PARTY_URLS
+    context['tilestream_url'] = settings.TILESTREAM_URL
+    context['bing_key'] = settings.BING_KEY
+    context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
+
+    return context
 
 def sign_in_required(func):
     """
