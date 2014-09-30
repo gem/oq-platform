@@ -33,7 +33,8 @@ GEM_DB_USER='oqplatform'
 GEM_DB_PASS='the-password'
 GEM_HAZARD_CALC_ADDR='http://localhost:8800'
 GEM_RISK_CALC_ADDR='http://localhost:8800'
-GEM_OQ_ENGSERV_KEY="oq-platform"
+GEM_OQ_ENGSERV_KEY='oq-platform'
+GEM_OQ_BING_KEY=''
 
 GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
@@ -182,12 +183,12 @@ isc_viewer_dataloader () {
 
 #
 #
-maps_viewer_dataloader () {
+maps_viewer_postlayers () {
     local oqpdir="$1" db_name="$2" bdir
 
-    bdir="${oqpdir}/maps_viewer/fixtures"
-    openquakeplatform map_title
+    bdir="${oqpdir}/maps_viewer/post_fixtures"
     openquakeplatform loaddata "${bdir}/*.json"
+    openquakeplatform map_title
 }
 
 #
@@ -230,6 +231,7 @@ econd_dataloader () {
 vulnerability_dataloader () {
     local oqpdir="$1" db_name="$2" bdir
 
+    openquakeplatform loaddata ${oqpdir}/vulnerability/post_fixtures/initial_data.json
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # if it is an update we assume an already populated set of curves.
         # Changing the country table produce with high probability a corruption of the db.
@@ -273,7 +275,7 @@ function_exists () {
 #
 locset_create () {
     local oqpdir gem_host_name gem_secr_key gem_db_name gem_db_user gem_db_pass
-    local gem_hazard_calc_addr gem_risk_calc_addr gem_oq_engserv_key
+    local gem_hazard_calc_addr gem_risk_calc_addr gem_oq_engserv_key gem_oq_bing_key
     oqpdir="$1" ; shift
     gem_host_name="$1" ; shift
     gem_secr_key="$1" ; shift
@@ -282,7 +284,8 @@ locset_create () {
     gem_db_pass="$1" ; shift
     gem_hazard_calc_addr="$1" ; shift
     gem_risk_calc_addr="$1" ; shift
-    gem_oq_engserv_key="$1"
+    gem_oq_engserv_key="$1"; shift
+    gem_oq_bing_key="$1"
 
     if [ -f "$GEM_LOCAL_SETTINGS" ]; then
         return 1
@@ -298,9 +301,12 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
+                                   oq_bing_key='${gem_oq_bing_key}',
                                    oq_secret_key='${gem_secr_key}',
                                    mediaroot='/var/www/openquake/platform/uploaded',
-                                   staticroot='/var/www/openquake/platform/static/'))"
+                                   staticroot='/var/www/openquake/platform/static/',
+                                   is_gem_experimental=False,
+                                   ))"
 }
 
 #
@@ -421,6 +427,7 @@ oq_platform_install () {
     gem_hazard_calc_addr="${globargs['hazard_calc_addr']:-$GEM_HAZARD_CALC_ADDR}"
     gem_risk_calc_addr="${globargs['risk_calc_addr']:-$GEM_RISK_CALC_ADDR}"
     gem_oq_engserv_key="${globargs['oq_engserv_key']:-$GEM_OQ_ENGSERV_KEY}"
+    gem_oq_bing_key="${globargs['oq_bing_key']:-$GEM_OQ_BING_KEY}"
 
     cur_step=0
 
@@ -500,7 +507,7 @@ oq_platform_install () {
         mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.orig
     fi
 
-    locset_create "$oqpdir" "$gem_host_name" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"
+    locset_create "$oqpdir" "$gem_host_name" "$gem_secr_key" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${gem_hazard_calc_addr}" "${gem_risk_calc_addr}" "${gem_oq_engserv_key}"  "${gem_oq_bing_key}"
 
     if [ "$GEM_IS_INSTALL" != "y" ]; then
 	mv /etc/openquake/platform/local_settings.py /etc/openquake/platform/local_settings.py.new
@@ -578,12 +585,21 @@ oq_platform_install () {
 
     openquakeplatform updatelayers
     chown -R www-data.www-data /var/www/openquake
+
+    #
+    #  post layers creation apps customizations
+    for app in "${GEM_APP_LIST[@]}"; do
+        if function_exists "${app}_postlayers"; then
+            "${app}_postlayers" "$oqpdir" "$gem_db_name"
+        fi
+    done
+
 }
 
 
 usage() {
     local com="$1" ret="$2"
-    echo "${com} <--help|-p> <--host|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>]"
+    echo "${com} <--help|-p> <--host|-H> hostname [<--db_name|-d> db_name] [<--db_user|-u> db_user] [<--hazard_calc_addr|-h> <addr>] [<--risk_calc_addr|-r> <addr>] [<--oq_engserv_key|-k> <key>] [<--oq_bing_key|-B> <bing-key>]"
     exit $ret
 }
 
@@ -604,7 +620,7 @@ fi
 wai="$(whoami)"
 
 if [ "$wai" = "root" ]; then
-    parsargs "norm_user|U:,norm_dir|D:,help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:" "$@"
+    parsargs "norm_user|U:,norm_dir|D:,help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
     if [ "${globargs['host']}" == "" ]; then
         usage "$0" 1
     fi
@@ -612,7 +628,7 @@ if [ "$wai" = "root" ]; then
     oq_platform_install
     exit $?
 else
-    parsargs "help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:" "$@"
+    parsargs "help|p,host|H:,db_name|d:,db_user|u:,hazard_calc_addr|h:,risk_calc_addr|r:,oq_engserv_key|k:,oq_bing_key|B:" "$@"
 
     if [ "${globargs['host']}" == "" -o "${globargs['help']}" ]; then
         usage "$0" 1

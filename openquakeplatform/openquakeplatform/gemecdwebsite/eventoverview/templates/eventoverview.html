@@ -6,7 +6,9 @@
             <div id="panelcontainer">
                 <div id="backlink">{{ page_backlink|safe }}</div>
                 <h1>{{ paneltitle }}</h1>
-                    <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
+                {% if iconicimage != "" %}
+                <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
+                {% endif %}
 
                     <a class="moredetailslink" href="/ecd/eventdetails/{{ eventid }}{{ filterstring }}">Full event details &raquo;</a>
 

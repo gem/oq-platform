@@ -2,6 +2,8 @@ import os
 import geonode
 import openquakeplatform
 
+from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
+
 SITENAME = 'Openquake Platform'
 SITEURL = 'http://%(host)s/'
 
@@ -9,6 +11,9 @@ OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
 
 ROOT_URLCONF = 'openquakeplatform.urls'
+
+# GEM Experimental apps enabled
+GEM_EXPERIMENTAL = %(is_gem_experimental)s
 
 SERIALIZATION_MODULES = {
     'json': 'wadofstuff.django.serializers.json'
@@ -117,49 +122,43 @@ THIRD_PARTY_URLS = {
     ),
 }
 
+TILESTREAM_URL = '//tilestream.openquake.org'
+
+GEOSERVER_URL = '/geoserver/'
+
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'openquakeplatform.utils.oq_context_processor',
+)
+
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
-    # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION': SITEURL + 'geoserver/',
+         # Do not change the internal channel
+        'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
+        'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
-        'DATASTORE': 'default',   # 'datastore',
-        'OPTIONS': {
-            'MAPFISH_PRINT_ENABLED': True,
-            'PRINTNG_ENABLED': True,
-            'GEONODE_SECURITY_ENABLED': True,
-            'GEOGIT_ENABLED': False,
-            'WMST_ENABLED': False,
-            'WPS_ENABLED': True,
-            # Set to name of database in DATABASES dictionary to enable
-        }
+        'MAPFISH_PRINT_ENABLED': True,
+        'PRINTNG_ENABLED': True,
+        'GEONODE_SECURITY_ENABLED': True,
+        'GEOGIT_ENABLED': False,
+        'WMST_ENABLED': False,
+        'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED': True,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
     }
 }
 
 # CSW settings
 CATALOGUE = {
     'default': {
-        # The underlying CSW implementation
-        # default is pycsw in local mode (tied directly to GeoNode Django DB)
+        # The underlying CSW backend
+        # ("pycsw_http", "pycsw_local", "geonetwork", "deegree")
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-        # pycsw in non-local mode
-        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
-        # GeoNetwork opensource
-        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
-        # deegree and others
-        #'ENGINE': 'geonode.catalogue.backends.generic',
-
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%%scatalogue/csw' %% SITEURL,
-        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-
-        # login credentials (for GeoNetwork)
-        'USER': 'admin',
-        'PASSWORD': 'admin',
     }
 }
 
@@ -205,9 +204,6 @@ PYCSW = {
         }
     }
 }
-
-## FIXME: this will removed after the urls.py refactoring
-DOCUMENTS_APP = True
 
 INSTALLED_APPS = (
 
