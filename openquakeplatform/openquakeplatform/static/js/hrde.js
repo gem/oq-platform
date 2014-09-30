@@ -1638,6 +1638,8 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
+        console.log("layerImt");
+        console.log(layerImt);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -1663,9 +1665,19 @@ var startApp = function() {
             .append('text')
             .attr('x', 160)
             .attr('y', 30)
-            .attr('dy', '-1em')
-            //.attr('text-anchor', 'middle')
-            //.style('font-size','12px')
+            .attr('dy', '.71em')
+            .attr('text-anchor', 'middle')
+            .style('font-size','12px')
+            .text(layerImt);
+
+        svg.append('g')
+            .attr('class', 'x axis')
+            .append('text')
+            .attr('x', width / 2)
+            .attr('y',  (height + margin.bottom)- 35)
+            //.attr('dy', '.71em')
+            .attr('text-anchor', 'middle')
+            .style('font-size','12px')
             .text(layerImt);
 
         svg.append('g')
