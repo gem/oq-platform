@@ -1551,9 +1551,9 @@ var startApp = function() {
         }
     }
 
-    ////////////////////////////////////////////
-    ////////////// Single hazard Chart /////////
-    ////////////////////////////////////////////
+    ///////////////////////////////////////
+    ///////// Single hazard Chart /////////
+    ///////////////////////////////////////
 
     function hazardD3Chart(probArray, imlArray, lat, lng) {
         var lon = lng;
@@ -1592,12 +1592,11 @@ var startApp = function() {
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
-        var x = d3.scale.log().range([0, width]);
+        var x = d3.scale.log().domain([0, width]).range([0, width]);
         var y = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            //.ticks(2)
             .tickFormat(function (d) { return Math.round(d * 100) / 100; })
             .orient('bottom');
 
@@ -1654,18 +1653,19 @@ var startApp = function() {
             .call(xAxis)
             .selectAll("text")
                 .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr('x', 40)
-                .style('font-size','12px')
+                .attr("dy", "-0.6em")
+                .attr('x', 30)
+                .style('font-family', 'myriad pro')
+                .style('font-size','11px')
                 .attr("transform", function(d) {
                     return "rotate(90)";
                         })
             .append('text')
             .attr('x', 160)
             .attr('y', 30)
-            .attr('dy', '.71em')
-            .attr('text-anchor', 'middle')
-            .style('font-size','12px')
+            .attr('dy', '-1em')
+            //.attr('text-anchor', 'middle')
+            //.style('font-size','12px')
             .text(layerImt);
 
         svg.append('g')
