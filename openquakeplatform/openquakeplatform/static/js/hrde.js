@@ -97,7 +97,7 @@ var startApp = function() {
         //position: {at: 'right bottom'}
     });
 
-    $('#help').button().click(function() {
+    $('#help').button().click(function(e) {
         $('#helpDialog').dialog('open');
     });
 
@@ -437,9 +437,19 @@ var startApp = function() {
     $('#addTileCurve').click(function() {
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
+
         } catch (e) {
             // continue
         }
@@ -516,6 +526,15 @@ var startApp = function() {
     $('#addTileInput').click(function() {
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
@@ -539,6 +558,15 @@ var startApp = function() {
 
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
@@ -605,6 +633,15 @@ var startApp = function() {
     $('#addTileLoss').click(function() {
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
@@ -848,16 +885,6 @@ var startApp = function() {
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
         if (curveType == 'hc') {
-            console.log("single curve");
-            // Remove any existing UtfGrid layers in order to avoid conflict
-            map.removeLayer(utfGrid);
-            map.removeLayer(tileLayer);
-            try {
-                map.removeLayer(utfGridMap);
-            } catch (e) {
-                // continue
-            }
-
             utfGrid = {};
             var e = document.getElementById('curve-list');
             var curveLayerId = e.options[e.selectedIndex].value;
@@ -932,8 +959,6 @@ var startApp = function() {
 
     // add input curve layers from tilestream
     function inputCurve(curveType) {
-        map.removeLayer(tileLayer);
-        map.removeLayer(utfGrid);
         var e = document.getElementById('input-list');
         var inputLayerId = e.options[e.selectedIndex].value;
         // Look up the layer id using the layer name
@@ -1011,9 +1036,6 @@ var startApp = function() {
 
     // Add loss curve layers form tilestream list
     function lossCurve() {
-        // Remove any existing UtfGrid layers in order to avoid conflict
-        map.removeLayer(utfGrid);
-        map.removeLayer(tileLayer);
         utfGrid = {};
         var e = document.getElementById('loss-list');
         var lossLayerId = e.options[e.selectedIndex].value;
@@ -1053,15 +1075,6 @@ var startApp = function() {
 
     // Add mixed curve layers form tilestream list
     function mixedCurve(curveType) {
-        console.log("mixed curve");
-        map.removeLayer(utfGrid);
-        map.removeLayer(tileLayer);
-        try {
-            map.removeLayer(utfGridMap);
-        } catch (e) {
-            // continue
-        }
-
         var selectedLayer;
 
         if (curveType == 'hc') {
