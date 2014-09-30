@@ -88,6 +88,21 @@ var startApp = function() {
         });
     });
 
+    // Help dialog
+    $('#helpDialog').dialog({
+        autoOpen: false,
+        height: 550,
+        width: 900,
+        closeOnEscape: true,
+        //position: {at: 'right bottom'}
+    });
+
+    $('#help').button().click(function() {
+        $('#helpDialog').dialog('open');
+    });
+
+    $('#helpDialog').css({ 'overflow' : 'auto' });
+
     map = new L.Map('map', {
 
         minZoom: 2,

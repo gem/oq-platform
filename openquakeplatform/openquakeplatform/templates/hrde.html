@@ -30,6 +30,7 @@ Explore - {{block.super}}
 <button type="button" id="hazard-data">Load Hazard Data</button>
 <button type="button" id="risk-data">Load Risk Data</button>
 <button type="button" id="legend">Legend</button>
+<button type="button" id="help">Help</button>
 
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>
@@ -45,6 +46,40 @@ Explore - {{block.super}}
     <!-- Category tags-->
   <div id="chartDialog" title="Plot" style="overflow: hidden;"></div>
   <div id="legendDialog" title="Legend" style="overflow: hidden;"></div>
+  <div id="helpDialog" title="Help" style="overflow: hidden;">
+    <h2>Hazard & Risk Data Explorer</h2>
+    <p>The Hazard & Risk Data Explorer is customized web application for exploring GEM hazard and risk models</p>
+    
+    <ul>
+      <li><b>Base Layers:</b>
+        <dl>On the top left of the toolbar one can select alternative base maps</dl>
+      </li>
+
+      <li><b>Loading layers into the map:</b>
+        <dl>Select 'Load Hazard Data' or 'Load Risk Data'. From the respective dialog one can choose to load layers into the map</dl>
+
+        <dl>Multiple hazard map layers can be loaded into the map simultaneously. This is not the case for all other layers (curves & input models). For these types of layers, each time a layer is added, the previously loaded layer is automatically removed from the map, while hazard maps layers will remain in the map</dl>
+        
+        <dl>Once a hazard map has been selected and loaded, the layer transparency can be adjusted in the Hazard Data dialog using the slider</dl>
+
+        <dl>Each layer that is added to the map gets added to the layer controller <img src="{{ STATIC_URL }}/Leaflet/dist/images/layers.png" alt="controller image" style="width:26px;height:26px">, from the controller layers can be turned on and off</dl>
+
+        <dl>When adding hazard maps the order in which layers are added to the map matters, new layers will be rendered on top of previously added layers</dl>
+
+      </li>
+      <li><b>Interactivity:</b>
+        <dl>Hazard maps: hover the mouse over each hazard map and view the point value in the dialog popup (bottom right)</dl>
+        <dl>Curves and input models: click points in the grid on the map layer to render the curve(s) into the plot dialog</dl>
+        <dl>Curve plots: hover the mouse over any point along the line to view it's value</dl>
+        <dl>Inside the plot dialog one can download a CSV that will incude the values of the plot</dl>
+      </li>
+      <li><b>Legend:</b>
+        <dl>Only the hazard map and input model layers have a thematic representation that can be described by a legend</dl>
+        <dl>Each time a hazard map or input model layer is loaded into the map, a legend is automatically displayed into the legend dialog. When closed, this dialog can be opened again by clicking the 'Legend' button in the toolbar </dl>
+      </li>
+    </ul>
+
+  </div>
   <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">
 
 
