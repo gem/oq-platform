@@ -117,7 +117,13 @@ var startApp = function() {
 
     var gl = L.mapboxGL({
         token: token,
-        style: 'https://www.mapbox.com/mapbox-gl-styles/styles/bright-v4.json'
+        //style: 'https://www.mapbox.com/mapbox-gl-styles/styles/bright-v4.json'
+        //style: 'https://www.mapbox.com/mapbox-gl-styles/styles/pencil-v5.json'
+        //style: 'https://www.mapbox.com/mapbox-gl-styles/styles/satellite-v5.json'
+        style: 'https://www.mapbox.com/mapbox-gl-styles/styles/outdoors-raster-v4.json'
+
+        
+
     }).addTo(map);
 
     //End test
