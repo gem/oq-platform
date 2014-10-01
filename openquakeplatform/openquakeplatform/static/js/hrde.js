@@ -1733,7 +1733,7 @@ var startApp = function() {
 
         textBottom = svg.append('text')
             .attr('x', 0)
-            .attr('y', 340)
+            .attr('y', 350)
             .attr('dy', '.35em')
             .text('');
 
