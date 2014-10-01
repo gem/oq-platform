@@ -88,11 +88,21 @@ var startApp = function() {
         });
     });
 
+    var winHaz = $(window).height() - 200;
+    var winHelp = $(window).height() - 200;
+    var winW = $(window).width() - 200;
+    if (winHelp > 760) {
+        winHelp = 760;
+    }
+    if (winHaz > 620) {
+        winHaz = 620;
+    }
+
     // Help dialog
     $('#helpDialog').dialog({
         autoOpen: false,
-        height: 550,
-        width: 900,
+        height: winHelp,
+        width: winW,
         closeOnEscape: true,
         //position: {at: 'right bottom'}
     });
@@ -102,6 +112,46 @@ var startApp = function() {
     });
 
     $('#helpDialog').css({ 'overflow' : 'auto' });
+
+    var riskDataDialog = $('#riskDataDialog').dialog({
+        autoOpen: false,
+        height: 250,
+        width: 400,
+        modal: true,
+        position: [100,150]
+    });
+
+    $('#riskDataDialog').css({ 'overflow' : 'auto' });
+
+    $('#risk-data').button().click(function() {
+        $('#riskDataDialog').dialog('open');
+    });
+
+    var hazardDataDialog = $('#hazardDataDialog').dialog({
+        autoOpen: false,
+        height: winHaz,
+        width: 400,
+        modal: true,
+        position: [100,150]
+    });
+
+    $('#hazardDataDialog').css({ 'overflow' : 'auto' });
+
+    $('#hazard-data').button().click(function() {
+        $('#hazardDataDialog').dialog('open');
+    });
+
+    var legendDialog = $('#legendDialog').dialog({
+        autoOpen: false,
+        height: 230,
+        width: 200,
+        modal: false,
+        position: [20,620]
+    });
+
+    $('#legend').button().click(function() {
+        $('#legendDialog').dialog('open');
+    });
 
     map = new L.Map('map', {
 
@@ -1303,45 +1353,6 @@ var startApp = function() {
                 showRemoveMsg();
             }
         });
-    });
-
-    var riskDataDialog = $('#riskDataDialog').dialog({
-        autoOpen: false,
-        height: 420,
-        width: 400,
-        modal: true
-    });
-
-    $('#riskDataDialog').css({ 'overflow' : 'auto' });
-
-    $('#risk-data').button().click(function() {
-        $('#riskDataDialog').dialog('open');
-    });
-
-    var hazardDataDialog = $('#hazardDataDialog').dialog({
-        autoOpen: false,
-        height: 480,
-        width: 400,
-        modal: true,
-        position: [100,150]
-    });
-
-    $('#hazardDataDialog').css({ 'overflow' : 'auto' });
-
-    $('#hazard-data').button().click(function() {
-        $('#hazardDataDialog').dialog('open');
-    });
-
-    var legendDialog = $('#legendDialog').dialog({
-        autoOpen: false,
-        height: 230,
-        width: 200,
-        modal: false,
-        position: [20,620]
-    });
-
-    $('#legend').button().click(function() {
-        $('#legendDialog').dialog('open');
     });
 
     $(function() {
