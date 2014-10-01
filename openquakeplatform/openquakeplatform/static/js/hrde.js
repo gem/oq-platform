@@ -69,6 +69,7 @@ var inputAvailable = {};
 var inputByInvestSingle = {};
 var inputCategoryList = [];
 var inputLayerGrids = [];
+var mappedValue;
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
@@ -94,17 +95,13 @@ var startApp = function() {
     if (winHelp > 760) {
         winHelp = 760;
     }
-    if (winHaz > 620) {
-        winHaz = 620;
-    }
 
     // Help dialog
     $('#helpDialog').dialog({
         autoOpen: false,
         height: winHelp,
         width: winW,
-        closeOnEscape: true,
-        //position: {at: 'right bottom'}
+        closeOnEscape: true
     });
 
     $('#help').button().click(function(e) {
@@ -561,7 +558,6 @@ var startApp = function() {
                 $('#curve-check-box').append(checkbox);
             }
 
-            hazardDataDialog.dialog('option', 'height', (500 + (curvesList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -667,7 +663,6 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             }
-            hazardDataDialog.dialog('option', 'height', (500 + (uhsList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -945,6 +940,7 @@ var startApp = function() {
     
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                mappedValue = json.mapped_value;
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.iml;
                 layerImt = json.imt;
@@ -1142,6 +1138,7 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                mappedValue = json.mapped_value;
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.iml;
                 layerImt = json.imt;
@@ -1160,6 +1157,7 @@ var startApp = function() {
             var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                mappedValue = json.mapped_value;
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.periods;
                 layerPoe = json.poe;
@@ -1424,7 +1422,7 @@ var startApp = function() {
         }); // End utfGrid click
     }; // End hazardCurveUtfGridClickEvent
 
-    var hazardCurveUtfGridClickEventMixed = function(utfGrid, curveType) {
+    function hazardCurveUtfGridClickEventMixed(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             // Get the selected curves
             selectedCurves = [];
@@ -1599,7 +1597,7 @@ var startApp = function() {
             }
         }
 
-        var margin = {top: 20, right: 20, bottom: 80, left: 60},
+        var margin = {top: 45, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
@@ -1736,15 +1734,26 @@ var startApp = function() {
                     .style('fill', 'gray');
             });
 
-        legend.append('text')
-            .attr('x', 60)
-            .attr('y', 7)
-            .attr('dy', '.35em')
-            .text('Location (Lon/Lat): '+lng+', '+lat);
+        var chartHeaderTest = 'Investigation Time: '+layerInvestigationTime;
+        
+        textTopTitle = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -30)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","14px")
+            .text(mappedValue);
+
+        textTopLable = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -15)
+            .attr("dy", ".35em")
+            .attr("font-size","12px")
+            .text(chartHeaderTest+' (Lon/Lat): '+lng+', '+lat);
 
         textBottom = svg.append('text')
             .attr('x', 0)
-            .attr('y', 350)
+            .attr('y', 320)
             .attr('dy', '.35em')
             .text('');
 
@@ -2308,7 +2317,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
 
-                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
+                    textBottom.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
 
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -2317,7 +2326,7 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 55, right: 20, bottom: 45, left: 60};
+        var margin = {top: 55, right: 20, bottom: 60, left: 60};
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
@@ -2488,24 +2497,31 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text(yAxisLable);
 
-        textTopLonLat = svg.append("text")
+        textTopTitle = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -47)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","14px")
+            .text(mappedValue);
+
+        textTopSubTitle = svg.append("text")
             .attr("x", 0)
             .attr("y", -32)
             .attr("dy", ".35em")
             .attr("font-size","12px")
-            .text("Location (Lon/Lat): "+lon+", "+lat);
-
-        textTopLable = svg.append("text")
-            .attr("x", -55)
-            .attr("y", -47)
-            .attr("dy", ".35em")
-            .style("font-weight", "bold")
-            .attr("font-size","12px")
             .text(chartHeaderTest);
 
-        textTop = svg.append("text")
+        textTopSubTitle = svg.append("text")
             .attr("x", 0)
-            .attr("y", -15)
+            .attr("y", -20)
+            .attr("dy", ".35em")
+            .attr("font-size","12px")
+            .text("(Lon/Lat): "+lon+", "+lat);
+
+        textBottom = svg.append("text")
+            .attr("x", 0)
+            .attr("y", 315)
             .attr("dy", ".35em")
             .style("font-size","11px")
             .text('');
