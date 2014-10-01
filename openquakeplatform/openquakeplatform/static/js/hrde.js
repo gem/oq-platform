@@ -108,7 +108,24 @@ var startApp = function() {
         minZoom: 2,
         //maxBounds: new L.LatLngBounds(new L.LatLng(-120, -250), new L.LatLng(120, 250)),
     });
-    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+
+
+    // mapbox-gl stuff
+    //var token = location.hash.replace('#', '');
+    var token = "pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog";
+    if (!token) {
+        token = prompt('Mapbox Access Token');
+    }
+
+    var gl = L.mapboxGL({
+        token: token,
+        style: 'https://www.mapbox.com/mapbox-gl-styles/styles/bright-v4.json'
+    }).addTo(map);
+    //});
+
+    //End test
+
+    map.setView(new L.LatLng(10, -10), 2);
 
     layers = {};
 
