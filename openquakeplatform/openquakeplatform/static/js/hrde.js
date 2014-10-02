@@ -1884,10 +1884,6 @@ var startApp = function() {
                 .attr("r", 2.5)
                 .style("fill", color)
                 .on("mouseover", function() {
-                    d3.select(this)
-                        .attr('r', 6)
-                        .text(circleX + ", " + circleY)
-                        .style("fill", "gray");
                     var circleX = d3.select(this.__data__[0]);
                     circleX = circleX.toString();
                     circleX = circleX.split(","[0]);
@@ -1898,10 +1894,6 @@ var startApp = function() {
 
                     textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
 
-                }).on("mouseout", function() {
-                    d3.select(this)
-                        .attr('r', 2.5)
-                        .style("fill", color);
                 });
         }
 
@@ -2068,7 +2060,7 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(mappedValue+' Hazard Input Model');
+            .text(mappedValue);
 
         textTop = svg.append("text")
             .attr("x", 0)
