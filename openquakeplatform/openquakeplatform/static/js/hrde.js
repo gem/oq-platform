@@ -1378,9 +1378,9 @@ var startApp = function() {
             var invest_time;
             var imt;
 
-            if (curveType == 'uhs') {
+            if (e.data.poe !== undefined) {
                 prob = e.data.poe;
-            } else if (curveType == 'hc') {
+            } else if (e.data.prob !== undefined) {
                 prob = e.data.prob;
             }
 
