@@ -1013,6 +1013,7 @@ var startApp = function() {
         var hasGrid = $.inArray(selectedLayer, inputLayerGrids) > -1;
         // get more information about the selected layer for use in chart
         $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+            mappedValue = json.category +' '+ json.mapped_value;
             var bounds = json.bounds;
             var htmlLegend = json.html_legend;
             $('#legendDialog').empty();
@@ -1813,7 +1814,6 @@ var startApp = function() {
         /* associative array of arrays [ x, y ] to describe the curve on the plane */
         curve_coup = [];
 
-        chartHeaderTest = 'Input Model Plot';
         yAxisLable = 'Number of events / years';
         xAxisLable = 'Magnitude';
 
@@ -2062,13 +2062,13 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text(yAxisLable);
 
-        textTopLable = svg.append("text")
-            .attr("x", -55)
+        textTopTitle = svg.append("text")
+            .attr("x", 0)
             .attr("y", -47)
             .attr("dy", ".35em")
             .style("font-weight", "bold")
-            .attr("font-size","12px")
-            .text(chartHeaderTest);
+            .attr("font-size","14px")
+            .text(mappedValue+' Hazard Input Model');
 
         textTop = svg.append("text")
             .attr("x", 0)
