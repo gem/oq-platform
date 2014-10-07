@@ -376,5 +376,12 @@ AUTH_EXEMPT_URLS = ('/account/signup/',
 # must be verified by the user.
 # ACCOUNT_ACTIVATION_DAYS = 1
 
+# A valid mailserver must be configured to make open registration work
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 25
+# DEFAULT_FROM_EMAIL = 'info@%(host)s'
+# THEME_ACCOUNT_CONTACT_EMAIL = 'info@%(host)s'
+
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
