@@ -95,8 +95,7 @@ def baseenv(
     _maybe_install_postgis(db_name)
     # Install geonode/geoserver and syncdb for oq-platform apps
     setup()
-
-    # Set Django 'sites' to a correct value
+    # Update Django 'sites' with real hostname
     _set_sites(host)
 
     # We need to start geoserver
