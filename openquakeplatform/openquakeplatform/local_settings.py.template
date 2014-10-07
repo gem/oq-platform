@@ -376,7 +376,7 @@ AUTH_EXEMPT_URLS = ('/account/signup/',
 # must be verified by the user.
 # ACCOUNT_ACTIVATION_DAYS = 1
 
-# A valid mailserver must be configured to make open registration work
+# A valid mailserver must be configured to make open registration work.
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 25
