@@ -95,6 +95,9 @@ def baseenv(
     # Install geonode/geoserver and syncdb for oq-platform apps
     setup()
 
+    # Set Django 'sites' to a correct value
+    _set_sites(host)
+
     # We need to start geoserver
     init_start()
 
@@ -325,3 +328,14 @@ def _add_vulnerability():
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
+
+def _set_sites(host):
+    import os
+    from django.contrib.sites.models import Site
+
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'openquakeplatform.settings'
+
+    mysite = Site.objects.all()[0]
+    mysite.domain = host
+    mysite.name = host
+    mysite.save()
