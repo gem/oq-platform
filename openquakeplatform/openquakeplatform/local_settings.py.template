@@ -371,5 +371,10 @@ AUTH_EXEMPT_URLS = ('/account/signup/',
 # FIXME: there's no admin validation on new accounts.
 # REGISTRATION_OPEN = True
 
+# Uncomment to allow open registration.
+# This setting define in how many days an account
+# must be verified by the user.
+# ACCOUNT_ACTIVATION_DAYS = 1
+
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
