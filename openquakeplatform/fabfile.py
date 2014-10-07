@@ -95,11 +95,10 @@ def baseenv(
     _maybe_install_postgis(db_name)
     # Install geonode/geoserver and syncdb for oq-platform apps
     setup()
-    # Update Django 'sites' with real hostname
-    _set_sites(host)
-
     # We need to start geoserver
     init_start()
+    # Update Django 'sites' with real hostname
+    _set_sites(host)
 
 APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
              'maps_viewer', 'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
