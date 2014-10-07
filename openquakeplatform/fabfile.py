@@ -339,10 +339,9 @@ def _add_vulnerability():
 
 def _set_sites(host):
     import os
-    from django.contrib.sites.models import Site
-
     os.environ['DJANGO_SETTINGS_MODULE'] = 'openquakeplatform.settings'
 
+    from django.contrib.sites.models import Site
     mysite = Site.objects.all()[0]
     mysite.domain = host
     mysite.name = host
