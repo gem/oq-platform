@@ -358,14 +358,18 @@ MAP_BASELAYERS = [{
 }]
 
 # Add additional paths (as regular expressions) that don't require
-# authentication. This URL needs to be hit by the oq-engine-server.
-AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)',
+# authentication.
+AUTH_EXEMPT_URLS = ('/account/signup/',
+                    '/icebox/calculation/(\d+)',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*')
 
+# Uncomment to allow open registration.
+# FIXME: there's no admin validation on new accounts.
+# REGISTRATION_OPEN = True
 
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
