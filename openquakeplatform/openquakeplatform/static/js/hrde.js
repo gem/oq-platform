@@ -80,12 +80,12 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 /////////////////
 //angular stuff//
 /////////////////
-
+/*
 // test input
 angular.module('testApp').controller('MainCtrl', function ($scope) {
     $scope.hello = 'world';
 });
-
+*/
 // modal
 var mymodal = angular.module('testApp', []);
 

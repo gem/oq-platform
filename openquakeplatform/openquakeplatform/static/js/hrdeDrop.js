@@ -1,4 +1,4 @@
-angular.module('testApp', []).controller('DropdownCtrl', function ($scope) {
+angular.module('testApp', []).controller('MainCtrl', function ($scope) {
   $scope.items = [
     'The first choice!',
     'And another choice for you.',
