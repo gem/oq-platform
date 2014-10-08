@@ -27,14 +27,92 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 {% include "base_map_options.html" %}
+{% verbatim %}
 <div ng-app="testApp">
-  <div ng-controller="MainCtrl">
-    <h2>{{hello}}</h2>
+  <!--
+  <div ng-controller="TestCtrl">
+    <input type="text" ng-model="hello" /><h2>{{hello}}</h2>
     
   </div>
-  <button type="button" id="hazard-data">Load Hazard Data</button>
-  <button type="button" id="risk-data">Load Risk Data</button>
-  <button type="button" id="legend">Legend</button>
+-->
+
+<!--
+<div ng-controller="DropdownCtrl">
+
+    <div class="btn-group" dropdown is-open="status.isopen">
+      <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
+        Button dropdown <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="#">Action</a></li>
+        <li><a href="#">Another action</a></li>
+        <li><a href="#">Something else here</a></li>
+        <li class="divider"></li>
+        <li><a href="#">Separated link</a></li>
+      </ul>
+    </div>
+
+  
+</div>
+  
+-->
+
+
+<!-- modal-->   
+<div ng-controller="MainCtrl" class="container">
+
+<input type="text" ng-model="hello" /><h2>{{hello}}</h2>
+   
+  <button ng-click="toggleModal()" class="btn btn-default">Load Hazard Data</button>
+
+
+    
+  <modal title="Hazard Data" visible="showModal">
+
+    <form id="tile-form-list-curves">
+      <br>Load Hazard Data:<br>
+      <select id="hazard-curve-category"></select>
+
+      <br/>
+
+      <br>Hazard Maps:<br>
+      <select id="layer-list"></select><br>
+      <input type="button" id="addTileLayer" value="Add Layer">
+      <input type="button" id="removeTileLayer" value="Remove Layer">
+      <div id="transparency-labels">
+        <p> 
+          <label class="transparency-label" for="amount">Layer transparency:</label> 
+          <input type="text" id="amount" readonly style="width:30px">
+        </p>
+      </div>
+      <div id="transparency-slider"></div>
+      
+      <br/>
+
+      <br>Input Models:<br>
+      <select id="input-list"></select><br>
+      <input type="button" id="addTileInput" value="Add Layer">
+      <input type="button" id="removeTileInput" value="Remove Layer">
+      <br/>
+
+      <br>Hazard Curves:<br>
+      <select id="curve-list"></select><br>
+      <input type="button" id="addTileCurve" value="Add Layer">
+      <input type="button" id="removeTileCurve" value="Remove Layer">
+      <br/>
+
+      <br>Uniform Hazard Spectra:<br>
+      <select id="uhs-list"></select><br>
+      <input type="button" id="addTileUhs" value="Add Layer">
+      <input type="button" id="removeTileUhs" value="Remove Layer">
+    </form>
+  </modal>
+</div>
+
+
+
+{% endverbatim %}
+
   
   <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
       <p>This layer is not loaded in the map</p>
@@ -103,7 +181,8 @@ Explore - {{block.super}}
       <input type="button" id="removeTileLoss" value="Remove Layer">
     </form>
   </div>
-    <script src="{{ STATIC_URL }}js/hrdeTestApp.js"></script>
+
+    
     <script src="{{ STATIC_URL }}js/hrde.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
     
