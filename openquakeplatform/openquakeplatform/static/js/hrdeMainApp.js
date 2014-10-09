@@ -20,15 +20,10 @@ angular
     'ui.bootstrap',
   ])
   .controller("AppController", ["$scope", function($scope){
-	$scope.username = "Pals";	
+	//$scope.username = "Pals";	
   }])
-  .config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider, routeProvider) {
-    $urlRouterProvider.otherwise('/');
-    $stateProvider
-      .state('education', {
-        url: '/education',
-        templateUrl: 'education/index.html'
-      })
+  .config([ function(routeProvider) {
+    
 	$routeProvider
       .when('/a', {
         templateUrl: '/templates/hrde.html',
