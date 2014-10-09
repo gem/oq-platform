@@ -87,6 +87,7 @@ angular.module('testApp').controller('MainCtrl', function ($scope) {
 });
 */
 // modal
+/*
 var mymodal = angular.module('testApp', []);
 
 mymodal.controller('MainCtrl', function ($scope) {
@@ -137,7 +138,7 @@ mymodal.directive('modal', function () {
       }
     };
   });
-
+*/
 
 
 var startApp = function() {
