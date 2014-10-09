@@ -1,0 +1,121 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
+
+{% block extra_head %}
+    {{block.super}}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+{% endblock extra_head %}
+
+{% block body %}
+  <div class="span12">
+    <div class="hero-unit">
+      <div id="oq-context-ribbon">
+        {% block oq_context_ribbon %}
+          <!-- Subtemplates can add context-sensitive components to the page-->
+        {% endblock oq_context_ribbon %}
+      </div>
+      <div id="oq-body-heading">
+        {% block oq_body_heading %}
+          <h1>{% trans "OpenQuake Calculate" %}</h1>
+          <br />
+        {% endblock oq_body_heading %}
+      </div>
+      <div id="oq-body-content">
+        {% block oq_body_content %}
+          <div class="oq-intro">
+            <!-- Main page content goes here -->
+
+            So you want to use the OpenQuake Engine, well, you came to the right place!
+            <br><br>
+            <b>The Engine:</b>
+            <ul><li><a href="http://www.globalquakemodel.org/openquake/about/engine/" target="_blank">learn</a> more about the Engine and it's calculators</li></ul>
+
+            <b>Calculate in the cloud:</b>
+              <ul>
+                <li>Get an <a href="http://www.globalquakemodel.org/gem/terms/oats/" target="_blank">OATS </a>account to begin using the OpenQuake Engine. An OATS account will allow you to run calculations through a web interface, and the calcualtions and data are in the cloud</li>
+                <li> <!-- TODO replace calculate with 'icebox'--><a href="{% url 'icebox' %}">Run a demo calculation now</a></li>
+              </ul>
+
+
+            <b>Calculate on a desktop computer or server:</b>
+              <ul>
+                <li><a href="http://www.globalquakemodel.org/openquake/start/download/" target="_blank">Download the OpenQuake Engine </a></li>
+              </ul>
+
+            <b>Libraries:</b>
+              <ul>
+                <li>
+                  <a href="https://github.com/gem/oq-commonlib" target="_blank">oq-commonlib</a> - Common libraries for OpenQuake Engine and Desktop Tools
+                </li>
+                <li>
+                  <a href="https://github.com/gem/oq-hazardlib" target="_blank">oq-hazardlib</a> - Openquake Hazard Library
+                </li>
+                <li>
+                  <a href="https://github.com/gem/oq-risklib" target="_blank">oq-risklib</a> - OpenQuake Risk Library
+                </li>
+                <li>
+                  <a href="https://github.com/gem/oq-nrmllib" target="_blank">oq-nrmllib</a> - Natural hazards' Risk Markup Language
+                </li>
+              </ul>
+
+            <b>Modelling Tools:</b>
+              <ul>
+                <li>
+                  <a href="https://github.com/GEMScienceTools/hmtk" target="_blank">Hazard Modeller's Toolkit</a> - A suite of tools developed by scientists working at the GEM Model Facility, used to create PSHA input models
+                </li>
+                <li>
+                  Risk Modeller's Toolkit - RMTK is a work in progress and is on it's way
+                </li>
+                <li>
+                  <a href="https://github.com/GEMScienceTools/gmpe-smtk" target="_blank">Strong Motions Toolkit</a> - Python and OpenQuake-based Toolkit for Analysis of Strong Motions and Interpretation of GMPEs
+                </li>
+                <li>
+                  SVIR plugin - SVIR QGIS plugin is a work in progress and is on it's way
+                </li>
+              </ul>
+
+
+
+
+            <b>Supporting material:</b>
+              <ul>
+                <li>
+                  <a href="http://www.globalquakemodel.org/media/cms_page_media/79/oq-manual-1_0.pdf" target="_blank">OpenQuake Engine manual </a>
+                </li>
+                <li>
+                  GEM respository for <a href="https://github.com/GEMScienceTools/notebooks" target="_blank">ipython notebook examples </a> demonstrating use of GEM scientific libraries (e.g., oq-hazardlib, hmtk etc.)
+                </li>
+                <li>
+                  GEM respository for <a href="https://github.com/GEMScienceTools/nrml_converters" target="_blank">NRML converters </a>
+                </li>
+              </ul>
+            <br/><br/>
+
+          </div>
+        {% endblock oq_body_content %}
+      </div>
+      <div id="oq-body-sidebar">
+        {% block oq_body_sidebar %}
+          <div class="oq-btns">
+            <img src="../static/img/OQ-logo-blue.png"><br/><br/>
+            <a class="btn btn-large" href="{% url "layer_browse" %}">
+              {% trans "Explore Layers" %}
+            </a>
+            <a class="btn btn-large" href="{% url "maps_browse" %}">
+              {% trans "Explore Maps" %}
+            </a>
+
+          </div>
+        {% endblock oq_body_sidebar %}
+      </div>
+    </div>
+  </div>
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+    {% include 'search_scripts.html' %}
+{% endblock extra_script %}

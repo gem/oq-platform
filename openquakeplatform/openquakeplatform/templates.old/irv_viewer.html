@@ -1,0 +1,98 @@
+<!--
+Copyright (c) 2014, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "data_viewer_base.html" %}
+
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
+
+{% block body_outer %}
+{% include "base_map_options.html" %}
+
+<button type="button" id="load-project">Load Project</button>
+<div id="loadProjectDialog" title="Load Project">
+  <form id="tile-form-list">
+    <br>Category:<br>
+    <select id="layer-category">
+    </select>
+    <br>Project:<br>
+    <select id="layer-list">
+    </select><br>
+    <input type="button" id="addLayer" value="Add Layer">
+    <input type="button" id="removeLayer" value="Remove Layer">
+  </form>
+</div>
+
+
+<div id="projectDefWeightDialog" title="Project Definition">
+</div>
+
+<div id="warning-duplicate" title="Woops!" class="ui-helper-hidden">
+    <p>This layer has already been added to the map</p>
+</div>
+
+<div id="warning-no-layer" title="Woops!" class="ui-helper-hidden">
+    <p>This layer in not loaded in the map</p>
+</div>
+
+{{block.super}}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/irv_viewer.css" />
+
+{% endblock %}
+
+
+{% block extra_script %}
+    {{block.super}}
+    <!-- Category tags-->
+<div id="categoryTabs">
+  <ul>
+    <li id="1" ><a href="#project-def">Project Def</a></li>
+    <li id="2"><a href="#iri-chart">IRI Chart</a></li>
+    <li id="3"><a href="#cat-chart">Category Chart</a></li>
+    <li id="4"><a href="#primary-tab">Primary Chart</a></li>
+
+  </ul>
+
+  <div id="project-def">
+    <div id="projectDefDialog" title="Project Definition">
+    </div>
+  </div>
+  <div id="iri-chart"></div>
+  <div id="cat-chart"></div>
+  <div id="primary-tab">
+    <div id="primary-limit">
+      <p>
+        <label for="outlier-limit"> Outlier Break Point </label>
+        <input id="outlier-limit" name="outlier-limit" value="0.7">
+      </p>
+    </div>
+    <div id="primary-chart"></div>
+  </div>
+
+  <!-- TODO fix this-->
+  <div id="empty" style="height:500px;">
+  </div>
+
+</div>
+    <script src="{{ STATIC_URL }}js/irv_viewer.js"></script>
+    <script src="{{ STATIC_URL }}js/irv_viewer_d3_tree.js"></script>
+    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
+    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
+    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
+    
+{% endblock extra_script %}
