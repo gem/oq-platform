@@ -45,10 +45,15 @@ Explore - {{block.super}}
     
   <modal title="Hazard Data" visible="showModal">
 
+    <!-- first dropdown -->
     <div ng-controller="Contact">
-      <select name="" id="" ng-model="selected_person" ng-options="person.name for person in people">
+      Filter <input type="text" ng-model="search">
+      <br>
+      <select name="" id="TEST" ng-model="selected_person" ng-options="person.name for person in people | filter:search">
         <option value="">Choose a name</option>
       </select>
+      <br>
+      selected_person.name = {{selected_person.name}}
     </div>
 
     <form id="tile-form-list-curves">

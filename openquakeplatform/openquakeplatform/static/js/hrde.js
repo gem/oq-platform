@@ -76,10 +76,14 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+var layerList = [];
 
 /////////////////
 //angular stuff//
 /////////////////
+
+
+
 /*
 // test input
 angular.module('testApp').controller('MainCtrl', function ($scope) {
@@ -247,6 +251,7 @@ var startApp = function() {
     selCurveCat.appendChild(catCurveMenuHeader);
 
     // Create a header for the menu drop down
+
     var catUhsMenuHeader = document.createElement('option');
     selUhsCat.appendChild(catUhsMenuHeader);
     $('#hazard-curve-category option:empty').remove();
@@ -708,6 +713,7 @@ var startApp = function() {
     }
 
     // Create dynamic categorized map layer dialog
+    /*
     $('#hazard-curve-category').change(function() {
         // Remove the layer list element
         document.getElementById('layer-list').options.length = 0;
@@ -716,6 +722,8 @@ var startApp = function() {
         var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
         var layersArray = mapLayersByCat[strUser];
+        console.log("layersArray");
+        console.log(layersArray);
         for (var i in layersArray) {
             var layers = layersArray[i];
             var opt = document.createElement('option');
@@ -723,6 +731,34 @@ var startApp = function() {
             opt.valuse = layers;
             selLayer.appendChild(opt);
         }
+    });
+*/
+
+
+
+    // Create dynamic categorized map layer dialog NEW
+    $('#hazard-curve-category').change(function() {
+        var e = document.getElementById('hazard-curve-category');
+        var strUser = e.options[e.selectedIndex].value;
+        var layersArray = mapLayersByCat[strUser];
+
+        console.log("layersArray");
+        console.log(layersArray.length);
+
+        var layerList = [];
+            for (var i = 0; i < layersArray.length; i++) {
+                var foo = layersArray[i];
+                layerList.push({name: layersArray[i]});
+            }
+            console.log("layerList");
+            console.log(layerList);
+
+        var scope = angular.element($("#TEST")).scope();
+
+        scope.$apply(function(){
+            scope.people = layerList;
+        });
+        
     });
 
     // Create dynamic categorized curve layer dialog
