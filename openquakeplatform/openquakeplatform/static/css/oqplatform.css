@@ -19,7 +19,6 @@
 
 body {
     color: #555555;
-    padding-top: 0px;
 }
 
 h2 {
@@ -53,13 +52,13 @@ h2 {
 }
 
 .navbar .nav > li > a {
-    color: #1B75A7;
+    color: #fff;
     text-shadow: none;
 }
 
 .nav-logo {
-    width: 316px;
-    height: 82px;
+    width: 250px;
+    height: 42px;
     background: url(/static/img/OQ_logo.png) no-repeat;
     margin-left: -10px;
     margin-top: -10px;
@@ -72,73 +71,28 @@ h2 {
     -mox-box-shadow: none;
     box-shadow: none;
     min-width: 900px;
-    background: url(../img/OQ_header_bg.png) no-repeat;
+    background-color: #1b75a5;
     background-size: 100%;
-    border-bottom: 2px solid #1B75A7;
 }
 
 .nav-box {
     background: none;
-    margin-left: -20px;
-    margin-right: 0px;
-}
-
-nav.main-nav {
-    margin-bottom: 0px;
-}
-
-/* Hide the default geonode menu */
-nav.main-nav ul li {
-    display: none;
-}
-
-nav.main-nav ul {
-    position: relative;
-    margin-bottom: 0px;
-}
-
-/* Show the custom OQ Platform menu */
-nav.main-nav ul li.oqp-menu-item {
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    color: #1B75A7;
-    display: inline-block;
-    line-height: 18px;
-}
-
-nav.main-nav li ul {
-    display: none;
-    position: absolute;
-    top: 0;
 }
 
 nav.main-nav ul li a {
-    font-size: 16px;
-    color: #1B75A7;
+    color: #fff;
     text-transform: none;
+    border-bottom: 3px;
 }
 
-nav.main-nav li:hover ul, li.over ul {
-    display: block;
-    height: 1.5em;
+nav.main-nav ul li.calc a {
+   border-bottom: solid #ffdc00 3px;
 }
-
-
-/* submenu */
-
-#submenu {
-    width: 100%;
-    height: 26px;
-    float: left;
-    clear: left;
-    margin: 0px;
-    list-style: none;
+nav.main-nav ul li.share a {
+   border-bottom: solid #eb737d 3px;
 }
-
-#submenu li {
-    float: left;
-    margin-right: 20px;
-    position: relative;
+nav.main-nav ul li.explore a {
+   border-bottom: solid #dc6522 3px;
 }
 
 #submenu a {
@@ -299,12 +253,11 @@ ul.social li a.gp {
 
 #oq-page-footer, footer.footer {
     z-index: 1000;
-    background: #1B75A7;
+    background: gray;
     font-size: 12px;
     position: fixed;
-    height: 45px;
+    height: 20px;
     bottom: 0;
-    padding-top: 0px;
     padding-left: 10%;
     padding-right: 10%;
     float: left;
@@ -314,7 +267,6 @@ ul.social li a.gp {
 footer.footer div.container {
     /* Make the footer content align nicely, and not so close to the
        top of the bar */
-    margin-top: 10px;
 }
 
 #oq-page-footer, footer.footer form label {
