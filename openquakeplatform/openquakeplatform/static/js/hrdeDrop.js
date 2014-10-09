@@ -1,10 +1,8 @@
-'use strict';
+function Contact($scope) {
+    $scope.people=[
+        {name: "bob", number: 32321321},
+        {name: "tom", number:312312},
 
-/**
- * @ngdoc function
- * @name leafletTestApp.controller:MainCtrl
- * @description
- * # MainCtrl
- * Controller of the leafletTestApp
- */
- 
+    ]
+
+}
