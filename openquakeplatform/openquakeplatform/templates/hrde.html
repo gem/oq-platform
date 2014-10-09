@@ -37,10 +37,10 @@ Explore - {{block.super}}
 -->
 
 <body ng-controller="AppController">
-    <div class="navbar navbar-default ">
-      <ul class="nav navbar-nav" >
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown">aaaaaaa<span class="caret"></span></a>
+    <div class="btn-group"><button class="btn btn-inverse btn-info">Action</button>
+    <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+    </button>
           <ul class="dropdown-menu">
             <li><a ui-sref="a">a</a></li>
             <li><a ui-sref="b">b</a></li>
@@ -58,9 +58,7 @@ Explore - {{block.super}}
       </ul>
 </div>
 
-
-
-<!-- modal-->   
+  
 
 <div ng-controller="MainCtrl" class="container">
 
