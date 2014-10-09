@@ -76,7 +76,6 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
-var layerList = [];
 
 /////////////////
 //angular stuff//
@@ -753,10 +752,10 @@ var startApp = function() {
             console.log("layerList");
             console.log(layerList);
 
-        var scope = angular.element($("#TEST")).scope();
+        var scope = angular.element($("#layer-list")).scope();
 
         scope.$apply(function(){
-            scope.people = layerList;
+            scope.maps = layerList;
         });
         
     });
@@ -868,12 +867,14 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
+            var scope = angular.element($("#layer-list")).scope();
 
-            var e = document.getElementById('layer-list');
-            var mapLayerId = e.options[e.selectedIndex].value;
+            mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var selectedLayer = mapLayerNames[mapLayerId];
+            console.log("selectedLayer");
+            console.log(selectedLayer);
             selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 

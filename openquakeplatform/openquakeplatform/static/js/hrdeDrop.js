@@ -1,5 +1,5 @@
-function Contact($scope) {
-    $scope.people=[
+function HazardMapDropdown($scope) {
+    $scope.maps=[
         {}
     ]
 

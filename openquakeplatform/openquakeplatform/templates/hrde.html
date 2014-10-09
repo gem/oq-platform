@@ -45,16 +45,6 @@ Explore - {{block.super}}
     
   <modal title="Hazard Data" visible="showModal">
 
-    <!-- first dropdown -->
-    <div ng-controller="Contact">
-      Filter <input type="text" ng-model="search">
-      <br>
-      <select name="" id="TEST" ng-model="selected_person" ng-options="person.name for person in people | filter:search">
-        <option value="">Choose a name</option>
-      </select>
-      <br>
-      selected_person.name = {{selected_person.name}}
-    </div>
 
     <form id="tile-form-list-curves">
       <br>Load Hazard Data:<br>
@@ -62,6 +52,27 @@ Explore - {{block.super}}
 
       <br/>
 
+      <!-- Hazard Maps dropdown -->
+      <div ng-controller="HazardMapDropdown">
+        <br>Hazard Maps:<br>
+        Filter <input type="text" ng-model="search">
+        <select name="" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search">
+          <option value="">Choose a name</option>
+        </select>
+        <br>
+        Selected Map = {{selected_map.name}}
+        <br>
+        <input type="button" id="addTileLayer" value="Add Layer">
+        <input type="button" id="removeTileLayer" value="Remove Layer">
+        <div id="transparency-labels">
+        <p> 
+          <label class="transparency-label" for="amount">Layer transparency:</label> 
+          <input type="text" id="amount" readonly style="width:30px">
+        </p>
+      </div>
+      <div id="transparency-slider"></div>
+      </div>
+<!--
       <br>Hazard Maps:<br>
       <select id="layer-list"></select><br>
       <input type="button" id="addTileLayer" value="Add Layer">
@@ -73,7 +84,7 @@ Explore - {{block.super}}
         </p>
       </div>
       <div id="transparency-slider"></div>
-      
+      -->
       <br/>
 
       <br>Input Models:<br>
