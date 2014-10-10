@@ -58,7 +58,7 @@ Explore - {{block.super}}
         <br>Hazard Maps:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search">
+        <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
           <option id="mapOptionLabel"></option>
         </select>
         
@@ -80,7 +80,7 @@ Explore - {{block.super}}
         <br>Input Models:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search">
+        <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search | orderBy:'name'">
           <option id="inputOptionLabel"></option>
         </select>
         <br>
