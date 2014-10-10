@@ -1,4 +1,6 @@
 
+var app = angular.module('testApp', []);
+
 // start with empty dropdown menus
 function HazardMapDropdown($scope) {
     $scope.maps=[
@@ -6,10 +8,14 @@ function HazardMapDropdown($scope) {
     ];
 }
 
-
-
 function HazardInputDropdown($scope) {
-    $scope.maps=[
+    $scope.inputs=[
+        {}
+    ];
+}
+
+function HazardCurveDropdown($scope) {
+    $scope.curves=[
         {}
     ];
 }

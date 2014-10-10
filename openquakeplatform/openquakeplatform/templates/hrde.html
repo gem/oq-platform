@@ -28,13 +28,14 @@ Explore - {{block.super}}
 {% block body_outer %}
 {% include "base_map_options.html" %}
 {% verbatim %}
-<div ng-app="testApp">
+
 
 <button type="button" id="hazard-data">Load Hazard Data</button>
 <button type="button" id="risk-data">Load Risk Data</button>
 <button type="button" id="legend">Legend</button>
 <button type="button" id="help">Help</button>
 
+<div ng-app="testApp">
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>
 </div>
@@ -77,22 +78,29 @@ Explore - {{block.super}}
 
   </div>
   <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">
-
-
     <form id="tile-form-list-curves">
-      <br>Load Hazard Data:<br>
+      <br>Select Category:<br>
       <select id="hazard-curve-category"></select>
       <br/>
+
+      <!-- Input model dropdown -->
+      <div ng-controller="HazardInputDropdown">
+        <br>Input Models:<br>
+        Filter <input type="text" ng-model="search">
+        <br>
+        <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search | orderBy:'name'"></select>
+        <br>
+        <input type="button" id="addTileInput" value="Add Layer">
+        <input type="button" id="removeTileInput" value="Remove Layer">
+        <br>
+      </div>
 
       <!-- Hazard Maps dropdown -->
       <div ng-controller="HazardMapDropdown">
         <br>Hazard Maps:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
-          <option id="mapOptionLabel"></option>
-        </select>
-        
+        <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'"></select>
         <br>
         <input type="button" id="addTileLayer" value="Add Layer">
         <input type="button" id="removeTileLayer" value="Remove Layer">
@@ -106,29 +114,17 @@ Explore - {{block.super}}
       </div>
       <br/>
 
-      <!-- Input model dropdown -->
-      <div ng-controller="HazardInputDropdown">
-        <br>Input Models:<br>
+      <!-- Hazard Curve dropdown -->
+      <div ng-controller="HazardCurveDropdown">
+        <br>Hazard Curves:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search | orderBy:'name'">
-          <option id="inputOptionLabel"></option>
-        </select>
+        <select id="curve-list" size="5" ng-model="selected_curve" ng-options="curve.name for curve in curves | filter:search | orderBy:'name'"></select>
         <br>
+        <input type="button" id="addTileCurve" value="Add Layer">
+        <input type="button" id="removeTileCurve" value="Remove Layer">
         <br>
-        <input type="button" id="addTileInput" value="Add Layer">
-        <input type="button" id="removeTileInput" value="Remove Layer">
-        
       </div>
-
-
-
-
-      <br>Hazard Curves:<br>
-      <select id="curve-list"></select><br>
-      <input type="button" id="addTileCurve" value="Add Layer">
-      <input type="button" id="removeTileCurve" value="Remove Layer">
-      <br/>
 
       <br>Uniform Hazard Spectra:<br>
       <select id="uhs-list"></select><br>
@@ -162,8 +158,6 @@ Explore - {{block.super}}
     {{block.super}}
     <!-- Category tags-->
 
-
-    <script src="{{ STATIC_URL }}js/hrdeDrop.js"></script>
     <script src="{{ STATIC_URL }}js/hrde.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
     <script src="{{ STATIC_URL }}js/hrdeDrop.js"></script>

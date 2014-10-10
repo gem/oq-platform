@@ -78,73 +78,6 @@ var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
-/////////////////
-//angular stuff//
-/////////////////
-
-
-
-/*
-// test input
-angular.module('testApp').controller('MainCtrl', function ($scope) {
-    $scope.hello = 'world';
-});
-*/
-// modal
-/*
-var mymodal = angular.module('testApp', []);
-
-mymodal.controller('MainCtrl', function ($scope) {
-    $scope.showModal = false;
-    $scope.toggleModal = function(){
-        $scope.showModal = !$scope.showModal;
-    };
-  });
-
-mymodal.directive('modal', function () {
-    return {
-      template: '<div class="modal fade">' + 
-          '<div class="modal-dialog">' + 
-            '<div class="modal-content">' + 
-              '<div class="modal-header">' + 
-                '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' + 
-                '<h4 class="modal-title">{{ title }}</h4>' + 
-              '</div>' + 
-              '<div class="modal-body" ng-transclude></div>' + 
-            '</div>' + 
-          '</div>' + 
-        '</div>',
-      restrict: 'E',
-      transclude: true,
-      replace:true,
-      scope:true,
-      link: function postLink(scope, element, attrs) {
-        scope.title = attrs.title;
-
-        scope.$watch(attrs.visible, function(value){
-          if(value == true)
-            $(element).modal('show');
-          else
-            $(element).modal('hide');
-        });
-
-        $(element).on('shown.bs.modal', function(){
-          scope.$apply(function(){
-            scope.$parent[attrs.visible] = true;
-          });
-        });
-
-        $(element).on('hidden.bs.modal', function(){
-          scope.$apply(function(){
-            scope.$parent[attrs.visible] = false;
-          });
-        });
-      }
-    };
-  });
-*/
-
-
 var startApp = function() {
     $(function() {
         $('#chartDialog').dialog({
@@ -571,8 +504,9 @@ var startApp = function() {
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
-        var e = document.getElementById('curve-list');
-        var option = e.options[e.selectedIndex].value;
+
+        var scope = angular.element($("#curve-list")).scope();
+        var option = scope.selected_curve.name;
         var investType = checkCurveType(curvesByInvestMixed, curvesByInvestSingle, option);
         var curvesListCap = [];
         var curveType = 'hc';
@@ -659,17 +593,6 @@ var startApp = function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        //var e = document.getElementById('input-list');
-        //var option = e.options[e.selectedIndex].value;
-
-
-
-
-
-
-
-
-        //var investType = checkInputType(inputByInvestMixed, inputByInvestSingle, option);
         var curveType = 'input';
         inputCurve(curveType);
     }); // end add input curve
@@ -821,60 +744,69 @@ var startApp = function() {
         var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
 
-        // Create dynamic categorized map layer dialog NEW
+        /////////////////////////////////////////////////
+        // Create dynamic categorized map layer dialog //
+        /////////////////////////////////////////////////
+
         var mapLayersArray = mapLayersByCat[strUser];
 
         if (mapLayersArray.length > 0) {
             $('#mapOptionLabel').prepend('Choose a Map');
         }
 
-        var layerList = [];
+        var mapLayerList = [];
         for (var i = 0; i < mapLayersArray.length; i++) {
-            layerList.push({name: mapLayersArray[i]});
+            mapLayerList.push({name: mapLayersArray[i]});
         }
 
+        // Append the hazard map layer list to the dropdown form
         var mapScope = angular.element($("#layer-list")).scope();
 
         mapScope.$apply(function(){
-            mapScope.maps = layerList;
+            mapScope.maps = mapLayerList;
         });
 
-        // Create dynamic categorized input model dialog NEW
+        ///////////////////////////////////////////////////
+        // Create dynamic categorized input model dialog //
+        ///////////////////////////////////////////////////
+
         var inputLayersArray = inputLayersByCat[strUser];
 
-        if (inputLayersArray.length > 0) {
-            $('#inputOptionLabel').prepend('Choose an Input Model');
+        if (inputLayersArray instanceof Array) {
+            var inputLayerList = [];
+            for (var j = 0; j < inputLayersArray.length; j++) {
+                inputLayerList.push({name: inputLayersArray[j]});
+            }
         }
 
-        var inputLayerList = [];
-        for (var j = 0; j < inputLayersArray.length; j++) {
-            inputLayerList.push({name: inputLayersArray[j]});
-        }
-
+        // Append the input model layer list to the dropdown form
         var inputScope = angular.element($("#input-list")).scope();
 
         inputScope.$apply(function(){
             inputScope.inputs = inputLayerList;
         });
-        
-    });
 
-    // Create dynamic categorized curve layer dialog
-    $('#hazard-curve-category').change(function() {
-        // Remove the layer list element
-        document.getElementById('curve-list').options.length = 0;
+        //////////////////////////////////////////////////////////
+        // Create dynamic categorized hazard curve layer dialog //
+        //////////////////////////////////////////////////////////
 
-       // Create the layer list based on the category selected
-        var e = document.getElementById('hazard-curve-category');
-        var strUser = e.options[e.selectedIndex].value;
-        var layersArray = curveLayersByCat[strUser];
-        for (var i in layersArray) {
-            var layers = layersArray[i];
-            var curveOpt = document.createElement('option');
-            curveOpt.innerHTML = layers;
-            curveOpt.valuse = layers;
-            selCurve.appendChild(curveOpt);
+        var hazardCurveLayersArray = curveLayersByCat[strUser];
+
+        if (hazardCurveLayersArray instanceof Array) {
+            var hazardCurveLayerList = [];
+
+            for (var j = 0; j < hazardCurveLayersArray.length; j++) {
+                hazardCurveLayerList.push({name: hazardCurveLayersArray[j]});
+            }
+
         }
+        // Append the haard curve layer list to the dropdown form
+        var hazardCurveScope = angular.element($("#curve-list")).scope();
+
+        hazardCurveScope.$apply(function(){
+            hazardCurveScope.curves = hazardCurveLayerList;
+        });
+
         if($('#curve-list').find('option').length == 0) {
             $('#addTileCurve').attr('disabled', true);
             $('#removeTileCurve').attr('disabled', true);
@@ -882,9 +814,8 @@ var startApp = function() {
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
         }
+     
     });
-
-
 
     // Create dynamic categorized uhs layer dialog
     $('#hazard-curve-category').change(function() {
@@ -943,7 +874,6 @@ var startApp = function() {
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
             var scope = angular.element($("#layer-list")).scope();
-
             mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
@@ -1007,8 +937,11 @@ var startApp = function() {
     function singleCurve(curveType) {
         if (curveType == 'hc') {
             utfGrid = {};
-            var e = document.getElementById('curve-list');
-            var curveLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#curve-list")).scope();
+            var curveLayerId = scope.selected_curve.name;
+
+            console.log("curveLayerId");
+            console.log(curveLayerId);
     
             // Look up the layer id using the layer name
             var curveLayerIdArray = curveLayerNames[curveLayerId];
