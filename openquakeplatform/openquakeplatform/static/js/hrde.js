@@ -69,6 +69,7 @@ var inputAvailable = {};
 var inputByInvestSingle = {};
 var inputCategoryList = [];
 var inputLayerGrids = [];
+var mappedValue;
 
 //Keep track of layer specific information
 var layerInvestigationTime, layerIml, layerImt, layerPoe;
@@ -153,6 +154,67 @@ var startApp = function() {
             closeOnEscape: true,
             position: {at: 'right bottom'}
         });
+    });
+
+    var winHaz = $(window).height() - 200;
+    var winHelp = $(window).height() - 200;
+    var winW = $(window).width() - 200;
+    if (winHelp > 760) {
+        winHelp = 760;
+    }
+
+    // Help dialog
+    $('#helpDialog').dialog({
+        autoOpen: false,
+        height: winHelp,
+        width: winW,
+        closeOnEscape: true
+    });
+
+    $('#help').button().click(function(e) {
+        $('#helpDialog').dialog('open');
+    });
+
+    $('#helpDialog').css({ 'overflow' : 'auto' });
+
+    var riskDataDialog = $('#riskDataDialog').dialog({
+        autoOpen: false,
+        height: 250,
+        width: 400,
+        modal: true,
+        position: [100,150]
+    });
+
+    $('#riskDataDialog').css({ 'overflow' : 'auto' });
+
+    $('#risk-data').button().click(function() {
+        $('#riskDataDialog').dialog('open');
+    });
+
+    var hazardDataDialog = $('#hazardDataDialog').dialog({
+        autoOpen: false,
+        height: winHaz,
+        width: 400,
+        modal: true,
+        position: [100,150]
+    });
+
+    $('#hazardDataDialog').css({ 'overflow' : 'auto' });
+
+    $('#hazard-data').button().click(function() {
+        $('#hazardDataDialog').dialog('open');
+    });
+
+    var legendDialog = $('#legendDialog').dialog({
+        autoOpen: false,
+        height: 230,
+        width: 200,
+        modal: false,
+        position: [20,620]
+    });
+
+    $('#legend').button().click(function() {
+        $('#legendDialog').dialog('open');
     });
 
     map = new L.Map('map', {
@@ -489,9 +551,19 @@ var startApp = function() {
     $('#addTileCurve').click(function() {
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
+
         } catch (e) {
             // continue
         }
@@ -553,7 +625,6 @@ var startApp = function() {
                 $('#curve-check-box').append(checkbox);
             }
 
-            hazardDataDialog.dialog('option', 'height', (500 + (curvesList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -568,6 +639,15 @@ var startApp = function() {
     $('#addTileInput').click(function() {
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
@@ -599,6 +679,15 @@ var startApp = function() {
 
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
@@ -649,7 +738,6 @@ var startApp = function() {
 
                 $('#curve-check-box').append(checkbox);
             }
-            hazardDataDialog.dialog('option', 'height', (500 + (uhsList.length * 10)));
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -665,6 +753,15 @@ var startApp = function() {
     $('#addTileLoss').click(function() {
         // try to remove any existing UtfGrids
         try {
+            // check if the layer is not a hazard map, and if so remove from controller
+            for (var k in layerControl._layers) {
+                var nameTemp = layerControl._layers[k].name;
+                var nameTest = nameTemp.indexOf("map") > -1;
+
+                if (nameTest === false) {
+                    delete layerControl._layers[k];
+                }
+            }
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
             map.removeLayer(utfGridMap);
@@ -909,15 +1006,6 @@ var startApp = function() {
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
         if (curveType == 'hc') {
-            // Remove any existing UtfGrid layers in order to avoid conflict
-            map.removeLayer(utfGrid);
-            map.removeLayer(tileLayer);
-            try {
-                map.removeLayer(utfGridMap);
-            } catch (e) {
-                // continue
-            }
-
             utfGrid = {};
             var e = document.getElementById('curve-list');
             var curveLayerId = e.options[e.selectedIndex].value;
@@ -928,6 +1016,7 @@ var startApp = function() {
     
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                mappedValue = json.mapped_value;
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.iml;
                 layerImt = json.imt;
@@ -992,9 +1081,6 @@ var startApp = function() {
 
     // add input curve layers from tilestream
     function inputCurve(curveType) {
-        map.removeLayer(tileLayer);
-        map.removeLayer(utfGrid);
-
         var scope = angular.element($("#input-list")).scope();
         var inputLayerId = scope.selected_input.name;
 
@@ -1004,6 +1090,7 @@ var startApp = function() {
         var hasGrid = $.inArray(selectedLayer, inputLayerGrids) > -1;
         // get more information about the selected layer for use in chart
         $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+            mappedValue = json.category +' '+ json.mapped_value;
             var bounds = json.bounds;
             var htmlLegend = json.html_legend;
             $('#legendDialog').empty();
@@ -1073,9 +1160,6 @@ var startApp = function() {
 
     // Add loss curve layers form tilestream list
     function lossCurve() {
-        // Remove any existing UtfGrid layers in order to avoid conflict
-        map.removeLayer(utfGrid);
-        map.removeLayer(tileLayer);
         utfGrid = {};
         var e = document.getElementById('loss-list');
         var lossLayerId = e.options[e.selectedIndex].value;
@@ -1115,15 +1199,6 @@ var startApp = function() {
 
     // Add mixed curve layers form tilestream list
     function mixedCurve(curveType) {
-        console.log("mixed curve");
-        map.removeLayer(utfGrid);
-        map.removeLayer(tileLayer);
-        try {
-            map.removeLayer(utfGridMap);
-        } catch (e) {
-            // continue
-        }
-
         var selectedLayer;
 
         if (curveType == 'hc') {
@@ -1141,6 +1216,7 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                mappedValue = json.mapped_value;
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.iml;
                 layerImt = json.imt;
@@ -1159,6 +1235,7 @@ var startApp = function() {
             var hasGrid = $.inArray(selectedLayer, uhsLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                mappedValue = json.mapped_value;
                 layerInvestigationTime = json.investigationTime;
                 layerIml = json.periods;
                 layerPoe = json.poe;
@@ -1354,45 +1431,6 @@ var startApp = function() {
         });
     });
 
-    var riskDataDialog = $('#riskDataDialog').dialog({
-        autoOpen: false,
-        height: 420,
-        width: 400,
-        modal: true
-    });
-
-    $('#riskDataDialog').css({ 'overflow' : 'auto' });
-
-    $('#risk-data').button().click(function() {
-        $('#riskDataDialog').dialog('open');
-    });
-
-    var hazardDataDialog = $('#hazardDataDialog').dialog({
-        autoOpen: false,
-        height: 480,
-        width: 400,
-        modal: true,
-        position: [100,150]
-    });
-
-    $('#hazardDataDialog').css({ 'overflow' : 'auto' });
-
-    $('#hazard-data').button().click(function() {
-        $('#hazardDataDialog').dialog('open');
-    });
-
-    var legendDialog = $('#legendDialog').dialog({
-        autoOpen: false,
-        height: 230,
-        width: 200,
-        modal: false,
-        position: [20,620]
-    });
-
-    $('#legend').button().click(function() {
-        $('#legendDialog').dialog('open');
-    });
-
     $(function() {
         $( '#categoryTabs' ).tabs({
             collapsible: true,
@@ -1417,9 +1455,9 @@ var startApp = function() {
             var invest_time;
             var imt;
 
-            if (curveType == 'uhs') {
+            if (e.data.poe !== undefined) {
                 prob = e.data.poe;
-            } else if (curveType == 'hc') {
+            } else if (e.data.prob !== undefined) {
                 prob = e.data.prob;
             }
 
@@ -1462,7 +1500,7 @@ var startApp = function() {
         }); // End utfGrid click
     }; // End hazardCurveUtfGridClickEvent
 
-    var hazardCurveUtfGridClickEventMixed = function(utfGrid, curveType) {
+    function hazardCurveUtfGridClickEventMixed(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
             // Get the selected curves
             selectedCurves = [];
@@ -1600,9 +1638,9 @@ var startApp = function() {
         }
     }
 
-    ////////////////////////////////////////////
-    ////////////// Single hazard Chart /////////
-    ////////////////////////////////////////////
+    ///////////////////////////////////////
+    ///////// Single hazard Chart /////////
+    ///////////////////////////////////////
 
     function hazardD3Chart(probArray, imlArray, lat, lng) {
         var lon = lng;
@@ -1637,16 +1675,15 @@ var startApp = function() {
             }
         }
 
-        var margin = {top: 20, right: 20, bottom: 80, left: 60},
+        var margin = {top: 45, right: 20, bottom: 80, left: 60},
         width = 400 - margin.left - margin.right,
         height = 380 - margin.top - margin.bottom;
 
-        var x = d3.scale.log().range([0, width]);
+        var x = d3.scale.log().domain([0, width]).range([0, width]);
         var y = d3.scale.log().range([height, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            //.ticks(2)
             .tickFormat(function (d) { return Math.round(d * 100) / 100; })
             .orient('bottom');
 
@@ -1688,6 +1725,8 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
+        console.log("layerImt");
+        console.log(layerImt);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -1703,9 +1742,10 @@ var startApp = function() {
             .call(xAxis)
             .selectAll("text")
                 .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr('x', 40)
-                .style('font-size','12px')
+                .attr("dy", "-0.6em")
+                .attr('x', 30)
+                .style('font-family', 'myriad pro')
+                .style('font-size','11px')
                 .attr("transform", function(d) {
                     return "rotate(90)";
                         })
@@ -1713,6 +1753,16 @@ var startApp = function() {
             .attr('x', 160)
             .attr('y', 30)
             .attr('dy', '.71em')
+            .attr('text-anchor', 'middle')
+            .style('font-size','12px')
+            .text(layerImt);
+
+        svg.append('g')
+            .attr('class', 'x axis')
+            .append('text')
+            .attr('x', width / 2)
+            .attr('y',  (height + margin.bottom)- 35)
+            //.attr('dy', '.71em')
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
             .text(layerImt);
@@ -1762,15 +1812,26 @@ var startApp = function() {
                     .style('fill', 'gray');
             });
 
-        legend.append('text')
-            .attr('x', 60)
-            .attr('y', 7)
-            .attr('dy', '.35em')
-            .text('Location (Lon/Lat): '+lng+', '+lat);
+        var chartHeaderTest = 'Investigation Time: '+layerInvestigationTime;
+        
+        textTopTitle = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -30)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","14px")
+            .text(mappedValue);
+
+        textTopLable = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -15)
+            .attr("dy", ".35em")
+            .attr("font-size","12px")
+            .text(chartHeaderTest+' (Lon/Lat): '+lng+', '+lat);
 
         textBottom = svg.append('text')
             .attr('x', 0)
-            .attr('y', 340)
+            .attr('y', 320)
             .attr('dy', '.35em')
             .text('');
 
@@ -1830,7 +1891,6 @@ var startApp = function() {
         /* associative array of arrays [ x, y ] to describe the curve on the plane */
         curve_coup = [];
 
-        chartHeaderTest = 'Input Model Plot';
         yAxisLable = 'Number of events / years';
         xAxisLable = 'Magnitude';
 
@@ -1901,10 +1961,6 @@ var startApp = function() {
                 .attr("r", 2.5)
                 .style("fill", color)
                 .on("mouseover", function() {
-                    d3.select(this)
-                        .attr('r', 6)
-                        .text(circleX + ", " + circleY)
-                        .style("fill", "gray");
                     var circleX = d3.select(this.__data__[0]);
                     circleX = circleX.toString();
                     circleX = circleX.split(","[0]);
@@ -1915,10 +1971,6 @@ var startApp = function() {
 
                     textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
 
-                }).on("mouseout", function() {
-                    d3.select(this)
-                        .attr('r', 2.5)
-                        .style("fill", color);
                 });
         }
 
@@ -2079,13 +2131,13 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text(yAxisLable);
 
-        textTopLable = svg.append("text")
-            .attr("x", -55)
+        textTopTitle = svg.append("text")
+            .attr("x", 0)
             .attr("y", -47)
             .attr("dy", ".35em")
             .style("font-weight", "bold")
-            .attr("font-size","12px")
-            .text(chartHeaderTest);
+            .attr("font-size","14px")
+            .text(mappedValue);
 
         textTop = svg.append("text")
             .attr("x", 0)
@@ -2334,7 +2386,7 @@ var startApp = function() {
                     circleY = circleY.toString();
                     circleY = circleY.split(","[0]);
 
-                    textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
+                    textBottom.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
 
                 }).on("mouseout", function() {
                     d3.select(this)
@@ -2343,7 +2395,7 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 55, right: 20, bottom: 45, left: 60};
+        var margin = {top: 55, right: 20, bottom: 60, left: 60};
         var width = 400 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
@@ -2514,24 +2566,31 @@ var startApp = function() {
             .style("text-anchor", "end")
             .text(yAxisLable);
 
-        textTopLonLat = svg.append("text")
+        textTopTitle = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -47)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","14px")
+            .text(mappedValue);
+
+        textTopSubTitle = svg.append("text")
             .attr("x", 0)
             .attr("y", -32)
             .attr("dy", ".35em")
             .attr("font-size","12px")
-            .text("Location (Lon/Lat): "+lon+", "+lat);
-
-        textTopLable = svg.append("text")
-            .attr("x", -55)
-            .attr("y", -47)
-            .attr("dy", ".35em")
-            .style("font-weight", "bold")
-            .attr("font-size","12px")
             .text(chartHeaderTest);
 
-        textTop = svg.append("text")
+        textTopSubTitle = svg.append("text")
             .attr("x", 0)
-            .attr("y", -15)
+            .attr("y", -20)
+            .attr("dy", ".35em")
+            .attr("font-size","12px")
+            .text("(Lon/Lat): "+lon+", "+lat);
+
+        textBottom = svg.append("text")
+            .attr("x", 0)
+            .attr("y", 315)
             .attr("dy", ".35em")
             .style("font-size","11px")
             .text('');
