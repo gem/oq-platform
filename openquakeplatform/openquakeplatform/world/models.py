@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.contrib.gis.db import models
-# from django.db import models
+# from django.contrib.gis.db import models
+from django.db import models
 
 
 class Country(models.Model):
@@ -22,7 +22,7 @@ class Country(models.Model):
         verbose_name_plural = "countries"
 
     name = models.CharField(max_length=150)
-    iso3 = models.CharField(max_length=6)
+    iso3 = models.CharField(max_length=3, primary_key=True)
     # the_geom = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
     # is_visible = models.BooleanField(default=True)
 

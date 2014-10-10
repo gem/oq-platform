@@ -19,7 +19,7 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from fields import DictField
-from openquakeplatform.world import Country
+from openquakeplatform.world.models import Country
 
 
 CHMAX = 200
@@ -108,11 +108,11 @@ class Indicator(models.Model):
     theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
     # ~"Variable Name"
-    name = models.CharField(max_length=CHMAX)
+    name = models.TextField()
     # ~"Unit of Measurement"
     measurement_type = models.ForeignKey('MeasurementType')
     # ~"Variable Description"
-    description = models.CharField(max_length=CHMAX)
+    description = models.TextField()
     source = models.ForeignKey('Source')
     keywords = models.ManyToManyField('Keyword', null=True, blank=True)
     aggregation_method = models.ForeignKey('AggregationMethod')
@@ -165,10 +165,15 @@ class Theme(models.Model):
 
 
 class Subtheme(models.Model):
+    theme = models.ForeignKey('Theme')
     name = models.CharField(max_length=CHMAX)
 
+    class Meta:
+        unique_together = ('theme', 'name')
+        ordering = ['theme', 'name']
+
     def __unicode__(self):
-        return self.name
+        return '(%s) %s' % (self.theme.name, self.name)
 
 
 class MeasurementType(models.Model):
@@ -193,27 +198,27 @@ class Keyword(models.Model):
 
 
 class Source(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    description = models.TextField()
     year_min = models.IntegerField()
     year_max = models.IntegerField()
-    update_periodicity = models.ForeignKey('Periodicity')
+    update_periodicity = models.ForeignKey('UpdatePeriodicity')
 
     @property
     def year_range(self):
         return self.year_max - self.year_min
 
     def __unicode__(self):
-        return '%s (%d-%d)' % (self.name, self.year_min, self.year_max)
+        return '%s (%s - %s)' % (self.description, self.year_min, self.year_max)
 
 
-class Periodicity(models.Model):
+class UpdatePeriodicity(models.Model):
     name = models.CharField(max_length=CHMAX)
 
     def __unicode__(self):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'periodicity'
+        verbose_name_plural = 'update periodicity'
 
 
 class AggregationMethod(models.Model):
@@ -231,7 +236,7 @@ class CountryIndicator(models.Model):
 
     def __unicode__(self):
         return "%s: %s = %s [%s]" % (
-            self.country, self.indicator, self.value,
+            self.country.iso3, self.indicator, self.value,
             self.indicator.measurement_type)
 
     class Meta:
