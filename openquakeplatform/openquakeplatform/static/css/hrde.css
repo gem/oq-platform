@@ -2,6 +2,18 @@ select#layer-list {
   width: 95%;
 }
 
+select#loss-list {
+  width: 95%;
+}
+
+select#curve-list {
+  width: 95%;
+}
+
+select#uhs-list {
+  width: 95%;
+}
+
 select#input-list {
   width: 95%;
 }

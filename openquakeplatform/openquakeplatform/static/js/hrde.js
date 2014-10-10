@@ -112,8 +112,8 @@ var startApp = function() {
 
     var riskDataDialog = $('#riskDataDialog').dialog({
         autoOpen: false,
-        height: 250,
-        width: 400,
+        height: winHaz,
+        width: 500,
         modal: true,
         position: [100,150]
     });
@@ -127,7 +127,7 @@ var startApp = function() {
     var hazardDataDialog = $('#hazardDataDialog').dialog({
         autoOpen: false,
         height: winHaz,
-        width: 400,
+        width: 500,
         modal: true,
         position: [100,150]
     });
@@ -770,7 +770,6 @@ var startApp = function() {
     
             $('#addTileLayer').attr('disabled', false);
             $('#removeTileLayer').attr('disabled', false);
-            $('#layer-list option:first').empty();
         } else {
             $('#layer-list').find('option').empty();
             $('#addTileLayer').attr('disabled', true);
@@ -801,7 +800,6 @@ var startApp = function() {
     
             $('#addTileInput').attr('disabled', false);
             $('#removeTileInput').attr('disabled', false);
-            $('#input-list option:first').empty();
         } else {
             $('#input-list').find('option').empty();
             $('#addTileInput').attr('disabled', true);
@@ -830,7 +828,6 @@ var startApp = function() {
     
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
-            $('#curve-list option:first').empty();
         } else {
             $('#curve-list').find('option').empty();
             $('#addTileCurve').attr('disabled', true);
@@ -859,7 +856,6 @@ var startApp = function() {
     
             $('#addTileUhs').attr('disabled', false);
             $('#removeTileUhs').attr('disabled', false);
-            $('#uhs-list option:first').empty();
         } else {
             $('#uhs-list').find('option').empty();
             $('#addTileUhs').attr('disabled', true);
@@ -868,27 +864,37 @@ var startApp = function() {
     });
 
     // Create dynamic categorized loss layer dialog
-    $('#risk-form-list-curves').change(function() {
-        // Remove the layer list element
-        document.getElementById('loss-list').options.length = 0;
+    $('#risk-curve-category').change(function() {
 
-       // Create the layer list based on the category selected
         var e = document.getElementById('risk-curve-category');
         var strUser = e.options[e.selectedIndex].value;
-        var layersArray = lossLayersByCat[strUser];
-        for (var i in layersArray) {
-            var layers = layersArray[i];
-            var lossOpt = document.createElement('option');
-            lossOpt.innerHTML = layers;
-            lossOpt.valuse = layers;
-            selLoss.appendChild(lossOpt);
-        }
-        if($('#loss-list').find('option').length == 0) {
-            $('#addTileLoss').attr('disabled', true);
-            $('#removeTileLoss').attr('disabled', true);
-        } else {
+
+        ////////////////////////////////////////////////////////
+        // Create dynamic categorized loss curve layer dialog //
+        ////////////////////////////////////////////////////////
+
+        var lossLayersArray = lossLayersByCat[strUser];
+        if (lossLayersArray instanceof Array) {
+
+            var lossLayerList = [];
+
+            for (var j = 0; j < lossLayersArray.length; j++) {
+                lossLayerList.push({name: lossLayersArray[j]});
+            }
+
+            // Append the risk loss layer list to the dropdown form
+            var lossScope = angular.element($("#loss-list")).scope();
+    
+            lossScope.$apply(function(){
+                lossScope.losses = lossLayerList;
+            });
+  
             $('#addTileLoss').attr('disabled', false);
             $('#removeTileLoss').attr('disabled', false);
+        } else {
+            $('#loss-list').find('option').empty();
+            $('#addTileLoss').attr('disabled', true);
+            $('#removeTileLoss').attr('disabled', true);
         }
     });
 
@@ -1118,8 +1124,8 @@ var startApp = function() {
     // Add loss curve layers form tilestream list
     function lossCurve() {
         utfGrid = {};
-        var e = document.getElementById('loss-list');
-        var lossLayerId = e.options[e.selectedIndex].value;
+        var scope = angular.element($("#loss-list")).scope();
+        var lossLayerId = scope.selected_loss.name;
         // Look up the layer id using the layer name
         var lossLayerIdArray = lossLayerNames[lossLayerId];
         var selectedLayer = lossLayerIdArray.toString();
@@ -1369,8 +1375,9 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            var e = document.getElementById('loss-list');
-            var mapLayerId = e.options[e.selectedIndex].value;
+
+            var scope = angular.element($("#loss-list")).scope();
+            var mapLayerId = scope.selected_loss.name;
 
             // Look up the layer id using the layer name
             var mapLayerIdArray = lossLayerNames[mapLayerId];

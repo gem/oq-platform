@@ -147,10 +147,17 @@ Explore - {{block.super}}
     <form id="risk-form-list-curves">
       <br>Risk Models:<br>
       <select id="risk-curve-category"></select>
-      <br>Loss Curves:<br>
-      <select id="loss-list"></select><br>
-      <input type="button" id="addTileLoss" value="Add Layer">
-      <input type="button" id="removeTileLoss" value="Remove Layer">
+      <!-- Risk Loss Curve dropdown -->
+      <div ng-controller="RiskLossCurvesDropdown">
+        <br>Loss Curves<br>
+        Filter <input type="text" ng-model="search">
+        <br>
+        <select id="loss-list" size="5" ng-model="selected_loss" ng-options="loss.name for loss in losses | filter:search | orderBy:'name'"></select>
+        <br>
+        <input type="button" id="addTileLoss" value="Add Layer">
+        <input type="button" id="removeTileLoss" value="Remove Layer">
+        <br>
+      </div>
     </form>
   </div>
   

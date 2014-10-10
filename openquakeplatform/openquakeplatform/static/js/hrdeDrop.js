@@ -25,3 +25,9 @@ function UhsDropdown($scope) {
         {}
     ];
 }
+
+function RiskLossCurvesDropdown($scope) {
+    $scope.losses=[
+        {}
+    ];
+}
