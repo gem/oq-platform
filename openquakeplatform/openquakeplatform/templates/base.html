@@ -31,20 +31,56 @@
             <div class="span3">
               <a href="{% url "home" %}"><span class="nav-logo"></span></a>
             </div>
+            <div class="span10">
+              <nav class="main-nav">
+                <ul>
+                  <!-- <li id="nav_home">
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                  </li>
+                  <li id="nav_data">
+                    <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+                  </li>
+                  <li id="nav_maps">
+                    <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+                  </li>
+
+                  {% if USE_DOCUMENTS %}
+                  <li id="nav_documents">
+                    <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
+                  </li>
+                  {% endif %}
+                  <li id="nav_people">
+                    <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
+                  </li>
+                  <li id="nav_search">
+                    <a href="{% url "advanced_search" %}">{% trans "Search" %}</a>
+                  </li> -->
+                  {% block extra-nav %}{% endblock %}
+                </ul>
+              </nav>
+            </div> <!-- ./span10 -->
+            {% if SOCIAL_BUTTONS %}
+            <div class="span2">
+              <ul class="social">
+                  <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
+                  <li><a href="https://twitter.com/share?url=http://{{ request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
+                  <li><a href="https://plusone.google.com/_/1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
+              </ul>
+            </div> <!-- /.span2 -->
+            {% endif %}
             <div class="span9">
               <div class="nav-collapse pull-right">
                 <div class="pull-right">
                   <ul class="nav pull-right account-bar">
                     {% if user.is_authenticated %}
                       <li class="user-avatar">
-                        {% avatar user 20 %}
+                        {% avatar user 30 %}
                       </li>
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                           {{ user.username }}
                           <b class="caret"></b>
                         </a>
-			
                         <ul class="dropdown-menu">
                           <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
                           <li><a href="{% url "messages_inbox" %}"><i class="icon-inbox"></i> {% trans "Inbox" %}</a></li>
@@ -63,15 +99,16 @@
                         </ul>
                       </li> <!-- ./dropdown user -->
                       <li>
-              <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
-                {# csrf_token #}
-                <input id="search" type="text" name="q"/>
-              </form></li>
-
+                          <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
+                            {# csrf_token #}
+                            <input id="search" type="text" name="q"/>
+                          </form>
+                      </li>
+                      <!-- <li class="divider-v">|</li> -->
                       <li class="actions">
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
-                        <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a-->
-                        <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
+                        <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a
+                        <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a> -->
                         <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
                       </li>
                     {% else %}
@@ -107,12 +144,10 @@
                 </div>
               </div>
             </div>
-              <nav class="main-nav">
-                <ul>
-                  {% block extra-nav %}{% endblock %}
-                </ul>
-              </nav>
-            </div> <!-- ./span10 -->
+            <div style="float: right;position: absolute;right:0;">
+              <a href="{% url "home" %}"><span class="nav-logo nav-logo-gem"></span></a>
+            </div>
+          </div>
         </div> <!-- /.container -->
         </section>
       </div> <!-- /.navbar-inner -->
@@ -148,7 +183,7 @@
       </div> <!-- /.container -->
     </div>
     {% endblock middle %}
-    
+
     {% block footer %}
     <footer class="footer">
       <div class="container">
@@ -158,25 +193,11 @@
           <a href="{% url "about" %}">{% trans "About" %}</a>
         </div>
         <div class="pull-right">
-        {% if csrf_token != "NOTPROVIDED" %}
-          {% get_current_language as LANGUAGE %}
-          <form class="form-inline" action="/i18n/setlang/" method="post">
-          {% csrf_token %}
-            <label>{% trans "Language" %}</label>
-            <select class="input span2" name="language" onchange="javascript:form.submit()">
-              {% for lang in LANGUAGES %}
-              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-              </option>
-              {% endfor %}
-            </select>
-          </form>
-        {% endif %}
         </div> <!-- /.pull-right -->
       </div> <!-- /.container -->
     </footer>
     {% endblock footer %}
-    
+
     {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
@@ -198,7 +219,7 @@
       $("#search").select2({
         minimumInputLength: 1,
         placeholder: 'Search...',
-        width: 'element',     
+        width: 'element',
         ajax: {
           url: '{% url "search_api" %}',
           data: function(term,page){
@@ -219,14 +240,14 @@
               }),
               more: more
             }
-          }          
+          }
         },
-        createSearchChoice:function(term, data) { 
+        createSearchChoice:function(term, data) {
             term = term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-            if ($(data).filter(function() { 
+            if ($(data).filter(function() {
                 return this.text.localeCompare(term)===0; }).length===0) {
                     return {id:term, text:term};
-                    } 
+                    }
         },
         formatSelection: function(item){
           if(item.url != undefined) {

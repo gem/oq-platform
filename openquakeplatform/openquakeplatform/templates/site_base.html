@@ -68,12 +68,6 @@
       parse eventual GetFeatureInfo templates and run javascript
       against them */
 
-      // remove the upload alt icon from the header
-      $('.icon-upload-alt').remove();
-
-      // remove the language dropdown from the footer
-      $('.form-inline').remove();
-
       if (typeof(gxp) != 'undefined') {
       var originalAddOutput = gxp.plugins.WMSGetFeatureInfo.prototype.addOutput;
       Ext.override(gxp.plugins.WMSGetFeatureInfo, {

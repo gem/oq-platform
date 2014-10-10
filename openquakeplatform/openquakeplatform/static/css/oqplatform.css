@@ -19,6 +19,7 @@
 
 body {
     color: #555555;
+    padding-top: 40px;
 }
 
 h2 {
@@ -33,12 +34,18 @@ h2 {
     min-width: 800px;
 }
 
+.navbar .nav.account-bar {
+    margin-top: 5px;
+}
+
 .span10 {
-    width: 80%;
+    margin-top: 5px;
+    width: 400px;
 }
 
 .span9 {
     width: auto;
+    margin-right: 70px;
     float: right;
 }
 
@@ -46,53 +53,84 @@ h2 {
     width: auto;
 }
 
-.navbar-inner {
+.gem {
+    width: auto;
+}
+
+.navbar .navbar-inner {
     background-image: none;
-    border: 1px solid #002029;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar .nav > li > a {
     color: #fff;
     text-shadow: none;
+    font-size: 16px;
 }
 
 .nav-logo {
-    width: 250px;
-    height: 42px;
-    background: url(/static/img/OQ_logo.png) no-repeat;
-    margin-left: -10px;
-    margin-top: -10px;
-    margin-bottom: -10px;
+    background: url(/static/images/oq-logo.png) no-repeat;
+    width: 218px;
+    height: 40px;
+    margin: 0;
+}
+.nav-logo-gem {
+    background: url(/static/images/oq-gem.png) no-repeat;
+    width: 72px;
+    height: 40px;
+    margin: 0;
 }
 
 .navbar .navbar-inner {
-    background: none;
-    -webkit-box-shadow: none;
-    -mox-box-shadow: none;
-    box-shadow: none;
-    min-width: 900px;
+    background: url(/static/images/oq-header.png) no-repeat left top;
+    min-width: 1200px;
     background-color: #1b75a5;
-    background-size: 100%;
 }
 
 .nav-box {
     background: none;
 }
 
+
+nav.main-nav {
+    margin: 0;
+}
+nav.main-nav ul li {
+    height: 30px;
+    display: inline-block;
+    float: left;
+    width: 80px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
 nav.main-nav ul li a {
     color: #fff;
     text-transform: none;
-    border-bottom: 3px;
+    width: 80px;
+    text-align: center;
+    padding: 4px 0;
+    font-size: 18px;
 }
 
-nav.main-nav ul li.calc a {
-   border-bottom: solid #ffdc00 3px;
+nav.main-nav ul li.calc{
+   border-bottom: solid #ffdc00 5px;
 }
-nav.main-nav ul li.share a {
-   border-bottom: solid #eb737d 3px;
+nav.main-nav ul li.share{
+   border-bottom: solid #eb737d 5px;
 }
-nav.main-nav ul li.explore a {
-   border-bottom: solid #dc6522 3px;
+nav.main-nav ul li.explore{
+   border-bottom: solid #dc6522 5px;
+}
+
+.span11 {
+    float: right;
+    right: 0;
+    width: 100px;
+}
+
+.input-append, .input-prepend {
+    margin-bottom: 5px;
 }
 
 #submenu a {
@@ -256,12 +294,13 @@ ul.social li a.gp {
     background: gray;
     font-size: 12px;
     position: fixed;
-    height: 20px;
     bottom: 0;
     padding-left: 10%;
     padding-right: 10%;
     float: left;
     width: 80%;
+    height: auto;
+    padding-top: 0;
 }
 
 footer.footer div.container {
@@ -276,3 +315,5 @@ footer.footer div.container {
 #my-calculations.well{
     background-color: #F5F5F5;
 }
+
+
