@@ -19,3 +19,9 @@ function HazardCurveDropdown($scope) {
         {}
     ];
 }
+
+function UhsDropdown($scope) {
+    $scope.uhss=[
+        {}
+    ];
+}

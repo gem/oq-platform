@@ -203,8 +203,8 @@ var startApp = function() {
         $('#tableBody').html('');
         $('#tablehead').html('');
 
-        var e = document.getElementById('layer-list');
-        var mapLayerId = e.options[e.selectedIndex].value;
+        var scope = angular.element($("#layer-list")).scope();
+        var mapLayerId = scope.selected_map.name;
 
         // Look up the layer id using the layer name
         var mapLayerIdArray = mapLayerNames[mapLayerId];
@@ -599,7 +599,6 @@ var startApp = function() {
 
 
     $('#addTileUhs').click(function() {
-
         // try to remove any existing UtfGrids
         try {
             // check if the layer is not a hazard map, and if so remove from controller
@@ -622,8 +621,9 @@ var startApp = function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        var e = document.getElementById('uhs-list');
-        var option = e.options[e.selectedIndex].value;
+        var scope = angular.element($("#uhs-list")).scope();
+        var option = scope.selected_map.name;
+
         var investType = checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option);
         var curveType = 'uhs';
 
@@ -747,24 +747,38 @@ var startApp = function() {
         /////////////////////////////////////////////////
         // Create dynamic categorized map layer dialog //
         /////////////////////////////////////////////////
-
+        var mapScope = angular.element($("#layer-list")).scope();
         var mapLayersArray = mapLayersByCat[strUser];
 
-        if (mapLayersArray.length > 0) {
+        if (mapLayersArray instanceof Array) {
             $('#mapOptionLabel').prepend('Choose a Map');
+        
+            var mapLayerList = [];
+            for (var i = 0; i < mapLayersArray.length; i++) {
+                mapLayerList.push({name: mapLayersArray[i]});
+            }
+    
+            // Append the hazard map layer list to the dropdown form
+            //var mapScope = angular.element($("#layer-list")).scope();
+        
+            
+            mapScope.$apply(function(){
+                mapScope.maps = mapLayerList;
+                console.log("mapScope");
+                console.log(mapScope);
+            });
+    
+            $('#addTileLayer').attr('disabled', false);
+            $('#removeTileLayer').attr('disabled', false);
+            $('#layer-list option:first').empty();
+        } else {
+            $('#layer-list').find('option').empty();
+            $('#addTileLayer').attr('disabled', true);
+            $('#removeTileLayer').attr('disabled', true);
+            mapScope.maps = null;
+            console.log("mapScope");
+            console.log(mapScope);
         }
-
-        var mapLayerList = [];
-        for (var i = 0; i < mapLayersArray.length; i++) {
-            mapLayerList.push({name: mapLayersArray[i]});
-        }
-
-        // Append the hazard map layer list to the dropdown form
-        var mapScope = angular.element($("#layer-list")).scope();
-
-        mapScope.$apply(function(){
-            mapScope.maps = mapLayerList;
-        });
 
         ///////////////////////////////////////////////////
         // Create dynamic categorized input model dialog //
@@ -777,14 +791,22 @@ var startApp = function() {
             for (var j = 0; j < inputLayersArray.length; j++) {
                 inputLayerList.push({name: inputLayersArray[j]});
             }
+
+            // Append the input model layer list to the dropdown form
+            var inputScope = angular.element($("#input-list")).scope();
+    
+            inputScope.$apply(function(){
+                inputScope.inputs = inputLayerList;
+            });
+    
+            $('#addTileInput').attr('disabled', false);
+            $('#removeTileInput').attr('disabled', false);
+            $('#input-list option:first').empty();
+        } else {
+            $('#input-list').find('option').empty();
+            $('#addTileInput').attr('disabled', true);
+            $('#removeTileInput').attr('disabled', true);
         }
-
-        // Append the input model layer list to the dropdown form
-        var inputScope = angular.element($("#input-list")).scope();
-
-        inputScope.$apply(function(){
-            inputScope.inputs = inputLayerList;
-        });
 
         //////////////////////////////////////////////////////////
         // Create dynamic categorized hazard curve layer dialog //
@@ -799,47 +821,49 @@ var startApp = function() {
                 hazardCurveLayerList.push({name: hazardCurveLayersArray[j]});
             }
 
-        }
-        // Append the haard curve layer list to the dropdown form
-        var hazardCurveScope = angular.element($("#curve-list")).scope();
-
-        hazardCurveScope.$apply(function(){
-            hazardCurveScope.curves = hazardCurveLayerList;
-        });
-
-        if($('#curve-list').find('option').length == 0) {
-            $('#addTileCurve').attr('disabled', true);
-            $('#removeTileCurve').attr('disabled', true);
-        } else {
+            // Append the haard curve layer list to the dropdown form
+            var hazardCurveScope = angular.element($("#curve-list")).scope();
+    
+            hazardCurveScope.$apply(function(){
+                hazardCurveScope.curves = hazardCurveLayerList;
+            });
+    
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
-        }
-     
-    });
-
-    // Create dynamic categorized uhs layer dialog
-    $('#hazard-curve-category').change(function() {
-        // Remove the layer list element
-        document.getElementById('uhs-list').options.length = 0;
-
-        // Create the layer list based on the category selected
-        var e = document.getElementById('hazard-curve-category');
-        var strUser = e.options[e.selectedIndex].value;
-        var layersArray = uhsLayersByCat[strUser];
-        for (var i in layersArray) {
-            var layers = layersArray[i];
-            var uhsOpt = document.createElement('option');
-            uhsOpt.innerHTML = layers;
-            uhsOpt.valuse = layers;
-            selUhs.appendChild(uhsOpt);
-        }
-
-        if($('#uhs-list').find('option').length == 0) {
-            $('#addTileUhs').attr('disabled', true);
-            $('#removeTileUhs').attr('disabled', true);
+            $('#curve-list option:first').empty();
         } else {
+            $('#curve-list').find('option').empty();
+            $('#addTileCurve').attr('disabled', true);
+            $('#removeTileCurve').attr('disabled', true);
+        }
+
+        ///////////////////////////////////////////////////////
+        // Create dynamic categorized uhs curve layer dialog //
+        ///////////////////////////////////////////////////////
+
+        var uhsLayersArray = uhsLayersByCat[strUser];
+
+        if (uhsLayersArray instanceof Array) {
+            var uhsLayerList = [];
+
+            for (var j = 0; j < uhsLayersArray.length; j++) {
+                uhsLayerList.push({name: uhsLayersArray[j]});
+            }
+
+            // Append the haard uhs layer list to the dropdown form
+            var uhsScope = angular.element($("#uhs-list")).scope();
+    
+            uhsScope.$apply(function(){
+                uhsScope.uhss = uhsLayerList;
+            });
+    
             $('#addTileUhs').attr('disabled', false);
             $('#removeTileUhs').attr('disabled', false);
+            $('#uhs-list option:first').empty();
+        } else {
+            $('#uhs-list').find('option').empty();
+            $('#addTileUhs').attr('disabled', true);
+            $('#removeTileUhs').attr('disabled', true);
         }
     });
 
@@ -958,8 +982,8 @@ var startApp = function() {
 
             });
         } else if (curveType == 'uhs') {
-            var e = document.getElementById('uhs-list');
-            var uhsLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#uhs-list")).scope();
+            uhsLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
@@ -974,8 +998,8 @@ var startApp = function() {
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
         } else if (curveType == 'input') {
-            var e = document.getElementById('input-list');
-            var inputLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#input-list")).scope();
+            var inputLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var inputLayerIdArray = inputLayerNames[inputLayerId];
@@ -1137,8 +1161,8 @@ var startApp = function() {
         if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
             // this is only needed in the case when the user adds the same curve twice
-            var e = document.getElementById('curve-list');
-            var curveLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#curve-list")).scope();
+            var curveLayerId = scope.selected_map.name;
 
             //TODO make sure that the curveLayerNames[curveLayerId] are in all lowwer case and are seperated by _
             // Look up the layer id using the layer name
@@ -1159,8 +1183,8 @@ var startApp = function() {
 
         }
         else if (curveType == 'uhs') {
-            var e = document.getElementById('uhs-list');
-            var uhsLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#uhs-list")).scope();
+            uhsLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = uhsLayerNames[uhsLayerId];
@@ -1207,8 +1231,8 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            var e = document.getElementById('layer-list');
-            var mapLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#layer-list")).scope();
+            var mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var mapLayerIdArray = mapLayerNames[mapLayerId];
@@ -1241,8 +1265,8 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            var e = document.getElementById('curve-list');
-            var mapLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#curve-list")).scope();
+            var mapLayerId = scope.selected_map.name;
             // Look up the layer id using the layer name
             var mapLayerIdArray = curveLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
@@ -1275,8 +1299,8 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            var e = document.getElementById('input-list');
-            var mapLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#input-list")).scope();
+            var mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var mapLayerIdArray = uhsLayerNames[mapLayerId];
@@ -1311,8 +1335,8 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            var e = document.getElementById('uhs-list');
-            var mapLayerId = e.options[e.selectedIndex].value;
+            var scope = angular.element($("#uhs-list")).scope();
+            mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
             var mapLayerIdArray = uhsLayerNames[mapLayerId];

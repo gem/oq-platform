@@ -88,7 +88,9 @@ Explore - {{block.super}}
         <br>Input Models:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search | orderBy:'name'"></select>
+        <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search | orderBy:'name'">
+          <option value="0"></option>
+        </select>
         <br>
         <input type="button" id="addTileInput" value="Add Layer">
         <input type="button" id="removeTileInput" value="Remove Layer">
@@ -100,7 +102,9 @@ Explore - {{block.super}}
         <br>Hazard Maps:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'"></select>
+        <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
+          <option></option>
+        </select>
         <br>
         <input type="button" id="addTileLayer" value="Add Layer">
         <input type="button" id="removeTileLayer" value="Remove Layer">
@@ -126,11 +130,17 @@ Explore - {{block.super}}
         <br>
       </div>
 
-      <br>Uniform Hazard Spectra:<br>
-      <select id="uhs-list"></select><br>
-      <input type="button" id="addTileUhs" value="Add Layer">
-      <input type="button" id="removeTileUhs" value="Remove Layer">
-    </form>
+      <!-- UHS Curve dropdown -->
+      <div ng-controller="UhsDropdown">
+        <br>Uniform Hazard Spectra:<br>
+        Filter <input type="text" ng-model="search">
+        <br>
+        <select id="uhs-list" size="5" ng-model="selected_uhs" ng-options="uhs.name for uhs in uhss | filter:search | orderBy:'name'"></select>
+        <br>
+        <input type="button" id="addTileUhs" value="Add Layer">
+        <input type="button" id="removeTileUhs" value="Remove Layer">
+        <br>
+      </div>
   </div>
 
   <div id="riskDataDialog" title="Risk Data" style="overflow: hidden;">
