@@ -60,7 +60,7 @@ $('#base-map-menu').change(function() {
         baseMapUrl = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.blue-marble-topo-jul/{z}/{x}/{y}.png');
         map.addLayer(baseMapUrl);
     } else if (baseMapSelection == 2) {
-        baseMapUrl = new L.BingLayer(bing_key, {type: 'AerialWithLabels'}); // TODO change the api to point to bing api key aerial with labels
+        baseMapUrl = new L.BingLayer(bing_key, {type: 'AerialWithLabels'});
         map.addLayer(baseMapUrl);
     } else if (baseMapSelection == 5) {
         baseMapUrl = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
