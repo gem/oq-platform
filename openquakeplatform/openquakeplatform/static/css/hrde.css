@@ -1,3 +1,10 @@
+select#layer-list {
+  width: 95%;
+}
+
+select#input-list {
+  width: 95%;
+}
 
 #curve-list {
   width:350px;

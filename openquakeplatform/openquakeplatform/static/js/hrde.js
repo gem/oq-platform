@@ -579,8 +579,16 @@ var startApp = function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        var e = document.getElementById('input-list');
-        var option = e.options[e.selectedIndex].value;
+        //var e = document.getElementById('input-list');
+        //var option = e.options[e.selectedIndex].value;
+
+
+
+
+
+
+
+
         //var investType = checkInputType(inputByInvestMixed, inputByInvestSingle, option);
         var curveType = 'input';
         inputCurve(curveType);
@@ -711,51 +719,45 @@ var startApp = function() {
         }
     }
 
-    // Create dynamic categorized map layer dialog
-    /*
-    $('#hazard-curve-category').change(function() {
-        // Remove the layer list element
-        document.getElementById('layer-list').options.length = 0;
 
-       // Create the layer list based on the category selected
+    $('#hazard-curve-category').change(function() {
         var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
-        var layersArray = mapLayersByCat[strUser];
-        console.log("layersArray");
-        console.log(layersArray);
-        for (var i in layersArray) {
-            var layers = layersArray[i];
-            var opt = document.createElement('option');
-            opt.innerHTML = layers;
-            opt.valuse = layers;
-            selLayer.appendChild(opt);
+
+        // Create dynamic categorized map layer dialog NEW
+        var mapLayersArray = mapLayersByCat[strUser];
+
+        if (mapLayersArray.length > 0) {
+            $('#mapOptionLabel').prepend('Choose a Map');
         }
-    });
-*/
-
-
-
-    // Create dynamic categorized map layer dialog NEW
-    $('#hazard-curve-category').change(function() {
-        var e = document.getElementById('hazard-curve-category');
-        var strUser = e.options[e.selectedIndex].value;
-        var layersArray = mapLayersByCat[strUser];
-
-        console.log("layersArray");
-        console.log(layersArray.length);
 
         var layerList = [];
-            for (var i = 0; i < layersArray.length; i++) {
-                var foo = layersArray[i];
-                layerList.push({name: layersArray[i]});
-            }
-            console.log("layerList");
-            console.log(layerList);
+        for (var i = 0; i < mapLayersArray.length; i++) {
+            layerList.push({name: mapLayersArray[i]});
+        }
 
-        var scope = angular.element($("#layer-list")).scope();
+        var mapScope = angular.element($("#layer-list")).scope();
 
-        scope.$apply(function(){
-            scope.maps = layerList;
+        mapScope.$apply(function(){
+            mapScope.maps = layerList;
+        });
+
+        // Create dynamic categorized input model dialog NEW
+        var inputLayersArray = inputLayersByCat[strUser];
+
+        if (inputLayersArray.length > 0) {
+            $('#inputOptionLabel').prepend('Choose an Input Model');
+        }
+
+        var inputLayerList = [];
+        for (var j = 0; j < inputLayersArray.length; j++) {
+            inputLayerList.push({name: inputLayersArray[j]});
+        }
+
+        var inputScope = angular.element($("#input-list")).scope();
+
+        inputScope.$apply(function(){
+            inputScope.inputs = inputLayerList;
         });
         
     });
@@ -785,31 +787,7 @@ var startApp = function() {
         }
     });
 
-    // Create dynamic categorized input layer dialog
-    $('#hazard-curve-category').change(function() {
-        // Remove the layer list element
-        document.getElementById('input-list').options.length = 0;
 
-        // Create the layer list based on the category selected
-        var e = document.getElementById('hazard-curve-category');
-        var strUser = e.options[e.selectedIndex].value;
-        var layersArray = inputLayersByCat[strUser];
-        for (var i in layersArray) {
-            var layers = layersArray[i];
-            var inputOpt = document.createElement('option');
-            inputOpt.innerHTML = layers;
-            inputOpt.valuse = layers;
-            selInput.appendChild(inputOpt);
-        }
-
-        if($('#input-list').find('option').length == 0) {
-            $('#addTileInput').attr('disabled', true);
-            $('#removeTileInput').attr('disabled', true);
-        } else {
-            $('#addTileInput').attr('disabled', false);
-            $('#removeTileInput').attr('disabled', false);
-        }
-    });
 
     // Create dynamic categorized uhs layer dialog
     $('#hazard-curve-category').change(function() {
@@ -873,8 +851,6 @@ var startApp = function() {
 
             // Look up the layer id using the layer name
             var selectedLayer = mapLayerNames[mapLayerId];
-            console.log("selectedLayer");
-            console.log(selectedLayer);
             selectedLayer = selectedLayer.toString();
             var hasGrid = $.inArray(selectedLayer, mapLayerGrids) > -1;
 
@@ -933,7 +909,6 @@ var startApp = function() {
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
         if (curveType == 'hc') {
-            console.log("single curve");
             // Remove any existing UtfGrid layers in order to avoid conflict
             map.removeLayer(utfGrid);
             map.removeLayer(tileLayer);
@@ -1019,8 +994,10 @@ var startApp = function() {
     function inputCurve(curveType) {
         map.removeLayer(tileLayer);
         map.removeLayer(utfGrid);
-        var e = document.getElementById('input-list');
-        var inputLayerId = e.options[e.selectedIndex].value;
+
+        var scope = angular.element($("#input-list")).scope();
+        var inputLayerId = scope.selected_input.name;
+
         // Look up the layer id using the layer name
         var inputLayerIdArray = inputLayerNames[inputLayerId];
         var selectedLayer = inputLayerIdArray.toString();
