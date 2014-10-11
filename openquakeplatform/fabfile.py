@@ -80,10 +80,10 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
 
-def baseenv(
-        host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key='',
-        db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
-        mediaroot='/tmp', staticroot='/home'):
+def baseenv(host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
+            oq_secret_key, oq_bing_key='', db_name='oqplatform',
+            db_user='oqplatform', db_pass=DB_PASSWORD,
+            mediaroot='/tmp', staticroot='/home'):
     _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
