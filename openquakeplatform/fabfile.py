@@ -35,7 +35,7 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage' ]
+PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
 
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
@@ -56,8 +56,8 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
-    oq_secret_key=''.join(random.choice(string.ascii_letters + string.digits +
-    '%$&()=+-|#@?') for _ in range(50))
+    oq_secret_key = ''.join(random.choice(string.ascii_letters + string.digits
+                    + '%$&()=+-|#@?') for _ in range(50))
 
     baseenv(db_name=db_name, db_user=db_user, db_pass=db_pass,
             host=host, hazard_calc_addr=hazard_calc_addr,
@@ -79,9 +79,10 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     #if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
-def baseenv(
-            host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key='',
-            db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
+
+def baseenv(host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
+            oq_secret_key, oq_bing_key='', db_name='oqplatform',
+            db_user='oqplatform', db_pass=DB_PASSWORD,
             mediaroot='/tmp', staticroot='/home'):
     _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
@@ -94,17 +95,19 @@ def baseenv(
     _maybe_install_postgis(db_name)
     # Install geonode/geoserver and syncdb for oq-platform apps
     setup()
-
     # We need to start geoserver
     init_start()
+    # Update Django 'sites' with real hostname
+    _set_sites(host)
 
-APPS_LIST=['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
-           'maps_viewer', 'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
-           'icebox']
+APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
+             'maps_viewer', 'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
+             'icebox']
+
 
 def apps(db_name, db_user, db_pass):
     globs = globals()
-    apps_list=""
+    apps_list = ""
     # Add the apps
     for app in APPS_LIST:
         apps_list += " '"+app+"'"
@@ -121,6 +124,7 @@ def apps(db_name, db_user, db_pass):
     local('python manage.py updatelayers')
     local('python manage.py loaddata openquakeplatform/maps_viewer/post_fixtures/*.json')
     local('python manage.py map_title')
+
 
 def clean(db_name='oqplatform', db_user='oqplatform'):
     with settings(warn_only=True):
@@ -295,6 +299,7 @@ def _add_isc_viewer():
 def _add_icebox():
     pass
 
+
 def _add_faulted_earth():
     pass
 
@@ -309,15 +314,19 @@ def _add_gaf_viewer():
     local('python manage.py import_gaf_ft_csv '
           './openquakeplatform/gaf_viewer/dev_data/gaf_data_ft.csv')
 
+
 def _add_econd():
     local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
     local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
 
+
 def _add_weblib():
     pass
 
+
 def _add_gemecdwebsite():
     pass
+
 
 def _add_vulnerability():
     local('python manage.py loaddata '
@@ -325,3 +334,14 @@ def _add_vulnerability():
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
+
+
+def _set_sites(host):
+    import os
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'openquakeplatform.settings'
+
+    from django.contrib.sites.models import Site
+    mysite = Site.objects.all()[0]
+    mysite.domain = host
+    mysite.name = host
+    mysite.save()
