@@ -32,7 +32,6 @@ h2 {
 .navbar-fixed-top .container,
 .navbar-fixed-bottom .container {
     width: 100%;
-    min-width: 800px;
 }
 
 .navbar .nav.account-bar {
@@ -46,6 +45,7 @@ h2 {
 
 .span9 {
     width: auto;
+    margin-left: 0;
     margin-right: 70px;
     float: right;
 }
@@ -85,7 +85,7 @@ h2 {
 
 .navbar .navbar-inner {
     background: url(/static/images/oq-header.png) no-repeat left top;
-    min-width: 1200px;
+    min-width: 1100px;
     background-color: #1b75a5;
 }
 
