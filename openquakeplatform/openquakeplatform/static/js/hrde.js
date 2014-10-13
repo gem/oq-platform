@@ -76,10 +76,10 @@ AppProtoType.prototype = {
 
 };
 
-var AppPT = new AppProtoType();
+var AppVars = new AppProtoType();
 
 console.log("curveCategoryList");
-console.log(AppPT.curveCategoryList);
+console.log(AppVars.curveCategoryList);
     
     var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
     var TILESTREAM_URL = TS_URL + '/v2/';
@@ -216,7 +216,7 @@ var startApp = function() {
         var mapLayerId = scope.selected_map.name;
 
         // Look up the layer id using the layer name
-        var mapLayerIdArray = AppPT.mapLayerNames[mapLayerId];
+        var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
         var selectedLayer = mapLayerIdArray.toString();
 
         // Check in the layer is in the map port
@@ -237,6 +237,11 @@ var startApp = function() {
 
     var selCurveCat = document.getElementById('hazard-curve-category');
     var selUhsCat = document.getElementById('hazard-curve-category');
+
+    var foo = $('#hazard-curve-category')[0];
+    console.log(foo);
+    console.log(selCurveCat);
+
     var selLossCat = document.getElementById('risk-curve-category');
     var selInputCat = document.getElementById('hazard-curve-category');
     var selCurve = document.getElementById('curve-list');
@@ -257,6 +262,7 @@ var startApp = function() {
 
     var catUhsMenuHeader = document.createElement('option');
     selUhsCat.appendChild(catUhsMenuHeader);
+    console.log(selUhs);
     $('#hazard-curve-category option:empty').remove();
 
     var catInputMenuHeader = document.createElement('option');
@@ -285,54 +291,54 @@ var startApp = function() {
             var grid, gridName;
  
             if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds') {
-                AppPT.curveCategoryList.push(cat);
-                AppPT.curveLayersByCat[cat] = [];
-                AppPT.curveLayerNames[name] = [];
+                AppVars.curveCategoryList.push(cat);
+                AppVars.curveLayersByCat[cat] = [];
+                AppVars.curveLayerNames[name] = [];
                 grid = grids.toString();
                 gridName = grid.split('/')[4];
-                AppPT.curveLayerGrids.push(gridName);
+                AppVars.curveLayerGrids.push(gridName);
 
             }
 
             if (type == 'curve-uhs') {
-                AppPT.uhsCategoryList.push(cat);
-                AppPT.uhsLayersByCat[cat] = [];
-                AppPT.uhsLayerNames[name] = [];
+                AppVars.uhsCategoryList.push(cat);
+                AppVars.uhsLayersByCat[cat] = [];
+                AppVars.uhsLayerNames[name] = [];
                 grid = grids.toString();
                 gridName = grid.split('/')[4];
-                AppPT.uhsLayerGrids.push(gridName);
+                AppVars.uhsLayerGrids.push(gridName);
             }
             if (type == 'curve-loss') {
-                AppPT.lossCategoryList.push(cat);
-                AppPT.lossLayersByCat[cat] = [];
-                AppPT.lossLayerNames[name] = [];
+                AppVars.lossCategoryList.push(cat);
+                AppVars.lossLayersByCat[cat] = [];
+                AppVars.lossLayerNames[name] = [];
                 grid = grids.toString();
                 gridName = grid.split('/')[4];
-                AppPT.lossLayerGrids.push(gridName);
+                AppVars.lossLayerGrids.push(gridName);
             }
             
             if (type == 'input-mfds') {                
-                AppPT.inputCategoryList.push(cat);
-                AppPT.inputLayersByCat[cat] = [];
-                AppPT.inputLayerNames[name] = [];
+                AppVars.inputCategoryList.push(cat);
+                AppVars.inputLayersByCat[cat] = [];
+                AppVars.inputLayerNames[name] = [];
                 grid = grids.toString();
                 gridName = grid.split('/')[4];
-                AppPT.inputLayerGrids.push(gridName);
+                AppVars.inputLayerGrids.push(gridName);
             }
           
             if (chartType == undefined && cat !== undefined && type == 'hazard') {
-                AppPT.mapCategoryList.push(cat);
-                AppPT.mapLayerNames[name] = [];
-                AppPT.mapLayersByCat[cat] = [];
+                AppVars.mapCategoryList.push(cat);
+                AppVars.mapLayerNames[name] = [];
+                AppVars.mapLayersByCat[cat] = [];
                 if (grids !== undefined) {
                     grid = grids.toString();
                     gridName = grid.split('/')[4];
-                    AppPT.mapLayerGrids.push(gridName);
+                    AppVars.mapLayerGrids.push(gridName);
                 }
             }
 
             if (grids !== undefined) {
-                AppPT.mapLayerNames[grids] = [];
+                AppVars.mapLayerNames[grids] = [];
             }
         }
 
@@ -354,55 +360,55 @@ var startApp = function() {
             if (type == 'curve-hc') {
                 var curveLayerId = json[j].id;
                 var curveLayerTitle = json[j].mapped_value;
-                AppPT.curveLayerNames[name].push(curveLayerId);
-                AppPT.curveLayersByCat[cat].push(curveLayerTitle);
+                AppVars.curveLayerNames[name].push(curveLayerId);
+                AppVars.curveLayersByCat[cat].push(curveLayerTitle);
 
                 if (chartType == 'single') {
-                    AppPT.CurvesByInvestSingle[j] = name;
+                    AppVars.CurvesByInvestSingle[j] = name;
                 }
                 else if (chartType == 'mixed') {
-                    AppPT.curvesByInvestMixed[j] = name;
-                    AppPT.curvesAvailable[j] = template;
+                    AppVars.curvesByInvestMixed[j] = name;
+                    AppVars.curvesAvailable[j] = template;
                 }
             }
 
             if (type == 'curve-uhs') {
                 var uhsLayerId = json[j].id;
                 var uhsLayerTitle = json[j].mapped_value;
-                AppPT.uhsLayerNames[name].push(uhsLayerId);
-                AppPT.uhsLayersByCat[cat].push(uhsLayerTitle);
+                AppVars.uhsLayerNames[name].push(uhsLayerId);
+                AppVars.uhsLayersByCat[cat].push(uhsLayerTitle);
 
                 if (chartType == 'mixed') {
-                    AppPT.uhsByInvestMixed[j] = name;
-                    AppPT.uhsAvailable[j] = template;
+                    AppVars.uhsByInvestMixed[j] = name;
+                    AppVars.uhsAvailable[j] = template;
                 }
                 else if (chartType == 'single') {
-                    AppPT.uhsByInvestSingle[j] = name;
+                    AppVars.uhsByInvestSingle[j] = name;
                 }
             }
 
             if (type == 'curve-loss') {
-                AppPT.lossLayerId = json[j].id;
-                AppPT.lossLayerTitle = json[j].mapped_value;
-                AppPT.lossLayerNames[name].push(AppPT.lossLayerId);
-                AppPT.lossLayersByCat[cat].push(AppPT.lossLayerTitle);
-                AppPT.lossByInvestMixed[j] = name;
-                AppPT.lossAvailable[j] = template;
-                AppPT.lossByInvestSingle[j] = name;
+                AppVars.lossLayerId = json[j].id;
+                AppVars.lossLayerTitle = json[j].mapped_value;
+                AppVars.lossLayerNames[name].push(AppVars.lossLayerId);
+                AppVars.lossLayersByCat[cat].push(AppVars.lossLayerTitle);
+                AppVars.lossByInvestMixed[j] = name;
+                AppVars.lossAvailable[j] = template;
+                AppVars.lossByInvestSingle[j] = name;
             }
 
             if (type == 'input-mfds') {
                 var inputLayerId = json[j].id;
                 var inputLayerTitle = json[j].mapped_value;
-                AppPT.inputLayerNames[name].push(inputLayerId);
-                AppPT.inputLayersByCat[cat].push(inputLayerTitle);
+                AppVars.inputLayerNames[name].push(inputLayerId);
+                AppVars.inputLayersByCat[cat].push(inputLayerTitle);
 
                 if (chartType == 'mixed') {
-                    AppPT.InputByInvestMixed[j] = name;
-                    AppPT.inputAvailable[j] = template;
+                    AppVars.InputByInvestMixed[j] = name;
+                    AppVars.inputAvailable[j] = template;
                 }
                 else if (chartType == 'single') {
-                    AppPT.InputbyInvestSingle[j] = name;
+                    AppVars.InputbyInvestSingle[j] = name;
                 }
             }
 
@@ -410,30 +416,30 @@ var startApp = function() {
                 mapLayerId = json[j].id;
                 mapLayerTitle = json[j].mapped_value;
                 chartType = json[j].chartType;
-                AppPT.mapLayerNames[name].push(mapLayerId);
-                AppPT.mapLayersByCat[cat].push(mapLayerTitle);
+                AppVars.mapLayerNames[name].push(mapLayerId);
+                AppVars.mapLayersByCat[cat].push(mapLayerTitle);
             }
         }
 
         // Get unique category names
-        var mapCategoryUnique = AppPT.mapCategoryList.filter(function(itm,i,mapCategoryList){
-            return i == AppPT.mapCategoryList.indexOf(itm);
+        var mapCategoryUnique = AppVars.mapCategoryList.filter(function(itm,i,mapCategoryList){
+            return i == AppVars.mapCategoryList.indexOf(itm);
         });
 
-        var curveCategoryUnique = AppPT.curveCategoryList.filter(function(itm,i,curveCategoryList){
-            return i == AppPT.curveCategoryList.indexOf(itm);
+        var curveCategoryUnique = AppVars.curveCategoryList.filter(function(itm,i,curveCategoryList){
+            return i == AppVars.curveCategoryList.indexOf(itm);
         });
 
-        var uhsCategoryUnique = AppPT.uhsCategoryList.filter(function(itm,i,uhsCategoryList){
-            return i == AppPT.uhsCategoryList.indexOf(itm);
+        var uhsCategoryUnique = AppVars.uhsCategoryList.filter(function(itm,i,uhsCategoryList){
+            return i == AppVars.uhsCategoryList.indexOf(itm);
         });
 
-        var inputCategoryUnique = AppPT.inputCategoryList.filter(function(itm,i,inputCategoryList){
-            return i == AppPT.inputCategoryList.indexOf(itm);
+        var inputCategoryUnique = AppVars.inputCategoryList.filter(function(itm,i,inputCategoryList){
+            return i == AppVars.inputCategoryList.indexOf(itm);
         });
 
-        var lossCategoryUnique = AppPT.lossCategoryList.filter(function(itm,i,lossCategoryList){
-            return i == AppPT.lossCategoryList.indexOf(itm);
+        var lossCategoryUnique = AppVars.lossCategoryList.filter(function(itm,i,lossCategoryList){
+            return i == AppVars.lossCategoryList.indexOf(itm);
         });
 
         for (var i in mapCategoryUnique) {
@@ -506,9 +512,9 @@ var startApp = function() {
                     delete layerControl._layers[k];
                 }
             }
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            map.removeLayer(AppPT.utfGridMap);
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            map.removeLayer(AppVars.utfGridMap);
 
         } catch (e) {
             // continue
@@ -520,7 +526,7 @@ var startApp = function() {
 
         var scope = angular.element($("#curve-list")).scope();
         var option = scope.selected_curve.name;
-        var investType = checkCurveType(AppPT.curvesByInvestMixed, AppPT.CurvesByInvestSingle, option);
+        var investType = checkCurveType(AppVars.curvesByInvestMixed, AppVars.CurvesByInvestSingle, option);
         var curvesListCap = [];
         var curveType = 'hc';
 
@@ -528,7 +534,7 @@ var startApp = function() {
             // Use investType to find the key in curvesByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available curves in curvesAvailable
-            var curvesList = AppPT.curvesAvailable[layerKey].split(' ');
+            var curvesList = AppVars.curvesAvailable[layerKey].split(' ');
 
             // Remove items that are not curves
             var index = curvesList.indexOf('iml');
@@ -584,20 +590,20 @@ var startApp = function() {
     }); //end add tile curve
 
     $('#addTileInput').click(function() {
-        // try to remove any existing AppPT.utfGrids
+        // try to remove any existing AppVars.utfGrids
         try {
             // check if the layer is not a hazard map, and if so remove from controller
-            for (var k in AppPT.layerControl._layers) {
-                var nameTemp = AppPT.layerControl._layers[k].name;
+            for (var k in AppVars.layerControl._layers) {
+                var nameTemp = AppVars.layerControl._layers[k].name;
                 var nameTest = nameTemp.indexOf("map") > -1;
 
                 if (nameTest === false) {
-                    delete AppPT.layerControl._layers[k];
+                    delete AppVars.layerControl._layers[k];
                 }
             }
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            map.removeLayer(AppPT.utfGridMap);
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            map.removeLayer(AppVars.utfGridMap);
         } catch (e) {
             // continue
         }
@@ -615,17 +621,17 @@ var startApp = function() {
         // try to remove any existing UtfGrids
         try {
             // check if the layer is not a hazard map, and if so remove from controller
-            for (var k in AppPT.layerControl._layers) {
-                var nameTemp = AppPT.layerControl._layers[k].name;
+            for (var k in AppVars.layerControl._layers) {
+                var nameTemp = AppVars.layerControl._layers[k].name;
                 var nameTest = nameTemp.indexOf("map") > -1;
 
                 if (nameTest === false) {
-                    delete AppPT.layerControl._layers[k];
+                    delete AppVars.layerControl._layers[k];
                 }
             }
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            map.removeLayer(AppPT.utfGridMap);
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            map.removeLayer(AppVars.utfGridMap);
         } catch (e) {
             // continue
         }
@@ -637,14 +643,14 @@ var startApp = function() {
         var scope = angular.element($("#uhs-list")).scope();
         var option = scope.selected_map.name;
 
-        var investType = checkUhsType(AppPT.uhsByInvestMixed, AppPT.uhsByInvestSingle, option);
+        var investType = checkUhsType(AppVars.uhsByInvestMixed, AppVars.uhsByInvestSingle, option);
         var curveType = 'uhs';
 
         if (investType.indexOf('mixed') == 1 ) {
             // Use investType to find the key in uhsByInvestMixed
             var layerKey = investType.shift();
             // Use that key to look up available uhs in uhsAvailable
-            var uhsList = AppPT.uhsAvailable[layerKey].split(' ');
+            var uhsList = AppVars.uhsAvailable[layerKey].split(' ');
             var uhsListCap = [];
 
             // Remove items that are not curves
@@ -690,17 +696,17 @@ var startApp = function() {
         // try to remove any existing UtfGrids
         try {
             // check if the layer is not a hazard map, and if so remove from controller
-            for (var k in AppPT.layerControl._layers) {
-                var nameTemp = AppPT.layerControl._layers[k].name;
+            for (var k in AppVars.layerControl._layers) {
+                var nameTemp = AppVars.layerControl._layers[k].name;
                 var nameTest = nameTemp.indexOf("map") > -1;
 
                 if (nameTest === false) {
-                    delete AppPT.layerControl._layers[k];
+                    delete AppVars.layerControl._layers[k];
                 }
             }
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            map.removeLayer(AppPT.utfGridMap);
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            map.removeLayer(AppVars.utfGridMap);
         } catch (e) {
             // continue
         }
@@ -714,18 +720,18 @@ var startApp = function() {
 
     // Check to see if the curve has an investigation time 'mixed'
     function checkCurveType(curvesByInvestMixed, CurvesByInvestSingle, option) {
-        for (var key in AppPT.curvesByInvestMixed) {
-            if (!AppPT.curvesByInvestMixed.hasOwnProperty(key))
+        for (var key in AppVars.curvesByInvestMixed) {
+            if (!AppVars.curvesByInvestMixed.hasOwnProperty(key))
                 continue;
-            if (AppPT.curvesByInvestMixed[key] == option) {
+            if (AppVars.curvesByInvestMixed[key] == option) {
                 var mixed = 'mixed';
                 return [key, mixed];
             }
         }
-        for (key in AppPT.CurvesByInvestSingle) {
-            if (!AppPT.CurvesByInvestSingle.hasOwnProperty(key))
+        for (key in AppVars.CurvesByInvestSingle) {
+            if (!AppVars.CurvesByInvestSingle.hasOwnProperty(key))
                 continue;
-            if (AppPT.CurvesByInvestSingle[key] == option) {
+            if (AppVars.CurvesByInvestSingle[key] == option) {
                 var single = 'single';
                 return [single];
             }
@@ -734,18 +740,18 @@ var startApp = function() {
 
     // Check to see if the uhs has an investigation time 'mixed'
     function checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option) {
-        for (var key in AppPT.uhsByInvestMixed) {
-            if (!AppPT.uhsByInvestMixed.hasOwnProperty(key))
+        for (var key in AppVars.uhsByInvestMixed) {
+            if (!AppVars.uhsByInvestMixed.hasOwnProperty(key))
                 continue;
-            if (AppPT.uhsByInvestMixed[key] == option) {
+            if (AppVars.uhsByInvestMixed[key] == option) {
                 var mixed = 'mixed';
                 return [key, mixed];
             }
         }
-        for (key in AppPT.uhsByInvestSingle) {
-            if (!AppPT.uhsByInvestSingle.hasOwnProperty(key))
+        for (key in AppVars.uhsByInvestSingle) {
+            if (!AppVars.uhsByInvestSingle.hasOwnProperty(key))
                 continue;
-            if (AppPT.uhsByInvestSingle[key] == option) {
+            if (AppVars.uhsByInvestSingle[key] == option) {
                 var single = 'single';
                 return [single];
             }
@@ -761,7 +767,7 @@ var startApp = function() {
         // Create dynamic categorized map layer dialog //
         /////////////////////////////////////////////////
         var mapScope = angular.element($("#layer-list")).scope();
-        var mapLayersArray = AppPT.mapLayersByCat[strUser];
+        var mapLayersArray = AppVars.mapLayersByCat[strUser];
 
         if (mapLayersArray instanceof Array) {
             $('#mapOptionLabel').prepend('Choose a Map');
@@ -796,7 +802,7 @@ var startApp = function() {
         // Create dynamic categorized input model dialog //
         ///////////////////////////////////////////////////
 
-        var inputLayersArray = AppPT.inputLayersByCat[strUser];
+        var inputLayersArray = AppVars.inputLayersByCat[strUser];
 
         if (inputLayersArray instanceof Array) {
             var inputLayerList = [];
@@ -823,7 +829,7 @@ var startApp = function() {
         // Create dynamic categorized hazard curve layer dialog //
         //////////////////////////////////////////////////////////
 
-        var hazardCurveLayersArray = AppPT.curveLayersByCat[strUser];
+        var hazardCurveLayersArray = AppVars.curveLayersByCat[strUser];
 
         if (hazardCurveLayersArray instanceof Array) {
             var hazardCurveLayerList = [];
@@ -851,7 +857,7 @@ var startApp = function() {
         // Create dynamic categorized uhs curve layer dialog //
         ///////////////////////////////////////////////////////
 
-        var uhsLayersArray = AppPT.uhsLayersByCat[strUser];
+        var uhsLayersArray = AppVars.uhsLayersByCat[strUser];
 
         if (uhsLayersArray instanceof Array) {
             var uhsLayerList = [];
@@ -886,7 +892,7 @@ var startApp = function() {
         // Create dynamic categorized loss curve layer dialog //
         ////////////////////////////////////////////////////////
 
-        var lossLayersArray = AppPT.lossLayersByCat[strUser];
+        var lossLayersArray = AppVars.lossLayersByCat[strUser];
         if (lossLayersArray instanceof Array) {
 
             var lossLayerList = [];
@@ -920,33 +926,33 @@ var startApp = function() {
             mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var selectedLayer = AppPT.mapLayerNames[mapLayerId];
+            var selectedLayer = AppVars.mapLayerNames[mapLayerId];
             selectedLayer = selectedLayer.toString();
-            var hasGrid = $.inArray(selectedLayer, AppPT.mapLayerGrids) > -1;
+            var hasGrid = $.inArray(selectedLayer, AppVars.mapLayerGrids) > -1;
 
-            AppPT.utfGridMap = {};
+            AppVars.utfGridMap = {};
             tileLayerMap = L.tileLayer(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
                 selectedLayer +
                 '.json'});
-            AppPT.layerControl.addOverlay(tileLayerMap, selectedLayer);
+            AppVars.layerControl.addOverlay(tileLayerMap, selectedLayer);
             map.addLayer(tileLayerMap);
             var val = $('#transparency-slider').slider("option", "value");
             tileLayerMap.setOpacity(val);
             // Keep track of layers that have been added
-            AppPT.layernames[selectedLayer] = tileLayerMap;
+            AppVars.layernames[selectedLayer] = tileLayerMap;
             if (hasGrid == true) {
-                AppPT.gridList = 1;
-                AppPT.utfGridMap = new L.UtfGrid(TILESTREAM_URL +
+                AppVars.gridList = 1;
+                AppVars.utfGridMap = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-                map.addLayer(AppPT.utfGridMap);
-                hazardCurveUtfGridClickEvent(AppPT.utfGridMap);
+                map.addLayer(AppVars.utfGridMap);
+                hazardCurveUtfGridClickEvent(AppVars.utfGridMap);
                 $("#chartDialog ").dialog({width: 200,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
                 $('#chartDialog').dialog('open');
-                AppPT.utfGridMap.on('mouseover', function (e) {
+                AppVars.utfGridMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
                     $('#chartDialog').append(e.data.VAL);
                 });
@@ -971,7 +977,7 @@ var startApp = function() {
         $('#transparency-slider').slider({
             change: function( event, ui) {
                 var val = $('#transparency-slider').slider("option", "value");
-                AppPT.tileLayer.setOpacity(val);
+                AppVars.tileLayer.setOpacity(val);
             }
         });
     }
@@ -979,7 +985,7 @@ var startApp = function() {
     // Add single curve layers form tilestream list
     function singleCurve(curveType) {
         if (curveType == 'hc') {
-            AppPT.utfGrid = {};
+            AppVars.utfGrid = {};
             var scope = angular.element($("#curve-list")).scope();
             var curveLayerId = scope.selected_curve.name;
 
@@ -987,15 +993,15 @@ var startApp = function() {
             console.log(curveLayerId);
     
             // Look up the layer id using the layer name
-            var curveLayerIdArray = AppPT.curveLayerNames[curveLayerId];
+            var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
             var selectedLayer = curveLayerIdArray.toString();
     
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppPT.mappedValue = json.mapped_value;
-                AppPT.layerInvestigationTime = json.investigationTime;
-                AppPT.layerIml = json.iml;
-                AppPT.layerImt = json.imt;
+                AppVars.mappedValue = json.mapped_value;
+                AppVars.layerInvestigationTime = json.investigationTime;
+                AppVars.layerIml = json.iml;
+                AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
 
@@ -1005,14 +1011,14 @@ var startApp = function() {
             uhsLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var uhsLayerIdArray = AppPT.uhsLayerNames[uhsLayerId];
+            var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppPT.uhsLayerGrids) > -1;
+            var hasGrid = $.inArray(selectedLayer, AppVars.uhsLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppPT.layerInvestigationTime = json.investigationTime;
-                AppPT.layerIml = json.periods;
-                AppPT.layerPoe = json.poe;
+                AppVars.layerInvestigationTime = json.investigationTime;
+                AppVars.layerIml = json.periods;
+                AppVars.layerPoe = json.poe;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1021,9 +1027,9 @@ var startApp = function() {
             var inputLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var inputLayerIdArray = AppPT.inputLayerNames[inputLayerId];
+            var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
             var selectedLayer = inputLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppPT.inputLayerGrids) > -1;
+            var hasGrid = $.inArray(selectedLayer, AppVars.inputLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 //layerInvestigationTime = json.investigationTime;
@@ -1034,24 +1040,24 @@ var startApp = function() {
             });
         }
 
-        var hasGrid = $.inArray(selectedLayer, AppPT.curveLayerGrids) > -1;
+        var hasGrid = $.inArray(selectedLayer, AppVars.curveLayerGrids) > -1;
 
-        AppPT.tileLayer = L.tileLayer(TILESTREAM_URL +
+        AppVars.tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppPT.layerControl.addOverlay(AppPT.tileLayer, selectedLayer);
-        map.addLayer(AppPT.tileLayer);
+        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        map.addLayer(AppVars.tileLayer);
         // Keep track of layers that have been added
-        AppPT.layernames[selectedLayer] = AppPT.tileLayer;
+        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
         if (hasGrid == true) {
-            AppPT.gridList = 1;
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+            AppVars.gridList = 1;
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            hazardCurveUtfGridClickEvent(AppPT.utfGrid, curveType);
+            map.addLayer(AppVars.utfGrid);
+            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
         }
     }
 
@@ -1061,12 +1067,12 @@ var startApp = function() {
         var inputLayerId = scope.selected_input.name;
 
         // Look up the layer id using the layer name
-        var inputLayerIdArray = AppPT.inputLayerNames[inputLayerId];
+        var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
         var selectedLayer = inputLayerIdArray.toString();
-        var hasGrid = $.inArray(selectedLayer, AppPT.inputLayerGrids) > -1;
+        var hasGrid = $.inArray(selectedLayer, AppVars.inputLayerGrids) > -1;
         // get more information about the selected layer for use in chart
         $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-            AppPT.mappedValue = json.category +' '+ json.mapped_value;
+            AppVars.mappedValue = json.category +' '+ json.mapped_value;
             var bounds = json.bounds;
             var htmlLegend = json.html_legend;
             $('#legendDialog').empty();
@@ -1076,25 +1082,25 @@ var startApp = function() {
             map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
-        var hasGrid = $.inArray(selectedLayer, AppPT.curveLayerGrids) > -1;
+        var hasGrid = $.inArray(selectedLayer, AppVars.curveLayerGrids) > -1;
 
-        AppPT.tileLayer = L.tileLayer(TILESTREAM_URL +
+        AppVars.tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppPT.layerControl.addOverlay(AppPT.tileLayer, selectedLayer);
-        map.addLayer(AppPT.tileLayer);
+        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        map.addLayer(AppVars.tileLayer);
         // Keep track of layers that have been added
-        AppPT.layernames[selectedLayer] = AppPT.tileLayer;
+        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
         if (hasGrid == true) {
-            AppPT.gridList = 1;
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+            AppVars.gridList = 1;
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
+            map.addLayer(AppVars.utfGrid);
             //hazardCurveUtfGridClickEvent(utfGrid, curveType);
-            AppPT.utfGrid.on('click', function (e) {
+            AppVars.utfGrid.on('click', function (e) {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
                 //{{{mfds}}} {{{bin_width}}} {{{min_mag}}} {{{occur_rate}}}
@@ -1136,40 +1142,40 @@ var startApp = function() {
 
     // Add loss curve layers form tilestream list
     function lossCurve() {
-        AppPT.utfGrid = {};
+        AppVars.utfGrid = {};
         var scope = angular.element($("#loss-list")).scope();
         var lossLayerId = scope.selected_loss.name;
         // Look up the layer id using the layer name
-        var lossLayerIdArray = AppPT.lossLayerNames[lossLayerId];
+        var lossLayerIdArray = AppVars.lossLayerNames[lossLayerId];
         var selectedLayer = lossLayerIdArray.toString();
 
         // get more information about the selected layer for use in chart
         $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-            AppPT.layerInvestigationTime = json.investigationTime;
-            AppPT.layerIml = json.iml;
-            AppPT.layerImt = json.imt;
+            AppVars.layerInvestigationTime = json.investigationTime;
+            AppVars.layerIml = json.iml;
+            AppVars.layerImt = json.imt;
             var bounds = json.bounds;
             map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
-        var hasGrid = $.inArray(selectedLayer, AppPT.lossLayerGrids) > -1;
+        var hasGrid = $.inArray(selectedLayer, AppVars.lossLayerGrids) > -1;
 
-        AppPT.tileLayer = L.tileLayer(TILESTREAM_URL +
+        AppVars.tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppPT.layerControl.addOverlay(AppPT.tileLayer, selectedLayer);
-        map.addLayer(AppPT.tileLayer);
+        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        map.addLayer(AppVars.tileLayer);
         // Keep track of layers that have been added
-        AppPT.layernames[selectedLayer] = AppPT.tileLayer;
+        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
         if (hasGrid == true) {
-            AppPT.gridList = 1;
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+            AppVars.gridList = 1;
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            lossCurveUtfGridClickEvent(AppPT.utfGrid);
+            map.addLayer(AppVars.utfGrid);
+            lossCurveUtfGridClickEvent(AppVars.utfGrid);
         }
     }
 
@@ -1185,17 +1191,17 @@ var startApp = function() {
 
             //TODO make sure that the curveLayerNames[curveLayerId] are in all lowwer case and are seperated by _
             // Look up the layer id using the layer name
-            var curveLayerIdArray = AppPT.curveLayerNames[curveLayerId];
+            var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
 
             selectedLayer = curveLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppPT.curveLayerGrids) > -1;
+            var hasGrid = $.inArray(selectedLayer, AppVars.curveLayerGrids) > -1;
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppPT.mappedValue = json.mapped_value;
-                AppPT.layerInvestigationTime = json.investigationTime;
-                AppPT.layerIml = json.iml;
-                AppPT.layerImt = json.imt;
+                AppVars.mappedValue = json.mapped_value;
+                AppVars.layerInvestigationTime = json.investigationTime;
+                AppVars.layerIml = json.iml;
+                AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1206,62 +1212,62 @@ var startApp = function() {
             uhsLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var uhsLayerIdArray = AppPT.uhsLayerNames[uhsLayerId];
+            var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppPT.uhsLayerGrids) > -1;
+            var hasGrid = $.inArray(selectedLayer, AppVars.uhsLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppPT.mappedValue = json.mapped_value;
-                AppPT.layerInvestigationTime = json.investigationTime;
-                AppPT.layerIml = json.periods;
-                AppPT.layerPoe = json.poe;
+                AppVars.mappedValue = json.mapped_value;
+                AppVars.layerInvestigationTime = json.investigationTime;
+                AppVars.layerIml = json.periods;
+                AppVars.layerPoe = json.poe;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
         }
 
-        AppPT.utfGrid = {};
-        AppPT.tileLayer = L.tileLayer(TILESTREAM_URL +
+        AppVars.utfGrid = {};
+        AppVars.tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppPT.layerControl.addOverlay(AppPT.tileLayer, selectedLayer);
-        map.addLayer(AppPT.tileLayer);
+        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        map.addLayer(AppVars.tileLayer);
         // Keep track of layers that have been added
-        AppPT.layernames[selectedLayer] = AppPT.tileLayer;
+        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
         if (hasGrid == true) {
-            AppPT.gridList = 1;
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+            AppVars.gridList = 1;
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            hazardCurveUtfGridClickEventMixed(AppPT.utfGrid, curveType);
+            map.addLayer(AppVars.utfGrid);
+            hazardCurveUtfGridClickEventMixed(AppVars.utfGrid, curveType);
         }
     }
 
     // Remove map layers from tilestream
     $(document).ready(function() {
         $('#removeTileLayer').click(function() {
-            AppPT.gridList = 0;
-            map.removeLayer(AppPT.utfGridMap);
+            AppVars.gridList = 0;
+            map.removeLayer(AppVars.utfGridMap);
             map.removeLayer(tileLayerMap);
-            AppPT.utfGrid = {};
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            hazardCurveUtfGridClickEvent(AppPT.utfGrid, curveType);
+            AppVars.utfGrid = {};
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(AppVars.utfGrid);
+            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#layer-list")).scope();
             var mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var mapLayerIdArray = AppPT.mapLayerNames[mapLayerId];
+            var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
 
             // Check in the layer is in the map port
-            if (selectedLayer in AppPT.layernames) {
-                AppPT.layerControl.removeLayer(AppPT.layernames[selectedLayer]);
-                map.removeLayer(AppPT.layernames[selectedLayer]);
-                delete AppPT.layernames[selectedLayer];
+            if (selectedLayer in AppVars.layernames) {
+                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
+                map.removeLayer(AppVars.layernames[selectedLayer]);
+                delete AppVars.layernames[selectedLayer];
             }
             else {
                 showRemoveMsg();
@@ -1277,23 +1283,23 @@ var startApp = function() {
             $('#addTileLoss').attr('disabled', false);
             $('#removeTileLoss').attr('disabled', false);
             $('#curve-check-box').remove();
-            AppPT.gridList = 0;
+            AppVars.gridList = 0;
             map.removeLayer(utfGrid);
-            map.removeLayer(AppPT.tileLayer);
+            map.removeLayer(AppVars.tileLayer);
             utfGrid = {};
-            utfGrid = new L.AppPT.utfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            utfGrid = new L.AppVars.utfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
-            hazardCurveUtfGridClickEvent(AppPT.utfGrid, curveType);
+            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#curve-list")).scope();
             var mapLayerId = scope.selected_map.name;
             // Look up the layer id using the layer name
-            var mapLayerIdArray = AppPT.curveLayerNames[mapLayerId];
+            var mapLayerIdArray = AppVars.curveLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
             // Check in the layer is in the map port
-            if (selectedLayer in AppPT.layernames) {
-                AppPT.layerControl.removeLayer(AppPT.layernames[selectedLayer]);
-                map.removeLayer(AppPT.layernames[selectedLayer]);
-                delete AppPT.layernames[selectedLayer];
+            if (selectedLayer in AppVars.layernames) {
+                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
+                map.removeLayer(AppVars.layernames[selectedLayer]);
+                delete AppVars.layernames[selectedLayer];
             }
             else {
                 showRemoveMsg();
@@ -1310,26 +1316,26 @@ var startApp = function() {
             $('#removeTileLoss').attr('disabled', false);
 
             $('#curve-check-box').remove();
-            AppPT.gridList = 0;
+            AppVars.gridList = 0;
 
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            AppPT.utfGrid = {};
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            hazardCurveUtfGridClickEvent(AppPT.utfGrid, curveType);
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            AppVars.utfGrid = {};
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(AppVars.utfGrid);
+            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#input-list")).scope();
             var mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var mapLayerIdArray = AppPT.uhsLayerNames[mapLayerId];
+            var mapLayerIdArray = AppVars.uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
 
             // Check in the layer is in the map port
-            if (selectedLayer in AppPT.layernames) {
-                AppPT.layerControl.removeLayer(AppPT.layernames[selectedLayer]);
-                map.removeLayer(AppPT.layernames[selectedLayer]);
-                delete AppPT.layernames[selectedLayer];
+            if (selectedLayer in AppVars.layernames) {
+                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
+                map.removeLayer(AppVars.layernames[selectedLayer]);
+                delete AppVars.layernames[selectedLayer];
             }
             else {
                 showRemoveMsg();
@@ -1346,26 +1352,26 @@ var startApp = function() {
             $('#removeTileLoss').attr('disabled', false);
 
             $('#curve-check-box').remove();
-            AppPT.gridList = 0;
+            AppVars.gridList = 0;
 
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            AppPT.utfGrid = {};
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            hazardCurveUtfGridClickEvent(AppPT.utfGrid, curveType);
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            AppVars.utfGrid = {};
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(AppVars.utfGrid);
+            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#uhs-list")).scope();
             mapLayerId = scope.selected_map.name;
 
             // Look up the layer id using the layer name
-            var mapLayerIdArray = AppPT.uhsLayerNames[mapLayerId];
+            var mapLayerIdArray = AppVars.uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
 
             // Check in the layer is in the map port
-            if (selectedLayer in AppPT.layernames) {
-                AppPT.layerControl.removeLayer(AppPT.layernames[selectedLayer]);
-                map.removeLayer(AppPT.layernames[selectedLayer]);
-                delete AppPT.layernames[selectedLayer];
+            if (selectedLayer in AppVars.layernames) {
+                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
+                map.removeLayer(AppVars.layernames[selectedLayer]);
+                delete AppVars.layernames[selectedLayer];
             }
             else {
                 showRemoveMsg();
@@ -1381,26 +1387,26 @@ var startApp = function() {
             $('#addTileUhs').attr('disabled', false);
             $('#removeTileUhs').attr('disabled', false);
             $('#curve-check-box').remove();
-            AppPT.gridList = 0;
-            map.removeLayer(AppPT.utfGrid);
-            map.removeLayer(AppPT.tileLayer);
-            AppPT.utfGrid = {};
-            AppPT.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppPT.utfGrid);
-            hazardCurveUtfGridClickEvent(AppPT.utfGrid, curveType);
+            AppVars.gridList = 0;
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            AppVars.utfGrid = {};
+            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+            map.addLayer(AppVars.utfGrid);
+            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
 
             var scope = angular.element($("#loss-list")).scope();
             var mapLayerId = scope.selected_loss.name;
 
             // Look up the layer id using the layer name
-            var mapLayerIdArray = AppPT.lossLayerNames[mapLayerId];
+            var mapLayerIdArray = AppVars.lossLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
 
             // Check in the layer is in the map port
-            if (selectedLayer in AppPT.layernames) {
-                AppPT.layerControl.removeLayer(AppPT.layernames[selectedLayer]);
-                map.removeLayer(AppPT.layernames[selectedLayer]);
-                delete AppPT.layernames[selectedLayer];
+            if (selectedLayer in AppVars.layernames) {
+                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
+                map.removeLayer(AppVars.layernames[selectedLayer]);
+                delete AppVars.layernames[selectedLayer];
             }
             else {
                 showRemoveMsg();
@@ -1417,7 +1423,7 @@ var startApp = function() {
     });
 
     var hazardCurveUtfGridClickEvent = function(utfGrid, curveType) {
-        AppPT.utfGrid.on('click', function (e) {
+        AppVars.utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
             if ($("#chartDialog").dialog( "isOpen" ) == false) {
                 $('#chartDialog').dialog('open');
@@ -1443,7 +1449,7 @@ var startApp = function() {
                 iml = e.data.iml;
 
                 if (iml == undefined) {
-                    iml = AppPT.layerIml;
+                    iml = AppVars.layerIml;
                 } else {
                     imlArray = iml.split(',');
                 }
@@ -1478,7 +1484,7 @@ var startApp = function() {
     }; // End hazardCurveUtfGridClickEvent
 
     function hazardCurveUtfGridClickEventMixed(utfGrid, curveType) {
-        AppPT.utfGrid.on('click', function (e) {
+        AppVars.utfGrid.on('click', function (e) {
             // Get the selected curves
             var selectedCurves = [];
             var sc;
@@ -1510,7 +1516,7 @@ var startApp = function() {
     }; // End hazardCurveUtfGridClickEventMixed
 
     var lossCurveUtfGridClickEvent = function(utfGrid) {
-        AppPT.utfGrid.on('click', function (e) {
+        AppVars.utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
             $('#chartDialog').dialog('open');
             var asset;
@@ -1636,19 +1642,19 @@ var startApp = function() {
                 .ticks(5);
         }
 
-        console.log(AppPT.layerIml);
+        console.log(AppVars.layerIml);
 
-        if (AppPT.layerIml instanceof Array) {
+        if (AppVars.layerIml instanceof Array) {
             //continue
         } else {
-            AppPT.layerIml = AppPT.layerIml.split(',');
+            AppVars.layerIml = AppVars.layerIml.split(',');
         }
 
         var data = [];
         for(i=0; i<probArray.length; i++) {
             // Only push into data if the values are greater then 0
-            if (parseFloat(AppPT.layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
-                data.push([parseFloat(AppPT.layerIml[i]), parseFloat(probArray[i])]);
+            if (parseFloat(AppVars.layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
+                data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
             }
         }
 
@@ -1703,7 +1709,7 @@ var startApp = function() {
             d.y = +d[1];
         };
         console.log("layerImt");
-        console.log(AppPT.layerImt);
+        console.log(AppVars.layerImt);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -1732,7 +1738,7 @@ var startApp = function() {
             .attr('dy', '.71em')
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
-            .text(AppPT.layerImt);
+            .text(AppVars.layerImt);
 
         svg.append('g')
             .attr('class', 'x axis')
@@ -1742,7 +1748,7 @@ var startApp = function() {
             //.attr('dy', '.71em')
             .attr('text-anchor', 'middle')
             .style('font-size','12px')
-            .text(AppPT.layerImt);
+            .text(AppVars.layerImt);
 
         svg.append('g')
             .attr('class', 'y axis')
@@ -1754,7 +1760,7 @@ var startApp = function() {
             .attr('dy', '.71em')
             .style('font-size','12px')
             .style('text-anchor', 'end')
-            .text('Probability of exceedance in '+AppPT.layerInvestigationTime+' years');
+            .text('Probability of exceedance in '+AppVars.layerInvestigationTime+' years');
 
         var legend = d3.select('#chartDialog').append('svg')
             .attr('height', 25);
@@ -1789,7 +1795,7 @@ var startApp = function() {
                     .style('fill', 'gray');
             });
 
-        var chartHeaderTest = 'Investigation Time: '+AppPT.layerInvestigationTime;
+        var chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime;
         
         textTopTitle = svg.append("text")
             .attr("x", 0)
@@ -1797,7 +1803,7 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(AppPT.mappedValue);
+            .text(AppVars.mappedValue);
 
         textTopLable = svg.append("text")
             .attr("x", 0)
@@ -1837,9 +1843,9 @@ var startApp = function() {
             csvData = csvData.concat('"');
             csvData = csvData.concat(probArray);
             csvData = csvData.concat('","');
-            csvData = csvData.concat(AppPT.layerIml);
+            csvData = csvData.concat(AppVars.layerIml);
             csvData = csvData.concat('",');
-            csvData = csvData.concat(AppPT.layerInvestigationTime);
+            csvData = csvData.concat(AppVars.layerInvestigationTime);
             csvData = csvData.concat(',');
             csvData = csvData.concat(lon);
             csvData = csvData.concat(',');
@@ -2114,7 +2120,7 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(AppPT.mappedValue);
+            .text(AppVars.mappedValue);
 
         textTop = svg.append("text")
             .attr("x", 0)
@@ -2196,12 +2202,12 @@ var startApp = function() {
         var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
-        if (AppPT.layerIml instanceof Array) {
+        if (AppVars.layerIml instanceof Array) {
             //continue
         } else {
-            AppPT.layerIml = AppPT.layerIml.split(',');
-            for (var i = 0; i < AppPT.layerIml.length; i++) {
-                AppPT.layerIml[i] = parseFloat(AppPT.layerIml[i]);
+            AppVars.layerIml = AppVars.layerIml.split(',');
+            for (var i = 0; i < AppVars.layerIml.length; i++) {
+                AppVars.layerIml[i] = parseFloat(AppVars.layerIml[i]);
             }
         }
 
@@ -2214,15 +2220,15 @@ var startApp = function() {
         lat = chartData.lat;
         lon = chartData.lon;
         if (curveType == 'uhs') {
-            poe = AppPT.layerPoe;
-            chartHeaderTest = 'Investigation Time: '+AppPT.layerInvestigationTime+', Probability of exceedance: '+poe;
+            poe = AppVars.layerPoe;
+            chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime+', Probability of exceedance: '+poe;
         } else {
-            chartHeaderTest = 'Investigation Time: '+AppPT.layerInvestigationTime;
+            chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime;
         }
 
-        invest_time = AppPT.layerInvestigationTime;
+        invest_time = AppVars.layerInvestigationTime;
         if (curveType == 'hc') {
-            yAxisLable =  'Probability of exceedance in '+AppPT.layerInvestigationTime+' years';
+            yAxisLable =  'Probability of exceedance in '+AppVars.layerInvestigationTime+' years';
         } else if (curveType == 'uhs') {
             yAxisLable = 'Spectral acceleration (g)';
         }
@@ -2231,7 +2237,7 @@ var startApp = function() {
             // The imt variable needs to be formated i.e. SA = Spectral Acceleration (g)
             // SA-0.1 = Spectral Acceleration (0.1 s)
 
-            xAxisLable = AppPT.layerImt;
+            xAxisLable = AppVars.layerImt;
             var xAxisLableValue;
             if (xAxisLable.indexOf('SA-') == 0 ) {
                 xAxisLableValue = xAxisLable.substring(xAxisLable.indexOf('-') + 1);
@@ -2265,7 +2271,7 @@ var startApp = function() {
 
         // Set the y axis variable depending on the type of curve
         if (curveType == 'hc') {
-            yAxisVariable = AppPT.layerIml;
+            yAxisVariable = AppVars.layerIml;
         } else if (curveType == 'uhs') {
             yAxisVariable = curve_vals.periods;
         }
@@ -2549,7 +2555,7 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(AppPT.mappedValue);
+            .text(AppVars.mappedValue);
 
         textTopSubTitle = svg.append("text")
             .attr("x", 0)
