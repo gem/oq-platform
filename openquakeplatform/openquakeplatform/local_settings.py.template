@@ -4,7 +4,7 @@ import openquakeplatform
 
 from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
 
-SITENAME = 'Openquake Platform'
+SITENAME = 'OpenQuake Platform'
 SITEURL = 'http://%(host)s/'
 
 OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
