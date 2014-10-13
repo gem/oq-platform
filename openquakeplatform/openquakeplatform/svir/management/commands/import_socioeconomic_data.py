@@ -56,12 +56,23 @@ class Command(BaseCommand):
 
             sys.stdout.write(
                 'Importing custom regions and assigining countries...\n')
+
+            # Also create a custom region containing all the countries for
+            # which socioeconomic data are available (those with a population
+            # above 200000 individuals)
+            # It will be used to quantify general data completeness, which
+            # would be meaningless if we calculate it with respect of the whole
+            # set of countries in GADM
+            countries_with_socioeconomic_data, _ = CustomRegion.objects.get_or_create(
+                name='Countries with socioeconomic data')
+
             iso_reg_dict = dict(zip(isos, assoc_regions))
             for iso in iso_reg_dict:
                 country = Country.objects.get(iso3=iso)
                 region, _ = CustomRegion.objects.get_or_create(
                     name=iso_reg_dict[iso])
                 region.countries.add(country)
+                countries_with_socioeconomic_data.countries.add(country)
 
             for row in reader:
                 code = row[0]
@@ -97,7 +108,7 @@ class Command(BaseCommand):
                 year_min = row[8]
                 year_max = row[9]
                 ind.source, _ = Source.objects.get_or_create(
-                    name=source,
+                    description=source,
                     defaults={'year_min': year_min,
                               'year_max': year_max,
                               'update_periodicity': period})
@@ -112,7 +123,8 @@ class Command(BaseCommand):
                 ind.internal_consistency_metric, _ = InternalConsistencyMetric.objects.get_or_create(
                     name=internal_consistency_metric)
 
-                ind.notes = row[-1]
+                notes = row[-1] if row[-1] != "None" else None
+                ind.notes = notes
 
                 ind.save()
 
