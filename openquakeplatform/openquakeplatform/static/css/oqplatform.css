@@ -104,6 +104,7 @@ nav.main-nav ul li {
     width: 80px;
     margin-left: 20px;
     margin-right: 20px;
+    padding: 0;
 }
 nav.main-nav ul li a {
     color: #fff;
