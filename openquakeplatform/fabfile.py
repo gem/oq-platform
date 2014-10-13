@@ -343,5 +343,5 @@ def _set_sites(host):
     from django.contrib.sites.models import Site
     mysite = Site.objects.all()[0]
     mysite.domain = host
-    mysite.name = host
+    mysite.name = "OpenQuake Platform"
     mysite.save()
