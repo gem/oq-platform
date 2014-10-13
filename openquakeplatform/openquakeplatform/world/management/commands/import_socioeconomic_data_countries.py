@@ -30,7 +30,7 @@ class Command(BaseCommand):
     def handle(self, filename, *args, **options):
 
         with open(filename, 'rb') as f:
-            sys.stdout.write('Loading socioeconomic data...\n')
+            sys.stdout.write('Loading countries from the csv containing socioeconomic data...\n')
 
             reader = csv.reader(f)
             # read row containing field names, country names and region names
