@@ -104,7 +104,7 @@ class Project(UserData):
 
 
 class Indicator(models.Model):
-    code = models.CharField(max_length=CHMAX)
+    code = models.CharField(max_length=CHMAX, unique=True)
     theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
     # ~"Variable Name"
@@ -130,18 +130,26 @@ class Indicator(models.Model):
     def data_completeness(self):
         # count how many countries have a value for this indicator
         # and divide by the number of countries
+        # FIXME: wrong count
         tot_countries_with_indicator_data = len(self.countries)
-        tot_countries = Country.objects.all().count()
-        return tot_countries_with_indicator_data / tot_countries
+        # use the custom region containing countries which population is over
+        # 200000 individuals, for which socioeconomic data have been collected
+        countries_with_socioeconomic_data = CustomRegion.objects.get(
+            name='Countries with socioeconomic data') 
+        tot_countries = countries_with_socioeconomic_data.countries.count()
+        return 1.0 * tot_countries_with_indicator_data / tot_countries
 
     @property
     def data_completeness_for_region(self, region):
         # count how many countries are in the specified custom region
+        num_countries_in_region = region.countries.count()
         # count how many of these countries have a value for the indicator
+        num_countries_in_region_with_value = 0
+        for country in region.countries:
+            if CountryIndicator.objects.filter(country=country, indicator=self):
+                num_countries_in_region_with_value += 1
         # divide the latter by the former
-        # countries_in_region = Country.objects.filter(FIXME).count()
-        # countries_in_region_with_indicator_data
-        pass
+        return 1.0 * num_countries_in_region_with_value / num_countries_in_region
 
 
 # For the svir application, we want to provide the possibility to have
@@ -150,7 +158,7 @@ class Indicator(models.Model):
 # countries that share the same currency, regardless from their geographical
 # location)
 class CustomRegion(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
     countries = models.ManyToManyField('world.Country')
 
     def __unicode__(self):
@@ -158,7 +166,7 @@ class CustomRegion(models.Model):
 
 
 class Theme(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
@@ -177,21 +185,21 @@ class Subtheme(models.Model):
 
 
 class MeasurementType(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
 
 
 class InternalConsistencyMetric(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
 
 
 class Keyword(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
@@ -212,7 +220,7 @@ class Source(models.Model):
 
 
 class UpdatePeriodicity(models.Model):
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
@@ -222,8 +230,7 @@ class UpdatePeriodicity(models.Model):
 
 
 class AggregationMethod(models.Model):
-
-    name = models.CharField(max_length=CHMAX)
+    name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
