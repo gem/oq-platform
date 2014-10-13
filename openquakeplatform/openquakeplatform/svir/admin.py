@@ -25,7 +25,6 @@ from models import (Theme, Subtheme, MeasurementType,
 admin.site.register(AggregationMethod)
 # admin.site.register(Comment)
 admin.site.register(CountryIndicator)
-admin.site.register(Indicator)
 admin.site.register(InternalConsistencyMetric)
 admin.site.register(Keyword)
 admin.site.register(UpdatePeriodicity)
@@ -34,4 +33,15 @@ admin.site.register(Source)
 admin.site.register(MeasurementType)
 admin.site.register(Subtheme)
 admin.site.register(Theme)
-admin.site.register(CustomRegion)
+
+
+class IndicatorAdmin(admin.ModelAdmin):
+    filter_horizontal = ('keywords',)
+
+admin.site.register(Indicator, IndicatorAdmin)
+
+
+class CustomRegionAdmin(admin.ModelAdmin):
+    filter_horizontal = ('countries',)
+
+admin.site.register(CustomRegion, CustomRegionAdmin)
