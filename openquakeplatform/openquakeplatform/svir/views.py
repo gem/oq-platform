@@ -19,13 +19,15 @@
 
 import csv
 import json
-from django.http import HttpResponse
+from django.http import (HttpResponse,
+                         HttpResponseBadRequest,
+                         HttpResponseNotFound,)
 from django.views.decorators.http import condition
 from django.core.exceptions import ValidationError
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
 from openquakeplatform.svir import util
-from openquakeplatform.svir.models import Project
+from openquakeplatform.svir.models import Project, Theme, Subtheme
 
 COPYRIGHT_HEADER = u"""\
  Version 1.0 released on 31.01.2013
@@ -109,9 +111,114 @@ def upload_project_definition(request):
     """
     project_id = request.GET.get('project_id', None)
     project_definition = request.GET.get('project_definition', None)
-    project = Project.objects.get(pk=project_id)
+    try:
+        project = Project.objects.get(pk=project_id)
+    except:
+        return HttpResponseNotFound(
+            'Project with id [%s] not found' % project_id)
     project.metadata = project_definition
     project.save()
+    return HttpResponse('Project definition successfully uploaded')
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def list_themes(request):
+    themes = Theme.objects.all()
+    if not themes:
+        return HttpResponseNotFound('No themes available in the DB')
+    response = HttpResponse()
+    for theme in themes:
+        response.write(theme.name + ',')
+    return HttpResponse(response)
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def list_subthemes_by_theme(request):
+    theme_str = request.GET.get('theme')
+    if not theme_str:
+        return HttpResponseBadRequest(
+            'Please provide a theme to get the corresponding subthemes.')
+    try:
+        theme_obj = Theme.objects.get(name=theme_str)
+    except:
+        return HttpResponseNotFound('Theme not found')
+    subthemes = theme_obj.subtheme_set.all()
+    if not subthemes:
+        return HttpResponseNotFound(
+            'No subtheme corresponds to the given theme')
+    response = HttpResponse()
+    for subtheme in subthemes:
+        response.write(subtheme.name + ',')
+    return HttpResponse(response)
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def export_variables_by_keywords_and_subtheme(request):
+    """
+    Export a csv file containing information about the socioeconomic
+    indicators which have the specified keywords and/or subtheme 
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing at least
+        one of the following parameters:
+            * 'keywords'
+            * 'subtheme'
+        If one or more keywords are provided, the csv will contain the
+        indicators which have all those keywords associated.
+        If the subtheme is provided, the list will be filtered by subtheme.
+
+        If also the tag is provided, the csv file will contain the names of the
+        corresponding social vulnerability variables and their ids
+
+    :return:
+        a csv file in which each line contains the following data: 
+            * indicator.code 
+            * indicator.name
+            * indicator.description
+            * indicator.source (unicode which also displays year_min and year_max)
+            * indicator.aggregation_method
+    """
+    # We don't need 'Tag' anymore, but we need to show other fields
+    # We don't display update_periodicity and internal_consistency_metric
+    response = HttpResponse(content_type='text/csv')
+    content_disp = 'attachment; filename="socioeconomic_indicators_export.csv"'
+    response['Content-Disposition'] = content_disp
+    keywords_str = request.GET.get('keywords')
+    subtheme_str = request.GET.get('subtheme')
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    response.write(copyright + "\n")
+    writer = csv.writer(response)
+
+    keywords = []
+    if keywords_str:
+        keywords_str_list = keywords_str.split(',')
+        for keyword_str in keywords_str_list:
+            try:
+                keyword_obj = Keyword.objects.get(name=keyword_str)
+                keywords.add(keyword_obj)
+            except:
+                return HttpResponseNotFound('Keyword [%s] not found' % keyword_str)
+    subtheme_obj = None
+    if subtheme_str:
+        subtheme_obj = Subtheme.objects.filter(name=subtheme_str)
+        if not subtheme_obj:
+            #FIXME Return error
+            pass
+
+    if keywords or subtheme:
+        # sv_items = util._get_sv_ids_and_names(theme, subtheme, tag)
+        # writer.writerow(["ID", "NAME"])
+        pass
+    # for sv_item in sv_items:
+    #     encoded_sv_item = tuple([col.encode('utf-8') for col in sv_item])
+    #     writer.writerow(encoded_sv_item)
+    return response
 
 
 @condition(etag_func=None)
