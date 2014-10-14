@@ -78,6 +78,9 @@ class UserData(models.Model):
 
 
 class Project(UserData):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
     description = models.TextField()
     # FIXME: If we are uploading data through the geonode web interface, we
@@ -158,6 +161,9 @@ class Indicator(models.Model):
 # countries that share the same currency, regardless from their geographical
 # location)
 class CustomRegion(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
     countries = models.ManyToManyField('world.Country')
 
@@ -166,6 +172,9 @@ class CustomRegion(models.Model):
 
 
 class Theme(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
@@ -185,6 +194,9 @@ class Subtheme(models.Model):
 
 
 class MeasurementType(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
@@ -199,6 +211,9 @@ class InternalConsistencyMetric(models.Model):
 
 
 class Keyword(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
@@ -220,6 +235,9 @@ class Source(models.Model):
 
 
 class UpdatePeriodicity(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
@@ -230,6 +248,9 @@ class UpdatePeriodicity(models.Model):
 
 
 class AggregationMethod(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
