@@ -27,7 +27,11 @@ from django.core.exceptions import ValidationError
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
 from openquakeplatform.svir import util
-from openquakeplatform.svir.models import Project, Theme, Subtheme
+from openquakeplatform.svir.models import (Project,
+                                           Theme,
+                                           Subtheme,
+                                           Keyword,
+                                           Indicator)
 
 COPYRIGHT_HEADER = u"""\
  Version 1.0 released on 31.01.2013
@@ -159,7 +163,7 @@ def list_subthemes_by_theme(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def export_variables_by_keywords_and_subtheme(request):
+def export_variables(request):
     """
     Export a csv file containing information about the socioeconomic
     indicators which have the specified keywords and/or subtheme 
@@ -167,14 +171,16 @@ def export_variables_by_keywords_and_subtheme(request):
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing at least
         one of the following parameters:
+            * 'name'
             * 'keywords'
+            * 'theme'
             * 'subtheme'
-        If one or more keywords are provided, the csv will contain the
-        indicators which have all those keywords associated.
-        If the subtheme is provided, the list will be filtered by subtheme.
-
-        If also the tag is provided, the csv file will contain the names of the
-        corresponding social vulnerability variables and their ids
+        If the indicator name (or part of it) is provided, the indicators
+        which name contain the provided string will be included in the csv.
+        If one or more keywords are provided, the csv will list the
+        indicators which keywords contain the user-provided string/s.
+        If the theme is provided, the list will be filtered by theme, unless
+        also the subtheme is provided, then the list will be filtered by subtheme.
 
     :return:
         a csv file in which each line contains the following data: 
@@ -189,7 +195,9 @@ def export_variables_by_keywords_and_subtheme(request):
     response = HttpResponse(content_type='text/csv')
     content_disp = 'attachment; filename="socioeconomic_indicators_export.csv"'
     response['Content-Disposition'] = content_disp
+    name_str = request.GET.get('name')
     keywords_str = request.GET.get('keywords')
+    theme_str = request.GET.get('theme')
     subtheme_str = request.GET.get('subtheme')
     copyright = copyright_csv(COPYRIGHT_HEADER)
     response.write(copyright + "\n")
@@ -199,25 +207,44 @@ def export_variables_by_keywords_and_subtheme(request):
     if keywords_str:
         keywords_str_list = keywords_str.split(',')
         for keyword_str in keywords_str_list:
-            try:
-                keyword_obj = Keyword.objects.get(name=keyword_str)
-                keywords.add(keyword_obj)
-            except:
-                return HttpResponseNotFound('Keyword [%s] not found' % keyword_str)
+            keyword_objs = Keyword.objects.filter(name__icontains=keyword_str)
+            keywords.extend(keyword_objs)
+
+    theme_obj = None
+    if theme_str:
+        theme_obj = Theme.objects.get(name=theme_str)
+
     subtheme_obj = None
     if subtheme_str:
-        subtheme_obj = Subtheme.objects.filter(name=subtheme_str)
-        if not subtheme_obj:
-            #FIXME Return error
-            pass
+        subtheme_obj = Subtheme.objects.get(name=subtheme_str)
+ 
+    # start with the whole set of indicators, then refine filtering
+    indicators = Indicator.objects.all()
 
-    if keywords or subtheme:
-        # sv_items = util._get_sv_ids_and_names(theme, subtheme, tag)
-        # writer.writerow(["ID", "NAME"])
-        pass
-    # for sv_item in sv_items:
-    #     encoded_sv_item = tuple([col.encode('utf-8') for col in sv_item])
-    #     writer.writerow(encoded_sv_item)
+    if name_str:
+        indicators = indicators.filter(name__icontains=name_str)
+
+    if keywords:
+        indicators = indicators.filter(keywords__in=keywords)
+
+    if theme_obj:
+        if not subtheme_obj:
+            indicators = indicators.filter(theme=theme_obj)
+        else:
+            indicators = indicators.filter(subtheme=subtheme_obj)
+    elif subtheme_obj:
+        indicators = indicators.filter(subtheme=subtheme_obj)
+
+    writer.writerow(["Code", "Name", "Description", "Measurement Type", "Source", "Aggregation Method"])
+    for ind in indicators:
+        writer.writerow([
+            ind.code.encode('utf-8'),
+            ind.name.encode('utf-8'),
+            ind.description.encode('utf-8'),
+            ind.measurement_type.name.encode('utf-8'),
+            ind.source.__unicode__().encode('utf-8'),
+            ind.aggregation_method.name.encode('utf-8'),
+        ])
     return response
 
 
