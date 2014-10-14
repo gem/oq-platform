@@ -40,10 +40,10 @@ class Command(BaseCommand):
             # read row containing country iso codes
             third_row = reader.next()
 
-        isos = third_row[
-            COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
-        names = first_row[
-            COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
+        isos = [iso.strip() for iso in third_row[
+            COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]]
+        names = [name.strip() for name in first_row[
+            COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]]
 
         iso_name_dict = dict(zip(isos, names))
 
