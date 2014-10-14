@@ -205,7 +205,8 @@ def export_variables(request):
 
     keywords = []
     if keywords_str:
-        keywords_str_list = keywords_str.split(',')
+        keywords_str_list = [
+            keyword.strip() for keyword in keywords_str.split(',')]
         for keyword_str in keywords_str_list:
             keyword_objs = Keyword.objects.filter(name__icontains=keyword_str)
             keywords.extend(keyword_objs)
@@ -225,7 +226,7 @@ def export_variables(request):
         indicators = indicators.filter(name__icontains=name_str)
 
     if keywords:
-        indicators = indicators.filter(keywords__in=keywords)
+        indicators = indicators.filter(keywords__in=keywords).distinct()
 
     if theme_obj:
         if not subtheme_obj:
