@@ -85,6 +85,10 @@ h2 {
     padding-right: 0;
 }
 
+.navbar .nav.account-bar > li.divider-v {
+    padding: 10px 0;
+}
+
 .nav-logo {
     background: url(/static/images/oq-logo.png) no-repeat;
     width: 218px;
