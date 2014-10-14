@@ -68,20 +68,21 @@ h2 {
     color: #fff;
     text-shadow: none;
     font-size: 16px;
-    padding: 0 15px;
+    padding: 0 10px;
 }
 
 .navbar .nav > li.search-bar {
     padding-top: 6px;
+    padding-right: 4px;
 }
 
 .navbar .nav > li.user {
     padding-top: 10px;
 }
 
-.navbar .nav > li.actions > a {
+.navbar .nav.account-bar > li.actions > a {
+    padding-left: 0;
     padding-right: 0;
-    margin-right: 0;
 }
 
 .nav-logo {
