@@ -75,38 +75,40 @@ class Command(BaseCommand):
                 countries_with_socioeconomic_data.countries.add(country)
 
             for row in reader:
-                code = row[0]
-                indicators = Indicator.objects.filter(code=code)
-                if indicators:
-                    sys.stdout.write('Indicator [%s] already imported.\n' % code)
-                    continue
+                code = row[0].strip()
+                try:
+                    ind = Indicator.objects.get(code=code)
+                    sys.stdout.write(
+                        'Updating values for indicator [%s]...\n' % code)
+                except:
+                    ind = Indicator()
+                    sys.stdout.write(
+                        'Loading data for indicator [%s]...\n' % code)
 
-                ind = Indicator()
+                ind.code = code 
 
-                ind.code = row[0]
-
-                theme = row[1]
+                theme = row[1].strip()
                 ind.theme, _ = Theme.objects.get_or_create(name=theme)
 
-                subtheme = row[2]
+                subtheme = row[2].strip()
                 ind.subtheme, _ = Subtheme.objects.get_or_create(
                     theme=ind.theme, name=subtheme)
 
-                ind.name = row[3]
+                ind.name = row[3].strip()
 
-                measurement_type = row[4]
+                measurement_type = row[4].strip()
                 ind.measurement_type, _ = MeasurementType.objects.get_or_create(
                     name=measurement_type)
 
-                ind.description = row[5]
+                ind.description = row[5].strip()
 
-                update_periodicity = row[11]
+                update_periodicity = row[11].strip()
                 period, _ = UpdatePeriodicity.objects.get_or_create(
                         name=update_periodicity)
 
-                source = row[6]
-                year_min = row[8]
-                year_max = row[9]
+                source = row[6].strip()
+                year_min = row[8].strip()
+                year_max = row[9].strip()
                 ind.source, _ = Source.objects.get_or_create(
                     description=source,
                     defaults={'year_min': year_min,
@@ -115,20 +117,20 @@ class Command(BaseCommand):
 
                 # year_range column will be discarded
 
-                aggregation_method = row[12]
+                aggregation_method = row[12].strip()
                 ind.aggregation_method, _ = AggregationMethod.objects.get_or_create(
                     name=aggregation_method)
 
-                internal_consistency_metric = row[13]
+                internal_consistency_metric = row[13].strip()
                 ind.internal_consistency_metric, _ = InternalConsistencyMetric.objects.get_or_create(
                     name=internal_consistency_metric)
 
-                notes = row[-1] if row[-1] != "None" else None
+                notes = row[-1].strip() if row[-1] != "None" else None
                 ind.notes = notes
 
                 ind.save()
 
-                keyword_names = row[7].split(',')
+                keyword_names = [keyword.strip() for keyword in row[7].split(',')]
                 for keyword_name in keyword_names:
                     keyword, _ = Keyword.objects.get_or_create(
                         name=keyword_name)
