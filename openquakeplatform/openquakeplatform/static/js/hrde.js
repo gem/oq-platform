@@ -160,9 +160,6 @@ var startApp = function() {
     layers = {};
 
     AppVars.layerControl = L.control.layers(app.baseLayers);
-
-    console.log("layerControl");
-    console.log(AppVars.layerControl);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
 
@@ -220,16 +217,8 @@ var startApp = function() {
     var tileStreamLayer = '';
     var category = '';
     var selLayer = document.getElementById('layer-list');
-
-    var selCurveCat = document.getElementById('hazard-curve-category');
-    var selUhsCat = document.getElementById('hazard-curve-category');
-
-    var foo = $('#hazard-curve-category')[0];
-    console.log(foo);
-    console.log(selCurveCat);
-
+    var selCat = $('#hazard-curve-category')[0];
     var selLossCat = document.getElementById('risk-curve-category');
-    var selInputCat = document.getElementById('hazard-curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
     var selLoss = document.getElementById('loss-list');
@@ -242,17 +231,16 @@ var startApp = function() {
     // Create a header for the menu drop down
     var catCurveMenuHeader = document.createElement('option');
     catCurveMenuHeader.innerHTML = 'Category:';
-    selCurveCat.appendChild(catCurveMenuHeader);
+    selCat.appendChild(catCurveMenuHeader);
 
     // Create a header for the menu drop down
 
     var catUhsMenuHeader = document.createElement('option');
-    selUhsCat.appendChild(catUhsMenuHeader);
-    console.log(selUhs);
+    selCat.appendChild(catUhsMenuHeader);
     $('#hazard-curve-category option:empty').remove();
 
     var catInputMenuHeader = document.createElement('option');
-    selInputCat.appendChild(catInputMenuHeader);
+    selCat.appendChild(catInputMenuHeader);
     $('#hazard-curve-category option:empty').remove();
 
     // Create a header for the menu drop down
@@ -444,7 +432,7 @@ var startApp = function() {
             var curveOpt = document.createElement('option');
             curveOpt.innerHTML = curveCategoryTitle;
             curveOpt.value = curveCategoryTitle;
-            selCurveCat.appendChild(curveOpt);
+            selCat.appendChild(curveOpt);
             // Append layer list to dowpdown
             var layerCurveOpt = document.createElement('option');
         }
@@ -455,7 +443,7 @@ var startApp = function() {
             var uhsOpt = document.createElement('option');
             uhsOpt.innerHTML = uhsCategoryTitle;
             uhsOpt.value = uhsCategoryTitle;
-            selUhsCat.appendChild(curveOpt);
+            selCat.appendChild(curveOpt);
             // Append layer list to dowpdown
             var layeruhsOpt = document.createElement('option');
         }
@@ -467,7 +455,7 @@ var startApp = function() {
             var inputOpt = document.createElement('option');
             inputOpt.innerHTML = inputCategoryTitle;
             inputOpt.value = inputCategoryTitle;
-            selInputCat.appendChild(curveOpt);
+            selCat.appendChild(curveOpt);
             // Append layer list to dowpdown
             var layerInputOpt = document.createElement('option');
         }
@@ -900,7 +888,6 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
-            console.log("hi hihhihihi");
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
 
@@ -940,9 +927,7 @@ var startApp = function() {
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 var bounds = json.bounds;
                 var htmlLegend = json.html_legend;
-                console.log("hi there!");
 
-                //******** left off here
                 $('#legendDialog').empty();
                 $("#legendDialog").dialog({height:315});
                 $('#legendDialog').dialog('open');
@@ -969,9 +954,6 @@ var startApp = function() {
             AppVars.utfGrid = {};
             var scope = angular.element($("#curve-list")).scope();
             var curveLayerId = scope.selected_curve.name;
-
-            console.log("curveLayerId");
-            console.log(curveLayerId);
     
             // Look up the layer id using the layer name
             var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
@@ -1078,11 +1060,10 @@ var startApp = function() {
                 selectedLayer +
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(AppVars.utfGrid);
-            //hazardCurveUtfGridClickEvent(utfGrid, curveType);
+
             AppVars.utfGrid.on('click', function (e) {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
-                //{{{mfds}}} {{{bin_width}}} {{{min_mag}}} {{{occur_rate}}}
                 var mfds, binWidth, minMag, occurRate, mags;
 
                 if (e.data) {
@@ -1355,7 +1336,7 @@ var startApp = function() {
     });
 
     var hazardCurveUtfGridClickEvent = function(utfGrid, curveType) {
-        AppVars.utfGrid.on('click', function (e) {
+        utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
             if ($("#chartDialog").dialog( "isOpen" ) == false) {
                 $('#chartDialog').dialog('open');
@@ -1416,7 +1397,7 @@ var startApp = function() {
     }; // End hazardCurveUtfGridClickEvent
 
     function hazardCurveUtfGridClickEventMixed(utfGrid, curveType) {
-        AppVars.utfGrid.on('click', function (e) {
+        utfGrid.on('click', function (e) {
             // Get the selected curves
             var selectedCurves = [];
             var sc;
@@ -1448,7 +1429,7 @@ var startApp = function() {
     }; // End hazardCurveUtfGridClickEventMixed
 
     var lossCurveUtfGridClickEvent = function(utfGrid) {
-        AppVars.utfGrid.on('click', function (e) {
+        utfGrid.on('click', function (e) {
             $('#chartDialog').empty();
             $('#chartDialog').dialog('open');
             var asset;
@@ -1574,8 +1555,6 @@ var startApp = function() {
                 .ticks(5);
         }
 
-        console.log(AppVars.layerIml);
-
         if (AppVars.layerIml instanceof Array) {
             //continue
         } else {
@@ -1640,8 +1619,6 @@ var startApp = function() {
             d.x = +d[0];
             d.y = +d[1];
         };
-        console.log("layerImt");
-        console.log(AppVars.layerImt);
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -2074,9 +2051,6 @@ var startApp = function() {
         $('#downloadCurve').click(function(event) {
             var csvHeader = selectedCurves;
             var csvData = [];
-
-            console.log("csvData");
-            console.log(csvData);
 
             //csvData = csvData.concat(csvHeader);
             csvData = csvData.concat("mfds");
@@ -2536,8 +2510,6 @@ var startApp = function() {
             for (var k in selectedCurves) {
                 curve_name = selectedCurves[k];
                 var curveValue = chartData[curve_name];
-                console.log("curveValue");
-                console.log(curveValue);
                 csvData = csvData.concat(quotationMark);
                 csvData = csvData.concat(curveValue);
                 csvData = csvData.concat(quotationMark);
