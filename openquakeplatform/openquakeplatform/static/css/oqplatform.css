@@ -35,7 +35,7 @@ h2 {
 }
 
 .navbar .nav.account-bar {
-    margin-top: 5px;
+    margin-top: 0;
 }
 
 .span10 {
@@ -46,7 +46,7 @@ h2 {
 .span9 {
     width: auto;
     margin-left: 0;
-    margin-right: 70px;
+    margin-right: 75px;
     float: right;
 }
 
@@ -68,6 +68,20 @@ h2 {
     color: #fff;
     text-shadow: none;
     font-size: 16px;
+    padding: 0 15px;
+}
+
+.navbar .nav > li.search-bar {
+    padding-top: 6px;
+}
+
+.navbar .nav > li.user {
+    padding-top: 10px;
+}
+
+.navbar .nav > li.actions > a {
+    padding-right: 0;
+    margin-right: 0;
 }
 
 .nav-logo {

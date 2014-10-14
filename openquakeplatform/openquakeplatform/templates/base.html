@@ -74,7 +74,7 @@
                   <ul class="nav pull-right account-bar">
                     {% if user.is_authenticated %}
                       <li class="user-avatar">
-                        {% avatar user 32 %}
+                        {% avatar user 43 %}
                       </li>
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -98,7 +98,7 @@
                           <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
                         </ul>
                       </li> <!-- ./dropdown user -->
-                      <li>
+                      <li class="search-bar">
                           <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
                             {# csrf_token #}
                             <input id="search" type="text" name="q"/>
@@ -109,7 +109,8 @@
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
                         <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a
                         <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a> -->
-                        <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
+                        <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><img src="{{ STATIC_URL }}images/oq-help.png" /></a>
+                        <a href="#" rel="tooltip" title="Share"><img src="{{ STATIC_URL }}images/oq-share.png" /></a>
                       </li>
                     {% else %}
                       <li class="dropdown">
