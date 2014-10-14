@@ -24,9 +24,6 @@ AppProtoType.prototype = {
     utfGrid: {},
     layerControl: null,
     
-    // Keep track of the layer names
-    layerNames: null,
-    
     // Keep track of grids
     gridList: null,
     
@@ -77,16 +74,11 @@ AppProtoType.prototype = {
 };
 
 var AppVars = new AppProtoType();
-
-console.log("curveCategoryList");
-console.log(AppVars.curveCategoryList);
     
-    var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-    var TILESTREAM_URL = TS_URL + '/v2/';
-    var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
-    var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
-
-
+var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+var TILESTREAM_URL = TS_URL + '/v2/';
+var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
+var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
     $(function() {
@@ -167,7 +159,10 @@ var startApp = function() {
 
     layers = {};
 
-    layerControl = L.control.layers(app.baseLayers);
+    AppVars.layerControl = L.control.layers(app.baseLayers);
+
+    console.log("layerControl");
+    console.log(AppVars.layerControl);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
 
@@ -219,15 +214,6 @@ var startApp = function() {
         var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
         var selectedLayer = mapLayerIdArray.toString();
 
-        // Check in the layer is in the map port
-        if (selectedLayer in layers) {
-            layerControl.removeLayer(layers[selectedLayer]);
-            map.removeLayer(layers[selectedLayer]);
-            delete layers[selectedLayer];
-        }
-        else {
-            showRemoveMsg();
-        }
     };
 
     // Get layer names from tilestream
@@ -641,7 +627,7 @@ var startApp = function() {
         $('#chartDialog').empty();
 
         var scope = angular.element($("#uhs-list")).scope();
-        var option = scope.selected_map.name;
+        var option = scope.selected_uhs.name;
 
         var investType = checkUhsType(AppVars.uhsByInvestMixed, AppVars.uhsByInvestSingle, option);
         var curveType = 'uhs';
@@ -776,15 +762,9 @@ var startApp = function() {
             for (var i = 0; i < mapLayersArray.length; i++) {
                 mapLayerList.push({name: mapLayersArray[i]});
             }
-    
-            // Append the hazard map layer list to the dropdown form
-            //var mapScope = angular.element($("#layer-list")).scope();
-        
             
             mapScope.$apply(function(){
                 mapScope.maps = mapLayerList;
-                console.log("mapScope");
-                console.log(mapScope);
             });
     
             $('#addTileLayer').attr('disabled', false);
@@ -794,8 +774,6 @@ var startApp = function() {
             $('#addTileLayer').attr('disabled', true);
             $('#removeTileLayer').attr('disabled', true);
             mapScope.maps = null;
-            console.log("mapScope");
-            console.log(mapScope);
         }
 
         ///////////////////////////////////////////////////
@@ -917,11 +895,12 @@ var startApp = function() {
         }
     });
 
-    map.addControl(layerControl.setPosition('topleft'));
+    map.addControl(AppVars.layerControl.setPosition('topleft'));
 
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
+            console.log("hi hihhihihi");
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
 
@@ -940,8 +919,7 @@ var startApp = function() {
             map.addLayer(tileLayerMap);
             var val = $('#transparency-slider').slider("option", "value");
             tileLayerMap.setOpacity(val);
-            // Keep track of layers that have been added
-            AppVars.layernames[selectedLayer] = tileLayerMap;
+
             if (hasGrid == true) {
                 AppVars.gridList = 1;
                 AppVars.utfGridMap = new L.UtfGrid(TILESTREAM_URL +
@@ -962,6 +940,9 @@ var startApp = function() {
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 var bounds = json.bounds;
                 var htmlLegend = json.html_legend;
+                console.log("hi there!");
+
+                //******** left off here
                 $('#legendDialog').empty();
                 $("#legendDialog").dialog({height:315});
                 $('#legendDialog').dialog('open');
@@ -1008,7 +989,7 @@ var startApp = function() {
             });
         } else if (curveType == 'uhs') {
             var scope = angular.element($("#uhs-list")).scope();
-            uhsLayerId = scope.selected_map.name;
+            var uhsLayerId = scope.selected_uhs.name;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
@@ -1024,7 +1005,7 @@ var startApp = function() {
             });
         } else if (curveType == 'input') {
             var scope = angular.element($("#input-list")).scope();
-            var inputLayerId = scope.selected_map.name;
+            var inputLayerId = scope.selected_input.name;
 
             // Look up the layer id using the layer name
             var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
@@ -1049,8 +1030,7 @@ var startApp = function() {
             '.json'});
         AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
-        // Keep track of layers that have been added
-        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
+
         if (hasGrid == true) {
             AppVars.gridList = 1;
             AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -1091,8 +1071,7 @@ var startApp = function() {
             '.json'});
         AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
-        // Keep track of layers that have been added
-        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
+
         if (hasGrid == true) {
             AppVars.gridList = 1;
             AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -1168,7 +1147,6 @@ var startApp = function() {
         AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
         // Keep track of layers that have been added
-        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
         if (hasGrid == true) {
             AppVars.gridList = 1;
             AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -1187,9 +1165,8 @@ var startApp = function() {
             // Remove any existing UtfGrid layers in order to avoid conflict
             // this is only needed in the case when the user adds the same curve twice
             var scope = angular.element($("#curve-list")).scope();
-            var curveLayerId = scope.selected_map.name;
+            var curveLayerId = scope.selected_curve.name;
 
-            //TODO make sure that the curveLayerNames[curveLayerId] are in all lowwer case and are seperated by _
             // Look up the layer id using the layer name
             var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
 
@@ -1209,7 +1186,7 @@ var startApp = function() {
         }
         else if (curveType == 'uhs') {
             var scope = angular.element($("#uhs-list")).scope();
-            uhsLayerId = scope.selected_map.name;
+            var uhsLayerId = scope.selected_uhs.name;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
@@ -1234,8 +1211,7 @@ var startApp = function() {
             '.json'});
         AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
-        // Keep track of layers that have been added
-        AppVars.layernames[selectedLayer] = AppVars.tileLayer;
+
         if (hasGrid == true) {
             AppVars.gridList = 1;
             AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
@@ -1248,6 +1224,7 @@ var startApp = function() {
 
     // Remove map layers from tilestream
     $(document).ready(function() {
+        //$('#legendDialog').dialog('close');
         $('#removeTileLayer').click(function() {
             AppVars.gridList = 0;
             map.removeLayer(AppVars.utfGridMap);
@@ -1263,15 +1240,6 @@ var startApp = function() {
             var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
 
-            // Check in the layer is in the map port
-            if (selectedLayer in AppVars.layernames) {
-                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
-                map.removeLayer(AppVars.layernames[selectedLayer]);
-                delete AppVars.layernames[selectedLayer];
-            }
-            else {
-                showRemoveMsg();
-            }
         });
     });
 
@@ -1291,29 +1259,22 @@ var startApp = function() {
             map.addLayer(utfGrid);
             hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#curve-list")).scope();
-            var mapLayerId = scope.selected_map.name;
+            var mapLayerId = scope.selected_curve.name;
             // Look up the layer id using the layer name
             var mapLayerIdArray = AppVars.curveLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-            // Check in the layer is in the map port
-            if (selectedLayer in AppVars.layernames) {
-                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
-                map.removeLayer(AppVars.layernames[selectedLayer]);
-                delete AppVars.layernames[selectedLayer];
-            }
-            else {
-                showRemoveMsg();
-            }
+
         });
     });
 
-    // Remove uhs layers from tilestream
+    // Remove input layers from tilestream
     $(document).ready(function() {
         $('#removeTileInput').click(function() {
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
             $('#addTileLoss').attr('disabled', false);
             $('#removeTileLoss').attr('disabled', false);
+            $('#legendDialog').dialog('close');
 
             $('#curve-check-box').remove();
             AppVars.gridList = 0;
@@ -1325,21 +1286,11 @@ var startApp = function() {
             map.addLayer(AppVars.utfGrid);
             hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#input-list")).scope();
-            var mapLayerId = scope.selected_map.name;
+            var mapLayerId = scope.selected_input.name;
 
             // Look up the layer id using the layer name
             var mapLayerIdArray = AppVars.uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-
-            // Check in the layer is in the map port
-            if (selectedLayer in AppVars.layernames) {
-                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
-                map.removeLayer(AppVars.layernames[selectedLayer]);
-                delete AppVars.layernames[selectedLayer];
-            }
-            else {
-                showRemoveMsg();
-            }
         });
     });
 
@@ -1361,21 +1312,11 @@ var startApp = function() {
             map.addLayer(AppVars.utfGrid);
             hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
             var scope = angular.element($("#uhs-list")).scope();
-            mapLayerId = scope.selected_map.name;
+            mapLayerId = scope.selected_uhs.name;
 
             // Look up the layer id using the layer name
             var mapLayerIdArray = AppVars.uhsLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
-
-            // Check in the layer is in the map port
-            if (selectedLayer in AppVars.layernames) {
-                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
-                map.removeLayer(AppVars.layernames[selectedLayer]);
-                delete AppVars.layernames[selectedLayer];
-            }
-            else {
-                showRemoveMsg();
-            }
         });
     });
 
@@ -1402,15 +1343,6 @@ var startApp = function() {
             var mapLayerIdArray = AppVars.lossLayerNames[mapLayerId];
             var selectedLayer = mapLayerIdArray.toString();
 
-            // Check in the layer is in the map port
-            if (selectedLayer in AppVars.layernames) {
-                AppVars.layerControl.removeLayer(AppVars.layernames[selectedLayer]);
-                map.removeLayer(AppVars.layernames[selectedLayer]);
-                delete AppVars.layernames[selectedLayer];
-            }
-            else {
-                showRemoveMsg();
-            }
         });
     });
 
