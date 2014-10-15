@@ -23,7 +23,7 @@
   </head>
   <body class="{% block body_class %}{% endblock %}">
     {% block header %}
-    <div class="navbar navbar-fixed-top">
+    <div id="header" class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <section>
         <div class="container">
@@ -185,7 +185,7 @@
     {% endblock middle %}
 
     {% block footer %}
-    <footer class="footer">
+    <footer id="footer" class="footer">
       <div class="container">
         <div class="pull-left">
           {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
