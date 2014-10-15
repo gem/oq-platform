@@ -369,3 +369,5 @@ AUTH_EXEMPT_URLS = ('/icebox/calculation/(\d+)',
 
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
+
+AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar.png'
