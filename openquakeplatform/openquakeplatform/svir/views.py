@@ -31,7 +31,9 @@ from openquakeplatform.svir.models import (Project,
                                            Theme,
                                            Subtheme,
                                            Keyword,
-                                           Indicator)
+                                           Indicator,
+                                           CustomRegion,
+                                           CountryIndicator,)
 
 COPYRIGHT_HEADER = u"""\
  Version 1.0 released on 31.01.2013
@@ -163,7 +165,7 @@ def list_subthemes_by_theme(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def export_variables(request):
+def export_variables_info(request):
     """
     Export a csv file containing information about the socioeconomic
     indicators which have the specified keywords and/or subtheme 
@@ -296,6 +298,58 @@ def export_sv_category_names(request):
     for sv_item in sv_items:
         encoded_sv_item = tuple([col.encode('utf-8') for col in sv_item])
         writer.writerow(encoded_sv_item)
+    return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def export_variables_data_by_ids(request):
+    """
+    Export a csv file containing data corresponding to the social vulnerability
+    variables which ids are given in input
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameter:
+            * 'sv_variables_ids': a string of comma-separated ids of social
+                                  vulnerability variables
+    """
+    if not request.GET.get('sv_variables_ids'):
+        msg = ('A list of comma-separated social vulnerability variable names'
+               ' must be specified')
+        response = HttpResponse(msg, status="400")
+        return response
+    response = HttpResponse(content_type='text/csv')
+    content_disp = 'attachment; filename="sv_data_by_variables_ids_export.csv"'
+    response['Content-Disposition'] = content_disp
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    writer = csv.writer(response)
+    response.write(copyright + "\n")
+    sv_variables_ids = request.GET['sv_variables_ids']
+    sv_variables_ids_list = sv_variables_ids.split(",")
+    # build the header, appending sv_variables_ids properly
+    header_list = ["ISO", "COUNTRY_NAME"]
+    for sv_variable_id in sv_variables_ids_list:
+        header_list.append(sv_variable_id)
+    # TODO: Currently not retreiving the geometries (they still aren't in DB)
+    # header_list.append("GEOMETRY")
+    writer.writerow(header_list)
+    indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    inclusive_region = CustomRegion.objects.get(
+        name='Countries with socioeconomic data')
+    for country in inclusive_region.countries.all():
+        row = [country.iso3, country.name.encode('utf-8')]
+        ind_vals = []
+        for indicator in indicators:
+            try:
+                val = CountryIndicator.objects.get(
+                    country=country, indicator=indicator).value
+            except:
+                val = ''
+            ind_vals.append(val)
+        row.extend(ind_vals)
+        writer.writerow(row)
     return response
 
 

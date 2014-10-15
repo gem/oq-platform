@@ -28,7 +28,8 @@ from openquakeplatform.svir.views import (export_sv_category_names,
                                           upload_project_data,
                                           list_themes,
                                           list_subthemes_by_theme,
-                                          export_variables)
+                                          export_variables_info,
+                                          export_variables_data_by_ids)
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -45,5 +46,6 @@ urlpatterns = patterns(
     url(r'^upload_project_definition', upload_project_definition),
     url(r'^list_themes', list_themes),
     url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
-    url(r'^export_variables', export_variables),
+    url(r'^export_variables_info', export_variables_info),
+    url(r'^export_variables_data_by_ids', export_variables_data_by_ids),
 )
