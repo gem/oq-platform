@@ -890,7 +890,7 @@ $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
                 AppVars.utfGridMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
-                    $('#chartDialog').append(e.data.VAL);
+                    $('#chartDialog').append('Gravity Acceleration: '+e.data.VAL);
                 });
             }
 
