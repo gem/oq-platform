@@ -475,6 +475,17 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
+
+        try {
+            map.removeLayer(AppVars.utfGrid);
+            map.removeLayer(AppVars.tileLayer);
+            console.log("utfGridMap");
+            console.log(AppVars.utfGridMap);
+            map.removeLayer(AppVars.utfGridMap);
+        } catch (e) {
+                // continue
+        }
+
         // try to remove any existing UtfGrids
         try {
             // check if the layer is not a hazard map, and if so remove from controller
@@ -486,9 +497,7 @@ var startApp = function() {
                     delete layerControl._layers[k];
                 }
             }
-            map.removeLayer(AppVars.utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridMap);
+
 
         } catch (e) {
             // continue
@@ -888,6 +897,7 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
+            $('#chartDialog').empty();
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
 
@@ -913,15 +923,30 @@ var startApp = function() {
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(AppVars.utfGridMap);
-                hazardCurveUtfGridClickEvent(AppVars.utfGridMap);
                 $("#chartDialog ").dialog({width: 200,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
                 $('#chartDialog').dialog('open');
+                console.log("AppVars.utfGridMap");
+                console.log(AppVars.utfGridMap);
+
                 AppVars.utfGridMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
                     $('#chartDialog').append(e.data.VAL);
                 });
             }
+
+            // get information out of the utfgrid for use in Download
+            for (var k in AppVars.utfGridMap._cache) {
+
+                console.log("AppVars.utfGridMap._cache[k]");
+                console.log(AppVars.utfGridMap._cache[k] + k);
+                if (AppVars.utfGridMap._cache[k] !== null && typeof AppVars.utfGridMap._cache[k] === 'object') {
+                    console.log("k");
+                    console.log(k);
+                }
+
+            }
+
 
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -1337,6 +1362,7 @@ var startApp = function() {
 
     var hazardCurveUtfGridClickEvent = function(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
+
             $('#chartDialog').empty();
             if ($("#chartDialog").dialog( "isOpen" ) == false) {
                 $('#chartDialog').dialog('open');
@@ -1351,13 +1377,21 @@ var startApp = function() {
             var invest_time;
             var imt;
 
-            if (e.data.poe !== undefined) {
+            try {
                 prob = e.data.poe;
-            } else if (e.data.prob !== undefined) {
+            } catch (e) {
+                // continue
+            }
+
+            try {
                 prob = e.data.prob;
+            } catch (e) {
+                // continue
             }
 
             if (e.data) {
+                console.log("data");
+                console.log(e.data);
                 probArray = prob.split(',');
                 iml = e.data.iml;
 
@@ -2371,8 +2405,12 @@ var startApp = function() {
         legend = d3.select("#chartDialog").append("svg")
             .attr("height", 25*(selectedCurves.length - 1));
 
-        for (k in selectedCurves) {
-            var curve_name = selectedCurves[k];
+            console.log("selectedCurves");
+            console.log(selectedCurves);
+
+        for (var i = 0; i < selectedCurves.length; i++) {
+
+            var curve_name = selectedCurves[i];
 
             if (curveType == 'hc' && curve_name == "iml")
                 continue;
@@ -2380,10 +2418,12 @@ var startApp = function() {
                 continue;
 
             var data = curve_coup[curve_name];
+            console.log("data");
+            console.log(data);
 
             svg.append("path")
-                .data([curve_coup[curve_name]])
-                .attr("class", "line"+k)
+                .data([data])
+                .attr("class", "line"+i)
                 .attr("d", line);
 
             // Update the css for each line
@@ -2401,30 +2441,28 @@ var startApp = function() {
             ];
 
             var gray = "A0A0A0";
-            $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
+            var color = colors[i % colors.length];
+            $(".line"+i).css({'fill':'none','opacity':'0.4', 'stroke':'black'});
 
-            var color = colors[k % colors.length];
-
-            var str = selectedCurves[k];
+            var str = selectedCurves[i];
             str = str.replace(/_/g, " ");
             var curveTitle = capitalize(str)
 
-            makeCircles(data, k, color, curveTitle);
+            makeCircles(data, i, color, curveTitle);
 
             legend.append("text")
                 .attr("x", 90)
-                .attr("y", 20*(k))
+                .attr("y", 20*(i))
                 .attr("dy", ".35em")
                 .text(curveTitle);
 
             legend.append("svg:circle")
-                //.attr("cx", 50)
-                .attr("cy", 20*(k))
+                .attr("cy", 20*(i))
                 .attr("cx", 80)
                 .attr("r", 3)
                 .style("fill", color)
 
-            $("."+selectedCurves[k]).css({'stroke':colors[k]});
+            $("."+selectedCurves[i]).css({'stroke':colors[i]});
         }
 
         for (i = 0 ; i < xAxis_n ; i++) {
