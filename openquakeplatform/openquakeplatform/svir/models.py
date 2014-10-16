@@ -130,6 +130,10 @@ class Indicator(models.Model):
         return self.name
 
     @property
+    def keywords_str(self):
+        return ', '.join([keyword.name for keyword in self.keywords.all()])
+
+    @property
     def data_completeness(self):
         # count how many countries have a value for this indicator
         # and divide by the number of countries

@@ -135,8 +135,13 @@ def list_themes(request):
     if not themes:
         return HttpResponseNotFound('No themes available in the DB')
     response = HttpResponse()
+    first=True
     for theme in themes:
-        response.write(theme.name + ',')
+        if first:
+            first=False
+        else:
+            response.write(',')
+        response.write('"' + theme.name + '"')
     return HttpResponse(response)
 
 
@@ -157,8 +162,13 @@ def list_subthemes_by_theme(request):
         return HttpResponseNotFound(
             'No subtheme corresponds to the given theme')
     response = HttpResponse()
+    first=True
     for subtheme in subthemes:
-        response.write(subtheme.name + ',')
+        if first:
+            first=False
+        else:
+            response.write(',')
+        response.write('"' + subtheme.name + '"')
     return HttpResponse(response)
 
 
@@ -188,9 +198,12 @@ def export_variables_info(request):
         a csv file in which each line contains the following data: 
             * indicator.code 
             * indicator.name
+            * indicator.theme
+            * indicator.subtheme
             * indicator.description
             * indicator.source (unicode which also displays year_min and year_max)
             * indicator.aggregation_method
+            * indicator.keywords
     """
     # We don't need 'Tag' anymore, but we need to show other fields
     # We don't display update_periodicity and internal_consistency_metric
@@ -238,15 +251,26 @@ def export_variables_info(request):
     elif subtheme_obj:
         indicators = indicators.filter(subtheme=subtheme_obj)
 
-    writer.writerow(["Code", "Name", "Description", "Measurement Type", "Source", "Aggregation Method"])
+    writer.writerow(["Code",
+                     "Name",
+                     "Theme",
+                     "Subtheme",
+                     "Description",
+                     "Measurement Type",
+                     "Source",
+                     "Aggregation Method",
+                     "Keywords"])
     for ind in indicators:
         writer.writerow([
             ind.code.encode('utf-8'),
             ind.name.encode('utf-8'),
+            ind.theme.name.encode('utf-8'),
+            ind.subtheme.name.encode('utf-8'),
             ind.description.encode('utf-8'),
             ind.measurement_type.name.encode('utf-8'),
             ind.source.__unicode__().encode('utf-8'),
             ind.aggregation_method.name.encode('utf-8'),
+            ind.keywords_str.encode('utf-8'),
         ])
     return response
 
