@@ -27,8 +27,16 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 {% include "base_map_options.html" %}
-{% verbatim %}
 
+
+<select id="external-layers-menu">
+  <option>Select additinal layers</option>
+  <option value="1">Strain</option>
+  <option value="2">Strain Arrows</option>
+  <option value="3">Instrumental Earthquake Catalogue</option>
+  <option value="4">Historic Earthquake Catalogue</option>
+
+</select>
 
 <button type="button" id="hazard-data">Load Hazard Data</button>
 <button type="button" id="risk-data">Load Risk Data</button>
@@ -42,6 +50,7 @@ Explore - {{block.super}}
   
   <div id="chartDialog" title="Plot" style="overflow: hidden;"></div>
   <div id="legendDialog" title="Legend" style="overflow: hidden;"></div>
+  <div id="additionalDataLayers" title="Additinal Data Layers" style="overflow: hidden;">
   <div id="helpDialog" title="Help" style="overflow: hidden;">
     <h2>Hazard & Risk Data Explorer</h2>
     <p>The Hazard & Risk Data Explorer is customized web application for exploring GEM hazard and risk models</p>
@@ -77,6 +86,7 @@ Explore - {{block.super}}
     </ul>
 
   </div>
+  {% verbatim %}
   <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">
     <form id="tile-form-list-curves">
       <br>Select Category:<br>
@@ -93,7 +103,6 @@ Explore - {{block.super}}
         </select>
         <br>
         <input type="button" id="addTileInput" value="Add Layer">
-        <input type="button" id="removeTileInput" value="Remove Layer">
         <br>
       </div>
 
@@ -107,7 +116,6 @@ Explore - {{block.super}}
         </select>
         <br>
         <input type="button" id="addTileLayer" value="Add Layer">
-        <input type="button" id="removeTileLayer" value="Remove Layer">
         <div id="transparency-labels">
         <p> 
           <label class="transparency-label" for="amount">Layer transparency:</label> 
@@ -126,7 +134,6 @@ Explore - {{block.super}}
         <select id="curve-list" size="5" ng-model="selected_curve" ng-options="curve.name for curve in curves | filter:search | orderBy:'name'"></select>
         <br>
         <input type="button" id="addTileCurve" value="Add Layer">
-        <input type="button" id="removeTileCurve" value="Remove Layer">
         <br>
         <div id="hc-mixed-selection"></div><br>
       </div>
@@ -139,7 +146,6 @@ Explore - {{block.super}}
         <select id="uhs-list" size="5" ng-model="selected_uhs" ng-options="uhs.name for uhs in uhss | filter:search | orderBy:'name'"></select>
         <br>
         <input type="button" id="addTileUhs" value="Add Layer">
-        <input type="button" id="removeTileUhs" value="Remove Layer">
         <br>
         <div id="uhs-mixed-selection"></div><br>
       </div>
@@ -157,7 +163,6 @@ Explore - {{block.super}}
         <select id="loss-list" size="5" ng-model="selected_loss" ng-options="loss.name for loss in losses | filter:search | orderBy:'name'"></select>
         <br>
         <input type="button" id="addTileLoss" value="Add Layer">
-        <input type="button" id="removeTileLoss" value="Remove Layer">
         <br>
       </div>
     </form>

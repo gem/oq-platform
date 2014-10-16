@@ -110,6 +110,12 @@ var startApp = function() {
 
     $('#helpDialog').css({ 'overflow' : 'auto' });
 
+
+$('#external-layers-menu').css({ 'margin-bottom' : 0 });
+
+$('#base-map-menu').css({ 'margin-bottom' : 0 });
+
+
     var riskDataDialog = $('#riskDataDialog').dialog({
         autoOpen: false,
         height: winHaz,
@@ -160,6 +166,40 @@ var startApp = function() {
     AppVars.layerControl = L.control.layers(app.baseLayers);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
+
+    // switch additional data layers
+    $('#external-layers-menu').change(function() {
+        var externalLayerSelection = document.getElementById('external-layers-menu').value;
+ 
+        if (externalLayerSelection == 1) {
+            var strain = new L.TileLayer(TILESTREAM_URL+'strain/{z}/{x}/{y}.png');
+            map.addLayer(strain);
+            AppVars.layerControl.addOverlay(strain, "Strain");
+            
+        } else if (externalLayerSelection == 2) {
+            var strainArrows = new L.TileLayer(TILESTREAM_URL+'strain-arrows/{z}/{x}/{y}.png');
+            map.addLayer(strainArrows);
+            AppVars.layerControl.addOverlay(strainArrows, "Strain with arrows");
+        } else if (externalLayerSelection == 3) {
+            var iec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
+                layers: 'oqplatform:isc_viewer_measure',
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0'
+            });
+            map.addLayer(iec);
+            AppVars.layerControl.addOverlay(iec, "Instrumental Earthquake Catalogue");
+        } else if (externalLayerSelection == 4) {
+            var hec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
+                layers: 'oqplatform:ghec_viewer_measure',
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0'
+            });
+            map.addLayer(hec);
+            AppVars.layerControl.addOverlay(hec, "Historic Earthquake Catalogue");
+        }
+    });
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
@@ -436,23 +476,9 @@ var startApp = function() {
             map.removeLayer(AppVars.tileLayer);
             map.removeLayer(AppVars.utfGridMap);
         } catch (e) {
-                // continue
-        }
-
-        // try to remove any existing UtfGrids
-        try {
-            // check if the layer is not a hazard map, and if so remove from controller
-            for (var k in layerControl._layers) {
-                var nameTemp = layerControl._layers[k].name;
-                var nameTest = nameTemp.indexOf("map") > -1;
-
-                if (nameTest === false) {
-                    delete layerControl._layers[k];
-                }
-            }
-        } catch (e) {
             // continue
         }
+
         
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
@@ -555,24 +581,6 @@ var startApp = function() {
 
 
     $('#addTileUhs').click(function() {
-        // try to remove any existing UtfGrids
-        try {
-            // check if the layer is not a hazard map, and if so remove from controller
-            for (var k in AppVars.layerControl._layers) {
-                var nameTemp = AppVars.layerControl._layers[k].name;
-                var nameTest = nameTemp.indexOf("map") > -1;
-
-                if (nameTest === false) {
-                    delete AppVars.layerControl._layers[k];
-                }
-            }
-            map.removeLayer(AppVars.utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridMap);
-        } catch (e) {
-            // continue
-        }
-
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -634,24 +642,6 @@ var startApp = function() {
     }); // end add uhs curve
 
     $('#addTileLoss').click(function() {
-        // try to remove any existing UtfGrids
-        try {
-            // check if the layer is not a hazard map, and if so remove from controller
-            for (var k in AppVars.layerControl._layers) {
-                var nameTemp = AppVars.layerControl._layers[k].name;
-                var nameTest = nameTemp.indexOf("map") > -1;
-
-                if (nameTest === false) {
-                    delete AppVars.layerControl._layers[k];
-                }
-            }
-            map.removeLayer(AppVars.utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridMap);
-        } catch (e) {
-            // continue
-        }
-
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -860,6 +850,14 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
+            try {
+                map.removeLayer(AppVars.utfGrid);
+                map.removeLayer(AppVars.tileLayer);
+                map.removeLayer(AppVars.utfGridMap);
+            } catch (e) {
+                // continue
+            }
+
             $('#chartDialog').empty();
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
@@ -989,8 +987,9 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        //AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
+        AppVars.tileLayer.setZIndex(1000);
 
         if (hasGrid == true) {
             AppVars.gridList = 1;
@@ -1032,6 +1031,7 @@ var startApp = function() {
             '.json'});
         AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
+        AppVars.tileLayer.setZIndex(1000);
 
         if (hasGrid == true) {
             AppVars.gridList = 1;
@@ -1104,8 +1104,9 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        //AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
+        AppVars.tileLayer.setZIndex(1000);
         // Keep track of layers that have been added
         if (hasGrid == true) {
             AppVars.gridList = 1;
@@ -1169,8 +1170,9 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
+        //AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
+        AppVars.tileLayer.setZIndex(1000);
 
         if (hasGrid == true) {
             AppVars.gridList = 1;
@@ -1181,130 +1183,6 @@ var startApp = function() {
             hazardCurveUtfGridClickEventMixed(AppVars.utfGrid, curveType);
         }
     }
-
-    // Remove map layers from tilestream
-    $(document).ready(function() {
-        //$('#legendDialog').dialog('close');
-        $('#removeTileLayer').click(function() {
-            AppVars.gridList = 0;
-            map.removeLayer(AppVars.utfGridMap);
-            map.removeLayer(tileLayerMap);
-            AppVars.utfGrid = {};
-            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppVars.utfGrid);
-            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
-            var scope = angular.element($("#layer-list")).scope();
-            var mapLayerId = scope.selected_map.name;
-
-            // Look up the layer id using the layer name
-            var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
-
-        });
-    });
-
-    // Remove curve layers from tilestream
-    $(document).ready(function() {
-        $('#removeTileCurve').click(function() {
-            $('#addTileUhs').attr('disabled', false);
-            $('#removeTileUhs').attr('disabled', false);
-            $('#addTileLoss').attr('disabled', false);
-            $('#removeTileLoss').attr('disabled', false);
-            $('#curve-check-box').remove();
-            AppVars.gridList = 0;
-            map.removeLayer(utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            utfGrid = {};
-            utfGrid = new L.AppVars.utfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(utfGrid);
-            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
-            var scope = angular.element($("#curve-list")).scope();
-            var mapLayerId = scope.selected_curve.name;
-            // Look up the layer id using the layer name
-            var mapLayerIdArray = AppVars.curveLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
-
-        });
-    });
-
-    // Remove input layers from tilestream
-    $(document).ready(function() {
-        $('#removeTileInput').click(function() {
-            $('#addTileCurve').attr('disabled', false);
-            $('#removeTileCurve').attr('disabled', false);
-            $('#addTileLoss').attr('disabled', false);
-            $('#removeTileLoss').attr('disabled', false);
-            $('#legendDialog').dialog('close');
-
-            $('#curve-check-box').remove();
-            AppVars.gridList = 0;
-
-            map.removeLayer(AppVars.utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            AppVars.utfGrid = {};
-            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppVars.utfGrid);
-            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
-            var scope = angular.element($("#input-list")).scope();
-            var mapLayerId = scope.selected_input.name;
-
-            // Look up the layer id using the layer name
-            var mapLayerIdArray = AppVars.uhsLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
-        });
-    });
-
-    // Remove uhs layers from tilestream
-    $(document).ready(function() {
-        $('#removeTileUhs').click(function() {
-            $('#addTileCurve').attr('disabled', false);
-            $('#removeTileCurve').attr('disabled', false);
-            $('#addTileLoss').attr('disabled', false);
-            $('#removeTileLoss').attr('disabled', false);
-
-            $('#curve-check-box').remove();
-            AppVars.gridList = 0;
-
-            map.removeLayer(AppVars.utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            AppVars.utfGrid = {};
-            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppVars.utfGrid);
-            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
-            var scope = angular.element($("#uhs-list")).scope();
-            mapLayerId = scope.selected_uhs.name;
-
-            // Look up the layer id using the layer name
-            var mapLayerIdArray = AppVars.uhsLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
-        });
-    });
-
-    // Remove Loss layers from tilestream
-    $(document).ready(function() {
-        $('#removeTileLoss').click(function() {
-            $('#addTileCurve').attr('disabled', false);
-            $('#removeTileCurve').attr('disabled', false);
-            $('#addTileUhs').attr('disabled', false);
-            $('#removeTileUhs').attr('disabled', false);
-            $('#curve-check-box').remove();
-            AppVars.gridList = 0;
-            map.removeLayer(AppVars.utfGrid);
-            map.removeLayer(AppVars.tileLayer);
-            AppVars.utfGrid = {};
-            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL + 'empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-            map.addLayer(AppVars.utfGrid);
-            hazardCurveUtfGridClickEvent(AppVars.utfGrid, curveType);
-
-            var scope = angular.element($("#loss-list")).scope();
-            var mapLayerId = scope.selected_loss.name;
-
-            // Look up the layer id using the layer name
-            var mapLayerIdArray = AppVars.lossLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
-
-        });
-    });
 
     $(function() {
         $( '#categoryTabs' ).tabs({
@@ -2765,7 +2643,7 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","12px")
-            .text('Loss Curve: some other info might go here');
+            .text('Loss Curve');
 
         textTop = svg.append("text")
             .attr("x", 0)
