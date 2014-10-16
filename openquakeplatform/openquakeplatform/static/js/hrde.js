@@ -28,9 +28,8 @@ AppProtoType.prototype = {
     gridList: null,
     
     // Make a list of categories
-    mapCategoryList: [],
     curveCategoryList: [],
-    uhsCategoryList: [],
+    wikiLinkList: {},
     lossCategoryList: [],
     mapLayerGrids: [],
     curveLayerGrids: [],
@@ -61,7 +60,6 @@ AppProtoType.prototype = {
     inputByInvestMixed: {},
     inputAvailable: {},
     inputByInvestSingle: {},
-    inputCategoryList: [],
     inputLayerGrids: [],
     mappedValue: null,
     
@@ -263,9 +261,14 @@ var startApp = function() {
             var chartType = json[i].chartType;
             var app = json[i].application;
             var grid, gridName;
+            var wiki = json[i].wiki_link;
  
             if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds') {
                 AppVars.curveCategoryList.push(cat);
+                if (wiki !== undefined ) {
+                    AppVars.wikiLinkList[cat] = wiki;
+                }
+
                 AppVars.curveLayersByCat[cat] = [];
                 AppVars.curveLayerNames[name] = [];
                 grid = grids.toString();
@@ -275,7 +278,6 @@ var startApp = function() {
             }
 
             if (type == 'curve-uhs') {
-                AppVars.uhsCategoryList.push(cat);
                 AppVars.uhsLayersByCat[cat] = [];
                 AppVars.uhsLayerNames[name] = [];
                 grid = grids.toString();
@@ -291,8 +293,7 @@ var startApp = function() {
                 AppVars.lossLayerGrids.push(gridName);
             }
             
-            if (type == 'input-mfds') {                
-                AppVars.inputCategoryList.push(cat);
+            if (type == 'input-mfds') {
                 AppVars.inputLayersByCat[cat] = [];
                 AppVars.inputLayerNames[name] = [];
                 grid = grids.toString();
@@ -301,7 +302,6 @@ var startApp = function() {
             }
           
             if (chartType == undefined && cat !== undefined && type == 'hazard') {
-                AppVars.mapCategoryList.push(cat);
                 AppVars.mapLayerNames[name] = [];
                 AppVars.mapLayersByCat[cat] = [];
                 if (grids !== undefined) {
@@ -395,36 +395,14 @@ var startApp = function() {
             }
         }
 
-        // Get unique category names
-        var mapCategoryUnique = AppVars.mapCategoryList.filter(function(itm,i,mapCategoryList){
-            return i == AppVars.mapCategoryList.indexOf(itm);
-        });
-
+        // Get unique category and wiki link names
         var curveCategoryUnique = AppVars.curveCategoryList.filter(function(itm,i,curveCategoryList){
             return i == AppVars.curveCategoryList.indexOf(itm);
-        });
-
-        var uhsCategoryUnique = AppVars.uhsCategoryList.filter(function(itm,i,uhsCategoryList){
-            return i == AppVars.uhsCategoryList.indexOf(itm);
-        });
-
-        var inputCategoryUnique = AppVars.inputCategoryList.filter(function(itm,i,inputCategoryList){
-            return i == AppVars.inputCategoryList.indexOf(itm);
         });
 
         var lossCategoryUnique = AppVars.lossCategoryList.filter(function(itm,i,lossCategoryList){
             return i == AppVars.lossCategoryList.indexOf(itm);
         });
-
-        for (var i in mapCategoryUnique) {
-            // Append category names to map dropdown list
-            var mapCategoryTitle = mapCategoryUnique[i];
-            var opt = document.createElement('option');
-            opt.innerHTML = mapCategoryTitle;
-            opt.value = mapCategoryTitle;
-            // Append layer list to dowpdown
-            var layerOpt = document.createElement('option');
-        }
 
         for (var i in curveCategoryUnique) {
             // Append category names to curve dropdown list
@@ -435,29 +413,6 @@ var startApp = function() {
             selCat.appendChild(curveOpt);
             // Append layer list to dowpdown
             var layerCurveOpt = document.createElement('option');
-        }
-
-        for (var i in curveCategoryUnique) {
-            // Append category names to uhs dropdown list
-            var uhsCategoryTitle = curveCategoryUnique[i];
-            var uhsOpt = document.createElement('option');
-            uhsOpt.innerHTML = uhsCategoryTitle;
-            uhsOpt.value = uhsCategoryTitle;
-            selCat.appendChild(curveOpt);
-            // Append layer list to dowpdown
-            var layeruhsOpt = document.createElement('option');
-        }
-
-        for (var i in curveCategoryUnique) {
-            // Append category names to input dropdown list
-            var inputCategoryTitle = curveCategoryUnique[i];
-
-            var inputOpt = document.createElement('option');
-            inputOpt.innerHTML = inputCategoryTitle;
-            inputOpt.value = inputCategoryTitle;
-            selCat.appendChild(curveOpt);
-            // Append layer list to dowpdown
-            var layerInputOpt = document.createElement('option');
         }
 
         for (var i in curveCategoryUnique) {
@@ -748,6 +703,8 @@ var startApp = function() {
     $('#hazard-curve-category').change(function() {
         var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
+        // Add the wiki link to the dialog menu
+        $('#wiki-link').append('<a href="'+AppVars.wikiLinkList[strUser]+'" style="color: rgb(0,102,204)" target="_blank">Detailed Documentation</a>' );
 
         /////////////////////////////////////////////////
         // Create dynamic categorized map layer dialog //
@@ -1377,10 +1334,12 @@ var startApp = function() {
                 // continue
             }
 
-            try {
-                prob = e.data.prob;
-            } catch (e) {
-                // continue
+            if (prob == undefined) {
+                try {
+                    prob = e.data.prob;
+                } catch (e) {
+                    // continue
+                }
             }
 
             if (e.data) {
