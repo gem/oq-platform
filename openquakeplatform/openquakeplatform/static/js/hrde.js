@@ -479,8 +479,6 @@ var startApp = function() {
         try {
             map.removeLayer(AppVars.utfGrid);
             map.removeLayer(AppVars.tileLayer);
-            console.log("utfGridMap");
-            console.log(AppVars.utfGridMap);
             map.removeLayer(AppVars.utfGridMap);
         } catch (e) {
                 // continue
@@ -497,8 +495,6 @@ var startApp = function() {
                     delete layerControl._layers[k];
                 }
             }
-
-
         } catch (e) {
             // continue
         }
@@ -549,16 +545,19 @@ var startApp = function() {
             }
 
             // Provide the user with the curves that are available in the dialog
-            $('#curve-check-box').remove();
-            $('#hazardDataDialog').append('<div id="curve-check-box"<p><b>Select curves to be ploted in the chart:</b></p></div>');
-            for (var j = 0; j < curvesList.length; j++) {
-                var checkbox = '<input type="checkbox" id="'+curvesList[j]+'" class="curve-list" value=" ' +
-                    curvesList[j] +
-                    '">' +
-                    curvesList[j] +
-                    '<br>';
-
-                $('#curve-check-box').append(checkbox);
+            if (curveType == 'hc') {
+                $('#hc-mixed-selection').empty();
+                $('#uhs-mixed-selection').empty();
+                $('#hc-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
+                for (var j = 0; j < curvesList.length; j++) {
+                    var checkbox = '<input type="checkbox" id="'+curvesList[j]+'" class="curve-list" value=" ' +
+                        curvesList[j] +
+                        '">' +
+                        curvesList[j] +
+                        '<br>';
+    
+                    $('#hc-mixed-selection').append(checkbox);
+                }
             }
 
             $('.curve-list').prop('checked', true);
@@ -652,17 +651,21 @@ var startApp = function() {
             }
 
             // Provide the user with the uhs that are available in the dialog
-            $('#curve-check-box').remove();
-            $('#hazardDataDialog').append('<div id="curve-check-box" <p><b>Select curves to be ploted in the chart:</b></p></div>');
-            for (var l = 0; l < uhsList.length; l++) {
-                var checkbox = '<input type="checkbox" id="'+uhsList[l]+'" class="curve-list" value=" ' +
-                    uhsList[l] +
-                    '">' +
-                    uhsList[l] +
-                    '<br>';
-
-                $('#curve-check-box').append(checkbox);
+            if (curveType == 'uhs') {
+                $('#uhs-mixed-selection').empty();
+                $('#hc-mixed-selection').empty();
+                $('#uhs-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
+                for (var j = 0; j < uhsList.length; j++) {
+                    var checkbox = '<input type="checkbox" id="'+uhsList[j]+'" class="curve-list" value=" ' +
+                        uhsList[j] +
+                        '">' +
+                        uhsList[j] +
+                        '<br>';
+    
+                    $('#uhs-mixed-selection').append(checkbox);
+                }
             }
+
             $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
@@ -926,8 +929,6 @@ var startApp = function() {
                 $("#chartDialog ").dialog({width: 200,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
                 $('#chartDialog').dialog('open');
-                console.log("AppVars.utfGridMap");
-                console.log(AppVars.utfGridMap);
 
                 AppVars.utfGridMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
@@ -937,16 +938,9 @@ var startApp = function() {
 
             // get information out of the utfgrid for use in Download
             for (var k in AppVars.utfGridMap._cache) {
-
-                console.log("AppVars.utfGridMap._cache[k]");
-                console.log(AppVars.utfGridMap._cache[k] + k);
                 if (AppVars.utfGridMap._cache[k] !== null && typeof AppVars.utfGridMap._cache[k] === 'object') {
-                    console.log("k");
-                    console.log(k);
                 }
-
             }
-
 
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -1390,8 +1384,6 @@ var startApp = function() {
             }
 
             if (e.data) {
-                console.log("data");
-                console.log(e.data);
                 probArray = prob.split(',');
                 iml = e.data.iml;
 
@@ -2405,9 +2397,6 @@ var startApp = function() {
         legend = d3.select("#chartDialog").append("svg")
             .attr("height", 25*(selectedCurves.length - 1));
 
-            console.log("selectedCurves");
-            console.log(selectedCurves);
-
         for (var i = 0; i < selectedCurves.length; i++) {
 
             var curve_name = selectedCurves[i];
@@ -2418,8 +2407,6 @@ var startApp = function() {
                 continue;
 
             var data = curve_coup[curve_name];
-            console.log("data");
-            console.log(data);
 
             svg.append("path")
                 .data([data])
