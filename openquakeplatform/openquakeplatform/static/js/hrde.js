@@ -704,7 +704,10 @@ var startApp = function() {
         var e = document.getElementById('hazard-curve-category');
         var strUser = e.options[e.selectedIndex].value;
         // Add the wiki link to the dialog menu
-        $('#wiki-link').append('<a href="'+AppVars.wikiLinkList[strUser]+'" style="color: rgb(0,102,204)" target="_blank">Detailed Documentation</a>' );
+        $('#wiki-link').empty();
+        if (AppVars.wikiLinkList[strUser] !== undefined) {
+            $('#wiki-link').append('<a href="'+AppVars.wikiLinkList[strUser]+'" style="color: rgb(0,102,204)" target="_blank">Detailed Documentation</a>' );
+        }
 
         /////////////////////////////////////////////////
         // Create dynamic categorized map layer dialog //
