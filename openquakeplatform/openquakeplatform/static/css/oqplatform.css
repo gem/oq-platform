@@ -90,20 +90,20 @@ h2 {
 }
 
 .nav-logo {
-    background: url(/static/images/oq-logo.png) no-repeat;
+    background: url(/static/img/oq-logo.png) no-repeat;
     width: 218px;
     height: 40px;
     margin: 0;
 }
 .nav-logo-gem {
-    background: url(/static/images/oq-gem.png) no-repeat;
+    background: url(/static/img/oq-gem.png) no-repeat;
     width: 72px;
     height: 40px;
     margin: 0;
 }
 
 .navbar .navbar-inner {
-    background: url(/static/images/oq-header.png) no-repeat left top;
+    background: url(/static/img/oq-header.png) no-repeat left top;
     min-width: 1100px;
     background-color: #1b75a5;
 }
