@@ -351,7 +351,7 @@ def export_variables_data_by_ids(request):
     writer = csv.writer(response)
     response.write(copyright + "\n")
     sv_variables_ids = request.GET['sv_variables_ids']
-    sv_variables_ids_list = sv_variables_ids.split(",")
+    sv_variables_ids_list = [var_id.strip() for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
     for sv_variable_id in sv_variables_ids_list:
