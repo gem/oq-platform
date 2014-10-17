@@ -240,7 +240,7 @@ def export_variables_info(request):
     if name_str:
         indicators = indicators.filter(name__icontains=name_str)
 
-    if keywords:
+    if keywords_str:
         indicators = indicators.filter(keywords__in=keywords).distinct()
 
     if theme_obj:
