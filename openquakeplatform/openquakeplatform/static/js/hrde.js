@@ -104,17 +104,23 @@ var startApp = function() {
         closeOnEscape: true
     });
 
+    // Hazard Map download warning dialog
+    $('#HMDownloadWarning').dialog({
+        autoOpen: false,
+        height: 150,
+        width: 400,
+        closeOnEscape: true
+    });
+
     $('#help').button().click(function(e) {
         $('#helpDialog').dialog('open');
+        $('#helpDialog').scrollTop( 0 );
     });
 
     $('#helpDialog').css({ 'overflow' : 'auto' });
 
-
-$('#external-layers-menu').css({ 'margin-bottom' : 0 });
-
-$('#base-map-menu').css({ 'margin-bottom' : 0 });
-
+    $('#external-layers-menu').css({ 'margin-bottom' : 0 });
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
     var riskDataDialog = $('#riskDataDialog').dialog({
         autoOpen: false,
@@ -125,7 +131,6 @@ $('#base-map-menu').css({ 'margin-bottom' : 0 });
     });
 
     $('#riskDataDialog').css({ 'overflow' : 'auto' });
-
     $('#risk-data').button().click(function() {
         $('#riskDataDialog').dialog('open');
     });
@@ -894,12 +899,6 @@ $('#base-map-menu').css({ 'margin-bottom' : 0 });
                 });
             }
 
-            // get information out of the utfgrid for use in Download
-            for (var k in AppVars.utfGridMap._cache) {
-                if (AppVars.utfGridMap._cache[k] !== null && typeof AppVars.utfGridMap._cache[k] === 'object') {
-                }
-            }
-
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 var bounds = json.bounds;
@@ -914,6 +913,59 @@ $('#base-map-menu').css({ 'margin-bottom' : 0 });
             Transparency(tileLayerMap);
         
         });
+    });
+
+
+    // Logic for downloading hazard map csv
+    $('#HMDownload').button().click(function() {
+
+        if (AppVars.utfGridMap !== undefined) {
+    
+            var zoomLevel = map.getZoom();
+            var bounds = map.getBounds();
+            var tempPolygon = L.polygon([
+                [bounds._northEast.lat, bounds._northEast.lng],
+                [bounds._southWest.lat, bounds._southWest.lng]
+            ]);
+            if (zoomLevel >= 6) {
+                var hazardMapValues = [];
+    
+                // get information out of the utfgrid for use in Download
+                for (var l in AppVars.utfGridMap._cache) {
+                    if (AppVars.utfGridMap._cache[l] !== null && typeof AppVars.utfGridMap._cache[l] === 'object') {
+                        for(var m in AppVars.utfGridMap._cache[l].data) {
+                            // download only the values that are within the map bounds
+                            var tempRecord = AppVars.utfGridMap._cache[l].data[m];
+                            var tmpLatLng = L.latLng(tempRecord.latitude, tempRecord.longitude);
+                            if (tempPolygon.getBounds().contains(tmpLatLng)) {
+                                hazardMapValues.push([tempRecord.VAL, tempRecord.longitude, tempRecord.latitude]);
+                            }
+                        }
+                    }
+                }
+    
+                var header = "val, longitude, latitude],";
+                var stringForDownload = JSON.stringify(hazardMapValues);
+                var stringForDownload = header.concat(stringForDownload);
+    
+                stringForDownload = stringForDownload
+                    .replace(/{/g, '')
+                    .replace(/}/g, '')
+                    .replace(/\],/g, '\r\n')
+                    .replace(/\[/g, '')
+                    .replace(/\]/g, '');
+    
+                downloadJSON2CSV(stringForDownload);
+            } else {
+                $('#HMDownloadWarning').empty();
+                $('#HMDownloadWarning').append("Hazard map data can only be downloaded at zoom level 6 or greater. The current zoom level is: "+zoomLevel );
+                $('#HMDownloadWarning').dialog('open');
+            }
+        } else {
+            $('#HMDownloadWarning').empty();
+            $('#HMDownloadWarning').append("A hazard map needs to be loaded into the map before a csv can be downloaded");
+            $('#HMDownloadWarning').dialog('open');
+        }
     });
 
     function Transparency(tileLayer) {
