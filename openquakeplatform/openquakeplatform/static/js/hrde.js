@@ -484,8 +484,7 @@ var startApp = function() {
             // continue
         }
 
-
-        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -576,7 +575,7 @@ var startApp = function() {
             // continue
         }
 
-        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -586,7 +585,7 @@ var startApp = function() {
 
 
     $('#addTileUhs').click(function() {
-        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -647,7 +646,7 @@ var startApp = function() {
     }); // end add uhs curve
 
     $('#addTileLoss').click(function() {
-        $("#chartDialog ").dialog({width: 520,height:520});
+        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -889,7 +888,7 @@ var startApp = function() {
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
                 map.addLayer(AppVars.utfGridMap);
-                $("#chartDialog ").dialog({width: 200,height:150});
+                $('#chartDialog').dialog({width: 200,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
                 $('#chartDialog').dialog('open');
 
