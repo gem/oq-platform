@@ -1615,7 +1615,7 @@ var startApp = function() {
                     .style('fill', 'gray');
             });
 
-        var chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime;
+        var chartHeader = 'Investigation Time: '+AppVars.layerInvestigationTime;
 
         textTopTitle = svg.append("text")
             .attr("x", 0)
@@ -1630,7 +1630,7 @@ var startApp = function() {
             .attr("y", -15)
             .attr("dy", ".35em")
             .attr("font-size","12px")
-            .text(chartHeaderTest+' (Lon/Lat): '+lng+', '+lat);
+            .text(chartHeader+' (Lon/Lat): '+lng+', '+lat);
 
         textBottom = svg.append('text')
             .attr('x', 0)
@@ -1686,7 +1686,7 @@ var startApp = function() {
 
     function hazardInputD3Chart(mfdsJsonObj) {
 
-        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
+        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
         var selectedCurves = [];
         /* associative array of arrays of values */
@@ -2009,7 +2009,7 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
-        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeaderTest;
+        var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeader;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
         if (AppVars.layerIml instanceof Array) {
@@ -2031,9 +2031,9 @@ var startApp = function() {
         lon = chartData.lon;
         if (curveType == 'uhs') {
             poe = AppVars.layerPoe;
-            chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime+', Probability of exceedance: '+poe;
+            chartHeader = 'Investigation Time: '+AppVars.layerInvestigationTime+', Probability of exceedance: '+poe;
         } else {
-            chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime;
+            chartHeader = 'Investigation Time: '+AppVars.layerInvestigationTime;
         }
 
         invest_time = AppVars.layerInvestigationTime;
@@ -2371,7 +2371,7 @@ var startApp = function() {
             .attr("y", -32)
             .attr("dy", ".35em")
             .attr("font-size","12px")
-            .text(chartHeaderTest);
+            .text(chartHeader);
 
         textTopSubTitle = svg.append("text")
             .attr("x", 0)
