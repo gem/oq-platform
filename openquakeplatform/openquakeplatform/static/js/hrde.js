@@ -1465,9 +1465,7 @@ var startApp = function() {
                 .ticks(5);
         }
 
-        if (AppVars.layerIml instanceof Array) {
-            //continue
-        } else {
+        if(!(AppVars.layerIml instanceof Array)) {
             AppVars.layerIml = AppVars.layerIml.split(',');
         }
 
@@ -2011,9 +2009,7 @@ var startApp = function() {
         var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeader;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
-        if (AppVars.layerIml instanceof Array) {
-            //continue
-        } else {
+        if(!(AppVars.layerIml instanceof Array)) {
             AppVars.layerIml = AppVars.layerIml.split(',');
             for (var i = 0; i < AppVars.layerIml.length; i++) {
                 AppVars.layerIml[i] = parseFloat(AppVars.layerIml[i]);
