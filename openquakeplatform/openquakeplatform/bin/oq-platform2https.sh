@@ -140,6 +140,7 @@ s@</VirtualHost>@\
     SSLEngine on\n\
     SSLCertificateFile    /etc/ssl/certs/oq-platform.crt\n\
     SSLCertificateKeyFile /etc/ssl/private/oq-platform.key\n\
+    SSLProtocol All -SSLv2 -SSLv3\n\
     BrowserMatch \"MSIE [2-6]\" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0\n\
     # MSIE 7 and newer should be able to use keepalive\n\
     BrowserMatch \"MSIE [17-9]\" ssl-unclean-shutdown\n\

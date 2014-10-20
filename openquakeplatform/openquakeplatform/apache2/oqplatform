@@ -10,6 +10,7 @@ WSGIDaemonProcess openquakeplatform user=www-data threads=15 processes=2
     WSGIProcessGroup openquakeplatform
     WSGIPassAuthorization On
     WSGIScriptAlias / /var/www/openquake/platform/wsgi.py
+    WSGIApplicationGroup %{GLOBAL}
 
     <Directory "/var/www/openquake/platform/">
        Order allow,deny
