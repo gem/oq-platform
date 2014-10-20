@@ -23,10 +23,10 @@ AppProtoType.prototype = {
 
     utfGrid: {},
     layerControl: null,
-    
+
     // Keep track of grids
     gridList: null,
-    
+
     // Make a list of categories
     curveCategoryList: [],
     wikiLinkList: {},
@@ -62,7 +62,7 @@ AppProtoType.prototype = {
     inputByInvestSingle: {},
     inputLayerGrids: [],
     mappedValue: null,
-    
+
     //Keep track of layer specific information
     layerInvestigationTime: null,
     layerIml: null,
@@ -72,7 +72,7 @@ AppProtoType.prototype = {
 };
 
 var AppVars = new AppProtoType();
-    
+
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
@@ -175,12 +175,12 @@ var startApp = function() {
     // switch additional data layers
     $('#external-layers-menu').change(function() {
         var externalLayerSelection = document.getElementById('external-layers-menu').value;
- 
+
         if (externalLayerSelection == 1) {
             var strain = new L.TileLayer(TILESTREAM_URL+'strain/{z}/{x}/{y}.png');
             map.addLayer(strain);
             AppVars.layerControl.addOverlay(strain, "Strain");
-            
+
         } else if (externalLayerSelection == 2) {
             var strainArrows = new L.TileLayer(TILESTREAM_URL+'strain-arrows/{z}/{x}/{y}.png');
             map.addLayer(strainArrows);
@@ -307,7 +307,7 @@ var startApp = function() {
             var app = json[i].application;
             var grid, gridName;
             var wiki = json[i].wiki_link;
- 
+
             if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds') {
                 AppVars.curveCategoryList.push(cat);
                 if (wiki !== undefined ) {
@@ -337,7 +337,7 @@ var startApp = function() {
                 gridName = grid.split('/')[4];
                 AppVars.lossLayerGrids.push(gridName);
             }
-            
+
             if (type == 'input-mfds') {
                 AppVars.inputLayersByCat[cat] = [];
                 AppVars.inputLayerNames[name] = [];
@@ -345,7 +345,7 @@ var startApp = function() {
                 gridName = grid.split('/')[4];
                 AppVars.inputLayerGrids.push(gridName);
             }
-          
+
             if (chartType == undefined && cat !== undefined && type == 'hazard') {
                 AppVars.mapLayerNames[name] = [];
                 AppVars.mapLayersByCat[cat] = [];
@@ -484,7 +484,7 @@ var startApp = function() {
             // continue
         }
 
-        
+
         $("#chartDialog ").dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -541,7 +541,7 @@ var startApp = function() {
                         '">' +
                         curvesList[j] +
                         '<br>';
-    
+
                     $('#hc-mixed-selection').append(checkbox);
                 }
             }
@@ -629,7 +629,7 @@ var startApp = function() {
                         '">' +
                         uhsList[j] +
                         '<br>';
-    
+
                     $('#uhs-mixed-selection').append(checkbox);
                 }
             }
@@ -712,16 +712,16 @@ var startApp = function() {
 
         if (mapLayersArray instanceof Array) {
             $('#mapOptionLabel').prepend('Choose a Map');
-        
+
             var mapLayerList = [];
             for (var i = 0; i < mapLayersArray.length; i++) {
                 mapLayerList.push({name: mapLayersArray[i]});
             }
-            
+
             mapScope.$apply(function(){
                 mapScope.maps = mapLayerList;
             });
-    
+
             $('#addTileLayer').attr('disabled', false);
             $('#removeTileLayer').attr('disabled', false);
         } else {
@@ -745,11 +745,11 @@ var startApp = function() {
 
             // Append the input model layer list to the dropdown form
             var inputScope = angular.element($("#input-list")).scope();
-    
+
             inputScope.$apply(function(){
                 inputScope.inputs = inputLayerList;
             });
-    
+
             $('#addTileInput').attr('disabled', false);
             $('#removeTileInput').attr('disabled', false);
         } else {
@@ -773,11 +773,11 @@ var startApp = function() {
 
             // Append the haard curve layer list to the dropdown form
             var hazardCurveScope = angular.element($("#curve-list")).scope();
-    
+
             hazardCurveScope.$apply(function(){
                 hazardCurveScope.curves = hazardCurveLayerList;
             });
-    
+
             $('#addTileCurve').attr('disabled', false);
             $('#removeTileCurve').attr('disabled', false);
         } else {
@@ -801,11 +801,11 @@ var startApp = function() {
 
             // Append the haard uhs layer list to the dropdown form
             var uhsScope = angular.element($("#uhs-list")).scope();
-    
+
             uhsScope.$apply(function(){
                 uhsScope.uhss = uhsLayerList;
             });
-    
+
             $('#addTileUhs').attr('disabled', false);
             $('#removeTileUhs').attr('disabled', false);
         } else {
@@ -836,11 +836,11 @@ var startApp = function() {
 
             // Append the risk loss layer list to the dropdown form
             var lossScope = angular.element($("#loss-list")).scope();
-    
+
             lossScope.$apply(function(){
                 lossScope.losses = lossLayerList;
             });
-  
+
             $('#addTileLoss').attr('disabled', false);
             $('#removeTileLoss').attr('disabled', false);
         } else {
@@ -911,7 +911,7 @@ var startApp = function() {
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
             Transparency(tileLayerMap);
-        
+
         });
     });
 
@@ -920,7 +920,6 @@ var startApp = function() {
     $('#HMDownload').button().click(function() {
 
         if (AppVars.utfGridMap !== undefined) {
-    
             var zoomLevel = map.getZoom();
             var bounds = map.getBounds();
             var tempPolygon = L.polygon([
@@ -929,7 +928,7 @@ var startApp = function() {
             ]);
             if (zoomLevel >= 6) {
                 var hazardMapValues = [];
-    
+
                 // get information out of the utfgrid for use in Download
                 for (var l in AppVars.utfGridMap._cache) {
                     if (AppVars.utfGridMap._cache[l] !== null && typeof AppVars.utfGridMap._cache[l] === 'object') {
@@ -943,18 +942,18 @@ var startApp = function() {
                         }
                     }
                 }
-    
+
                 var header = "val, longitude, latitude],";
                 var stringForDownload = JSON.stringify(hazardMapValues);
                 var stringForDownload = header.concat(stringForDownload);
-    
+
                 stringForDownload = stringForDownload
                     .replace(/{/g, '')
                     .replace(/}/g, '')
                     .replace(/\],/g, '\r\n')
                     .replace(/\[/g, '')
                     .replace(/\]/g, '');
-    
+
                 downloadJSON2CSV(stringForDownload);
             } else {
                 $('#HMDownloadWarning').empty();
@@ -983,11 +982,11 @@ var startApp = function() {
             AppVars.utfGrid = {};
             var scope = angular.element($("#curve-list")).scope();
             var curveLayerId = scope.selected_curve.name;
-    
+
             // Look up the layer id using the layer name
             var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
             var selectedLayer = curveLayerIdArray.toString();
-    
+
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 AppVars.mappedValue = json.mapped_value;
@@ -1024,9 +1023,6 @@ var startApp = function() {
             var hasGrid = $.inArray(selectedLayer, AppVars.inputLayerGrids) > -1;
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                //layerInvestigationTime = json.investigationTime;
-                //layerIml = json.periods;
-                //layerPoe = json.poe;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1039,7 +1035,6 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        //AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
         AppVars.tileLayer.setZIndex(1000);
 
@@ -1113,8 +1108,8 @@ var startApp = function() {
                     for (var i = 0; i < tempOccurRate.length; i++) {
                         occurRateArray.push(i);
                     }
-                    
-                    for (var k in mfdsJsonObj) {    
+
+                    for (var k in mfdsJsonObj) {
                         binWidth = mfdsJsonObj[k].bin_width;
                         minMag = mfdsJsonObj[k].min_mag;
                         occurRate = mfdsJsonObj[k].occur_rates;
@@ -1156,7 +1151,6 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        //AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
         AppVars.tileLayer.setZIndex(1000);
         // Keep track of layers that have been added
@@ -1222,7 +1216,6 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        //AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
         AppVars.tileLayer.setZIndex(1000);
 
@@ -1248,10 +1241,10 @@ var startApp = function() {
         utfGrid.on('click', function (e) {
 
             $('#chartDialog').empty();
-            if ($("#chartDialog").dialog( "isOpen" ) == false) {
+            if ($("#chartDialog").dialog("isOpen") == false) {
                 $('#chartDialog').dialog('open');
             }
-            
+
             var prob;
             var iml;
             var probArray = [];
@@ -1344,7 +1337,7 @@ var startApp = function() {
                 //document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
-    }; // End hazardCurveUtfGridClickEventMixed
+    } // End hazardCurveUtfGridClickEventMixed
 
     var lossCurveUtfGridClickEvent = function(utfGrid) {
         utfGrid.on('click', function (e) {
@@ -1420,9 +1413,9 @@ var startApp = function() {
                     chartData[assetArray[i]] = [];
                 }
 
-                for (var i = 0; i < lossesArray.length; i++) {
-                    chartData[assetArray[i]].push(lossesArray[i]);
-                    chartData[assetArray[i]].push(poesArray[i]);
+                for (var b = 0; b < lossesArray.length; b++) {
+                    chartData[assetArray[b]].push(lossesArray[b]);
+                    chartData[assetArray[b]].push(poesArray[b]);
                 }
 
                 LossD3Chart(chartData, assetArray, lat, lon);
@@ -1623,7 +1616,7 @@ var startApp = function() {
             });
 
         var chartHeaderTest = 'Investigation Time: '+AppVars.layerInvestigationTime;
-        
+
         textTopTitle = svg.append("text")
             .attr("x", 0)
             .attr("y", -30)
@@ -1787,8 +1780,6 @@ var startApp = function() {
         var margin = {top: 55, right: 80, bottom: 45, left: 60};
         var width = 480 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
-
-      
         var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
         var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
 
@@ -1804,7 +1795,7 @@ var startApp = function() {
             for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
                 xAxis_vals[i].push(yAxisVariable[e]);
             }
-            
+
             xAxis[i] = d3.svg.axis()
                 .scale(x_scale)
                 .ticks(4)
@@ -1971,11 +1962,11 @@ var startApp = function() {
             var csvData = [];
 
             //csvData = csvData.concat(csvHeader);
-            csvData = csvData.concat("mfds");
-            csvData = csvData.concat("binWidth");
-            csvData = csvData.concat("minMag");
-            csvData = csvData.concat("occurRate");
-            csvData = csvData.concat("mags");
+            csvData.push("mfds");
+            csvData.push("binWidth");
+            csvData.push("minMag");
+            csvData.push("occurRate");
+            csvData.push("mags");
             csvData = JSON.stringify(csvData);
             var lineBreak = "lineBreak";
             csvData = csvData.concat(lineBreak);
@@ -1994,7 +1985,7 @@ var startApp = function() {
 
                 csvData = csvData.concat(curve_name);
                 csvData = csvData.concat(',');
-                
+
                 csvData = csvData.concat(curveValue.bin_width);
                 csvData = csvData.concat(',');
 
@@ -2415,10 +2406,10 @@ var startApp = function() {
             var csvHeader = selectedCurves;
             var csvData = [];
             csvData = csvData.concat(csvHeader);
-            csvData = csvData.concat("investigationTime");
-            csvData = csvData.concat("poE");
-            csvData = csvData.concat("lon");
-            csvData = csvData.concat("lat");
+            csvData.push("investigationTime");
+            csvData.push("poE");
+            csvData.push("lon");
+            csvData.push("lat");
             csvData = JSON.stringify(csvData);
             var lineBreak = "lineBreak";
             csvData = csvData.concat(lineBreak);
