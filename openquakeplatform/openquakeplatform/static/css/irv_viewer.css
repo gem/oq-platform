@@ -28,6 +28,9 @@ input {
   float:left;	
 }
 
+.ui-dialog {
+  z-index: 9000;
+}
 
 svg {
   font: 10px sans-serif;
