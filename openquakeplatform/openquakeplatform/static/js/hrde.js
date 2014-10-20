@@ -1983,26 +1983,21 @@ var startApp = function() {
                 curve_name = selectedCurves[k];
                 var curveValue = mfdsJsonObj[curve_name];
 
-                csvData = csvData.concat(curve_name);
-                csvData = csvData.concat(',');
-
-                csvData = csvData.concat(curveValue.bin_width);
-                csvData = csvData.concat(',');
-
-                csvData = csvData.concat(curveValue.min_mag);
-                csvData = csvData.concat(',');
-
-                csvData = csvData.concat(quotationMark);
-                csvData = csvData.concat(curveValue.occur_rates);
-                csvData = csvData.concat(quotationMark);
-                csvData = csvData.concat(',');
-
-                csvData = csvData.concat(quotationMark);
-                csvData = csvData.concat(curveValue.mags);
-                csvData = csvData.concat(quotationMark);
-                csvData = csvData.concat('\r\n');
+                csvData.push(curve_name);
+                csvData.push(',');
+                csvData.push(curveValue.bin_width);
+                csvData.push(',');
+                csvData.push(curveValue.min_mag);
+                csvData.push(',');
+                csvData.push(quotationMark);
+                csvData.push(curveValue.occur_rates);
+                csvData.push(quotationMark);
+                csvData.push(',');
+                csvData.push(quotationMark);
+                csvData.push(curveValue.mags);
+                csvData.push(quotationMark);
+                csvData.push('\r\n');
             }
-
 
             downloadJSON2CSV(csvData);
         });
