@@ -543,7 +543,7 @@ oq_platform_install () {
 
     #
     # Update Django 'sites' with real hostname
-    DJANGO_SETTINGS_MODULE='openquakeplatform.settings' python -c "from django.contrib.sites.models import Site; mysite = Site.objects.all()[0]; mysite.domain = '$gem_host_name'; mysite.name = '$gem_host_name'; mysite.save()"
+    DJANGO_SETTINGS_MODULE='openquakeplatform.settings' python -c "from django.contrib.sites.models import Site; from openquakeplatform import settings; mysite = Site.objects.all()[0]; mysite.domain = settings.SITEURL; mysite.name = settings.SITENAME; mysite.save()"
 
     #
     #  database population (fixtures)
