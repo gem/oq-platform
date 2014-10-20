@@ -105,6 +105,24 @@ var startApp = function() {
     map.panTo(new L.LatLng(39.399, -8.22));
     map.setZoom(6);
 
+    var winHelp = $(window).height() - 200;
+    var winW = $(window).width() - 200;
+
+    // Help dialog
+    $('#helpDialog').dialog({
+        autoOpen: false,
+        height: winHelp,
+        width: winW,
+        closeOnEscape: true
+    });
+
+    $('#help').button().click(function(e) {
+        $('#helpDialog').dialog('open');
+        $('#helpDialog').scrollTop( 0 );
+    });
+
+    $('#helpDialog').css({ 'overflow' : 'auto' });
+
     // Duplicate layer warnning message
     function showDuplicateMsg() {
         $('#warning-duplicate').dialog('open');

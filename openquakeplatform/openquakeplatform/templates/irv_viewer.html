@@ -24,6 +24,8 @@ Explore - {{block.super}}
 {% include "base_map_options.html" %}
 
 <button type="button" id="load-project">Load Project</button>
+<button type="button" id="help">Help</button>
+
 <div id="loadProjectDialog" title="Load Project">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -37,6 +39,54 @@ Explore - {{block.super}}
   </form>
 </div>
 
+<div id="helpDialog" title="Help" style="overflow: hidden;">
+    <h1><center>Integrated Risk and Vulnerability Viewer</center></h1>
+
+    <br>
+    <h2><center>About</center></h2>
+
+    <p>The Integrated Risk and Vulnerability Viewer is an interactive map created by the GEM Foundation that can be used to explore and interact with social vulnerability indicators. Within the application users can load a project that has been created using the GEM SVIR QGIS plugin. Users are then able to modify the indicator weights, these new values directly affect the charts that can be viewed by clicking regions on the map.</p>
+    <br>
+
+    <ul>
+      <li><h3>Layers:</h3>
+        <dl>Alternative base maps can be selected on the top left of the toolbar</dl>
+        <dl>Each layer that is added to the map gets added to the layer controller <img src="{{ STATIC_URL }}/Leaflet/dist/images/layers.png" alt="controller image" style="width:26px;height:26px">, from the controller layers can be turned on and off</dl>
+      </li>
+
+      <li><h3>Loading layers into the map:</h3>
+        <dl>Select 'Load Project', from the respective dialog one can choose to load a project into the map</dl>
+
+        <dl>Once a project has been selected and loaded, the map view will zoom to the location of the project map layer</dl>
+
+        <dl>To view and modify the project definition tree, select the Project Def tab. The weights can now be modified by clicking on a name within the 'tree branch' of the project definition. All of the weight values for a single tree branch will be normalized to a sum equal to 1. These weights will be applied to the charts</dl>
+
+      </li>
+      <li><h3>The Charts:</h3>
+        <dl>Charts can be rendered for IRI, Category and Primary indicators of each region of the project. To render a chart, simply click on the respective chart tab, then select a region on the map</dl>
+
+      <li><h3>Attribution:</h3>
+      <!-- TODO add data attribution link
+        <dl><b>Data: </b> Information about the data accesable in this applicaiton can be found at <a style="color: rgb(0,102,204)" href="https://hazardwiki.openquake.org/hazard_models">here</a></dl>
+        -->
+        <dl><b>Basemaps: <br></b><a style="color: rgb(0,102,204)" href="http://visibleearth.nasa.gov/view_cat.php?categoryID=1484">Blue Marble</a>, Source: NASA Earth Observatory/NOAA NGDC
+        <br>
+        <a style="color: rgb(0,102,204)" href="http://msdn.microsoft.com/en-us/library/dd877180.aspx">Bing Maps</a>
+        <br>
+        <a style="color: rgb(0,102,204)" href="http://developer.mapquest.com/web/tools/getting-started/platform/licensed-vs-open">MapQuest</a>
+        <a style="color: rgb(0,102,204)" href="http://www.openstreetmap.org/copyright">OpenStreetMaps</a>
+        <br>
+        <br>
+        <b>Graph: </b><a style="color: rgb(0,102,204)" href="http://d3js.org/">d3.js</a> by <a style="color: rgb(0,102,204)" href="http://bost.ocks.org/mike/">Mike Bostock</a>was used to generate the hazard and risk plots
+        <br>
+        <br>
+        <b>Map: </b><a style="color: rgb(0,102,204)" href="http://leafletjs.com/">Leaflet.js</a> was used to generate the web maps
+        <br>
+        </dl>
+
+      </li>
+    </ul>
+  </div>
 
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
