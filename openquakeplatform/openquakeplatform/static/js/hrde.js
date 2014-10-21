@@ -970,7 +970,7 @@ var startApp = function() {
         $('#transparency-slider').slider({
             change: function( event, ui) {
                 var val = $('#transparency-slider').slider("option", "value");
-                AppVars.tileLayer.setOpacity(val);
+                tileLayer.setOpacity(val);
             }
         });
     }
