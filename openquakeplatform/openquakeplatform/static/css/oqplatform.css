@@ -44,10 +44,12 @@ h2 {
 }
 
 .span9 {
+    position: absolute;
     width: auto;
     margin-left: 0;
     margin-right: 75px;
     float: right;
+    right: 0;
 }
 
 .span3 {
@@ -95,6 +97,14 @@ h2 {
     height: 40px;
     margin: 0;
 }
+
+#gem-right-logo {
+    float: right;
+    right: 0;
+    position: absolute;
+
+}
+
 .nav-logo-gem {
     background: url(/static/img/oq-gem.png) no-repeat;
     width: 72px;
