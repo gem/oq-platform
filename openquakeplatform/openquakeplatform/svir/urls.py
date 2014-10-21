@@ -21,12 +21,7 @@
 # from django.conf.urls.defaults import patterns
 # from django.conf.urls.defaults import url
 from django.conf.urls import patterns, include, url
-from openquakeplatform.svir.views import (export_sv_category_names,
-                                          export_sv_data_by_variables_ids,
-                                          create_project,
-                                          upload_project_definition,
-                                          upload_project_data,
-                                          list_themes,
+from openquakeplatform.svir.views import (list_themes,
                                           list_subthemes_by_theme,
                                           export_variables_info,
                                           export_variables_data_by_ids)
@@ -39,11 +34,6 @@ admin.autodiscover()
 urlpatterns = patterns(
     'geonode.svir.views',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^export_sv_category_names', export_sv_category_names),
-    url(r'^export_sv_data_by_variables_ids', export_sv_data_by_variables_ids),
-    url(r'^create_project', create_project),
-    url(r'^upload_project_data', upload_project_data),
-    url(r'^upload_project_definition', upload_project_definition),
     url(r'^list_themes', list_themes),
     url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
     url(r'^export_variables_info', export_variables_info),

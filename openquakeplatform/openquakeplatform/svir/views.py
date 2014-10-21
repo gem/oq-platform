@@ -26,7 +26,6 @@ from django.views.decorators.http import condition
 from django.core.exceptions import ValidationError
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
-from openquakeplatform.svir import util
 from openquakeplatform.svir.models import (Project,
                                            Theme,
                                            Subtheme,
@@ -61,70 +60,6 @@ COPYRIGHT_HEADER = u"""\
 
  More information on licensing: http://www.globalquakemodel.org/licensing
 """
-
-
-@condition(etag_func=None)
-@allowed_methods(('POST', ))
-@sign_in_required
-def create_project(request):
-    """
-    Create a new SVIR project, given its name and description
-    :param request:
-        A "POST" :class:`django.http.HttpRequest` object containing
-        the following parameters::
-            * 'name'
-            * 'description'
-    :return:
-        a json object containing
-            * 'project_id': the id of the new project saved (if the project is
-                            correctly saved)
-            * the names of the invalid fields, in case of validation errors
-            * a generic 'error' if the project is not saved for another reason
-    """
-    name = request.GET.get('name', None)
-    description = request.GET.get('description', None)
-    # if not name or not description:
-    #     return HttpResponse('Project name and description are mandatory')
-    try:
-        project = Project(name=name, description=description)
-        project.created_by = request.user
-        project.full_clean()
-        project.save()
-    except ValidationError, e:
-        return HttpResponse(json.dumps(e), content_type="application/json")
-    except Exception, e:
-        return HttpResponse(json.dumps(e), content_type="application/json")
-    return HttpResponse(json.dumps(dict(project_id=project.pk)),
-                        content_type="application/json")
-
-
-@condition(etag_func=None)
-@allowed_methods(('POST', ))
-@sign_in_required
-def upload_project_data(request):
-    """
-    Upload into Project a GeoJSON object containing project data
-    """
-    pass
-
-
-@condition(etag_func=None)
-@allowed_methods(('POST', ))
-@sign_in_required
-def upload_project_definition(request):
-    """
-    Upload into Project JSON object containing project definition
-    """
-    project_id = request.GET.get('project_id', None)
-    project_definition = request.GET.get('project_definition', None)
-    try:
-        project = Project.objects.get(pk=project_id)
-    except:
-        return HttpResponseNotFound(
-            'Project with id [%s] not found' % project_id)
-    project.metadata = project_definition
-    project.save()
-    return HttpResponse('Project definition successfully uploaded')
 
 
 @condition(etag_func=None)
@@ -278,56 +213,6 @@ def export_variables_info(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def export_sv_category_names(request):
-    """
-    Export a csv file containing the requested social vulnerability category
-    names
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing zero or more
-        of the following parameters::
-            * 'theme'
-            * 'subtheme'
-            * 'tag'
-        If none of those parameters is provided, the csv file will contain the
-        list of distinct themes in the svir DB.
-        If theme is provided, the csv file will contain the corresponding list
-        of distinct subthemes.
-        If also the subtheme is provided, the csv file will contain the
-        corresponding list of tags.
-        If also the tag is provided, the csv file will contain the names of the
-        corresponding social vulnerability variables and their ids
-    """
-    response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="sv_category_names_export.csv"'
-    response['Content-Disposition'] = content_disp
-    theme = request.GET.get('theme')
-    subtheme = request.GET.get('subtheme')
-    tag = request.GET.get('tag')
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    response.write(copyright + "\n")
-    writer = csv.writer(response)
-    if theme and subtheme and tag:
-        sv_items = util._get_sv_ids_and_names(theme, subtheme, tag)
-        writer.writerow(["ID", "NAME"])
-    elif theme and subtheme:
-        sv_items = util._get_sv_tags(theme, subtheme)
-        writer.writerow(["TAG"])
-    elif theme:
-        sv_items = util._get_sv_subthemes(theme)
-        writer.writerow(["SUBTHEME"])
-    else:
-        writer.writerow(["THEME"])
-        sv_items = util._get_sv_themes()
-    for sv_item in sv_items:
-        encoded_sv_item = tuple([col.encode('utf-8') for col in sv_item])
-        writer.writerow(encoded_sv_item)
-    return response
-
-
-@condition(etag_func=None)
-@allowed_methods(('GET', ))
-@sign_in_required
 def export_variables_data_by_ids(request):
     """
     Export a csv file containing data corresponding to the social vulnerability
@@ -338,6 +223,8 @@ def export_variables_data_by_ids(request):
         following parameter:
             * 'sv_variables_ids': a string of comma-separated ids of social
                                   vulnerability variables
+            * 'export_geometries': a boolean indicating if the geometries of
+                                   countries need to be exported too
     """
     if not request.GET.get('sv_variables_ids'):
         msg = ('A list of comma-separated social vulnerability variable names'
@@ -356,7 +243,9 @@ def export_variables_data_by_ids(request):
     header_list = ["ISO", "COUNTRY_NAME"]
     for sv_variable_id in sv_variables_ids_list:
         header_list.append(sv_variable_id)
-    header_list.append("GEOMETRY")
+    export_geometries = request.GET.get('export_geometries') == 'True'
+    if export_geometries:
+        header_list.append("GEOMETRY")
     writer.writerow(header_list)
     indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
     inclusive_region = CustomRegion.objects.get(
@@ -372,55 +261,9 @@ def export_variables_data_by_ids(request):
                 val = ''
             ind_vals.append(val)
         row.extend(ind_vals)
-        row.append(country.the_geom)
+        if export_geometries:
+            row.append(country.the_geom)
         writer.writerow(row)
-    return response
-
-
-@condition(etag_func=None)
-@allowed_methods(('GET', ))
-@sign_in_required
-def export_sv_data_by_variables_ids(request):
-    """
-    Export a csv file containing data corresponding to the social vulnerability
-    variables which ids are given in input
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameter:
-            * 'sv_variables_ids': a string of comma-separated ids of social
-                                  vulnerability variables
-    """
-    if not request.GET.get('sv_variables_ids'):
-        msg = ('A list of comma-separated social vulnerability variable names'
-               ' must be specified')
-        response = HttpResponse(msg, status="400")
-        return response
-    response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="sv_data_by_variables_ids_export.csv"'
-    response['Content-Disposition'] = content_disp
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    writer = csv.writer(response)
-    response.write(copyright + "\n")
-    sv_variables_ids = request.GET['sv_variables_ids']
-    sv_variables_ids_list = sv_variables_ids.split(",")
-    # build the header, appending sv_variables_ids properly
-    header_list = ["ISO", "COUNTRY_NAME"]
-    for sv_variable_id in sv_variables_ids_list:
-        header_list.append(sv_variable_id)
-    header_list.append("GEOMETRY")
-    writer.writerow(header_list)
-    sv_data_by_variables_ids = \
-        util._get_sv_data_by_variables_ids(sv_variables_ids)
-    for row in sv_data_by_variables_ids:
-        encoded_row = []
-        for element in row:
-            if isinstance(element, unicode):
-                encoded_element = element.encode('utf-8')
-            else:
-                encoded_element = unicode(element).encode('utf-8')
-            encoded_row.append(encoded_element)
-        writer.writerow(encoded_row)
     return response
 
 
