@@ -1,0 +1,23 @@
+.welcome-container {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#welcome-details {
+    background-color: rgba(255, 255, 255, 1);
+    display: table-cell;
+    padding: 50px;
+}
+
+#welcome-details .info {
+    text-align: center;
+}
+
+#welcome-details .info p {
+    font-size: 1.3em;
+}
+
+#welcome-details .info .lead-icon {
+    color: rgb(183, 183, 183);
+    font-size: 80px;
+}
