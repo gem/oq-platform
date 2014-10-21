@@ -2022,12 +2022,18 @@ var startApp = function() {
     /////////////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
+
+        if (selectedCurves.indexOf("iml") > -1) {
+            var inx = selectedCurves.indexOf("iml");
+            selectedCurves.splice(inx, 1);
+        }
+
         var lat, lon, poe, xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors, chartHeader;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
         if(!(AppVars.layerIml instanceof Array)) {
-            AppVars.layerIml = AppVars.layerIml.split(',');
-            for (var i = 0; i < AppVars.layerIml.length; i++) {
+            AppVars.layerIml = AppVars.layerIml.split(' ');
+            for (i = 0 ; i < AppVars.layerIml.length ; i++) {
                 AppVars.layerIml[i] = parseFloat(AppVars.layerIml[i]);
             }
         }
@@ -2079,7 +2085,11 @@ var startApp = function() {
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
-            curve_vals[curve_name] = chartData[curve_name].split(',');
+            try {
+                curve_vals[curve_name] = chartData[curve_name].split(',');
+            } catch (e) {
+                // continue
+            }
         }
 
         for (var k in selectedCurves) {
@@ -2168,6 +2178,8 @@ var startApp = function() {
         }
 
         function makeCircles(circleData, k, color, curveTitle) {
+            console.log("circleData");
+            console.log(circleData);
             // Points along the line
             svg.selectAll("circle.line")
                 .data(circleData)
@@ -2178,6 +2190,8 @@ var startApp = function() {
                 .attr("r", 2.5)
                 .style("fill", color)
                 .on("mouseover", function() {
+                    console.log("this.__data__[0]");
+                    console.log(this);
                     d3.select(this)
                         .attr('r', 6)
                         .text(circleX + ", " + circleY)
@@ -2199,8 +2213,8 @@ var startApp = function() {
                 });
         }
 
-        var margin = {top: 55, right: 20, bottom: 60, left: 60};
-        var width = 400 - margin.left - margin.right;
+        var margin = {top: 55, right: 10, bottom: 60, left: 60};
+        var width = 450 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
 
         if (curveType == 'hc') {
@@ -2284,7 +2298,7 @@ var startApp = function() {
             );
 
         legend = d3.select("#chartDialog").append("svg")
-            .attr("height", 25*(selectedCurves.length - 1));
+            .attr("height", 35*(selectedCurves.length - 1));
 
         for (var i = 0; i < selectedCurves.length; i++) {
 
@@ -2328,12 +2342,12 @@ var startApp = function() {
 
             legend.append("text")
                 .attr("x", 90)
-                .attr("y", 20*(i))
+                .attr("y", 20*(i+1))
                 .attr("dy", ".35em")
                 .text(curveTitle);
 
             legend.append("svg:circle")
-                .attr("cy", 20*(i))
+                .attr("cy", 20*(i+1))
                 .attr("cx", 80)
                 .attr("r", 3)
                 .style("fill", color)
