@@ -861,6 +861,22 @@ var startApp = function() {
             } catch (e) {
                 // continue
             }
+            try {
+                // check if the layer is not a hazard map, and if so remove from controller
+                for (var k in AppVars.layerControl._layers) {
+                    var nameTemp = AppVars.layerControl._layers[k].name;
+                    var nameTest = nameTemp.indexOf("map") > -1;
+
+                    if (nameTest === false) {
+                        delete AppVars.layerControl._layers[k];
+                    }
+                }
+                map.removeLayer(AppVars.utfGrid);
+                map.removeLayer(AppVars.tileLayer);
+                map.removeLayer(AppVars.utfGridMap);
+            } catch (e) {
+                // continue
+            }
 
             $('#chartDialog').empty();
             var scope = angular.element($("#layer-list")).scope();
