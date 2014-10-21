@@ -23,25 +23,21 @@ Explore - {{block.super}}
 {% block body_outer %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
 
-<center><h1>The OpenQuake Platform Help</h1>
+<center><h1>Explore Data Help</h1>
 	<div id="welcome-details">
 		<div id="calculate" class="welcome-container">
-			<h2>Calculate</h2>
-			<p>Learn how to use, access & download the <a href="{% url 'calculate' %}">OpenQuake Engine ></a></p>
+			<h2>Custom Map Compose</h2>
+			<p>Learn to create save and share a custom map using GeoExplore</p>
 		</div>
 		<div id="share" class="welcome-container">
-			<h2>Share</h2>
-			<p>The OpenQuake Platform includes a number of tool for contributing to the existing datasets. <a href="{% url 'share' %}">Find out more ></a></p>
+			<h2>Hazard & Risk Data Explorer</h2>
+			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'help_hrde' %}">Learn more ></a></p>
 		</div>
 		<div id="explore" class="welcome-container">
-			<h2>Explore</h2>
-			<p>The OpenQuake Platform features a number of custom applications to explore and interact with data <a href="{% url 'help_explore' %}">Learn more ></a></p>
+			<h2>Integrated Risk Vulnerability Viewer</h2>
+			<p>The Integrated Risk and Vulnerability Viewer is an interactive map created by the GEM Foundation that can be used to explore and interact with social vulnerability indicators. Within the application users can load a project that has been created using the GEM SVIR QGIS plugin. Users are then able to modify the indicator weights, these new values directly affect the charts that can be viewed by clicking regions on the map. <a href="{% url 'help_irv' %}">Learn more ></a></p>
 		</div>
-
 	</div>
-
-
-
 
 {{block.super}}
 

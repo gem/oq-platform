@@ -96,6 +96,12 @@ urlpatterns = patterns('',
         template_name="hazard_viewer.html"), name='hazard_viewer'),
     url(r'^help_oqp/$', TemplateView.as_view(
         template_name="help_oqp.html"), name='help_oqp'),
+    url(r'^help_explore/$', TemplateView.as_view(
+        template_name="help_explore.html"), name='help_explore'),
+    url(r'^help_hrde/$', TemplateView.as_view(
+        template_name="help_hrde.html"), name='help_hrde'),
+    url(r'^help_irv/$', TemplateView.as_view(
+        template_name="help_irv.html"), name='help_irv'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
