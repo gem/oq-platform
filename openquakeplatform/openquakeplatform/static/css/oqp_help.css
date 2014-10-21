@@ -17,7 +17,23 @@
     font-size: 1.3em;
 }
 
-#welcome-details .info .lead-icon {
+#welcome-details .info {
     color: rgb(183, 183, 183);
     font-size: 80px;
+}
+
+#calculate {
+  float: left;
+  width: 32%;
+  padding left: 1%;
+}
+#share {
+  float: left;
+  width: 32%;
+  padding left: 1%;
+}
+#explore {
+  float: left;
+  width: 32%;
+  padding left: 1%;
 }
