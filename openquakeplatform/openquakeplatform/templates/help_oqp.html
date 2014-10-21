@@ -1,0 +1,55 @@
+<!--
+Copyright (c) 2014, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "data_viewer_base.html" %}
+
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
+
+{% block body_outer %}
+<div>
+	<center><h1>The OpenQuake Platform</h1>
+	<div id="calculate">
+		<h2>Calculate</h2>
+		<P>Learn how to use, access & download the <a href="{% url 'calculate' %}">OpenQuake Engine ></a></P>
+	</div>
+	<div id="share">
+		<h2>Share</h2>
+		<P>The OpenQuake Platform includes a number of tool for contributing to the existing datasets. <a href="{% url 'share' %}">Find out more ></a></P>
+	</div>
+	<div id="explore">
+		<h2>Explore</h2>
+		<P> <a href="{% url 'share' %}">Find out more ></a></P>
+	</div>
+
+
+
+
+</div>
+
+
+
+
+{{block.super}}
+
+{% endblock %}
+
+{% block extra_script %}
+    {{block.super}}
+    <!-- Category tags-->
+
+{% endblock extra_script %}

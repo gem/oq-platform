@@ -90,12 +90,12 @@ urlpatterns = patterns('',
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^grv_viewer/$', TemplateView.as_view(
         template_name="grv_viewer.html"), name='grv_viewer'),
-
     url(r'^hazus/$', TemplateView.as_view(
-
         template_name="hazus.html"), name='hazus'),
     url(r'^hazard_viewer/$', TemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
+    url(r'^help_oqp/$', TemplateView.as_view(
+        template_name="help_oqp.html"), name='help_oqp'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
