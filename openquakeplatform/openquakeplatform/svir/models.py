@@ -268,7 +268,7 @@ class CountryIndicator(models.Model):
 
     def __unicode__(self):
         return "%s: %s = %s [%s]" % (
-            self.country.iso3, self.indicator, self.value,
+            self.country.iso, self.indicator, self.value,
             self.indicator.measurement_type)
 
     class Meta:

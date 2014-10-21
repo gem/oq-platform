@@ -356,14 +356,13 @@ def export_variables_data_by_ids(request):
     header_list = ["ISO", "COUNTRY_NAME"]
     for sv_variable_id in sv_variables_ids_list:
         header_list.append(sv_variable_id)
-    # TODO: Currently not retreiving the geometries (they still aren't in DB)
-    # header_list.append("GEOMETRY")
+    header_list.append("GEOMETRY")
     writer.writerow(header_list)
     indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
-        row = [country.iso3, country.name.encode('utf-8')]
+        row = [country.iso, country.name_engli.encode('utf-8')]
         ind_vals = []
         for indicator in indicators:
             try:
@@ -373,6 +372,7 @@ def export_variables_data_by_ids(request):
                 val = ''
             ind_vals.append(val)
         row.extend(ind_vals)
+        row.append(country.the_geom)
         writer.writerow(row)
     return response
 

@@ -68,7 +68,8 @@ class Command(BaseCommand):
 
             iso_reg_dict = dict(zip(isos, assoc_regions))
             for iso in iso_reg_dict:
-                country = Country.objects.get(iso3=iso)
+                # sys.stdout.write('iso: %s\n' % iso)
+                country = Country.objects.get(iso=iso)
                 region, _ = CustomRegion.objects.get_or_create(
                     name=iso_reg_dict[iso])
                 region.countries.add(country)
@@ -146,7 +147,7 @@ class Command(BaseCommand):
                 for iso in iso_val_dict:
                     value = iso_val_dict[iso]
                     if value is not None:
-                        country = Country.objects.get(iso3=iso)
+                        country = Country.objects.get(iso=iso)
                         ci, _ = CountryIndicator.objects.get_or_create(
                             country=country,
                             indicator=ind,
