@@ -102,6 +102,8 @@ urlpatterns = patterns('',
         template_name="help_hrde.html"), name='help_hrde'),
     url(r'^help_irv/$', TemplateView.as_view(
         template_name="help_irv.html"), name='help_irv'),
+    url(r'^help_exposure/$', TemplateView.as_view(
+        template_name="help_exposure.html"), name='help_exposure'),
 
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),

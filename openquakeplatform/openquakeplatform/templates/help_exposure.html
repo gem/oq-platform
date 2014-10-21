@@ -26,24 +26,22 @@ Explore - {{block.super}}
 <center><h1>Explore Data Help</h1>
 	<div id="welcome-details">
 		<div id="calculate" class="welcome-container">
-			<h2>Exposure Export Tool</h2>
-			<p>Learn how to download exposure data using the <a href="{% url 'help_exposure' %}">Exposure Exporte Tool ></a></p>
+			<h2>Compose a Custom Map</h2>
+			<p>Learn create save and share a custom map using GeoExplore</p>
 		</div>
 		<div id="share" class="welcome-container">
 			<h2>Hazard & Risk Data Explorer</h2>
-			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'help_hrde' %}">Learn more ></a></p>
+			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'hrde-help' %}">Learn more ></a></p>
 		</div>
 		<div id="explore" class="welcome-container">
-			<h2>Integrated Risk Vulnerability Viewer</h2>
-			<p>The Integrated Risk and Vulnerability Viewer is an interactive map created by the GEM Foundation that can be used to explore and interact with social vulnerability indicators. Within the application users can load a project that has been created using the GEM SVIR QGIS plugin. Users are then able to modify the indicator weights, these new values directly affect the charts that can be viewed by clicking regions on the map. <a href="{% url 'help_irv' %}">Learn more ></a></p>
+			<h2>Explore</h2>
+			<p>The OpenQuake Platform features a number of custom applications to explore and interact with data <a href="{% url 'help_explore' %}">Learn more ></a></p>
 		</div>
-		<!--
-		<div id="calculate" class="welcome-container">
-			<h2>Custom Map Compose</h2>
-			<p>Learn to create save and share a custom map using GeoExplore</p>
-		</div>
-		-->
+
 	</div>
+
+
+
 
 {{block.super}}
 
