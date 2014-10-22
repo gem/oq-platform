@@ -21,7 +21,7 @@ Explore - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help_detail.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
 <div id="help-body">
 <center><h1>Hazard & Risk Data Explorer Help</h1></center>
 
@@ -34,11 +34,10 @@ Explore - {{block.super}}
     <br>
 
     <ul>
-      <li><h3>Base Layers:</h3>
+      <h3>Base Layers:</h3>
         <dl>Alternative base maps can be selected on the top left of the toolbar</dl>
-      </li>
 
-      <li><h3>Loading layers into the map:</h3>
+      <h3>Loading layers into the map:</h3>
         <dl>Select 'Load Hazard Data' or 'Load Risk Data'. From the respective dialog one can choose to load layers into the map</dl>
 
         <dl>Multiple hazard map layers can be loaded into the map simultaneously. This is not the case for all other layers types (curves & input models). For curves & input models, each time a layer is added, the previously loaded layer is automatically removed from the map, while hazard maps layers will remain in the map</dl>
@@ -51,13 +50,11 @@ Explore - {{block.super}}
 
         <dl>When adding hazard maps the order in which layers are added to the map matters, new layers will be rendered on top of previously added layers</dl>
 
-      </li>
-      <li><h3>The Data:</h3>
+      <h3>The Data:</h3>
         <dl>Information about the data can be accessed from inside the Hazard Data dialog, once a category is seleced, a hyper link is provided to the GEM Hazard Wiki</dl>
 
-      </li>
       <br>
-      <li><h3>Interactivity:</h3>
+      <h3>Interactivity:</h3>
 
       	<dl>The application is packed with information that can be accessed by interacting with the map and the charts. The general workflow for using the applications is as follows:</dl>
       	<ul style="list-style-type:circle">
@@ -73,16 +70,14 @@ Explore - {{block.super}}
         <dl>Zoom in on the map to get more detail</dl>
         <dl>Curve plots: hover the mouse over any point along the line to view it's value</dl>
         <dl>Inside the plot dialog one can download a CSV that will incude the values of the plot</dl>
-      </li>
       <br/>
       <img src="{{ STATIC_URL }}images/hrde_chart.gif" alt="Chart gif" style="width:900px;">
       <br><br>
-      <li><h3>Legend:</h3>
+      <h3>Legend:</h3>
         <dl>Only the hazard map and input model layers have a thematic representation that can be described by a legend</dl>
         <dl>Each time a hazard map or input model layer is loaded into the map, a legend is automatically displayed into the legend dialog. When closed, this dialog can be opened again by clicking the 'Legend' button in the toolbar </dl>
-      </li>
       <br>
-      <li><h3>Attribution:</h3>
+      <h3>Attribution:</h3>
         <dl><b>Data: </b> Information about the data accesable in this applicaiton can be found at <a style="color: rgb(0,102,204)" href="https://hazardwiki.openquake.org/hazard_models">here</a></dl>
         <dl><b>Basemaps: <br></b><a style="color: rgb(0,102,204)" href="http://visibleearth.nasa.gov/view_cat.php?categoryID=1484">Blue Marble</a>, Source: NASA Earth Observatory/NOAA NGDC
         <br>
@@ -99,7 +94,6 @@ Explore - {{block.super}}
         <br>
         </dl>
 
-      </li>
     </ul>
 
 </div>

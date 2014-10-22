@@ -1,6 +1,17 @@
+h1 {
+  margin-top: 4%;
+  text-transform: uppercase;
+}
+h3 {
+   color: #1B75A7;
+}
+
 .welcome-container {
     display: table-cell;
     vertical-align: middle;
+    float: left;
+    width: 29%;
+    padding: 2%;
 }
 
 #welcome-details {
@@ -23,17 +34,14 @@
 }
 
 #calculate {
-  float: left;
-  width: 32%;
-  padding left: 1%;
+
 }
 #share {
-  float: left;
-  width: 32%;
-  padding left: 1%;
+
 }
 #explore {
-  float: left;
-  width: 32%;
-  padding left: 1%;
+}
+#help-body {
+  width: 75%;
+  margin: 0 auto;
 }
