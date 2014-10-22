@@ -121,7 +121,6 @@ h2 {
     background: none;
 }
 
-
 nav.main-nav {
     margin: 0;
 }
@@ -317,7 +316,7 @@ ul.social li a.gp {
 
 #oq-page-footer, footer.footer {
     z-index: 1000;
-    background: gray;
+    background: #bebebe;
     font-size: 12px;
     position: fixed;
     bottom: 0;
@@ -334,6 +333,10 @@ footer.footer div.container {
        top of the bar */
 }
 
-#oq-page-footer, footer.footer form label { color: #FFFFFF; }
+#oq-page-footer, footer.footer form label {
+    color: #FFFFFF;
+}
 
-#my-calculations.well{ background-color: #F5F5F5; }
+#my-calculations.well {
+    background-color: #F5F5F5;
+}
