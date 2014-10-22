@@ -25,10 +25,12 @@ Explore - {{block.super}}
 <div id="help-body">
 <center><h1>Hazard & Risk Data Explorer Help</h1></center>
 
-	<center><b>Explore hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves<b></center>
-
-    <br>
-    <h2><center>About</center></h2>
+	<center><b>Explore hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves<b>
+	<br><br>
+	<!--TODO change this link to 'hrde'-->
+	<a href="{% url 'hazard_viewer' %}" ="" class="btn btn-primary">Get Started</a></center>
+  <br>
+  <h2><center>About</center></h2>
 
     <p>The HRDE is an interactive map created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way.</p>
     <br>
@@ -52,7 +54,7 @@ Explore - {{block.super}}
 
       <h3>The Data:</h3>
         <dl>Information about the data can be accessed from inside the Hazard Data dialog, once a category is seleced, a hyper link is provided to the GEM Hazard Wiki</dl>
-
+        <img src="{{ STATIC_URL }}images/hrde_wiki.gif" alt="Chart gif" style="width:900px;">
       <br>
       <h3>Interactivity:</h3>
 
