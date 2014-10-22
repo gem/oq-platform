@@ -469,6 +469,15 @@ var startApp = function() {
 
     $('#addTileCurve').click(function() {
         try {
+                for (var k in AppVars.layerControl._layers) {
+                    var nameTemp = AppVars.layerControl._layers[k].name;
+                    var nameTest = nameTemp.indexOf("map") > -1;
+
+                    if (nameTest === false) {
+                        delete AppVars.layerControl._layers[k];
+                    }
+                }
+
             map.removeLayer(AppVars.utfGrid);
             map.removeLayer(AppVars.tileLayer);
             map.removeLayer(AppVars.utfGridHazardMap);
@@ -847,13 +856,6 @@ var startApp = function() {
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
             try {
-                map.removeLayer(AppVars.utfGrid);
-                map.removeLayer(AppVars.tileLayer);
-                map.removeLayer(AppVars.utfGridHazardMap);
-            } catch (e) {
-                // continue
-            }
-            try {
                 // check if the layer is not a hazard map, and if so remove from controller
                 for (var k in AppVars.layerControl._layers) {
                     var nameTemp = AppVars.layerControl._layers[k].name;
@@ -877,6 +879,24 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var selectedLayer = AppVars.mapLayerNames[mapLayerId];
             selectedLayer = selectedLayer.toString();
+
+
+
+
+            for (var k in AppVars.layerControl._layers) {
+                var nameTemp = AppVars.layerControl._layers[k].name;
+                var idxTemp = nameTemp.indexOf("map") > -1;
+                console.log("nameTemp");
+                console.log(nameTemp);
+                console.log("selectedLayer");
+                console.log(selectedLayer);
+                if (selectedLayer == nameTest) {
+                    console.log("DELETE NOW");
+                    delete AppVars.layerControl._layers[k];
+                }
+            }
+
+
             var hasGrid = $.inArray(selectedLayer, AppVars.mapLayerGrids) > -1;
 
             AppVars.utfGridMap = {};
@@ -892,6 +912,11 @@ var startApp = function() {
                 AppVars.utfGridHazardMap = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+
+
+
+
+
                 AppVars.utfGridMap = L.layerGroup([
                     AppVars.utfGridHazardMap,
                     tileLayerMap
@@ -1045,6 +1070,7 @@ var startApp = function() {
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
+        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
         AppVars.tileLayer.setZIndex(1000);
 
