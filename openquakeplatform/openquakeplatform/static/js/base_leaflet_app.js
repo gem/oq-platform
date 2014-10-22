@@ -32,8 +32,8 @@ var OQLeaflet = {
         };
         OQLeafletApp.prototype.mapFit = function() {
             // Calculate the height:
-            var headerHeight = $('#oq-page-header').height();
-            var footerHeight = $('#oq-page-footer').height();
+            var headerHeight = $('#header').height();
+            var footerHeight = $('#footer').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
             var mapHeight = (window.innerHeight - headerHeight - footerHeight
                              - ribbonHeight);
@@ -43,8 +43,8 @@ var OQLeaflet = {
         };
         OQLeafletApp.prototype.sidebarFit = function() {
             // Calculate the height:
-            var headerHeight = $('#oq-page-header').height();
-            var footerHeight = $('#oq-page-footer').height();
+            var headerHeight = $('#header').height();
+            var footerHeight = $('#footer').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
             var barHeight = (window.innerHeight - headerHeight - footerHeight
                              - ribbonHeight);
