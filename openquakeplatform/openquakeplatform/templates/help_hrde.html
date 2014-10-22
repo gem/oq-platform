@@ -56,20 +56,32 @@ Explore - {{block.super}}
         <dl>Information about the data can be accessed from inside the Hazard Data dialog, once a category is seleced, a hyper link is provided to the GEM Hazard Wiki</dl>
 
       </li>
+      <br>
       <li><h3>Interactivity:</h3>
 
-      <img src="{{ STATIC_URL }}images/hrde_chart_diagram.png" alt="Chart">
-
+      	<dl>The application is packed with information that can be accessed by interacting with the map and the charts. The general workflow for using the applications is as follows:</dl>
+      	<ul style="list-style-type:circle">
+  				<li>Load hazad or risk data into the map</li>
+				  <li>Click on a feature to render a plot of the curves(s). For maps, simply hover the mouse over the thematic map and view the values in the dialog box</li>
+				  <li>Hover the mouse within the chart to get the exacte point value</li>
+				</ul>
+      	<br/>
+      	<img src="{{ STATIC_URL }}images/hrde_chart_diagram.png" alt="Chart">
+      	<br/>
         <dl>Hazard maps: hover the mouse over each hazard map and view the point value in the dialog popup (bottom right)</dl>
         <dl>Curves and input models: click points in the grid on the map layer to render the curve(s) into the plot dialog</dl>
         <dl>Zoom in on the map to get more detail</dl>
         <dl>Curve plots: hover the mouse over any point along the line to view it's value</dl>
         <dl>Inside the plot dialog one can download a CSV that will incude the values of the plot</dl>
       </li>
+      <br/>
+      <img src="{{ STATIC_URL }}images/hrde_chart.gif" alt="Chart gif" style="width:900px;">
+      <br><br>
       <li><h3>Legend:</h3>
         <dl>Only the hazard map and input model layers have a thematic representation that can be described by a legend</dl>
         <dl>Each time a hazard map or input model layer is loaded into the map, a legend is automatically displayed into the legend dialog. When closed, this dialog can be opened again by clicking the 'Legend' button in the toolbar </dl>
       </li>
+      <br>
       <li><h3>Attribution:</h3>
         <dl><b>Data: </b> Information about the data accesable in this applicaiton can be found at <a style="color: rgb(0,102,204)" href="https://hazardwiki.openquake.org/hazard_models">here</a></dl>
         <dl><b>Basemaps: <br></b><a style="color: rgb(0,102,204)" href="http://visibleearth.nasa.gov/view_cat.php?categoryID=1484">Blue Marble</a>, Source: NASA Earth Observatory/NOAA NGDC

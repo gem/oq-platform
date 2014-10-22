@@ -94,8 +94,8 @@ urlpatterns = patterns('',
         template_name="hazus.html"), name='hazus'),
     url(r'^hazard_viewer/$', TemplateView.as_view(
         template_name="hazard_viewer.html"), name='hazard_viewer'),
-    url(r'^help_oqp/$', TemplateView.as_view(
-        template_name="help_oqp.html"), name='help_oqp'),
+    url(r'^help/$', TemplateView.as_view(
+        template_name="help.html"), name='help'),
     url(r'^help_explore/$', TemplateView.as_view(
         template_name="help_explore.html"), name='help_explore'),
     url(r'^help_hrde/$', TemplateView.as_view(
