@@ -5,7 +5,7 @@
 }
 
 #header-wrapper {
-    height: 108px;
+    height: 40px;
 }
 
 .dropdown-backdrop {
@@ -18,12 +18,13 @@
 }
 
 body {
-    color: #555555;
-    padding-top: 0px;
+    color: #555;
+    padding-top: 40px;
+    padding-bottom: 20px;
 }
 
 h2 {
-    color: #1B75A7;
+    color: #1b75a7;
 }
 
 .container,
@@ -31,114 +32,134 @@ h2 {
 .navbar-fixed-top .container,
 .navbar-fixed-bottom .container {
     width: 100%;
-    min-width: 800px;
+}
+
+.navbar .nav.account-bar {
+    margin-top: 0;
 }
 
 .span10 {
-    width: 80%;
+    margin-top: 5px;
+    width: 400px;
 }
 
 .span9 {
+    position: absolute;
     width: auto;
+    margin-left: 0;
+    margin-right: 75px;
     float: right;
+    right: 0;
 }
 
 .span3 {
     width: auto;
 }
 
-.navbar-inner {
-    background-image: none;
-    border: 1px solid #002029;
-}
-
-.navbar .nav > li > a {
-    color: #1B75A7;
-    text-shadow: none;
-}
-
-.nav-logo {
-    width: 316px;
-    height: 82px;
-    background: url(/static/img/OQ_logo.png) no-repeat;
-    margin-left: -10px;
-    margin-top: -10px;
-    margin-bottom: -10px;
+.gem {
+    width: auto;
 }
 
 .navbar .navbar-inner {
-    background: none;
-    -webkit-box-shadow: none;
-    -mox-box-shadow: none;
-    box-shadow: none;
-    min-width: 900px;
-    background: url(../img/OQ_header_bg.png) no-repeat;
-    background-size: 100%;
-    border-bottom: 2px solid #1B75A7;
+    background-image: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar .nav > li > a {
+    color: #fff;
+    text-shadow: none;
+    font-size: 16px;
+    padding: 0 10px;
+}
+
+.navbar .nav > li.search-bar {
+    padding-top: 6px;
+    padding-right: 4px;
+}
+
+.navbar .nav > li.user {
+    padding-top: 10px;
+}
+
+.navbar .nav.account-bar > li.actions > a {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.navbar .nav.account-bar > li.divider-v {
+    padding: 10px 0;
+}
+
+.nav-logo {
+    background: url(/static/img/oq-logo.png) no-repeat;
+    width: 218px;
+    height: 40px;
+    margin: 0;
+}
+
+#gem-right-logo {
+    float: right;
+    right: 0;
+    position: absolute;
+
+}
+
+.nav-logo-gem {
+    background: url(/static/img/oq-gem.png) no-repeat;
+    width: 72px;
+    height: 40px;
+    margin: 0;
+}
+
+.navbar .navbar-inner {
+    background: url(/static/img/oq-header.png) no-repeat left top;
+    background-color: #1b75a5;
 }
 
 .nav-box {
     background: none;
-    margin-left: -20px;
-    margin-right: 0px;
 }
 
 nav.main-nav {
-    margin-bottom: 0px;
+    margin: 0;
 }
-
-/* Hide the default geonode menu */
 nav.main-nav ul li {
-    display: none;
-}
-
-nav.main-nav ul {
-    position: relative;
-    margin-bottom: 0px;
-}
-
-/* Show the custom OQ Platform menu */
-nav.main-nav ul li.oqp-menu-item {
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    color: #1B75A7;
+    height: 30px;
     display: inline-block;
-    line-height: 18px;
-}
-
-nav.main-nav li ul {
-    display: none;
-    position: absolute;
-    top: 0;
-}
-
-nav.main-nav ul li a {
-    font-size: 16px;
-    color: #1B75A7;
-    text-transform: none;
-}
-
-nav.main-nav li:hover ul, li.over ul {
-    display: block;
-    height: 1.5em;
-}
-
-
-/* submenu */
-
-#submenu {
-    width: 100%;
-    height: 26px;
     float: left;
-    clear: left;
-    margin: 0px;
-    list-style: none;
-}
-
-#submenu li {
-    float: left;
+    width: 80px;
+    margin-left: 20px;
     margin-right: 20px;
-    position: relative;
+    padding: 0;
+}
+nav.main-nav ul li a {
+    color: #fff;
+    text-transform: none;
+    width: 80px;
+    text-align: center;
+    padding: 4px 0;
+    font-size: 18px;
+}
+
+nav.main-nav ul li.calc{
+   border-bottom: solid #ffdc00 5px;
+}
+nav.main-nav ul li.share{
+   border-bottom: solid #eb737d 5px;
+}
+nav.main-nav ul li.explore{
+   border-bottom: solid #dc6522 5px;
+}
+
+.span11 {
+    float: right;
+    right: 0;
+    width: 100px;
+}
+
+.input-append, .input-prepend {
+    margin-bottom: 5px;
 }
 
 #submenu a {
@@ -147,7 +168,7 @@ nav.main-nav li:hover ul, li.over ul {
     text-decoration: none;
     font-family: 'Lato', sans-serif;
     font-weight: 400;
-    color: #1B75A7;
+    color: #1b75a7;
     text-transform: capitalize;
 }
 
@@ -158,7 +179,7 @@ nav.main-nav li:hover ul, li.over ul {
 #submenu h3 {
     font-size: 11px;
     font-weight: bold;
-    color: #FFF;
+    color: #fff;
     margin-top: 5px;
 }
 
@@ -248,7 +269,7 @@ ul.social li a.gp {
 }
 
 #oq-page-header {
-    height: 107px;
+    height: 40px;
     position: absolute;
     top: 0;
 }
@@ -258,11 +279,11 @@ ul.social li a.gp {
     font-family: 'Lato', sans-serif;
     font-weight: 200;
     line-height: 27px;
-    color: #555555;
+    color: #555;
 }
 
 #oq-body-heading h1 {
-    color: #1B75A7;
+    color: #1b75a7;
     font-size: 40px;
     text-transform: uppercase;
     font-weight: 300;
@@ -276,10 +297,6 @@ ul.social li a.gp {
 #oq-body-sidebar {
     float: right;
     width: 30%;
-}
-
-#oq-page-middle {
-    margin-top: 107px;
 }
 
 #oq-page-middle div.content-wrap {
@@ -299,28 +316,27 @@ ul.social li a.gp {
 
 #oq-page-footer, footer.footer {
     z-index: 1000;
-    background: #1B75A7;
+    background: #bebebe;
     font-size: 12px;
     position: fixed;
-    height: 45px;
     bottom: 0;
-    padding-top: 0px;
     padding-left: 10%;
     padding-right: 10%;
     float: left;
     width: 80%;
+    height: auto;
+    padding-top: 0;
 }
 
 footer.footer div.container {
     /* Make the footer content align nicely, and not so close to the
        top of the bar */
-    margin-top: 10px;
 }
 
 #oq-page-footer, footer.footer form label {
-    color: #FFFFFF;
+    color: #fff;
 }
 
-#my-calculations.well{
-    background-color: #F5F5F5;
+#my-calculations.well {
+    background-color: #f5f5f5;
 }

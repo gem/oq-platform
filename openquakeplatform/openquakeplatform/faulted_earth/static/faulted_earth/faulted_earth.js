@@ -136,7 +136,7 @@ Ext.Ajax.on('beforerequest', function (conn, options) {
             }
         }, {
             region: "south",
-            height: 45,
+            height: 18,
             contentEl: 'footer'
         }]}],
             bbar: {id: "mybbar"}
