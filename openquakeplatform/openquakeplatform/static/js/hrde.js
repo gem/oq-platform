@@ -20,7 +20,7 @@ var AppProtoType = function() {
 };
 
 AppProtoType.prototype = {
-
+    utfGridHazardMap: {},
     utfGrid: {},
     layerControl: null,
 
@@ -468,11 +468,10 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
-
         try {
             map.removeLayer(AppVars.utfGrid);
             map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridMap);
+            map.removeLayer(AppVars.utfGridHazardMap);
         } catch (e) {
             // continue
         }
@@ -563,7 +562,7 @@ var startApp = function() {
             }
             map.removeLayer(AppVars.utfGrid);
             map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridMap);
+            map.removeLayer(AppVars.utfGridHazardMap);
         } catch (e) {
             // continue
         }
@@ -850,7 +849,7 @@ var startApp = function() {
             try {
                 map.removeLayer(AppVars.utfGrid);
                 map.removeLayer(AppVars.tileLayer);
-                map.removeLayer(AppVars.utfGridMap);
+                map.removeLayer(AppVars.utfGridHazardMap);
             } catch (e) {
                 // continue
             }
@@ -866,7 +865,7 @@ var startApp = function() {
                 }
                 map.removeLayer(AppVars.utfGrid);
                 map.removeLayer(AppVars.tileLayer);
-                map.removeLayer(AppVars.utfGridMap);
+                map.removeLayer(AppVars.utfGridHazardMap);
             } catch (e) {
                 // continue
             }
@@ -886,24 +885,27 @@ var startApp = function() {
                 '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
                 selectedLayer +
                 '.json'});
-            AppVars.layerControl.addOverlay(tileLayerMap, selectedLayer);
-            map.addLayer(tileLayerMap);
             var val = $('#transparency-slider').slider("option", "value");
-            tileLayerMap.setOpacity(val);
 
             if (hasGrid == true) {
                 AppVars.gridList = 1;
-                AppVars.utfGridMap = new L.UtfGrid(TILESTREAM_URL +
+                AppVars.utfGridHazardMap = new L.UtfGrid(TILESTREAM_URL +
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+                AppVars.utfGridMap = L.layerGroup([
+                    AppVars.utfGridHazardMap,
+                    tileLayerMap
+                ]);
+                AppVars.layerControl.addOverlay(AppVars.utfGridMap, selectedLayer);
                 map.addLayer(AppVars.utfGridMap);
-                $('#chartDialog').dialog({width: 200,height:150});
+
+                $('#chartDialog').dialog({width: 350,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
                 $('#chartDialog').dialog('open');
 
-                AppVars.utfGridMap.on('mouseover', function (e) {
+                AppVars.utfGridHazardMap.on('mouseover', function (e) {
                     $('#chartDialog').empty();
-                    $('#chartDialog').append('Gravity Acceleration: '+e.data.VAL);
+                    $('#chartDialog').append("<strong>"+selectedLayer+"</strong><br>Gravity Acceleration: "+e.data.VAL);
                 });
             }
 
