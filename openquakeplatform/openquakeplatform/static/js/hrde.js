@@ -880,22 +880,13 @@ var startApp = function() {
             var selectedLayer = AppVars.mapLayerNames[mapLayerId];
             selectedLayer = selectedLayer.toString();
 
-
-
-
+            // Don't allow duplicate hazard maps to be loaded
             for (var k in AppVars.layerControl._layers) {
                 var nameTemp = AppVars.layerControl._layers[k].name;
-                var idxTemp = nameTemp.indexOf("map") > -1;
-                console.log("nameTemp");
-                console.log(nameTemp);
-                console.log("selectedLayer");
-                console.log(selectedLayer);
-                if (selectedLayer == nameTest) {
-                    console.log("DELETE NOW");
+                if (nameTemp == selectedLayer) {
                     delete AppVars.layerControl._layers[k];
                 }
             }
-
 
             var hasGrid = $.inArray(selectedLayer, AppVars.mapLayerGrids) > -1;
 
