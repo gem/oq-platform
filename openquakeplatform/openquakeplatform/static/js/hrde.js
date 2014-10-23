@@ -20,6 +20,8 @@ var AppProtoType = function() {
 };
 
 AppProtoType.prototype = {
+    utfGridInput: {},
+    utfGridInput: {},
     utfGridHazardMap: {},
     utfGrid: {},
     layerControl: null,
@@ -468,6 +470,7 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
+        /*
         try {
                 for (var k in AppVars.layerControl._layers) {
                     var nameTemp = AppVars.layerControl._layers[k].name;
@@ -478,13 +481,13 @@ var startApp = function() {
                     }
                 }
 
-            map.removeLayer(AppVars.utfGrid);
+            //map.removeLayer(AppVars.utfGrid);
             map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridHazardMap);
+            //map.removeLayer(AppVars.utfGridHazardMap);
         } catch (e) {
             // continue
         }
-
+*/
         $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -558,6 +561,7 @@ var startApp = function() {
     }); //end add tile curve
 
     $('#addTileInput').click(function() {
+        /*
         // try to remove any existing AppVars.utfGrids
         try {
             // check if the layer is not a hazard map, and if so remove from controller
@@ -569,13 +573,13 @@ var startApp = function() {
                     delete AppVars.layerControl._layers[k];
                 }
             }
-            map.removeLayer(AppVars.utfGrid);
+            //map.removeLayer(AppVars.utfGrid);
             map.removeLayer(AppVars.tileLayer);
-            map.removeLayer(AppVars.utfGridHazardMap);
+            //map.removeLayer(AppVars.utfGridHazardMap);
         } catch (e) {
             // continue
         }
-
+*/
         $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -855,6 +859,7 @@ var startApp = function() {
     // Add map layers form tilestream list
     $(document).ready(function() {
         $('#addTileLayer').click(function() {
+            /*
             try {
                 // check if the layer is not a hazard map, and if so remove from controller
                 for (var k in AppVars.layerControl._layers) {
@@ -865,13 +870,13 @@ var startApp = function() {
                         delete AppVars.layerControl._layers[k];
                     }
                 }
-                map.removeLayer(AppVars.utfGrid);
+                //map.removeLayer(AppVars.utfGrid);
                 map.removeLayer(AppVars.tileLayer);
-                map.removeLayer(AppVars.utfGridHazardMap);
+                //map.removeLayer(AppVars.utfGridHazardMap);
             } catch (e) {
                 // continue
             }
-
+*/
             $('#chartDialog').empty();
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
@@ -891,7 +896,7 @@ var startApp = function() {
             var hasGrid = $.inArray(selectedLayer, AppVars.mapLayerGrids) > -1;
 
             AppVars.utfGridMap = {};
-            tileLayerMap = L.tileLayer(TILESTREAM_URL +
+            var tileLayerMap = L.tileLayer(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
                 selectedLayer +
@@ -904,22 +909,19 @@ var startApp = function() {
                     selectedLayer +
                     '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-
-
-
-
                 AppVars.utfGridMap = L.layerGroup([
                     AppVars.utfGridHazardMap,
                     tileLayerMap
                 ]);
                 AppVars.layerControl.addOverlay(AppVars.utfGridMap, selectedLayer);
                 map.addLayer(AppVars.utfGridMap);
+                //AppVars.utfGridMap.setZIndex(1000);
 
                 $('#chartDialog').dialog({width: 350,height:150});
                 $('#chartDialog').dialog('option', 'title', 'Map Value');
                 $('#chartDialog').dialog('open');
 
-                AppVars.utfGridHazardMap.on('mouseover', function (e) {
+                AppVars.utfGridHazardMap.on('click', function (e) {
                     $('#chartDialog').empty();
                     $('#chartDialog').append("<strong>"+selectedLayer+"</strong><br>Gravity Acceleration: "+e.data.VAL);
                 });
@@ -1063,7 +1065,7 @@ var startApp = function() {
             '.json'});
         AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
         map.addLayer(AppVars.tileLayer);
-        AppVars.tileLayer.setZIndex(1000);
+        //AppVars.tileLayer.setZIndex(1000);
 
         if (hasGrid == true) {
             AppVars.gridList = 1;
@@ -1098,23 +1100,29 @@ var startApp = function() {
 
         var hasGrid = $.inArray(selectedLayer, AppVars.curveLayerGrids) > -1;
 
-        AppVars.tileLayer = L.tileLayer(TILESTREAM_URL +
+        var tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
             selectedLayer +
             '.json'});
-        AppVars.layerControl.addOverlay(AppVars.tileLayer, selectedLayer);
-        map.addLayer(AppVars.tileLayer);
-        AppVars.tileLayer.setZIndex(1000);
 
         if (hasGrid == true) {
             AppVars.gridList = 1;
-            AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
+            AppVars.utfGridInput = new L.UtfGrid(TILESTREAM_URL +
                 selectedLayer +
                 '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(AppVars.utfGrid);
 
-            AppVars.utfGrid.on('click', function (e) {
+            AppVars.utfGrid = L.layerGroup([
+                AppVars.utfGridInput,
+                tileLayer
+            ]);
+
+            AppVars.layerControl.addOverlay(AppVars.utfGrid, selectedLayer);
+            map.addLayer(AppVars.utfGrid);
+            //AppVars.utfGrid.setZIndex(1000);
+
+            AppVars.utfGridInput.on('click', function (e) {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
                 var mfds, binWidth, minMag, occurRate, mags;
@@ -1179,7 +1187,7 @@ var startApp = function() {
             selectedLayer +
             '.json'});
         map.addLayer(AppVars.tileLayer);
-        AppVars.tileLayer.setZIndex(1000);
+        //AppVars.tileLayer.setZIndex(1000);
         // Keep track of layers that have been added
         if (hasGrid == true) {
             AppVars.gridList = 1;
@@ -1190,6 +1198,11 @@ var startApp = function() {
             lossCurveUtfGridClickEvent(AppVars.utfGrid);
         }
     }
+
+    map.on('overlayadd', function(e) {
+        console.log(e);
+    });
+
 
     // Add mixed curve layers form tilestream list
     function mixedCurve(curveType) {
@@ -1244,7 +1257,7 @@ var startApp = function() {
             selectedLayer +
             '.json'});
         map.addLayer(AppVars.tileLayer);
-        AppVars.tileLayer.setZIndex(1000);
+        //AppVars.tileLayer.setZIndex(1000);
 
         if (hasGrid == true) {
             AppVars.gridList = 1;
