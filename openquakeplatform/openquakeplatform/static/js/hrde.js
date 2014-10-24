@@ -688,18 +688,16 @@ var startApp = function() {
             });
 
             $('#addTileLayer').attr('disabled', false);
-            $('#removeTileLayer').attr('disabled', false);
         } else {
             $('#layer-list').find('option').empty();
             $('#addTileLayer').attr('disabled', true);
-            $('#removeTileLayer').attr('disabled', true);
             mapScope.maps = null;
         }
 
         ///////////////////////////////////////////////////
         // Create dynamic categorized input model dialog //
         ///////////////////////////////////////////////////
-
+        var inputScope = angular.element($("#input-list")).scope();
         var inputLayersArray = AppVars.inputLayersByCat[strUser];
 
         if (inputLayersArray instanceof Array) {
@@ -708,25 +706,21 @@ var startApp = function() {
                 inputLayerList.push({name: inputLayersArray[j]});
             }
 
-            // Append the input model layer list to the dropdown form
-            var inputScope = angular.element($("#input-list")).scope();
-
             inputScope.$apply(function(){
                 inputScope.inputs = inputLayerList;
             });
 
             $('#addTileInput').attr('disabled', false);
-            $('#removeTileInput').attr('disabled', false);
         } else {
             $('#input-list').find('option').empty();
             $('#addTileInput').attr('disabled', true);
-            $('#removeTileInput').attr('disabled', true);
+            inputScope.inputs = null;
         }
 
         //////////////////////////////////////////////////////////
         // Create dynamic categorized hazard curve layer dialog //
         //////////////////////////////////////////////////////////
-
+        var hazardCurveScope = angular.element($("#curve-list")).scope();
         var hazardCurveLayersArray = AppVars.curveLayersByCat[strUser];
 
         if (hazardCurveLayersArray instanceof Array) {
@@ -736,25 +730,21 @@ var startApp = function() {
                 hazardCurveLayerList.push({name: hazardCurveLayersArray[j]});
             }
 
-            // Append the haard curve layer list to the dropdown form
-            var hazardCurveScope = angular.element($("#curve-list")).scope();
-
             hazardCurveScope.$apply(function(){
                 hazardCurveScope.curves = hazardCurveLayerList;
             });
 
             $('#addTileCurve').attr('disabled', false);
-            $('#removeTileCurve').attr('disabled', false);
         } else {
             $('#curve-list').find('option').empty();
             $('#addTileCurve').attr('disabled', true);
-            $('#removeTileCurve').attr('disabled', true);
+            hazardCurveScope.curves = null;
         }
 
         ///////////////////////////////////////////////////////
         // Create dynamic categorized uhs curve layer dialog //
         ///////////////////////////////////////////////////////
-
+        var uhsScope = angular.element($("#uhs-list")).scope();
         var uhsLayersArray = AppVars.uhsLayersByCat[strUser];
 
         if (uhsLayersArray instanceof Array) {
@@ -764,19 +754,15 @@ var startApp = function() {
                 uhsLayerList.push({name: uhsLayersArray[j]});
             }
 
-            // Append the haard uhs layer list to the dropdown form
-            var uhsScope = angular.element($("#uhs-list")).scope();
-
             uhsScope.$apply(function(){
                 uhsScope.uhss = uhsLayerList;
             });
 
             $('#addTileUhs').attr('disabled', false);
-            $('#removeTileUhs').attr('disabled', false);
         } else {
             $('#uhs-list').find('option').empty();
             $('#addTileUhs').attr('disabled', true);
-            $('#removeTileUhs').attr('disabled', true);
+            uhsScope.uhss = null;
         }
     });
 
@@ -789,8 +775,9 @@ var startApp = function() {
         ////////////////////////////////////////////////////////
         // Create dynamic categorized loss curve layer dialog //
         ////////////////////////////////////////////////////////
-
+        var lossScope = angular.element($("#loss-list")).scope();
         var lossLayersArray = AppVars.lossLayersByCat[strUser];
+
         if (lossLayersArray instanceof Array) {
 
             var lossLayerList = [];
@@ -799,19 +786,15 @@ var startApp = function() {
                 lossLayerList.push({name: lossLayersArray[j]});
             }
 
-            // Append the risk loss layer list to the dropdown form
-            var lossScope = angular.element($("#loss-list")).scope();
-
             lossScope.$apply(function(){
                 lossScope.losses = lossLayerList;
             });
 
             $('#addTileLoss').attr('disabled', false);
-            $('#removeTileLoss').attr('disabled', false);
         } else {
             $('#loss-list').find('option').empty();
             $('#addTileLoss').attr('disabled', true);
-            $('#removeTileLoss').attr('disabled', true);
+            lossScope.losses = null;
         }
     });
 
