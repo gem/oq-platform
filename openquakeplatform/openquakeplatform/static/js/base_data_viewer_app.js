@@ -14,10 +14,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
-// NOTE: This base_data_viewer is different then the leaflet base as it is
-// intended to work with the template base_data_viewer.html and posibly any
-// additional data visualization tools.
-
 
 // NOTE: This `map` var needs to be in global scope
 // for stuff like wax interaction to work.
