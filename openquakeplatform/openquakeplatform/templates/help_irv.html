@@ -22,25 +22,72 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
+<div id="help-body">
+<center><h1>Integrated Risk and Vulnerability Viewer</h1>
 
-<center><h1>Explore Data Help</h1>
-	<div id="welcome-details">
-		<div id="calculate" class="welcome-container">
-			<h2>Compose a Custom Map</h2>
-			<p>Learn create save and share a custom map using GeoExplore</p>
-		</div>
-		<div id="share" class="welcome-container">
-			<h2>Hazard & Risk Data Explorer</h2>
-			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'hrde-help' %}">Learn more ></a></p>
-		</div>
-		<div id="explore" class="welcome-container">
-			<h2>Explore</h2>
-			<p>The OpenQuake Platform features a number of custom applications to explore and interact with data <a href="{% url 'help_explore' %}">Learn more ></a></p>
-		</div>
+	<br>
+	<!--TODO change this link to 'hrde'-->
+	<a href="{% url 'irv_viewer' %}" ="" class="btn btn-primary">Get Started</a>
+  <br><br>
+  <h2>About</h2></center>
 
-	</div>
+    <p>The Integrated Risk and Vulnerability Viewer is an interactive map created by the GEM Foundation that can be used to explore and interact with social vulnerability indicators. Within the application users can load a project that has been created using the GEM SVIR QGIS plugin. Users are then able to modify the indicator weights, these new values directly affect the charts that can be viewed by clicking regions on the map.</p>
+    <br>
 
+    <ul>
+      <h3>Base Layers:</h3>
+        <dl>Alternative base maps can be selected on the top left of the toolbar</dl>
 
+      <h3>Loading a project:</h3>
+        <dl>Select 'Load Project', from the respective dialog one can choose to load a project into the map</dl>
+
+        <dl>Once a project has been selected and loaded, the map view will zoom to the location of the project map layer</dl>
+
+        <dl>To view and modify the project definition tree, select the Project Def tab. The weights can now be modified by clicking on a name within the 'tree branch' of the project definition. All of the weight values for a single tree branch will be normalized to a sum equal to 1. These weights will be applied to the charts</dl>
+
+      <h3>The Project Definition</h3>
+        <dl>A Project definition is a set of weighted values that are applied to each primary, catigory and IRI indicator. When a new project is loaded into an application, you can access it's project definition in the tab lables 'Project Definition'. From the project definition tree one can modify the default weight of any indicator. Any change to a wieght will affect any subsequent rendered chart. </dl><br>
+        <img src="{{ STATIC_URL }}images/help_irv_project_def.gif" alt="Chart gif" style="width:900px;">
+      <br>
+
+      <h3>The Charts:</h3>
+        <dl>Charts can be rendered for IRI, Category and Primary indicators of each region of the project. To render a chart, simply click on the respective chart tab, then select a region on the map</dl><br>
+        <img src="{{ STATIC_URL }}images/help_irv_chart_diagram.png" alt="Chart gif" style="width:900px;">
+      <br>
+      <h3>Interactivity:</h3>
+
+      	<dl>The application is packed with information that can be accessed by interacting with the map and the charts. The general workflow for using the applications is as follows:</dl>
+      	<ul style="list-style-type:circle">
+  				<li>Load a integrated risk project into the application</li>
+  				<li>Access the project definition and modify weights as needed</li>
+				  <li>Select a indicator level tab, i.e IRI, Category, Primary</li>
+				  <li>Click on a district on the map to render a chart</li>
+				</ul>
+      	<br/>
+      	<img src="{{ STATIC_URL }}images/help_irv_charts.gif" alt="Chart gif" style="width:900px;">
+      	<br/>
+      <br/>
+      <br><br>
+      <h3>Attribution:</h3>
+        <dl><b>Data: </b> Information about the data accesable in this applicaiton can be found at <a style="color: rgb(0,102,204)" href="https://hazardwiki.openquake.org/hazard_models">here</a></dl>
+        <dl><b>Basemaps: <br></b><a style="color: rgb(0,102,204)" href="http://visibleearth.nasa.gov/view_cat.php?categoryID=1484">Blue Marble</a>, Source: NASA Earth Observatory/NOAA NGDC
+        <br>
+        <a style="color: rgb(0,102,204)" href="http://msdn.microsoft.com/en-us/library/dd877180.aspx">Bing Maps</a>
+        <br>
+        <a style="color: rgb(0,102,204)" href="http://developer.mapquest.com/web/tools/getting-started/platform/licensed-vs-open">MapQuest</a>
+        <a style="color: rgb(0,102,204)" href="http://www.openstreetmap.org/copyright">OpenStreetMaps</a>
+        <br>
+        <br>
+        <b>Graph: </b><a style="color: rgb(0,102,204)" href="http://d3js.org/">d3.js</a> by <a style="color: rgb(0,102,204)" href="http://bost.ocks.org/mike/">Mike Bostock</a>was used to generate the hazard and risk plots
+        <br>
+        <br>
+        <b>Map: </b><a style="color: rgb(0,102,204)" href="http://leafletjs.com/">Leaflet.js</a> was used to generate the web maps
+        <br>
+        </dl>
+
+    </ul>
+
+</div>
 
 
 {{block.super}}
