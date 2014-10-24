@@ -91,6 +91,21 @@ var startApp = function() {
         }
     });
 
+    $(function() {
+        $("#help")
+            .button()
+            .click(function( event ) {
+                event.preventDefault();
+        });
+    });
+
+    $('#help').click(function(){
+        window.location.href="../help_irv";
+    });
+
+    $('#map-tools').append($('#base-map-menu'));
+    $('#base-map-menu').css({ 'margin-bottom' : 0 });
+
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
