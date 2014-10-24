@@ -28,19 +28,20 @@ HRDE - {{block.super}}
 {% block body_outer %}
 {% include "base_map_options.html" %}
 
-
-<button type="button" id="hazard-data">Load Hazard Data</button>
-<button type="button" id="risk-data">Load Risk Data</button>
-<select id="external-layers-menu">
-  <option>Select additinal layers</option>
-  <option value="1">Strain</option>
-  <option value="2">Strain Arrows</option>
-  <option value="3">Instrumental Earthquake Catalogue</option>
-  <option value="4">Historic Earthquake Catalogue</option>
-</select>
-<button type="button" id="HMDownload">Download Hazard Map</button>
-<button type="button" id="legend">Legend</button>
-<button type="button" id="help">Help</button>
+<div id="map-tools">
+  <button type="button" id="hazard-data">Load Hazard Data</button>
+  <button type="button" id="risk-data">Load Risk Data</button>
+  <select id="external-layers-menu">
+    <option>Select additinal layers</option>
+    <option value="1">Strain</option>
+    <option value="2">Strain Arrows</option>
+    <option value="3">Instrumental Earthquake Catalogue</option>
+    <option value="4">Historic Earthquake Catalogue</option>
+  </select>
+  <button type="button" id="HMDownload">Download Hazard Map</button>
+  <button type="button" id="legend">Legend</button>
+  <button type="button" id="help">Help</button>
+</div>
 
 <div ng-app="testApp">
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">

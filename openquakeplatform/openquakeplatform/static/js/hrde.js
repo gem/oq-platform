@@ -111,6 +111,7 @@ var startApp = function() {
     });
 
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
+    $('#map-tools').append($('#base-map-menu'));
     $('#base-map-menu').css({ 'margin-bottom' : 0 });
 
     var riskDataDialog = $('#riskDataDialog').dialog({
