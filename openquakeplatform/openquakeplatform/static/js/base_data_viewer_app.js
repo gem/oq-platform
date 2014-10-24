@@ -39,9 +39,10 @@ var OQLeaflet = {
             // Calculate the height:
             var headerHeight = $('#header').height();
             var footerHeight = $('#footer').height();
+            var mtoolsHeight = $('#map-tools').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
             var mapHeight = (window.innerHeight - headerHeight - footerHeight
-                             - ribbonHeight);
+                             - mtoolsHeight - ribbonHeight);
 
             // Resize the map so that everything fits on one page:
             $('#map').height(mapHeight);
@@ -50,9 +51,10 @@ var OQLeaflet = {
             // Calculate the height:
             var headerHeight = $('#header').height();
             var footerHeight = $('#footer').height();
+            var mtoolsHeight = $('#map-tools').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
             var barHeight = (window.innerHeight - headerHeight - footerHeight
-                             - ribbonHeight);
+                             - mtoolsHeight - ribbonHeight);
 
             //$('#oq-body-sidebar').height(barHeight);
         };
