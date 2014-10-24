@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 
-{% extends "leaflet_base.html" %}
+{% extends "data_viewer_base.html" %}
 
 {% block title %}
 Exposure Export {{ block.super }}
@@ -31,7 +31,6 @@ Exposure Export {{ block.super }}
 {% endblock extra_head %}
 
 {% block body_outer %}
-{% include "base_map_options.html" %}
 {{block.super}}
 <div id="sidePanel-leg">
   <div id="panelContent-leg">
@@ -221,8 +220,7 @@ Exposure Export {{ block.super }}
     {% endfor %}
     </script>
 
-    <script src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
-    <script src="/static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
-    <script type="text/javascript" src="/static/exposure/exposure_export.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}static/Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}static/exposure/exposure_export.js"></script>
 {% endblock extra_script %}
