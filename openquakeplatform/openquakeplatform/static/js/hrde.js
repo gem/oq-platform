@@ -87,20 +87,12 @@ var startApp = function() {
         });
     });
 
-    $(function() {
-        $( "#help" )
-            .button()
-            .click(function( event ) {
-                event.preventDefault();
-        });
-    });
-
-    $('#help').click(function(){
-        window.location.href="../help_hrde";
-    });
-
+    var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
     var winW = $(window).width() - 200;
+    if (winHelp > 760) {
+        winHelp = 760;
+    }
 
     // Hazard Map download warning dialog
     $('#HMDownloadWarning').dialog({
@@ -109,6 +101,21 @@ var startApp = function() {
         width: 400,
         closeOnEscape: true
     });
+
+    // Help dialog
+    $('#helpDialog').dialog({
+        autoOpen: false,
+        height: winHelp,
+        width: winW,
+        closeOnEscape: true
+    });
+
+    $('#help').button().click(function(e) {
+        $('#helpDialog').dialog('open');
+        $('#helpDialog').scrollTop( 0 );
+    });
+
+    $('#helpDialog').css({ 'overflow' : 'auto' });
 
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
     $('#map-tools').append($('#base-map-menu'));
