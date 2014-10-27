@@ -22,25 +22,68 @@ Explore - {{block.super}}
 
 {% block body_outer %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
-
-<center><h1>Explore Data Help</h1>
-	<div id="welcome-details">
-		<div id="calculate" class="welcome-container">
-			<h2>Compose a Custom Map</h2>
-			<p>Learn create save and share a custom map using GeoExplore</p>
-		</div>
-		<div id="share" class="welcome-container">
-			<h2>Hazard & Risk Data Explorer</h2>
-			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'hrde-help' %}">Learn more ></a></p>
-		</div>
-		<div id="explore" class="welcome-container">
-			<h2>Explore</h2>
-			<p>The OpenQuake Platform features a number of custom applications to explore and interact with data <a href="{% url 'help_explore' %}">Learn more ></a></p>
-		</div>
-
-	</div>
+<div id="help-body">
+<center><h1>Building Exposure Export Tool</h1>
 
 
+	<!--TODO change this link to 'hrde'-->
+	<a href="{% url 'exposure' %}" ="" class="btn btn-primary">Get Started</a>
+  <br>
+  <br>
+  <h2>About</h2></center>
+
+    <p>The database structure is built to contain information on buildings and people from the country-level all the way down to the individual building. The first version of the Global Exposure Database (GED) will contain aggregate information on population and the number/built area/reconstruction cost of residential and non-residential buildings at a 1km resolution. Detailed datasets on single buildings will be available for a selected number of areas and will increase over time.<a style="color: rgb(0,102,204)" href="http://www.globalquakemodel.org/what/physical-integrated-risk/exposure-database/"> Read more ...</a></p>
+
+    <p>The Building Exposure Export tool is an interactive map created by GEM that allows users to download a subset of the Global Exposure Database. Users can also interacte with building fractions, viewing building distribution on the fly. The application also includes GRUMP urban and rural, IMPRO, NERA, GA and Hazus layers</p>
+    <br>
+
+    <ul>
+      <h3>Base Layers:</h3>
+        <dl>Alternative base maps can accessed from the base map dropdown in the top toolbar <img src="{{ STATIC_URL }}images/help_base_layer_dropdown.png" alt="basemap"></dl>
+
+      <h3>Downloading Exposure Data:</h3>
+        <dl>
+          <ul style="list-style-type:circle">
+            <li>Zoom into the area of intrest on the map</li>
+            <li>Select the bounding box tool from the top left of the map view <img src="{{ STATIC_URL }}images/help_bounding_box_tool.png" alt="bounding box"></li> 
+            <li>Pull a bounding box over the map</li>
+            <li>Make the desired selections from the popup windows</li>
+            <li>The application includes a lookup tabe for the taxonomies codes used to describe the building fraction charts. To access the lookup table hover the mouse ofver the "Dwelling Types" tab located to the left of the mpa</li>
+          </ul>
+        </dl>
+
+        <center><dl>Download building data:</dl></center>
+        <img class="diagram" src="{{ STATIC_URL }}images/help_exposure_building_data.gif" alt="Chart gif" style="width:900px;">
+        <br>
+        <center><dl>Download population data:</dl></center>
+        <img class="diagram" src="{{ STATIC_URL }}images/help_exposure_population_data.gif" alt="Chart gif" style="width:900px;">
+        <br>
+
+      <h3>Building Fraction Charts:</h3>
+        <dl>By interacting with the map, you can hover the mouse and get building distribution information for each country</dl>
+        <img class="diagram" src="{{ STATIC_URL }}images/help_exposure_building_fractions.gif" alt="Chart gif" style="width:900px;">
+      <br>
+      <br>
+      <h3>Attribution:</h3>
+        <dl><b>Data: </b> Information about the data accesable in this applicaiton can be found at <a style="color: rgb(0,102,204)" href="https://hazardwiki.openquake.org/hazard_models">here</a></dl>
+        <dl><b>Basemaps: <br></b><a style="color: rgb(0,102,204)" href="http://visibleearth.nasa.gov/view_cat.php?categoryID=1484">Blue Marble</a>, Source: NASA Earth Observatory/NOAA NGDC
+        <br>
+        <a style="color: rgb(0,102,204)" href="http://msdn.microsoft.com/en-us/library/dd877180.aspx">Bing Maps</a>
+        <br>
+        <a style="color: rgb(0,102,204)" href="http://developer.mapquest.com/web/tools/getting-started/platform/licensed-vs-open">MapQuest</a>
+        <a style="color: rgb(0,102,204)" href="http://www.openstreetmap.org/copyright">OpenStreetMaps</a>
+        <br>
+        <br>
+        <b>Graph: </b><a style="color: rgb(0,102,204)" href="http://d3js.org/">d3.js</a> by <a style="color: rgb(0,102,204)" href="http://bost.ocks.org/mike/">Mike Bostock</a>was used to generate the hazard and risk plots
+        <br>
+        <br>
+        <b>Map: </b><a style="color: rgb(0,102,204)" href="http://leafletjs.com/">Leaflet.js</a> was used to generate the web maps
+        <br>
+        </dl>
+
+    </ul>
+
+</div>
 
 
 {{block.super}}
