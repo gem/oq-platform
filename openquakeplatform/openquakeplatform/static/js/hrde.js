@@ -1172,10 +1172,7 @@ var startApp = function() {
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-        var utfGridMixed = L.layerGroup([
-            utfGridInput,
-            tileLayer
-        ]);
+        var utfGridMixed = L.layerGroup([utfGrid, tileLayer]);
 
         AppVars.layerControl.addOverlay(utfGridMixed, selectedLayer);
         map.addLayer(utfGridMixed);
