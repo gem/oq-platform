@@ -1360,15 +1360,15 @@ var startApp = function() {
                 }
 
                 lat = e.data.lat;
-                lng = e.data.lon;
+                lon = e.data.lon;
 
                 if (e.data.YCOORD != undefined) {
                     lat = e.data.YCOORD;
-                    lng = e.data.XCOORD;
+                    lon = e.data.XCOORD;
                 }
                 else if(e.data.latitude != undefined) {
                     lat = e.data.latitude;
-                    lng = e.data.longitude;
+                    lon = e.data.longitude;
                 }
 
                 var chartData = {};
@@ -2410,6 +2410,8 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function LossD3Chart(chartData, assetArray, lat, lon) {
+        console.log("lon");
+        console.log(lon);
         var lat, lon, xAxisLable, yAxisLable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
