@@ -23,22 +23,28 @@ Explore - {{block.super}}
 {% block body_outer %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
 
+<div id="help-body">
 <center><h1>The OpenQuake Platform Help</h1>
-	<div id="welcome-details">
-		<div id="calculate" class="welcome-container">
-			<h2>Calculate</h2>
-			<p>Learn how to use, access & download the <a href="{% url 'calculate' %}">OpenQuake Engine ></a></p>
-		</div>
-		<div id="share" class="welcome-container">
-			<h2>Share</h2>
-			<p>The OpenQuake Platform includes a number of tool for contributing to the existing datasets. <a href="{% url 'share' %}">Find out more ></a></p>
-		</div>
-		<div id="explore" class="welcome-container">
-			<h2>Explore</h2>
-			<p>The OpenQuake Platform features a number of custom applications to explore and interact with data <a href="{% url 'help_explore' %}">Learn more ></a></p>
-		</div>
 
+	<h2>About</h2>
+	<p>The  OpenQuake Platform serve as a hub for integrated risk assessment, allowing both power and standard users to combine GEM products in many different ways in order to obtain output for science, risk assessment, risk awareness creation and risk management. By building on the latest opensource technologies also leveraged by the World Bank’s GFDRR labs with whom we collaborate on this, the platform will make for an interactive, dynamic and collaborative environment for GEM products. <a style="color: rgb(0,102,204)" href="http://www.globalquakemodel.org/openquake/about/platform/">Read More ...</a></p></center>
+</div>
+
+<div id="welcome-details"><center>
+	<div class="welcome-container">
+		<h2>Calculate</h2>
+		<p>Learn how to use, access & download the <a href="{% url 'calculate' %}">OpenQuake Engine ></a></p>
 	</div>
+	<div class="welcome-container">
+		<h2>Share</h2>
+		<p>The OpenQuake Platform includes a number of tool for contributing to the existing datasets. <a href="{% url 'share' %}">Find out more ></a></p>
+	</div>
+	<div class="welcome-container">
+		<h2>Explore</h2>
+		<p>The OpenQuake Platform features a number of custom applications to explore and interact with data <a href="{% url 'help_explore' %}">Learn more ></a></p>
+	</div>
+</div></center>
+
 
 
 

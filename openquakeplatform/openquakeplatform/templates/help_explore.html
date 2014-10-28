@@ -24,18 +24,25 @@ Explore - {{block.super}}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
 
 <center><h1>Explore Data Help</h1>
+
+<div id="help-body">
+</div>
+
 	<div id="welcome-details">
-		<div id="calculate" class="welcome-container">
+		<div class="welcome-container">
 			<h2>Exposure Export Tool</h2>
-			<p>The first open database of global buildings and population distribution is being built through the GED4GEM project. Much of the ‘exposure’ information that is needed for reliable risk assessment is incomplete, not homogeneous or available at certain geographic levels. GEM’s Global Exposure Database (GED) will be a multi-scale database that will be an integral part of the OpenQuake platform. <a href="{% url 'help_exposure' %}">Exposure Exporte Tool ></a></p>
+			<p>The first open database of global buildings and population distribution is being built through the GED4GEM project. Much of the ‘exposure’ information that is needed for reliable risk assessment is incomplete, not homogeneous or available at certain geographic levels. GEM’s Global Exposure Database (GED) will be a multi-scale database that will be an integral part of the OpenQuake platform. <a href="{% url 'help_exposure' %}">Exposure Exporte Tool ></a></p><br>
+			<a href="{% url 'help_exposure' %}"><img src="{{ STATIC_URL }}images/help_exposure_app_thumb.png" alt="image"></a>
 		</div>
-		<div id="share" class="welcome-container">
+		<div class="welcome-container">
 			<h2>Hazard & Risk Data Explorer</h2>
-			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'help_hrde' %}">Learn more ></a></p>
+			<p>The HRDE is an interactive application created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way <a href="{% url 'help_hrde' %}">Learn more ></a></p><br>
+			<a href="{% url 'help_hrde' %}"><img src="{{ STATIC_URL }}images/help_hrde_app_thumb.png" alt="image"></a>
 		</div>
-		<div id="explore" class="welcome-container">
+		<div class="welcome-container">
 			<h2>Integrated Risk Vulnerability Viewer</h2>
-			<p>The Integrated Risk and Vulnerability Viewer is an interactive map created by the GEM Foundation that can be used to explore and interact with social vulnerability indicators. Within the application users can load a project that has been created using the GEM SVIR QGIS plugin. Users are then able to modify the indicator weights, these new values directly affect the charts that can be viewed by clicking regions on the map. <a href="{% url 'help_irv' %}">Learn more ></a></p>
+			<p>The Integrated Risk and Vulnerability Viewer is an interactive map created by the GEM Foundation that can be used to explore and interact with social vulnerability indicators. Within the application users can load a project that has been created using the GEM SVIR QGIS plugin. Users are then able to modify the indicator weights, these new values directly affect the charts that can be viewed by clicking regions on the map. <a href="{% url 'help_irv' %}">Learn more ></a></p><br>
+			<a href="{% url 'help_irv' %}"><img src="{{ STATIC_URL }}images/help_iri_app_thumb.png" alt="image"></a>
 		</div>
 		<!--
 		<div id="calculate" class="welcome-container">
