@@ -138,15 +138,15 @@ def group_objs(base):
 
 
 
-def update_fk(updates_gr, model, item, new_pk):
+def update_fk(updates_gr, model, item, new_pk, debug=False):
     # update all references
     for mdref in models_descr:
-        print "MDREF: %s" % mdref
+        pdebug(debug, "MDREF: %s" % mdref)
         if model in models_descr[mdref].refs:
             fie = models_descr[mdref].refs[model]
-            print "FIE: %s" % fie
+            pdebug(debug, "FIE: %s" % fie)
             for itemod in updates_gr[mdref]:
-                print "ITEMOD: %s" % itemod
+                pdebug(debug, "ITEMOD: %s" % itemod)
                 ty = type(itemod['fields'][fie])
                 if ty is int:
                     # simplest case, one to one, if the same value update with the new
@@ -160,14 +160,18 @@ def update_fk(updates_gr, model, item, new_pk):
                             idx = itemod['fields'][fie].index(item['pk'])
                             itemod['fields'][fie][idx] = new_pk
                     else:
-                        print "itemod list of lists case not supported"
+                        pdebug(debug, "itemod list of lists case not supported")
                         sys.exit(10)
 
 
 
+def pdebug(debug, s):
+    if not debug:
+        return
+    print s
 
 
-def updatures(argv, output=None, fakeold=False):
+def updatures(argv, output=None, fakeold=False, debug=False):
     
     if output == None:
         output = sys.stdout
@@ -177,14 +181,14 @@ def updatures(argv, output=None, fakeold=False):
     final_out = []
 
     for fname in argv:
-        print "FNAME %s" % fname
+        pdebug(debug, "FNAME %s" % fname)
         updates += json.load(file(fname, 'r'))
 
-    print "MOP UPDATES: %s" % str(updates)
+    pdebug(debug, "MOP UPDATES: %s" % str(updates))
 
     updates_gr = group_objs(updates)
 
-    print "MOP GROUPS: %s" % str(updates_gr)
+    pdebug(debug, "MOP GROUPS: %s" % str(updates_gr))
     models = {}
     oldels = {}
 
@@ -193,7 +197,7 @@ def updatures(argv, output=None, fakeold=False):
     if not fakeold:
         # load the associated data from db
         for k in models:
-            print "KEY: %s" % k
+            pdebug(debug, "KEY: %s" % k)
             fname = '/tmp/command_output_' + k + '.json'
             with open(fname, "w") as f:
                 call_command('dumpdata', k, use_natural_keys=True,
@@ -211,7 +215,8 @@ def updatures(argv, output=None, fakeold=False):
         if updates_gr[model] == []:
             continue
         else:
-            print "MODEL: %s" % model
+            pdebug(debug, "MODEL: %s" % model)
+            pass
         md = models_descr[model]
         
         # natural key ?
@@ -220,95 +225,86 @@ def updatures(argv, output=None, fakeold=False):
             #
             #  found identical item with different pk
             for item in updates_gr[model]:
-                print "ITEM: [%s]" % item
+                pdebug(debug, "ITEM: [%s]" % item)
                 skip_it = False
                 # item already exists ?
                 for otem in oldates_gr[model]:
                     if item == otem:
-                        print "identical items, skip it"
+                        pdebug(debug, "identical items, skip it")
                         # identical case: continue
                         skip_it = True
                         break
 
                     # no: pk key case
                     item_new = copy.deepcopy(item)
-                    print "OTEM: %s" % otem
+                    pdebug(debug, "OTEM: %s" % otem)
                     item_new['pk'] = otem['pk']
                     if item_new == otem:
                         # identical items except for pk, skip it and update all references
-                        print "identical item except for pk, skip it and update all references"
+                        pdebug(debug, "identical item except for pk, skip it and update all references")
                         skip_it = True
-                        update_fk(updates_gr, model, item, otem['pk'])
+                        update_fk(updates_gr, model, item, otem['pk'], debug=debug)
                         break
 
                 if skip_it:
-                    print "SKIP IT"
+                    pdebug(debug, "SKIP IT")
                     continue
 
-                # loop to identify a new entry with the same pk of old item
+                # loop to identify if new item has the same pk of old item
                 for otem in oldates_gr[model]:
                     if item['pk'] == otem['pk']:
                         new_pk = oldels[model].newpk()
-                        print "NEWPK: %d" % new_pk
-                        update_fk(updates_gr, model, item, new_pk)
+                        pdebug(debug, "NEWPK: %d" % new_pk)
+                        update_fk(updates_gr, model, item, new_pk, debug=debug)
                         item['pk'] = new_pk
                         break
 
-                print "ADD IT"
+                pdebug(debug, "ADD IT")
 
                 final_out.append(item)
 
+        else: # if not md.natural:
+            for item in updates_gr[model]:
+                pdebug(debug, "ITEM: [%s]" % item)
+                skip_it = False
+                found_it = False
 
+                # item already exists ?
+                for otem in oldates_gr[model]:
+                    pdebug(debug, "OTEM: [%s]" % otem)
+                    if item == otem:
+                        pdebug(debug, "identical items, skip it")
+                        # identical case: continue
+                        found_it = True
+                        skip_it = True
+                        break
 
+                    if md.natural(item) == md.natural(otem):
+                        # same natural keys found, update new pk value to match old pk
+                        item['pk'] = otem['pk']
+                        found_it = True
+                        break
 
-    # # morphing if required
-    # for model in models_order:
-    #     if not model in updates_gr:
-    #         continue
-    #     md = models_descr[model]
-    #     updates_gr_orig = copy.deepcopy(updates_gr[model])
-    #     for item in updates_gr_orig:
-    #         # item already exists ?
-    #         for otem in oldates_gr[model]:
-    #             # natural key found
-    #             if md.natural:
-    #                 if md.natural(item) == md.natural(otem):                       
-    #                     # identical record case, we can remove the item
-    #                     if item == otem:
-    #                         updates_gr[model].remove(item)
-    #                     else:
-    #                         # try to check if, except the pk, all fields are identical
-    #                         old_item = copy.deepcopy(otem)
-    #                         old_item['pk'] = item['pk']
-    #                         if old_item == item:
-    #                             print "Item [%s]\nidentical except pk, not managed yet, exit." % item
-    #                             return 1
-    #             else: # if md.natural
-    #                 # in this case pk is the key used
-    #                 new_item = copy.deepcopy(item)
-    #                 new_item['pk'] = otem['pk']
-    #                 if new_item == otem:
-    #                     # this item already exists but with a different pk value:
-    #                     # update related fixtures items and remove from the list
-    #                     for foreign in 
+                if skip_it:
+                    pdebug(debug, "SKIP IT")
+                    continue
 
-    #                     else: # if new_item == otem:
+                if not found_it:
+                    # loop to identify if new item has the same pk of old item
+                    for otem in oldates_gr[model]:
+                        if item['pk'] == otem['pk']:
+                            new_pk = oldels[model].newpk()
+                            pdebug(debug, "NEWPK: %d" % new_pk)
+                            update_fk(updates_gr, model, item, new_pk, debug=debug)
+                            item['pk'] = new_pk
+                            break
 
-    # for model in models_order:
-    #     if not model in updates_gr:
-    #         continue
-    #     final_out += updates_gr[model]
+                pdebug(debug, "ADD IT")
+                final_out.append(item)
 
-    print "FINAL: "
+    pdebug(debug, "FINAL: ")
     json.dump(final_out, output, indent=4)
     output.write("\n")
-    
-
-
-    # show_items_info(models)
-    # show_items_info(oldels)
-
-    
         
 
 if __name__ == "__main__":

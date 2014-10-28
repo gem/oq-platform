@@ -1,0 +1,14 @@
+[
+    {
+        "pk": 101, 
+        "model": "auth.permission", 
+        "fields": {
+            "codename": "add_permission", 
+            "name": "Can add permission old", 
+            "content_type": [
+                "auth", 
+                "permission"
+            ]
+        }
+    } 
+]
