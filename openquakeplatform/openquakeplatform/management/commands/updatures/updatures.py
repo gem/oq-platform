@@ -82,9 +82,9 @@ models_order = [ 'auth.permission',
 
 class items_info(object):
 
-    def __init__(self):
-        self.occur = 0
-        self.maxpk = -1
+    def __init__(self, item):
+        self.occur = 1
+        self.maxpk = item['pk']
 
     def update(self, item):
         self.occur += 1
@@ -111,7 +111,7 @@ def inspect(base):
         model = item['model'] 
 
         if not model in models:
-            models[model] = items_info()
+            models[model] = items_info(item)
         else:
             models[model].update(item)
 
@@ -138,7 +138,7 @@ def group_objs(base):
 
 
 
-def update_fk(updates_gr, model, item, otem):
+def update_fk(updates_gr, model, item, new_pk):
     # update all references
     for mdref in models_descr:
         print "MDREF: %s" % mdref
@@ -151,14 +151,14 @@ def update_fk(updates_gr, model, item, otem):
                 if ty is int:
                     # simplest case, one to one, if the same value update with the new
                     if itemod['fields'][fie] == item['pk']:
-                        itemod['fields'][fie] = otem['pk']
+                        itemod['fields'][fie] = new_pk
                 elif ty is list:
                     ty2 = type(itemod['fields'][fie][0])
                     if ty2 is int:
                         # case list of pk, substitute just the right occurrency
                         if item['pk'] in itemod['fields'][fie]:
                             idx = itemod['fields'][fie].index(item['pk'])
-                            itemod['fields'][fie][idx] = otem['pk']
+                            itemod['fields'][fie][idx] = new_pk
                     else:
                         print "itemod list of lists case not supported"
                         sys.exit(10)
@@ -238,23 +238,25 @@ def updatures(argv, output=None, fakeold=False):
                         # identical items except for pk, skip it and update all references
                         print "identical item except for pk, skip it and update all references"
                         skip_it = True
-                        update_fk(updates_gr, model, item, otem)
+                        update_fk(updates_gr, model, item, otem['pk'])
                         break
 
                 if skip_it:
                     print "SKIP IT"
                     continue
 
-                # # loop to identify different new entry with the same pk
-                # for otem in oldates_gr[model]:
-                #     if item.pk == otem.pk:
-                #         new_pk = models[model].newpk()
-                    
+                # loop to identify a new entry with the same pk of old item
+                for otem in oldates_gr[model]:
+                    if item['pk'] == otem['pk']:
+                        new_pk = oldels[model].newpk()
+                        print "NEWPK: %d" % new_pk
+                        update_fk(updates_gr, model, item, new_pk)
+                        item['pk'] = new_pk
+                        break
 
                 print "ADD IT"
 
                 final_out.append(item)
-
 
 
 
@@ -298,8 +300,8 @@ def updatures(argv, output=None, fakeold=False):
     #     final_out += updates_gr[model]
 
     print "FINAL: "
-    json.dump(final_out, sys.stdout, indent=4)
-    
+    json.dump(final_out, output, indent=4)
+    output.write("\n")
     
 
 
