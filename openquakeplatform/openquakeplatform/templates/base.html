@@ -1,83 +1,65 @@
-{% extends "admin/vulnerability/base.html" %}
-{% load i18n %}
-
-{% block extrahead %}
+{% load i18n avatar_tags announcements_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    {% block head %}
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      {% if DEBUG_STATIC %}
+      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
+      {% else %}
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      {% endif %}
+      {% block extra_head %}
+      {% endblock %}
+    {% endblock %}
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% block header %}
+    {% include "includes/header.html" %}
+    {% endblock header %}
 
-      <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
-      <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico"/>
-
-      <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
-      <script type="text/javascript" src="{% url "lang" %}"></script>
-
-  <style type="text/css">
-
-ul.social li {
-   padding: 0;
-}
-
-ul.account-bar li {
-    list-style-type: none;
-    padding: 0;
-    font-size: 13px;
-}
-
-.collapse {
-    height: auto;
-    overflow: visible;
-    position: static;
-    transition: all 0 ease 0;
-}
-
-.inline-related .inline {
-    display: inline;
-    margin-bottom: 0;
-}
-
-
-.inline-related input[type="checkbox"] {
-    line-height: normal;
-    vertical-align: text-bottom;
-    margin: 0;
-}
-
-</style>
-{% endblock extrahead %}
-
-{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
-
-{% block extra-nav %}
-<li class="calc"><a href="{% url 'calculate' %}">Calculate</a></li>
-<li class="share"><a href="{% url 'share' %}">Share</a></li>
-<li class="explore"><a href="{% url 'explore' %}">Explore</a></li>
-{% endblock extra-nav %}
-
-
-{% block branding %}
-<h1 id="site-name">{% trans 'Django administration' %}</h1>
-{% endblock %}
-
-{% block nav-global %}{% endblock %}
-
-{% block footer %}
-<footer class="footer">
-  <div class="container">
-    <div class="pull-left">
-      {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-      <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-      <a href="{% url "about" %}">{% trans "About" %}</a>
+    {% block middle %}
+    {% announcements as site_wide_announcements %}
+    <div class="content-wrap">
+      {% if site_wide_announcements %}
+      <div id="site_wide_announcements">
+        {% for announcement in site_wide_announcements %}
+        <div class="alert alert-block announcement">
+          <a type="button" class="close" data-dismiss="alert" data-dismiss-url="{% url "announcements_dismiss" announcement.pk %}" href="#">×</a>
+          <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></h4>
+          <p><small><em>{{ announcement.creation_date }}</em></small></p>
+          <div>{{ announcement.content }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="container">
+        <div class="row">
+        {% block body_outer %}
+          <div class="span8">
+          {% block body %}{% endblock %}
+          </div>
+          <div class="span4">
+          {% block sidebar %}{% endblock %}
+          </div>
+        {% endblock %}
+        </div>
+      </div> <!-- /.container -->
     </div>
-    <div class="pull-right">
-    </div> <!-- /.pull-right -->
-  </div> <!-- /.container -->
-</footer>
-{% endblock footer %}
+    {% endblock middle %}
 
+    {% block footer %}
+    {% include "includes/footer.html" %}
+    {% endblock footer %}
 
-{% block footer-script %}
     {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
@@ -149,4 +131,5 @@ ul.account-bar li {
         color: black;
       }
     </style>
-{% endblock footer-script %}
+  </body>
+</html>

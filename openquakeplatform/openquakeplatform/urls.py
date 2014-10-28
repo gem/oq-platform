@@ -82,10 +82,6 @@ urlpatterns = patterns('',
         template_name="ghec_viewer.html"), name='ghec_viewer'),
     url(r'^geodetic/$', TemplateView.as_view(
         template_name="geodetic.html"), name='geodetic'),
-    url(r'^geojson/$', TemplateView.as_view(
-        template_name="geojson.html"), name='geojson'),
-    url(r'^hazard_models/$', TemplateView.as_view(
-        template_name="hazard_models.html"), name='hazard_models'),
     url(r'^gaf_viewer/$', TemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^grv_viewer/$', TemplateView.as_view(
