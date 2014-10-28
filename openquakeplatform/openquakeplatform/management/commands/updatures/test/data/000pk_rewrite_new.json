@@ -1,0 +1,46 @@
+[
+    {
+        "pk": 101, 
+        "model": "test.leaf", 
+        "fields": {
+            "one": "yes", 
+            "two": "yessss" 
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "test.one2one", 
+        "fields": {
+            "one": "yesx", 
+            "two": "yessssx", 
+            "leaf": 44
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "test.one2one", 
+        "fields": {
+            "one": "yesx", 
+            "two": "yessssx", 
+            "leaf": 101
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "test.one2many", 
+        "fields": {
+            "one": "yesy", 
+            "two": "yessssy", 
+            "leafs": [22, 33, 44]
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "test.one2many", 
+        "fields": {
+            "one": "yesy", 
+            "two": "yessssy", 
+            "leafs": [22, 101, 44]
+        }
+    } 
+]
