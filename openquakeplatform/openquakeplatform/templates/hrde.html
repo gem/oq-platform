@@ -26,8 +26,8 @@ HRDE - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-{% include "base_map_options.html" %}
 
+<!--
 <div id="map-tools">
   <button type="button" id="hazard-data">Load Hazard Data</button>
   <button type="button" id="risk-data">Load Risk Data</button>
@@ -42,7 +42,7 @@ HRDE - {{block.super}}
   <button type="button" id="legend">Legend</button>
   <button type="button" id="help">Help</button>
 </div>
-
+-->
 <div ng-app="testApp">
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>

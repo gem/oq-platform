@@ -70,7 +70,6 @@ AppProtoType.prototype = {
 };
 
 var AppVars = new AppProtoType();
-
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var TILESTREAM_URL = TS_URL + '/v2/';
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
@@ -86,6 +85,21 @@ var startApp = function() {
             position: {at: 'right bottom'}
         });
     });
+
+    // Add some buttons to the toolbar ribbon
+    $('#map-tools').append('<button type="button" id="hazard-data">Load Hazard Data</button>');
+    $('#map-tools').append('<button type="button" id="risk-data">Load Risk Data</button>');
+    $('#map-tools').append('<select id="external-layers-menu">'+
+            '<option>Select additinal layers</option>'+
+            '<option value="1">Strain</option>'+
+            '<option value="2">Strain Arrows</option>'+
+            '<option value="3">Instrumental Earthquake Catalogue</option>'+
+            '<option value="4">Historic Earthquake Catalogue</option>'+
+        '</select>'
+    );
+    $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
+    $('#map-tools').append('<button type="button" id="legend">Legend</button>');
+    $('#map-tools').append('<button type="button" id="help">Help</button>');
 
     var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
