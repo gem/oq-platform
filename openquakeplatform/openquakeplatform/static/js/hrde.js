@@ -868,6 +868,7 @@ var startApp = function() {
             AppVars.utfGridMap.on('click', function (e) {
                 $('#chartDialog').empty();
                 $('#chartDialog').append("<strong>"+selectedLayer+"</strong><br>Gravity Acceleration: "+e.data.VAL);
+                $('#chartDialog').dialog('open');
             });
 
             // get more information about the selected layer
