@@ -20,9 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 Explore - {{block.super}}
 {% endblock %}
 
-{% block body_outer %}
-{% include "base_map_options.html" %}
-
+{% block map_tools %}
+{{block.super}}
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -48,9 +47,6 @@ Explore - {{block.super}}
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
 </div>
-
-{{block.super}}
-
 {% endblock %}
 
 
@@ -68,7 +64,7 @@ Explore - {{block.super}}
   </ul>
 
     <br>
-    <button type="button" id="thematic-map">Map Options</button> 
+    <button type="button" id="thematic-map">Map Options</button>
     <button type="button" id="chart-options">Chart Options</button>
     <select id="chart-var-numb">
       <option value=1>1 countries</option>
@@ -80,15 +76,11 @@ Explore - {{block.super}}
     </select>
 
   <div id="economy">
- 
     <div id="econ-chart-spider" style="display:inline-block;" >
       <svg></svg>
     </div>
-  
+
     <div style="display:inline-block;" id='econ-chart-bar'></div>
- <!--
-    <div id="example" class="parcoords" style="width:960px;height:200px;"></div>
-      -->
     <table id="econ-table" >
       <thead id="tablehead">
         <tr>
@@ -199,5 +191,4 @@ Explore - {{block.super}}
 
 </div>
     <script src="{{ STATIC_URL }}js/grv_viewer.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 {% endblock extra_script %}

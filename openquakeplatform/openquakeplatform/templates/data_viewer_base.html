@@ -27,8 +27,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_table.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_page.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.css" />
-
 {% endblock extra_head %}
+
+{% block body_outer %}
+<div id="map-tools">
+    {% block map_tools %}
+    {% include "base_map_options.html" %}
+    {% endblock %}
+</div>
+{{block.super}}
+{% endblock %}
 
 {% block oq_body_content %}
     <div id="map"></div>
@@ -50,6 +58,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}js/jquery.dataTables.js"></script>
     <script src="{{ STATIC_URL }}js/d3.js"></script>
     <script src="{{ STATIC_URL }}js/bing.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the
