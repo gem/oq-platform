@@ -1,20 +1,4 @@
-#/bin/env python
-
-
-# import os
-# from cStringIO import StringIO
-
-# from django.core import management
-
-# def create_fixture(app_name, filename):
-#     buf = StringIO()
-#     management.call_command('dumpdata', app_name, stdout=buf)
-#     buf.seek(0)
-#     with open(filename, 'w') as f:
-#         f.write(buf.read())
-
-
-
+#!/usr/bin/env python
 
 import json
 import os
@@ -41,7 +25,7 @@ models_descr = {  'auth.permission' : model_description(
 
                   'auth.user': model_description(
         'auth.user',
-        lambda i: [ i['fields']['name'] ],
+        lambda i: [ i['fields']['username'] ],
         {'auth.permission': 'user_permissions',
          'auth.group': 'groups'}),
 
@@ -69,7 +53,7 @@ models_descr = {  'auth.permission' : model_description(
         {'test.leaf': 'leafs'}),
                   }
 
-# TODO: order could be extracted from the models_descr 
+# TODO: order could be extracted from the models_descr
 models_order = [ 'auth.permission',
                  'auth.group',
                  'auth.user',
@@ -108,7 +92,7 @@ def inspect(base):
         if not 'pk' in item:
             sys.stderr.write("malformed item, 'pl' key doesn't exists" % str(item))
             return 1
-        model = item['model'] 
+        model = item['model']
 
         if not model in models:
             models[model] = items_info(item)
@@ -172,7 +156,7 @@ def pdebug(debug, s):
 
 
 def updatures(argv, output=None, fakeold=False, debug=False):
-    
+
     if output == None:
         output = sys.stdout
 
@@ -218,7 +202,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
             pdebug(debug, "MODEL: %s" % model)
             pass
         md = models_descr[model]
-        
+
         # natural key ?
         if not md.natural:
 
@@ -305,8 +289,16 @@ def updatures(argv, output=None, fakeold=False, debug=False):
     pdebug(debug, "FINAL: ")
     json.dump(final_out, output, indent=4)
     output.write("\n")
-        
+
 
 if __name__ == "__main__":
+    argv = []
+    debug = False
+    for arg in sys.argv[1:]:
+        if arg in [ '-v', '--verbose' ]:
+            debug = True
+        else:
+            argv.append(arg)
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
-    sys.exit(updatures(sys.argv[1:]))
+    sys.exit(updatures(argv, debug=debug))

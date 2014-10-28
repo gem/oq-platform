@@ -25,5 +25,5 @@ if __name__ == "__main__":
             fnameout = 'data/' + test + '_out.json'
             file(fnameout, 'w').write(output.getvalue())
             print "TEST DIFFER %s, OUTPUT IS SAVED IN %s" % (test, fnameout)
-        
+
     sys.exit(0)
