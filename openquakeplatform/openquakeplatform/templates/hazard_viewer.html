@@ -25,8 +25,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 Explore - {{block.super}}
 {% endblock %}
 
-{% block body_outer %}
-{% include "base_map_options.html" %}
+{% block map_tools %}
+{{block.super}}
 <button type="button" id="thematic-map">Load Maps</button>
 <button type="button" id="hazard-curve">Load Models</button>
 <button type="button" id="hazard-dialog">Chart Dialog</button>
@@ -42,11 +42,7 @@ Explore - {{block.super}}
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>
 </div>
-
-{{block.super}}
-
 {% endblock %}
-
 
 {% block extra_script %}
     {{block.super}}
@@ -91,9 +87,9 @@ Explore - {{block.super}}
       <input type="button" id="addTileLoss" value="Add Layer">
       <input type="button" id="removeTileLoss" value="Remove Layer">
     </form>
-    
+
   </div>
     <script src="{{ STATIC_URL }}js/hazard_viewer.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
-    
+
 {% endblock extra_script %}

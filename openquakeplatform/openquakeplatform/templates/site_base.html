@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}
-{% endblock title %}
-
 {% block extra_head %}
     <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
-    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link href="{{ STATIC_URL }}img/favicon.ico" rel="shortcut icon"/>
 
+    <script src="{{ STATIC_URL }}js/d3.js"></script>
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the
          frontend.
@@ -26,22 +24,6 @@
         var CURRENT_USER = "{{request.user}}";
     </script>
 {% endblock extra_head %}
-
-{% block header %}
-    <div id="oq-page-header">
-    {{block.super}}
-    </div>
-{% endblock header %}
-
-{% block extra-nav %}
-{% include "extra-nav.html" %}
-{% endblock extra-nav %}
-
-{% block middle %}
-    <div id="oq-page-middle">
-    {{block.super}}
-    </div>
-{% endblock middle %}
 
 {% block body_outer %}
     <div id="oq-body-wrapper">
@@ -72,17 +54,8 @@
     </div>
 {% endblock body_outer %}
 
-{% block footer %}
-    <div id="oq-page-footer">
-
-    {{block.super}}
-
-    </div>
-{% endblock footer %}
-
 {% block extra_script %}
     <!--  Override this in child templates to include additional javascript code -->
-
 
     <style>
 		  /* SVG styling used in GetFeatureInfoTemplate */
@@ -109,18 +82,11 @@
 			}
     </style>
 
-    <script src="{{ STATIC_URL }}js/d3.js"></script>
 
     <script type="text/javascript">
       /* Override addOutput for the getfeatureinfo tool in order to
       parse eventual GetFeatureInfo templates and run javascript
       against them */
-
-      // remove the upload alt icon from the header
-      $('.icon-upload-alt').remove();
-
-      // remove the language dropdown from the footer
-      $('.form-inline').remove();
 
       if (typeof(gxp) != 'undefined') {
       var originalAddOutput = gxp.plugins.WMSGetFeatureInfo.prototype.addOutput;

@@ -12,38 +12,41 @@ Calculate - {{block.super}}
 {% endblock %}
 
 {% block body %}
-<div class="tabbable well-large">
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#tab1" data-toggle="tab">My Calculations</a></li>
-    <li><a href="#tab2" data-toggle="tab">My Outputs</a></li>
-  </ul>
 
-  <div class="tab-content">
-    <div class="tab-pane active" id="tab1">
-        <form class="calc-form form-horizontal"
-              enctype="multipart/form-data"
-              method="post" action="{% url "calculations" %}">
-          <input type="hidden" name="calculation_type" value="hazard"/>
-          <div class="control-group">
-            <label style="width: auto" class="control-label" for="calc_archive">
-              Run a Hazard Calculation
-            </label>
-
-            <div class="controls">
-              <div class="fileinput" data-provides="fileinput">
-                <span class="btn btn-default btn-file"><span>Select Job Archive</span><input type="file" name="calc_archive"/></span>
-              </div>
+<div class="row">
+    <div class="span12">
+        <div class="tabbable well-large">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab">My Calculations</a></li>
+                <li><a href="#tab2" data-toggle="tab">My Outputs</a></li>
+            </ul>
+             <div class="tab-content">
+               <div class="tab-pane active" id="tab1">
+                   <form class="calc-form form-horizontal"
+                         enctype="multipart/form-data"
+                         method="post" action="{% url "calculations" %}">
+                     <input type="hidden" name="calculation_type" value="hazard"/>
+                     <div class="control-group">
+                       <label style="width: auto" class="control-label" for="calc_archive">
+                         Run a Hazard Calculation
+                       </label>
+                       <div class="controls">
+                         <div class="fileinput" data-provides="fileinput">
+                           <span class="btn btn-default btn-file"><span>Select Job Archive</span><input type="file" name="calc_archive"/></span>
+                         </div>
+                       </div>
+                     </div>
+                       <input type="hidden" name="callback_url" value=""/>
+                       <input type="hidden" name="foreign_calculation_id" value=""/>
+                   </form>
+                 <div id="my-calculations" class="well"></div>
+               </div>
+               <div class="tab-pane well" id="tab2"></div>
             </div>
-          </div>
-            <input type="hidden" name="callback_url" value=""/>
-            <input type="hidden" name="foreign_calculation_id" value=""/>
-        </form>
-
-      <div id="my-calculations" class="well"></div>
+        </div>
     </div>
-    <div class="tab-pane well" id="tab2"></div>
-  </div>
 </div>
+
 
 {% endblock body %}
 
