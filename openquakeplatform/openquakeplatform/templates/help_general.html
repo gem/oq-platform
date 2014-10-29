@@ -1,0 +1,74 @@
+<!--
+Copyright (c) 2014, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "data_viewer_base.html" %}
+
+{% block title %}
+Explore - {{block.super}}
+{% endblock %}
+
+{% block body_outer %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/oqp_help.css" />
+<div id="help-body">
+<center><h1>General OpenQuake Platform Help Topics</h1></center>
+
+  <br>
+  <h2><center>About</center></h2>
+
+    <center><p>This page is intended to provide an overview of how to access and navigae the OpenQuake platform</p></center>
+    <br>
+
+    <ul>
+      <h3>Logging in and out of the Platform:</h3>
+     		<dl>Before accessing the Platform you will need to register for an account<br><!--TODO add link to access account here-->
+        <dl>When first visiting the Platform one is presented with the main login access point where you can enter your Platform credentials<br><img src="{{ STATIC_URL }}images/help_login.png" alt="login"></dl>
+        <dl>To log out of the Platform, click on the dropdown selection menu next to your account name on the top right of the page and select 'logout'</dl> <img src="{{ STATIC_URL }}images/help_profile_menu.png" height="30%"  width="30%" alt="profile"><br><br>
+
+    	<h3>User Profile</h3>
+     		<dl>Once you are logged into the Platform you can modify your user profile, avatar and password from the dropdown selection menu next to your account name on the top right of the page</dl><img src="{{ STATIC_URL }}images/help_profile_menu2.png" height="10%"  width="10%" alt="profile"><br><br>
+
+     	<h3>Navigation</h3>
+     		<dl>The Platform is packed with information, custom applicaitons and tools. All of this has been oganized into three main categories <b>Calcualte, Share and Explore</b>. Each category page contains links to all of the respective tools, and applications</dl><br>
+
+     	<h3>Exploring Layers</h3>
+     		<dl>The Platform has the capability to ingest and render geographic data in the form of a layer also known as map layer. The organization of layers begins with the layers over view page. Access the layer overview page by navigating to the <img src="{{ STATIC_URL }}images/help_explore_layers.png" height="10%"  width="10%" alt="Explore Layers">  page. From this page users can upload, download and search for layers that are hosted on the Platform</dl>
+     		<dl>By selecting a layer you will be taken to a layer detail page: <br><img class="diagram" src="{{ STATIC_URL }}images/help_layers_detail.png" alt="help layers detail"><br>
+     		Users have the ability to set the permissions of their layers to discriminte how the layer can be used. You must be the owner of a layer to alter it's permission settings. To modify the permissions of a layer, navigate to the layers page, select the layer. Once you are on the layers detail page you can modify the permission by selecting "Change Layer Permissions": <br> <img src="{{ STATIC_URL }}images/help_layer_permissions.png" alt="Layers Permissions"> <br>
+     		The permissions opntions can then be modified:<br>
+     		<img src="{{ STATIC_URL }}images/help_permissions_detail.png"  alt="Layers Permissions">
+     		</dl>
+
+     	<h3>Exploring Maps</h3>
+     		<dl>The Platform allows users to compose maps. You can think of a map's behavior like a file on your computer. Just like a file, a maps can be created and saved and an exisiting map can be modified and saved as a new map. A map can be composed using one or many layers that are hosted by the Platform</dl> 
+     		<dl>Maps are organized in the same way as layers (described above), there is a maps overview page, and for each map there is a map detail page. The over view page is where you can search through all the maps avalable in the platform. From the map detail page users can download the map, view a list of layers that are used in the map, create a new map that is a copy of the existing map, and modify the map permissions</dl><br>
+
+     	<h3>Creating Maps</h3>
+     		<dl>The Platform includes a map composing tool called GeoExplorer. To access the GeoExplorer, navigate to <img src="{{ STATIC_URL }}images/help_explore_maps.png" height="10%"  width="10%" alt="Explore Maps"> and then select <img src="{{ STATIC_URL }}images/help_create_map.png" height="10%"  width="10%" alt="Create Map"></dl>
+     		<dl>With the GeoExplorer you can mix together multiple layers into a single map, save the map, copy the map, share the map, revisite the map layer and continue making changes<br><img class="diagram"  src="{{ STATIC_URL }}images/help_geoExplorer_detail.png" alt="GeoExplorer"></dl>
+
+
+</div>
+
+
+{{block.super}}
+
+{% endblock %}
+
+{% block extra_script %}
+    {{block.super}}
+    <!-- Category tags-->
+
+{% endblock extra_script %}
