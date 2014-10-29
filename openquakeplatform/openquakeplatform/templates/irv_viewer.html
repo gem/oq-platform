@@ -20,9 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 Explore - {{block.super}}
 {% endblock %}
 
-{% block body_outer %}
-{% include "base_map_options.html" %}
-
+{% block map_tools %}
+{{block.super}}
 <button type="button" id="load-project">Load Project</button>
 <div id="loadProjectDialog" title="Load Project">
   <form id="tile-form-list">
@@ -37,7 +36,6 @@ Explore - {{block.super}}
   </form>
 </div>
 
-
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
 
@@ -48,10 +46,11 @@ Explore - {{block.super}}
 <div id="warning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
 </div>
+{% endblock %}
 
+{% block body_outer %}
 {{block.super}}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/irv_viewer.css" />
-
 {% endblock %}
 
 
@@ -93,6 +92,4 @@ Explore - {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
-    
 {% endblock extra_script %}

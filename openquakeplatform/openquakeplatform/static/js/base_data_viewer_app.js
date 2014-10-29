@@ -14,10 +14,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
-// NOTE: This base_data_viewer is different then the leaflet base as it is 
-// intended to work with the template base_data_viewer.html and posibly any 
-// additional data visualization tools.
-
 
 // NOTE: This `map` var needs to be in global scope
 // for stuff like wax interaction to work.
@@ -37,22 +33,24 @@ var OQLeaflet = {
         };
         OQLeafletApp.prototype.mapFit = function() {
             // Calculate the height:
-            var headerHeight = $('#oq-page-header').height();
-            var footerHeight = $('#oq-page-footer').height();
+            var headerHeight = $('#header').height();
+            var footerHeight = $('#footer').height();
+            var mtoolsHeight = $('#map-tools').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
             var mapHeight = (window.innerHeight - headerHeight - footerHeight
-                             - ribbonHeight);
+                             - mtoolsHeight - ribbonHeight);
 
             // Resize the map so that everything fits on one page:
             $('#map').height(mapHeight);
         };
         OQLeafletApp.prototype.sidebarFit = function() {
             // Calculate the height:
-            var headerHeight = $('#oq-page-header').height();
-            var footerHeight = $('#oq-page-footer').height();
+            var headerHeight = $('#header').height();
+            var footerHeight = $('#footer').height();
+            var mtoolsHeight = $('#map-tools').height();
             var ribbonHeight = $('#oq-context-ribbon').height();
             var barHeight = (window.innerHeight - headerHeight - footerHeight
-                             - ribbonHeight);
+                             - mtoolsHeight - ribbonHeight);
 
             //$('#oq-body-sidebar').height(barHeight);
         };
