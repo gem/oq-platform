@@ -10,48 +10,54 @@ class model_description(object):
     def __init__(self, name, natural, refs):
         self.name = name
         self.natural = natural
+        # { field: model, ... }
         self.refs = refs
 
 
-models_descr = {  'auth.permission' : model_description(
+models_descr = {
+    # auth models
+    'auth.permission' : model_description(
         'auth.permission',
         lambda i: [ i['fields']['codename'], i['fields']['content_type'][0], i['fields']['content_type'][1] ],
         {}),
 
-                  'auth.group': model_description(
+    'auth.group': model_description(
         'auth.group',
         lambda i: [ i['fields']['name'] ],
-        {'auth.permission': 'permissions'}),
+        {'permissions': 'auth.permission'}),
 
-                  'auth.user': model_description(
+    'auth.user': model_description(
         'auth.user',
         lambda i: [ i['fields']['username'] ],
-        {'auth.permission': 'user_permissions',
-         'auth.group': 'groups'}),
+        {'user_permissions': 'auth.permission',
+         'groups': 'auth.group'}),
 
-                  'account.account': model_description(
+    'account.account': model_description(
         'account.account',
         lambda i: i['fields']['user'],
-        {'auth.user': 'user'}),
+        {'user': 'auth.user'}),
 
-                  'account.emailaddress': model_description(
+    'account.emailaddress': model_description(
         'account.emailaddress',
         lambda i: i['fields']['user'],
-        {'auth.user': 'user'}),
+        {'user': 'auth.user'}),
 
-                  'test.leaf': model_description(
+    # test models
+    'test.one2one': model_description(
+        'test.one2one',
+        None,
+        {'leaf': 'test.leaf'}),
+
+    'test.one2many': model_description(
+        'test.one2many',
+        None,
+        {'leafs': 'test.leaf'}),
+
+    'test.leaf': model_description(
         'test.leaf',
         None,
         {}),
-                  'test.one2one': model_description(
-        'test.one2one',
-        None,
-        {'test.leaf': 'leaf'}),
-                  'test.one2many': model_description(
-        'test.one2many',
-        None,
-        {'test.leaf': 'leafs'}),
-                  }
+    }
 
 # TODO: order could be extracted from the models_descr
 models_order = [ 'auth.permission',
@@ -126,26 +132,28 @@ def update_fk(updates_gr, model, item, new_pk, debug=False):
     # update all references
     for mdref in models_descr:
         pdebug(debug, "MDREF: %s" % mdref)
-        if model in models_descr[mdref].refs:
-            fie = models_descr[mdref].refs[model]
-            pdebug(debug, "FIE: %s" % fie)
-            for itemod in updates_gr[mdref]:
-                pdebug(debug, "ITEMOD: %s" % itemod)
-                ty = type(itemod['fields'][fie])
-                if ty is int:
-                    # simplest case, one to one, if the same value update with the new
-                    if itemod['fields'][fie] == item['pk']:
-                        itemod['fields'][fie] = new_pk
-                elif ty is list:
-                    ty2 = type(itemod['fields'][fie][0])
-                    if ty2 is int:
-                        # case list of pk, substitute just the right occurrency
-                        if item['pk'] in itemod['fields'][fie]:
-                            idx = itemod['fields'][fie].index(item['pk'])
-                            itemod['fields'][fie][idx] = new_pk
-                    else:
-                        pdebug(debug, "itemod list of lists case not supported")
-                        sys.exit(10)
+        if model in models_descr[mdref].refs.values():
+            for ref_field, ref_model in models_descr[mdref].refs.iteritems():
+                if ref_model != model:
+                    continue
+                pdebug(debug, "REF_FIELD: %s" % ref_field)
+                for itemod in updates_gr[mdref]:
+                    pdebug(debug, "ITEMOD: %s" % itemod)
+                    ty = type(itemod['fields'][ref_field])
+                    if ty is int:
+                        # simplest case, one to one, if the same value update with the new
+                        if itemod['fields'][ref_field] == item['pk']:
+                            itemod['fields'][ref_field] = new_pk
+                    elif ty is list:
+                        ty2 = type(itemod['fields'][ref_field][0])
+                        if ty2 is int:
+                            # case list of pk, substitute just the right occurrency
+                            if item['pk'] in itemod['fields'][ref_field]:
+                                idx = itemod['fields'][ref_field].index(item['pk'])
+                                itemod['fields'][ref_field][idx] = new_pk
+                        else:
+                            pdebug(debug, "itemod list of lists case not supported")
+                            sys.exit(10)
 
 
 
