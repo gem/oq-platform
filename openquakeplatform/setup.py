@@ -79,8 +79,8 @@ setup(
         "django-taggit==0.10a1",
         "django-taggit-templatetags==0.4.6dev",
         "django-templatetag-sugar==0.1",
-        "django-user-accounts==1.0b14",
         "geonode-avatar==2.1.1",
+        "geonode-user-accounts==1.0.5,"
         "gisdata==0.5.4",
         "gsconfig==0.6.6",
         "lxml==2.3.2",

@@ -384,6 +384,7 @@ deps_info () {
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
+    sudo pip install geonode-user-accounts==1.0.5
 EOF
 }
 
@@ -396,6 +397,7 @@ deps_install () {
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
+    sudo pip install geonode-user-accounts==1.0.5
 
     # FIXME currently 'pip install -U --no-deps' is used to install
     #       openquakeplatform, until '-U --nodeps' will be removed we must install
