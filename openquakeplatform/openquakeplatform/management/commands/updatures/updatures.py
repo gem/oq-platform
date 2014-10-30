@@ -42,6 +42,175 @@ models_descr = {
         lambda i: i['fields']['user'],
         {'user': 'auth.user'}),
 
+    # Vulnerability models
+    'vulnerability.qrsempirical': model_description(
+        'vulnerability.qrsempirical',
+        None,
+        {'fragility_func':     'vulnerability.fragilityfunc',
+         'vulnerability_func': 'vulnerability.vulnerabilityfunc'}),
+
+    'vulnerability.qrsanalytical': model_description(
+        'vulnerability.qrsanalytical',
+        None,
+        {'fragility_func':     'vulnerability.fragilityfunc',
+         'vulnerability_func': 'vulnerability.vulnerabilityfunc'}),
+
+    'vulnerability.statmodel': model_description(
+        'vulnerability.statmodel',
+        None,
+        {}),
+
+    'vulnerability.statmodelfittingmethod': model_description(
+        'vulnerability.statmodelfittingmethod',
+        None,
+        {}),
+
+    'vulnerability.modelfittingmethodassumption': model_description(
+        'vulnerability.modelfittingmethodassumption',
+        None,
+        {}),
+
+    'vulnerability.fitassessmentgoodness': model_description(
+        'vulnerability.fitassessmentgoodness',
+        None,
+        {}),
+
+    'vulnerability.procconstrint': model_description(
+        'vulnerability.procconstrint',
+        None,
+        {}),
+
+    'vulnerability.statisticalinformation': model_description(
+        'vulnerability.statisticalinformation',
+        None,
+        {'fragility_func':              'vulnerability.fragilityfunc',
+         'vulnerability_func':          'vulnerability.vulnerabilityfunc',
+         'stat_model':                  'vulnerability.statmodel',
+         'stat_model_fitting_method':   'vulnerability.statmodelfittingmethod',
+         'model_fitting_method_assumptions': 'vulnerability.modelfittingmethodassumption',
+         'fit_assessment_goodness':     'vulnerability.fitassessmentgoodness',
+         'proc_constr_conf_int':        'vulnerability.procconstrint',
+         'proc_constr_pred_int':        'vulnerability.procconstrint'}),
+
+    'vulnerability.empiricalmodelinfo': model_description(
+        'vulnerability.empiricalmodelinfo',
+        None,
+        {'fragility_func':     'vulnerability.fragilityfunc',
+         'vulnerability_func': 'vulnerability.vulnerabilityfunc',
+         'evaluation_of_im':   'vulnerability.evaluationofim'}),
+
+    'vulnerability.analysistype': model_description(
+        'vulnerability.analysistype',
+        None,
+        {}),
+
+    'vulnerability.analyticalmodelinfo': model_description(
+        'vulnerability.analyticalmodelinfo',
+        None,
+        {'fragility_func':     'vulnerability.fragilityfunc',
+         'vulnerability_func': 'vulnerability.vulnerabilityfunc',
+         'analysis_type':      'vulnerability.analysistype',
+         'evaluation_of_im':   'vulnerability.evaluationofim'}),
+
+    'vulnerability.cc_analysistype': model_description(
+        'vulnerability.cc_analysistype',
+        None,
+        {}),
+
+    'vulnerability.cc_analyticalmodelinfo': model_description(
+        'vulnerability.cc_analyticalmodelinfo',
+        None,
+        {'capacity_curve_func': 'vulnerability.capacitycurvefunc',
+         'analysis_type':       'vulnerability.cc_analysistype'}),
+
+    'vulnerability.country': model_description(
+        'vulnerability.country',
+        None,
+        {}),
+
+    'vulnerability.geoapplicability': model_description(
+        'vulnerability.geoapplicability',
+        None,
+        {'general_information': 'vulnerability.generalinformation',
+         'countries':           'vulnerability.country'}),
+
+    'vulnerability.taxonomytype': model_description(
+        'vulnerability.taxonomytype',
+        None,
+        {}),
+
+    'vulnerability.cc_predictorvar': model_description(
+        'vulnerability.cc_predictorvar',
+        None,
+        {'capacity_curve_func': 'vulnerability.capacitycurvefunc'}),
+
+    'vulnerability.capacitycurvefunc': model_description(
+        'vulnerability.capacitycurvefunc',
+        None,
+        {'general_information': 'vulnerability.generalinformation'}),
+
+    'vulnerability.funcdistrdtldiscr': model_description(
+        'vulnerability.funcdistrdtldiscr',
+        None,
+        {'damage_to_loss_func': 'vulnerability.damagetolossfunc'}),
+
+    'vulnerability.damagetolossfunc': model_description(
+        'vulnerability.damagetolossfunc',
+        None,
+        {'general_information': 'vulnerability.generalinformation'}),
+
+    'vulnerability.funcdistrvulncont': model_description(
+        'vulnerability.funcdistrvulncont',
+        None,
+        {'vulnerability_func': 'vulnerability.vulnerabilityfunc'}),
+
+    'vulnerability.funcdistrvulndiscr': model_description(
+        'vulnerability.funcdistrvulndiscr',
+        None,
+        {'vulnerability_func': 'vulnerability.vulnerabilityfunc'}),
+
+    'vulnerability.evaluationofim': model_description(
+        'vulnerability.evaluationofim',
+        None,
+        {}),
+
+    'vulnerability.predictorvar': model_description(
+        'vulnerability.predictorvar',
+        None,
+        {'vulnerability_func': 'vulnerability.vulnerabilityfunc',
+         'fragility_func':     'vulnerability.fragilityfunc'}),
+
+    'vulnerability.vulnerabilityfunc': model_description(
+        'vulnerability.vulnerabilityfunc',
+        None,
+        {'general_information': 'vulnerability.generalinformation'}),
+
+    'vulnerability.funcdistrfragcont': model_description(
+        'vulnerability.funcdistrfragcont',
+        None,
+        {'fragility_func':     'vulnerability.fragilityfunc'}),
+
+    'vulnerability.funcdistrfragdiscr': model_description(
+        'vulnerability.funcdistrfragdiscr',
+        None,
+        {'fragility_func':     'vulnerability.fragilityfunc'}),
+
+    'vulnerability.engineeringdemandpar': model_description(
+        'vulnerability.engineeringdemandpar',
+        None,
+        {}),
+
+    'vulnerability.fragilityfunc': model_description(
+        'vulnerability.fragilityfunc',
+        None,
+        {'general_information': 'vulnerability.generalinformation',
+         'engineering_demand_par': 'vulnerability.engineeringdemandpar'}),
+
+    'vulnerability.generalinformation': model_description(
+        'vulnerability.generalinformation',
+        None,
+        {'taxonomy_type': 'vulnerability.taxonomytype'}),
+
     # test models
     'test.one2one': model_description(
         'test.one2one',
@@ -59,16 +228,35 @@ models_descr = {
         {}),
     }
 
-# TODO: order could be extracted from the models_descr
-models_order = [ 'auth.permission',
-                 'auth.group',
-                 'auth.user',
-                 'account.account',
-                 'account.emailaddress',
-                 'test.leaf',
-                 'test.one2one',
-                 'test.one2many'
-                 ]
+def rebuild_order():
+    reloop = True
+    first_loop = True
+    models_descr_old = models_descr.copy()
+    models_descr_rest = {}
+    models_order = []
+    while reloop:
+        for model, descr in models_descr_old.iteritems():
+            if first_loop:
+                first_loop = False
+                if descr.refs == {}:
+                    models_order.append(model)
+                else:
+                    models_descr_rest[model] = descr
+            else:
+                for field, dep in descr.refs.iteritems():
+                    if not dep in models_order:
+                        models_descr_rest[model] = descr
+                        break
+                else:
+                    models_order.append(model)
+        models_descr_old = models_descr_rest.copy()
+        models_descr_rest = {}
+        if models_descr_old == {}:
+            reloop = False
+
+    return models_order
+
+models_order = rebuild_order()
 
 class items_info(object):
 
