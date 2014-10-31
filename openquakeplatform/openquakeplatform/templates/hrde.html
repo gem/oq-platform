@@ -55,7 +55,7 @@ HRDE - {{block.super}}
 
         <dl>Multiple hazard map layers can be loaded into the map simultaneously. This is not the case for all other layers (curves & input models). For curves & input models, each time a layer is added, the previously loaded layer is automatically removed from the map, while hazard maps layers will remain in the map</dl>
 
-        <dl>Once a hazard map has been selected and loaded, the layer transparency can be adjusted in the Hazard Data dialog using the slider</dl>
+        <dl>Once a hazard map has been selected and loaded, the layer opacity can be adjusted in the Hazard Data dialog using the slider</dl>
 
         <dl>Once a hazard map has been selected and loaded, one can download the hazard map into a csv file. Please note that the downloaded data is limited to the extent of the map that is visible on the screen.</dl>
 
@@ -130,13 +130,13 @@ HRDE - {{block.super}}
         </select>
         <br>
         <input type="button" id="addTileLayer" value="Add Layer">
-        <div id="transparency-labels">
+        <div id="opacity-labels">
         <p> 
-          <label class="transparency-label" for="amount">Layer transparency:</label> 
+          <label class="opacity-label" for="amount">Layer opacity:</label> 
           <input type="text" id="amount" readonly style="width:30px">
         </p>
       </div>
-      <div id="transparency-slider"></div>
+      <div id="opacity-slider"></div>
       </div>
       <br/>
 
