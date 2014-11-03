@@ -60,6 +60,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}js/bing.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 
+    <!-- This style overrides the default z-index imposed by jquery to fix
+         overlap between widgets and header in the leaflet apps.
+    -->
+    <style>
+          .ui-dialog, .ui-widget { z-index: 10000; }
+    </style>
+
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the
          frontend.
