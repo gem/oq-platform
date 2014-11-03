@@ -25,7 +25,6 @@ AppProtoType.prototype = {
     // Keep track of grids
     gridList: null,
     utfGrid: {},
-    utfClickData: {},
     // Make a list of categories
     curveCategoryList: [],
     wikiLinkList: {},
@@ -827,23 +826,27 @@ var startApp = function() {
     // Logic for downloading hazard map csv
     $('#HMDownload').button().click(function() {
 
-        if (AppVars.utfGridMap !== undefined) {
+        if (AppVars.utfGrid !== undefined && AppVars.utfGrid.utfGridType == 'map') {
             var zoomLevel = map.getZoom();
             var bounds = map.getBounds();
             var tempPolygon = L.polygon([
                 [bounds._northEast.lat, bounds._northEast.lng],
                 [bounds._southWest.lat, bounds._southWest.lng]
             ]);
+
             if (zoomLevel >= 6) {
                 var hazardMapValues = [];
 
                 // get information out of the utfgrid for use in Download
-                for (var l in AppVars.utfGridMap._cache) {
-                    if (AppVars.utfGridMap._cache[l] !== null && typeof AppVars.utfGridMap._cache[l] === 'object') {
-                        for(var m in AppVars.utfGridMap._cache[l].data) {
+                for (var l in AppVars.utfGrid._cache) {
+                    if (AppVars.utfGrid._cache[l] !== null && typeof AppVars.utfGrid._cache[l] === 'object') {
+                        for (var m in AppVars.utfGrid._cache[l].data) {
                             // download only the values that are within the map bounds
-                            var tempRecord = AppVars.utfGridMap._cache[l].data[m];
+                            var tempRecord = AppVars.utfGrid._cache[l].data[m];
                             var tmpLatLng = L.latLng(tempRecord.latitude, tempRecord.longitude);
+                            if (tmpLatLng == undefined) {
+                                alert("There is a problem with this hazard map, please alert the systems administration of this issue")
+                            }
                             if (tempPolygon.getBounds().contains(tmpLatLng)) {
                                 hazardMapValues.push([tempRecord.VAL, tempRecord.longitude, tempRecord.latitude]);
                             }
