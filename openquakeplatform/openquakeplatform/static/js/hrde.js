@@ -1793,6 +1793,12 @@ var startApp = function() {
                 .tickFormat('')
             );
 
+        svg.append("text")
+            .attr("x", 335)
+            .attr("y", -25)
+            .attr("dy", ".35em")
+            .text("MFDS *:");
+
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
 
@@ -1892,6 +1898,7 @@ var startApp = function() {
             .style("font-size","11px")
             .text('');
 
+        $('#chartDialog').append('<div>* Magnitude Frequency Distributions</div>');
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
         $('#downloadCurve').on("hover", function(){
             $(this).css("cursor", "pointer");
