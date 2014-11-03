@@ -921,7 +921,6 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppVars.uhsLayerGrids) > -1;
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -943,7 +942,6 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
             var selectedLayer = inputLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppVars.inputLayerGrids) > -1;
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -954,7 +952,7 @@ var startApp = function() {
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
 
-        } else if (curveType == undefined) {
+        } else if (curveType == undefined || curveType == 'map') {
 
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
@@ -982,19 +980,14 @@ var startApp = function() {
                 }
             }
 
-            utfGrid = createUtfLayerGroups(selectedLayer);
+            utfGrid = createUtfLayerGroups(selectedLayer, curveType);
             utfGrid.utfGridType = "map";
-
-            // TODO update app to handel the opacity stuff
-            //Opacity(tileLayerMap);
         }
+
         hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
     }
 
-    function createUtfLayerGroups(selectedLayer) {
-
-        //var hasGrid = $.inArray(selectedLayer, AppVars.curveLayerGrids) > -1;
-
+    function createUtfLayerGroups(selectedLayer, curveType) {
         var tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
@@ -1010,9 +1003,11 @@ var startApp = function() {
         ]);
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
+        if (curveType == undefined || curveType == 'map') {
+            Opacity(tileLayer);
+        }
 
         return AppVars.utfGrid;
-
     }
 
     // add input curve layers from tilestream
@@ -1023,7 +1018,7 @@ var startApp = function() {
         // Look up the layer id using the layer name
         var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
         var selectedLayer = inputLayerIdArray.toString();
-        //var hasGrid = $.inArray(selectedLayer, AppVars.inputLayerGrids) > -1;
+
         // get more information about the selected layer for use in chart
         $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
             AppVars.mappedValue = json.category +' '+ json.mapped_value;
@@ -1085,8 +1080,6 @@ var startApp = function() {
             map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
-        var hasGrid = $.inArray(selectedLayer, AppVars.lossLayerGrids) > -1;
-
         var tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
@@ -1121,7 +1114,6 @@ var startApp = function() {
             var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
 
             selectedLayer = curveLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppVars.curveLayerGrids) > -1;
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -1141,7 +1133,7 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
-            var hasGrid = $.inArray(selectedLayer, AppVars.uhsLayerGrids) > -1;
+
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
                 AppVars.mappedValue = json.mapped_value;
