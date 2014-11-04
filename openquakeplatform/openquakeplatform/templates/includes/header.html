@@ -62,11 +62,16 @@
                           <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
                         </ul>
                       </li> <!-- ./dropdown user -->
-                      <li class="search-bar">
-                          <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
-                            {# csrf_token #}
-                            <input id="search" type="text" name="q"/>
-                          </form>
+                      <li class="dropdown search">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{% trans 'Search' %}"><img src="{{ STATIC_URL }}img/oq-search.png" /></a>
+                        <ul class="dropdown-menu">
+                          <li class="search-bar">
+                            <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
+                              {# csrf_token #}
+                              <input id="search" type="text" name="q"/>
+                            </form>
+                          </li>a
+                        </ul>
                       </li>
                       <li class="actions">
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
@@ -108,7 +113,7 @@
               </div>
             </div>
             <div id="gem-right-logo">
-              <a href="{% url "home" %}"><span class="nav-logo nav-logo-gem"></span></a>
+              <a href="http://www.globalquakemodel.org" title="GEM Foundation" target="_blank"><span class="nav-logo nav-logo-gem"></span></a>
             </div>
           </div>
         </div> <!-- /.container -->
