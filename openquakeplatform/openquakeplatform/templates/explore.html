@@ -37,7 +37,7 @@
           <div class="oq-intro">
             <!-- Main page content goes here -->
 
-            <b>Explore:</b> 
+            <b>Explore:</b>
             <ul>
               <li><a href="{% url 'documents_browse' %}">Documents</a></li>
               <li><a href="{% url "layer_browse" %}">Layers</a></li>
@@ -46,7 +46,7 @@
               <li><a href="{% url 'profile_browse' %}">People</a></li>
             </ul>
 
-            <b>Data Sets:</b> 
+            <b>Data Sets:</b>
             <ul>
               <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
               <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
@@ -63,7 +63,6 @@
                 <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
               </li>
             </ul>
-            
           </div>
         {% endblock oq_body_content %}
       </div>
@@ -77,7 +76,6 @@
             <a class="btn btn-large" href="{% url "maps_browse" %}">
               {% trans "Explore Maps" %}
             </a>
-            
           </div>
         {% endblock oq_body_sidebar %}
       </div>
