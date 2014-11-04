@@ -359,7 +359,7 @@ var startApp = function() {
                 AppVars.inputLayerGrids.push(gridName);
             }
 
-            if (chartType == undefined && cat !== undefined && type == 'hazard') {
+            if (type == 'map') {
                 AppVars.mapLayerNames[name] = [];
                 AppVars.mapLayersByCat[cat] = [];
                 if (grids !== undefined) {
@@ -444,7 +444,7 @@ var startApp = function() {
                 }
             }
 
-            if (chartType == undefined && cat !== undefined && type == 'hazard') {
+            if (type == 'map') {
                 mapLayerId = json[j].id;
                 mapLayerTitle = json[j].mapped_value;
                 chartType = json[j].chartType;
