@@ -409,6 +409,7 @@ def updatures(argv, output=None, fakeold=False, debug=0):
     pdebug(debug, 3, "MOP UPDATES: %s" % str(updates))
 
     updates_gr = group_objs(updates)
+    final_out_gr = group_objs([])
 
     pdebug(debug, 3, "MOP GROUPS: %s" % str(updates_gr))
     models = {}
@@ -450,7 +451,7 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                 pdebug(debug, 1, "ITEM: [%s]" % item)
                 skip_it = False
                 # item already exists ?
-                for otem in oldates_gr[model]:
+                for otem in oldates_gr[model] + final_out_gr[model]:
                     if item_compare(item, otem, pk_included=True):
                         pdebug(debug, 1, "identical items, skip it")
                         # identical case: continue
@@ -473,7 +474,7 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                     continue
 
                 # loop to identify if new item has the same pk of old item
-                for otem in oldates_gr[model]:
+                for otem in oldates_gr[model] + final_out_gr[model]:
                     if item['pk'] == otem['pk']:
                         new_pk = oldels[model].newpk()
                         pdebug(debug, 1, "NEWPK: %d" % new_pk)
@@ -483,6 +484,7 @@ def updatures(argv, output=None, fakeold=False, debug=0):
 
                 pdebug(debug, 1, "ADD IT")
 
+                final_out_gr[model].append(item)
                 final_out.append(item)
 
         else: # if not md.natural:
@@ -492,7 +494,7 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                 found_it = False
 
                 # item already exists ?
-                for otem in oldates_gr[model]:
+                for otem in oldates_gr[model] + final_out_gr[model]:
                     pdebug(debug, 2, "OTEM: [%s]" % otem)
                     if item_compare(item, otem, pk_included=True):
                         pdebug(debug, 1, "identical items, skip it")
@@ -523,15 +525,17 @@ def updatures(argv, output=None, fakeold=False, debug=0):
 
                 if not found_it:
                     # loop to identify if new item has the same pk of old item
-                    for otem in oldates_gr[model]:
+                    for otem in oldates_gr[model] + final_out_gr[model]:
                         if item['pk'] == otem['pk']:
                             new_pk = oldels[model].newpk()
+                            pdebug(debug, 2, "SAME PK, UPDATE IT [%d]" % new_pk)
                             pdebug(debug, 1, "NEWPK: %d" % new_pk)
                             update_fk(updates_gr, model, item, new_pk, debug=debug)
                             item['pk'] = new_pk
                             break
 
                 pdebug(debug, 1, "ADD IT")
+                final_out_gr[model].append(item)
                 final_out.append(item)
 
     pdebug(debug, 1, "FINAL: ")
