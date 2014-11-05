@@ -351,6 +351,46 @@ def pdebug(debug, s):
     print s
 
 
+def fk_compare(a, b):
+    b = list(b)
+    try:
+        for elem in a:
+            b.remove(elem)
+    except ValueError:
+        return False
+    return not b
+
+def item_compare(a, b, pk_included=True):
+    if pk_included:
+        if a['pk'] != b['pk']:
+            return False
+
+    if a['model'] != b['model']:
+        return False
+
+    mdesc = models_descr[a['model']]
+
+    b_keys = b['fields'].keys()
+
+    a_fie = a['fields']
+    b_fie = b['fields']
+
+    for a_key in a_fie:
+        if not a_key in b_fie:
+            return False
+
+        if a_key in mdesc.refs:
+            # foreign key case
+            if not fk_compare(a_fie, b_fie):
+                return False
+        else:
+            if a_fie[a_key] != b_fie[a_key]:
+                return False
+        b_keys.remove(a_key)
+
+    return not b_keys
+
+
 def updatures(argv, output=None, fakeold=False, debug=False):
 
     if output == None:
@@ -409,7 +449,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                 skip_it = False
                 # item already exists ?
                 for otem in oldates_gr.get(model, []):
-                    if item == otem:
+                    if item_compare(item, otem, pk_included=True):
                         pdebug(debug, "identical items, skip it")
                         # identical case: continue
                         skip_it = True
@@ -419,7 +459,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                     item_new = copy.deepcopy(item)
                     pdebug(debug, "OTEM: %s" % otem)
                     item_new['pk'] = otem['pk']
-                    if item_new == otem:
+                    if item_compare(item_new, otem, pk_included=True):
                         # identical items except for pk, skip it and update all references
                         pdebug(debug, "identical item except for pk, skip it and update all references")
                         skip_it = True
@@ -452,7 +492,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                 # item already exists ?
                 for otem in oldates_gr.get(model, []):
                     pdebug(debug, "OTEM: [%s]" % otem)
-                    if item == otem:
+                    if item_compare(item, otem, pk_included=True):
                         pdebug(debug, "identical items, skip it")
                         # identical case: continue
                         found_it = True
@@ -463,6 +503,16 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                         # same natural keys found, update new pk value to match old pk
                         item['pk'] = otem['pk']
                         found_it = True
+
+                        # no: pk key case
+                        item_new = copy.deepcopy(item)
+                        pdebug(debug, "OTEM: %s" % otem)
+                        item_new['pk'] = otem['pk']
+                        if item_compare(item_new, otem, pk_included=True):
+                            # identical items except for pk, skip it and update all references
+                            pdebug(debug, "identical item except for pk, skip it and update all references")
+                            skip_it = True
+
                         break
 
                 if skip_it:
