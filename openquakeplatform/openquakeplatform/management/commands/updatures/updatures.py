@@ -316,18 +316,23 @@ def group_objs(base):
     return group
 
 
+def pdebug(debug, level, s):
+    if debug < level:
+        return
+    print s
+
 
 def update_fk(updates_gr, model, item, new_pk, debug=False):
     # update all references
     for mdref in models_descr:
-        pdebug(debug, "MDREF: %s" % mdref)
+        pdebug(debug, 3, "MDREF: %s" % mdref)
         if model in models_descr[mdref].refs.values():
             for ref_field, ref_model in models_descr[mdref].refs.iteritems():
                 if ref_model != model:
                     continue
-                pdebug(debug, "REF_FIELD: %s" % ref_field)
+                pdebug(debug, 2,"REF_FIELD: %s" % ref_field)
                 for itemod in updates_gr[mdref]:
-                    pdebug(debug, "ITEMOD: %s" % itemod)
+                    pdebug(debug, 2, "ITEMOD: %s" % itemod)
                     ty = type(itemod['fields'][ref_field])
                     if ty is int:
                         # simplest case, one to one, if the same value update with the new
@@ -341,15 +346,9 @@ def update_fk(updates_gr, model, item, new_pk, debug=False):
                                 idx = itemod['fields'][ref_field].index(item['pk'])
                                 itemod['fields'][ref_field][idx] = new_pk
                         else:
-                            pdebug(debug, "itemod list of lists case not supported")
+                            pdebug(debug, 1, "itemod list of lists case not supported")
                             sys.exit(10)
 
-
-
-def pdebug(debug, s):
-    if not debug:
-        return
-    print s
 
 
 def fk_compare(a, b):
@@ -392,7 +391,7 @@ def item_compare(a, b, pk_included=True):
     return not b_keys
 
 
-def updatures(argv, output=None, fakeold=False, debug=False):
+def updatures(argv, output=None, fakeold=False, debug=0):
 
     if output == None:
         output = sys.stdout
@@ -401,15 +400,17 @@ def updatures(argv, output=None, fakeold=False, debug=False):
     oldates = []
     final_out = []
 
+    pdebug(debug, 1, "DEBUG LEVEL: %d" % debug)
+
     for fname in argv:
-        pdebug(debug, "FNAME %s" % fname)
+        pdebug(debug, 1, "FNAME %s" % fname)
         updates += json.load(file(fname, 'r'))
 
-    pdebug(debug, "MOP UPDATES: %s" % str(updates))
+    pdebug(debug, 3, "MOP UPDATES: %s" % str(updates))
 
     updates_gr = group_objs(updates)
 
-    pdebug(debug, "MOP GROUPS: %s" % str(updates_gr))
+    pdebug(debug, 3, "MOP GROUPS: %s" % str(updates_gr))
     models = {}
     oldels = {}
 
@@ -418,7 +419,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
     if not fakeold:
         # load the associated data from db
         for k in models:
-            pdebug(debug, "KEY: %s" % k)
+            pdebug(debug, 1, "KEY: %s" % k)
             fname = '/tmp/command_output_' + k + '.json'
             with open(fname, "w") as f:
                 call_command('dumpdata', k, use_natural_keys=True,
@@ -436,7 +437,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
         if updates_gr[model] == []:
             continue
         else:
-            pdebug(debug, "MODEL: %s" % model)
+            pdebug(debug, 1, "MODEL: %s" % model)
             pass
         md = models_descr[model]
 
@@ -446,55 +447,55 @@ def updatures(argv, output=None, fakeold=False, debug=False):
             #
             #  found identical item with different pk
             for item in updates_gr[model]:
-                pdebug(debug, "ITEM: [%s]" % item)
+                pdebug(debug, 1, "ITEM: [%s]" % item)
                 skip_it = False
                 # item already exists ?
-                for otem in oldates_gr.get(model, []):
+                for otem in oldates_gr[model]:
                     if item_compare(item, otem, pk_included=True):
-                        pdebug(debug, "identical items, skip it")
+                        pdebug(debug, 1, "identical items, skip it")
                         # identical case: continue
                         skip_it = True
                         break
 
                     # no: pk key case
                     item_new = copy.deepcopy(item)
-                    pdebug(debug, "OTEM: %s" % otem)
+                    pdebug(debug, 2, "OTEM: %s" % otem)
                     item_new['pk'] = otem['pk']
                     if item_compare(item_new, otem, pk_included=True):
                         # identical items except for pk, skip it and update all references
-                        pdebug(debug, "identical item except for pk, skip it and update all references")
+                        pdebug(debug, 1, "identical item except for pk, skip it and update all references")
                         skip_it = True
                         update_fk(updates_gr, model, item, otem['pk'], debug=debug)
                         break
 
                 if skip_it:
-                    pdebug(debug, "SKIP IT")
+                    pdebug(debug, 1, "SKIP IT")
                     continue
 
                 # loop to identify if new item has the same pk of old item
-                for otem in oldates_gr.get(model, []):
+                for otem in oldates_gr[model]:
                     if item['pk'] == otem['pk']:
                         new_pk = oldels[model].newpk()
-                        pdebug(debug, "NEWPK: %d" % new_pk)
+                        pdebug(debug, 1, "NEWPK: %d" % new_pk)
                         update_fk(updates_gr, model, item, new_pk, debug=debug)
                         item['pk'] = new_pk
                         break
 
-                pdebug(debug, "ADD IT")
+                pdebug(debug, 1, "ADD IT")
 
                 final_out.append(item)
 
         else: # if not md.natural:
             for item in updates_gr[model]:
-                pdebug(debug, "ITEM: [%s]" % item)
+                pdebug(debug, 1, "ITEM: [%s]" % item)
                 skip_it = False
                 found_it = False
 
                 # item already exists ?
-                for otem in oldates_gr.get(model, []):
-                    pdebug(debug, "OTEM: [%s]" % otem)
+                for otem in oldates_gr[model]:
+                    pdebug(debug, 2, "OTEM: [%s]" % otem)
                     if item_compare(item, otem, pk_included=True):
-                        pdebug(debug, "identical items, skip it")
+                        pdebug(debug, 1, "identical items, skip it")
                         # identical case: continue
                         found_it = True
                         skip_it = True
@@ -507,43 +508,43 @@ def updatures(argv, output=None, fakeold=False, debug=False):
 
                         # no: pk key case
                         item_new = copy.deepcopy(item)
-                        pdebug(debug, "OTEM: %s" % otem)
+                        pdebug(debug, 2, "OTEM: %s" % otem)
                         item_new['pk'] = otem['pk']
                         if item_compare(item_new, otem, pk_included=True):
                             # identical items except for pk, skip it and update all references
-                            pdebug(debug, "identical item except for pk, skip it and update all references")
+                            pdebug(debug, 1, "identical item except for pk, skip it and update all references")
                             skip_it = True
 
                         break
 
                 if skip_it:
-                    pdebug(debug, "SKIP IT")
+                    pdebug(debug, 1, "SKIP IT")
                     continue
 
                 if not found_it:
                     # loop to identify if new item has the same pk of old item
-                    for otem in oldates_gr.get(model, []):
+                    for otem in oldates_gr[model]:
                         if item['pk'] == otem['pk']:
                             new_pk = oldels[model].newpk()
-                            pdebug(debug, "NEWPK: %d" % new_pk)
+                            pdebug(debug, 1, "NEWPK: %d" % new_pk)
                             update_fk(updates_gr, model, item, new_pk, debug=debug)
                             item['pk'] = new_pk
                             break
 
-                pdebug(debug, "ADD IT")
+                pdebug(debug, 1, "ADD IT")
                 final_out.append(item)
 
-    pdebug(debug, "FINAL: ")
+    pdebug(debug, 1, "FINAL: ")
     json.dump(final_out, output, indent=4)
     output.write("\n")
 
 
 if __name__ == "__main__":
     argv = []
-    debug = False
+    debug = 0
     for arg in sys.argv[1:]:
         if arg in [ '-v', '--verbose' ]:
-            debug = True
+            debug += 1
         else:
             argv.append(arg)
 

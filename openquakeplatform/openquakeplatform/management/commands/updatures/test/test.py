@@ -6,14 +6,23 @@ sys.path.append('..')
 
 from updatures import updatures
 
-test_list = [ '000pk-rewrite', '001pk-already-exists', '002identical',
+test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
               '003nat-identical', '004nat-pk-already-exists',
               '100auth-vulnerability' ]
 
 if __name__ == "__main__":
-    debug = False
-    if '-v' in sys.argv or '--verbose' in sys.argv:
-        debug = True
+    argv = []
+    debug = 0
+    for arg in sys.argv[1:]:
+        if arg in [ '-v', '--verbose' ]:
+            debug += 1
+        else:
+            argv.append(arg)
+
+    if argv == []:
+        test_list = test_list_orig
+    else:
+        test_list = argv
 
     for test in test_list:
         output = StringIO.StringIO()
