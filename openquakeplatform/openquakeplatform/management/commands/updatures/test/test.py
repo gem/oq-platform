@@ -6,7 +6,9 @@ sys.path.append('..')
 
 from updatures import updatures
 
-test_list = [ '000pk-rewrite', '001pk-already-exists', '002identical', '003nat-identical', '004nat-pk-already-exists' ]
+test_list = [ '000pk-rewrite', '001pk-already-exists', '002identical',
+              '003nat-identical', '004nat-pk-already-exists',
+              '100auth-vulnerability' ]
 
 if __name__ == "__main__":
     debug = False
