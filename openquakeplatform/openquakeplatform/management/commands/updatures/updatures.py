@@ -408,7 +408,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                 pdebug(debug, "ITEM: [%s]" % item)
                 skip_it = False
                 # item already exists ?
-                for otem in oldates_gr[model]:
+                for otem in oldates_gr.get(model, []):
                     if item == otem:
                         pdebug(debug, "identical items, skip it")
                         # identical case: continue
@@ -431,7 +431,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                     continue
 
                 # loop to identify if new item has the same pk of old item
-                for otem in oldates_gr[model]:
+                for otem in oldates_gr.get(model, []):
                     if item['pk'] == otem['pk']:
                         new_pk = oldels[model].newpk()
                         pdebug(debug, "NEWPK: %d" % new_pk)
@@ -450,7 +450,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
                 found_it = False
 
                 # item already exists ?
-                for otem in oldates_gr[model]:
+                for otem in oldates_gr.get(model, []):
                     pdebug(debug, "OTEM: [%s]" % otem)
                     if item == otem:
                         pdebug(debug, "identical items, skip it")
@@ -471,7 +471,7 @@ def updatures(argv, output=None, fakeold=False, debug=False):
 
                 if not found_it:
                     # loop to identify if new item has the same pk of old item
-                    for otem in oldates_gr[model]:
+                    for otem in oldates_gr.get(model, []):
                         if item['pk'] == otem['pk']:
                             new_pk = oldels[model].newpk()
                             pdebug(debug, "NEWPK: %d" % new_pk)
