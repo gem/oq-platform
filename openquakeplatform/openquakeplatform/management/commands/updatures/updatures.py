@@ -9,11 +9,12 @@ from collections import OrderedDict
 from django.core.management import call_command, execute_manager
 
 class model_description(object):
-    def __init__(self, name, natural, refs):
+    def __init__(self, name, natural, refs, pk_natural = False):
         self.name = name
         self.natural = natural
         # { field: model, ... }
         self.refs = refs
+        self.pk_natural = pk_natural
 
 
 models_descr = OrderedDict()
@@ -128,7 +129,7 @@ models_descr['vulnerability.cc_analyticalmodelinfo'] = model_description(
 models_descr['vulnerability.country'] = model_description(
     'vulnerability.country',
     None,
-    {})
+    {}, pk_natural=True)
 
 models_descr['vulnerability.geoapplicability'] = model_description(
     'vulnerability.geoapplicability',
@@ -393,6 +394,8 @@ def item_compare(a, b, pk_included=True):
 
 def updatures(argv, output=None, fakeold=False, debug=0):
 
+    include_skipped = True
+
     if output == None:
         output = sys.stdout
 
@@ -471,16 +474,18 @@ def updatures(argv, output=None, fakeold=False, debug=0):
 
                 if skip_it:
                     pdebug(debug, 1, "SKIP IT")
-                    continue
-
-                # loop to identify if new item has the same pk of old item
-                for otem in oldates_gr[model] + final_out_gr[model]:
-                    if item['pk'] == otem['pk']:
-                        new_pk = oldels[model].newpk()
-                        pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                        update_fk(updates_gr, model, item, new_pk, debug=debug)
-                        item['pk'] = new_pk
-                        break
+                    if not include_skipped:
+                        continue
+                else:
+                    if not md.pk_natural:
+                        # loop to identify if new item has the same pk of old item
+                        for otem in oldates_gr[model] + final_out_gr[model]:
+                            if item['pk'] == otem['pk']:
+                                new_pk = oldels[model].newpk()
+                                pdebug(debug, 1, "NEWPK: %d" % new_pk)
+                                update_fk(updates_gr, model, item, new_pk, debug=debug)
+                                item['pk'] = new_pk
+                                break
 
                 pdebug(debug, 1, "ADD IT")
 
@@ -520,19 +525,20 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                         break
 
                 if skip_it:
-                    pdebug(debug, 1, "SKIP IT")
-                    continue
-
-                if not found_it:
-                    # loop to identify if new item has the same pk of old item
-                    for otem in oldates_gr[model] + final_out_gr[model]:
-                        if item['pk'] == otem['pk']:
-                            new_pk = oldels[model].newpk()
-                            pdebug(debug, 2, "SAME PK, UPDATE IT [%d]" % new_pk)
-                            pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                            update_fk(updates_gr, model, item, new_pk, debug=debug)
-                            item['pk'] = new_pk
-                            break
+                    if not include_skipped:
+                        pdebug(debug, 1, "SKIP IT")
+                        continue
+                else:
+                    if not found_it and not md.pk_natural:
+                        # loop to identify if new item has the same pk of old item
+                        for otem in oldates_gr[model] + final_out_gr[model]:
+                            if item['pk'] == otem['pk']:
+                                new_pk = oldels[model].newpk()
+                                pdebug(debug, 2, "SAME PK, UPDATE IT [%d]" % new_pk)
+                                pdebug(debug, 1, "NEWPK: %d" % new_pk)
+                                update_fk(updates_gr, model, item, new_pk, debug=debug)
+                                item['pk'] = new_pk
+                                break
 
                 pdebug(debug, 1, "ADD IT")
                 final_out_gr[model].append(item)
