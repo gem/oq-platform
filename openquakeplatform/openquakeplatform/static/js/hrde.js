@@ -1313,6 +1313,7 @@ var startApp = function() {
             var svg = d3.select('#chartDialog').append('svg')
                 .attr('width', width + margin.left + margin.right)
                 .attr('height', height + margin.top + margin.bottom)
+                .attr('id', 'chartSvg')
                 .append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -1444,7 +1445,47 @@ var startApp = function() {
                 .attr('dy', '.35em')
                 .text('');
 
+            $('#chartDialog').append('<div id="saveImage"><font color="blue">Save Image</font></div>');
             $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+
+            $(function() {
+                $("#saveImage").click(function() {
+                    var html = d3.select("svg")
+                        .attr("version", 1.1)
+                        .attr("xmlns", "http://www.w3.org/2000/svg")
+                        .node().parentNode.innerHTML;
+
+                    console.log(html);
+                    var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+                    var img = '<img src="'+imgsrc+'">';
+                    d3.select("#svgdataurl").html(img);
+
+                    var canvas = document.querySelector("canvas"),
+                        context = canvas.getContext("2d");
+
+                    var image = new Image;
+                    image.src = imgsrc;
+                    image.onload = function() {
+                        context.drawImage(image, 0, 0);
+
+                        var canvasdata = canvas.toDataURL("image/png");
+
+                        var pngimg = '<img src="'+canvasdata+'">';
+                        d3.select("#pngdataurl").html(pngimg);
+
+                        var a = document.createElement("a");
+                        a.download = "sample.png";
+                        a.href = canvasdata;
+                        a.click();
+                    };
+
+                });
+            });
+
+            $('#saveImage').on('hover', function(){
+                $(this).css('cursor', 'pointer');
+            });
+
             $('#downloadCurve').on('hover', function(){
                 $(this).css('cursor', 'pointer');
             });
