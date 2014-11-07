@@ -31,7 +31,12 @@ HRDE - {{block.super}}
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>
 </div>
-  <div id="chartDialog" title="Plot" style="overflow: hidden;"></div>
+    <canvas id="canvas" style="display:none"></canvas>
+    <img id="image" style="clear:both;display:none;">
+  <div id="chartDialog" title="Plot" style="overflow: hidden;">
+
+
+  </div>
   <div id="HMDownloadWarning" title="Whoops" style="overflow: hidden;"></div>
   <div id="legendDialog" title="Legend" style="overflow: hidden;"></div>
   <div id="helpDialog" title="Help" style="overflow: hidden;">
@@ -101,7 +106,7 @@ HRDE - {{block.super}}
 
   </div>
   {% verbatim %}
-  <canvas id="canvas" style="display:none"></canvas>
+
   <div id="svgdataurl"></div>
 
   <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">

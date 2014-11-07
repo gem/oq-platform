@@ -1389,9 +1389,6 @@ var startApp = function() {
                 .style('text-anchor', 'end')
                 .text('Probability of exceedance in '+AppVars.layerInvestigationTime+' years');
 
-            var legend = d3.select('#chartDialog').append('svg')
-                .attr('height', 25);
-
             // points along the line
             svg.selectAll('circle.line')
                 .data(data)
@@ -1446,38 +1443,28 @@ var startApp = function() {
                 .text('');
 
             $('#chartDialog').append('<div id="saveImage"><font color="blue">Save Image</font></div>');
+
             $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
 
             $(function() {
                 $("#saveImage").click(function() {
+                    $('#chartDialog').append('<div id="foo"></div>');
                     var html = d3.select("svg")
-                        .attr("version", 1.1)
-                        .attr("xmlns", "http://www.w3.org/2000/svg")
-                        .node().parentNode.innerHTML;
+                            .attr("version", 1.1)
+                            .attr("xmlns", "http://www.w3.org/2000/svg")
+                            .node().parentNode.innerHTML;
 
-                    console.log(html);
-                    var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
-                    var img = '<img src="'+imgsrc+'">';
-                    d3.select("#svgdataurl").html(img);
 
-                    var canvas = document.querySelector("canvas"),
-                        context = canvas.getContext("2d");
-
-                    var image = new Image;
-                    image.src = imgsrc;
-                    image.onload = function() {
-                        context.drawImage(image, 0, 0);
-
-                        var canvasdata = canvas.toDataURL("image/png");
-
-                        var pngimg = '<img src="'+canvasdata+'">';
-                        d3.select("#pngdataurl").html(pngimg);
-
-                        var a = document.createElement("a");
-                        a.download = "sample.png";
-                        a.href = canvasdata;
-                        a.click();
-                    };
+                            var idx = html.indexOf('<div id="saveImage');
+                            html = html.substring(0, idx != -1 ? idx : html.length);
+                            console.log("html");
+                            console.log(html);
+                      //console.log(html);
+                      var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+                      console.log(imgsrc);
+                      var img = '<img src="'+imgsrc+'">';
+                      console.log(img);
+                      d3.select("#foo").html(img);
 
                 });
             });
