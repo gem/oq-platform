@@ -84,13 +84,14 @@ var startApp = function() {
 
     // TODO fix this, this is a work around needed becasue the
     // resize does not respect itself
+    /*
     $('#categoryTabs').tabs({
         activate: function(event,ui) {
         $('#IRI-svg-element').empty();
         $('#CI-svg-element').empty();
         }
     });
-
+*/
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -367,7 +368,7 @@ var startApp = function() {
     // Map options selection dialog
     $('#thematicMap').dialog({
         autoOpen: false,
-        height: 300,
+        height: 730,
         width: 350,
         modal: true
     });
@@ -379,7 +380,7 @@ var startApp = function() {
 
     $(function() {
         $( '#categoryTabs' ).tabs({
-            collapsible: true,
+            collapsible: false,
             selected: -1,
             active: false
         });
@@ -398,7 +399,7 @@ var startApp = function() {
         (pdData.children || []).forEach(function(currentItem) {
             findPrimaryIndicators(currentItem, [pi]);
         });
-    }    
+    }
 
     function findCategoryIndicators(pdData, ci) {
         // Find all of the primary indicators
@@ -534,7 +535,6 @@ var startApp = function() {
                                 }
                             }
                         }
-                        
                         tmp[elementName] = parseFloat(tmpPI[m]);
                         tmp.municipality = municipality[m];
                         primaryIndicator[m] = tmp;
@@ -552,7 +552,7 @@ var startApp = function() {
             // is to be modifyed by the project definition weights 
             weightedPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
             sessionPrimaryIndicator = JSON.parse( JSON.stringify( primaryIndicator ) );
-            
+
             // Multiply the copy of primary indicator data by the weighted value
             for(var p1 in weightedPrimaryIndicator) {
                 for(var p2 in weightedPrimaryIndicator[p1]) {
@@ -570,7 +570,7 @@ var startApp = function() {
             for (var l in primaryIndicator) {
                 primaryData.push(primaryIndicator[l]);
             }
-            
+
             // Allow the user to modify the outlier break point
             $('#outlier-limit').spinner({
                 stop:function(e,ui){
@@ -588,6 +588,8 @@ var startApp = function() {
                     numberFormat: "n",
                 });
             });
+
+            console.log("runnign the Primary_PCP_Chart now");
 
             Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint);
 
@@ -756,7 +758,7 @@ var startApp = function() {
                 }
 
                 if (CIkeys[i] != "municipality" && CIkeys[i] != "getCIvalues" && CIkeys[i] != "scaleCIvalues" && CIkeys[i] != "newCatObj") {
-                    
+
                     var tempCImin = Math.min.apply(null, tempCIvalues),
                         tempCImax = Math.max.apply(null, tempCIvalues);
 
@@ -777,7 +779,7 @@ var startApp = function() {
             // The data passed into d3 need to be an array of objects
             // Place the category indicator objects into an array
             var catData = [];
-            
+
             for (var k in scaledCatIndicator) {
                 catData.push(scaledCatIndicator[k]);
             }
