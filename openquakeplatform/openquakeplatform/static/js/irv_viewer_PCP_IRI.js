@@ -23,16 +23,20 @@ function IRI_PCP_Chart(iriPcpData) {
 
     var plotElements = ["iri", "svi", "aal"];
     var keys = [];
+
     for (var k in iriPcpData) {
         keys.push(k);
     }
-    var m = [80, 10, 10, 120],
-        w = 990 - m[1] - m[3],
-        h = 300 - m[0] - m[2];
-    
+
+    var winH = ($(window).height() / 1.7);
+    var winW = ($(window).width());
+    var m = [150, 10, 10, 120],
+        w = (winW - 100) - m[1] - m[3],
+        h = winH - m[0] - m[2];
+
     var x = d3.scale.ordinal().domain(municipality).rangePoints([0, w]),
         y = {};
-    
+
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient("left"),
         foreground;
@@ -53,30 +57,11 @@ function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
-        .attr("viewBox", "-30 0 1100 300")
+        .attr("viewBox", "-30 -120 " +winW+" " + winH)
         .attr("id", "IRI-svg-element")
-        .attr("width", w + m[1] + m[3])
-        .attr("height", h + m[0] + m[2])
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + ",5)");
-    
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-    var aspect = windowWidth / windowHeight,
-        chart = $("#IRI-svg-element");
 
-    function resize() {
-        var targetWidth = chart.parent().width();
-        chart.attr("width", targetWidth);
-        chart.attr("height", targetWidth / aspect);
-    }
-
-    resize();
-
-    $(window).on("resize", function() {
-        resize();
-    });
-    
     // Create a scale and brush for each trait.
     municipality.forEach(function(d) {
         // Coerce values to numbers.
@@ -84,7 +69,7 @@ function IRI_PCP_Chart(iriPcpData) {
         y[d] = d3.scale.linear()
             .domain([0,1])
             .range([h, 0]);
-  
+
         y[d].brush = d3.svg.brush()
             .y(y[d])
             .on("brush", brush);

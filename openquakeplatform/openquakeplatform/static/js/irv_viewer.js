@@ -589,8 +589,6 @@ var startApp = function() {
                 });
             });
 
-            console.log("runnign the Primary_PCP_Chart now");
-
             Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint);
 
             /////////////////////////////////////////////
