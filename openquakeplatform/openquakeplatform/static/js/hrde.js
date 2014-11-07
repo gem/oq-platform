@@ -1453,12 +1453,9 @@ var startApp = function() {
                             .attr("version", 1.1)
                             .attr("xmlns", "http://www.w3.org/2000/svg")
                             .node().parentNode.innerHTML;
-
-
                             var idx = html.indexOf('<div id="saveImage');
                             html = html.substring(0, idx != -1 ? idx : html.length);
-                            console.log("html");
-                            console.log(html);
+
                       //console.log(html);
                       var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
                       console.log(imgsrc);
@@ -1466,6 +1463,29 @@ var startApp = function() {
                       console.log(img);
                       d3.select("#foo").html(img);
 
+                      var canvas = document.querySelector("canvas");
+                      var context = canvas.getContext("2d");
+                      console.log(context);
+
+                      context.fillStyle = "red";
+                      context.strokeStyle = "red";
+                      context.shadowColor = "red";
+                 
+                  var image = new Image;
+                  image.src = imgsrc;
+                  image.onload = function() {
+                      context.drawImage(image, 0, 0);
+                 
+                      var canvasdata = canvas.toDataURL("image/png");
+                 
+                      var pngimg = '<img src="'+canvasdata+'">'; 
+                      d3.select("#pngdataurl").html(pngimg);
+                 
+                      var a = document.createElement("a");
+                      a.download = "sample.png";
+                      a.href = canvasdata;
+                      a.click();
+                 };
                 });
             });
 
