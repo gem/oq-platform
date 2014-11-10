@@ -30,7 +30,7 @@ function IRI_PCP_Chart(iriPcpData) {
 
     var winH = ($(window).height() / 1.7);
     var winW = ($(window).width());
-    var m = [150, 10, 10, 120],
+    var m = [10, 10, 10, 120],
         w = (winW - 100) - m[1] - m[3],
         h = winH - m[0] - m[2];
 
@@ -57,7 +57,7 @@ function IRI_PCP_Chart(iriPcpData) {
     $("#iri-chart").empty();
 
     var svg = d3.select("#iri-chart").append("svg")
-        .attr("viewBox", "-30 -120 " +winW+" " + winH)
+        .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
         .attr("id", "IRI-svg-element")
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + ",5)");
@@ -111,7 +111,7 @@ function IRI_PCP_Chart(iriPcpData) {
         .style("font-size","14px")
         .style("font-style", "bold")
         .attr("class", "legend");
-  
+
     legend.append("svg:line")
         .attr("class", String)
         .attr("x2", -18)
@@ -124,7 +124,7 @@ function IRI_PCP_Chart(iriPcpData) {
         .attr("dy", ".31em")
         .text(function(d) { return d; })
         .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
-  
+
     // Add foreground lines.
     foreground = svg.append("svg:g")
         .attr("class", "foreground")
@@ -133,7 +133,7 @@ function IRI_PCP_Chart(iriPcpData) {
         .enter().append("svg:path")
         .attr("d", path)
         .attr("class", function(d) { return d.plotElement; });
-  
+
     var g = svg.selectAll(".dimension")
         .data(dimensions)
         .enter().append("g");
@@ -152,32 +152,33 @@ function IRI_PCP_Chart(iriPcpData) {
         .call(xAxis)
         .selectAll("text")
         .style("text-anchor", "start")
-        .attr('y', -10)
+        .attr('y', -15)
         .attr('x', 10)
-        .style('font-size','12px')
+        .style('font-size','16px')
+        .attr("class", "text90")
         .attr("transform", function(d) {
-            return "rotate(-45)";
+            return "rotate(90)";
                 })
         .append('text');
 
     function dragstart(d) {
         i = keys.indexOf(d);
     }
-  
+
     function drag(d) {
         x.range()[i] = d3.event.x;
         keys.sort(function(a, b) { return x(a) - x(b); });
         g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
         foreground.attr("d", path);
     }
-  
+
     function dragend(d) {
         x.domain(keys).rangePoints([0, w]);
         var t = d3.transition().duration(500);
         t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
         t.selectAll(".foreground path").attr("d", path);
     }
-        
+
     // Update the css for each plotElements
     $("."+plotElements[0]).css('stroke', 'red');
     $("."+plotElements[1]).css('stroke', 'blue');
@@ -199,7 +200,7 @@ function IRI_PCP_Chart(iriPcpData) {
     $("."+plotElements[17]).css('stroke', 'MidnightBlue');
     $("."+plotElements[18]).css('stroke', 'Maroon');
     // Returns the path for a given data point.
-    
+
     function path(d) {
         return line(municipality.map(function(p) { return [x(p), y[p](d[p])]; }));
     }

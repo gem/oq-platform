@@ -81,17 +81,6 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
-
-    // TODO fix this, this is a work around needed becasue the
-    // resize does not respect itself
-    /*
-    $('#categoryTabs').tabs({
-        activate: function(event,ui) {
-        $('#IRI-svg-element').empty();
-        $('#CI-svg-element').empty();
-        }
-    });
-*/
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -154,6 +143,9 @@ var startApp = function() {
         width: 350,
         modal: true
     });
+
+    // Set custom map div height
+    $('#map').height("300px");
 
     $('#load-project').button().click(function() {
         $('#loadProjectDialog').dialog('open');
@@ -241,7 +233,7 @@ var startApp = function() {
         var categoryUnique = categoryList.filter(function(itm,i,categoryList){
             return i==categoryList.indexOf(itm);
         });
-    
+
         for (var l in categoryUnique) {
             // Append category names to dropdown list
             var categoryTitle = categoryUnique[l];
@@ -277,8 +269,7 @@ var startApp = function() {
     map.addControl(layerControl.setPosition('topleft'));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
-    
-    
+
     // Add layers form tilestream list
     $(document).ready(function() {
         $('#addLayer').click(function() {
@@ -293,7 +284,7 @@ var startApp = function() {
             // Link to Github is a temp proof of concept
             // Load the project definition json
             selectedPDefStr = 'https://api.github.com/repos/bwyss/oq-platform/git/blobs/9864cb7a5d36572af1451e585f4516d1d19ce568?callback=_processGithubResponse';
- 
+
             $.getJSON(selectedPDefStr+'?format=json&callback=?', function(pdJson) {
                 encodedData = pdJson.data.content;
                 selectedPDef = window.atob(encodedData);
@@ -345,14 +336,14 @@ var startApp = function() {
             utfGrid = new L.UtfGrid(TILESTREAM_URL+'/empty/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
             map.addLayer(utfGrid);
             utfGridClickEvent(utfGrid);
-    
+
             var e = document.getElementById('layer-list');
             var layerId = e.options[e.selectedIndex].value;
-    
+
             // Look up the layer id using the layer name
             var layerIdArray = layerNames[layerId];
             var selectedLayer = layerIdArray.toString();
-    
+
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
                 layerControl.removeLayer(layers[selectedLayer]);
@@ -382,7 +373,8 @@ var startApp = function() {
         $( '#categoryTabs' ).tabs({
             collapsible: false,
             selected: -1,
-            active: false
+            active: false,
+            height: 550
         });
     });
 
@@ -518,7 +510,7 @@ var startApp = function() {
                 for (var i = 0; i < pdTempPrimaryIndicator.length; i++) {
                     var elementName = pdTempPrimaryIndicator[i].toLowerCase();
                     tmpPI = e.data[pdTempPrimaryIndicator[i].toLowerCase()];
-                    
+
                     if (tmpPI != undefined) {
                         tmpPI = tmpPI.split(',');
                         // Check and see what category the tmpPI belongs to
@@ -628,7 +620,7 @@ var startApp = function() {
             for (k in parentChildKey) {
                 tempParentChildKey.push(k);
             }
-            
+
             for (var j = 0; j < municipality.length; j++) {
                 var tempCIValues = [];
 
@@ -823,7 +815,7 @@ var startApp = function() {
             var sessionKey = Object.keys(weightedCatIndicator[tempSviSearchElements[0]]);
             sessionKey.pop();
             sessionKey.pop();
-            
+
             for (var i = 0; i < tempSviSearchElements.length; i++) {
                 var tempArray = [];
 
