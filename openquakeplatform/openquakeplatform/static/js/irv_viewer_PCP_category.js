@@ -30,7 +30,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     var data = catData;
     var winH = ($(window).height() / 1.5);
     var winW = ($(window).width());
-    var margin = {top: 50, right: 20, bottom: 10, left: 20},
+    var margin = {top: 100, right: 20, bottom: 10, left: 20},
         width = (winW - 200) - margin.left - margin.right,
         height = winH - margin.top - margin.bottom;
 
@@ -122,10 +122,11 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .attr('width', 16);
 
     var textTop = svg.append('text')
-        .attr('x', 70)
+        .attr('x', 170)
         .attr('y', -35)
         .attr('dy', '.35em')
-        .style('font-size','14px')
+        .attr("class", "text90")
+        .style('font-size','30px')
         .style('font-style', 'bold')
         .text('');
 
