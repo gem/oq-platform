@@ -51,24 +51,20 @@ class Indicator(models.Model):
 
     @property
     def data_completeness(self):
-        # count how many countries have a value for this indicator
-        # and divide by the number of countries
-        # FIXME: wrong count
-        tot_countries_with_indicator_data = len(self.countries)
-        # use the custom region containing countries which population is over
-        # 200000 individuals, for which socioeconomic data have been collected
+        # NOTE: It is counted with respect to the total of countries for which
+        # socioeconomic data have been collected, i.e., a custom region
+        # containing countries which population is above 200k people
         countries_with_socioeconomic_data = CustomRegion.objects.get(
             name='Countries with socioeconomic data') 
-        tot_countries = countries_with_socioeconomic_data.countries.count()
-        return 1.0 * tot_countries_with_indicator_data / tot_countries
+        return self.data_completeness_for_region(
+            countries_with_socioeconomic_data)
 
-    @property
     def data_completeness_for_region(self, region):
         # count how many countries are in the specified custom region
         num_countries_in_region = region.countries.count()
         # count how many of these countries have a value for the indicator
         num_countries_in_region_with_value = 0
-        for country in region.countries:
+        for country in region.countries.all():
             if CountryIndicator.objects.filter(
                     country=country, indicator=self):
                 num_countries_in_region_with_value += 1
