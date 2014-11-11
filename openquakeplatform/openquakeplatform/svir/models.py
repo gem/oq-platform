@@ -69,10 +69,12 @@ class Indicator(models.Model):
         # count how many of these countries have a value for the indicator
         num_countries_in_region_with_value = 0
         for country in region.countries:
-            if CountryIndicator.objects.filter(country=country, indicator=self):
+            if CountryIndicator.objects.filter(
+                    country=country, indicator=self):
                 num_countries_in_region_with_value += 1
         # divide the latter by the former
-        return 1.0 * num_countries_in_region_with_value / num_countries_in_region
+        return (
+            1.0 * num_countries_in_region_with_value / num_countries_in_region)
 
 
 # For the svir application, we want to provide the possibility to have

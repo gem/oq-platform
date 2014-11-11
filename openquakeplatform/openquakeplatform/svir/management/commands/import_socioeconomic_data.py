@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
             reader = csv.reader(f)
             # read row containing field names, country names and region names
-            first_row = reader.next()
+            first_row = reader.next()  # not used
             # read row containing the region names to which countries belong
             second_row = reader.next()
             assoc_regions  = second_row[COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
