@@ -18,6 +18,7 @@
 var dataCat = "";
 var chartCat = "";
 var utfGrid = {};
+var styleLayer = {};
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia', 'foo', 'bar');
 var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0, 1, 1);
 var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18, 1, 1);
@@ -30,7 +31,6 @@ var svirRankKeys = [];
 var svirRankValues = [];
 var svirRegionRankKeys = [];
 var svirRegionRankValues = [];
-var layerControl;
 
 // An object of all attributes and values to be used for the checkbox selection
 var dataFormated = {};
@@ -60,15 +60,12 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     map = new L.Map('map', {
-        minZoom: 2,
         attributionControl: false,
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
-
-    layerControl = L.control.layers(app.baseLayers);
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -113,7 +110,6 @@ var startApp = function() {
 
         // Check in the layer is in the map port
         if (selectedLayer in layers) {
-            layerControl.removeLayer(layers[selectedLayer]);
             map.removeLayer(layers[selectedLayer]);
             delete layers[selectedLayer];
         }
@@ -148,13 +144,13 @@ var startApp = function() {
         }
 
         // Create the category list (population the object)
-        for (var i=0; i < json.length; i++) {
-            var name = json[i].mapped_value;
-            var cat = json[i].category;
-            var type = json[i].type;
+        for (var j=0; j < json.length; j++) {
+            var name = json[j].mapped_value;
+            var cat = json[j].category;
+            var type = json[j].type;
             if (cat != undefined && type == "svir") {
-                layerId = json[i].id;
-                layerTitle = json[i].mapped_value;
+                layerId = json[j].id;
+                layerTitle = json[j].mapped_value;
                 layerNames[name].push(layerId);
                 layersByCat[cat].push(layerTitle);
             }
@@ -164,10 +160,10 @@ var startApp = function() {
         var categoryUnique = categoryList.filter(function(itm,i,categoryList){
             return i==categoryList.indexOf(itm);
         });
-    
-        for (var i in categoryUnique) {
+
+        for (var k in categoryUnique) {
             // Append category names to dropdown list
-            var categoryTitle = categoryUnique[i];
+            var categoryTitle = categoryUnique[k];
             var opt = document.createElement('option');
             opt.innerHTML = categoryTitle;
             opt.value = categoryTitle;
@@ -175,7 +171,7 @@ var startApp = function() {
             // Append layer list to dowpdown
             var layerOpt = document.createElement('option');
         }
-    
+
     });
 
     // Create dynamic categorized layer dialog
@@ -196,7 +192,6 @@ var startApp = function() {
         }
     });
 
-    map.addControl(layerControl.setPosition("topleft"));
     // TODO set the map max zoom to 9
     // The interactivity of the map/charts will not work with a map zoom greater then 9
     // Add layers form tilestream list
@@ -214,12 +209,11 @@ var startApp = function() {
                 showDuplicateMsg();
             }
             else {
-                var tileLayer = L.tileLayer(TS_URL + '/v2/'
-                    + selectedLayer
-                    + '/{z}/{x}/{y}.png',{wax: TS_URL + '/v2/'
-                    +selectedLayer
-                    +'.json'});
-                layerControl.addOverlay(tileLayer, selectedLayer);
+                var tileLayer = L.tileLayer(TS_URL + '/v2/' +
+                    selectedLayer +
+                    '/{z}/{x}/{y}.png',{wax: TS_URL + '/v2/' +
+                    selectedLayer +
+                    '.json'});
                 map.addLayer(tileLayer);
                 // Keep track of layers that have been added
                 layers[selectedLayer] = tileLayer;
@@ -240,7 +234,6 @@ var startApp = function() {
 
             // Check in the layer is in the map port
             if (selectedLayer in layers) {
-                layerControl.removeLayer(layers[selectedLayer]);
                 map.removeLayer(layers[selectedLayer]);
                 delete layers[selectedLayer];
             }
@@ -317,6 +310,7 @@ var startApp = function() {
             values.push(e.data[d]);
         }
         var keys = Object.keys(e.data);
+
         for (var i=0, il=values.length; i<il; i++){
             $('#'+dataCat).dataTable().fnAddData( [
                 keys[i],
@@ -376,7 +370,6 @@ var startApp = function() {
         obj4[attrSelection[5]] = selectedValue6[4];
 
         obj5.country = countriesArray[5];
-
         obj5[attrSelection[0]] = selectedValue1[5];
         obj5[attrSelection[1]] = selectedValue2[5];
         obj5[attrSelection[2]] = selectedValue3[5];
@@ -397,9 +390,12 @@ var startApp = function() {
             country.splice(numberOfCountries,10);
         }
 
+        var winH = ($(window).height() / 1.7);
+        var winW = ($(window).width());
+
         var m = [80, 160, 200, 160],
-            w = 1280 - m[1] - m[3],
-            h = 500 - m[0] - m[2];
+            w = winW - m[1] - m[3],
+            h = winH - m[0] - m[2];
 
         var x = d3.scale.ordinal().domain(attributes).rangePoints([0, w]),
             y = {};
@@ -411,6 +407,7 @@ var startApp = function() {
         $("#"+chartCat+"-spider").empty();
 
         var svg = d3.select("#"+chartCat+"-spider").append("svg")
+            //.attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
             .attr("width", w + m[1] + m[3])
             .attr("height", h + m[0] + m[2])
             .append("svg:g")
@@ -479,12 +476,13 @@ var startApp = function() {
             // Add an axis and title.
             g.append("svg:g")
                 .attr("class", "axis")
-                .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+                .each(function(d) {d3.select(this).call(axis.scale(y[d])); })
                 .append("svg:text")
                 .attr("id", "attrLable")
                 .attr("text-anchor", "left")
-                .attr("y", 160)
-                .attr("x", 160)
+                .attr("y", -10)
+                .attr("x", 0)
+                .attr("transform", "rotate(90)")
                 .text(String);
 
             // Add a brush for each axis.
@@ -543,6 +541,9 @@ var startApp = function() {
         dataCat = "econ-table";
         chartCat = "econ-chart";
         map.removeLayer(utfGrid);
+        map.removeLayer(styleLayer);
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_econ_style/{z}/{x}/{y}.png');
+        map.addLayer(styleLayer);
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
@@ -555,19 +556,10 @@ var startApp = function() {
         dataCat = "pop-table";
         chartCat = "pop-chart";
         map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_pop/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
-        utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
-    });
-
-    $("#health").click(function(){
-        dataCat = "health-table";
-        chartCat = "health-chart";
-        map.removeLayer(utfGrid);
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_health/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        map.removeLayer(styleLayer);
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_pop_style/{z}/{x}/{y}.png');
+        map.addLayer(styleLayer);
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_pop_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
@@ -579,6 +571,7 @@ var startApp = function() {
         dataCat = "infra-table";
         chartCat = "infra-chart";
         map.removeLayer(utfGrid);
+        map.removeLayer(styleLayer);
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
@@ -591,6 +584,7 @@ var startApp = function() {
         dataCat = "gov-table";
         chartCat = "gov-chart";
         map.removeLayer(utfGrid);
+        map.removeLayer(styleLayer);
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
@@ -603,6 +597,7 @@ var startApp = function() {
         dataCat = "edu-table";
         chartCat = "edu-chart";
         map.removeLayer(utfGrid);
+        map.removeLayer(styleLayer);
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         map.addLayer(utfGrid);
         utfGridClickEvent(dataCat, chartCat);
@@ -627,10 +622,8 @@ var startApp = function() {
             var countryTable = $("#"+dataCat).dataTable();
             countryTable.fnClearTable();
 
-            buildDataTable(e, dataCat);
-
             if (e.data) {
-
+                buildDataTable(e, dataCat);
                 // Populate a drop down list so the user can select attributes to be used in the spider chart
                 var values = [];
                 for (var d in e.data) {
@@ -727,7 +720,7 @@ var startApp = function() {
                 buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
 
             } else {
-                document.getElementById('click').innerHTML = 'click: nothing';
+                //document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
     }; // End utfGridClickEvent
