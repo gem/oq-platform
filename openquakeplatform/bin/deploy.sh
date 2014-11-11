@@ -380,7 +380,7 @@ db_gis_create () {
 
 deps_info () {
         cat <<EOF
-    sudo apt-get install imagemagick xmlstarlet
+    sudo apt-get install imagemagick xmlstarlet python-scipy
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
@@ -389,8 +389,10 @@ EOF
 
 deps_install () {
     local old_IFS pkg
-    # FIXME these lines must be integrated with the oq-platform deb package
-    sudo apt-get install imagemagick xmlstarlet
+    # FIXME these lines must be integrated into the oq-platform deb package
+    # since they are our own, direct dependencies.
+    # Other dependencies are already satisfied by the GeoNode deb package.
+    sudo apt-get install imagemagick xmlstarlet python-scipy
     sudo pip install Pillow==2.3.1 --no-deps
     sudo pip install South==0.8.4 --no-deps
     sudo pip install django-photologue==2.6.1 --no-deps
@@ -456,6 +458,9 @@ oq_platform_install () {
     fi
 
     apt-get install -y python-software-properties
+    add-apt-repository ppa:openquake-automatic-team/latest-master
+    apt-get update
+    apt-get install -y geonode-user-accounts
     add-apt-repository -y ppa:geonode/release
     apt-get update
     apt-get install -y geonode

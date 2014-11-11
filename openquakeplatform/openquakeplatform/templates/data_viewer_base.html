@@ -27,8 +27,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_table.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_page.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.css" />
-
 {% endblock extra_head %}
+
+{% block body_outer %}
+<div id="map-tools">
+    {% block map_tools %}
+    {% include "base_map_options.html" %}
+    {% endblock %}
+</div>
+{{block.super}}
+{% endblock %}
 
 {% block oq_body_content %}
     <div id="map"></div>
@@ -37,8 +45,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% block extra_script %}
     {{block.super}}
     <script src="{{ STATIC_URL }}js/jquery.mousewheel.js"></script>
-    <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.form-3.44.0.js"></script>
     <script src="{{ STATIC_URL }}Leaflet/dist/leaflet.js"></script>
     <script src="{{ STATIC_URL }}L.Wax/L.Wax.js"></script>
     <script src="{{ STATIC_URL }}wax/dist/wax.leaf.min.js"></script>
@@ -50,6 +56,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}js/jquery.dataTables.js"></script>
     <script src="{{ STATIC_URL }}js/d3.js"></script>
     <script src="{{ STATIC_URL }}js/bing.js"></script>
+    <script src="{{ STATIC_URL }}js/angular.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="{{ STATIC_URL }}js/hrdeMainApp.js"></script>
+    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
+
+    <!-- This style overrides the default z-index imposed by jquery to fix
+         overlap between widgets and header in the leaflet apps.
+    -->
+    <style>
+          .ui-dialog, .ui-widget { z-index: 10000; }
+    </style>
 
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the
