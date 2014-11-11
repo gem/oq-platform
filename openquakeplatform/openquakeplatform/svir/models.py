@@ -17,93 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.gis.db import models
-from django.contrib.auth.models import User
-from fields import DictField
-from openquakeplatform.world.models import Country
 
 
 CHMAX = 200
-
-# In the vulnerability-db application, regions are not stored in the DB and
-# they are read from a tuple to group countries in order to simplify the
-# process of country selection.
-# REGIONS = (
-#     (1, 'Australia/New Zealand'),
-#     (2, 'Caribbean'),
-#     (3, 'Central America'),
-#     (4, 'Central Asia'),
-#     (5, 'Eastern Africa'),
-#     (6, 'Eastern Asia'),
-#     (7, 'Eastern Europe'),
-#     (8, 'Melanesia'),
-#     (9, 'Micronesia'),
-#     (10, 'Middle Africa'),
-#     (11, 'Northern Africa'),
-#     (12, 'Northern America'),
-#     (13, 'Northern Europe'),
-#     (14, 'Polynesia'),
-#     (15, 'South America'),
-#     (16, 'South-Eastern Asia'),
-#     (17, 'Southern Europe'),
-#     (18, 'Western Africa'),
-#     (19, 'Western Asia'),
-#     (20, 'Western Europe'),
-# )
-
-
-class UserData(models.Model):
-    # '%(class)s' is replaced by the lower-cased name of the child class
-    # that the field is used in.
-    # '%(app_label)s' is replaced by the lower-cased name of the app the
-    # child class is contained within.
-    # Each installed application name must be unique and the model class
-    # names within each app must also be unique, therefore the resulting
-    # name will end up being different.
-    created_by = models.ForeignKey(
-        User, editable=False,
-        related_name="%(app_label)s_%(class)s_created_by")
-    # auto_now_add=True ==> Automatically set the field to now
-    #                       when the object is first created
-    created_on = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_by = models.ForeignKey(
-        User, editable=False, null=True, blank=True,
-        related_name="%(app_label)s_%(class)s_updated_by")
-    # auto_now=True ==> Automatically set the field to now
-    #                   every time the object is saved
-    updated_on = models.DateTimeField(
-        auto_now=True, editable=False, null=True, blank=True)
-
-    class Meta:
-        abstract = True
-
-
-class Project(UserData):
-    class Meta:
-        ordering = ['name']
-
-    name = models.CharField(max_length=CHMAX, unique=True)
-    description = models.TextField()
-    # FIXME: If we are uploading data through the geonode web interface, we
-    # don-t need to store the layer here (but perhaps we should have some kind
-    # of link to the geonode layer?)
-    # data = DictField(blank=True, null=True)
-
-    # The project definition json, containing indicators, weights and operators
-    metadata = DictField(blank=True, null=True)
-
-    def __unicode__(self):
-        return self.name
-
-
-# FIXME: Check about this. We are commenting this out, because we decided to
-# upload layers through geonode and add comments directly to layers
-# class Comment(UserData):
-#     project = models.ForeignKey('Project')
-#     parent_comment = models.ForeignKey('Comment', blank=True, null=True)
-#     body = models.TextField()
-
-#     def __unicode__(self):
-#         return self.body
 
 
 class Indicator(models.Model):

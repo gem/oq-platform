@@ -14,25 +14,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from models import (Theme, Subtheme, MeasurementType,
-                    InternalConsistencyMetric, Keyword,
-                    Source, UpdatePeriodicity,
-                    AggregationMethod, Indicator,
+from models import (AggregationMethod,
                     CountryIndicator,
                     CustomRegion,
-                    Project,)# Comment)
+                    Indicator,
+                    InternalConsistencyMetric,
+                    Keyword,
+                    MeasurementType,
+                    Source,
+                    Subtheme,
+                    Theme,
+                    UpdatePeriodicity,)
 
 admin.site.register(AggregationMethod)
-# admin.site.register(Comment)
 admin.site.register(CountryIndicator)
 admin.site.register(InternalConsistencyMetric)
 admin.site.register(Keyword)
-admin.site.register(UpdatePeriodicity)
-admin.site.register(Project)
-admin.site.register(Source)
 admin.site.register(MeasurementType)
+admin.site.register(Source)
 admin.site.register(Subtheme)
 admin.site.register(Theme)
+admin.site.register(UpdatePeriodicity)
 
 
 class IndicatorAdmin(admin.ModelAdmin):
