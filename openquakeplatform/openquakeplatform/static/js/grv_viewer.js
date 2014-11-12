@@ -679,15 +679,8 @@ var startApp = function() {
     });
 
     var utfGridClickEvent = function(dataCat, chartCat) {
-        console.log("utfGrid:");
-        console.log(utfGrid);
-        console.log("map:");
-        console.log(map);
 
         utfGrid.on('click', function (e) {
-            console.log("e:");
-            console.log(e);
-
             // TODO allow the user to control the number of countries/attributes to interrogate
 
             $("#chartOptions").empty();
@@ -786,8 +779,8 @@ var startApp = function() {
                 }
 
                 var countryName = e.data.country;
-                console.log("countryName:");
-                console.log(countryName);
+                countryName = countryName.replace(/\s/g, "-");
+
                 // Indicate the country name for the table header
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
 
