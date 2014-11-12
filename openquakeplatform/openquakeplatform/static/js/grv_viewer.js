@@ -329,7 +329,7 @@ var startApp = function() {
     //////// Parallel Coordinates Chart ////////
     ////////////////////////////////////////////
 
-    function buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
+    function buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
 
         var numberOfCountries = $("#chart-var-numb option:selected").val();
         obj0.country = countriesArray[0];
@@ -541,12 +541,14 @@ var startApp = function() {
     }
 
 
-    // Change the utfgrid layer when the tabs are clicked
+    // Change the utfGrid layer when the tabs are clicked
     $("#econ").click(function(){
         dataCat = "econ-table";
         chartCat = "econ-chart";
+
         try {
-            map.removeLayer(utfGridGroup);
+            map.removeLayer(styleLayer);
+            map.removeLayer(utfGrid);
         } catch (e) {
             // continue
         }
@@ -572,8 +574,8 @@ var startApp = function() {
         dataCat = "pop-table";
         chartCat = "pop-chart";
         try {
-            console.log("trying to remove the layer group");
-            map.removeLayer(utfGridGroup);
+            map.removeLayer(styleLayer);
+            map.removeLayer(utfGrid);
         } catch (e) {
             // continue
         }
@@ -599,8 +601,8 @@ var startApp = function() {
         dataCat = "infra-table";
         chartCat = "infra-chart";
         try {
-            console.log("trying to remove the layer group");
-            map.removeLayer(utfGridGroup);
+            map.removeLayer(styleLayer);
+            map.removeLayer(utfGrid);
         } catch (e) {
             // continue
         }
@@ -626,8 +628,8 @@ var startApp = function() {
         dataCat = "gov-table";
         chartCat = "gov-chart";
         try {
-            console.log("trying to remove the layer group");
-            map.removeLayer(utfGridGroup);
+            map.removeLayer(styleLayer);
+            map.removeLayer(utfGrid);
         } catch (e) {
             // continue
         }
@@ -653,8 +655,8 @@ var startApp = function() {
         dataCat = "edu-table";
         chartCat = "edu-chart";
         try {
-            console.log("trying to remove the layer group");
-            map.removeLayer(utfGridGroup);
+            map.removeLayer(styleLayer);
+            map.removeLayer(utfGrid);
         } catch (e) {
             // continue
         }
@@ -677,7 +679,14 @@ var startApp = function() {
     });
 
     var utfGridClickEvent = function(dataCat, chartCat) {
+        console.log("utfGrid:");
+        console.log(utfGrid);
+        console.log("map:");
+        console.log(map);
+
         utfGrid.on('click', function (e) {
+            console.log("e:");
+            console.log(e);
 
             // TODO allow the user to control the number of countries/attributes to interrogate
 
@@ -777,6 +786,8 @@ var startApp = function() {
                 }
 
                 var countryName = e.data.country;
+                console.log("countryName:");
+                console.log(countryName);
                 // Indicate the country name for the table header
                 $(".table-header").replaceWith('<div class="table-header" style="background-color: #dadcff;"><p>The table represents indicators for '+countryName+'</p>');
 
@@ -787,10 +798,8 @@ var startApp = function() {
                 }
 
                 // TODO: use a 2d array instead of several selectedValue<x> arrays
-                buildD3SpiderChart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
+                buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray);
 
-            } else {
-                //document.getElementById('click').innerHTML = 'click: nothing';
             }
         }); // End utfGrid click
     }; // End utfGridClickEvent
