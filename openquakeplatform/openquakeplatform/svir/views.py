@@ -26,8 +26,7 @@ from django.views.decorators.http import condition
 from django.core.exceptions import ValidationError
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
-from openquakeplatform.svir.models import (Project,
-                                           Theme,
+from openquakeplatform.svir.models import (Theme,
                                            Subtheme,
                                            Keyword,
                                            Indicator,
