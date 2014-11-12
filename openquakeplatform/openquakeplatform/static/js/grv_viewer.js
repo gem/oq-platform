@@ -60,6 +60,7 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
+    $('#map').height("300px");
 
     map = new L.Map('map', {
         attributionControl: false,
@@ -408,12 +409,11 @@ var startApp = function() {
             axis = d3.svg.axis().orient("left"),
             foreground;
 
-        $("#"+chartCat+"-spider").empty();
+        $("#"+chartCat+"-pcc").empty();
 
-        var svg = d3.select("#"+chartCat+"-spider").append("svg")
-            //.attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
-            .attr("width", w + m[1] + m[3])
-            .attr("height", h + m[0] + m[2])
+        var svg = d3.select("#"+chartCat+"-pcc").append("svg")
+            .attr("width", winW + m[1] + m[3])
+            .attr("height", (winH / 3.5) + m[0] + m[2])
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
 
@@ -439,22 +439,16 @@ var startApp = function() {
 
             legend.append("svg:line")
                 .attr("class", String)
-                .attr("x2", -28)
+                .attr("x2", 20)
                 .attr("y2", 0)
-                .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
+                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 335) + ")"; });
 
             legend.append("svg:text")
-                .attr("x", -125)
-                .attr("y", -510)
-                .attr("dy", ".31em")
-                .text("test");
-
-            legend.append("svg:text")
-                .attr("x", -125)
-                .attr("y", -510)
+                .attr("x", -10)
+                .attr("y", -250)
                 .attr("dy", ".31em")
                 .text(function(d) { return d; })
-                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
+                .attr("transform", function(d, i) { return "translate(35," + (i * 20 + 584) + ")"; });
 
             // Add foreground lines.
             foreground = svg.append("svg:g")
@@ -696,7 +690,7 @@ var startApp = function() {
 
             if (e.data) {
                 buildDataTable(e, dataCat);
-                // Populate a drop down list so the user can select attributes to be used in the spider chart
+                // Populate a drop down list so the user can select attributes to be used in the pcc chart
                 var values = [];
                 for (var d in e.data) {
                     values.push(e.data[d]);
