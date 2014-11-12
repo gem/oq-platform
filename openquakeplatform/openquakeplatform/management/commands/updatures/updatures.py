@@ -332,7 +332,7 @@ def inspect(base):
             sys.stderr.write("malformed item, 'model' key doesn't exists: %s" % str(item))
             return 1
         if not 'pk' in item:
-            sys.stderr.write("malformed item, 'pl' key doesn't exists" % str(item))
+            sys.stderr.write("malformed item, 'pk' key doesn't exists" % str(item))
             return 1
         model = item['model']
 
@@ -610,13 +610,17 @@ def item_key(model, item):
         return item['pk']
 
 def grouping_set(debug, dates_gr, datesk_gr):
+    group_heads = []
+
     for model in models_order:
         md = models_descr[model]
         pdebug(debug, 2, "Mod: %s  Is grouped: %s" % (model, md.group))
-        if md.group is None:
-            pdebug(debug, 2, "No grouping for model %s" % model)
+        if md.group is None or not dates_gr[model]:
+            pdebug(debug, 2, "No grouping or items for model %s" % model)
             continue
 
+        if md.group not in group_heads:
+            group_heads.append(md.group)
         dirref_groups = [(k,(v1,v2)) for k,(v1,v2) in md.refs.iteritems() if v1 == md.group]
         if dirref_groups:
             pdebug(debug, 2, "Direct group for model %s" % model)
@@ -673,6 +677,7 @@ def grouping_set(debug, dates_gr, datesk_gr):
                     pdebug(debug, 0, "ITEM: %s" % item)
                     pdebug(debug, 0, "Not found any grouping reference, abort")
                     sys.exit(22)
+    return group_heads
 
 
 def print_refs(spc, item_in):
@@ -718,7 +723,13 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
     pdebug(debug, 3, "MOP UPDATES: %s" % str(updates))
 
     updates_gr, updatesk_gr = group_objs(updates)
-    grouping_set(debug, updates_gr, updatesk_gr)
+    updates_gheads = grouping_set(debug, updates_gr, updatesk_gr)
+
+    for ghead in updates_gheads:
+        print "MODEL: %s" % ghead
+        for i in updates_gr[ghead]:
+            print "GENERAL INFO: %s" % i['fields']['name']
+            print_refs(4, i)
 
     #for i in updates_gr['vulnerability.generalinformation']:
     #    print "GENERAL INFO: %s" % i['fields']['name']
@@ -731,9 +742,6 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
     final_out_gr, final_outk_gr = group_objs([])
 
     pdebug(debug, 3, "MOP GROUPS: %s" % str(updates_gr))
-    models = {}
-    oldels = {}
-
     models = inspect(updates)
 
     if not fakeold:
@@ -750,7 +758,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
         oldates = json.load(file(fakeold, 'r'))
 
     oldates_gr,oldatesk_gr = group_objs(oldates)
-    grouping_set(debug, oldates_gr, oldatesk_gr)
+    oldates_gheads = grouping_set(debug, oldates_gr, oldatesk_gr)
 
     oldels = inspect(oldates)
 
@@ -804,7 +812,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                                update_pk(updates_gr, model, item, new_pk, debug=debug)
+                                update_pk(updates_gr, updatesk_gr, model, item, new_pk, debug=debug)
                                 item['pk'] = new_pk
                                 break
 
@@ -857,7 +865,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "SAME PK, UPDATE IT [%d]" % new_pk)
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                                update_pk(updates_gr, model, item, new_pk, debug=debug)
+                                update_pk(updates_gr, updatesk_gr, model, item, new_pk, debug=debug)
                                 item['pk'] = new_pk
                                 break
 
