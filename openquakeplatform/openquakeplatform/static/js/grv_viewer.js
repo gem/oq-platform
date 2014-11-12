@@ -19,6 +19,7 @@ var dataCat = "";
 var chartCat = "";
 var utfGrid = {};
 var styleLayer = {};
+var utfGridGroup = {};
 var countriesArray = new Array('Turkmenistan', 'Uzbekistan', 'Kazakhstan', 'Mongolia', 'foo', 'bar');
 var selectedValue1 = new Array(11.12, 16.591, 9.835, 14.0, 1, 1);
 var selectedValue2 = new Array(33.209, 55.71, 49.38, 50.18, 1, 1);
@@ -31,6 +32,7 @@ var svirRankKeys = [];
 var svirRankValues = [];
 var svirRegionRankKeys = [];
 var svirRegionRankValues = [];
+var layerControl = "";
 
 // An object of all attributes and values to be used for the checkbox selection
 var dataFormated = {};
@@ -66,6 +68,8 @@ var startApp = function() {
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layers = {};
+    layerControl = L.control.layers(app.baseLayers);
+    map.addControl(layerControl.setPosition("topleft"));
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -536,16 +540,28 @@ var startApp = function() {
         }
     }
 
+
     // Change the utfgrid layer when the tabs are clicked
     $("#econ").click(function(){
         dataCat = "econ-table";
         chartCat = "econ-chart";
-        map.removeLayer(utfGrid);
-        map.removeLayer(styleLayer);
+        try {
+            map.removeLayer(utfGridGroup);
+        } catch (e) {
+            // continue
+        }
+        // Empty the layer controler
+        layerControl._layers = {};
+
         styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_econ_style/{z}/{x}/{y}.png');
-        map.addLayer(styleLayer);
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_econ/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
+        var utfGridGroup = L.layerGroup([
+            styleLayer,
+            utfGrid
+        ]);
+        map.addLayer(utfGridGroup);
+        layerControl.addOverlay(utfGridGroup, " SVIR Standardized Economic Indicators");
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -555,12 +571,24 @@ var startApp = function() {
     $("#pop").click(function(){
         dataCat = "pop-table";
         chartCat = "pop-chart";
-        map.removeLayer(utfGrid);
-        map.removeLayer(styleLayer);
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_pop_style/{z}/{x}/{y}.png');
-        map.addLayer(styleLayer);
+        try {
+            console.log("trying to remove the layer group");
+            map.removeLayer(utfGridGroup);
+        } catch (e) {
+            // continue
+        }
+        // Empty the layer controler
+        layerControl._layers = {};
+
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_pop_new/{z}/{x}/{y}.png');
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_pop_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
+        var utfGridGroup = L.layerGroup([
+            styleLayer,
+            utfGrid
+        ]);
+        map.addLayer(utfGridGroup);
+        layerControl.addOverlay(utfGridGroup, " SVIR Standardized Population Indicators");
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -570,10 +598,24 @@ var startApp = function() {
     $("#infra").click(function(){
         dataCat = "infra-table";
         chartCat = "infra-chart";
-        map.removeLayer(utfGrid);
-        map.removeLayer(styleLayer);
+        try {
+            console.log("trying to remove the layer group");
+            map.removeLayer(utfGridGroup);
+        } catch (e) {
+            // continue
+        }
+        // Empty the layer controler
+        layerControl._layers = {};
+
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.png');
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
+        var utfGridGroup = L.layerGroup([
+            styleLayer,
+            utfGrid
+        ]);
+        map.addLayer(utfGridGroup);
+        layerControl.addOverlay(utfGridGroup, " SVIR Standardized Infrastructure Indicators");
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -583,10 +625,24 @@ var startApp = function() {
     $("#gov").click(function(){
         dataCat = "gov-table";
         chartCat = "gov-chart";
-        map.removeLayer(utfGrid);
-        map.removeLayer(styleLayer);
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
+        try {
+            console.log("trying to remove the layer group");
+            map.removeLayer(utfGridGroup);
+        } catch (e) {
+            // continue
+        }
+        // Empty the layer controler
+        layerControl._layers = {};
+
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_gov_new/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_gov_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        var utfGridGroup = L.layerGroup([
+            styleLayer,
+            utfGrid
+        ]);
+        map.addLayer(utfGridGroup);
+        layerControl.addOverlay(utfGridGroup, " SVIR Standardized Government Indicators");
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
@@ -596,10 +652,24 @@ var startApp = function() {
     $("#edu").click(function(){
         dataCat = "edu-table";
         chartCat = "edu-chart";
-        map.removeLayer(utfGrid);
-        map.removeLayer(styleLayer);
+        try {
+            console.log("trying to remove the layer group");
+            map.removeLayer(utfGridGroup);
+        } catch (e) {
+            // continue
+        }
+        // Empty the layer controler
+        layerControl._layers = {};
+
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.png');
         utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        map.addLayer(utfGrid);
+        var utfGridGroup = L.layerGroup([
+            styleLayer,
+            utfGrid
+        ]);
+        map.addLayer(utfGridGroup);
+        layerControl.addOverlay(utfGridGroup, " SVIR Standardized Education Indicators");
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
         $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
