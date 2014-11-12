@@ -433,9 +433,10 @@ def update_fk(updates_gr, model, item, new_pk, debug=False):
                             break
 
 
-def update_pk(updates_gr, model, item, new_pk, debug=False):
+def update_pk(updates_gr, updatesk_gr, model, item, new_pk, debug=False):
     """
     updates_gr   grouped updates items
+    updatesk_gr  grouped updates items (dict with keys)
     model        item model
     item         item to be updated
     new_pk       new key
@@ -628,7 +629,7 @@ def grouping_set(debug, dates_gr, datesk_gr):
 
                     if item['fields'][ref_field]:
                         k = item['fields'][ref_field]
-                        item['__group__'] = k
+                        item['fields']['__group__'] = k
                         try:
                             kk = tuple(k)
                         except TypeError:
@@ -653,7 +654,7 @@ def grouping_set(debug, dates_gr, datesk_gr):
                         pdebug(debug, 0, "No reference record found, abort")
                         sys.exit(20)
 
-                    group_ref = ref_record.get('__group__', None)
+                    group_ref = ref_record['fields'].get('__group__', None)
                     if not group_ref:
                         continue
 
@@ -666,7 +667,7 @@ def grouping_set(debug, dates_gr, datesk_gr):
                         datesk_gr[ref_model][kk]['__backrefs__'].append((model, item))
                     except KeyError:
                         datesk_gr[ref_model][kk]['__backrefs__'] = [(model, item)]
-                    item['__group__'] = group_ref
+                    item['fields']['__group__'] = group_ref
                     break
                 else:
                     pdebug(debug, 0, "ITEM: %s" % item)
@@ -808,8 +809,8 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                                 break
 
                 pdebug(debug, 1, "ADD IT")
-                # if md.group:
-                #    del item['__group__']
+                if md.group:
+                    del item['fields']['__group__']
                 final_out_gr[model].append(item)
                 kappend(final_outk_gr, model, item)
                 final_out.append(item)
@@ -862,7 +863,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
 
                 pdebug(debug, 1, "ADD IT")
                 if md.group:
-                    del item['__group__']
+                    del item['fields']['__group__']
                 final_out_gr[model].append(item)
                 kappend(final_outk_gr, model, item)
                 final_out.append(item)
