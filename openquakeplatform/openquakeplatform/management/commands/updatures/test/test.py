@@ -2,6 +2,12 @@
 import sys
 import StringIO
 
+import pdb, sys, traceback
+def info(type, value, tb):
+    traceback.print_exception(type, value, tb)
+    pdb.pm()
+sys.excepthook = info
+
 sys.path.append('..')
 
 from updatures import updatures
@@ -13,9 +19,12 @@ test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
 if __name__ == "__main__":
     argv = []
     debug = 0
+    check_consistency = False
     for arg in sys.argv[1:]:
         if arg in [ '-v', '--verbose' ]:
             debug += 1
+        elif arg in [ '-c', '--check_consistency' ]:
+            check_consistency = True
         else:
             argv.append(arg)
 
@@ -26,7 +35,9 @@ if __name__ == "__main__":
 
     for test in test_list:
         output = StringIO.StringIO()
-        updatures(['data/' + test + '_new.json'], output=output, fakeold='data/' + test + '_old.json', debug=debug)
+        updatures(['data/' + test + '_new.json'], output=output,
+                  fakeold='data/' + test + '_old.json',
+                  check_consistency=check_consistency, debug=debug)
 
         exp = file('data/' + test + '_exp.json', 'r').read()
 

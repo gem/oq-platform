@@ -8,14 +8,24 @@ from pprint import pprint
 from collections import OrderedDict
 from django.core.management import call_command, execute_manager
 
+import pdb
+
+
+def pdebug(debug, level, s):
+    if debug < level:
+        return
+    print s
+
+
+
 class model_description(object):
-    def __init__(self, name, natural, refs, pk_natural = False):
+    def __init__(self, name, natural, refs, group=None, pk_natural=False):
         self.name = name
         self.natural = natural
-        # { field: model, ... }
+        # { field: (model, is_many), ... }
         self.refs = refs
+        self.group = group
         self.pk_natural = pk_natural
-
 
 models_descr = OrderedDict()
     # auth models
@@ -27,36 +37,62 @@ models_descr['auth.permission'] = model_description(
 models_descr['auth.group'] = model_description(
     'auth.group',
     lambda i: [ i['fields']['name'] ],
-    {'permissions': 'auth.permission'})
+    {'permissions': ('auth.permission', True)})
 
 models_descr['auth.user'] = model_description(
     'auth.user',
     lambda i: [ i['fields']['username'] ],
-    {'user_permissions': 'auth.permission',
-     'groups': 'auth.group'})
+    {'user_permissions': ('auth.permission', True),
+     'groups':           ('auth.group', True)})
 
 models_descr['account.account'] = model_description(
     'account.account',
-    lambda i: i['fields']['user'],
-    {'user': 'auth.user'})
+    None,
+    {'user': ('auth.user', False)})
+
+models_descr['account.signupcode'] = model_description(
+    'account.signupcode',
+    None,
+    {'inviter': ('auth.user', False)})
+
+models_descr['account.signupcodeextended'] = model_description(
+    'account.signupcodeextended',
+    None,
+    {'signupcode': ('account.signupcode', False)}) # signupcode is pk too, strange case
+
+models_descr['account.signupcoderesult'] = model_description(
+    'account.signupcoderesult',
+    None,
+    {'signup_code': ('account.signupcode', False),
+     'user': ('auth.user', False)})
 
 models_descr['account.emailaddress'] = model_description(
     'account.emailaddress',
-    lambda i: i['fields']['user'],
-    {'user': 'auth.user'})
+    None,
+    {'user': ('auth.user', False)})
+
+models_descr['account.emailconfirmation'] = model_description(
+    'account.emailconfirmation',
+    None,
+    {'email_address': ('account.emailaddress', False)})
+
+models_descr['account.accountdeletion'] = model_description(
+    'account.accountdeletion',
+    None,
+    {'user': ('auth.user', False)})
 
     # Vulnerability models
 models_descr['vulnerability.qrsempirical'] = model_description(
     'vulnerability.qrsempirical',
     None,
-    {'fragility_func':     'vulnerability.fragilityfunc',
-     'vulnerability_func': 'vulnerability.vulnerabilityfunc'})
+    {'fragility_func':     ('vulnerability.fragilityfunc', False),
+     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.qrsanalytical'] = model_description(
     'vulnerability.qrsanalytical',
     None,
-    {'fragility_func':     'vulnerability.fragilityfunc',
-     'vulnerability_func': 'vulnerability.vulnerabilityfunc'})
+    {'fragility_func':     ('vulnerability.fragilityfunc', False),
+     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.statmodel'] = model_description(
     'vulnerability.statmodel',
@@ -86,21 +122,14 @@ models_descr['vulnerability.procconstrint'] = model_description(
 models_descr['vulnerability.statisticalinformation'] = model_description(
     'vulnerability.statisticalinformation',
     None,
-    {'fragility_func':              'vulnerability.fragilityfunc',
-     'vulnerability_func':          'vulnerability.vulnerabilityfunc',
-     'stat_model':                  'vulnerability.statmodel',
-     'stat_model_fitting_method':   'vulnerability.statmodelfittingmethod',
-     'model_fitting_method_assumptions': 'vulnerability.modelfittingmethodassumption',
-     'fit_assessment_goodness':     'vulnerability.fitassessmentgoodness',
-     'proc_constr_conf_int':        'vulnerability.procconstrint',
-     'proc_constr_pred_int':        'vulnerability.procconstrint'})
+    {'fragility_func':              ('vulnerability.fragilityfunc', False),
+     'vulnerability_func':          ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.empiricalmodelinfo'] = model_description(
     'vulnerability.empiricalmodelinfo',
     None,
-    {'fragility_func':     'vulnerability.fragilityfunc',
-     'vulnerability_func': 'vulnerability.vulnerabilityfunc',
-     'evaluation_of_im':   'vulnerability.evaluationofim'})
+    {'fragility_func':     ('vulnerability.fragilityfunc', False),
+     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.analysistype'] = model_description(
     'vulnerability.analysistype',
@@ -110,10 +139,8 @@ models_descr['vulnerability.analysistype'] = model_description(
 models_descr['vulnerability.analyticalmodelinfo'] = model_description(
     'vulnerability.analyticalmodelinfo',
     None,
-    {'fragility_func':     'vulnerability.fragilityfunc',
-     'vulnerability_func': 'vulnerability.vulnerabilityfunc',
-     'analysis_type':      'vulnerability.analysistype',
-     'evaluation_of_im':   'vulnerability.evaluationofim'})
+    {'fragility_func':     ('vulnerability.fragilityfunc', False),
+     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.cc_analysistype'] = model_description(
     'vulnerability.cc_analysistype',
@@ -123,8 +150,7 @@ models_descr['vulnerability.cc_analysistype'] = model_description(
 models_descr['vulnerability.cc_analyticalmodelinfo'] = model_description(
     'vulnerability.cc_analyticalmodelinfo',
     None,
-    {'capacity_curve_func': 'vulnerability.capacitycurvefunc',
-     'analysis_type':       'vulnerability.cc_analysistype'})
+    {'capacity_curve_func': ('vulnerability.capacitycurvefunc', False)})
 
 models_descr['vulnerability.country'] = model_description(
     'vulnerability.country',
@@ -134,8 +160,8 @@ models_descr['vulnerability.country'] = model_description(
 models_descr['vulnerability.geoapplicability'] = model_description(
     'vulnerability.geoapplicability',
     None,
-    {'general_information': 'vulnerability.generalinformation',
-     'countries':           'vulnerability.country'})
+    {'general_information': ('vulnerability.generalinformation', False),
+     'countries':           ('vulnerability.country', True)})
 
 models_descr['vulnerability.taxonomytype'] = model_description(
     'vulnerability.taxonomytype',
@@ -145,32 +171,32 @@ models_descr['vulnerability.taxonomytype'] = model_description(
 models_descr['vulnerability.cc_predictorvar'] = model_description(
     'vulnerability.cc_predictorvar',
     None,
-    {'capacity_curve_func': 'vulnerability.capacitycurvefunc'})
+    {'capacity_curve_func': ('vulnerability.capacitycurvefunc', False)})
 
 models_descr['vulnerability.capacitycurvefunc'] = model_description(
     'vulnerability.capacitycurvefunc',
     None,
-    {'general_information': 'vulnerability.generalinformation'})
+    {'general_information': ('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.funcdistrdtldiscr'] = model_description(
     'vulnerability.funcdistrdtldiscr',
     None,
-    {'damage_to_loss_func': 'vulnerability.damagetolossfunc'})
+    {'damage_to_loss_func': ('vulnerability.damagetolossfunc', False)})
 
 models_descr['vulnerability.damagetolossfunc'] = model_description(
     'vulnerability.damagetolossfunc',
     None,
-    {'general_information': 'vulnerability.generalinformation'})
+    {'general_information': ('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.funcdistrvulncont'] = model_description(
     'vulnerability.funcdistrvulncont',
     None,
-    {'vulnerability_func': 'vulnerability.vulnerabilityfunc'})
+    {'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.funcdistrvulndiscr'] = model_description(
     'vulnerability.funcdistrvulndiscr',
     None,
-    {'vulnerability_func': 'vulnerability.vulnerabilityfunc'})
+    {'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.evaluationofim'] = model_description(
     'vulnerability.evaluationofim',
@@ -180,23 +206,23 @@ models_descr['vulnerability.evaluationofim'] = model_description(
 models_descr['vulnerability.predictorvar'] = model_description(
     'vulnerability.predictorvar',
     None,
-    {'vulnerability_func': 'vulnerability.vulnerabilityfunc',
-     'fragility_func':     'vulnerability.fragilityfunc'})
+    {'vulnerability_func': ('vulnerability.vulnerabilityfunc', False),
+     'fragility_func':     ('vulnerability.fragilityfunc', False)})
 
 models_descr['vulnerability.vulnerabilityfunc'] = model_description(
     'vulnerability.vulnerabilityfunc',
     None,
-    {'general_information': 'vulnerability.generalinformation'})
+    {'general_information': ('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.funcdistrfragcont'] = model_description(
     'vulnerability.funcdistrfragcont',
     None,
-    {'fragility_func':     'vulnerability.fragilityfunc'})
+    {'fragility_func':     ('vulnerability.fragilityfunc', False)})
 
 models_descr['vulnerability.funcdistrfragdiscr'] = model_description(
     'vulnerability.funcdistrfragdiscr',
     None,
-    {'fragility_func':     'vulnerability.fragilityfunc'})
+    {'fragility_func':     ('vulnerability.fragilityfunc', False)})
 
 models_descr['vulnerability.engineeringdemandpar'] = model_description(
     'vulnerability.engineeringdemandpar',
@@ -206,31 +232,52 @@ models_descr['vulnerability.engineeringdemandpar'] = model_description(
 models_descr['vulnerability.fragilityfunc'] = model_description(
     'vulnerability.fragilityfunc',
     None,
-    {'general_information': 'vulnerability.generalinformation',
-     'engineering_demand_par': 'vulnerability.engineeringdemandpar'})
+    {'general_information':    ('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.generalinformation'] = model_description(
     'vulnerability.generalinformation',
-    None,
-    {'taxonomy_type': 'vulnerability.taxonomytype'})
+    lambda i: [ i['fields']['name'] ],
+    {})
 
     # test models
 models_descr['test.one2one'] = model_description(
     'test.one2one',
     None,
-    {'leaf': 'test.leaf'})
+    {'leaf': ('test.leaf', False)})
 
 models_descr['test.one2many'] = model_description(
     'test.one2many',
     None,
-    {'leafs': 'test.leaf'})
+    {'leafs': ('test.leaf', True)})
 
 models_descr['test.leaf'] = model_description(
     'test.leaf',
     None,
     {})
 
-def rebuild_order():
+# set owner as reference for all vulnerability models except country
+for md_key in models_descr:
+    if md_key.startswith("vulnerability.") and md_key != "vulnerability.country":
+        models_descr[md_key].refs['owner'] = ('auth.user', False)
+
+    if (md_key.startswith("vulnerability.")
+        and md_key not in (
+            "vulnerability.country",
+            "vulnerability.statmodel",
+            "vulnerability.statmodelfittingmethod",
+            'vulnerability.modelfittingmethodassumption',
+            'vulnerability.fitassessmentgoodness',
+            'vulnerability.procconstrint',
+            'vulnerability.evaluationofim',
+            'vulnerability.analysistype',
+            'vulnerability.cc_analysistype',
+            'vulnerability.engineeringdemandpar',
+            'vulnerability.taxonomytype',
+            'vulnerability.generalinformation')):
+        models_descr[md_key].group = "vulnerability.generalinformation"
+
+
+def rebuild_order(debug):
     reloop = True
     first_loop = True
     models_descr_old = models_descr.copy()
@@ -238,6 +285,7 @@ def rebuild_order():
     models_order = []
     while reloop:
         for model, descr in models_descr_old.iteritems():
+            pdebug(debug, 1, "rebuild_order: model %s" % model)
             if first_loop:
                 first_loop = False
                 if descr.refs == {}:
@@ -245,8 +293,8 @@ def rebuild_order():
                 else:
                     models_descr_rest[model] = descr
             else:
-                for field, dep in descr.refs.iteritems():
-                    if not dep in models_order:
+                for ref_field, (ref_model, ref_ismulti) in descr.refs.iteritems():
+                    if not ref_model in models_order:
                         models_descr_rest[model] = descr
                         break
                 else:
@@ -257,8 +305,6 @@ def rebuild_order():
             reloop = False
 
     return models_order
-
-models_order = rebuild_order()
 
 class items_info(object):
 
@@ -304,51 +350,124 @@ def show_items_info(iinfo):
 
 def group_objs(base):
     group = {}
+    groupk = {}
+
     for model in models_order:
         group[model] = []
+        groupk[model] = {}
 
     for item in base:
         model = item['model']
-        if model in group:
-            group[model].append(item)
+        md = models_descr[model]
+
+        group[model].append(item)
+        if md.natural:
+            k = tuple(md.natural(item))
         else:
-            group[model] = [ item ]
+            k = tuple([item['pk']])
+        groupk[model][k] = item
 
-    return group
+    return (group, groupk)
 
+def kappend(groupk, model, item):
+    model = item['model']
+    md = models_descr[model]
 
-def pdebug(debug, level, s):
-    if debug < level:
-        return
-    print s
+    if md.natural:
+        k = tuple(md.natural(item))
+    else:
+        k = item['pk']
+    groupk[model][k] = item
 
 
 def update_fk(updates_gr, model, item, new_pk, debug=False):
+    """
+    updates_gr   grouped updates items
+    model        item model
+    item         item to be updated
+    new_pk       new key
+    debug        debug level
+    """
+    md = models_descr[model]
     # update all references
-    for mdref in models_descr:
-        pdebug(debug, 3, "MDREF: %s" % mdref)
-        if model in models_descr[mdref].refs.values():
-            for ref_field, ref_model in models_descr[mdref].refs.iteritems():
-                if ref_model != model:
+    for ref_model, ref_md in models_descr.iteritems():
+        pdebug(debug, 3, "MDREF: %s" % ref_model)
+        # found each model has a refs value associated with the current item model
+        for ref_reffield, (ref_refmodel, ref_refmulti) in ref_md.refs.iteritems():
+            if ref_refmodel != model:
+                continue
+
+            for itemod in updates_gr[ref_model]:
+                # if field not set or empty list continue
+                if not itemod['fields'][ref_reffield]:
                     continue
-                pdebug(debug, 2,"REF_FIELD: %s" % ref_field)
-                for itemod in updates_gr[mdref]:
-                    pdebug(debug, 2, "ITEMOD: %s" % itemod)
-                    ty = type(itemod['fields'][ref_field])
-                    if ty is int:
-                        # simplest case, one to one, if the same value update with the new
-                        if itemod['fields'][ref_field] == item['pk']:
-                            itemod['fields'][ref_field] = new_pk
-                    elif ty is list:
-                        ty2 = type(itemod['fields'][ref_field][0])
-                        if ty2 is int:
-                            # case list of pk, substitute just the right occurrency
-                            if item['pk'] in itemod['fields'][ref_field]:
-                                idx = itemod['fields'][ref_field].index(item['pk'])
-                                itemod['fields'][ref_field][idx] = new_pk
-                        else:
-                            pdebug(debug, 1, "itemod list of lists case not supported")
+                pdebug(debug, 2, "ITEMOD: %s" % itemod)
+                if md.natural:
+                    if type(itemod['fields'][ref_reffield]) is not list:
+                        pdebug(debug, 1, "update_fk: a natural key needs a list as field [%s] ref: [%s]" % (itemod['fields'][ref_reffield], ref_reffield))
+                        sys.exit(10)
+                    if ref_refmulti:
+                        field_items = itemod['fields'][ref_reffield]
+                        for i, fk in enumerate(field_items):
+                            if fk == md.natural(item):
+                                field_items[i] = new_pk
+                                break
+                    else:
+                        if itemod['fields'][ref_reffield] == md.natural(item):
+                            itemod['fields'][ref_reffield] = new_pk
+                            break
+
+                else:
+                    if ref_refmulti:
+                        if type(itemod['fields'][ref_reffield][0]) is list:
+                            pdebug(debug, 0, "itemod list of lists case not managed")
                             sys.exit(10)
+                        field_items = itemod['fields'][ref_reffield]
+                        for i, fk in enumerate(field_items):
+                            if fk == item.fk:
+                                field_items[i] = new_pk
+                                break
+                    else:
+                        if itemod['fields'][ref_reffield] == item['pk']:
+                            itemod['fields'][ref_reffield] = new_pk
+                            break
+
+
+def update_pk(updates_gr, model, item, new_pk, debug=False):
+    """
+    updates_gr   grouped updates items
+    model        item model
+    item         item to be updated
+    new_pk       new key
+    debug        debug level
+    """
+    md = models_descr[model]
+    # update all references
+    for ref_model, ref_md in models_descr.iteritems():
+        pdebug(debug, 3, "MDREF: %s" % ref_model)
+        # found each model has a refs value associated with the current item model
+        for ref_reffield, (ref_refmodel, ref_refmulti) in ref_md.refs.iteritems():
+            if ref_refmodel != model:
+                continue
+
+            for itemod in updates_gr[ref_model]:
+                # if field not set or empty list continue
+                if not itemod['fields'][ref_reffield]:
+                    continue
+                pdebug(debug, 2, "ITEMOD: %s" % itemod)
+                if ref_refmulti:
+                    if type(itemod['fields'][ref_reffield][0]) is list:
+                        pdebug(debug, 0, "itemod list of lists case not managed")
+                        sys.exit(10)
+                    field_items = itemod['fields'][ref_reffield]
+                    for i, fk in enumerate(field_items):
+                        if fk == item.fk:
+                            field_items[i] = new_pk
+                            break
+                else:
+                    if itemod['fields'][ref_reffield] == item['pk']:
+                        itemod['fields'][ref_reffield] = new_pk
+                        break
 
 
 
@@ -369,7 +488,7 @@ def item_compare(a, b, pk_included=True):
     if a['model'] != b['model']:
         return False
 
-    mdesc = models_descr[a['model']]
+    md = models_descr[a['model']]
 
     b_keys = b['fields'].keys()
 
@@ -380,9 +499,9 @@ def item_compare(a, b, pk_included=True):
         if not a_key in b_fie:
             return False
 
-        if a_key in mdesc.refs:
-            # foreign key case
-            if not fk_compare(a_fie, b_fie):
+        if a_key in md.refs and md.refs[a_key][1]:
+            # foreign key casefk_compare
+            if not fk_compare(a_fie[a_key], b_fie[a_key]):
                 return False
         else:
             if a_fie[a_key] != b_fie[a_key]:
@@ -392,9 +511,195 @@ def item_compare(a, b, pk_included=True):
     return not b_keys
 
 
-def updatures(argv, output=None, fakeold=False, debug=0):
+def consistencymeter(dates_gr, debug=0):
+    cm_out_gr = OrderedDict()
 
-    include_skipped = True
+    for model in models_order:
+        pdebug(debug, 2, "CC: MODEL: %s" % model)
+        cm_out_gr[model] = { 'fields_n': 0, 'incons': 0 }
+        cm_out = cm_out_gr[model]
+        md = models_descr[model]
+        for item in dates_gr[model]:
+            pdebug(debug, 2, "CC: ITEM: %s" % item)
+            for ref_field, (ref_model, ref_ismulti) in md.refs.iteritems():
+                ref_md = models_descr[ref_model]
+                pdebug(debug, 2, "CC: REF_FIELD, REF_MODEL: %s, %s, %s" % (ref_field, ref_model, ref_md.natural))
+                if not item['fields'][ref_field]:
+                    continue
+                cm_out['fields_n'] += 1
+                ty = type(item['fields'][ref_field])
+
+                if ref_md.natural and ref_ismulti:
+                    if type(item['fields'][ref_field][0]) is not list:
+                        pdebug(debug, 1, "consistencymeter:\n  model: %s\n"
+                               + "natural key field: %s  ref_model: %s\n"
+                               + "item: %s\nwrong field fk type\n" %
+                               (model, ref_field, ref_model, str(item)))
+                        return False
+                elif ((ref_md.natural and not ref_ismulti) or
+                      (not ref_md.natural and ref_ismulti)):
+                    if type(item['fields'][ref_field]) is not list:
+                        pdebug(debug, 1, "consistencymeter:\n  model: %s\n"
+                               + "natural key field: %s  ref_model: %s\n"
+                               + "item: %s\nwrong field fk type\n" %
+                               (model, ref_field, ref_model, str(item)))
+                        return False
+                elif (not ref_md.natural and not ref_ismulti):
+                    if type(item['fields'][ref_field]) is list:
+                        pdebug(debug, 1, "consistencymeter:\n  model: %s\n"
+                               + "natural key field: %s  ref_model: %s\n"
+                               + "item: %s\nwrong field fk type\n" %
+                               (model, ref_field, ref_model, str(item)))
+                        return False
+
+                if ref_md.natural is not None:
+                    if ref_ismulti:
+                        # one2many case
+                        refs_fk = item['fields'][ref_field]
+                    else: # if ref_ismulti:
+                        # any2one case:
+                        refs_fk = [ item['fields'][ref_field] ]
+
+                    for fk in refs_fk:
+                        for fktem in dates_gr[ref_model]:
+                            if fk == ref_md.natural(fktem):
+                                break
+                        else:
+                            pdebug(debug, 1, "CC: natural")
+                            cm_out['incons'] += 1
+
+                else: # if ref_md.natural
+                    pdebug(debug, 2, "CC: NOT NATURAL")
+
+                    # many2many case
+                    if ref_ismulti:
+                        refs_fk = item['fields'][ref_field]
+                    else:
+                        refs_fk = [ item['fields'][ref_field] ]
+
+
+                    for fk in refs_fk:
+                        for fktem in dates_gr[ref_model]:
+                            if fk == fktem['pk']:
+                                break
+                        else:
+                            pdebug(debug, 1, "CC: not natural model: %s %s" % (model, item))
+                            cm_out['incons'] += 1
+
+    return cm_out_gr
+
+
+def reference_get(dates_gr, model, pk):
+    md = models_descr[model]
+    for item in dates_gr[model]:
+        if md.natural:
+            if md.natural(item) == pk:
+                return item
+        else:
+            if item['pk'] == pk:
+                return item
+    else:
+        return None
+
+def item_key(model, item):
+    md = models_descr[model]
+    if md.natural:
+        return md.natural(item)
+    else:
+        return item['pk']
+
+def grouping_set(debug, dates_gr, datesk_gr):
+    for model in models_order:
+        md = models_descr[model]
+        pdebug(debug, 2, "Mod: %s  Is grouped: %s" % (model, md.group))
+        if md.group is None:
+            pdebug(debug, 2, "No grouping for model %s" % model)
+            continue
+
+        dirref_groups = [(k,(v1,v2)) for k,(v1,v2) in md.refs.iteritems() if v1 == md.group]
+        if dirref_groups:
+            pdebug(debug, 2, "Direct group for model %s" % model)
+            for item in dates_gr[model]:
+                # grouped with a direct reference
+                for ref_field, (ref_model, ref_ismulti) in dirref_groups:
+                    if ref_ismulti:
+                        continue
+                    ref_md = models_descr[ref_model]
+
+                    if item['fields'][ref_field]:
+                        k = item['fields'][ref_field]
+                        item['__group__'] = k
+                        try:
+                            kk = tuple(k)
+                        except TypeError:
+                            kk = tuple([k])
+
+                        try:
+                            datesk_gr[ref_model][kk]['__backrefs__'].append((model, item))
+                        except KeyError:
+                            datesk_gr[ref_model][kk]['__backrefs__'] = [(model, item)]
+                        break
+                else:
+                    pdebug(debug, 0, "Direct reference not found")
+                    return False
+        else:
+            pdebug(debug, 2, "No direct group for model %s" % model)
+            for item in dates_gr[model]:
+                for ref_field, (ref_model, ref_ismulti) in md.refs.iteritems():
+                    if ref_ismulti or not item['fields'][ref_field]:
+                        continue
+                    ref_record = reference_get(dates_gr, ref_model, item['fields'][ref_field])
+                    if ref_record == None:
+                        pdebug(debug, 0, "No reference record found, abort")
+                        sys.exit(20)
+
+                    group_ref = ref_record.get('__group__', None)
+                    if not group_ref:
+                        continue
+
+                    try:
+                        kk = tuple(item['fields'][ref_field])
+                    except TypeError:
+                        kk = tuple([item['fields'][ref_field]])
+
+                    try:
+                        datesk_gr[ref_model][kk]['__backrefs__'].append((model, item))
+                    except KeyError:
+                        datesk_gr[ref_model][kk]['__backrefs__'] = [(model, item)]
+                    item['__group__'] = group_ref
+                    break
+                else:
+                    pdebug(debug, 0, "ITEM: %s" % item)
+                    pdebug(debug, 0, "Not found any grouping reference, abort")
+                    sys.exit(22)
+
+
+def print_refs(spc, item_in):
+    if '__backrefs__' not in item_in:
+        return
+
+    for mod,item in item_in['__backrefs__']:
+        print "%s%s (%s)" % (" "*spc, mod, item['pk'])
+        print_refs(spc + 4, item)
+
+
+def model_groups_get(debug):
+    model_groups = []
+
+    for model in models_order:
+        if models_descr[model].group:
+            if models_descr[model].group not in model_groups:
+                model_groups.append(models_descr[model].group)
+
+    return model_groups
+
+def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0):
+    global models_order
+
+    models_order = rebuild_order(debug)
+    model_groups = model_groups_get(debug)
+
+    include_skipped = True if check_consistency else False
 
     if output == None:
         output = sys.stdout
@@ -411,8 +716,18 @@ def updatures(argv, output=None, fakeold=False, debug=0):
 
     pdebug(debug, 3, "MOP UPDATES: %s" % str(updates))
 
-    updates_gr = group_objs(updates)
-    final_out_gr = group_objs([])
+    updates_gr, updatesk_gr = group_objs(updates)
+    grouping_set(debug, updates_gr, updatesk_gr)
+
+    #for i in updates_gr['vulnerability.generalinformation']:
+    #    print "GENERAL INFO: %s" % i['fields']['name']
+    #    print_refs(4, i)
+    # sys.exit(123)
+
+    if check_consistency:
+        cm_new = consistencymeter(updates_gr, debug=debug)
+
+    final_out_gr, final_outk_gr = group_objs([])
 
     pdebug(debug, 3, "MOP GROUPS: %s" % str(updates_gr))
     models = {}
@@ -433,7 +748,8 @@ def updatures(argv, output=None, fakeold=False, debug=0):
     else:
         oldates = json.load(file(fakeold, 'r'))
 
-    oldates_gr = group_objs(oldates)
+    oldates_gr,oldatesk_gr = group_objs(oldates)
+    grouping_set(debug, oldates_gr, oldatesk_gr)
 
     oldels = inspect(oldates)
 
@@ -470,6 +786,10 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                         pdebug(debug, 1, "identical item except for pk, skip it and update all references")
                         skip_it = True
                         update_fk(updates_gr, model, item, otem['pk'], debug=debug)
+                        if item['model'] == 'vulnerability.fragilityfunc':
+                            pdebug(debug, 0, "ITEM: [%s]\nOTEM: [%s]\n" % (item_new, otem))
+                            pdebug(debug, 0, "ASSIGN HERE: [%s] [%s]" % (item['pk'], otem['pk']))
+                        item['pk'] = otem['pk']
                         break
 
                 if skip_it:
@@ -483,13 +803,15 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                                update_fk(updates_gr, model, item, new_pk, debug=debug)
+                                update_pk(updates_gr, model, item, new_pk, debug=debug)
                                 item['pk'] = new_pk
                                 break
 
                 pdebug(debug, 1, "ADD IT")
-
+                # if md.group:
+                #    del item['__group__']
                 final_out_gr[model].append(item)
+                kappend(final_outk_gr, model, item)
                 final_out.append(item)
 
         else: # if not md.natural:
@@ -514,10 +836,8 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                         found_it = True
 
                         # no: pk key case
-                        item_new = copy.deepcopy(item)
                         pdebug(debug, 2, "OTEM: %s" % otem)
-                        item_new['pk'] = otem['pk']
-                        if item_compare(item_new, otem, pk_included=True):
+                        if item_compare(item, otem, pk_included=True):
                             # identical items except for pk, skip it and update all references
                             pdebug(debug, 1, "identical item except for pk, skip it and update all references")
                             skip_it = True
@@ -529,20 +849,37 @@ def updatures(argv, output=None, fakeold=False, debug=0):
                         pdebug(debug, 1, "SKIP IT")
                         continue
                 else:
+                    # loop to identify if new item has the same pk of old item
                     if not found_it and not md.pk_natural:
-                        # loop to identify if new item has the same pk of old item
                         for otem in oldates_gr[model] + final_out_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
-                                pdebug(debug, 2, "SAME PK, UPDATE IT [%d]" % new_pk)
+                                pdebug(debug, 1, "SAME PK, UPDATE IT [%d]" % new_pk)
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                                update_fk(updates_gr, model, item, new_pk, debug=debug)
+                                update_pk(updates_gr, model, item, new_pk, debug=debug)
                                 item['pk'] = new_pk
                                 break
 
                 pdebug(debug, 1, "ADD IT")
+                if md.group:
+                    del item['__group__']
                 final_out_gr[model].append(item)
+                kappend(final_outk_gr, model, item)
                 final_out.append(item)
+
+    if check_consistency:
+        cm_fin = consistencymeter(final_out_gr, debug=debug)
+        print "Consistency Report"
+        for k,v in cm_new.iteritems():
+            if v['fields_n'] > 0:
+                print v, k
+            if cm_new[k] != cm_fin[k]:
+                print "WARNING: k: %s new: %s fin: %s" % (
+                    k, v, cm_fin[k])
+                # sys.exit(2)
+
+    model_groups = model_groups_get(debug)
+    pdebug(debug, 0, "MODEL_GROUPS: %s" % model_groups)
 
     pdebug(debug, 1, "FINAL: ")
     json.dump(final_out, output, indent=4)
@@ -552,11 +889,14 @@ def updatures(argv, output=None, fakeold=False, debug=0):
 if __name__ == "__main__":
     argv = []
     debug = 0
+    check_consistency = False
     for arg in sys.argv[1:]:
         if arg in [ '-v', '--verbose' ]:
             debug += 1
+        elif arg in [ '-c', '--check_consistency' ]:
+            check_consistency = True
         else:
             argv.append(arg)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
-    sys.exit(updatures(argv, debug=debug))
+    sys.exit(updatures(argv, check_consistency=check_consistency, debug=debug))
