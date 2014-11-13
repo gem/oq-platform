@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import StringIO
+import json
 
 import pdb, sys, traceback
 def info(type, value, tb):
@@ -33,19 +34,29 @@ if __name__ == "__main__":
     else:
         test_list = argv
 
+    test_result = 0
     for test in test_list:
         output = StringIO.StringIO()
-        updatures(['data/' + test + '_new.json'], output=output,
+        result = updatures(['data/' + test + '_new.json'], output=output,
                   fakeold='data/' + test + '_old.json',
                   check_consistency=check_consistency, debug=debug)
 
         exp = file('data/' + test + '_exp.json', 'r').read()
 
-        if output.getvalue() == exp:
-            print "TEST SUCCESS %s" % test
+        if result == 0:
+            if output.getvalue() == exp:
+                print "TEST SUCCESS %s" % test
+            else:
+                test_result = 1
+                fnameout = 'data/' + test + '_out.json'
+                file(fnameout, 'w').write(output.getvalue())
+                print "TEST DIFFER %s, OUTPUT IS SAVED IN %s" % (test, fnameout)
         else:
-            fnameout = 'data/' + test + '_out.json'
-            file(fnameout, 'w').write(output.getvalue())
-            print "TEST DIFFER %s, OUTPUT IS SAVED IN %s" % (test, fnameout)
+            exp = json.loads(exp)
+            if [ result ] == exp:
+                print "TEST SUCCESS %s, failure was expected" % test
+            else:
+                test_result = 1
+                print "TEST FAILS %s excting a failure %s was expected but %s was returned" % (test, exp, [ result ])
 
-    sys.exit(0)
+    sys.exit(test_result)

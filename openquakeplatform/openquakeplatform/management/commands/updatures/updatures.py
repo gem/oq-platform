@@ -10,13 +10,10 @@ from django.core.management import call_command, execute_manager
 
 import pdb
 
-
 def pdebug(debug, level, s):
     if debug < level:
         return
     print s
-
-
 
 class model_description(object):
     def __init__(self, name, natural, refs, group=None, pk_natural=False):
@@ -348,6 +345,15 @@ def show_items_info(iinfo):
         print "KEY: %s" % k
         print iinfo[k]
 
+def key_get(md, item):
+    if md.natural:
+        k = md.natural(item)
+    else:
+        k = [item['pk']]
+    return tuple(k)
+
+
+
 def group_objs(base):
     group = {}
     groupk = {}
@@ -361,10 +367,7 @@ def group_objs(base):
         md = models_descr[model]
 
         group[model].append(item)
-        if md.natural:
-            k = tuple(md.natural(item))
-        else:
-            k = tuple([item['pk']])
+        k = key_get(md, item)
         groupk[model][k] = item
 
     return (group, groupk)
@@ -699,6 +702,67 @@ def model_groups_get(debug):
 
     return model_groups
 
+def groupstruct_issubset(subset, item):
+    """
+    is 'subset' structure tree totally included in the 'item' structure tree ?
+    """
+    if '__backrefs__' not in subset:
+        item['replace'] = subset
+        return True
+
+    if ('__backrefs__' in subset
+        and '__backrefs__' not in item):
+        return False
+
+    backrefs_out = copy.deepcopy(subset['__backrefs__'])
+
+    for sub_model, sub_item in subset['__backrefs__']:
+        # Note:
+        #    a second loop is needed to manage cases where 2 references to the same model
+        #    have different sub-branch structures like:
+        #                 A
+        #               /   \
+        #             B       B
+        #           /      /     \
+        #         C      D         E
+        #
+        for br_model, br_item in [ (mod, itm) for mod, itm in item['__backrefs__'] if mod == sub_model ]:
+            if groupstruct_issubset(sub_item, br_item):
+                backrefs_out.remove((sub_model, sub_item))
+                break
+        else: # for
+            return False
+
+    if not backrefs_out:
+        return True
+    else:
+        return False
+
+def grouping_update(debug, updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updatesk_gr):
+    """
+    Check if groups that already exists became inconsistent after update in the other case
+    adjust pk indexes accordingly.
+    """
+    result = True
+    for gmodel in updates_gheads:
+        md = models_descr[gmodel]
+        for item in updates_gr[gmodel]:
+            key = key_get(md, item)
+            pdebug(debug, 0, "KEY: %s[%s]" % (gmodel, key))
+            print oldatesk_gr.keys()
+            if key in oldatesk_gr[gmodel]:
+                otem = copy.deepcopy(oldatesk_gr[gmodel][key])
+                print "FOUND THE SAME CURVE"
+                issubset = groupstruct_issubset(otem, item)
+                if issubset:
+                    print "TODO: update all keys of new items group with the olds"
+                else:
+                    print "WARNING: in model '%s' the istance '%s' isn't totally replaced by new version, remove it manually from the database and retry" % (gmodel, key)
+                    result = False
+    return result
+
+
+
 def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0):
     global models_order
 
@@ -724,17 +788,11 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
 
     updates_gr, updatesk_gr = group_objs(updates)
     updates_gheads = grouping_set(debug, updates_gr, updatesk_gr)
-
     for ghead in updates_gheads:
         print "MODEL: %s" % ghead
         for i in updates_gr[ghead]:
-            print "GENERAL INFO: %s" % i['fields']['name']
+            print "GENERAL INFO: %s (%s)" % (i['fields']['name'], i['pk'])
             print_refs(4, i)
-
-    #for i in updates_gr['vulnerability.generalinformation']:
-    #    print "GENERAL INFO: %s" % i['fields']['name']
-    #    print_refs(4, i)
-    # sys.exit(123)
 
     if check_consistency:
         cm_new = consistencymeter(updates_gr, debug=debug)
@@ -761,6 +819,12 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
     oldates_gheads = grouping_set(debug, oldates_gr, oldatesk_gr)
 
     oldels = inspect(oldates)
+
+    # grouping matching and comparison
+    grouping_consistent = grouping_update(debug, updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updatesk_gr)
+
+    if not grouping_consistent:
+        return 1
 
     for model in models_order:
         if updates_gr[model] == []:
@@ -894,6 +958,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
     json.dump(final_out, output, indent=4)
     output.write("\n")
 
+    return 0
 
 if __name__ == "__main__":
     argv = []
