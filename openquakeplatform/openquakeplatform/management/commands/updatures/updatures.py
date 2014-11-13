@@ -776,7 +776,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
 
     updates = []
     oldates = []
-    final_out = []
+    finals = []
 
     pdebug(debug, 1, "DEBUG LEVEL: %d" % debug)
 
@@ -797,7 +797,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
     if check_consistency:
         cm_new = consistencymeter(updates_gr, debug=debug)
 
-    final_out_gr, final_outk_gr = group_objs([])
+    finals_gr, finalsk_gr = group_objs([])
 
     pdebug(debug, 3, "MOP GROUPS: %s" % str(updates_gr))
     models = inspect(updates)
@@ -840,10 +840,14 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
             #
             #  found identical item with different pk
             for item in updates_gr[model]:
-                pdebug(debug, 1, "ITEM: [%s]" % item)
+                pdebug(debug, 3, "ITEM: [%s]" % item)
                 skip_it = False
+
+                if item.get('replace', None):
+                    # this item replace an old item associated with it (by grouping only, currently)
+
                 # item already exists ?
-                for otem in oldates_gr[model] + final_out_gr[model]:
+                for otem in oldates_gr[model] + finals_gr[model]:
                     if item_compare(item, otem, pk_included=True):
                         pdebug(debug, 1, "identical items, skip it")
                         # identical case: continue
@@ -872,7 +876,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                 else:
                     if not md.pk_natural:
                         # loop to identify if new item has the same pk of old item
-                        for otem in oldates_gr[model] + final_out_gr[model]:
+                        for otem in oldates_gr[model] + finals_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
@@ -883,9 +887,9 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                 pdebug(debug, 1, "ADD IT")
                 if md.group:
                     del item['fields']['__group__']
-                final_out_gr[model].append(item)
-                kappend(final_outk_gr, model, item)
-                final_out.append(item)
+                finals_gr[model].append(item)
+                kappend(finalsk_gr, model, item)
+                finals.append(item)
 
         else: # if not md.natural:
             for item in updates_gr[model]:
@@ -894,7 +898,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                 found_it = False
 
                 # item already exists ?
-                for otem in oldates_gr[model] + final_out_gr[model]:
+                for otem in oldates_gr[model] + finals_gr[model]:
                     pdebug(debug, 2, "OTEM: [%s]" % otem)
                     if item_compare(item, otem, pk_included=True):
                         pdebug(debug, 1, "identical items, skip it")
@@ -924,7 +928,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                 else:
                     # loop to identify if new item has the same pk of old item
                     if not found_it and not md.pk_natural:
-                        for otem in oldates_gr[model] + final_out_gr[model]:
+                        for otem in oldates_gr[model] + finals_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "SAME PK, UPDATE IT [%d]" % new_pk)
@@ -936,12 +940,12 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                 pdebug(debug, 1, "ADD IT")
                 if md.group:
                     del item['fields']['__group__']
-                final_out_gr[model].append(item)
-                kappend(final_outk_gr, model, item)
-                final_out.append(item)
+                finals_gr[model].append(item)
+                kappend(finalsk_gr, model, item)
+                finals.append(item)
 
     if check_consistency:
-        cm_fin = consistencymeter(final_out_gr, debug=debug)
+        cm_fin = consistencymeter(finals_gr, debug=debug)
         print "Consistency Report"
         for k,v in cm_new.iteritems():
             if v['fields_n'] > 0:
@@ -955,7 +959,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
     pdebug(debug, 0, "MODEL_GROUPS: %s" % model_groups)
 
     pdebug(debug, 1, "FINAL: ")
-    json.dump(final_out, output, indent=4)
+    json.dump(finals, output, indent=4)
     output.write("\n")
 
     return 0
