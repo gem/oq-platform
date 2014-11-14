@@ -251,7 +251,8 @@ def export_variables_data_by_ids(request):
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
-        row = [country.iso, country.name_engli.encode('utf-8')]
+        # row = [country.iso, country.name_engli.encode('utf-8')]
+        row = [country.iso, country.name_0.encode('utf-8')]
         ind_vals = []
         for indicator in indicators:
             try:

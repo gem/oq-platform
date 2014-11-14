@@ -17,7 +17,8 @@ import sys
 import csv
 # from django.db import connections, transaction
 from django.core.management.base import BaseCommand
-from openquakeplatform.world.models import Country
+# from openquakeplatform.world.models import Country
+from openquakeplatform.world.models import CountrySimplified1000M as Country
 from openquakeplatform.svir.models import (Indicator,
                                            Theme,
                                            Subtheme,

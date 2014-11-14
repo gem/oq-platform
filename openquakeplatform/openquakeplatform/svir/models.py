@@ -38,7 +38,7 @@ class Indicator(models.Model):
     internal_consistency_metric = models.ForeignKey(
         'InternalConsistencyMetric')
     countries = models.ManyToManyField(
-        'world.Country', through='CountryIndicator',
+        'world.CountrySimplified1000M', through='CountryIndicator',
         null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
@@ -83,7 +83,7 @@ class CustomRegion(models.Model):
         ordering = ['name']
 
     name = models.CharField(max_length=CHMAX, unique=True)
-    countries = models.ManyToManyField('world.Country')
+    countries = models.ManyToManyField('world.CountrySimplified1000M')
 
     def __unicode__(self):
         return self.name
@@ -176,7 +176,8 @@ class AggregationMethod(models.Model):
 
 
 class CountryIndicator(models.Model):
-    country = models.ForeignKey('world.Country')
+    # country = models.ForeignKey('world.Country')
+    country = models.ForeignKey('world.CountrySimplified1000M')
     indicator = models.ForeignKey('Indicator')
     value = models.FloatField()
 
