@@ -18,12 +18,10 @@
 # <https://www.gnu.org/licenses/agpl.html>.
 
 import csv
-import json
 from django.http import (HttpResponse,
                          HttpResponseBadRequest,
                          HttpResponseNotFound,)
 from django.views.decorators.http import condition
-from django.core.exceptions import ValidationError
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
 from openquakeplatform.svir.models import (Theme,
@@ -69,10 +67,10 @@ def list_themes(request):
     if not themes:
         return HttpResponseNotFound('No themes available in the DB')
     response = HttpResponse()
-    first=True
+    first = True
     for theme in themes:
         if first:
-            first=False
+            first = False
         else:
             response.write(',')
         response.write('"' + theme.name + '"')
@@ -96,10 +94,10 @@ def list_subthemes_by_theme(request):
         return HttpResponseNotFound(
             'No subtheme corresponds to the given theme')
     response = HttpResponse()
-    first=True
+    first = True
     for subtheme in subthemes:
         if first:
-            first=False
+            first = False
         else:
             response.write(',')
         response.write('"' + subtheme.name + '"')
@@ -112,7 +110,7 @@ def list_subthemes_by_theme(request):
 def export_variables_info(request):
     """
     Export a csv file containing information about the socioeconomic
-    indicators which have the specified keywords and/or subtheme 
+    indicators which have the specified keywords and/or subtheme
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing at least
@@ -126,16 +124,18 @@ def export_variables_info(request):
         If one or more keywords are provided, the csv will list the
         indicators which keywords contain the user-provided string/s.
         If the theme is provided, the list will be filtered by theme, unless
-        also the subtheme is provided, then the list will be filtered by subtheme.
+        also the subtheme is provided, then the list will be filtered by
+        subtheme.
 
     :return:
-        a csv file in which each line contains the following data: 
-            * indicator.code 
+        a csv file in which each line contains the following data:
+            * indicator.code
             * indicator.name
             * indicator.theme
             * indicator.subtheme
             * indicator.description
-            * indicator.source (unicode which also displays year_min and year_max)
+            * indicator.source (unicode which also displays
+                                year_min and year_max)
             * indicator.aggregation_method
             * indicator.keywords
     """
@@ -167,7 +167,7 @@ def export_variables_info(request):
     subtheme_obj = None
     if subtheme_str:
         subtheme_obj = Subtheme.objects.get(name=subtheme_str)
- 
+
     # start with the whole set of indicators, then refine filtering
     indicators = Indicator.objects.all()
 
@@ -237,7 +237,8 @@ def export_variables_data_by_ids(request):
     writer = csv.writer(response)
     response.write(copyright + "\n")
     sv_variables_ids = request.GET['sv_variables_ids']
-    sv_variables_ids_list = [var_id.strip() for var_id in sv_variables_ids.split(",")]
+    sv_variables_ids_list = [var_id.strip()
+                             for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
     for sv_variable_id in sv_variables_ids_list:

@@ -13,15 +13,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# =================================================
+# NOTE: This command is used to import countries (with no geometries) directly
+# from the new socioeconomic dataset, for testing purposes. This is not going
+# to be actually used in the OpenQuake Platform.
+# =================================================
+
 import sys
 import csv
 from django.db import connections, transaction
 from django.core.management.base import BaseCommand
 from openquakeplatform.world.models import Country
 
+
 COUNTRIES_COUNT = 197
 COUNTRIES_STARTING_IDX = 14
 REGIONS_STARTING_IDX = COUNTRIES_STARTING_IDX + COUNTRIES_COUNT + 1  # discarding data completeness
+
 
 class Command(BaseCommand):
     args = '<csv filename>'
@@ -36,7 +44,7 @@ class Command(BaseCommand):
             # read row containing field names, country names and region names
             first_row = reader.next()
             # read row containing the region names to which countries belong
-            second_row = reader.next()
+            second_row = reader.next()  # never used
             # read row containing country iso codes
             third_row = reader.next()
 

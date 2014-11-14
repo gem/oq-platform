@@ -27,7 +27,7 @@ class Country(models.Model):
     # iso = models.CharField(max_length=3, primary_key=True)
     # the_geom = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
     # is_visible = models.BooleanField(default=True)
-    
+
     gid = models.IntegerField(primary_key=True)
     id_0 = models.IntegerField(null=True, blank=True)
     iso = models.CharField(max_length=3, blank=True)
@@ -49,10 +49,12 @@ class Country(models.Model):
     iso2 = models.CharField(max_length=4, blank=True)
     www = models.CharField(max_length=2, blank=True)
     fips = models.CharField(max_length=6, blank=True)
-    ison = models.DecimalField(null=True, max_digits=65535, decimal_places=65535, blank=True)
+    ison = models.DecimalField(null=True, max_digits=65535,
+                               decimal_places=65535, blank=True)
     validfr = models.CharField(max_length=12, blank=True)
     validto = models.CharField(max_length=10, blank=True)
-    eumember = models.DecimalField(null=True, max_digits=65535, decimal_places=65535, blank=True)
+    eumember = models.DecimalField(null=True, max_digits=65535,
+                                   decimal_places=65535, blank=True)
     the_geom = models.GeometryField(srid=4326, dim=2, null=True, blank=True)
 
     def __unicode__(self):

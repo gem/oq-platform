@@ -34,6 +34,7 @@ COUNTRIES_COUNT = 197
 COUNTRIES_STARTING_IDX = 14
 REGIONS_STARTING_IDX = COUNTRIES_STARTING_IDX + COUNTRIES_COUNT + 1  # discarding data completeness
 
+
 class Command(BaseCommand):
     args = '<csv filename>'
     help = 'Import csv of socioeconomic data'
@@ -48,7 +49,8 @@ class Command(BaseCommand):
             first_row = reader.next()  # not used
             # read row containing the region names to which countries belong
             second_row = reader.next()
-            assoc_regions  = second_row[COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
+            assoc_regions = second_row[
+                COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
             # read row containing country iso codes
             third_row = reader.next()
             isos = third_row[
@@ -63,8 +65,9 @@ class Command(BaseCommand):
             # It will be used to quantify general data completeness, which
             # would be meaningless if we calculate it with respect of the whole
             # set of countries in GADM
-            countries_with_socioeconomic_data, _ = CustomRegion.objects.get_or_create(
-                name='Countries with socioeconomic data')
+            countries_with_socioeconomic_data, _ = \
+                CustomRegion.objects.get_or_create(
+                    name='Countries with socioeconomic data')
 
             iso_reg_dict = dict(zip(isos, assoc_regions))
             for iso in iso_reg_dict:
@@ -98,14 +101,15 @@ class Command(BaseCommand):
                 ind.name = row[3].strip()
 
                 measurement_type = row[4].strip()
-                ind.measurement_type, _ = MeasurementType.objects.get_or_create(
-                    name=measurement_type)
+                ind.measurement_type, _ = \
+                    MeasurementType.objects.get_or_create(
+                        name=measurement_type)
 
                 ind.description = row[5].strip()
 
                 update_periodicity = row[11].strip()
                 period, _ = UpdatePeriodicity.objects.get_or_create(
-                        name=update_periodicity)
+                    name=update_periodicity)
 
                 source = row[6].strip()
                 year_min = row[8].strip()
@@ -119,19 +123,22 @@ class Command(BaseCommand):
                 # year_range column will be discarded
 
                 aggregation_method = row[12].strip()
-                ind.aggregation_method, _ = AggregationMethod.objects.get_or_create(
-                    name=aggregation_method)
+                ind.aggregation_method, _ = \
+                    AggregationMethod.objects.get_or_create(
+                        name=aggregation_method)
 
                 internal_consistency_metric = row[13].strip()
-                ind.internal_consistency_metric, _ = InternalConsistencyMetric.objects.get_or_create(
-                    name=internal_consistency_metric)
+                ind.internal_consistency_metric, _ = \
+                    InternalConsistencyMetric.objects.get_or_create(
+                        name=internal_consistency_metric)
 
                 notes = row[-1].strip() if row[-1] != "None" else None
                 ind.notes = notes
 
                 ind.save()
 
-                keyword_names = [keyword.strip() for keyword in row[7].split(',')]
+                keyword_names = [keyword.strip()
+                                 for keyword in row[7].split(',')]
                 for keyword_name in keyword_names:
                     keyword, _ = Keyword.objects.get_or_create(
                         name=keyword_name)

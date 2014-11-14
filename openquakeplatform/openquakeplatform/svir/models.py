@@ -55,7 +55,7 @@ class Indicator(models.Model):
         # socioeconomic data have been collected, i.e., a custom region
         # containing countries which population is above 200k people
         countries_with_socioeconomic_data = CustomRegion.objects.get(
-            name='Countries with socioeconomic data') 
+            name='Countries with socioeconomic data')
         return self.data_completeness_for_region(
             countries_with_socioeconomic_data)
 
@@ -149,20 +149,20 @@ class Source(models.Model):
         return self.year_max - self.year_min
 
     def __unicode__(self):
-        return '%s (%s - %s)' % (self.description, self.year_min, self.year_max)
+        return '%s (%s - %s)' % (self.description,
+                                 self.year_min,
+                                 self.year_max)
 
 
 class UpdatePeriodicity(models.Model):
     class Meta:
         ordering = ['name']
+        verbose_name_plural = 'update periodicity'
 
     name = models.CharField(max_length=CHMAX, unique=True)
 
     def __unicode__(self):
         return self.name
-
-    class Meta:
-        verbose_name_plural = 'update periodicity'
 
 
 class AggregationMethod(models.Model):
