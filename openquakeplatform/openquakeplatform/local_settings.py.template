@@ -112,8 +112,8 @@ LOCALE_PATHS = (
 )
 
 OQ_ENGINE_SERVER_URLS = {
-    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/hazard/run',  # i.e. : 'http://oq-platform:8800'
-    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/risk/run',        # i.e. : 'http://oq-platform:8800'
+    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/run',  # i.e. : 'http://oq-platform:8800'
+    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/run',        # i.e. : 'http://oq-platform:8800'
 }
 
 THIRD_PARTY_URLS = {
