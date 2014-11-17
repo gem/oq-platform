@@ -395,14 +395,14 @@ var startApp = function() {
             country.splice(numberOfCountries,10);
         }
 
-        var winH = ($(window).height() / 1.7);
+        var winH = ($(window).height() / 2);
         var winW = ($(window).width());
 
-        var m = [80, 160, 200, 160],
-            w = winW - m[1] - m[3],
-            h = winH - m[0] - m[2];
+        var margin = {top: 80, right: 80, bottom: 100, left: 80},
+            width = winW - margin.left - margin.right,
+            height = winH - margin.top - margin.bottom;
 
-        var x = d3.scale.ordinal().domain(attributes).rangePoints([0, w]),
+        var x = d3.scale.ordinal().domain(attributes).rangePoints([0, width]),
             y = {};
 
         var line = d3.svg.line(),
@@ -410,105 +410,91 @@ var startApp = function() {
             foreground;
 
         $("#"+chartCat+"-pcc").empty();
+        $("#"+chartCat+"-pcc").attr("height", winH);
 
         var svg = d3.select("#"+chartCat+"-pcc").append("svg")
-            .attr("width", winW + m[1] + m[3])
-            .attr("height", (winH / 3.5) + m[0] + m[2])
-            .append("svg:g")
-            .attr("transform", "translate(" + m[3] + ",5)");
+            .attr("viewBox", "-80 -40 " + winW +" " + winH)
+            .append("g");
 
-            // Create a scale and brush for each trait.
-            attributes.forEach(function(d) {
-                // Coerce values to numbers.
-                chartArray.forEach(function(p) { p[d] = +p[d]; });
-
-                y[d] = d3.scale.linear()
-                    .domain(d3.extent(chartArray, function(p) { return p[d]; }))
-                    .range([h, 0]);
-
-                y[d].brush = d3.svg.brush()
-                    .y(y[d])
-                    .on("brush", brush);
-            });
-
-            // Add a legend.
-            var legend = svg.selectAll("g.legend")
-                .data(country)
-                .enter().append("svg:g")
-                .attr("class", "legend");
-
-            legend.append("svg:line")
-                .attr("class", String)
-                .attr("x2", 20)
-                .attr("y2", 0)
-                .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 335) + ")"; });
-
-            legend.append("svg:text")
-                .attr("x", -10)
-                .attr("y", -250)
-                .attr("dy", ".31em")
-                .text(function(d) { return d; })
-                .attr("transform", function(d, i) { return "translate(35," + (i * 20 + 584) + ")"; });
-
-            // Add foreground lines.
-            foreground = svg.append("svg:g")
-                .attr("class", "foreground")
-                .selectAll("path")
-                .data(chartArray)
-                .enter().append("svg:path")
-                .attr("d", path)
-                .attr("class", function(d) { return d.country; });
-
-            // Add a group element for each trait.
-            var g = svg.selectAll(".trait")
-                .data(attributes)
-                .enter().append("svg:g")
-                .attr("class", "trait")
-                .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-                .call(d3.behavior.drag()
-                .origin(function(d) { return {x: x(d)}; })
-                .on("dragstart", dragstart)
-                .on("drag", drag)
-                .on("dragend", dragend));
-
-            // Add an axis and title.
-            g.append("svg:g")
-                .attr("class", "axis")
-                .each(function(d) {d3.select(this).call(axis.scale(y[d])); })
-                .append("svg:text")
-                .attr("id", "attrLable")
-                .attr("text-anchor", "left")
-                .attr("y", -10)
-                .attr("x", 0)
-                .attr("transform", "rotate(90)")
-                .text(String);
-
-            // Add a brush for each axis.
-            g.append("svg:g")
-                .attr("class", "brush")
-                .each(function(d) { d3.select(this).call(y[d].brush); })
-                .selectAll("rect")
-                .attr("x", -8)
-                .attr("width", 16);
-
-            function dragstart(d) {
-                i = attributes.indexOf(d);
-            }
-
-            function drag(d) {
-                x.range()[i] = d3.event.x;
-                attributes.sort(function(a, b) { return x(a) - x(b); });
-                g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-                foreground.attr("d", path);
-            }
-
-            function dragend(d) {
-                x.domain(attributes).rangePoints([0, w]);
-                var t = d3.transition().duration(500);
-                t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-                t.selectAll(".foreground path").attr("d", path);
-            }
-
+        // Create a scale and brush for each trait.
+        attributes.forEach(function(d) {
+            // Coerce values to numbers.
+            chartArray.forEach(function(p) { p[d] = +p[d]; });
+            y[d] = d3.scale.linear()
+                .domain(d3.extent(chartArray, function(p) { return p[d]; }))
+                .range([height, 0]);
+            y[d].brush = d3.svg.brush()
+                .y(y[d])
+                .on("brush", brush);
+        });
+        // Add a legend.
+        var legend = svg.selectAll("g.legend")
+            .data(country)
+            .enter().append("svg:g")
+            .attr("class", "legend");
+        legend.append("svg:line")
+            .attr("class", String)
+            .attr("x2", 20)
+            .attr("y2", 0)
+            .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 335) + ")"; });
+        legend.append("svg:text")
+            .attr("x", -10)
+            .attr("y", -250)
+            .attr("dy", ".31em")
+            .text(function(d) { return d; })
+            .attr("transform", function(d, i) { return "translate(35," + (i * 20 + 584) + ")"; });
+        // Add foreground lines.
+        foreground = svg.append("svg:g")
+            .attr("class", "foreground")
+            .selectAll("path")
+            .data(chartArray)
+            .enter().append("svg:path")
+            .attr("d", path)
+            .attr("class", function(d) { return d.country; });
+        // Add a group element for each trait.
+        var g = svg.selectAll(".trait")
+            .data(attributes)
+            .enter().append("svg:g")
+            .attr("class", "trait")
+            .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+            .call(d3.behavior.drag()
+            .origin(function(d) { return {x: x(d)}; })
+            .on("dragstart", dragstart)
+            .on("drag", drag)
+            .on("dragend", dragend));
+        // Add an axis and title.
+        g.append("svg:g")
+            .attr("class", "axis")
+            .each(function(d) {d3.select(this).call(axis.scale(y[d])); })
+            .append("svg:text")
+            .attr("id", "attrLable")
+            .attr("text-anchor", "left")
+            .attr("y", -10)
+            .attr("x", 0)
+            .attr("transform", "rotate(90)")
+            .text(String);
+        // Add a brush for each axis.
+        g.append("svg:g")
+            .attr("class", "brush")
+            .each(function(d) { d3.select(this).call(y[d].brush); })
+            .selectAll("rect")
+            .attr("x", -8)
+            .attr("width", 16);
+        function dragstart(d) {
+            i = attributes.indexOf(d);
+        }
+        function drag(d) {
+            x.range()[i] = d3.event.x;
+            attributes.sort(function(a, b) { return x(a) - x(b); });
+            g.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+            foreground.attr("d", path);
+        }
+        function dragend(d) {
+            x.domain(attributes).rangePoints([0, w]);
+            var t = d3.transition().duration(500);
+            t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
+            t.selectAll(".foreground path").attr("d", path);
+        }
         // Update the css for each country
         $("."+countriesArray[0]).css('stroke', 'red');
         $("."+countriesArray[1]).css('stroke', 'blue');
@@ -516,12 +502,10 @@ var startApp = function() {
         $("."+countriesArray[3]).css('stroke', 'orange');
         $("."+countriesArray[4]).css('stroke', 'purple');
         $("."+countriesArray[5]).css('stroke', 'black');
-
         // Returns the path for a given data point.
         function path(d) {
             return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
-
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
             var actives = attributes.filter(function(p) { return !y[p].brush.empty(); }),
@@ -603,8 +587,8 @@ var startApp = function() {
         // Empty the layer controler
         layerControl._layers = {};
 
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.png');
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_infra_new/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             styleLayer,
             utfGrid
@@ -657,8 +641,8 @@ var startApp = function() {
         // Empty the layer controler
         layerControl._layers = {};
 
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.png');
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_edu_new/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             styleLayer,
             utfGrid
