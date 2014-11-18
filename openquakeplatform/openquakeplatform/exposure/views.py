@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
+import json
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -250,6 +251,46 @@ def export_building(request):
     response_data = _stream_building_exposure(request, output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
+    return response
+
+
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_country_list(request):
+    """
+    Get the list of countries available in the GED database
+
+    :returns: json containing iso and name of each country
+    """
+    country_list = util._get_iso_and_name_for_all_countries()
+    response_data = json.dumps(country_list)
+    response = HttpResponse(response_data, mimetype='text/json')
+    return response
+
+
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_geographic_regions_by_iso(request):
+    """
+    Given an ISO code, get the list of geographic regions belonging to the
+    country specified, for which studies are available in the GED database
+
+    :param iso: country's ISO code
+    :returns: json containing, for each geographic region,
+              geographic_region_id: id of the geographic region
+              g1name: name of the administrative level 1 region
+              g2name: name of the administrative level 2 region
+              g3name: name of the administrative level 3 region
+    """
+    iso = request.GET.get('iso')
+    if not iso:
+        msg = ('A country ISO code must be provided.')
+        response = HttpResponse(msg, status="400")
+        return response
+    iso = request.GET['iso']
+    geographic_regions = util._get_geographic_region_id_and_name_by_iso(iso)
+    response_data = json.dumps(geographic_regions)
+    response = HttpResponse(response_data, mimetype='text/json')
     return response
 
 
