@@ -78,7 +78,7 @@ var startApp = function() {
     );
 
     var overlays = {
-        "Dwelling Fractions Admin 0" : PAGER,
+        "Dwelling Fractions PAGER" : df_admin0,
         "GRUMP Urban" : grump_urban,
         "GRUMP Rural" : grump_rural,
         "HAZUS Level 1 Building Counts" : hazus1,
