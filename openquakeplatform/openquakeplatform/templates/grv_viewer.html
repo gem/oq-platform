@@ -36,10 +36,26 @@ Explore - {{block.super}}
   </form>
 </div>
 
-<div id="chartOptions" title="Chart Options">
-  <p>whoops, first interact with the map to load some data, then you can set the chart options</p>
+<div id="econ-chart-options" title="Chart Options">
   <!-- Chart attribute picker gets loaded here-->
 </div>
+
+<div id="pop-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
+<div id="infra-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
+<div id="gov-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
+<div id="edu-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
@@ -65,7 +81,6 @@ Explore - {{block.super}}
 
     <br>
     <button type="button" id="thematic-map">Map Options</button>
-    <button type="button" id="chart-options">Chart Options</button>
     <select id="chart-var-numb">
       <option value=1>1 countries</option>
       <option value=2>2 countries</option>
@@ -76,6 +91,9 @@ Explore - {{block.super}}
     </select>
 
   <div id="economy">
+    <div id="econ-menu">
+      <button type="button" id="econChartOptions">Chart Options</button>
+    </div>
     <div id="econ-chart-pcc">
       <svg></svg>
     </div>
@@ -94,6 +112,9 @@ Explore - {{block.super}}
 
 
   <div id="population">
+    <div id="pop-menu">
+      <button type="button" id="popChartOptions">Chart Options</button>
+    </div>
     <div id="pop-chart-pcc" >
       <svg></svg>
     </div>
@@ -112,6 +133,9 @@ Explore - {{block.super}}
   </div>
 
   <div id="infrastructure">
+    <div id="infra-menu">
+      <button type="button" id="infraChartOptions">Chart Options</button>
+    </div>
     <div id="infra-chart-pcc" >
       <svg></svg>
     </div>
@@ -130,6 +154,9 @@ Explore - {{block.super}}
   </div>
 
   <div id="governance">
+    <div id="gov-menu">
+      <button type="button" id="govChartOptions">Chart Options</button>
+    </div>
     <div id="gov-chart-pcc">
       <svg></svg>
     </div>
@@ -149,6 +176,9 @@ Explore - {{block.super}}
   </div>
 
   <div id="education">
+    <div id="edu-menu">
+      <button type="button" id="eduChartOptions">Chart Options</button>
+    </div>
     <div id="edu-chart-pcc">
       <svg></svg>
     </div>

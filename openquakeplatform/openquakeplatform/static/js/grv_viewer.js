@@ -249,10 +249,40 @@ var startApp = function() {
         });
     });
 
-    // Chart variable selection dialog
-    $("#chartOptions").dialog({
+    var winH = $(window).height();
+
+    // Chart variable selection dialogs
+    $("#econ-chart-options").dialog({
         autoOpen: false,
-        height: 300,
+        height: winH / 1.5,
+        width: 500,
+        modal: true
+    });
+
+    $("#pop-chart-options").dialog({
+        autoOpen: false,
+        height: winH / 1.5,
+        width: 500,
+        modal: true
+    });
+
+    $("#infra-chart-options").dialog({
+        autoOpen: false,
+        height: winH / 1.5,
+        width: 500,
+        modal: true
+    });
+
+    $("#gov-chart-options").dialog({
+        autoOpen: false,
+        height: winH / 1.5,
+        width: 500,
+        modal: true
+    });
+
+    $("#edu-chart-options").dialog({
+        autoOpen: false,
+        height: winH / 1.5,
         width: 500,
         modal: true
     });
@@ -265,8 +295,24 @@ var startApp = function() {
         modal: true
     });
 
-    $("#chart-options").button().click(function() {
-        $("#chartOptions").dialog("open");
+    $("#econChartOptions").button().click(function() {
+        $("#econ-chart-options").dialog("open");
+    });
+
+    $("#popChartOptions").button().click(function() {
+        $("#pop-chart-options").dialog("open");
+    });
+
+    $("#infraChartOptions").button().click(function() {
+        $("#infra-chart-options").dialog("open");
+    });
+
+    $("#govChartOptions").button().click(function() {
+        $("#gov-chart-options").dialog("open");
+    });
+
+    $("#eduChartOptions").button().click(function() {
+        $("#edu-chart-options").dialog("open");
     });
 
     $("#thematic-map").button().click(function() {
@@ -558,10 +604,10 @@ var startApp = function() {
         }).done(function() {
             for (var i = 0; i < econIndicatorsArray.length; i++) {
                 var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+econIndicatorsArray[i]+'" value="'+econIndicatorsArray[i]+'">'+econIndicatorsArray[i]+'<br>';
-                $('#chartOptions').append(chartDropDown);
+                $('#econ-chart-options').append(chartDropDown);
             }
             $('.attributeOption:lt(6)').prop('checked', true);
-            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+            $('#econ-chart-options').append('<input id="econ-chart-optionsButton" type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -575,8 +621,6 @@ var startApp = function() {
         });
 
         utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-
     });
 
     $("#pop").click(function(){
@@ -616,10 +660,10 @@ var startApp = function() {
         }).done(function() {
             for (var i = 0; i < popIndicatorsArray.length; i++) {
                 var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+popIndicatorsArray[i]+'" value="'+popIndicatorsArray[i]+'">'+popIndicatorsArray[i]+'<br>';
-                $('#chartOptions').append(chartDropDown);
+                $('#pop-chart-options').append(chartDropDown);
             }
             $('.attributeOption:lt(6)').prop('checked', true);
-            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+            $('#pop-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -633,8 +677,6 @@ var startApp = function() {
         });
 
         utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-
     });
 
     $("#infra").click(function(){
@@ -674,10 +716,10 @@ var startApp = function() {
         }).done(function() {
             for (var i = 0; i < infraIndicatorsArray.length; i++) {
                 var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+infraIndicatorsArray[i]+'" value="'+infraIndicatorsArray[i]+'">'+infraIndicatorsArray[i]+'<br>';
-                $('#chartOptions').append(chartDropDown);
+                $('#infra-chart-options').append(chartDropDown);
             }
             $('.attributeOption:lt(6)').prop('checked', true);
-            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+            $('#infra-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -691,8 +733,6 @@ var startApp = function() {
         });
 
         utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-
     });
 
     $("#gov").click(function(){
@@ -732,10 +772,10 @@ var startApp = function() {
         }).done(function() {
             for (var i = 0; i < govIndicatorsArray.length; i++) {
                 var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+govIndicatorsArray[i]+'" value="'+govIndicatorsArray[i]+'">'+govIndicatorsArray[i]+'<br>';
-                $('#chartOptions').append(chartDropDown);
+                $('#gov-chart-options').append(chartDropDown);
             }
             $('.attributeOption:lt(6)').prop('checked', true);
-            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+            $('#gov-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -749,8 +789,6 @@ var startApp = function() {
         });
 
         utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-
     });
 
     $("#edu").click(function(){
@@ -789,10 +827,10 @@ var startApp = function() {
         }).done(function() {
             for (var i = 0; i < eduIndicatorsArray.length; i++) {
                 var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+eduIndicatorsArray[i]+'" value="'+eduIndicatorsArray[i]+'">'+eduIndicatorsArray[i]+'<br>';
-                $('#chartOptions').append(chartDropDown);
+                $('#edu-chart-options').append(chartDropDown);
             }
             $('.attributeOption:lt(6)').prop('checked', true);
-            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+            $('#edu-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -806,12 +844,9 @@ var startApp = function() {
         });
 
         utfGridClickEvent(dataCat, chartCat);
-        $("#chartOptions").empty();
-
     });
 
     var utfGridClickEvent = function(dataCat, chartCat) {
-
         utfGrid.on('click', function (e) {
             // TODO allow the user to control the number of countries/attributes to interrogate
             $("#"+chartCat+"-bar").empty();
@@ -844,9 +879,9 @@ var startApp = function() {
                 }
 
                 $("#chartOptionsButton").click(function(){
-                    $('#chartOptions').dialog('close');
+                    $('#'+chartCat+'-options').dialog('close');
                     // Grab the check box values to be used in the chart
-                    attrSelection = $('#chartOptions input[class="attributeOption"]:checked')
+                    attrSelection = $('#'+chartCat+'-options input[class="attributeOption"]:checked')
                         .map(function(){
                             return this.name;
                         });
@@ -856,7 +891,7 @@ var startApp = function() {
                 });
 
                 var attrSelection = [];
-                $('#chartOptions input[class="attributeOption"]:checked').map(function(){
+                $('#'+chartCat+'-options input[class="attributeOption"]:checked').map(function(){
                     attrSelection.push(this.name);
                 });
 
