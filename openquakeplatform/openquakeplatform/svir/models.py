@@ -23,7 +23,7 @@ CHMAX = 200
 
 
 class Indicator(models.Model):
-    code = models.CharField(max_length=CHMAX, unique=True)
+    code = models.CharField(max_length=CHMAX, primary_key=True)
     theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
     # ~"Variable Name"
@@ -82,7 +82,7 @@ class CustomRegion(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
     countries = models.ManyToManyField('world.CountrySimplified1000M')
 
     def __unicode__(self):
@@ -93,15 +93,25 @@ class Theme(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
 
     def __unicode__(self):
         return self.name
 
 
+class SubthemeManager(models.Manager):
+    def get_by_natural_key(self, theme, name):
+        return self.get(theme=theme, name=name)
+
+
 class Subtheme(models.Model):
+    objects = SubthemeManager()
+
     theme = models.ForeignKey('Theme')
     name = models.CharField(max_length=CHMAX)
+    
+    def natural_key(self):
+        return (self.theme, self.name)
 
     class Meta:
         unique_together = ('theme', 'name')
@@ -115,14 +125,14 @@ class MeasurementType(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
 
     def __unicode__(self):
         return self.name
 
 
 class InternalConsistencyMetric(models.Model):
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
 
     def __unicode__(self):
         return self.name
@@ -132,14 +142,14 @@ class Keyword(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
 
     def __unicode__(self):
         return self.name
 
 
 class Source(models.Model):
-    description = models.TextField()
+    description = models.TextField(primary_key=True)
     year_min = models.IntegerField()
     year_max = models.IntegerField()
     update_periodicity = models.ForeignKey('UpdatePeriodicity')
@@ -159,7 +169,7 @@ class UpdatePeriodicity(models.Model):
         ordering = ['name']
         verbose_name_plural = 'update periodicity'
 
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
 
     def __unicode__(self):
         return self.name
@@ -169,17 +179,27 @@ class AggregationMethod(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, unique=True)
+    name = models.CharField(max_length=CHMAX, primary_key=True)
 
     def __unicode__(self):
         return self.name
 
 
+class CountryIndicatorManager(models.Manager):
+    def get_by_natural_key(self, country, indicator):
+        return self.get(country=country, indicator=indicator)
+
+
 class CountryIndicator(models.Model):
+    objects = CountryIndicatorManager()
+
     # country = models.ForeignKey('world.Country')
     country = models.ForeignKey('world.CountrySimplified1000M')
     indicator = models.ForeignKey('Indicator')
     value = models.FloatField()
+
+    def natural_key(self):
+        return (self.country, self.indicator)
 
     def __unicode__(self):
         return "%s: %s = %s [%s]" % (
@@ -187,5 +207,5 @@ class CountryIndicator(models.Model):
             self.indicator.measurement_type)
 
     class Meta:
-        db_table = 'svir_country_indicators'
+        # db_table = 'svir_country_indicators'
         unique_together = ('country', 'indicator')
