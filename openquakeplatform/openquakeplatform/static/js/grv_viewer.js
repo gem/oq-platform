@@ -58,6 +58,7 @@ var obj5 = {};
 var chart;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
 var startApp = function() {
     $('#map').height("300px");
@@ -341,7 +342,6 @@ var startApp = function() {
         obj0[attrSelection[4]] = selectedValue5[0];
         obj0[attrSelection[5]] = selectedValue6[0];
 
-
         obj1.country = countriesArray[1];
         obj1[attrSelection[0]] = selectedValue1[1];
         obj1[attrSelection[1]] = selectedValue2[1];
@@ -381,8 +381,6 @@ var startApp = function() {
         obj5[attrSelection[3]] = selectedValue4[5];
         obj5[attrSelection[4]] = selectedValue5[5];
         obj5[attrSelection[5]] = selectedValue6[5];
-
-        chartArray.splice(0,10);
 
         for (var i=0; i<numberOfCountries; i++) {
             chartArray[i] = window["obj" + i];
@@ -465,7 +463,9 @@ var startApp = function() {
         // Add an axis and title.
         g.append("svg:g")
             .attr("class", "axis")
-            .each(function(d) {d3.select(this).call(axis.scale(y[d])); })
+            .each(function(d) {
+                d3.select(this).call(axis.scale(y[d]));
+            })
             .append("svg:text")
             .attr("id", "attrLable")
             .attr("text-anchor", "left")
@@ -473,6 +473,7 @@ var startApp = function() {
             .attr("x", 0)
             .attr("transform", "rotate(90)")
             .text(String);
+
         // Add a brush for each axis.
         g.append("svg:g")
             .attr("class", "brush")
@@ -542,10 +543,40 @@ var startApp = function() {
         map.addLayer(utfGridGroup);
         layerControl.addOverlay(utfGridGroup, " SVIR Standardized Economic Indicators");
 
+        // Populate a drop down list so the user can select attributes to be used in the pcc chart
+        var econIndicators;
+        var econIndicatorsArray = [];
+        $.getJSON(TILESTREAM_API_URL, function(json) {
+            for (var i = json.length - 1; i >= 0; i--) {
+                if (json[i].category == 'economy') {
+                    econIndicators = json[i].indicators;
+                }
+            }
+
+        econIndicatorsArray = econIndicators.split(',');
+
+        }).done(function() {
+            for (var i = 0; i < econIndicatorsArray.length; i++) {
+                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+econIndicatorsArray[i]+'" value="'+econIndicatorsArray[i]+'">'+econIndicatorsArray[i]+'<br>';
+                $('#chartOptions').append(chartDropDown);
+            }
+            $('.attributeOption:lt(6)').prop('checked', true);
+            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+
+            // don't allow more than 6 check boxes to be selected
+            $(function() {
+                var max = 7;
+                var checkboxes = $('input[type="checkbox"]');
+                checkboxes.change(function() {
+                    var current = checkboxes.filter(':checked').length;
+                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+                });
+            });
+        });
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
+
     });
 
     $("#pop").click(function(){
@@ -560,8 +591,8 @@ var startApp = function() {
         // Empty the layer controler
         layerControl._layers = {};
 
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_pop_new/{z}/{x}/{y}.png');
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_pop_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_pop/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_pop/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             styleLayer,
             utfGrid
@@ -569,10 +600,41 @@ var startApp = function() {
         map.addLayer(utfGridGroup);
         layerControl.addOverlay(utfGridGroup, " SVIR Standardized Population Indicators");
 
+        // Populate a drop down list so the user can select attributes to be used in the pcc chart
+        var popIndicators;
+        var popIndicatorsArray = [];
+        $.getJSON(TILESTREAM_API_URL, function(json) {
+
+            for (var i = json.length - 1; i >= 0; i--) {
+                if (json[i].category == 'population') {
+                    popIndicators = json[i].indicators;
+                }
+            }
+
+        popIndicatorsArray = popIndicators.split(',');
+
+        }).done(function() {
+            for (var i = 0; i < popIndicatorsArray.length; i++) {
+                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+popIndicatorsArray[i]+'" value="'+popIndicatorsArray[i]+'">'+popIndicatorsArray[i]+'<br>';
+                $('#chartOptions').append(chartDropDown);
+            }
+            $('.attributeOption:lt(6)').prop('checked', true);
+            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+
+            // don't allow more than 6 check boxes to be selected
+            $(function() {
+                var max = 7;
+                var checkboxes = $('input[type="checkbox"]');
+                checkboxes.change(function() {
+                    var current = checkboxes.filter(':checked').length;
+                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+                });
+            });
+        });
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
+
     });
 
     $("#infra").click(function(){
@@ -587,8 +649,8 @@ var startApp = function() {
         // Empty the layer controler
         layerControl._layers = {};
 
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_infra_new/{z}/{x}/{y}.png');
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             styleLayer,
             utfGrid
@@ -596,10 +658,41 @@ var startApp = function() {
         map.addLayer(utfGridGroup);
         layerControl.addOverlay(utfGridGroup, " SVIR Standardized Infrastructure Indicators");
 
+        // Populate a drop down list so the user can select attributes to be used in the pcc chart
+        var infraIndicators;
+        var infraIndicatorsArray = [];
+        $.getJSON(TILESTREAM_API_URL, function(json) {
+
+            for (var i = json.length - 1; i >= 0; i--) {
+                if (json[i].category == 'infrastructure') {
+                    infraIndicators = json[i].indicators;
+                }
+            }
+
+        infraIndicatorsArray = infraIndicators.split(',');
+
+        }).done(function() {
+            for (var i = 0; i < infraIndicatorsArray.length; i++) {
+                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+infraIndicatorsArray[i]+'" value="'+infraIndicatorsArray[i]+'">'+infraIndicatorsArray[i]+'<br>';
+                $('#chartOptions').append(chartDropDown);
+            }
+            $('.attributeOption:lt(6)').prop('checked', true);
+            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+
+            // don't allow more than 6 check boxes to be selected
+            $(function() {
+                var max = 7;
+                var checkboxes = $('input[type="checkbox"]');
+                checkboxes.change(function() {
+                    var current = checkboxes.filter(':checked').length;
+                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+                });
+            });
+        });
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
+
     });
 
     $("#gov").click(function(){
@@ -614,8 +707,8 @@ var startApp = function() {
         // Empty the layer controler
         layerControl._layers = {};
 
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_gov_new/{z}/{x}/{y}.png');
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_gov_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_gov/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_gov/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             styleLayer,
             utfGrid
@@ -623,10 +716,41 @@ var startApp = function() {
         map.addLayer(utfGridGroup);
         layerControl.addOverlay(utfGridGroup, " SVIR Standardized Government Indicators");
 
+        // Populate a drop down list so the user can select attributes to be used in the pcc chart
+        var govIndicators;
+        var govIndicatorsArray = [];
+        $.getJSON(TILESTREAM_API_URL, function(json) {
+
+            for (var i = json.length - 1; i >= 0; i--) {
+                if (json[i].category == 'government') {
+                    govIndicators = json[i].indicators;
+                }
+            }
+
+        govIndicatorsArray = govIndicators.split(',');
+
+        }).done(function() {
+            for (var i = 0; i < govIndicatorsArray.length; i++) {
+                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+govIndicatorsArray[i]+'" value="'+govIndicatorsArray[i]+'">'+govIndicatorsArray[i]+'<br>';
+                $('#chartOptions').append(chartDropDown);
+            }
+            $('.attributeOption:lt(6)').prop('checked', true);
+            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+
+            // don't allow more than 6 check boxes to be selected
+            $(function() {
+                var max = 7;
+                var checkboxes = $('input[type="checkbox"]');
+                checkboxes.change(function() {
+                    var current = checkboxes.filter(':checked').length;
+                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+                });
+            });
+        });
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
+
     });
 
     $("#edu").click(function(){
@@ -641,8 +765,8 @@ var startApp = function() {
         // Empty the layer controler
         layerControl._layers = {};
 
-        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_edu_new/{z}/{x}/{y}.png');
-        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu_new/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
+        styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.png');
+        utfGrid = new L.UtfGrid(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             styleLayer,
             utfGrid
@@ -650,18 +774,46 @@ var startApp = function() {
         map.addLayer(utfGridGroup);
         layerControl.addOverlay(utfGridGroup, " SVIR Standardized Education Indicators");
 
+        // Populate a drop down list so the user can select attributes to be used in the pcc chart
+        var eduIndicators;
+        var eduIndicatorsArray = [];
+        $.getJSON(TILESTREAM_API_URL, function(json) {
+            for (var i = json.length - 1; i >= 0; i--) {
+                if (json[i].category == 'education') {
+                    eduIndicators = json[i].indicators;
+                }
+            }
+
+        eduIndicatorsArray = eduIndicators.split(',');
+
+        }).done(function() {
+            for (var i = 0; i < eduIndicatorsArray.length; i++) {
+                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+eduIndicatorsArray[i]+'" value="'+eduIndicatorsArray[i]+'">'+eduIndicatorsArray[i]+'<br>';
+                $('#chartOptions').append(chartDropDown);
+            }
+            $('.attributeOption:lt(6)').prop('checked', true);
+            $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
+
+            // don't allow more than 6 check boxes to be selected
+            $(function() {
+                var max = 7;
+                var checkboxes = $('input[type="checkbox"]');
+                checkboxes.change(function() {
+                    var current = checkboxes.filter(':checked').length;
+                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+                });
+            });
+        });
+
         utfGridClickEvent(dataCat, chartCat);
         $("#chartOptions").empty();
-        $("#chartOptions").append('<p>whoops, first interact with the map to load some data, then you can set the chart options</p>');
-        $("#empty").remove();
+
     });
 
     var utfGridClickEvent = function(dataCat, chartCat) {
 
         utfGrid.on('click', function (e) {
             // TODO allow the user to control the number of countries/attributes to interrogate
-
-            $("#chartOptions").empty();
             $("#"+chartCat+"-bar").empty();
             svirRankValues = [];
             svirRankKeys = [];
@@ -674,11 +826,13 @@ var startApp = function() {
 
             if (e.data) {
                 buildDataTable(e, dataCat);
+
                 // Populate a drop down list so the user can select attributes to be used in the pcc chart
                 var values = [];
                 for (var d in e.data) {
                     values.push(e.data[d]);
                 }
+
                 var keys = Object.keys(e.data);
 
                 for (var i in values) {
@@ -686,13 +840,8 @@ var startApp = function() {
                         var c = keys[i].replace(/_/g, " ");
                         var value = values[i];
                         dataFormated[c] = values[i];
-                        var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+c+'" value="'+value[i]+'">'+c+'<br>';
-                        $('#chartOptions').append(chartDropDown);
                     }
                 }
-
-                $('.attributeOption:lt(6)').prop('checked', true);
-                $('#chartOptions').append('<input id="chartOptionsButton" type="button" value="Apply"/>');
 
                 $("#chartOptionsButton").click(function(){
                     $('#chartOptions').dialog('close');
@@ -706,25 +855,10 @@ var startApp = function() {
                         }
                 });
 
-                $(function() {
-                    var max = 6;
-                    var checkboxes = $('input[type="checkbox"]');
-                    checkboxes.change(function() {
-                        var current = checkboxes.filter(':checked').length;
-                    checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
-                    });
+                var attrSelection = [];
+                $('#chartOptions input[class="attributeOption"]:checked').map(function(){
+                    attrSelection.push(this.name);
                 });
-
-                if(attrSelection.length == 0) {
-                    attrSelectionArray = $('.attributeOption:checkbox:checked');
-                    for (var i = attrSelectionArray.length - 1; i >= 0; i--) {
-                        attrSelection[i] = attrSelectionArray[i].name;
-                    }
-                } else {
-                    attrSelection = attrSelection = $('#chartOptions input[class="attributeOption"]:checked').map(function(){
-                            return this.name;
-                        });
-                }
 
                 selectedValue1.unshift(parseFloat(dataFormated[attrSelection[0]]));
                 if (selectedValue1.length > 6) {
