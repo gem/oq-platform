@@ -18,15 +18,16 @@ from django.contrib.gis.db import models
 
 
 class CountrySimplified1000M(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    id_0 = models.IntegerField(null=True, blank=True)
-    iso = models.CharField(max_length=3, blank=True)
+    # gid = models.IntegerField(primary_key=True)
+    # id_0 = models.IntegerField(null=True, blank=True)
+    # iso = models.CharField(max_length=3, blank=True)
+    iso = models.CharField(max_length=3, primary_key=True)
     name_0 = models.CharField(max_length=75, blank=True)
     the_geom = models.MultiPolygonField(null=True, blank=True)
-    objects = models.GeoManager()
+    # objects = models.GeoManager()
 
     class Meta:
-        managed = False
+        # managed = False
         db_table = 'gadm_countries_simplified_1000m'
         verbose_name_plural = "countries simplified (1000m tolerance)"
 
