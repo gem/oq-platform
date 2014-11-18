@@ -66,9 +66,6 @@ var startApp = function() {
      * Overlay layers *
      ******************/
 
-    var impro0 = L.tileLayer(TS_URL + '/v2/impro-level0-bc/{z}/{x}/{y}.png');
-    var nera0 = L.tileLayer(TS_URL + '/v2/nera-level0-bc/{z}/{x}/{y}.png');
-    var gedga2 = L.tileLayer(TS_URL + '/v2/ged-ga-level2/{z}/{x}/{y}.png');
     var hazus1 = L.tileLayer(TS_URL + '/v2/ged-hazus-level1/{z}/{x}/{y}.png');
     var hazus_bf = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
     var unh1 = L.tileLayer(TS_URL + '/v2/ph-unh1-bc-ge10-z10/{z}/{x}/{y}.png');
@@ -79,19 +76,11 @@ var startApp = function() {
         TS_URL + '/v2/dwelling-fractions/{z}/{x}/{y}.png',
         {wax: TS_URL + '/v2/dwelling-fractions.json'}
     );
-    var df_port = L.tileLayer(
-        TS_URL + '/v2/PRT-dwelling-fractions/{z}/{x}/{y}.png',
-        {wax: TS_URL + '/v2/PRT-dwelling-fractions.json'}
-    );
 
     var overlays = {
-        "Dwelling Fractions Admin 0" : df_admin0,
-        "Dwelling Fractions Portugal" : df_port,
+        "Dwelling Fractions Admin 0" : PAGER,
         "GRUMP Urban" : grump_urban,
         "GRUMP Rural" : grump_rural,
-        "IMPRO Level 0" : impro0,
-        "NERA Level 0" : nera0,
-        "GA Level 2" : gedga2,
         "HAZUS Level 1 Building Counts" : hazus1,
         "HAZUS Level 1 Building Fractions" : hazus_bf,
         "UN Habitat Level 1 Building Counts" : unh1
