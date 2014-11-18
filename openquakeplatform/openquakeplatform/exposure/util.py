@@ -227,3 +227,36 @@ ORDER BY grid_point.id;
     cursor.execute(query, [lng1, lat1, lng2, lat2])
 
     return cursor.fetchall()
+
+
+def _get_iso_and_name_for_all_countries():
+    """
+    Get iso and name for each of the countries for which at least one study
+    is present in the DB
+    """
+    query = """\
+SELECT iso, name
+FROM ged2.gadm_country
+ORDER BY name;
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def _get_geographic_region_id_and_name_by_iso(iso):
+    """
+    Get the geographic_region's id and name for a given iso code
+    :param iso: ISO code of a country
+    """
+    query = """\
+SELECT region_id AS geographic_region_id, g1name, g2name, g3name
+FROM ged2.geographic_region_gadm
+WHERE iso=%s
+ORDER BY g1name, g2name, g3name;
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [iso])
+
+    return cursor.fetchall()
