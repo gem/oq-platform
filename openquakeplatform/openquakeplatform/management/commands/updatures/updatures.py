@@ -305,17 +305,24 @@ def rebuild_order(debug):
 
 class items_info(object):
 
-    def __init__(self, item):
+    def __init__(self, item, pk_natural=False):
         self.occur = 1
-        self.maxpk = item['pk']
+        if pk_natural:
+            self.maxpk = 'pk_is_natural'
+        else:
+            self.maxpk = item['pk']
 
     def update(self, item):
         self.occur += 1
-        self.maxpk = item['pk'] if item['pk'] > self.maxpk else self.maxpk
+        if str(self.maxpk) != 'pk_is_natural':
+            self.maxpk = item['pk'] if item['pk'] > self.maxpk else self.maxpk
 
     def newpk(self):
-        self.maxpk = self.maxpk + 1
-        return self.maxpk
+        if str(self.maxpk) != 'pk_is_natural':
+            self.maxpk = self.maxpk + 1
+            return self.maxpk
+        else:
+            raise TypeError
 
     def __str__(self):
         return u"occur: %d\nmaxpk: %d\n" % (self.occur, self.maxpk)
@@ -333,12 +340,36 @@ def inspect(base):
             return 1
         model = item['model']
 
+        md = models_descr[model]
+
         if not model in models:
-            models[model] = items_info(item)
+            models[model] = items_info(item, pk_natural = md.pk_natural)
         else:
             models[model].update(item)
 
     return models
+
+def maxpk_models(models, oldels):
+    maxpks = {}
+
+    for model in models_order:
+        md = models_descr[model]
+        if md.pk_natural:
+            maxpks[model] = { 'maxpk': '_gem_unreachable_key_'}
+            continue
+        else:
+            maxpks[model] = { 'maxpk': 0 }
+
+        if model in models:
+            if maxpks[model]['maxpk'] < models[model].maxpk + 1:
+                maxpks[model]['maxpk'] = models[model].maxpk + 1
+
+        if model in oldels:
+            if maxpks[model]['maxpk'] < oldels[model].maxpk + 1:
+                maxpks[model]['maxpk'] = oldels[model].maxpk + 1
+
+    return maxpks
+
 
 def show_items_info(iinfo):
     for k in iinfo:
@@ -436,16 +467,33 @@ def update_fk(updates_gr, model, item, new_pk, debug=False):
                             break
 
 
-def update_pk(updates_gr, updatesk_gr, model, item, new_pk, debug=False):
+def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk, debug=0):
     """
     updates_gr   grouped updates items
     updatesk_gr  grouped updates items (dict with keys)
     model        item model
     item         item to be updated
+    maxpks       dict of maximum numeric pk reached
     new_pk       new key
     debug        debug level
     """
     md = models_descr[model]
+
+    if md.pk_natural:
+        return False
+
+    if item['pk'] == new_pk:
+        return True
+
+    # search a previous defined item with the same pk
+    for item_same_pk in updates_gr[model]:
+        if item_same_pk['pk'] == new_pk:
+            update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, maxpks[model]['maxpk'], debug=debug)
+            old_pk = item['pk']
+            break
+    else:
+        item_same_pk = None
+
     # update all references
     for ref_model, ref_md in models_descr.iteritems():
         pdebug(debug, 3, "MDREF: %s" % ref_model)
@@ -862,11 +910,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                         # identical items except for pk, skip it and update all references
                         pdebug(debug, 1, "identical item except for pk, skip it and update all references")
                         skip_it = True
-                        update_fk(updates_gr, model, item, otem['pk'], debug=debug)
-                        if item['model'] == 'vulnerability.fragilityfunc':
-                            pdebug(debug, 0, "ITEM: [%s]\nOTEM: [%s]\n" % (item_new, otem))
-                            pdebug(debug, 0, "ASSIGN HERE: [%s] [%s]" % (item['pk'], otem['pk']))
-                        item['pk'] = otem['pk']
+                        update_pk(updates_gr, updatesk_gr, model, item, maxpks, otem['pk'], debug=debug)
                         break
 
                 if skip_it:
@@ -933,13 +977,11 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "SAME PK, UPDATE IT [%d]" % new_pk)
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                                update_pk(updates_gr, updatesk_gr, model, item, new_pk, debug=debug)
+                                update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk, debug=debug)
                                 item['pk'] = new_pk
                                 break
 
                 pdebug(debug, 1, "ADD IT")
-                if md.group:
-                    del item['fields']['__group__']
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
                 finals.append(item)
