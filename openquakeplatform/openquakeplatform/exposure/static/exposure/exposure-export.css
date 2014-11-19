@@ -1,3 +1,13 @@
 .exposure_export_form {
     padding-left: 50px;
 }
+
+#radioCountryList {
+	float: left;
+	width: 45%;
+}
+
+#radioSubRegionList {
+	float: left;
+	width: 45%;
+}

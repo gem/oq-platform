@@ -52,6 +52,73 @@ var startApp = function() {
         }
     });
 
+    // create a dropdown list of all the countries
+    var winH = $(window).height() - 200;
+    var winW = $(window).width() - 200;
+    $('#countriesListDialog').dialog({
+        autoOpen: false,
+        height: winH,
+        width: winW,
+        modal: true,
+        position: [100,150]
+    });
+
+    $('#map-tools').append('<button type="button" id="countries-list">Load Data by Region</button>');
+    $('#countries-list').button().click(function() {
+        $('#countriesListDialog').dialog('open');
+    });
+
+    $('#countriesListDialog').append(
+        '<form>'+
+            '<div id="radioCountryList" style="width:'+(winW / 4)+'px"></div>'+
+        '</form>'+
+        '<div id="radioSubRegionList"></div>'
+    );
+
+    $.ajax({
+        type: 'get',
+        url: '/exposure/get_country_list/',
+        success: function(data, textStatus, jqXHR) {
+            for (var i = 0; i < data.length; i++) {
+                $('#radioCountryList').append(
+                    '<input type="radio" id="radio'+i+'" value="'+data[i][0]+'" name="countryRadio"><label for="radio'+i+'">'+data[i][1]+'</label><br>'
+                );
+            }
+            $( "#radioCountryList" ).buttonset();
+        },
+        complete: function(data) {
+
+        },
+    });
+
+    $('#radioCountryList').change(function() {
+        $('#radioSubRegionList').empty();
+        var isoSelection = $('input:radio[name=countryRadio]:checked').val();
+        console.log('isoSelection:');
+        console.log(isoSelection);
+        $.ajax({
+            type: 'get',
+            url: '/exposure/get_geographic_regions_by_iso?iso=' + isoSelection,
+            success: function(data) {
+                console.log('data:');
+                console.log(data);
+                // TODO set this constraint based on new field in db ~ yet to come...
+                for (var j = 0; j < data.length; j++) {
+                    if (data.length <= 1) {
+                        $('#radioSubRegionList').append('There are no sub-regional studies available for this country');
+                        // continue with form to get building info...
+                    } else{
+                        $('#radioSubRegionList').append(
+                            '<input type="radio" id="radio'+data[j]+'" value="'+data[j][0]+'" name="region1Radio"><label for="radio'+data[j]+'">'+data[j][1]+'</label><br>'
+                        );
+                    }
+                }
+                $("#countriesListDialog ").scrollTop(0);
+                $( "#radioSubRegionList" ).buttonset();
+            }
+        });
+    });
+
     // TODO remove this hack. This hack has been implemented in order to
     // temporarily remove the left side panel and should be remove once
     // the left side panel is completed
