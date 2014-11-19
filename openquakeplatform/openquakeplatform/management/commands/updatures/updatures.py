@@ -811,21 +811,19 @@ def grouping_update(debug, updates_gheads, oldates_gr, oldatesk_gr, updates_gr, 
         md = models_descr[gmodel]
         for item in updates_gr[gmodel]:
             key = key_get(md, item)
-            pdebug(debug, 0, "KEY: %s[%s]" % (gmodel, key))
+            pdebug(debug, 2, "KEY: %s[%s]" % (gmodel, key))
             print oldatesk_gr.keys()
             if key in oldatesk_gr[gmodel]:
                 otem = copy.deepcopy(oldatesk_gr[gmodel][key])
-                print "FOUND THE SAME CURVE"
+                print "FOUND THE SAME CURVE [%s]" % key
                 issubset = groupstruct_issubset(otem, item)
-                if issubset:
-                    print "TODO: update all keys of new items group with the olds"
-                else:
+                if not issubset:
                     print "WARNING: in model '%s' the istance '%s' isn't totally replaced by new version, remove it manually from the database and retry" % (gmodel, key)
                     result = False
     return result
 
 
-def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0):
+def updatures(argv, output=None, fakeold=False, check_consistency=False, sort_output=False, debug=0):
     """
 
     - load from fixture in updates list
@@ -1041,14 +1039,15 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
 
 
     fin_n = len(finals)
-    for i in range(0, fin_n - 1):
-        for e in range(i + 1, fin_n):
-            if (finals[i]['model'] > finals[e]['model'] or
-                (finals[i]['model'] == finals[e]['model'] and
-                 finals[i]['pk'] > finals[e]['pk'])):
-                tmp = finals[i]
-                finals[i] = finals[e]
-                finals[e] = tmp
+    if sort_output:
+        for i in range(0, fin_n - 1):
+            for e in range(i + 1, fin_n):
+                if (finals[i]['model'] > finals[e]['model'] or
+                    (finals[i]['model'] == finals[e]['model'] and
+                     finals[i]['pk'] > finals[e]['pk'])):
+                    tmp = finals[i]
+                    finals[i] = finals[e]
+                    finals[e] = tmp
 
     pdebug(debug, 1, "FINAL: ")
     json.dump(finals, output, indent=4, sort_keys=True)
@@ -1063,10 +1062,12 @@ if __name__ == "__main__":
     for arg in sys.argv[1:]:
         if arg in [ '-v', '--verbose' ]:
             debug += 1
+        elif arg in [ '-s', '--sort' ]:
+            sort_output = True
         elif arg in [ '-c', '--check_consistency' ]:
             check_consistency = True
         else:
             argv.append(arg)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
-    sys.exit(updatures(argv, check_consistency=check_consistency, debug=debug))
+    sys.exit(updatures(argv, check_consistency=check_consistency, debug=debug, sort_output=sort_output))
