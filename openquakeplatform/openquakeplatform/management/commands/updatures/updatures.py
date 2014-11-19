@@ -414,7 +414,7 @@ def kappend(groupk, model, item):
     groupk[model][k] = item
 
 
-def update_fk(updates_gr, model, item, new_pk, debug=False):
+def update_fk(updates_gr, model, item, new_pk, debug=0):
     """
     updates_gr   grouped updates items
     model        item model
@@ -458,7 +458,7 @@ def update_fk(updates_gr, model, item, new_pk, debug=False):
                             sys.exit(10)
                         field_items = itemod['fields'][ref_reffield]
                         for i, fk in enumerate(field_items):
-                            if fk == item.fk:
+                            if fk == item['fk']:
                                 field_items[i] = new_pk
                                 break
                     else:
@@ -506,14 +506,15 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk, debug=0):
                 # if field not set or empty list continue
                 if not itemod['fields'][ref_reffield]:
                     continue
+
                 pdebug(debug, 2, "ITEMOD: %s" % itemod)
                 if ref_refmulti:
                     if type(itemod['fields'][ref_reffield][0]) is list:
                         pdebug(debug, 0, "itemod list of lists case not managed")
                         sys.exit(10)
                     field_items = itemod['fields'][ref_reffield]
-                    for i, fk in enumerate(field_items):
-                        if fk == item.fk:
+                    for i, pk in enumerate(field_items):
+                        if pk == item['pk']:
                             field_items[i] = new_pk
                             break
                 else:
@@ -564,6 +565,8 @@ def item_compare(a, b, pk_included=True):
 
 
 def consistencymeter(dates_gr, debug=0):
+    """
+    """
     cm_out_gr = OrderedDict()
 
     for model in models_order:
@@ -755,7 +758,7 @@ def groupstruct_issubset(subset, item):
     is 'subset' structure tree totally included in the 'item' structure tree ?
     """
     if '__backrefs__' not in subset:
-        item['replace'] = subset
+        item['__replace__'] = subset
         return True
 
     if ('__backrefs__' in subset
@@ -924,19 +927,16 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
                                 pdebug(debug, 1, "NEWPK: %d" % new_pk)
-                                update_pk(updates_gr, updatesk_gr, model, item, new_pk, debug=debug)
+                                update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk, debug=debug)
                                 item['pk'] = new_pk
                                 break
 
                 pdebug(debug, 1, "ADD IT")
-                if md.group:
-                    del item['fields']['__group__']
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
                 finals.append(item)
 
-        else: # if not md.natural:
-            for item in updates_gr[model]:
+            else: # if not md.natural:
                 pdebug(debug, 1, "ITEM: [%s]" % item)
                 skip_it = False
                 found_it = False
