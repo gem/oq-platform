@@ -522,7 +522,19 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk, debug=0):
                         itemod['fields'][ref_reffield] = new_pk
                         break
 
+    # remove the item from the key based list of items
+    updatesk_gr[model].pop(key_get(md, item))
 
+    # update the pk with the new value
+    item['pk'] = new_pk
+
+    # add the item again to the key based list of items
+    updatesk_gr[model][key_get(md, item)] = item
+
+    # if another item had the same pk value of new_pk before swap it
+    # with the old pk value of the updated item
+    if item_same_pk is not None:
+        update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, old_pk, debug=debug)
 
 def fk_compare(a, b):
     b = list(b)
@@ -813,8 +825,22 @@ def grouping_update(debug, updates_gheads, oldates_gr, oldatesk_gr, updates_gr, 
     return result
 
 
-
 def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0):
+    """
+
+    - load from fixture in updates list
+    - group by model in 'updates_gr' dict of lists and 'updatesk_gr' dict of dicts
+    - set grouping accordingly with 'models_descr'iption (item['fields']['__group__'])
+    - for each model in updates load corresponding old data from db or from fake fixtures files
+    - group old data by model in 'oldates_gr' dict of lists and 'oldatesk_gr' dict of dicts
+    - grouping matching and comparison
+      if new header group match an old header group:
+         - check consistency of the DB after update and stop update if check fails
+         - update all group pk to overwrite old pk in db
+
+
+    """
+
     global models_order
 
     models_order = rebuild_order(debug)
@@ -871,31 +897,40 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
 
     oldels = inspect(oldates)
 
+    maxpks = maxpk_models(models, oldels)
+
     # grouping matching and comparison
     grouping_consistent = grouping_update(debug, updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updatesk_gr)
 
     if not grouping_consistent:
         return 1
 
+    # loops on models in a way that a foreign key appear before its related item
     for model in models_order:
         if updates_gr[model] == []:
             continue
         else:
             pdebug(debug, 1, "MODEL: %s" % model)
-            pass
+
         md = models_descr[model]
 
-        # natural key ?
-        if not md.natural:
+        for item in updates_gr[model]:
+            if item.get('__replace__', None):
+                # this item replace an old item associated with it (by grouping only, currently)
+                update_pk(updates_gr, updatesk_gr, model, item, maxpks, item['__replace__']['pk'], debug=debug)
 
-            #
-            #  found identical item with different pk
-            for item in updates_gr[model]:
+                finals_gr[model].append(item)
+                kappend(finalsk_gr, model, item)
+                finals.append(item)
+                continue
+
+            # not natural key ?
+            if not md.natural:
+                #
+                #  found identical item with different pk
                 pdebug(debug, 3, "ITEM: [%s]" % item)
                 skip_it = False
 
-                if item.get('replace', None):
-                    # this item replace an old item associated with it (by grouping only, currently)
 
                 # item already exists ?
                 for otem in oldates_gr[model] + finals_gr[model]:
@@ -998,10 +1033,25 @@ def updatures(argv, output=None, fakeold=False, check_consistency=False, debug=0
                 # sys.exit(2)
 
     model_groups = model_groups_get(debug)
-    pdebug(debug, 0, "MODEL_GROUPS: %s" % model_groups)
+
+    for final in finals:
+        final.pop('__backrefs__', None)
+        final.pop('__replace__', None)
+        final['fields'].pop('__group__', None)
+
+
+    fin_n = len(finals)
+    for i in range(0, fin_n - 1):
+        for e in range(i + 1, fin_n):
+            if (finals[i]['model'] > finals[e]['model'] or
+                (finals[i]['model'] == finals[e]['model'] and
+                 finals[i]['pk'] > finals[e]['pk'])):
+                tmp = finals[i]
+                finals[i] = finals[e]
+                finals[e] = tmp
 
     pdebug(debug, 1, "FINAL: ")
-    json.dump(finals, output, indent=4)
+    json.dump(finals, output, indent=4, sort_keys=True)
     output.write("\n")
 
     return 0
