@@ -414,59 +414,6 @@ def kappend(groupk, model, item):
     groupk[model][k] = item
 
 
-def update_fk(updates_gr, model, item, new_pk, debug=0):
-    """
-    updates_gr   grouped updates items
-    model        item model
-    item         item to be updated
-    new_pk       new key
-    debug        debug level
-    """
-    md = models_descr[model]
-    # update all references
-    for ref_model, ref_md in models_descr.iteritems():
-        pdebug(debug, 3, "MDREF: %s" % ref_model)
-        # found each model has a refs value associated with the current item model
-        for ref_reffield, (ref_refmodel, ref_refmulti) in ref_md.refs.iteritems():
-            if ref_refmodel != model:
-                continue
-
-            for itemod in updates_gr[ref_model]:
-                # if field not set or empty list continue
-                if not itemod['fields'][ref_reffield]:
-                    continue
-                pdebug(debug, 2, "ITEMOD: %s" % itemod)
-                if md.natural:
-                    if type(itemod['fields'][ref_reffield]) is not list:
-                        pdebug(debug, 1, "update_fk: a natural key needs a list as field [%s] ref: [%s]" % (itemod['fields'][ref_reffield], ref_reffield))
-                        sys.exit(10)
-                    if ref_refmulti:
-                        field_items = itemod['fields'][ref_reffield]
-                        for i, fk in enumerate(field_items):
-                            if fk == md.natural(item):
-                                field_items[i] = new_pk
-                                break
-                    else:
-                        if itemod['fields'][ref_reffield] == md.natural(item):
-                            itemod['fields'][ref_reffield] = new_pk
-                            break
-
-                else:
-                    if ref_refmulti:
-                        if type(itemod['fields'][ref_reffield][0]) is list:
-                            pdebug(debug, 0, "itemod list of lists case not managed")
-                            sys.exit(10)
-                        field_items = itemod['fields'][ref_reffield]
-                        for i, fk in enumerate(field_items):
-                            if fk == item['fk']:
-                                field_items[i] = new_pk
-                                break
-                    else:
-                        if itemod['fields'][ref_reffield] == item['pk']:
-                            itemod['fields'][ref_reffield] = new_pk
-                            break
-
-
 def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk, debug=0):
     """
     updates_gr   grouped updates items
