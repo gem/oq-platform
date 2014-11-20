@@ -68,6 +68,14 @@ var startApp = function() {
     $('#countries-list').button().click(function() {
         $('#countriesListDialog').dialog('open');
     });
+
+    $('#countries-list').button('disable');
+
+    $(document).ready(function() {
+        $('#countries-list').button('enable');
+        $('#radioCountryList').find('p').first().remove();
+    });
+
 /*
     $('#countriesListDialog').append(
         '<form>'+
