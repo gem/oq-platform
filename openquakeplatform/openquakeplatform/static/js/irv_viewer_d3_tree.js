@@ -133,7 +133,6 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        d3.json(selectedPDef, function() {
             data = JSON.parse(selectedPDef);
             root = data;
             root.x0 = height / 2;
@@ -149,7 +148,6 @@
 
             //root.children.forEach(collapse);
             updateD3Tree(root);
-        });
 
         d3.select(self.frameElement).style("height", "800px");
 
