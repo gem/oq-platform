@@ -68,7 +68,7 @@ var startApp = function() {
     $('#countries-list').button().click(function() {
         $('#countriesListDialog').dialog('open');
     });
-
+/*
     $('#countriesListDialog').append(
         '<form>'+
             '<div id="radioCountryList" style="width:'+(winW / 4)+'px"></div>'+
@@ -149,6 +149,7 @@ var startApp = function() {
         });
         $('#export_population_region').click(exportPopulationClick);
     });
+*/
 
     // TODO remove this hack. This hack has been implemented in order to
     // temporarily remove the left side panel and should be remove once
@@ -568,7 +569,8 @@ var startApp = function() {
     };
 
     var exportBuildingRegionClick = function() {
-
+        // Create the building exposure download form
+        
     };
 
     var exportBuildingCoordinatesClick = function(event) {

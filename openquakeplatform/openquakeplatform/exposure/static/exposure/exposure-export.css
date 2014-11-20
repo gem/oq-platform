@@ -17,3 +17,7 @@
 	width: 30%;
 }
 
+.ng-table {
+    border: 1px solid #000;
+}
+

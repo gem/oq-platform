@@ -28,11 +28,25 @@ Exposure Export {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
+
 {% endblock extra_head %}
 
 {% block body_outer %}
 {{block.super}}
-<div id="countriesListDialog" title="Select a Region"></div>
+{% verbatim %}
+<div ng-app="exposureApp" >
+  <div id="countriesListDialog" title="Select a Region">
+    <div id="radioCountryList" ng-controller="ExposureCountryList">
+      <table ng-table class="table">
+        <tr ng-repeat="user in users">
+          <td data-title="'Name'">{{user.name}}</td>
+          <td data-title="'Age'">{{user.age}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+{% endverbatim %}
 <div id="sidePanel-leg">
   <div id="panelContent-leg">
     <div class="map-legend-urban">
@@ -224,4 +238,5 @@ Exposure Export {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_export.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_controller.js"></script>
 {% endblock extra_script %}
