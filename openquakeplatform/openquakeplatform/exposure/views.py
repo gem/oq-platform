@@ -254,6 +254,7 @@ def export_building(request):
     return response
 
 
+@condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
 def get_country_list(request):
@@ -268,6 +269,7 @@ def get_country_list(request):
     return response
 
 
+@condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
 def get_geographic_regions_by_iso(request):
@@ -290,6 +292,43 @@ def get_geographic_regions_by_iso(request):
     iso = request.GET['iso']
     geographic_regions = util._get_geographic_region_id_and_name_by_iso(iso)
     response_data = json.dumps(geographic_regions)
+    response = HttpResponse(response_data, mimetype='text/json')
+    return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_countries_and_studies(request):
+    """
+    FIXME Missing docstring
+    """
+    country_list = util._get_countries_and_studies()
+    response_data = json.dumps(country_list)
+    response = HttpResponse(response_data, mimetype='text/json')
+    return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_studies_by_country(request):
+    """
+    FIXME Missing docstring
+    """
+    iso = request.GET.get('iso')
+    if not iso:
+        msg = 'A country ISO code must be provided.'
+        response = HttpResponse(msg, status="400")
+        return response
+    level_filter = request.GET.get('level_filter')
+    if level_filter is not None and level_filter not in ('national',
+                                                         'subnational'):
+        msg = 'Valid values for level_filter are "national" or "subnational".'
+        response = HttpResponse(msg, status="400")
+        return response
+    study_list = util._get_studies_by_country(iso, level_filter)
+    response_data = json.dumps(study_list)
     response = HttpResponse(response_data, mimetype='text/json')
     return response
 

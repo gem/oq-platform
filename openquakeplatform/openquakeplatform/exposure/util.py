@@ -260,3 +260,73 @@ ORDER BY g1name, g2name, g3name;
     cursor.execute(query, [iso])
 
     return cursor.fetchall()
+
+
+def _get_countries_and_studies():
+    """ 
+    FIXME Missing docstring
+    """
+    query = """\
+SELECT 
+  iq.iso, iq.num_l1_studies, iq.g0name AS country_name,
+  -- Construct sensible study name 
+  CASE WHEN s2.notes LIKE '%%PAGER%%'
+        THEN 'PAGER national study'
+        ELSE s2.name
+  END AS study_name,
+  -- Only PAGER studies hav non residential data
+  s2.notes LIKE '%%PAGER%%' AS has_nonres  
+  FROM (
+        -- List of countries with number of sub-national studies
+        SELECT grg.g0name, s.id AS study_id, 
+               grg.iso, COUNT(sr.id) AS num_l1_studies
+          FROM ged2.geographic_region_gadm grg
+          JOIN ged2.study_region sr 
+            ON sr.geographic_region_id=grg.region_id
+          JOIN ged2.study s ON s.id=sr.study_id
+         WHERE s.id NOT IN (447,449)
+         GROUP BY grg.g0name, s.id, grg.iso ORDER BY g0name
+   ) iq  -- inner query
+   JOIN ged2.study s2 ON s2.id=iq.study_id
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def _get_studies_by_country(iso, level_filter):
+    """
+    FIXME Missing docstring
+    """
+    if level_filter is None:
+        query_filter = ""  # Get all studies
+    elif level_filter == 'national':
+        query_filter = "\n AND grg.g1name IS NULL\n"
+    elif level_filter == 'subnational':
+        query_filter = "\n AND grg.g1name IS NOT NULL\n"
+    else:
+        raise ValueError('level_filter ' + level_filter + 'is not implemented')
+    query = """\
+SELECT grg.*, sr.id AS study_region_id,
+  -- sensible study name
+  CASE WHEN s.notes LIKE '%%PAGER%%'
+        THEN 'PAGER national study'
+        ELSE s.name
+  END AS study_name,
+  -- Only PAGER studies hav non residential data
+  s.notes LIKE '%%PAGER%%' AS has_nonres  
+  FROM ged2.geographic_region_gadm grg 
+  JOIN ged2.study_region sr 
+    ON sr.geographic_region_id=grg.region_id
+  JOIN ged2.study s 
+    ON s.id=sr.study_id    
+ WHERE grg.iso=%s{} 
+ ORDER BY sr.id
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query.format(query_filter), [iso])
+    print cursor.mogrify(query.format(query_filter), [iso])
+    import pdb; pdb.set_trace()
+
+    return cursor.fetchall()
