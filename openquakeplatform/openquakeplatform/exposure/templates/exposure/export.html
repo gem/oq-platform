@@ -39,8 +39,9 @@ Exposure Export {{ block.super }}
     <div id="radioCountryList" ng-controller="ExposureCountryList">
       <p><strong>Filter:</strong> {{tableParams.filter()|json}}
 
-      <table ng-table="tableParams" show-filter="true" class="table">
-        <tr ng-repeat="user in $data">
+      <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
+        <tr ng-repeat="user in $data" ng-click="user.$selected = !user.$selected; changeSelection(user)"
+                ng-class="{'active': user.$selected}">
           <td data-title="'Name'" filter="{ 'name': 'text' }">{{user.name}}</td>
           <td data-title="'Instances'">{{user.num}}</td>
           <td data-title="'Study'">{{user.study}}</td>

@@ -517,26 +517,7 @@ function ExposureCountryList($scope, $filter, ngTableParams, $http) {
   {iso: "ZWE",num: 1,name: "Zimbabwe",study: "Zimbabwe, L0, UN Habitat",hasReg: null},
   {iso: "ZWE",num: 10,name: "Zimbabwe",study: "Zimbabwe, L1, UN Habitat",hasReg: null}
 ];
-
-
-
-    var data = [{name: "Moroni", age: 50},
-                {name: "Tiancum", age: 43},
-                {name: "Jacob", age: 27},
-                {name: "Nephi", age: 29},
-                {name: "Enos", age: 34},
-                {name: "Tiancum", age: 43},
-                {name: "Jacob", age: 27},
-                {name: "Nephi", age: 29},
-                {name: "Enos", age: 34},
-                {name: "Tiancum", age: 43},
-                {name: "Jacob", age: 27},
-                {name: "Nephi", age: 29},
-                {name: "Enos", age: 34},
-                {name: "Tiancum", age: 43},
-                {name: "Jacob", age: 27},
-                {name: "Nephi", age: 29},
-                {name: "Enos", age: 34}];
+    $scope.data = myData;
 
     $scope.tableParams = new ngTableParams({
         page: 1,            // show first page
@@ -548,6 +529,9 @@ function ExposureCountryList($scope, $filter, ngTableParams, $http) {
         total: myData.length, // length of data
         getData: function($defer, params) {
             // use build-in angular filter
+            var filteredData = params.filter() ?
+                    $filter('filter')(myData, params.filter()) :
+                    myData;
             var orderedData = params.filter() ?
                    $filter('filter')(myData, params.filter()) :
                    myData;
@@ -558,6 +542,10 @@ function ExposureCountryList($scope, $filter, ngTableParams, $http) {
             $defer.resolve($scope.users);
         }
     });
+
+    $scope.changeSelection = function(user) {
+        console.info(user);
+    }
 
 }
 
