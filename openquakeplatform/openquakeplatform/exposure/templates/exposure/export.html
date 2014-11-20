@@ -42,7 +42,9 @@ Exposure Export {{ block.super }}
       <table ng-table="tableParams" show-filter="true" class="table">
         <tr ng-repeat="user in $data">
           <td data-title="'Name'" filter="{ 'name': 'text' }">{{user.name}}</td>
-          <td data-title="'Age'">{{user.age}}</td>
+          <td data-title="'Instances'">{{user.num}}</td>
+          <td data-title="'Study'">{{user.study}}</td>
+          <td data-title="'Regional'">{{user.hasReg}}</td>
         </tr>
       </table>
     </div>
