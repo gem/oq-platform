@@ -4,10 +4,16 @@
 
 #radioCountryList {
 	float: left;
-	width: 45%;
+	width: 30%;
 }
 
 #radioSubRegionList {
 	float: left;
-	width: 45%;
+	width: 30%;
 }
+
+#exposureExportForm {
+	float: left;
+	width: 30%;
+}
+

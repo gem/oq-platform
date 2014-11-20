@@ -18,6 +18,7 @@
 // vars for storing lon/lat of the bounding box selection
 var latlonTopLeft;
 var latlonBottomRight;
+var regionSelection;
 
 var drawnItems;
 var drawControl;
@@ -72,13 +73,15 @@ var startApp = function() {
         '<form>'+
             '<div id="radioCountryList" style="width:'+(winW / 4)+'px"></div>'+
         '</form>'+
-        '<div id="radioSubRegionList"></div>'
+        '<div id="radioSubRegionList"></div>'+
+        '<div id="exposureExportForm"></div>'
     );
 
     $.ajax({
         type: 'get',
         url: '/exposure/get_country_list/',
         success: function(data, textStatus, jqXHR) {
+            // TODO set constraint if the country is too big, field in db yet to come...
             for (var i = 0; i < data.length; i++) {
                 $('#radioCountryList').append(
                     '<input type="radio" id="radio'+i+'" value="'+data[i][0]+'" name="countryRadio"><label for="radio'+i+'">'+data[i][1]+'</label><br>'
@@ -91,6 +94,7 @@ var startApp = function() {
         },
     });
 
+    // country selection process
     $('#radioCountryList').change(function() {
         $('#radioSubRegionList').empty();
         var isoSelection = $('input:radio[name=countryRadio]:checked').val();
@@ -117,6 +121,33 @@ var startApp = function() {
                 $( "#radioSubRegionList" ).buttonset();
             }
         });
+    });
+
+    $('#radioSubRegionList').change(function() {
+        // start the form workflow using the selected region
+        regionSelection = $('input:radio[name=region1Radio]:checked').val();
+        console.log('regionSelection:');
+        console.log(regionSelection);
+        $('#exposureExportForm').append(
+            '<br />' +
+            '<div id="export_options">' +
+            'Export Options:' +
+            '<ul>' +
+            '<li><a href="#" id="export_building_region">Building exposure</a></li>' +
+            '<li><a href="#" id="export_population_region">Population exposure</a></li>' +
+            '</ul></div>' +
+            '<img id="export_button_spinner"' +
+            ' src="' + AJAX_SPINNER +'"' +
+            ' style="display: none;" />'
+        );
+        // Hook the export links click functionality:
+        //$('#export_building_region').click(exportBuildingRegionClick);
+
+        $('#export_building_region').click(function() {
+            //var requestType = "regional";
+            exportBuildingRegionClick();
+        });
+        $('#export_population_region').click(exportPopulationClick);
     });
 
     // TODO remove this hack. This hack has been implemented in order to
@@ -306,7 +337,7 @@ var startApp = function() {
             boundingBoxCenter(latlonTopLeft, latlonBottomRight)
         );
         if (export_type == 'building') {
-            doExportBuilding();
+            doExportBuildingCoordinates();
         }
         else if (export_type == 'population') {
             doExportPopulation();
@@ -378,7 +409,8 @@ var startApp = function() {
     /*
      * Show the export form as a jquery ui dialog
      */
-    var showBuildingExportForm = function() {
+    var showBuildingExportForm = function(requestType) {
+        console.log('made it to ther show building export form:');
 
         //disable submit button until the user has made selections
         $("#exposure-bldg-download-button").attr('disabled','disabled');
@@ -392,14 +424,14 @@ var startApp = function() {
         );
 
         // Display the form as a jqueryui popup:
-        $("#exposure-building-form").dialog(
-            {title: 'Download Building Exposure',
-             height: 275,
-             width: 500,
-             modal: true,
-             close: function(event, ui) { $("#exposure-export-form").remove(); },
-            }
-        );
+        $("#exposure-building-form").dialog({
+            title: 'Download Building Exposure',
+            height: 275,
+            width: 500,
+            modal: true,
+            autoOpen: true,
+            //close: function(event, ui) { $("#exposure-export-form").remove(); },
+        });
 
         // Hook functionality for Download button
         $("#exposure-bldg-download-button").click(
@@ -408,41 +440,55 @@ var startApp = function() {
                 $("#exposure-bldg-download-button").attr('disabled', 'disabled');
                 $("#download-button-spinner").css("display", "");
 
-                var params = {
-                    adminLevel: $('input[name=adminLevel]:checked').val(),
-                    timeOfDay: $('input[name=timeOfDay]:checked').val(),
-                    residential: $('input[name=residential]:checked').val(),
-                    outputType: $('input[name=outputType]:checked').val(),
-                    lat1: latlonTopLeft.lat,
-                    lng1: latlonTopLeft.lng,
-                    lat2: latlonBottomRight.lat,
-                    lng2: latlonBottomRight.lng,
-                };
+                if (requestType == 'coordinate') {
+                    var params = {
+                        adminLevel: $('input[name=adminLevel]:checked').val(),
+                        timeOfDay: $('input[name=timeOfDay]:checked').val(),
+                        residential: $('input[name=residential]:checked').val(),
+                        outputType: $('input[name=outputType]:checked').val(),
+                        lat1: latlonTopLeft.lat,
+                        lng1: latlonTopLeft.lng,
+                        lat2: latlonBottomRight.lat,
+                        lng2: latlonBottomRight.lng,
+                    };
 
-                // Check if export for the given parameters is allowed.
-                // If so, go head with the download.
-                // Otherwise, display an error.
-                $.ajax({
-                    type: 'get',
-                    data: params,
-                    url: '/exposure/validate_export/',
-                    error: function(response, error){
-                        if (response.status == 403) {
-                            showErrorDialog(
-                                response.responseText,
-                                {height: 175, width: 420}
-                            );
-                        }
-                    },
-                    success: function(data, textStatus, jqXHR) {
-                        var url = '/exposure/export_building?';
-                        url += objToUrlParams(params);
-                        window.location.href = url;
-                    },
-                    complete: function() {
-                        $("#download-button-spinner").css("display", "none");
-                    },
-                });
+                    // Check if export for the given parameters is allowed.
+                    // If so, go head with the download.
+                    // Otherwise, display an error.
+                    $.ajax({
+                        type: 'get',
+                        data: params,
+                        url: '/exposure/validate_export/',
+                        error: function(response, error){
+                            if (response.status == 403) {
+                                showErrorDialog(
+                                    response.responseText,
+                                    {height: 175, width: 420}
+                                );
+                            }
+                        },
+                        success: function(data, textStatus, jqXHR) {
+                            var url = '/exposure/export_building?';
+                            url += objToUrlParams(params);
+                            window.location.href = url;
+                        },
+                        complete: function() {
+                            $("#download-button-spinner").css("display", "none");
+                        },
+                    });
+                } else if (requestType == 'regional') {
+                    console.log('hi, we made it to the request:');
+                    var regionParams = {
+                        adminLevel: $('input[name=adminLevel]:checked').val(),
+                        timeOfDay: $('input[name=timeOfDay]:checked').val(),
+                        residential: $('input[name=residential]:checked').val(),
+                        outputType: $('input[name=outputType]:checked').val(),
+                        regionId: regionId,
+                    };
+                    var url = '/exposure/export_building_region?';
+                    url += objToUrlParams(regionParams);
+                    window.location.href = url;
+                }
             }
         );
     };
@@ -521,9 +567,13 @@ var startApp = function() {
 
     };
 
-    var exportBuildingClick = function(event) {
+    var exportBuildingRegionClick = function() {
+
+    };
+
+    var exportBuildingCoordinatesClick = function(event) {
         event.preventDefault();
-        doExportBuilding();
+        doExportBuildingCoordinates();
     };
 
     var exportPopulationClick = function(event) {
@@ -535,7 +585,7 @@ var startApp = function() {
      * Load the export form, which has all attached functionality to perform
      * the actual export.
      */
-    var doExportBuilding = function() {
+    var doExportBuildingCoordinates = function() {
         $("#export_options").hide();
         $("#export_button_spinner").css("display", "");
 
@@ -580,8 +630,11 @@ var startApp = function() {
                     showErrorDialog(msg, {title: 'Nothing here'});
                 }
                 else {
+                    console.log('data:');
+                    console.log(data);
                     $('#export_form_placeholder').html(data);
-                    showBuildingExportForm();
+                    var requestType = "coordinate";
+                    showBuildingExportForm(requestType);
                 }
             },
             complete: function() { map.closePopup(exportPopup); },
@@ -653,7 +706,7 @@ var startApp = function() {
         );
 
         // Hook the export links click functionality:
-        $('#export_building').click(exportBuildingClick);
+        $('#export_building').click(exportBuildingCoordinatesClick);
         $('#export_population').click(exportPopulationClick);
         // TODO: hook the same functionality for 'export_population'
     };
