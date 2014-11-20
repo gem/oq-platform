@@ -577,7 +577,7 @@ var startApp = function() {
         } catch (e) {
             // continue
         }
-        // Empty the layer controler
+        // Empty the layer controller
         layerControl._layers = {};
 
         styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_econ_style/{z}/{x}/{y}.png');
@@ -632,7 +632,7 @@ var startApp = function() {
         } catch (e) {
             // continue
         }
-        // Empty the layer controler
+        // Empty the layer controller
         layerControl._layers = {};
 
         styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_pop/{z}/{x}/{y}.png');
@@ -688,7 +688,7 @@ var startApp = function() {
         } catch (e) {
             // continue
         }
-        // Empty the layer controler
+        // Empty the layer controller
         layerControl._layers = {};
 
         styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_infra/{z}/{x}/{y}.png');
@@ -744,7 +744,7 @@ var startApp = function() {
         } catch (e) {
             // continue
         }
-        // Empty the layer controler
+        // Empty the layer controller
         layerControl._layers = {};
 
         styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_gov/{z}/{x}/{y}.png');
@@ -800,7 +800,7 @@ var startApp = function() {
         } catch (e) {
             // continue
         }
-        // Empty the layer controler
+        // Empty the layer controller
         layerControl._layers = {};
 
         styleLayer = new L.tileLayer(TS_URL + '/v2/svir_standized_edu/{z}/{x}/{y}.png');
