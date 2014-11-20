@@ -28,7 +28,7 @@ Exposure Export {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
-
+    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/bootstrap.css" />
 {% endblock extra_head %}
 
 {% block body_outer %}
@@ -37,9 +37,11 @@ Exposure Export {{ block.super }}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Select a Region">
     <div id="radioCountryList" ng-controller="ExposureCountryList">
-      <table ng-table class="table">
-        <tr ng-repeat="user in users">
-          <td data-title="'Name'">{{user.name}}</td>
+      <p><strong>Filter:</strong> {{tableParams.filter()|json}}
+
+      <table ng-table="tableParams" show-filter="true" class="table">
+        <tr ng-repeat="user in $data">
+          <td data-title="'Name'" filter="{ 'name': 'text' }">{{user.name}}</td>
           <td data-title="'Age'">{{user.age}}</td>
         </tr>
       </table>
