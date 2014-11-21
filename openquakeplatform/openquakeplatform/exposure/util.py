@@ -274,7 +274,7 @@ SELECT
         THEN 'PAGER national study'
         ELSE s2.name
   END AS study_name,
-  -- Only PAGER studies hav non residential data
+  -- Only PAGER studies have non residential data
   s2.notes LIKE '%%PAGER%%' AS has_nonres  
   FROM (
         -- List of countries with number of sub-national studies
