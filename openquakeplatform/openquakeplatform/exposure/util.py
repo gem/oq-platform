@@ -326,7 +326,5 @@ SELECT grg.*, sr.id AS study_region_id,
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query.format(query_filter), [iso])
-    print cursor.mogrify(query.format(query_filter), [iso])
-    import pdb; pdb.set_trace()
 
     return cursor.fetchall()
