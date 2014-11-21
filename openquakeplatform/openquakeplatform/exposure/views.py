@@ -328,7 +328,15 @@ def get_all_studies(request):
 @sign_in_required
 def get_studies_by_country(request):
     """
-    FIXME Missing docstring
+    Get GED studies for the country having the provided ISO code
+
+    :param iso: ISO code of the country (mandatory)
+    :param level_filter: optional filter. Available values are:
+                         national: only national studies are retrieved
+                         subnational: only subnational studies are retrieved
+                         If this parameter is not provided, all studies are
+                         retrieved.
+    :return: json object containing the list of studies
     """
     iso = request.GET.get('iso')
     if not iso:

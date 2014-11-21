@@ -298,7 +298,10 @@ SELECT
 
 def _get_studies_by_country(iso, level_filter):
     """
-    FIXME Missing docstring
+    Get GED studies for the country having the provided ISO code
+    If level_filter is not specified, all studies are retrieved
+    Otherwise, if level_filter is 'national' or 'subnational',
+    only national or only subnational studies are retrieved.
     """
     if level_filter is None:
         query_filter = ""  # Get all studies
