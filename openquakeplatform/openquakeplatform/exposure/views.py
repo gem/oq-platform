@@ -17,6 +17,7 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 import json
+from collections import namedtuple
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -303,8 +304,12 @@ def get_countries_and_studies(request):
     """
     FIXME Missing docstring
     """
-    country_list = util._get_countries_and_studies()
-    response_data = json.dumps(country_list)
+    countries_and_studies = []
+    CSRecord = namedtuple(
+        'CSRecord', 'iso num_l1_studies country_name study_name has_nonres')
+    for cs in map(CSRecord._make, util._get_countries_and_studies()):
+        countries_and_studies.append(dict(cs._asdict()))
+    response_data = json.dumps(countries_and_studies)
     response = HttpResponse(response_data, mimetype='text/json')
     return response
 
