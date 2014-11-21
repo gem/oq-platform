@@ -43,12 +43,13 @@ Exposure Export {{ block.super }}
         <tr ng-repeat="user in $data" ng-click="user.$selected = !user.$selected; changeSelection(user)"
                 ng-class="{'active': user.$selected}">
           <td data-title="'Name'" filter="{ 'name': 'text' }">{{user.name}}</td>
-          <td data-title="'Instances'">{{user.num}}</td>
+          <td data-title="'Admin Level'">{{user.level}}</td>
           <td data-title="'Study'">{{user.study}}</td>
-          <td data-title="'Regional'">{{user.hasReg}}</td>
+          <td data-title="'Has Residential'">{{user.hasReg}}</td>
         </tr>
       </table>
     </div>
+    <div id="radioSubRegionList"></div>
   </div>
 </div>
 {% endverbatim %}

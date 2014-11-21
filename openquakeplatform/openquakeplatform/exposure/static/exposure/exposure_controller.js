@@ -517,6 +517,21 @@ function ExposureCountryList($scope, $filter, ngTableParams, $http) {
   {iso: "ZWE",num: 1,name: "Zimbabwe",study: "Zimbabwe, L0, UN Habitat",hasReg: null},
   {iso: "ZWE",num: 10,name: "Zimbabwe",study: "Zimbabwe, L1, UN Habitat",hasReg: null}
 ];
+
+    for (var i = 0; i < myData.length; i++) {
+        if (myData[i].num > 1) {
+            myData[i]["level"] = "Sub-National";
+        } else if (myData[i].num <= 1) {
+            myData[i]["level"] =  "National";
+        }
+        if (myData[i].hasReg == null) {
+            myData[i].hasReg = false;
+        }
+    }
+
+    console.log('myData:');
+    console.log(myData);
+
     $scope.data = myData;
 
     $scope.tableParams = new ngTableParams({
@@ -543,9 +558,50 @@ function ExposureCountryList($scope, $filter, ngTableParams, $http) {
         }
     });
 
-    $scope.changeSelection = function(user) {
-        console.info(user);
-    }
+    $scope.changeSelection = function(study) {
+        console.info(study);
+        if (study.level == "National") {
+            $http.get("../exposure/get_studies_by_country?iso="+study.iso+"&level_filter=national").success(function(data, status) {
+                console.log('data:');
+                console.log(data);
+                $('#radioSubRegionList').append(
+                    '<form id="exposure-building-form" class="exposure_export_form">'+
+                        '<h3>Study: '+study.name+' '+study.study+'</h3></br>'+
+                        '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
+                        '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
+                        '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
+                        '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
+                        '<label for="id_timeOfDay_3"><input class="exposure_export_widget" id="id_timeOfDay_3" name="timeOfDay" type="radio" value="all" /> All</label></br></b>'+
+                        '<label for="id_timeOfDay_4"><input class="exposure_export_widget" id="id_timeOfDay_4" name="timeOfDay" type="radio" value="off" /> Off</label></br></b>'+
+                        '</p>'+
+                        '<p><label for="id_residential_0">Residential:</label></br>'+
+                        '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
+                        '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
+                        '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
+                        '</p>'+
+                        '<p><label for="id_outputType_0">Output Type:</label></br>'+
+                        '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
+                        '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                        '</p>'+
+                        '<input type="hidden" name="iso" value="'+study.iso+'">'+
+                        '<input type="hidden" name="study" value="'study.study'">'+
+                        '<br>'+
+                        '<button id="exposure-bldg-download-button" type="button">Download</button>'+
+                        '<img id="download-button-spinner" src="/static/img/ajax-loader.gif" style="display: none;" />'+
+                    '</form>'
+                );
+                // Build the national selection form
+
+            });
+        } else if (study.level == "Sub-National") {
+            $http.get("../exposure/get_studies_by_country?iso="+study.iso+"&level_filter=subnational").success(function(data, status) {
+                console.log('data:');
+                console.log(data);
+                // Build the sub-national selection form
+
+            });
+        }
+    };
 
 }
 
