@@ -315,9 +315,10 @@ def get_all_studies(request):
     """
     studies = []
     StudyRecord = namedtuple(
-        'StudyRecord', 'iso num_l1_studies country_name study_name has_nonres')
-    for cs in map(StudyRecord._make, util._get_all_studies()):
-        studies.append(dict(cs._asdict()))
+        'StudyRecord',
+        'iso num_l1_studies study_id country_name study_name has_nonres')
+    for sr in map(StudyRecord._make, util._get_all_studies()):
+        studies.append(dict(sr._asdict()))
     response_data = json.dumps(studies)
     response = HttpResponse(response_data, mimetype='text/json')
     return response
@@ -336,6 +337,7 @@ def get_studies_by_country(request):
                          subnational: only subnational studies are retrieved
                          If this parameter is not provided, all studies are
                          retrieved.
+    :param study_filter: (optional) study id
     :return: json object containing the list of studies
     """
     iso = request.GET.get('iso')
@@ -349,8 +351,15 @@ def get_studies_by_country(request):
         msg = 'Valid values for level_filter are "national" or "subnational".'
         response = HttpResponse(msg, status="400")
         return response
-    study_list = util._get_studies_by_country(iso, level_filter)
-    response_data = json.dumps(study_list)
+    study_filter = request.GET.get('study_filter')
+    studies = []
+    StudyRecord = namedtuple(
+        'StudyRecord',
+        'study_region_id g1name g2name g3name study_name has_nonres')
+    for sr in map(StudyRecord._make, util._get_studies_by_country(
+            iso, level_filter, study_filter)):
+        studies.append(dict(sr._asdict()))
+    response_data = json.dumps(studies)
     response = HttpResponse(response_data, mimetype='text/json')
     return response
 

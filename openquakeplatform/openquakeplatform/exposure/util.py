@@ -266,11 +266,11 @@ def _get_all_studies():
     """ 
     Get GED studies for all national levels
     Records will be in the format:
-    iso, num_l1_studies, country_name, study_name, has_nonres
+    iso, num_l1_studies, study_id, country_name, study_name, has_nonres
     """
     query = """\
 SELECT 
-  iq.iso, iq.num_l1_studies, iq.g0name AS country_name,
+  iq.iso, iq.num_l1_studies, iq.study_id, iq.g0name AS country_name,
   -- Construct sensible study name 
   CASE WHEN s2.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
@@ -296,7 +296,7 @@ SELECT
     return cursor.fetchall()
 
 
-def _get_studies_by_country(iso, level_filter):
+def _get_studies_by_country(iso, level_filter, study_filter):
     """
     Get GED studies for the country having the provided ISO code
     If level_filter is not specified, all studies are retrieved
@@ -311,8 +311,17 @@ def _get_studies_by_country(iso, level_filter):
         query_filter = "\n AND grg.g1name IS NOT NULL\n"
     else:
         raise ValueError('level_filter ' + level_filter + 'is not implemented')
+    if study_filter is not None:
+        try:
+            study_filter = float(study_filter)  # This also escapes the value
+            query_filter += "\n AND s.id = %s\n" % study_filter      
+        except ValueError:
+            raise
     query = """\
-SELECT grg.*, sr.id AS study_region_id,
+SELECT
+  -- Study Region ID (NOT geo region ID)
+  sr.id AS study_region_id,
+  grg.g1name, grg.g2name, grg.g3name, 
   -- sensible study name
   CASE WHEN s.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
