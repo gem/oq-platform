@@ -28,10 +28,12 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     concat.pop();
 
     var data = catData;
-    var margin = {top: 50, right: 10, bottom: 10, left: 10},
-        width = 990 - margin.left - margin.right,
-        height = 350 - margin.top - margin.bottom;
-    
+    var winH = ($(window).height() / 1.5);
+    var winW = ($(window).width());
+    var margin = {top: 100, right: 20, bottom: 10, left: 20},
+        width = (winW - 200) - margin.left - margin.right,
+        height = winH - margin.top - margin.bottom;
+
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
     var x2 = d3.scale.linear()
@@ -39,7 +41,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
 
      var y = d3.scale.linear()
         .range([height, 0]);
-    
+
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
         foreground;
@@ -49,7 +51,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .values(function(d) { return d.values; })
         .x(function(d) { return d.economy; })
         .y(function(d) { return d.education; });
-    
+
     var nest = d3.nest()
         .key(function(d) { return d.key; });
 
@@ -57,34 +59,15 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .x(function(d) {  return x2(d.economy); })
         .y0(function(d) {  return y(d.y0); })
         .y1(function(d) {  return y(d.y); });
-    
+
     $('#cat-chart').empty();
 
     var svg = d3.select('#cat-chart').append('svg')
-        .attr("viewBox", "0 0 950 300")
+        .attr("viewBox", "-30 20 " +(winW -130)+" " +winH)
         .attr("id", "CI-svg-element")
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-    var aspect = windowWidth / windowHeight,
-        chart = $("#CI-svg-element");
-
-    resize();
-
-    function resize() {
-        var targetWidth = chart.parent().width();
-        chart.attr("width", targetWidth);
-        chart.attr("height", targetWidth / aspect);
-    }
-
-    $(window).on("resize", function() {
-        resize();
-    });
-    
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
         return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
@@ -92,7 +75,7 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
             .range([height, 0]));
     }));
     var z = d3.scale.category20c();
-    
+
     // Add blue foreground lines for focus.
     foreground = svg.append('g')
         .attr('class', 'foreground')
@@ -139,13 +122,14 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .attr('width', 16);
 
     var textTop = svg.append('text')
-        .attr('x', 70)
+        .attr('x', 170)
         .attr('y', -35)
         .attr('dy', '.35em')
-        .style('font-size','14px')
+        .attr("class", "text90")
+        .style('font-size','30px')
         .style('font-style', 'bold')
         .text('');
-    
+
     // Returns the path for a given data point.
     function path(d) {
         return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));

@@ -110,6 +110,11 @@ svg {
   font-family: sans-serif !important;
 }
 
+.text90 {
+  opacity: 0.5;
+  font-family: sans-serif !important;
+}
+
 .ticks {
   opacity: 0.9;
   font-family: sans-serif !important;
