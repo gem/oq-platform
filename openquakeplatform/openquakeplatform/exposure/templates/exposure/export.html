@@ -43,14 +43,23 @@ Exposure Export {{ block.super }}
         <tr ng-repeat="user in $data" ng-click="user.$selected = !user.$selected; changeSelection(user)"
                 ng-class="{'active': user.$selected}">
           <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{user.country_name}}</td>
-          <!--
-          <td data-title="'Admin Level'">{{user.level}}</td> -->
+          <td data-title="'Number of Studies'">{{user.num_l1_studies}}</td>
           <td data-title="'Study'">{{user.study_name}}</td>
           <td data-title="'Has Residential'">{{user.has_nonres}}</td>
         </tr>
       </table>
     </div>
-    <div id="radioSubRegionList"></div>
+    <div id="radioSubRegionList">
+            <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
+        <tr ng-repeat="user2 in $bar" ng-click="user2.$selected = !user2.$selected; changeSelection(user2)"
+                ng-class="{'active': user2.$selected}">
+          <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{user2.country_name}}</td>
+          <td data-title="'Number of Studies'">{{user2.num_l1_studies}}</td>
+          <td data-title="'Study'">{{user2.study_name}}</td>
+          <td data-title="'Has Residential'">{{user2.has_nonres}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </div>
 {% endverbatim %}

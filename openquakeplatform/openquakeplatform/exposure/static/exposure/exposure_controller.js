@@ -18,12 +18,13 @@
 var app = angular.module('exposureApp', ['ngTable']);
 var data = [];
 
-app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
-    myService.getFoo().then(function(data) {
+app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http)  {
+    myService.getCountryList().then(function(data) {
         $scope.data = data;
 
         console.log('data:');
         console.log(data);
+        /*
         for (var i = 0; i < data.length; i++) {
             if (data[i].num > 1) {
                 data[i]["level"] = "Sub-National";
@@ -34,7 +35,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 data[i].has_nonres = false;
             }
         }
-
+*/
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
             count: 10,          // count per page
@@ -61,13 +62,13 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
         $scope.changeSelection = function(study) {
             console.info(study);
-            if (study.level == "National") {
+            if (study.num_l1_studies <= 1) {
                 $http.get("../exposure/get_studies_by_country?iso="+study.iso+"&level_filter=national").success(function(data, status) {
                     console.log('data:');
                     console.log(data);
                     $('#radioSubRegionList').append(
                         '<form id="exposure-building-form" class="exposure_export_form">'+
-                            '<h3>Study: '+study.name+' '+study.study+'</h3></br>'+
+                            '<h3>Study: '+study.country_name+' '+study.study_name+'</h3></br>'+
                             '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
                             '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
                             '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
@@ -94,11 +95,41 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     // Build the national selection form
 
                 });
-            } else if (study.level == "Sub-National") {
-                $http.get("../exposure/get_studies_by_country?iso="+study.iso+"&level_filter=subnational").success(function(data, status) {
-                    console.log('data:');
-                    console.log(data);
-                    // Build the sub-national selection form
+            } else if (study.num_l1_studies > 1) {
+                myService.getRegionList(study.iso).then(function(bar) {
+                    console.log('bar:');
+                    console.log(bar);
+                    //********** Left of here, need dictionaries in the second JSON reply ***********
+
+                    $scope.tableParams2 = new ngTableParams({
+                        page: 1,            // show first page
+                        count: 10,          // count per page
+                        filter: {
+                            country_name: ''       // initial filter
+                        }
+                    }, {
+                        total: bar.length, // length of data
+                        getData: function($defer, params) {
+                            // use build-in angular filter
+                            var filteredData = params.filter() ?
+                                $filter('filter')(bar, params.filter()) :
+                                bar;
+                            var orderedbar = params.filter() ?
+                                   $filter('filter')(bar, params.filter()) :
+                                   bar;
+
+                            $scope.users2 = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+                            params.total(orderedData.length); // set total for recalc pagination
+                            $defer.resolve($scope.users2);
+                        }
+                    });
+
+
+
+
+
+
                 });
             }
         }; // end changeSelection
@@ -106,17 +137,26 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 });
 
 app.factory('myService', function($http, $q) {
-   return {
-     getFoo: function() {
-       var deferred = $q.defer();
-       $http.get('../exposure/get_countries_and_studies').success(function(data) {
-          deferred.resolve(data);
-       }).error(function(){
-          deferred.reject();
-       });
-       return deferred.promise;
-     }
-   }
+    return {
+        getCountryList: function() {
+            var deferred = $q.defer();
+            $http.get('../exposure/get_countries_and_studies').success(function(data) {
+                deferred.resolve(data);
+            }).error(function(){
+                deferred.reject();
+            });
+            return deferred.promise;
+        },
+        getRegionList: function(iso) {
+            var deferred = $q.defer();
+            $http.get('get_studies_by_country?iso='+iso+'&level_filter=subnational').success(function(data) {
+                deferred.resolve(data);
+            }).error(function(){
+                deferred.reject();
+            });
+            return deferred.promise;
+        }
+    };
 });
 
 
