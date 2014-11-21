@@ -262,9 +262,11 @@ ORDER BY g1name, g2name, g3name;
     return cursor.fetchall()
 
 
-def _get_countries_and_studies():
+def _get_all_studies():
     """ 
-    FIXME Missing docstring
+    Get GED studies for all national levels
+    Records will be in the format:
+    iso, num_l1_studies, country_name, study_name, has_nonres
     """
     query = """\
 SELECT 
@@ -291,7 +293,6 @@ SELECT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-
     return cursor.fetchall()
 
 

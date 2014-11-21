@@ -300,16 +300,25 @@ def get_geographic_regions_by_iso(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def get_countries_and_studies(request):
+def get_all_studies(request):
     """
-    FIXME Missing docstring
+    Get GED studies for all national levels
+
+    :return: json object containing, for each study, a dictionary with the
+             following keys:
+             iso: ISO code of the country
+             num_l1_studies: number of level 1 studies
+             country_name: name of the country
+             study_name: name of the study
+             has_nonres: boolean that indicates if the study has
+                         non residential data
     """
-    countries_and_studies = []
-    CSRecord = namedtuple(
-        'CSRecord', 'iso num_l1_studies country_name study_name has_nonres')
-    for cs in map(CSRecord._make, util._get_countries_and_studies()):
-        countries_and_studies.append(dict(cs._asdict()))
-    response_data = json.dumps(countries_and_studies)
+    studies = []
+    StudyRecord = namedtuple(
+        'StudyRecord', 'iso num_l1_studies country_name study_name has_nonres')
+    for cs in map(StudyRecord._make, util._get_all_studies()):
+        studies.append(dict(cs._asdict()))
+    response_data = json.dumps(studies)
     response = HttpResponse(response_data, mimetype='text/json')
     return response
 
