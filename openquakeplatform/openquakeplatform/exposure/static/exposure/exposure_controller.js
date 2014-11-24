@@ -52,9 +52,15 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     $scope.changeSelection = function(study) {
         if (study.num_l1_studies <= 1) {
-            $("#ragionTable").hide();
-            $('#selectionForm').empty();
-            $('#selectionForm').append(
+            $('#ragionTable').hide();
+            $('#countrySelectionForm').insertAfter('#countryList');
+            $('#countryList').hide();
+            $('#countrySelectionForm').empty();
+            $('#countrySelectionForm').show();
+            $('#selectionFormBack').show();
+            $('#subRegionListBack').hide();
+            $('#subRegionFormBack').hide();
+            $('#countrySelectionForm').append(
                 '<form id="exposure-building-form" class="exposure_export_form">'+
                     '<h3>Study: '+study.country_name+' '+study.study_name+'</h3></br>'+
                     '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
@@ -81,9 +87,13 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '</form>'
             );
         } else if (study.num_l1_studies > 1) {
+            $('#subRegionListBack').show();
+            $('#subRegionList').show();
             $('#ragionTable h3').empty();
+            $('#countryList').hide();
+            $('#countryList').insertAfter('#subRegionList');
             $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
-            $('#selectionForm').empty();
+            $('#countrySelectionForm').empty();
             // Populate the table
             createRegionList(study);
             // Show html elements for the table
@@ -121,9 +131,11 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
     }; // end createRegionList
 
     $scope.changeSelection = function(study) {
-        console.log('study:');
-        console.log(study);
-        $('#radioSubRegionForm').append(
+        $('#subRegionForm').show();
+        $('#subRegionFormBack').show();
+        $('#subRegionList').insertAfter('#subRegionForm');
+        $('#subRegionList').hide();
+        $('#subRegionForm').prepend(
             '<form id="exposure-building-form" class="exposure_export_form">'+
                 '<h3>Study: '+study.g1name+' '+study.study_name+'</h3></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
@@ -144,6 +156,27 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
         );
     };
 });
+
+// Back button logic
+$('#subRegionListBack').button().click(function() {
+    $('#subRegionList').hide();
+    $('#countryList').show();
+});
+
+$('#subRegionFormBack').button().click(function() {
+    $('#subRegionForm').hide();
+    $('#subRegionList').show();
+});
+
+$('#selectionFormBack').button().click(function() {
+    $('#countrySelectionForm').hide();
+    $('#countryList').show();
+    $('#selectionFormBack').hide();
+});
+
+$('#subRegionListBack').hide();
+$('#subRegionFormBack').hide();
+$('#selectionFormBack').hide();
 
 
 app.factory('myService', function($http, $q) {

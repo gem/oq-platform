@@ -36,7 +36,7 @@ Exposure Export {{ block.super }}
 {% verbatim %}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Select a Region">
-    <div id="radioCountryList" ng-controller="ExposureCountryList">
+    <div id="countryList" ng-controller="ExposureCountryList">
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                 ng-class="{'active': record.$selected}">
@@ -47,8 +47,7 @@ Exposure Export {{ block.super }}
         </tr>
       </table>
     </div>
-    <div id="radioSubRegionList" ng-controller="ExposureRegionList">
-    <div id="selectionForm"></div>
+    <div id="subRegionList" ng-controller="ExposureRegionList">
       <div id="ragionTable">
         <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
           <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
@@ -58,8 +57,14 @@ Exposure Export {{ block.super }}
           </tr>
         </table>
       </div>
+      <input type="button" id="subRegionListBack" value="< Back">
     </div>
-    <div id="radioSubRegionForm">
+    <div id="selectionForm">
+      <div id="countrySelectionForm"></div>
+      <input type="button" id="selectionFormBack" value="< Back">
+    </div>
+    <div id="subRegionForm">
+      <input type="button" id="subRegionFormBack" value="< Back">
     </div>
   </div>
 </div>
