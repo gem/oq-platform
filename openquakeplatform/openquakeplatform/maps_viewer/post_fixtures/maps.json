@@ -4,7 +4,7 @@
         "model": "maps.map",
         "fields": {
             "projection": "EPSG:900913",
-            "popular_count": 4,
+            "popular_count": 0,
             "zoom": 3,
             "regions": [],
             "center_x": 0.0,
@@ -19,7 +19,7 @@
         "model": "maps.map",
         "fields": {
             "projection": "EPSG:900913",
-            "popular_count": 4,
+            "popular_count": 0,
             "zoom": 3,
             "regions": [],
             "center_x": 0.0,
@@ -34,7 +34,7 @@
         "model": "maps.map",
         "fields": {
             "projection": "EPSG:900913",
-            "popular_count": 5,
+            "popular_count": 0,
             "zoom": 3,
             "regions": [],
             "center_x": 0.0,
