@@ -188,7 +188,6 @@ maps_viewer_postlayers () {
 
     bdir="${oqpdir}/maps_viewer/post_fixtures"
     openquakeplatform loaddata "${bdir}/*.json"
-    openquakeplatform map_title
 }
 
 #
