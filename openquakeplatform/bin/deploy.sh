@@ -184,10 +184,15 @@ isc_viewer_dataloader () {
 #
 #
 maps_viewer_postlayers () {
-    local oqpdir="$1" db_name="$2" bdir
+    local oqpdir="$1" db_name="$2" bdir wdir
 
-    bdir="${oqpdir}/maps_viewer/post_fixtures"
-    openquakeplatform loaddata "${bdir}/*.json"
+    bdir="${oqpdir}/maps_viewer"
+    wdir="${GEM_WEBDIR}/uploaded"
+    openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
+    if [ ! -d "$wdir" ]; then
+        mkdir -p  "$wdir"
+    fi
+    cp ${bdir}/thumbs/*.png $wdir/
 }
 
 #
