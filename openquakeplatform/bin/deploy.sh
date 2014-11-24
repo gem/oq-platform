@@ -457,6 +457,7 @@ oq_platform_install () {
         service tomcat7 start                      || true
     fi
 
+    apt-get update
     apt-get install -y python-software-properties
     add-apt-repository ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
