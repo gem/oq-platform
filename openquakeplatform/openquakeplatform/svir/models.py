@@ -111,7 +111,7 @@ class Subtheme(models.Model):
     name = models.CharField(max_length=CHMAX)
     
     def natural_key(self):
-        return (self.theme, self.name)
+        return (self.theme.name, self.name)
 
     class Meta:
         unique_together = ('theme', 'name')
