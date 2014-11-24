@@ -123,6 +123,8 @@ def apps(db_name, db_user, db_pass):
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
     local('python manage.py loaddata openquakeplatform/maps_viewer/post_fixtures/*.json')
+    local('mkdir -p /tmp/thumbs')
+    local('cp openquakeplatform/maps_viewer/thumbs/*.png /tmp/thumbs/')
 
 
 def clean(db_name='oqplatform', db_user='oqplatform'):
