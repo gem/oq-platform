@@ -187,7 +187,7 @@ maps_viewer_postlayers () {
     local oqpdir="$1" db_name="$2" bdir wdir
 
     bdir="${oqpdir}/maps_viewer"
-    wdir="${GEM_WEBDIR}/uploaded"
+    wdir="${GEM_WEBDIR}/uploaded/thumbs"
     openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
     if [ ! -d "$wdir" ]; then
         mkdir -p  "$wdir"
@@ -462,7 +462,7 @@ oq_platform_install () {
     fi
 
     apt-get install -y python-software-properties
-    add-apt-repository ppa:openquake-automatic-team/latest-master
+    add-apt-repository -y ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
     apt-get update
     apt-get install -y geonode python-geonode-user-accounts
