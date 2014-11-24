@@ -50,47 +50,46 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
         });
     });
 
-        $scope.changeSelection = function(study) {
-            console.info(study);
-            if (study.num_l1_studies <= 1) {
-                $http.get("../exposure/get_studies_by_country?iso="+study.iso+"&level_filter=national").success(function(data, status) {
-                    console.log('data:');
-                    console.log(data);
-                    $('#ragionTable').append(
-                        '<form id="exposure-building-form" class="exposure_export_form">'+
-                            '<h3>Study: '+study.country_name+' '+study.study_name+'</h3></br>'+
-                            '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
-                            '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
-                            '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
-                            '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
-                            '<label for="id_timeOfDay_3"><input class="exposure_export_widget" id="id_timeOfDay_3" name="timeOfDay" type="radio" value="all" /> All</label></br></b>'+
-                            '<label for="id_timeOfDay_4"><input class="exposure_export_widget" id="id_timeOfDay_4" name="timeOfDay" type="radio" value="off" /> Off</label></br></b>'+
-                            '</p>'+
-                            '<p><label for="id_residential_0">Residential:</label></br>'+
-                            '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
-                            '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
-                            '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
-                            '</p>'+
-                            '<p><label for="id_outputType_0">Output Type:</label></br>'+
-                            '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
-                            '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
-                            '</p>'+
-                            '<input type="hidden" name="iso" value="'+study.iso+'">'+
-                            '<input type="hidden" name="study" value="'+study.study+'">'+
-                            '<br>'+
-                            '<button id="exposure-bldg-download-button" type="button">Download</button>'+
-                            '<img id="download-button-spinner" src="/static/img/ajax-loader.gif" style="display: none;" />'+
-                        '</form>'
-                    );
-                });
-            } else if (study.num_l1_studies > 1) {
-                // Populate the table
-                createRegionList(study);
-                // Show html elements for the table
-                $("#ragionTable").show();
-            }
-        }; // end changeSelection
-    //});
+    $scope.changeSelection = function(study) {
+        if (study.num_l1_studies <= 1) {
+            $("#ragionTable").hide();
+            $('#selectionForm').empty();
+            $('#selectionForm').append(
+                '<form id="exposure-building-form" class="exposure_export_form">'+
+                    '<h3>Study: '+study.country_name+' '+study.study_name+'</h3></br>'+
+                    '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
+                    '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
+                    '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
+                    '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
+                    '<label for="id_timeOfDay_3"><input class="exposure_export_widget" id="id_timeOfDay_3" name="timeOfDay" type="radio" value="all" /> All</label></br></b>'+
+                    '<label for="id_timeOfDay_4"><input class="exposure_export_widget" id="id_timeOfDay_4" name="timeOfDay" type="radio" value="off" /> Off</label></br></b>'+
+                    '</p>'+
+                    '<p><label for="id_residential_0">Residential:</label></br>'+
+                    '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
+                    '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
+                    '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
+                    '</p>'+
+                    '<p><label for="id_outputType_0">Output Type:</label></br>'+
+                    '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
+                    '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                    '</p>'+
+                    '<input type="hidden" name="iso" value="'+study.iso+'">'+
+                    '<input type="hidden" name="study" value="'+study.study+'">'+
+                    '<br>'+
+                    '<button id="exposure-bldg-download-button" type="button">Download</button>'+
+                    '<img id="download-button-spinner" src="/static/img/ajax-loader.gif" style="display: none;" />'+
+                '</form>'
+            );
+        } else if (study.num_l1_studies > 1) {
+            $('#ragionTable h3').empty();
+            $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
+            $('#selectionForm').empty();
+            // Populate the table
+            createRegionList(study);
+            // Show html elements for the table
+            $("#ragionTable").show();
+        }
+    }; // end changeSelection
 });
 
 
@@ -120,6 +119,30 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
             });
         });
     }; // end createRegionList
+
+    $scope.changeSelection = function(study) {
+        console.log('study:');
+        console.log(study);
+        $('#radioSubRegionForm').append(
+            '<form id="exposure-building-form" class="exposure_export_form">'+
+                '<h3>Study: '+study.g1name+' '+study.study_name+'</h3></br>'+
+                '<p><label for="id_residential_0">Residential:</label></br>'+
+                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
+                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
+                '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
+                '</p>'+
+                '<p><label for="id_outputType_0">Output Type:</label></br>'+
+                '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
+                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                '</p>'+
+                '<input type="hidden" name="iso" value="'+study.iso+'">'+
+                '<input type="hidden" name="study" value="'+study.study+'">'+
+                '<br>'+
+                '<button id="exposure-bldg-download-button" type="button">Download</button>'+
+                '<img id="download-button-spinner" src="/static/img/ajax-loader.gif" style="display: none;" />'+
+            '</form>'
+        );
+    };
 });
 
 

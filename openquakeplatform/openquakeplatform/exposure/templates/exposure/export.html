@@ -48,6 +48,7 @@ Exposure Export {{ block.super }}
       </table>
     </div>
     <div id="radioSubRegionList" ng-controller="ExposureRegionList">
+    <div id="selectionForm"></div>
       <div id="ragionTable">
         <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
           <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
@@ -57,6 +58,8 @@ Exposure Export {{ block.super }}
           </tr>
         </table>
       </div>
+    </div>
+    <div id="radioSubRegionForm">
     </div>
   </div>
 </div>
