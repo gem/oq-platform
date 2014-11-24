@@ -56,7 +56,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $http.get("../exposure/get_studies_by_country?iso="+study.iso+"&level_filter=national").success(function(data, status) {
                     console.log('data:');
                     console.log(data);
-                    $('#radioSubRegionList').append(
+                    $('#ragionTable').append(
                         '<form id="exposure-building-form" class="exposure_export_form">'+
                             '<h3>Study: '+study.country_name+' '+study.study_name+'</h3></br>'+
                             '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
@@ -84,7 +84,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 });
             } else if (study.num_l1_studies > 1) {
+                // Populate the table
                 createRegionList(study);
+                // Show html elements for the table
+                $("#ragionTable").show();
             }
         }; // end changeSelection
     //});
