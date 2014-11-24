@@ -238,6 +238,17 @@ models_descr['vulnerability.generalinformation'] = model_description(
     lambda i: [ i['fields']['name'] ],
     {})
 
+    # maps models
+models_descr['maps.map'] = model_description(
+    'maps.map',
+    None,
+    {})
+
+models_descr['maps.maplayer'] = model_description(
+    'maps.maplayer',
+    None,
+    {'map': ('maps.map', False)})
+
     # test models
 models_descr['test.one2one'] = model_description(
     'test.one2one',
@@ -372,11 +383,6 @@ def maxpk_models(models, oldels):
 
     return maxpks
 
-
-def show_items_info(iinfo):
-    for k in iinfo:
-        print "KEY: %s" % k
-        print iinfo[k]
 
 def key_get(md, item):
     if md.natural:
