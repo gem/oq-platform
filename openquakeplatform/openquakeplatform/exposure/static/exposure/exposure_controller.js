@@ -18,24 +18,13 @@
 var app = angular.module('exposureApp', ['ngTable']);
 var data = [];
 
-app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http)  {
+app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
     myService.getCountryList().then(function(data) {
         $scope.data = data;
 
-        console.log('data:');
+        console.log('getCountryList:');
         console.log(data);
-        /*
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].num > 1) {
-                data[i]["level"] = "Sub-National";
-            } else if (data[i].num <= 1) {
-                data[i]["level"] =  "National";
-            }
-            if (data[i].has_nonres == null) {
-                data[i].has_nonres = false;
-            }
-        }
-*/
+
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
             count: 10,          // count per page
@@ -59,6 +48,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $defer.resolve($scope.users);
             }
         });
+    });
 
         $scope.changeSelection = function(study) {
             console.info(study);
@@ -92,55 +82,49 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                             '<img id="download-button-spinner" src="/static/img/ajax-loader.gif" style="display: none;" />'+
                         '</form>'
                     );
-                    // Build the national selection form
-
                 });
             } else if (study.num_l1_studies > 1) {
-                myService.getRegionList(study.iso).then(function(bar) {
-                    console.log('bar:');
-                    console.log(bar);
-                    //********** Left of here, need dictionaries in the second JSON reply ***********
-
-                    $scope.tableParams2 = new ngTableParams({
-                        page: 1,            // show first page
-                        count: 10,          // count per page
-                        filter: {
-                            country_name: ''       // initial filter
-                        }
-                    }, {
-                        total: bar.length, // length of data
-                        getData: function($defer, params) {
-                            // use build-in angular filter
-                            var filteredData = params.filter() ?
-                                $filter('filter')(bar, params.filter()) :
-                                bar;
-                            var orderedbar = params.filter() ?
-                                   $filter('filter')(bar, params.filter()) :
-                                   bar;
-
-                            $scope.users2 = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
-
-                            params.total(orderedData.length); // set total for recalc pagination
-                            $defer.resolve($scope.users2);
-                        }
-                    });
-
-
-
-
-
-
-                });
+                createRegionList(study);
             }
         }; // end changeSelection
-    });
+    //});
 });
+
+
+app.controller('ExposureRegionList', function($scope, $filter, myService, ngTableParams)  {
+    createRegionList = function(study) {
+        myService.getRegionList(study.iso).then(function(bar) {
+            console.log('bar:');
+            console.log(bar);
+
+            $scope.tableParams2 = new ngTableParams({
+                page: 1,            // show first page
+                count: 10           // count per page
+            }, {
+                total: bar.length, // length of data
+                getData: function($defer, params) {
+                    // use build-in angular filter
+                    var orderedData = params.sorting() ?
+                            $filter('orderBy')(bar, params.orderBy()) :
+                            bar;
+                    orderedData = params.filter() ?
+                            $filter('filter')(orderedData, params.filter()) :
+                            orderedData;
+
+                    params.total(orderedData.length);
+                    $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+                }
+            });
+        });
+    }; // end createRegionList
+});
+
 
 app.factory('myService', function($http, $q) {
     return {
         getCountryList: function() {
             var deferred = $q.defer();
-            $http.get('../exposure/get_countries_and_studies').success(function(data) {
+            $http.get('../exposure/get_all_studies').success(function(data) {
                 deferred.resolve(data);
             }).error(function(){
                 deferred.reject();

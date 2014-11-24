@@ -37,26 +37,21 @@ Exposure Export {{ block.super }}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Select a Region">
     <div id="radioCountryList" ng-controller="ExposureCountryList">
-      <p><strong>Filter:</strong> {{tableParams.filter()|json}}
-
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
-        <tr ng-repeat="user in $data" ng-click="user.$selected = !user.$selected; changeSelection(user)"
-                ng-class="{'active': user.$selected}">
-          <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{user.country_name}}</td>
-          <td data-title="'Number of Studies'">{{user.num_l1_studies}}</td>
-          <td data-title="'Study'">{{user.study_name}}</td>
-          <td data-title="'Has Residential'">{{user.has_nonres}}</td>
+        <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
+                ng-class="{'active': record.$selected}">
+          <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{record.country_name}}</td>
+          <td data-title="'Number of Studies'">{{record.num_l1_studies}}</td>
+          <td data-title="'Study'">{{record.study_name}}</td>
+          <td data-title="'Has Residential'">{{record.has_nonres}}</td>
         </tr>
       </table>
     </div>
-    <div id="radioSubRegionList">
-            <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
-        <tr ng-repeat="user2 in $bar" ng-click="user2.$selected = !user2.$selected; changeSelection(user2)"
-                ng-class="{'active': user2.$selected}">
-          <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{user2.country_name}}</td>
-          <td data-title="'Number of Studies'">{{user2.num_l1_studies}}</td>
-          <td data-title="'Study'">{{user2.study_name}}</td>
-          <td data-title="'Has Residential'">{{user2.has_nonres}}</td>
+    <div id="radioSubRegionList" ng-controller="ExposureRegionList">
+      <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
+        <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
+                ng-class="{'active': record.$selected}">
+          <td data-title="'Name'" filter="{ 'g1name': 'text' }">{{record.g1name}}</td>
         </tr>
       </table>
     </div>

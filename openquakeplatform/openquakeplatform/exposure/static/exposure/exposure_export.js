@@ -73,7 +73,7 @@ var startApp = function() {
 
     $(document).ready(function() {
         $('#countries-list').button('enable');
-        $('#radioCountryList').find('p').first().remove();
+        $('#radioSubRegionList').find('p').first().remove();
     });
 
 /*
