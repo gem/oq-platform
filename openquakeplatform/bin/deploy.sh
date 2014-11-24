@@ -193,6 +193,7 @@ maps_viewer_postlayers () {
         mkdir -p  "$wdir"
     fi
     cp ${bdir}/thumbs/*.png $wdir/
+    chown -R www-data.www-data ${bdir}/thumbs/
 }
 
 #
