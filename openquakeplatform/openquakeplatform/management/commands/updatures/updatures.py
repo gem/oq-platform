@@ -771,7 +771,7 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
     return result
 
 
-def updatures(argv, output=None, fakeold=False, check_consistency=False, sort_output=False, debug=None):
+def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_output=False, debug=None):
     """
 
     - load from fixture in updates list
@@ -1015,10 +1015,8 @@ if __name__ == "__main__":
             debug += 1
         elif arg in [ '-s', '--sort' ]:
             sort_output = True
-        elif arg in [ '-c', '--check_consistency' ]:
-            check_consistency = True
         else:
             argv.append(arg)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
-    sys.exit(updatures(argv, check_consistency=check_consistency, debug=debug, sort_output=sort_output))
+    sys.exit(updatures(argv, debug=debug, sort_output=sort_output))

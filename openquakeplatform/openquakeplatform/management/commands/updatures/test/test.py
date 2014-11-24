@@ -20,12 +20,9 @@ test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
 if __name__ == "__main__":
     argv = []
     debug = 0
-    check_consistency = False
     for arg in sys.argv[1:]:
         if arg in [ '-v', '--verbose' ]:
             debug += 1
-        elif arg in [ '-c', '--check_consistency' ]:
-            check_consistency = True
         else:
             argv.append(arg)
 
@@ -39,7 +36,6 @@ if __name__ == "__main__":
         output = StringIO.StringIO()
         result = updatures(['data/' + test + '_new.json'], output=output,
                            fakeold='data/' + test + '_old.json',
-                           check_consistency=check_consistency,
                            sort_output=True, debug=debug)
 
         exp = file('data/' + test + '_exp.json', 'r').read()
