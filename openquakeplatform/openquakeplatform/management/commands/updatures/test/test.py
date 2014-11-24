@@ -38,8 +38,9 @@ if __name__ == "__main__":
     for test in test_list:
         output = StringIO.StringIO()
         result = updatures(['data/' + test + '_new.json'], output=output,
-                  fakeold='data/' + test + '_old.json',
-                  check_consistency=check_consistency, debug=debug)
+                           fakeold='data/' + test + '_old.json',
+                           check_consistency=check_consistency,
+                           sort_output=True, debug=debug)
 
         exp = file('data/' + test + '_exp.json', 'r').read()
 
