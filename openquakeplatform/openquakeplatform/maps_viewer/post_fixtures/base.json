@@ -2680,8 +2680,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:event&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/e263d699ba06b24133ab7062b4f89b56_11.png", 
-            "version": 4
+            "thumb_file": "thumbs/e263d699ba06b24133ab7062b4f89b56.png", 
+            "version": 1
         }
     }, 
     {
@@ -2689,8 +2689,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_displacement&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/ac157cdbf8e6dbdf6c16d861301d48ca_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/ac157cdbf8e6dbdf6c16d861301d48ca.png", 
+            "version": 1
         }
     }, 
     {
@@ -2698,8 +2698,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_event&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/5dd341b62b1693378a8de958900d0764_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/5dd341b62b1693378a8de958900d0764.png", 
+            "version": 1
         }
     }, 
     {
@@ -2707,8 +2707,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_faultgeometry&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/9c8b387333385d8bc5717d211196855e_11.png", 
-            "version": 4
+            "thumb_file": "thumbs/9c8b387333385d8bc5717d211196855e.png", 
+            "version": 1
         }
     }, 
     {
@@ -2716,8 +2716,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_faultsection&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/ab3f7c7b5a9fb71d21bc62821e087a43_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/ab3f7c7b5a9fb71d21bc62821e087a43.png", 
+            "version": 1
         }
     }, 
     {
@@ -2725,8 +2725,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_faultsource&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/5cd522ef8653c7b060ad1c95909bc13e_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/5cd522ef8653c7b060ad1c95909bc13e.png", 
+            "version": 1
         }
     }, 
     {
@@ -2734,8 +2734,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_fault&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/c029d8c77fedb85305694d3bee9a8427_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/c029d8c77fedb85305694d3bee9a8427.png", 
+            "version": 1
         }
     }, 
     {
@@ -2743,8 +2743,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_sliprate&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/1b2a2de841ebc89de1c1c1706df5b03a_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/1b2a2de841ebc89de1c1c1706df5b03a.png", 
+            "version": 1
         }
     }, 
     {
@@ -2752,8 +2752,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:faulted_earth_trace&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/b60e189f011433140cbbd9c420021186_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/b60e189f011433140cbbd9c420021186.png", 
+            "version": 1
         }
     }, 
     {
@@ -2761,8 +2761,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:gaf_viewer_faultsource&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/299426bf64368d4fb9fab2ae34a79269_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/299426bf64368d4fb9fab2ae34a79269.png", 
+            "version": 1
         }
     }, 
     {
@@ -2770,8 +2770,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:gaf_viewer_faulttrace&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/284270769120bccd7ab0e6b40111114c_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/284270769120bccd7ab0e6b40111114c.png", 
+            "version": 1
         }
     }, 
     {
@@ -2779,8 +2779,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:geobase_gadm_indonesia_2&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/6f6c726e39aa6d872feb5a315d163600_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/6f6c726e39aa6d872feb5a315d163600.png", 
+            "version": 1
         }
     }, 
     {
@@ -2788,8 +2788,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:geobase_laquila&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/ee1eb9a0d87c39f277623e19895385bc_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/ee1eb9a0d87c39f277623e19895385bc.png", 
+            "version": 1
         }
     }, 
     {
@@ -2797,8 +2797,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:ghec_viewer_measure&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/177e24489fbe99223cf1372f071b9560_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/177e24489fbe99223cf1372f071b9560.png", 
+            "version": 1
         }
     }, 
     {
@@ -2806,8 +2806,8 @@
         "model": "base.thumbnail", 
         "fields": {
             "thumb_spec": "http://localhost:8080/geoserver/wms/reflect?layers=oqplatform:isc_viewer_measure&width=200&height=150&format=image/png8", 
-            "thumb_file": "thumbs/4dffafb52dab995f28222032d207fbe6_10.png", 
-            "version": 4
+            "thumb_file": "thumbs/4dffafb52dab995f28222032d207fbe6.png", 
+            "version": 1
         }
     }, 
     {
