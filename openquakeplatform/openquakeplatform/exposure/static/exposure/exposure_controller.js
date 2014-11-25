@@ -20,11 +20,7 @@ var data = [];
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
     myService.getCountryList().then(function(data) {
-        $scope.data = data;
-
-        console.log('getCountryList:');
-        console.log(data);
-
+        // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
             count: 10,          // count per page
@@ -52,6 +48,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     $scope.changeSelection = function(study) {
         if (study.num_l1_studies <= 1) {
+            // National level building exposure download form
+            $('#countriesListDialog').dialog('option', 'title', 'National Building Exposure Download Form');
             $('#ragionTable').hide();
             $('#countrySelectionForm').insertAfter('#countryList');
             $('#countryList').hide();
@@ -87,6 +85,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '</form>'
             );
         } else if (study.num_l1_studies > 1) {
+            // Second level selection table
+            $('#countriesListDialog').dialog('option', 'title', 'Sub-National Selection Table');
             $('#subRegionListBack').show();
             $('#subRegionList').show();
             $('#ragionTable h3').empty();
@@ -131,6 +131,8 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
     }; // end createRegionList
 
     $scope.changeSelection = function(study) {
+        // Sub-national level building exposure download form
+        $('#countriesListDialog').dialog('option', 'title', 'Sub-National Building Exposure Download Form');
         $('#subRegionForm').show();
         $('#subRegionFormBack').show();
         $('#subRegionList').insertAfter('#subRegionForm');
@@ -159,6 +161,7 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
 
 // Back button logic
 $('#subRegionListBack').button().click(function() {
+    $('#countriesListDialog').dialog('option', 'title', 'National Selection Table');
     $('#subRegionList').hide();
     $('#countryList').show();
 });
