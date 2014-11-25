@@ -17,6 +17,16 @@ def pdebug(level, s):
         return
     print s
 
+class model_refs(object):
+    '''
+        model:   model name of referenced item (string)
+        is_many: if single or multiple fk (bool)
+    '''
+    def __init__(self, model, is_many):
+        self.model =   model
+        self.is_many = is_many
+
+
 class model_description(object):
     def __init__(self, name, natural, refs, group=None, pk_natural=False):
         self.name = name
@@ -27,7 +37,8 @@ class model_description(object):
         self.pk_natural = pk_natural
 
 models_descr = OrderedDict()
-    # auth models
+
+# auth models
 models_descr['auth.permission'] = model_description(
     'auth.permission',
     lambda i: [ i['fields']['codename'], i['fields']['content_type'][0], i['fields']['content_type'][1] ],
@@ -36,62 +47,85 @@ models_descr['auth.permission'] = model_description(
 models_descr['auth.group'] = model_description(
     'auth.group',
     lambda i: [ i['fields']['name'] ],
-    {'permissions': ('auth.permission', True)})
+    {'permissions': model_refs('auth.permission', True)})
 
 models_descr['auth.user'] = model_description(
     'auth.user',
     lambda i: [ i['fields']['username'] ],
-    {'user_permissions': ('auth.permission', True),
-     'groups':           ('auth.group', True)})
+    {'user_permissions': model_refs('auth.permission', True),
+     'groups':           model_refs('auth.group', True)})
 
 models_descr['account.account'] = model_description(
     'account.account',
     None,
-    {'user': ('auth.user', False)})
+    {'user':             model_refs('auth.user', False)})
 
+# account models
 models_descr['account.signupcode'] = model_description(
     'account.signupcode',
     None,
-    {'inviter': ('auth.user', False)})
+    {'inviter':          model_refs('auth.user', False)})
 
 models_descr['account.signupcodeextended'] = model_description(
     'account.signupcodeextended',
     None,
-    {'signupcode': ('account.signupcode', False)}) # signupcode is pk too, strange case
+    {'signupcode':       model_refs('account.signupcode', False)}) # signupcode is pk too, strange case
 
 models_descr['account.signupcoderesult'] = model_description(
     'account.signupcoderesult',
     None,
-    {'signup_code': ('account.signupcode', False),
-     'user': ('auth.user', False)})
+    {'signup_code':      model_refs('account.signupcode', False),
+     'user':             model_refs('auth.user', False)})
 
 models_descr['account.emailaddress'] = model_description(
     'account.emailaddress',
     None,
-    {'user': ('auth.user', False)})
+    {'user':             model_refs('auth.user', False)})
 
 models_descr['account.emailconfirmation'] = model_description(
     'account.emailconfirmation',
     None,
-    {'email_address': ('account.emailaddress', False)})
+    {'email_address':    model_refs('account.emailaddress', False)})
 
 models_descr['account.accountdeletion'] = model_description(
     'account.accountdeletion',
     None,
-    {'user': ('auth.user', False)})
+    {'user':             model_refs('auth.user', False)})
 
-    # Vulnerability models
+    # maps models
+models_descr['maps.map'] = model_description(
+    'maps.map',
+    None,
+    {})
+
+models_descr['maps.maplayer'] = model_description(
+    'maps.maplayer',
+    None,
+    {'map':              model_refs('maps.map', False)})
+
+# maps models
+models_descr['maps.map'] = model_description(
+    'maps.map',
+    None,
+    {})
+
+models_descr['maps.maplayer'] = model_description(
+    'maps.maplayer',
+    None,
+    {'map':              model_refs('maps.map', False)})
+
+# vulnerability models
 models_descr['vulnerability.qrsempirical'] = model_description(
     'vulnerability.qrsempirical',
     None,
-    {'fragility_func':     ('vulnerability.fragilityfunc', False),
-     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
+    {'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
+     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.qrsanalytical'] = model_description(
     'vulnerability.qrsanalytical',
     None,
-    {'fragility_func':     ('vulnerability.fragilityfunc', False),
-     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
+    {'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
+     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.statmodel'] = model_description(
     'vulnerability.statmodel',
@@ -121,14 +155,14 @@ models_descr['vulnerability.procconstrint'] = model_description(
 models_descr['vulnerability.statisticalinformation'] = model_description(
     'vulnerability.statisticalinformation',
     None,
-    {'fragility_func':              ('vulnerability.fragilityfunc', False),
-     'vulnerability_func':          ('vulnerability.vulnerabilityfunc', False)})
+    {'fragility_func':              model_refs('vulnerability.fragilityfunc', False),
+     'vulnerability_func':          model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.empiricalmodelinfo'] = model_description(
     'vulnerability.empiricalmodelinfo',
     None,
-    {'fragility_func':     ('vulnerability.fragilityfunc', False),
-     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
+    {'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
+     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.analysistype'] = model_description(
     'vulnerability.analysistype',
@@ -138,8 +172,8 @@ models_descr['vulnerability.analysistype'] = model_description(
 models_descr['vulnerability.analyticalmodelinfo'] = model_description(
     'vulnerability.analyticalmodelinfo',
     None,
-    {'fragility_func':     ('vulnerability.fragilityfunc', False),
-     'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
+    {'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
+     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.cc_analysistype'] = model_description(
     'vulnerability.cc_analysistype',
@@ -149,7 +183,7 @@ models_descr['vulnerability.cc_analysistype'] = model_description(
 models_descr['vulnerability.cc_analyticalmodelinfo'] = model_description(
     'vulnerability.cc_analyticalmodelinfo',
     None,
-    {'capacity_curve_func': ('vulnerability.capacitycurvefunc', False)})
+    {'capacity_curve_func': model_refs('vulnerability.capacitycurvefunc', False)})
 
 models_descr['vulnerability.country'] = model_description(
     'vulnerability.country',
@@ -159,8 +193,8 @@ models_descr['vulnerability.country'] = model_description(
 models_descr['vulnerability.geoapplicability'] = model_description(
     'vulnerability.geoapplicability',
     None,
-    {'general_information': ('vulnerability.generalinformation', False),
-     'countries':           ('vulnerability.country', True)})
+    {'general_information': model_refs('vulnerability.generalinformation', False),
+     'countries':           model_refs('vulnerability.country', True)})
 
 models_descr['vulnerability.taxonomytype'] = model_description(
     'vulnerability.taxonomytype',
@@ -170,32 +204,32 @@ models_descr['vulnerability.taxonomytype'] = model_description(
 models_descr['vulnerability.cc_predictorvar'] = model_description(
     'vulnerability.cc_predictorvar',
     None,
-    {'capacity_curve_func': ('vulnerability.capacitycurvefunc', False)})
+    {'capacity_curve_func': model_refs('vulnerability.capacitycurvefunc', False)})
 
 models_descr['vulnerability.capacitycurvefunc'] = model_description(
     'vulnerability.capacitycurvefunc',
     None,
-    {'general_information': ('vulnerability.generalinformation', False)})
+    {'general_information': model_refs('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.funcdistrdtldiscr'] = model_description(
     'vulnerability.funcdistrdtldiscr',
     None,
-    {'damage_to_loss_func': ('vulnerability.damagetolossfunc', False)})
+    {'damage_to_loss_func': model_refs('vulnerability.damagetolossfunc', False)})
 
 models_descr['vulnerability.damagetolossfunc'] = model_description(
     'vulnerability.damagetolossfunc',
     None,
-    {'general_information': ('vulnerability.generalinformation', False)})
+    {'general_information': model_refs('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.funcdistrvulncont'] = model_description(
     'vulnerability.funcdistrvulncont',
     None,
-    {'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
+    {'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.funcdistrvulndiscr'] = model_description(
     'vulnerability.funcdistrvulndiscr',
     None,
-    {'vulnerability_func': ('vulnerability.vulnerabilityfunc', False)})
+    {'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)})
 
 models_descr['vulnerability.evaluationofim'] = model_description(
     'vulnerability.evaluationofim',
@@ -205,23 +239,23 @@ models_descr['vulnerability.evaluationofim'] = model_description(
 models_descr['vulnerability.predictorvar'] = model_description(
     'vulnerability.predictorvar',
     None,
-    {'vulnerability_func': ('vulnerability.vulnerabilityfunc', False),
-     'fragility_func':     ('vulnerability.fragilityfunc', False)})
+    {'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),
+     'fragility_func':     model_refs('vulnerability.fragilityfunc', False)})
 
 models_descr['vulnerability.vulnerabilityfunc'] = model_description(
     'vulnerability.vulnerabilityfunc',
     None,
-    {'general_information': ('vulnerability.generalinformation', False)})
+    {'general_information': model_refs('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.funcdistrfragcont'] = model_description(
     'vulnerability.funcdistrfragcont',
     None,
-    {'fragility_func':     ('vulnerability.fragilityfunc', False)})
+    {'fragility_func':     model_refs('vulnerability.fragilityfunc', False)})
 
 models_descr['vulnerability.funcdistrfragdiscr'] = model_description(
     'vulnerability.funcdistrfragdiscr',
     None,
-    {'fragility_func':     ('vulnerability.fragilityfunc', False)})
+    {'fragility_func':     model_refs('vulnerability.fragilityfunc', False)})
 
 models_descr['vulnerability.engineeringdemandpar'] = model_description(
     'vulnerability.engineeringdemandpar',
@@ -231,34 +265,23 @@ models_descr['vulnerability.engineeringdemandpar'] = model_description(
 models_descr['vulnerability.fragilityfunc'] = model_description(
     'vulnerability.fragilityfunc',
     None,
-    {'general_information':    ('vulnerability.generalinformation', False)})
+    {'general_information':    model_refs('vulnerability.generalinformation', False)})
 
 models_descr['vulnerability.generalinformation'] = model_description(
     'vulnerability.generalinformation',
     lambda i: [ i['fields']['name'] ],
     {})
 
-    # maps models
-models_descr['maps.map'] = model_description(
-    'maps.map',
-    None,
-    {})
-
-models_descr['maps.maplayer'] = model_description(
-    'maps.maplayer',
-    None,
-    {'map': ('maps.map', False)})
-
-    # test models
+# test models
 models_descr['test.one2one'] = model_description(
     'test.one2one',
     None,
-    {'leaf': ('test.leaf', False)})
+    {'leaf': model_refs('test.leaf', False)})
 
 models_descr['test.one2many'] = model_description(
     'test.one2many',
     None,
-    {'leafs': ('test.leaf', True)})
+    {'leafs': model_refs('test.leaf', True)})
 
 models_descr['test.leaf'] = model_description(
     'test.leaf',
@@ -268,7 +291,7 @@ models_descr['test.leaf'] = model_description(
 # set owner as reference for all vulnerability models except country
 for md_key in models_descr:
     if md_key.startswith("vulnerability.") and md_key != "vulnerability.country":
-        models_descr[md_key].refs['owner'] = ('auth.user', False)
+        models_descr[md_key].refs['owner'] = model_refs('auth.user', False)
 
     if (md_key.startswith("vulnerability.")
         and md_key not in (
@@ -303,8 +326,8 @@ def rebuild_order():
                 else:
                     models_descr_rest[model] = descr
             else:
-                for ref_field, (ref_model, ref_ismulti) in descr.refs.iteritems():
-                    if not ref_model in models_order:
+                for ref_field, ref in descr.refs.iteritems():
+                    if not ref.model in models_order:
                         models_descr_rest[model] = descr
                         break
                 else:
@@ -452,8 +475,8 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     for ref_model, ref_md in models_descr.iteritems():
         pdebug(3, "MDREF: %s" % ref_model)
         # found each model has a refs value associated with the current item model
-        for ref_reffield, (ref_refmodel, ref_refmulti) in ref_md.refs.iteritems():
-            if ref_refmodel != model:
+        for ref_reffield, ref in ref_md.refs.iteritems():
+            if ref.model != model:
                 continue
 
             for itemod in updates_gr[ref_model]:
@@ -462,7 +485,7 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
                     continue
 
                 pdebug(2, "ITEMOD: %s" % itemod)
-                if ref_refmulti:
+                if ref.is_many:
                     if type(itemod['fields'][ref_reffield][0]) is list:
                         pdebug(0, "itemod list of lists case not managed")
                         sys.exit(10)
@@ -518,7 +541,7 @@ def item_compare(a, b, pk_included=True):
         if not a_key in b_fie:
             return False
 
-        if a_key in md.refs and md.refs[a_key][1]:
+        if a_key in md.refs and md.refs[a_key].is_many:
             # foreign key casefk_compare
             if not fk_compare(a_fie[a_key], b_fie[a_key]):
                 return False
@@ -542,47 +565,47 @@ def consistencymeter(dates_gr):
         md = models_descr[model]
         for item in dates_gr[model]:
             pdebug(2, "CC: ITEM: %s" % item)
-            for ref_field, (ref_model, ref_ismulti) in md.refs.iteritems():
-                ref_md = models_descr[ref_model]
-                pdebug(2, "CC: REF_FIELD, REF_MODEL: %s, %s, %s" % (ref_field, ref_model, ref_md.natural))
+            for ref_field, ref in md.refs.iteritems():
+                ref_md = models_descr[ref.model]
+                pdebug(2, "CC: REF_FIELD, REF.MODEL: %s, %s, %s" % (ref_field, ref.model, ref_md.natural))
                 if not item['fields'][ref_field]:
                     continue
                 cm_out['fields_n'] += 1
                 ty = type(item['fields'][ref_field])
 
-                if ref_md.natural and ref_ismulti:
+                if ref_md.natural and ref.is_many:
                     if type(item['fields'][ref_field][0]) is not list:
                         pdebug(1, "consistencymeter:\n  model: %s\n"
-                               + "natural key field: %s  ref_model: %s\n"
+                               + "natural key field: %s  ref.model: %s\n"
                                + "item: %s\nwrong field fk type\n" %
-                               (model, ref_field, ref_model, str(item)))
+                               (model, ref_field, ref.model, str(item)))
                         return False
-                elif ((ref_md.natural and not ref_ismulti) or
-                      (not ref_md.natural and ref_ismulti)):
+                elif ((ref_md.natural and not ref.is_many) or
+                      (not ref_md.natural and ref.is_many)):
                     if type(item['fields'][ref_field]) is not list:
                         pdebug(1, "consistencymeter:\n  model: %s\n"
-                               + "natural key field: %s  ref_model: %s\n"
+                               + "natural key field: %s  ref.model: %s\n"
                                + "item: %s\nwrong field fk type\n" %
-                               (model, ref_field, ref_model, str(item)))
+                               (model, ref_field, ref.model, str(item)))
                         return False
-                elif (not ref_md.natural and not ref_ismulti):
+                elif (not ref_md.natural and not ref.is_many):
                     if type(item['fields'][ref_field]) is list:
                         pdebug(1, "consistencymeter:\n  model: %s\n"
-                               + "natural key field: %s  ref_model: %s\n"
+                               + "natural key field: %s  ref.model: %s\n"
                                + "item: %s\nwrong field fk type\n" %
-                               (model, ref_field, ref_model, str(item)))
+                               (model, ref_field, ref.model, str(item)))
                         return False
 
                 if ref_md.natural is not None:
-                    if ref_ismulti:
+                    if ref.is_many:
                         # one2many case
                         refs_fk = item['fields'][ref_field]
-                    else: # if ref_ismulti:
+                    else: # if ref.is_many:
                         # any2one case:
                         refs_fk = [ item['fields'][ref_field] ]
 
                     for fk in refs_fk:
-                        for fktem in dates_gr[ref_model]:
+                        for fktem in dates_gr[ref.model]:
                             if fk == ref_md.natural(fktem):
                                 break
                         else:
@@ -593,14 +616,14 @@ def consistencymeter(dates_gr):
                     pdebug(2, "CC: NOT NATURAL")
 
                     # many2many case
-                    if ref_ismulti:
+                    if ref.is_many:
                         refs_fk = item['fields'][ref_field]
                     else:
                         refs_fk = [ item['fields'][ref_field] ]
 
 
                     for fk in refs_fk:
-                        for fktem in dates_gr[ref_model]:
+                        for fktem in dates_gr[ref.model]:
                             if fk == fktem['pk']:
                                 break
                         else:
@@ -641,15 +664,15 @@ def grouping_set(dates_gr, datesk_gr):
 
         if md.group not in group_heads:
             group_heads.append(md.group)
-        dirref_groups = [(k,(v1,v2)) for k,(v1,v2) in md.refs.iteritems() if v1 == md.group]
+        dirref_groups = [(k,v) for k,v in md.refs.iteritems() if v.model == md.group]
         if dirref_groups:
             pdebug(2, "Direct group for model %s" % model)
             for item in dates_gr[model]:
                 # grouped with a direct reference
-                for ref_field, (ref_model, ref_ismulti) in dirref_groups:
-                    if ref_ismulti:
+                for ref_field, ref in dirref_groups:
+                    if ref.is_many:
                         continue
-                    ref_md = models_descr[ref_model]
+                    ref_md = models_descr[ref.model]
 
                     if item['fields'][ref_field]:
                         k = item['fields'][ref_field]
@@ -660,9 +683,9 @@ def grouping_set(dates_gr, datesk_gr):
                             kk = tuple([k])
 
                         try:
-                            datesk_gr[ref_model][kk]['__backrefs__'].append((model, item))
+                            datesk_gr[ref.model][kk]['__backrefs__'].append((model, item))
                         except KeyError:
-                            datesk_gr[ref_model][kk]['__backrefs__'] = [(model, item)]
+                            datesk_gr[ref.model][kk]['__backrefs__'] = [(model, item)]
                         break
                 else:
                     pdebug(0, "Direct reference not found")
@@ -670,10 +693,10 @@ def grouping_set(dates_gr, datesk_gr):
         else:
             pdebug(2, "No direct group for model %s" % model)
             for item in dates_gr[model]:
-                for ref_field, (ref_model, ref_ismulti) in md.refs.iteritems():
-                    if ref_ismulti or not item['fields'][ref_field]:
+                for ref_field, ref in md.refs.iteritems():
+                    if ref.is_many or not item['fields'][ref_field]:
                         continue
-                    ref_record = reference_get(dates_gr, ref_model, item['fields'][ref_field])
+                    ref_record = reference_get(dates_gr, ref.model, item['fields'][ref_field])
                     if ref_record == None:
                         pdebug(0, "No reference record found, abort")
                         sys.exit(20)
@@ -688,9 +711,9 @@ def grouping_set(dates_gr, datesk_gr):
                         kk = tuple([item['fields'][ref_field]])
 
                     try:
-                        datesk_gr[ref_model][kk]['__backrefs__'].append((model, item))
+                        datesk_gr[ref.model][kk]['__backrefs__'].append((model, item))
                     except KeyError:
-                        datesk_gr[ref_model][kk]['__backrefs__'] = [(model, item)]
+                        datesk_gr[ref.model][kk]['__backrefs__'] = [(model, item)]
                     item['fields']['__group__'] = group_ref
                     break
                 else:
