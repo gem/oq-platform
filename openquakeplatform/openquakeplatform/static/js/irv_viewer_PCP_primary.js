@@ -44,14 +44,15 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     }
 
     var maxVal = Math.max.apply( Math, tmpArray );
-        
-    var margin = {top: 100, right: 50, bottom: 10, left: 50},
-        width = 990 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
-    
+    var winH = ($(window).height() / 1.5);
+    var winW = $(window).width();
+    var margin = {top: 100, right: 100, bottom: 10, left: 50},
+        width = (winW - 100) - margin.left - margin.right,
+        height = winH - margin.top - margin.bottom;
+
     var x = d3.scale.ordinal().rangePoints([0, width], 1),
         y = {};
-    
+
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient("left"),
         background,
@@ -74,29 +75,10 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
     $("#primary-chart").empty();
 
     var svg = d3.select("#primary-chart").append("svg")
-        .attr("viewBox", "-30 0 1100 590")
+        .attr("viewBox", "-30 20 " +(winW -130)+" " +winH)
         .attr("id", "PI-svg-element")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-    var aspect = windowWidth / windowHeight,
-        chart = $("#PI-svg-element");
-
-    resize();
-
-    function resize() {
-        var targetWidth = chart.parent().width();
-        chart.attr("width", targetWidth);
-        chart.attr("height", targetWidth / aspect);
-    }
-
-    $(window).on("resize", function() {
-        resize();
-    });
 
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(primaryData[0]).filter(function(d) {
@@ -104,7 +86,7 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
             .domain([0, maxVal])
             .range([height, 0]));
     }));
-  
+
     var g = svg.selectAll(".dimension")
         .data(dimensions)
         .enter().append("g");
@@ -205,14 +187,13 @@ function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakP
                 outlier.push(primaryData[s]);
             }
         }
-        
+
         for (var r in primaryData[s]) {
             var outlierLimit = sumMean[r] - outlierBreakPoint;
             if (primaryData[s][r] < outlierLimit) {
                 outlier.push(primaryData[s]);
             }
         }
-        
     }
 
     var sumMeanArray = [];
