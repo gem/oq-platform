@@ -766,10 +766,10 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
         for item in updates_gr[gmodel]:
             key = key_get(md, item)
             pdebug(2, "KEY: %s[%s]" % (gmodel, key))
-            print oldatesk_gr.keys()
+            # print oldatesk_gr.keys()
             if key in oldatesk_gr[gmodel]:
                 otem = copy.deepcopy(oldatesk_gr[gmodel][key])
-                print "FOUND THE SAME CURVE [%s]" % key
+                # print "FOUND THE SAME CURVE [%s]" % key
                 issubset = groupstruct_issubset(otem, item)
                 if not issubset:
                     print "WARNING: in model '%s' the istance '%s' isn't totally replaced by new version, remove it manually from the database and retry" % (gmodel, key)
@@ -820,11 +820,12 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
 
     updates_gr, updatesk_gr = group_objs(updates)
     updates_gheads = grouping_set(updates_gr, updatesk_gr)
-    for ghead in updates_gheads:
-        print "MODEL: %s" % ghead
-        for i in updates_gr[ghead]:
-            print "GENERAL INFO: %s (%s)" % (i['fields']['name'], i['pk'])
-            print_refs(4, i)
+    if updatures_debug_level > 0:
+        for ghead in updates_gheads:
+            print "MODEL: %s" % ghead
+            for i in updates_gr[ghead]:
+                print "GENERAL INFO: %s (%s)" % (i['fields']['name'], i['pk'])
+                print_refs(4, i)
 
     if check_consistency:
         cm_new = consistencymeter(updates_gr)
@@ -978,12 +979,12 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
 
     if check_consistency:
         cm_fin = consistencymeter(finals_gr)
-        print "Consistency Report"
+        # print "Consistency Report"
         for k,v in cm_new.iteritems():
             if v['fields_n'] > 0:
-                print v, k
+                pdebug(1, "k: %s v: %s" % (v, k))
             if cm_new[k] != cm_fin[k]:
-                print "WARNING: k: %s new: %s fin: %s" % (
+                print "Consistency Report: WARNING: k: %s new: %s fin: %s" % (
                     k, v, cm_fin[k])
                 # sys.exit(2)
 
