@@ -1,46 +1,78 @@
 [
     {
-        "pk": 101, 
-        "model": "test.leaf", 
         "fields": {
             "one": "yes", 
-            "two": "yessss" 
-        }
-    },
+            "two": "yessss"
+        }, 
+        "model": "test.leaf", 
+        "pk": 101
+    }, 
     {
-        "pk": 1, 
-        "model": "test.one2one", 
         "fields": {
+            "one": "forty", 
+            "two": "four"
+        }, 
+        "model": "test.leaf", 
+        "pk": 44
+    }, 
+    {
+        "fields": {
+            "one": "thirty", 
+            "two": "three"
+        }, 
+        "model": "test.leaf", 
+        "pk": 33
+    }, 
+    {
+        "fields": {
+            "one": "twenty", 
+            "two": "two"
+        }, 
+        "model": "test.leaf", 
+        "pk": 22
+    }, 
+    {
+        "fields": {
+            "leaf": 44, 
             "one": "yesx", 
-            "two": "yessssx", 
-            "leaf": 44
-        }
-    },
-    {
-        "pk": 2, 
+            "two": "yessssx"
+        }, 
         "model": "test.one2one", 
+        "pk": 1
+    }, 
+    {
         "fields": {
+            "leaf": 101, 
             "one": "yesx", 
-            "two": "yessssx", 
-            "leaf": 101
-        }
-    },
+            "two": "yessssx"
+        }, 
+        "model": "test.one2one", 
+        "pk": 2
+    }, 
     {
-        "pk": 1, 
-        "model": "test.one2many", 
         "fields": {
+            "leafs": [
+                22, 
+                33, 
+                44
+            ], 
             "one": "yesy", 
-            "two": "yessssy", 
-            "leafs": [22, 33, 44]
-        }
-    },
+            "two": "yessssy"
+        }, 
+        "model": "test.one2many", 
+        "pk": 1
+    }, 
     {
-        "pk": 2, 
-        "model": "test.one2many", 
         "fields": {
+            "leafs": [
+                22, 
+                101, 
+                44
+            ], 
             "one": "yesy", 
-            "two": "yessssy", 
-            "leafs": [22, 101, 44]
-        }
-    } 
+            "two": "yessssy"
+        }, 
+        "model": "test.one2many", 
+        "pk": 2
+    }
 ]

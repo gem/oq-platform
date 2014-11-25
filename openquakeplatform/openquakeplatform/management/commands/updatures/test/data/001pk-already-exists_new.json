@@ -1,46 +1,78 @@
 [
     {
-        "pk": 1, 
-        "model": "test.leaf", 
         "fields": {
             "one": "yes but new", 
-            "two": "yessss but new" 
-        }
-    },
+            "two": "yessss but new"
+        }, 
+        "model": "test.leaf", 
+        "pk": 1
+    }, 
     {
-        "pk": 1, 
-        "model": "test.one2one", 
         "fields": {
+            "one": "forty", 
+            "two": "four"
+        }, 
+        "model": "test.leaf", 
+        "pk": 44
+    }, 
+    {
+        "fields": {
+            "one": "thirty", 
+            "two": "three"
+        }, 
+        "model": "test.leaf", 
+        "pk": 33
+    }, 
+    {
+        "fields": {
+            "one": "twenty", 
+            "two": "two"
+        }, 
+        "model": "test.leaf", 
+        "pk": 22
+    }, 
+    {
+        "fields": {
+            "leaf": 44, 
             "one": "yesx", 
-            "two": "yessssx", 
-            "leaf": 44
-        }
-    },
-    {
-        "pk": 2, 
+            "two": "yessssx"
+        }, 
         "model": "test.one2one", 
+        "pk": 1
+    }, 
+    {
         "fields": {
+            "leaf": 1, 
             "one": "yesx", 
-            "two": "yessssx", 
-            "leaf": 1
-        }
-    },
+            "two": "yessssx"
+        }, 
+        "model": "test.one2one", 
+        "pk": 2
+    }, 
     {
-        "pk": 1, 
-        "model": "test.one2many", 
         "fields": {
+            "leafs": [
+                22, 
+                33, 
+                44
+            ], 
             "one": "yesy", 
-            "two": "yessssy", 
-            "leafs": [22, 33, 44]
-        }
-    },
+            "two": "yessssy"
+        }, 
+        "model": "test.one2many", 
+        "pk": 1
+    }, 
     {
-        "pk": 2, 
-        "model": "test.one2many", 
         "fields": {
+            "leafs": [
+                22, 
+                1, 
+                44
+            ], 
             "one": "yesy", 
-            "two": "yessssy", 
-            "leafs": [22, 1, 44]
-        }
-    } 
+            "two": "yessssy"
+        }, 
+        "model": "test.one2many", 
+        "pk": 2
+    }
 ]
