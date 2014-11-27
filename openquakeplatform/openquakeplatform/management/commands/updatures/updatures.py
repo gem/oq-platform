@@ -756,6 +756,7 @@ def item_key(model, item):
     else:
         return item['pk']
 
+
 def grouping_set(dates_gr, datesk_gr):
     """
     for composite data structure like vulnerability group records of different model
@@ -829,6 +830,40 @@ def grouping_set(dates_gr, datesk_gr):
                     pdebug(0, "Not found any grouping reference, abort")
                     sys.exit(22)
     return group_heads
+
+
+def inheriting_set(dates_gr, datesk_gr):
+    """
+    set back inheritance between generic and specialized models
+    """
+    for model in models_order:
+        md = models_descr[model]
+        if md.inher is None:
+            continue
+        for item in dates_gr[model]:
+            key = key_get(md, item)
+            genitem = datesk_gr[md.inher][key]
+
+            try:
+                genitem['__backinhe__'].append(backinheritance(md, item))
+            except KeyError:
+                genitem['__backinhe__'] = [backinheritance(md, item)]
+            models_descr[md.inher].is_inherited = True
+
+
+    # remove generic inheritable items that havn't a specialized counterpart
+    for model in models_order:
+        md = models_descr[model]
+        if not md.is_inherited:
+            continue
+
+        for item in dates_gr[model]:
+            if item.get('__backinhe__', None) is None:
+                pk = item['pk']
+                pdebug(1, "WARNING: generic instance of %s with pk [%s] not inherited, remove it" %
+                       (model, key_get(md, item)))
+                del(datesk_gr[model][key_get(md, item)])
+                dates_gr[model].remove(item)
 
 
 def print_refs(spc, item_in):
@@ -951,6 +986,8 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
 
     updates_gr, updatesk_gr = group_objs(updates)
     updates_gheads = grouping_set(updates_gr, updatesk_gr)
+    inheriting_set(updates_gr, updatesk_gr)
+
     if updatures_debug_level > 0:
         for ghead in updates_gheads:
             print "MODEL: %s" % ghead
