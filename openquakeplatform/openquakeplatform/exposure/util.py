@@ -302,6 +302,7 @@ def _get_studies_by_country(iso, level_filter, study_filter):
     If level_filter is not specified, all studies are retrieved
     Otherwise, if level_filter is 'national' or 'subnational',
     only national or only subnational studies are retrieved.
+    The output includes grid counts and bounding boxes.
     """
     if level_filter is None:
         query_filter = ""  # Get all studies
@@ -321,19 +322,26 @@ def _get_studies_by_country(iso, level_filter, study_filter):
 SELECT
   -- Study Region ID (NOT geo region ID)
   sr.id AS study_region_id,
-  grg.g1name, grg.g2name, grg.g3name, 
+  -- grg.g0name,
+  grg.g1name, grg.g2name, grg.g3name,
   -- sensible study name
   CASE WHEN s.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
         ELSE s.name
   END AS study_name,
   -- Only PAGER studies hav non residential data
-  s.notes LIKE '%%PAGER%%' AS has_nonres  
-  FROM ged2.geographic_region_gadm grg 
-  JOIN ged2.study_region sr 
+  s.notes LIKE '%%PAGER%%' AS has_nonres,
+  gr.tot_pop, gr.tot_grid_count,
+  -- Corners of bounding box - null if grid_count==0
+  ST_XMin(bounding_box) AS xmin, ST_YMin(bounding_box) AS ymin,
+  ST_XMax(bounding_box) AS xmax, ST_YMax(bounding_box) AS ymax
+  FROM ged2.geographic_region_gadm grg
+  JOIN ged2.study_region sr
     ON sr.geographic_region_id=grg.region_id
-  JOIN ged2.study s 
-    ON s.id=sr.study_id    
+  JOIN ged2.study s
+    ON s.id=sr.study_id
+  JOIN ged2.geographic_region gr
+    ON gr.id=sr.geographic_region_id
  WHERE grg.iso=%s{} 
  ORDER BY sr.id
 """

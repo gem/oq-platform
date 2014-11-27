@@ -338,7 +338,10 @@ def get_studies_by_country(request):
                          If this parameter is not provided, all studies are
                          retrieved.
     :param study_filter: (optional) study id
-    :return: json object containing the list of studies
+    :return: json object containing the list of studies. For each study,
+             the output contains the following fields:
+             study_region_id, g1name, g2name, g3name, study_name, has_nonres,
+             tot_pop, tot_grid_count, xmin, ymin, xmax, ymax
     """
     iso = request.GET.get('iso')
     if not iso:
@@ -355,7 +358,8 @@ def get_studies_by_country(request):
     studies = []
     StudyRecord = namedtuple(
         'StudyRecord',
-        'study_region_id g1name g2name g3name study_name has_nonres')
+        'study_region_id g1name g2name g3name study_name has_nonres'
+        ' tot_pop tot_grid_count xmin ymin xmax ymax')
     for sr in map(StudyRecord._make, util._get_studies_by_country(
             iso, level_filter, study_filter)):
         studies.append(dict(sr._asdict()))
