@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 
-# WARNING: this model is unmanaged, custom SQL is used to create the table (look inside sql/*.sql)
+# WARNING: this model is unmanaged, custom SQL is used to create the tables (look inside sql/*.sql)
 
 # id|geom|accuracy|neotectonic_section_id|fault_summary_id|average_dip|is_active|is_episodic|surface_dip|name|aseismic_slip_factor|compiler_id|completion_id|contributor_id|dip_dir|disp|downthrown_side_id|last_movement|length|lower_sm_depth|recurrence_interval|net_slip_rate|slip_type_id|strike|strike_slip_rate|upper_sm_depth|vert_slip_rate|created_date|modified_date|fault_summary_id|aseismic_slip_factor|compiler_id|completion_id|contributor_id|average_dip|dip_dir|displacement|downthrown_side_id|is_active|is_episodic|is_section_summary|last_movement|length|lower_sm_depth|name|recurrence_interval|strike_slip_rate|slip_type_id|strike|upper_sm_depth|created_date|modified_date|net_slip_rate|vert_slip_rate|slip_type
 
