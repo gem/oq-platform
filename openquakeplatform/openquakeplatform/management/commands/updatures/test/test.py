@@ -14,8 +14,11 @@ sys.path.append('..')
 from updatures import updatures
 
 test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
-              '003nat-identical', '004nat-pk-already-exists',
-              '100auth-vulnerability' ]
+                   '003nat-identical', '004nat-pk-already-exists',
+                   '005inher-ok', '006inher-skip-generic',
+                   '007inher-change-pk',
+                   '100auth-vulnerability' 
+                   ]
 
 if __name__ == "__main__":
     argv = []
