@@ -556,22 +556,22 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
 
             for itemod in updates_gr[ref_model]:
                 # if field not set or empty list continue
-                if not itemod['fields'][ref_reffield]:
+                ref_value = get_value(itemod, ref_reffield)
+                if not ref_value:
                     continue
 
                 pdebug(2, "ITEMOD: %s" % itemod)
                 if ref.is_many:
-                    if type(itemod['fields'][ref_reffield][0]) is list:
+                    if type(ref_value[0]) is list:
                         pdebug(0, "itemod list of lists case not managed")
                         sys.exit(10)
-                    field_items = itemod['fields'][ref_reffield]
-                    for i, pk in enumerate(field_items):
+                    for i, pk in enumerate(ref_value):
                         if pk == item['pk']:
-                            field_items[i] = new_pk
+                            ref_value[i] = new_pk
                             break
                 else:
-                    if itemod['fields'][ref_reffield] == item['pk']:
-                        itemod['fields'][ref_reffield] = new_pk
+                    if ref_value == item['pk']:
+                        set_value(itemod, ref_reffield, new_pk)
                         break
 
     # remove the item from the key based list of items
