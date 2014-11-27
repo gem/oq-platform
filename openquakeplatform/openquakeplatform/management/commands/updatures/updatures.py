@@ -756,7 +756,6 @@ def item_key(model, item):
     else:
         return item['pk']
 
-
 def grouping_set(dates_gr, datesk_gr):
     """
     for composite data structure like vulnerability group records of different model
