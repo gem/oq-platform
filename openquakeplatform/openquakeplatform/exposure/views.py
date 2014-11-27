@@ -348,6 +348,10 @@ def get_studies_by_country(request):
         msg = 'A country ISO code must be provided.'
         response = HttpResponse(msg, status="400")
         return response
+    if len(iso) != 3:
+        msg = 'Please use a 3 characters ISO code.'
+        response = HttpResponse(msg, status="400")
+        return response
     level_filter = request.GET.get('level_filter')
     if level_filter is not None and level_filter not in ('national',
                                                          'subnational'):

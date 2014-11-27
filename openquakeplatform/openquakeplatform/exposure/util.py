@@ -263,27 +263,27 @@ ORDER BY g1name, g2name, g3name;
 
 
 def _get_all_studies():
-    """ 
+    """
     Get GED studies for all national levels
     Records will be in the format:
     iso, num_l1_studies, study_id, country_name, study_name, has_nonres
     """
     query = """\
-SELECT 
+SELECT
   iq.iso, iq.num_l1_studies, iq.study_id, iq.g0name AS country_name,
-  -- Construct sensible study name 
+  -- Construct sensible study name
   CASE WHEN s2.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
         ELSE s2.name
   END AS study_name,
   -- Only PAGER studies have non residential data
-  s2.notes LIKE '%%PAGER%%' AS has_nonres  
+  s2.notes LIKE '%%PAGER%%' AS has_nonres
   FROM (
         -- List of countries with number of sub-national studies
-        SELECT grg.g0name, s.id AS study_id, 
+        SELECT grg.g0name, s.id AS study_id,
                grg.iso, COUNT(sr.id) AS num_l1_studies
           FROM ged2.geographic_region_gadm grg
-          JOIN ged2.study_region sr 
+          JOIN ged2.study_region sr
             ON sr.geographic_region_id=grg.region_id
           JOIN ged2.study s ON s.id=sr.study_id
          WHERE s.id NOT IN (447,449)
@@ -315,7 +315,7 @@ def _get_studies_by_country(iso, level_filter, study_filter):
     if study_filter is not None:
         try:
             study_filter = float(study_filter)  # This also escapes the value
-            query_filter += "\n AND s.id = %s\n" % study_filter      
+            query_filter += "\n AND s.id = %s\n" % study_filter
         except ValueError:
             raise
     query = """\
