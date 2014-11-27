@@ -342,10 +342,40 @@ SELECT
     ON s.id=sr.study_id
   JOIN ged2.geographic_region gr
     ON gr.id=sr.geographic_region_id
- WHERE grg.iso=%s{} 
+ WHERE grg.iso=%s{}
  ORDER BY sr.id
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query.format(query_filter), [iso])
+
+    return cursor.fetchall()
+
+
+def _get_fractions_by_study_region_id(sr_id):
+    """
+    FIXME Missing docstring
+
+    """
+    query = """\
+SELECT
+  -- sr.id AS sr_id,
+  -- grg.iso,grg.g0name,grg.g1name,grg.g2name,grg.g3name,
+  dg.is_urban, (dg.occupancy_id=0) AS is_residential,
+  dv.building_type, building_fraction, dwelling_fraction,
+  replace_cost_per_area, avg_dwelling_per_build, avg_floor_area
+  FROM ged2.study_region sr
+  JOIN ged2.distribution_group dg
+    ON dg.study_region_id=sr.id
+  JOIN ged2.distribution_value dv
+    ON dv.distribution_group_id = dg.id
+  JOIN ged2.geographic_region_gadm grg
+    ON grg.region_id=sr.geographic_region_id
+ WHERE sr.id=5577
+   -- Residential = 0, non-res=1
+    -- AND dg.occupancy_id=0 AND dg.is_urban
+  ORDER BY dg.id
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [sr_id])
 
     return cursor.fetchall()

@@ -375,6 +375,33 @@ def get_studies_by_country(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
+def get_fractions_by_study_region_id(request):
+    """
+    FIXME Missing docstring
+    """
+    sr_id = request.GET.get('sr_id')
+    if not sr_id:
+        msg = 'A study region id (parameter "sr_id") must be provided.'
+        response = HttpResponse(msg, status="400")
+        return response
+    fractions = []
+    FractionRecord = namedtuple(
+        'FractionRecord',
+        'is_urban is_residential building_type building_fraction'
+        ' dwelling_fraction replace_cost_per_area avg_dwelling_per_build'
+        ' avg_floor_area')
+    for sr in map(FractionRecord._make, util._get_fractions_by_study_region_id(
+            sr_id)):
+        fractions.append(dict(sr._asdict()))
+    response_data = json.dumps(fractions)
+    response = HttpResponse(response_data, mimetype='text/json')
+    return response
+
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
 def export_population(request):
     """
     Perform a streaming export of the requested exposure data.

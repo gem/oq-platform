@@ -29,7 +29,8 @@ from openquakeplatform.exposure.views import (export_building,
                                               get_country_list,
                                               get_geographic_regions_by_iso,
                                               get_all_studies,
-                                              get_studies_by_country)
+                                              get_studies_by_country,
+                                              get_fractions_by_study_region_id)
 
 
 urlpatterns = patterns(
@@ -45,4 +46,6 @@ urlpatterns = patterns(
     url(r'^get_geographic_regions_by_iso', get_geographic_regions_by_iso),
     url(r'^get_all_studies', get_all_studies),
     url(r'^get_studies_by_country', get_studies_by_country),
+    url(r'^get_fractions_by_study_region_id',
+        get_fractions_by_study_region_id),
 )
