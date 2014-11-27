@@ -22,9 +22,9 @@ class backinheritance(object):
         model_descr: model description instance of the specialized instance
         item:        item istance of the specialized instance
     '''
-    def __init__(self, model_descr, field):
+    def __init__(self, model_descr, item):
         self.model_descr = model_descr
-        self.field = field
+        self.item = item
 
 
 class model_refs(object):
@@ -352,8 +352,7 @@ models_descr['vulnerability.fragilityfunc'] = model_description(
 models_descr['vulnerability.generalinformation'] = model_description(
     'vulnerability.generalinformation',
     lambda i: [ i['fields']['name'] ],
-    {'owner': model_refs('auth.user', False),},
-    group="vulnerability.generalinformation")
+    {'owner': model_refs('auth.user', False),})
 
 # test models
 models_descr['test.one2one'] = model_description(
@@ -393,7 +392,7 @@ def rebuild_order():
     models_order = []
     while reloop:
         for model, descr in models_descr_old.iteritems():
-            pdebug(1, "rebuild_order: model %s" % model)
+            pdebug(2, "rebuild_order: model %s" % model)
             if first_loop:
                 first_loop = False
                 if descr.refs == {}:
@@ -583,6 +582,9 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     # add the item again to the key based list of items
     updatesk_gr[model][key_get(md, item)] = item
 
+    for backinhe in item.get('__bachinhe__', []):
+        update_pk(updates_gr, updatesk_gr, backinhe.model.name, backinhe.item, maxpks, new_pk)
+
     # if another item had the same pk value of new_pk before swap it
     # with the old pk value of the updated item
     if item_same_pk is not None:
@@ -672,13 +674,15 @@ def consistencymeter(dates_gr):
             for ref_field, ref in md.refs.iteritems():
                 ref_md = models_descr[ref.model]
                 pdebug(2, "CC: REF_FIELD, REF.MODEL: %s, %s, %s" % (ref_field, ref.model, ref_md.natural))
-                if not item['fields'][ref_field]:
+                ref_value = get_value(item, ref_field)
+                if not ref_value:
                     continue
+
                 cm_out['fields_n'] += 1
-                ty = type(item['fields'][ref_field])
+                ty = type(ref_value)
 
                 if ref_md.natural and ref.is_many:
-                    if type(item['fields'][ref_field][0]) is not list:
+                    if type(ref_value[0]) is not list:
                         pdebug(1, "consistencymeter:\n  model: %s\n"
                                + "natural key field: %s  ref.model: %s\n"
                                + "item: %s\nwrong field fk type\n" %
@@ -686,14 +690,11 @@ def consistencymeter(dates_gr):
                         return False
                 elif ((ref_md.natural and not ref.is_many) or
                       (not ref_md.natural and ref.is_many)):
-                    if type(item['fields'][ref_field]) is not list:
-                        pdebug(1, "consistencymeter:\n  model: %s\n"
-                               + "natural key field: %s  ref.model: %s\n"
-                               + "item: %s\nwrong field fk type\n" %
-                               (model, ref_field, ref.model, str(item)))
+                    if type(ref_value) is not list:
+                        pdebug(1, "consistencymeter:\n  model: %s\nref field: %s  ref.model: %s\nitem: %s\nwrong field fk type\n" % (model, ref_field, ref.model, str(item)))
                         return False
                 elif (not ref_md.natural and not ref.is_many):
-                    if type(item['fields'][ref_field]) is list:
+                    if type(ref_value) is list:
                         pdebug(1, "consistencymeter:\n  model: %s\n"
                                + "natural key field: %s  ref.model: %s\n"
                                + "item: %s\nwrong field fk type\n" %
@@ -703,10 +704,10 @@ def consistencymeter(dates_gr):
                 if ref_md.natural is not None:
                     if ref.is_many:
                         # one2many case
-                        refs_fk = item['fields'][ref_field]
+                        refs_fk = ref_value
                     else: # if ref.is_many:
                         # any2one case:
-                        refs_fk = [ item['fields'][ref_field] ]
+                        refs_fk = [ ref_value ]
 
                     for fk in refs_fk:
                         for fktem in dates_gr[ref.model]:
@@ -721,9 +722,9 @@ def consistencymeter(dates_gr):
 
                     # many2many case
                     if ref.is_many:
-                        refs_fk = item['fields'][ref_field]
+                        refs_fk = ref_value
                     else:
-                        refs_fk = [ item['fields'][ref_field] ]
+                        refs_fk = [ ref_value ]
 
 
                     for fk in refs_fk:
@@ -1037,6 +1038,12 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
 
         md = models_descr[model]
 
+        # if inheriting from another model skip this verification (will be performed
+        # on the inherited model instance)
+        if md.inher:
+            pdebug(2, "Model: %s inher, skip it" % md.name )
+            continue
+
         for item in updates_gr[model]:
             if item.get('__replace__', None):
                 # this item replace an old item associated with it (by grouping only, currently)
@@ -1058,16 +1065,13 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
                 # item already exists ?
                 for otem in oldates_gr[model] + finals_gr[model]:
                     if item_compare(item, otem, pk_included=True):
-                        pdebug(1, "identical items, skip it")
+                        pdebug(2, "identical items, skip it")
                         # identical case: continue
                         skip_it = True
                         break
 
                     # no: pk key case
-                    item_new = copy.deepcopy(item)
-                    pdebug(2, "OTEM: %s" % otem)
-                    item_new['pk'] = otem['pk']
-                    if item_compare(item_new, otem, pk_included=True):
+                    if item_compare(item, otem, pk_included=False):
                         # identical items except for pk, skip it and update all references
                         pdebug(1, "identical item except for pk, skip it and update all references")
                         skip_it = True
@@ -1075,7 +1079,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
                         break
 
                 if skip_it:
-                    pdebug(1, "SKIP IT")
+                    pdebug(2, "SKIP IT")
                     if not include_skipped:
                         continue
                 else:
@@ -1086,24 +1090,27 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
                                 new_pk = oldels[model].newpk()
                                 pdebug(1, "NEWPK: %d" % new_pk)
                                 update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk)
-                                item['pk'] = new_pk
                                 break
 
-                pdebug(1, "ADD IT")
+                pdebug(2, "ADD IT")
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
                 finals.append(item)
+                for backinhe in item.get('__backinhe__', []):
+                    finals_gr[backinhe.model_descr.name].append(backinhe.item)
+                    kappend(finalsk_gr, backinhe.model_descr.name, backinhe.item)
+                    finals.append(backinhe.item)
 
             else: # if not md.natural:
-                pdebug(1, "ITEM: [%s]" % item)
+                pdebug(3, "ITEM: [%s]" % item)
                 skip_it = False
                 found_it = False
 
                 # item already exists ?
                 for otem in oldates_gr[model] + finals_gr[model]:
-                    pdebug(2, "OTEM: [%s]" % otem)
+                    pdebug(3, "OTEM: [%s]" % otem)
                     if item_compare(item, otem, pk_included=True):
-                        pdebug(1, "identical items, skip it")
+                        pdebug(2, "identical items, skip it")
                         # identical case: continue
                         found_it = True
                         skip_it = True
@@ -1115,7 +1122,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
                         found_it = True
 
                         # no: pk key case
-                        pdebug(2, "OTEM: %s" % otem)
+                        pdebug(3, "OTEM: %s" % otem)
                         if item_compare(item, otem, pk_included=True):
                             # identical items except for pk, skip it and update all references
                             pdebug(1, "identical item except for pk, skip it and update all references")
@@ -1138,6 +1145,11 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
                                 update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk)
                                 item['pk'] = new_pk
                                 break
+
+                for backinhe in item.get('__bachinhe__', []):
+                    finals_gr[backinhe.model_descr.name].append(backinhe.item)
+                    kappend(finalsk_gr, backinhe.model_descr.name, backinhe.item)
+                    finals.append(backinhe.item)
 
                 pdebug(1, "ADD IT")
                 finals_gr[model].append(item)
