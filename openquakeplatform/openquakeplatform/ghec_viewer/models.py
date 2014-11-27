@@ -1,8 +1,10 @@
 from django.contrib.gis.db import models
 
+# WARNING: this model is unmanaged, custom SQL is used to create the table (look inside sql/*.sql)
+
 # En    Source    Year      Mo        Da        Ho        Mi        Se        Area      Lat       Lon       LatUnc    LonUnc    EpDet     Dep       Io        Msource   M         MUnc      MType     MDet      MDPSource         MDPn      MDPIx     MDPsc     Remarks GEHid
 # en(y) src(y)    yea(y)    mon(n)    day(n)    hou(n)    min(n)    sec(n)    are(n)    lat(y)    lon(y)    latunc(n) lonunc(n) epdet(n)  dep(n)    io(n)     msrc(y)   m(y)      munc(n)   mtyp(n)   mdet(n)   mdpsrc(n)         mdpn(n)   mdpix(n)  mdpsc(n)  rem(n)  gid(y)
-#  
+
 
 class Measure(models.Model):
     id = models.IntegerField(primary_key=True, null=False, blank=False)

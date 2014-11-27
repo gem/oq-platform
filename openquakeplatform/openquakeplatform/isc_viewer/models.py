@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
 
+# WARNING: this model is unmanaged, custom SQL is used to create the table (look inside sql/*.sql)
+
 # date, lat, lon, smajaz, sminax, strike, depth, unc , mw, unc , s, mo, fac, auth ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt
 
 
