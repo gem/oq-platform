@@ -7,136 +7,18 @@ import copy
 from pprint import pprint
 from collections import OrderedDict
 from django.core.management import call_command, execute_manager
-
+import updatures
+from updatures.classes import backinheritance, model_refs, model_description, models_descr
+import updatures.models_descr.tests
+import updatures.models_descr.auth
+import updatures.models_descr.vulnerability
 import pdb
 
-updatures_debug_level = 0
-
 def pdebug(level, s):
-    if updatures_debug_level < level:
+    if updatures.debug_level < level:
         return
     print s
 
-class backinheritance(object):
-    '''
-        model_descr: model description instance of the specialized instance
-        item:        item istance of the specialized instance
-    '''
-    def __init__(self, model_descr, item):
-        self.model_descr = model_descr
-        self.item = item
-
-
-class model_refs(object):
-    '''
-        model:   model name of referenced item (string)
-        is_many: if single or multiple fk (bool)
-    '''
-    def __init__(self, model, is_many):
-        self.model =   model
-        self.is_many = is_many
-
-
-class model_description(object):
-    '''
-    inheritance management:
-
-      - first step during the loading phase:
-          . for each inheriting model record must exists the inherited record
-          . assigning a '__backinhe__' field that link { 'model', 'item' }
-          . set the model_description as 'is_inherited'
-
-      - second step: filtering not inherited instances
-          . if an inherited model instance havn't '__backinhe__' field: remove it
-
-
-      - third step in check integrity key phase:
-          . for each inherited model, extend the comparison and the pk substitution
-            and skip models inheriting another
-
-      name - name of the class
-      natural - function to extract natural key used
-      refs  - dict of fk to other models (model_refs class as values)
-      group - reference to another model that is "header" of multiple objects group
-      pk_natural - True if pk is not a self-assigned incremental integer
-      inher - None or the inherited model
-
-    '''
-    def __init__(self, name, natural, refs, group=None, pk_natural=False, inher=None):
-        self.name = name
-        self.natural = natural
-        self.refs = refs
-        self.group = group
-        self.pk_natural = pk_natural
-        self.inher = inher
-        self.is_inherited = False # set by inheriting_set function
-
-models_descr = OrderedDict()
-
-# auth models
-models_descr['auth.permission'] = model_description(
-    'auth.permission',
-    lambda i: [ i['fields']['codename'], i['fields']['content_type'][0], i['fields']['content_type'][1] ],
-    {})
-
-models_descr['auth.group'] = model_description(
-    'auth.group',
-    lambda i: [ i['fields']['name'] ],
-    {'permissions': model_refs('auth.permission', True)})
-
-models_descr['auth.user'] = model_description(
-    'auth.user',
-    lambda i: [ i['fields']['username'] ],
-    {'user_permissions': model_refs('auth.permission', True),
-     'groups':           model_refs('auth.group', True)})
-
-models_descr['account.account'] = model_description(
-    'account.account',
-    None,
-    {'user':             model_refs('auth.user', False)})
-
-# account models
-models_descr['account.signupcode'] = model_description(
-    'account.signupcode',
-    None,
-    {'inviter':          model_refs('auth.user', False)})
-
-models_descr['account.signupcodeextended'] = model_description(
-    'account.signupcodeextended',
-    None,
-    {'signupcode':       model_refs('account.signupcode', False)}) # signupcode is pk too, strange case
-
-models_descr['account.signupcoderesult'] = model_description(
-    'account.signupcoderesult',
-    None,
-    {'signup_code':      model_refs('account.signupcode', False),
-     'user':             model_refs('auth.user', False)})
-
-models_descr['account.emailaddress'] = model_description(
-    'account.emailaddress',
-    None,
-    {'user':             model_refs('auth.user', False)})
-
-models_descr['account.emailconfirmation'] = model_description(
-    'account.emailconfirmation',
-    None,
-    {'email_address':    model_refs('account.emailaddress', False)})
-
-models_descr['account.accountdeletion'] = model_description(
-    'account.accountdeletion',
-    None,
-    {'user':             model_refs('auth.user', False)})
-
-    # maps models
-models_descr['maps.map'] = model_description(
-    'maps.map',
-    None,
-    {})
-
-models_descr['maps.maplayer'] = model_description(
-    'maps.maplayer',
-    None,
-    {'map':              model_refs('maps.map', False)})
 
 # maps models
 models_descr['maps.map'] = model_description(
@@ -148,239 +30,6 @@ models_descr['maps.maplayer'] = model_description(
     'maps.maplayer',
     None,
     {'map':              model_refs('maps.map', False)})
-
-# vulnerability models
-models_descr['vulnerability.qrsempirical'] = model_description(
-    'vulnerability.qrsempirical',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func': model_refs('vulnerability.fragilityfunc', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.qrsanalytical'] = model_description(
-    'vulnerability.qrsanalytical',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.statmodel'] = model_description(
-    'vulnerability.statmodel',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.statmodelfittingmethod'] = model_description(
-    'vulnerability.statmodelfittingmethod',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.modelfittingmethodassumption'] = model_description(
-    'vulnerability.modelfittingmethodassumption',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.fitassessmentgoodness'] = model_description(
-    'vulnerability.fitassessmentgoodness',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.procconstrint'] = model_description(
-    'vulnerability.procconstrint',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.statisticalinformation'] = model_description(
-    'vulnerability.statisticalinformation',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func':              model_refs('vulnerability.fragilityfunc', False),
-     'vulnerability_func':          model_refs('vulnerability.vulnerabilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.empiricalmodelinfo'] = model_description(
-    'vulnerability.empiricalmodelinfo',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.analysistype'] = model_description(
-    'vulnerability.analysistype',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.analyticalmodelinfo'] = model_description(
-    'vulnerability.analyticalmodelinfo',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False)},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.cc_analysistype'] = model_description(
-    'vulnerability.cc_analysistype',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.cc_analyticalmodelinfo'] = model_description(
-    'vulnerability.cc_analyticalmodelinfo',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'capacity_curve_func': model_refs('vulnerability.capacitycurvefunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.country'] = model_description(
-    'vulnerability.country',
-    None,
-    {}, pk_natural=True)
-
-models_descr['vulnerability.geoapplicability'] = model_description(
-    'vulnerability.geoapplicability',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'general_information': model_refs('vulnerability.generalinformation', False),
-     'countries':           model_refs('vulnerability.country', True)},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.taxonomytype'] = model_description(
-    'vulnerability.taxonomytype',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.cc_predictorvar'] = model_description(
-    'vulnerability.cc_predictorvar',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'capacity_curve_func': model_refs('vulnerability.capacitycurvefunc', False)},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.capacitycurvefunc'] = model_description(
-    'vulnerability.capacitycurvefunc',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'general_information': model_refs('vulnerability.generalinformation', False)},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.funcdistrdtldiscr'] = model_description(
-    'vulnerability.funcdistrdtldiscr',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'damage_to_loss_func': model_refs('vulnerability.damagetolossfunc', False)},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.damagetolossfunc'] = model_description(
-    'vulnerability.damagetolossfunc',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'general_information': model_refs('vulnerability.generalinformation', False)},
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.funcdistrvulncont'] = model_description(
-    'vulnerability.funcdistrvulncont',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.funcdistrvulndiscr'] = model_description(
-    'vulnerability.funcdistrvulndiscr',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.evaluationofim'] = model_description(
-    'vulnerability.evaluationofim',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.predictorvar'] = model_description(
-    'vulnerability.predictorvar',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'vulnerability_func': model_refs('vulnerability.vulnerabilityfunc', False),
-     'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.vulnerabilityfunc'] = model_description(
-    'vulnerability.vulnerabilityfunc',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'general_information': model_refs('vulnerability.generalinformation', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.funcdistrfragcont'] = model_description(
-    'vulnerability.funcdistrfragcont',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.funcdistrfragdiscr'] = model_description(
-    'vulnerability.funcdistrfragdiscr',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'fragility_func':     model_refs('vulnerability.fragilityfunc', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.engineeringdemandpar'] = model_description(
-    'vulnerability.engineeringdemandpar',
-    None,
-    {'owner': model_refs('auth.user', False),})
-
-models_descr['vulnerability.fragilityfunc'] = model_description(
-    'vulnerability.fragilityfunc',
-    None,
-    {'owner': model_refs('auth.user', False),
-     'general_information':    model_refs('vulnerability.generalinformation', False),
-     },
-    group="vulnerability.generalinformation")
-
-models_descr['vulnerability.generalinformation'] = model_description(
-    'vulnerability.generalinformation',
-    lambda i: [ i['fields']['name'] ],
-    {'owner': model_refs('auth.user', False),})
-
-# test models
-models_descr['test.one2one'] = model_description(
-    'test.one2one',
-    None,
-    {'leaf': model_refs('test.leaf', False)})
-
-models_descr['test.one2many'] = model_description(
-    'test.one2many',
-    None,
-    {'leafs': model_refs('test.leaf', True)})
-
-models_descr['test.leaf'] = model_description(
-    'test.leaf',
-    None,
-    {})
-
-# test2
-models_descr['test2.generic'] = model_description(
-    'test2.generic',
-    None,
-    {})
-
-models_descr['test2.specific'] = model_description(
-    'test2.specific',
-    None,
-    {'pk': model_refs('test2.generic', False)},
-    inher='test2.generic')
 
 
 
@@ -943,7 +592,7 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
     return result
 
 
-def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_output=False, debug=None):
+def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort_output=False, debug=None):
     """
 
     - load from fixture in updates list
@@ -959,10 +608,10 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
 
     """
 
-    global models_order, updatures_debug_level
+    global models_order
 
     if debug is not None:
-        updatures_debug_level = debug
+        updatures.debug_level = debug
 
     models_order = rebuild_order()
     model_groups = model_groups_get()
@@ -976,7 +625,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
     oldates = []
     finals = []
 
-    pdebug(1, "DEBUG LEVEL: %d" % updatures_debug_level)
+    pdebug(1, "DEBUG LEVEL: %d" % updatures.debug_level)
 
     for fname in argv:
         pdebug(1, "FNAME %s" % fname)
@@ -988,7 +637,7 @@ def updatures(argv, output=None, fakeold=False, check_consistency=True, sort_out
     updates_gheads = grouping_set(updates_gr, updatesk_gr)
     inheriting_set(updates_gr, updatesk_gr)
 
-    if updatures_debug_level > 0:
+    if updatures.debug_level > 0:
         for ghead in updates_gheads:
             print "MODEL: %s" % ghead
             for i in updates_gr[ghead]:
@@ -1206,4 +855,4 @@ if __name__ == "__main__":
             argv.append(arg)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
-    sys.exit(updatures(argv, debug=debug, sort_output=sort_output))
+    sys.exit(updatures_func(argv, debug=debug, sort_output=sort_output))

@@ -3,15 +3,14 @@ import sys
 import StringIO
 import json
 
+from updatures.app import updatures_app
+
 import pdb, sys, traceback
 def info(type, value, tb):
     traceback.print_exception(type, value, tb)
     pdb.pm()
 sys.excepthook = info
 
-sys.path.append('..')
-
-from updatures import updatures
 
 test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
                    '003nat-identical', '004nat-pk-already-exists',
@@ -37,7 +36,7 @@ if __name__ == "__main__":
     test_result = 0
     for test in test_list:
         output = StringIO.StringIO()
-        result = updatures(['data/' + test + '_new.json'], output=output,
+        result = updatures_app(['data/' + test + '_new.json'], output=output,
                            fakeold='data/' + test + '_old.json',
                            sort_output=True, debug=debug)
 
