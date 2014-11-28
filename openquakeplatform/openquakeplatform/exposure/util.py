@@ -263,27 +263,27 @@ ORDER BY g1name, g2name, g3name;
 
 
 def _get_all_studies():
-    """ 
+    """
     Get GED studies for all national levels
     Records will be in the format:
     iso, num_l1_studies, study_id, country_name, study_name, has_nonres
     """
     query = """\
-SELECT 
+SELECT
   iq.iso, iq.num_l1_studies, iq.study_id, iq.g0name AS country_name,
-  -- Construct sensible study name 
+  -- Construct sensible study name
   CASE WHEN s2.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
         ELSE s2.name
   END AS study_name,
   -- Only PAGER studies have non residential data
-  s2.notes LIKE '%%PAGER%%' AS has_nonres  
+  s2.notes LIKE '%%PAGER%%' AS has_nonres
   FROM (
         -- List of countries with number of sub-national studies
-        SELECT grg.g0name, s.id AS study_id, 
+        SELECT grg.g0name, s.id AS study_id,
                grg.iso, COUNT(sr.id) AS num_l1_studies
           FROM ged2.geographic_region_gadm grg
-          JOIN ged2.study_region sr 
+          JOIN ged2.study_region sr
             ON sr.geographic_region_id=grg.region_id
           JOIN ged2.study s ON s.id=sr.study_id
          WHERE s.id NOT IN (447,449)
@@ -302,6 +302,7 @@ def _get_studies_by_country(iso, level_filter, study_filter):
     If level_filter is not specified, all studies are retrieved
     Otherwise, if level_filter is 'national' or 'subnational',
     only national or only subnational studies are retrieved.
+    The output includes grid counts and bounding boxes.
     """
     if level_filter is None:
         query_filter = ""  # Get all studies
@@ -314,30 +315,67 @@ def _get_studies_by_country(iso, level_filter, study_filter):
     if study_filter is not None:
         try:
             study_filter = float(study_filter)  # This also escapes the value
-            query_filter += "\n AND s.id = %s\n" % study_filter      
+            query_filter += "\n AND s.id = %s\n" % study_filter
         except ValueError:
             raise
     query = """\
 SELECT
   -- Study Region ID (NOT geo region ID)
   sr.id AS study_region_id,
-  grg.g1name, grg.g2name, grg.g3name, 
+  -- grg.g0name,
+  grg.g1name, grg.g2name, grg.g3name,
   -- sensible study name
   CASE WHEN s.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
         ELSE s.name
   END AS study_name,
   -- Only PAGER studies hav non residential data
-  s.notes LIKE '%%PAGER%%' AS has_nonres  
-  FROM ged2.geographic_region_gadm grg 
-  JOIN ged2.study_region sr 
+  s.notes LIKE '%%PAGER%%' AS has_nonres,
+  gr.tot_pop, gr.tot_grid_count,
+  -- Corners of bounding box - null if grid_count==0
+  ST_XMin(bounding_box) AS xmin, ST_YMin(bounding_box) AS ymin,
+  ST_XMax(bounding_box) AS xmax, ST_YMax(bounding_box) AS ymax
+  FROM ged2.geographic_region_gadm grg
+  JOIN ged2.study_region sr
     ON sr.geographic_region_id=grg.region_id
-  JOIN ged2.study s 
-    ON s.id=sr.study_id    
- WHERE grg.iso=%s{} 
+  JOIN ged2.study s
+    ON s.id=sr.study_id
+  JOIN ged2.geographic_region gr
+    ON gr.id=sr.geographic_region_id
+ WHERE grg.iso=%s{}
  ORDER BY sr.id
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query.format(query_filter), [iso])
+
+    return cursor.fetchall()
+
+
+def _get_fractions_by_study_region_id(sr_id):
+    """
+    FIXME Missing docstring
+
+    """
+    query = """\
+SELECT
+  -- sr.id AS sr_id,
+  -- grg.iso,grg.g0name,grg.g1name,grg.g2name,grg.g3name,
+  dg.is_urban, (dg.occupancy_id=0) AS is_residential,
+  dv.building_type, building_fraction, dwelling_fraction,
+  replace_cost_per_area, avg_dwelling_per_build, avg_floor_area
+  FROM ged2.study_region sr
+  JOIN ged2.distribution_group dg
+    ON dg.study_region_id=sr.id
+  JOIN ged2.distribution_value dv
+    ON dv.distribution_group_id = dg.id
+  JOIN ged2.geographic_region_gadm grg
+    ON grg.region_id=sr.geographic_region_id
+ WHERE sr.id=%s
+   -- Residential = 0, non-res=1
+    -- AND dg.occupancy_id=0 AND dg.is_urban
+  ORDER BY dg.id
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [sr_id])
 
     return cursor.fetchall()
