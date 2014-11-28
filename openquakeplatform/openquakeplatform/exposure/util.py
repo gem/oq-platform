@@ -370,7 +370,7 @@ SELECT
     ON dv.distribution_group_id = dg.id
   JOIN ged2.geographic_region_gadm grg
     ON grg.region_id=sr.geographic_region_id
- WHERE sr.id=5577
+ WHERE sr.id=%s
    -- Residential = 0, non-res=1
     -- AND dg.occupancy_id=0 AND dg.is_urban
   ORDER BY dg.id
