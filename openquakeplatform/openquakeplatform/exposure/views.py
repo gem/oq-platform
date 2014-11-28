@@ -338,11 +338,18 @@ def get_studies_by_country(request):
                          If this parameter is not provided, all studies are
                          retrieved.
     :param study_filter: (optional) study id
-    :return: json object containing the list of studies
+    :return: json object containing the list of studies. For each study,
+             the output contains the following fields:
+             study_region_id, g1name, g2name, g3name, study_name, has_nonres,
+             tot_pop, tot_grid_count, xmin, ymin, xmax, ymax
     """
     iso = request.GET.get('iso')
     if not iso:
         msg = 'A country ISO code must be provided.'
+        response = HttpResponse(msg, status="400")
+        return response
+    if len(iso) != 3:
+        msg = 'Please use a 3 characters ISO code.'
         response = HttpResponse(msg, status="400")
         return response
     level_filter = request.GET.get('level_filter')
@@ -355,13 +362,41 @@ def get_studies_by_country(request):
     studies = []
     StudyRecord = namedtuple(
         'StudyRecord',
-        'study_region_id g1name g2name g3name study_name has_nonres')
+        'study_region_id g1name g2name g3name study_name has_nonres'
+        ' tot_pop tot_grid_count xmin ymin xmax ymax')
     for sr in map(StudyRecord._make, util._get_studies_by_country(
             iso, level_filter, study_filter)):
         studies.append(dict(sr._asdict()))
     response_data = json.dumps(studies)
     response = HttpResponse(response_data, mimetype='text/json')
     return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_fractions_by_study_region_id(request):
+    """
+    FIXME Missing docstring
+    """
+    sr_id = request.GET.get('sr_id')
+    if not sr_id:
+        msg = 'A study region id (parameter "sr_id") must be provided.'
+        response = HttpResponse(msg, status="400")
+        return response
+    fractions = []
+    FractionRecord = namedtuple(
+        'FractionRecord',
+        'is_urban is_residential building_type building_fraction'
+        ' dwelling_fraction replace_cost_per_area avg_dwelling_per_build'
+        ' avg_floor_area')
+    for sr in map(FractionRecord._make, util._get_fractions_by_study_region_id(
+            sr_id)):
+        fractions.append(dict(sr._asdict()))
+    response_data = json.dumps(fractions)
+    response = HttpResponse(response_data, mimetype='text/json')
+    return response
+
 
 
 @condition(etag_func=None)
