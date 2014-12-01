@@ -351,7 +351,7 @@ SELECT
     return cursor.fetchall()
 
 
-def _get_fractions_by_study_region_id(sr_id):
+def _stream_fractions_by_study_region_id(sr_id):
     """
     FIXME Missing docstring
 
@@ -377,5 +377,17 @@ SELECT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [sr_id])
+    column_names = tuple(description[0] for description in cursor.description)
+    is_first_iteration = True
+    while True:
+        if is_first_iteration:
+            is_first_iteration = False
+            yield column_names
+        else:
+            row = cursor.fetchone()
+            if row is None:
+                break
+            yield row
+    return
 
     return cursor.fetchall()
