@@ -65,8 +65,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     // National level building exposure download form
     function nationalForm(study) {
         return '<form id="exposure-building-form"'+
-                    '<h3>Study: '+study.country_name+' '+study.study_name+'</h3></br>'+
-                    '<p><b><label for="id_timeOfDay_0">Time of Day:</label></br></b>'+
+                    '<h3>Building Exposure Download Form</h3></br>'+
+                    '<p><label for="id_timeOfDay_0">Time of Day:</label></br>'+
                     '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
                     '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
                     '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
@@ -91,13 +91,17 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     // Watch for a selection from the national list
     $scope.changeSelection = function(study) {
         if (study.num_l1_studies <= 1) {
+            // The user has selected a national study
             console.log('study:');
             console.log(study);
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
                 console.log('data:');
                 console.log(data);
-                $('#countriesListDialog').dialog('option', 'title', 'National Building Exposure Download Form');
+                // Focus the map on the selected region
+                map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
+
+                $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countrySelectionForm').insertAfter('#countryList');
                 $('#countryList').hide();
@@ -131,14 +135,12 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
                 $('#selectBbox').button().click(function() {
                     $('#countriesListDialog').dialog('close');
-                    // Focus the map on the selected region
                     activateDrawTool();
-                    map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
                 });
             });
         } else if (study.num_l1_studies > 1) {
-            // Second level selection table
-            $('#countriesListDialog').dialog('option', 'title', 'Sub-National Selection Table');
+            // The user has selected a sub-national study
+            $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
             $('#subRegionListBack').show();
             $('#subRegionList').show();
             $('#ragionTable h3').empty();
@@ -192,7 +194,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     // Sub-national level building exposure download form
     function subNationalForm(study) {
         return '<form id="exposure-building-form" class="exposure_export_form">'+
-                '<h3>Study: '+study.g1name+' '+study.study_name+'</h3></br>'+
+                '<h3>Sub-National Building Exposure Download Form</h3></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
                 '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
@@ -211,7 +213,10 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     $scope.changeSelection = function(study) {
         console.log('study:');
         console.log(study);
-        $('#countriesListDialog').dialog('option', 'title', 'Sub-National Building Exposure Download Form');
+        // Focus the map on the selected region
+        map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
+
+        $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
         $('#exposure-building-form').empty();
         $('#subRegionForm').show();
         $('#subRegionFormBack').show();
@@ -240,17 +245,19 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
 // Back button logic
 $('#subRegionListBack').button().click(function() {
-    $('#countriesListDialog').dialog('option', 'title', 'National Selection Table');
+    $('#countriesListDialog').dialog('option', 'title', 'Admin Level 0 Selection Table');
     $('#subRegionList').hide();
     $('#countryList').show();
 });
 
 $('#subRegionFormBack').button().click(function() {
+    $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
     $('#subRegionForm').hide();
     $('#subRegionList').show();
 });
 
 $('#selectionFormBack').button().click(function() {
+    $('#countriesListDialog').dialog('option', 'title', 'Admin Level 0 Selection Table');
     $('#countrySelectionForm').hide();
     $('#countryList').show();
     $('#selectionFormBack').hide();

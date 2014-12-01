@@ -35,7 +35,7 @@ Exposure Export {{ block.super }}
 {{block.super}}
 {% verbatim %}
 <div ng-app="exposureApp" >
-  <div id="countriesListDialog" title="National Selection Table">
+  <div id="countriesListDialog" title="Admin Level 0 Selection Table">
     <div id="countryList" ng-controller="ExposureCountryList">
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
