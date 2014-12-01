@@ -96,7 +96,7 @@ NRML_FOOTER = """
 
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
-
+MAX_TOT_GRID_COUNT = 300000
 
 @allowed_methods(('GET', ))
 @sign_in_required
@@ -156,7 +156,8 @@ def get_exposure_population_form(request):
                                   context_instance=RequestContext(request))
 
 
-def _export_area_valid(lat1, lng1, lat2, lng2):
+def _export_area_valid(
+        lat1, lng1, lat2, lng2, max_area=MAX_EXPORT_AREA_SQ_DEG):
     """
     Simple validation to check the bounding box size.
 
@@ -174,7 +175,27 @@ def _export_area_valid(lat1, lng1, lat2, lng2):
             '<br />Max allowed selection area: %(max_area)s square degrees.'
         )
         msg %= dict(lat1=lat1, lng1=lng1, lat2=lat2, lng2=lng2,
-                    area=area, max_area=MAX_EXPORT_AREA_SQ_DEG)
+                    area=area, max_area=max_area)
+        return False, msg
+    return True, ''
+
+
+def _tot_grid_count_valid(sr_id):
+    StudyRegionInfoRecord = namedtuple(
+        'StudyRegionInfoRecord', 'tot_pop tot_grid_count bounding_box')
+    sr_info = []
+    for info in map(StudyRegionInfoRecord._make, util._get_study_region_info(
+            sr_id)):
+        sr_info.append(dict(info._asdict()))
+        assert len(sr_info) == 1, ('_get_study_region_info(sr_id) returned '
+                                   '%d rows. It should return one') % len(sr_info)
+    sr_info = sr_info[0]
+    if sr_info['tot_grid_count'] > MAX_TOT_GRID_COUNT:
+        msg = ('The export can not be performed because the '
+               'total grid count for study region id %s exceeds the '
+               'threshold (%s > %s)') % (sr_id,
+                                         sr_info['tot_grid_count'],
+                                         MAX_TOT_GRID_COUNT)
         return False, msg
     return True, ''
 
@@ -253,6 +274,114 @@ def export_building(request):
     response_data = _stream_building_exposure(request, output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
+    return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def export_exposure(request):
+    """
+    Perform a streaming export of the requested exposure data.
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameters:
+
+            * 'output_type' ('csv' or 'nrml')
+            * 'lng1'
+            * 'lat1'
+            * 'lng2'
+            * 'lat2'
+            * 'sr_id': a study region id
+            * 'occupancy_filter' (optional, default is residential
+                                            specify non_residential otherwise)
+    """
+    output_type = request.GET.get('output_type')
+    if not output_type or output_type not in ('csv', 'nrml'):
+        msg = ('Please provide the parameter "output_type".'
+               ' Available choices are "csv" and "nrml".')
+        response = HttpResponse(msg, status="400")
+        return response
+    if output_type == "csv":
+        content_disp = 'attachment; filename="exposure_export.csv"'
+        mimetype = 'text/csv'
+    elif output_type == "nrml":
+        content_disp = 'attachment; filename="exposure_export.xml"'
+        mimetype = 'text/plain'
+    else:
+        msg = ("Unrecognized output type '%s', only 'nrml' and 'csv' are "
+               "supported" % output_type)
+        response = HttpResponse(msg, status="400")
+        return response
+    sr_id = request.GET.get('sr_id')
+    if sr_id:
+        try:
+            sr_id = int(sr_id)
+        except ValueError:
+            msg = 'Please provide a valid (numeric) study region id'
+            response = HttpResponse(msg, status="400")
+            return response
+    else:
+        msg = 'Please provide a study region id (numeric parameter sr_id)'
+        response = HttpResponse(msg, status="400")
+        return response
+    filter_by_bounding_box = False
+    lng1 = request.GET.get('lng1')
+    lat1 = request.GET.get('lat1')
+    lng2 = request.GET.get('lng2')
+    lat2 = request.GET.get('lat2')
+    # If only a subset of lng1, lat1, lng2, lat2 is provided, raise an error
+    if lng1 or lat1 or lng2 or lat2:
+        if not lng1 or not lat1 or not lng2 or not lat2:
+            msg = 'Incomplete bounding box coordinates'
+            response = HttpResponse(msg, status="400")
+            return response
+    if lng1 and lat1 and lng2 and lat2:
+        filter_by_bounding_box = True
+        # For max area we are not using the default MAX_EXPORT_AREA_SQ_DEG here
+        valid, error = _export_area_valid(lat1, lng1, lat2, lng2, max_area=8)
+        if not valid:
+            return HttpResponse(content=error,
+                                content_type="text/html",
+                                status=403)
+    else:  # no bounding box provided; we need to check the tot_grid_count
+        valid, error = _tot_grid_count_valid(sr_id)
+        if not valid:
+            return HttpResponse(content=error,
+                                content_type="text/html",
+                                status=403)
+    occupancy_filter = request.GET.get('occupancy_filter')
+    if occupancy_filter:
+        if occupancy_filter == 'residential':
+            occupancy = 0
+        elif occupancy_filter == 'non-residential':
+            occupancy = 1
+        else:
+            msg = ("Invalid 'occupancy_filter' selection: '%s'."
+                   " Expected 'residential' or 'non-residential'."
+                   % occupancy_filter)
+            response = HttpResponse(msg, status="400")
+            return response
+    else:
+        occupancy = 0  # 'residential' by default
+    response = HttpResponse(mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    if output_type == 'csv':
+        copyright = copyright_csv(COPYRIGHT_HEADER)
+        response.write(copyright + "\n")
+        writer = csv.writer(response, delimiter=',', quotechar='"')
+        if filter_by_bounding_box:
+            for row in util._stream_exposure_by_bb_and_sr_id(
+                    lng1, lat1, lng2, lat2, sr_id, occupancy):
+                writer.writerow(row)
+        else:  # no bounding box provided
+            for row in util._stream_exposure_by_sr_id(sr_id, occupancy):
+                writer.writerow(row)
+    elif output_type == 'nrml':
+        # TODO: Implement export for nrml
+        raise NotImplementedError(
+            'output_type [%s] is not available' % output_type)
     return response
 
 
@@ -375,7 +504,14 @@ def get_studies_by_country(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
+def get_study_region_info(request):
     """
+    For a given study region id, retrieve
+    total population, total grid count and bounding box
+
+    :param sr_id: study region id
+
+    :return: json object containing tot_pop, tot_grid_count, bounding_box
     """
     sr_id = request.GET.get('sr_id')
     if sr_id:
@@ -389,7 +525,15 @@ def get_studies_by_country(request):
         msg = 'Please provide a study region id (numeric parameter sr_id)'
         response = HttpResponse(msg, status="400")
         return response
+    StudyRegionInfoRecord = namedtuple(
+        'StudyRegionInfoRecord', 'tot_pop tot_grid_count bounding_box')
+    sr_info = []
+    for info in map(StudyRegionInfoRecord._make, util._get_study_region_info(
             sr_id)):
+        sr_info.append(dict(info._asdict()))
+        assert len(sr_info) == 1, ('_get_study_region_info(sr_id) returned '
+                                   '%d rows. It should return one') % len(sr_info)
+    response_data = json.dumps(sr_info[0])
     response = HttpResponse(response_data, mimetype='text/json')
     return response
 
