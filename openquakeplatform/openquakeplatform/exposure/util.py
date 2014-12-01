@@ -351,7 +351,7 @@ SELECT
     return cursor.fetchall()
 
 
-def _get_fractions_by_study_region_id(sr_id):
+def _stream_fractions_by_study_region_id(sr_id):
     """
     FIXME Missing docstring
 
