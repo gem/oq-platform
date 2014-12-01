@@ -41,19 +41,8 @@ var app = new OQLeaflet.OQLeafletApp(THIRD_PARTY_URLS.leaflet_base_map);
 
 var startApp = function() {
     drawnItems = new L.LayerGroup();
-    // draw tool
-    drawControl = new L.Control.Draw({
-        position: 'topleft',
-        rectangle: {
-        title: 'Selection Tool',
-            allowIntersection: false,
-            shapeOptions: {
-                color: DRAW_TOOL_COLOR
-            }
-        }
-    });
 
-    // create a dropdown list of all the countries
+    // Create a dropdown list of all the countries
     var winH = $(window).height() - 200;
     var winW = $(window).width() - 200;
     $('#countriesListDialog').dialog({
@@ -85,7 +74,7 @@ var startApp = function() {
     $("#oq-body-content").width(width - 30);
 
     // Leaflet popup for the map-interactive export function
-    var exportPopup;
+    //var exportPopup;
 
     /******************
      * Overlay layers *
@@ -118,8 +107,6 @@ var startApp = function() {
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
     map.addLayer(drawnItems);
-
-    map.addControl(drawControl);
     L.control.layers(app.baseLayers, overlays).addTo(map).setPosition("topleft");
 
     // Add Wax support
@@ -184,26 +171,6 @@ var startApp = function() {
     $(document).ready(dwellingFractionSlidingPanel);
     $(document).ready(legendSlidingPanel);
 
-    var showExportButtonPopup = function(popupLatLng) {
-        var expButton = (
-            '<br />' +
-            '<div id="export_options">' +
-            'Export Options:' +
-            '<ul>' +
-            '<li><a href="#" id="export_building">Building exposure</a></li>' +
-            '<li><a href="#" id="export_population">Population exposure</a></li>' +
-            '</ul></div>' +
-            '<img id="export_button_spinner"' +
-            ' src="' + AJAX_SPINNER +'"' +
-            ' style="display: none;" />'
-        );
-
-        exportPopup = L.popup();
-        exportPopup.setContent(expButton);
-        exportPopup.setLatLng(popupLatLng);
-        exportPopup.openOn(map);
-    };
-
     /* Generic jquery error dialog, which renders to the '#error-dialog' div */
     var showErrorDialog = function(message, options) {
         // Options are optional
@@ -222,6 +189,7 @@ var startApp = function() {
         $("#error-dialog").dialog(options);
     };
 
+
     var selectArea = function(topLeft, bottomRight) {
         latlonTopLeft = topLeft;
         latlonBottomRight = bottomRight;
@@ -237,16 +205,18 @@ var startApp = function() {
         drawnItems.addLayer(rect);
     };
 
+/*
     var boundingBoxCenter = function(topLeft, bottomRight) {
         var halfWidth = (bottomRight.lng - topLeft.lng) / 2;
         var halfHeight = (bottomRight.lat - topLeft.lat) / 2;
         return new L.LatLng(topLeft.lat + halfHeight, topLeft.lng + halfWidth);
     };
-
+*/
     /*
      * Create a map selection and zoom to it, given location and zoom level
      * URL params
      */
+     /*
     var selectionFromURL = function(lat1, lng1, lat2, lng2, zoomLevel) {
         var topLeft;
         var bottomRight;
@@ -270,72 +240,12 @@ var startApp = function() {
             doExportPopulation();
         }
     };
-
-    /*
-     * When time of day is 'off', disable the 'both' selection
-     * for residential.
-     *
-     * Also, make sure the submit is enabled only if all radio button
-     * groups have a selection.
-     */
-    var buildingExportFormSelectionChanged = function() {
-        // NOTE: The radio button ids are given by Django
-        // form rendering.
-        var disableResidentialBoth = false;
-        // If 'time of day' is 'off',
-        // disable the 'both' option in the 'Residential' group,
-        // and clear the 'both' selection if it is already selected.
-        if ($("input[id=id_timeOfDay_4]:radio:checked").val() == 'off') {
-            disableResidentialBoth = true;
-
-            // if 'both' is selected AND the TOD is 'off',
-            // clear the both selection
-            if ($("input[id=id_residential_2]:radio:checked").val() == 'both') {
-                $('input[id=id_residential_2]').removeAttr('checked');
-                // Disable the submit/Download button
-                $('#exposure-bldg-download-button').attr('disabled', 'disabled');
-            }
-        }
-        $("input[id=id_residential_2]").attr('disabled',
-                                             disableResidentialBoth);
-
-        // If a subnational admin level (admin 1-3) is selected, clear the time
-        // of day selection and disable it.
-        var disableToD = false;
-        if ($('input[id=id_adminLevel_0]:radio:checked').val() == null) {
-            // A subnational selection has been made.
-            // Disable ToD:
-            $('input[name=timeOfDay]').removeAttr('checked');
-            disableToD = true;
-        }
-        $('input[name=timeOfDay]').attr('disabled', disableToD);
-
-        // Only enable the submit button if all of the radio button groups
-        // have a selection:
-        var radioSelections = [];
-        // Collect names of the radio groups with a selection:
-        $('form input[type=radio][class=exposure_export_widget]:checked').each(
-            function() {
-                radioSelections.push(this.name);
-            }
-        );
-
-        var expectedSelections = ['adminLevel', 'residential', 'outputType'];
-        if (!disableToD) {
-            expectedSelections.push('timeOfDay');
-        }
-        if (JSON.stringify(radioSelections.sort())
-                == JSON.stringify(expectedSelections.sort())) {
-            $('#exposure-bldg-download-button').removeAttr('disabled');
-        }
-        else {
-            $('#exposure-bldg-download-button').attr('disabled', 'disabled');
-        }
-    };
+*/
 
     /*
      * Show the export form as a jquery ui dialog
      */
+     /*
     var showBuildingExportForm = function(requestType) {
         console.log('made it to ther show building export form:');
 
@@ -343,9 +253,7 @@ var startApp = function() {
         $("#exposure-bldg-download-button").attr('disabled','disabled');
         //enable the submit button once the selections have been made
 
-        /*
-         * Hook in radio selection logic.
-         */
+        // Hook in radio selection logic.
         $("#exposure-building-form").change(
             buildingExportFormSelectionChanged
         );
@@ -419,7 +327,8 @@ var startApp = function() {
             }
         );
     };
-
+*/
+/*
     var populationExportFormSelectionChanged = function() {
         var radioSelections = [];
         $('form input[type=radio][class=exposure_export_widget]:checked').each(
@@ -493,12 +402,14 @@ var startApp = function() {
         );
 
     };
-
+    */
+/*
     var exportBuildingRegionClick = function() {
         // Create the building exposure download form
-        
-    };
 
+    };
+*/
+/*
     var exportBuildingCoordinatesClick = function(event) {
         event.preventDefault();
         doExportBuildingCoordinates();
@@ -508,14 +419,15 @@ var startApp = function() {
         event.preventDefault();
         doExportPopulation();
     };
-
+*/
     /*
      * Load the export form, which has all attached functionality to perform
      * the actual export.
      */
+     /*
     var doExportBuildingCoordinates = function() {
-        $("#export_options").hide();
-        $("#export_button_spinner").css("display", "");
+        //$("#export_options").hide();
+        //$("#export_button_spinner").css("display", "");
 
         var data = {lat1: latlonTopLeft.lat,
                     lng1: latlonTopLeft.lng,
@@ -568,7 +480,8 @@ var startApp = function() {
             complete: function() { map.closePopup(exportPopup); },
         });
     };
-
+*/
+/*
     var doExportPopulation = function() {
         $("#export_options").hide();
         $("#export_button_spinner").css("display", "");
@@ -615,38 +528,78 @@ var startApp = function() {
             complete: function() { map.closePopup(exportPopup); },
         });
     };
-
+*/
     var onRectangleDraw = function(e) {
-        // Clear layers, selections, and any previous download dialogs:
-        var expForm = $("form.exposure_export_form");
-        if (expForm.size()) {
-            // If the form was once loaded, dispose of it:
-            expForm.remove();
-        }
-
         // Record the bounds of the bounding box
         latlonBottomRight = e.rect._latlngs[1];
         latlonTopLeft = e.rect._latlngs[3];
         selectArea(latlonTopLeft, latlonBottomRight);
 
-        showExportButtonPopup(
-            boundingBoxCenter(latlonTopLeft, latlonBottomRight)
-        );
+        console.log('lat diff:');
+        console.log(Math.abs(e.rect._latlngs[0].lat - e.rect._latlngs[1].lat));
 
-        // Hook the export links click functionality:
-        $('#export_building').click(exportBuildingCoordinatesClick);
-        $('#export_population').click(exportPopulationClick);
-        // TODO: hook the same functionality for 'export_population'
+        console.log('long diff:');
+        console.log(Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng));
+
+        var latDiff = Math.abs(e.rect._latlngs[0].lat - e.rect._latlngs[1].lat);
+        var lonDiff = Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng);
+        var LatLngBox = latDiff + lonDiff;
+
+        if (LatLngBox > 16) {
+            var msg = 'The selected area is to large.';
+            showErrorDialog(msg);
+        } else {
+            /*
+            $.ajax({
+                type: 'get',
+                data: data,
+                url: '/exposure/get_exposure_building_form/',
+                error: function(response, error) {
+                    if (response.status == 401) {
+                        // Ask the user to login and redirect back here when
+                        // they're done logging in:
+                        var signInMsg = (
+                            // Include the error message from the server
+                            response.responseText
+                            + '<br/><a href="/accounts/login?next='
+                            + '/oq-platform2/exposure_export.html'
+                            + '%3Flat1=' + data.lat1
+                            + '%26lng1=' + data.lng1
+                            + '%26lat2=' + data.lat2
+                            + '%26lng2=' + data.lng2
+                            + '%26zoom=' + map.getZoom()
+                            + '%26export_type=building'
+                            + '">Sign in</a>'
+                        );
+                        showErrorDialog(signInMsg);
+                    }
+                    else if (response.status == 403) {
+                        showErrorDialog(
+                            response.responseText,
+                            {height: 175, width: 420}
+                        );
+                    }
+                },
+                success: function(data, textStatus, jqXHR) {
+                    if (jqXHR.status == 204) {
+                        // No data for the given bounding box selection
+                        var msg = 'No exposure data available in the selected area.';
+                        showErrorDialog(msg, {title: 'Nothing here'});
+                    }
+                    else {
+                        console.log('data:');
+                        console.log(data);
+                        $('#export_form_placeholder').html(data);
+                        var requestType = "coordinate";
+                        showBuildingExportForm(requestType);
+                    }
+                },
+                complete: function() { map.closePopup(exportPopup); },
+            });
+*/
+        }
     };
     map.on('draw:rectangle-created', onRectangleDraw);
-
-    if (URL_PARAMS.lat1 && URL_PARAMS.lng1
-            && URL_PARAMS.lat2 && URL_PARAMS.lng2
-            && URL_PARAMS.zoom && URL_PARAMS.export_type) {
-        exportFromURL(URL_PARAMS.lat1, URL_PARAMS.lng1,
-                      URL_PARAMS.lat2, URL_PARAMS.lng2,
-                      URL_PARAMS.zoom, URL_PARAMS.export_type);
-    }
 };
 
 app.initialize(startApp);

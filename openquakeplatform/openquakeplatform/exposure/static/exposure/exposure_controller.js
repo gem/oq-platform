@@ -18,6 +18,22 @@
 var app = angular.module('exposureApp', ['ngTable']);
 var data = [];
 
+var activateDrawTool = function() {
+    // draw tool
+    console.log('hi, im the draw tool:');
+    drawControl = new L.Control.Draw({
+        position: 'topleft',
+        rectangle: {
+        title: 'Selection Tool',
+            allowIntersection: false,
+            shapeOptions: {
+                color: DRAW_TOOL_COLOR
+            }
+        }
+    });
+    map.addControl(drawControl);
+};
+
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
     myService.getAllStudies().then(function(data) {
         // National level selection form
@@ -115,6 +131,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#selectBbox').button().click(function() {
                     $('#countriesListDialog').dialog('close');
                     // Focus the map on the selected region
+                    activateDrawTool();
                     map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
                 });
             });
