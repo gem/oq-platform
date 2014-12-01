@@ -613,9 +613,6 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     if debug is not None:
         updatures.debug_level = debug
 
-    models_order = rebuild_order()
-    model_groups = model_groups_get()
-
     include_skipped = True if check_consistency else False
 
     if output == None:
@@ -630,6 +627,22 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     for fname in argv:
         pdebug(1, "FNAME %s" % fname)
         updates += json.load(file(fname, 'r'))
+
+    if not fakeold:
+        # load the associated data from db
+        for k in models:
+            pdebug(1, "KEY: %s" % k)
+            fname = '/tmp/command_output_' + k + '.json'
+            with open(fname, "w") as f:
+                call_command('dumpdata', k, use_natural_keys=True,
+                             indent=4, stdout=f)
+
+            oldates += json.load(file(fname, 'r'))
+    else:
+        oldates = json.load(file(fakeold, 'r'))
+
+    models_order = rebuild_order()
+    model_groups = model_groups_get()
 
     pdebug(3, "MOP UPDATES: %s" % str(updates))
 
@@ -651,19 +664,6 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
     pdebug(3, "MOP GROUPS: %s" % str(updates_gr))
     models = inspect(updates)
-
-    if not fakeold:
-        # load the associated data from db
-        for k in models:
-            pdebug(1, "KEY: %s" % k)
-            fname = '/tmp/command_output_' + k + '.json'
-            with open(fname, "w") as f:
-                call_command('dumpdata', k, use_natural_keys=True,
-                             indent=4, stdout=f)
-
-            oldates += json.load(file(fname, 'r'))
-    else:
-        oldates = json.load(file(fakeold, 'r'))
 
     oldates_gr,oldatesk_gr = group_objs(oldates)
     oldates_gheads = grouping_set(oldates_gr, oldatesk_gr)
