@@ -88,6 +88,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '</form>';
     }
 
+    // Watch for a selection from the national list
     $scope.changeSelection = function(study) {
         if (study.num_l1_studies <= 1) {
             console.log('study:');
@@ -146,7 +147,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
             $('#countrySelectionForm').empty();
             // Populate the table
-            createRegionList(study);
+            lookupAddress(study.iso);
+            //createRegionList(study);
             // Show html elements for the table
             $("#ragionTable").show();
         }
@@ -154,32 +156,38 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 });
 
 
-app.controller('ExposureRegionList', function($scope, $filter, myService, ngTableParams)  {
-    createRegionList = function(study) {
-        myService.getRegionList(study.iso).then(function(bar) {
-            console.log('bar:');
-            console.log(bar);
+app.controller('ExposureRegionList', function($scope, $filter, $http, myService, ngTableParams)  {
 
-            $scope.tableParams2 = new ngTableParams({
-                page: 1,            // show first page
-                count: 10           // count per page
-            }, {
-                total: bar.length, // length of data
-                getData: function($defer, params) {
-                    // use build-in angular filter
-                    var orderedData = params.sorting() ?
-                            $filter('orderBy')(bar, params.orderBy()) :
-                            bar;
-                    orderedData = params.filter() ?
-                            $filter('filter')(orderedData, params.filter()) :
-                            orderedData;
+    $scope.subNationalData = [];
 
-                    params.total(orderedData.length);
-                    $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                }
-            });
+    lookupAddress = function (iso) {
+        var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
+        $http.get(url).success(function (data) {
+            console.log('data:');
+            console.log(data);
+            $scope.subNationalData = data;
+            $scope.tableParams2.reload();
         });
-    }; // end createRegionList
+    };
+
+    $scope.tableParams2 = new ngTableParams({
+        page: 1,            // show first page
+        count: 10           // count per page
+    }, {
+        total: $scope.subNationalData.length, // length of data
+        getData: function($defer, params) {
+            var currentData = $scope.subNationalData;
+            // use build-in angular filter
+            var orderedData = params.sorting() ?
+                    $filter('orderBy')(currentData, params.orderBy()) :
+                    currentData;
+            orderedData = params.filter() ?
+                    $filter('filter')(orderedData, params.filter()) :
+                    orderedData;
+            params.total(orderedData.length);
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+    });
 
     // Sub-national level building exposure download form
     function subNationalForm(study) {
@@ -267,15 +275,6 @@ app.factory('myService', function($http, $q) {
         getNationalGridCount: function(iso, study_id) {
             var deferred = $q.defer();
             $http.get('get_studies_by_country?iso='+iso+'&study_filter='+study_id+'&level_filter=national').success(function(data) {
-                deferred.resolve(data);
-            }).error(function(){
-                deferred.reject();
-            });
-            return deferred.promise;
-        },
-        getRegionList: function(iso) {
-            var deferred = $q.defer();
-            $http.get('get_studies_by_country?iso='+iso+'&level_filter=subnational').success(function(data) {
                 deferred.resolve(data);
             }).error(function(){
                 deferred.reject();
