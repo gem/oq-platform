@@ -419,7 +419,7 @@ def export_fractions_by_study_region_id(request):
         msg = 'Please provide a study region id (numeric parameter sr_id)'
         response = HttpResponse(msg, status="400")
         return response
-    filename = 'fractions_export_for_sr_id_%d.csv' % sr_id
+    filename = 'fractions_export.csv'
     content_disp = 'attachment; filename="%s"' % filename
     mimetype = 'text/csv'
     response = HttpResponse(mimetype=mimetype)
