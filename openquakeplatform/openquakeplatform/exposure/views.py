@@ -290,7 +290,6 @@ def get_geographic_regions_by_iso(request):
         msg = ('A country ISO code must be provided.')
         response = HttpResponse(msg, status="400")
         return response
-    iso = request.GET['iso']
     geographic_regions = util._get_geographic_region_id_and_name_by_iso(iso)
     response_data = json.dumps(geographic_regions)
     response = HttpResponse(response_data, mimetype='text/json')
@@ -380,10 +379,18 @@ def get_fractions_by_study_region_id(request):
     FIXME Missing docstring
     """
     sr_id = request.GET.get('sr_id')
-    if not sr_id:
-        msg = 'A study region id (parameter "sr_id") must be provided.'
+    if sr_id:
+        try:
+            sr_id = int(sr_id)
+        except ValueError:
+            msg = 'Please provide a valid (numeric) study region id'
+            response = HttpResponse(msg, status="400")
+            return response
+    else:
+        msg = 'Please provide a study region id (numeric parameter sr_id)'
         response = HttpResponse(msg, status="400")
         return response
+
     fractions = []
     FractionRecord = namedtuple(
         'FractionRecord',
