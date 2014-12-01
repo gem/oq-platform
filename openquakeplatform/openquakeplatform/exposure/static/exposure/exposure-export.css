@@ -4,10 +4,23 @@
 
 #radioCountryList {
 	float: left;
-	width: 45%;
+	width: 30%;
 }
 
 #radioSubRegionList {
 	float: left;
-	width: 45%;
+	width: 30%;
+}
+
+#exposureExportForm {
+	float: left;
+	width: 30%;
+}
+
+.ng-table {
+    border: 1px solid #000;
+}
+
+.ng-table-rowselected tr {
+    cursor: pointer;
 }

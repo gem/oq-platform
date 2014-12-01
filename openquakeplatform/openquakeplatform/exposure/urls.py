@@ -39,6 +39,10 @@ urlpatterns = patterns(
     'geonode.exposure.views',
     url(r'^$', TemplateView.as_view(
         template_name="exposure/export.html"), name='exposure'),
+    url(r'^exposure_old', TemplateView.as_view(
+        template_name="exposure/export_old.html"), name='exposure_old'),
+
+
     url(r'^validate_export', validate_export),
     url(r'^get_exposure_building_form', get_exposure_building_form),
     url(r'^get_exposure_population_form', get_exposure_population_form),

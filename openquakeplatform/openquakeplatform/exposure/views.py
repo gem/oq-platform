@@ -130,6 +130,28 @@ def get_exposure_building_form(request):
                                'lng2': lng2},
                               context_instance=RequestContext(request))
 
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_exposure_building_form_region(request):
+    # get the lat long variables from the client
+    regionId = request.GET['regionId']
+    admin_levels = util._get_available_admin_levels(regionId)
+
+    if not admin_levels:
+        # There is no grid data for any admin level; this can happen if, for
+        # example, the bounding box is drawn over the ocean somewhere.
+        return HttpResponse(status=204)
+
+    # if the admin level is okay, display the admin level selection form
+    form = forms.BuildingExposureForm(admin_levels=admin_levels)
+    return render_to_response('exposure/building_form.html',
+                              {'exposure_form': form,
+                               'lat1': lat1,
+                               'lng1': lng1,
+                               'lat2': lat2,
+                               'lng2': lng2},
+                              context_instance=RequestContext(request))
+
 
 @allowed_methods(('GET', ))
 @sign_in_required
@@ -255,6 +277,42 @@ def export_building(request):
                             content_type="text/html",
                             status=403)
 
+    output_type = request.GET['outputType']
+    content_disp = None
+    mimetype = None
+
+    if output_type == "csv":
+        content_disp = 'attachment; filename="exposure_export.csv"'
+        mimetype = 'text/csv'
+    elif output_type == "nrml":
+        content_disp = 'attachment; filename="exposure_export.xml"'
+        mimetype = 'text/plain'
+    else:
+        raise ValueError(
+            "Unrecognized output type '%s', only 'nrml' and 'csv' are "
+            "supported" % output_type
+        )
+
+    response_data = _stream_building_exposure(request, output_type)
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    return response
+
+def export_building_region(request):
+    """
+    Perform a streaming export of the requested exposure data.
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing the
+        following parameters::
+
+            * 'outputType' ('csv' or 'nrml')
+            * 'timeOfDay' ('day', 'night', 'transit', 'all', 'off')
+            * 'adminLevel' ('admin0', 'admin1', 'admin2', or 'admin3')
+            * 'regionId'
+
+    """
+    regionId = request.GET['regionId']
     output_type = request.GET['outputType']
     content_disp = None
     mimetype = None

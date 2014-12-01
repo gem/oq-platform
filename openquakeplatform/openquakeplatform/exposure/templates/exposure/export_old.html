@@ -28,47 +28,10 @@ Exposure Export {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/bootstrap.css" />
 {% endblock extra_head %}
 
 {% block body_outer %}
 {{block.super}}
-{% verbatim %}
-<div ng-app="exposureApp" >
-  <div id="countriesListDialog" title="Admin Level 0 Selection Table">
-    <div id="countryList" ng-controller="ExposureCountryList">
-      <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
-        <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
-                ng-class="{'active': record.$selected}">
-          <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{record.country_name}}</td>
-          <td data-title="'Number of Studies'">{{record.num_l1_studies}}</td>
-          <td data-title="'Study'">{{record.study_name}}</td>
-          <td data-title="'Has Residential'">{{record.has_nonres}}</td>
-        </tr>
-      </table>
-    </div>
-    <div id="subRegionList" ng-controller="ExposureRegionList">
-      <div id="ragionTable">
-        <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
-          <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
-                  ng-class="{'active': record.$selected}">
-            <td data-title="'Region Level 1'" filter="{ 'g1name': 'text' }">{{record.g1name}}</td>
-            <td data-title="'Region Level 2'" filter="{ 'g2name': 'text' }">{{record.g2name}}</td>
-          </tr>
-        </table>
-      </div>
-      <input type="button" id="subRegionListBack" value="< Back">
-    </div>
-    <div id="selectionForm">
-      <div id="countrySelectionForm"></div>
-      <input type="button" id="selectionFormBack" value="< Back">
-    </div>
-    <div id="subRegionForm">
-      <input type="button" id="subRegionFormBack" value="< Back">
-    </div>
-  </div>
-</div>
-{% endverbatim %}
 <div id="sidePanel-leg">
   <div id="panelContent-leg">
     <div class="map-legend-urban">
@@ -259,6 +222,5 @@ Exposure Export {{ block.super }}
 
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_export.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_controller.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_export_old.js"></script>
 {% endblock extra_script %}
