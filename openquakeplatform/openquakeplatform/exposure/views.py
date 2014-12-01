@@ -379,10 +379,18 @@ def get_fractions_by_study_region_id(request):
     FIXME Missing docstring
     """
     sr_id = request.GET.get('sr_id')
-    if not sr_id:
-        msg = 'A study region id (parameter "sr_id") must be provided.'
+    if sr_id:
+        try:
+            sr_id = int(sr_id)
+        except ValueError:
+            msg = 'Please provide a valid (numeric) study region id'
+            response = HttpResponse(msg, status="400")
+            return response
+    else:
+        msg = 'Please provide a study region id (numeric parameter sr_id)'
         response = HttpResponse(msg, status="400")
         return response
+
     fractions = []
     FractionRecord = namedtuple(
         'FractionRecord',
