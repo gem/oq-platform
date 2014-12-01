@@ -286,6 +286,7 @@ SELECT
           JOIN ged2.study_region sr
             ON sr.geographic_region_id=grg.region_id
           JOIN ged2.study s ON s.id=sr.study_id
+         -- Filter out a couple of studies that will likely be removed
          WHERE s.id NOT IN (447,449)
          GROUP BY grg.g0name, s.id, grg.iso ORDER BY g0name
    ) iq  -- inner query
@@ -390,4 +391,76 @@ SELECT
             yield row
     return
 
+
+def _get_study_region_info(sr_id):
+    """
+    Retrieve total population, total grid count and bounding box for
+    a study region, provided the study region id
+    """
+    query = """\
+SELECT gr.tot_pop, gr.tot_grid_count, ST_AsText(gr.bounding_box)
+  FROM ged2.study_region sr
+  JOIN ged2.geographic_region gr
+    ON gr.id=sr.geographic_region_id
+ WHERE sr.id=%s
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [sr_id])
+
     return cursor.fetchall()
+
+
+def _stream_exposure_by_sr_id(sr_id, occupancy):
+    """
+    Generator exporting the exposure, given a study region id
+    Return fields: grid_id,lon,lat,bldg_type,occ_type,is_urban,
+                   dwelling_fraction,bldg_fraction,type_pop,
+                   day_pop,night_pop,transit_pop,bldg_count,
+                   bldg_count_quality,bldg_area,bldg_area_quality,
+                   bldg_cost,bldg_cost_quality
+    """
+    query = \
+        "SELECT * FROM ged2.build_study_region_retrec(%s,%s)" % (sr_id,
+                                                                         occupancy)
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+    column_names = tuple(description[0] for description in cursor.description)
+    is_first_iteration = True
+    while True:
+        if is_first_iteration:
+            is_first_iteration = False
+            yield column_names
+        else:
+            row = cursor.fetchone()
+            if row is None:
+                break
+            yield row
+    return
+
+
+def _stream_exposure_by_bb_and_sr_id(lng1, lat1, lng2, lat2, sr_id, occupancy):
+    """
+    Generator exporting the exposure, given a bounding box and a study region id
+    Return fields: grid_id,lon,lat,bldg_type,occ_type,is_urban,
+                   dwelling_fraction,bldg_fraction,type_pop,
+                   day_pop,night_pop,transit_pop,bldg_count,
+                   bldg_count_quality,bldg_area,bldg_area_quality,
+                   bldg_cost,bldg_cost_quality
+    """
+    query = \
+        "SELECT * FROM ged2.build_study_region_retrec_bb(%s,%s,%s,%s,%s,%s)" % (
+            lng1, lat1, lng2, lat2, sr_id, occupancy)
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query)
+    column_names = tuple(description[0] for description in cursor.description)
+    is_first_iteration = True
+    while True:
+        if is_first_iteration:
+            is_first_iteration = False
+            yield column_names
+        else:
+            row = cursor.fetchone()
+            if row is None:
+                break
+            yield row
+    return
