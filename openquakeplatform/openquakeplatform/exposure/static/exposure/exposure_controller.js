@@ -34,6 +34,24 @@ var activateDrawTool = function() {
     map.addControl(drawControl);
 };
 
+var downloadFractions = function() {
+    $('#dwellingFractionsDownload').button().click(function() {
+        var sr_id = $('#dwellingFractionsDownload').val();
+        $.ajax({
+            type: 'get',
+            url: 'get_fractions_by_study_region_id?sr_id='+sr_id,
+            success: function(data, textStatus, jqXHR) {
+                if (navigator.appName != 'Microsoft Internet Explorer') {
+                    window.open('data:text/csv;charset=utf-8,' + escape(data));
+                } else {
+                    var popup = window.open('','csv','');
+                    popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+                }
+            }
+        });
+    });
+};
+
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
     myService.getAllStudies().then(function(data) {
         // National level selection form
@@ -64,28 +82,29 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // National level building exposure download form
     function nationalForm(study) {
-        return '<form id="exposure-building-form"'+
-                    '<h3>Building Exposure Download Form</h3></br>'+
-                    '<p><label for="id_timeOfDay_0">Time of Day:</label></br>'+
-                    '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
-                    '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
-                    '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
-                    '<label for="id_timeOfDay_3"><input class="exposure_export_widget" id="id_timeOfDay_3" name="timeOfDay" type="radio" value="all" /> All</label></br></b>'+
-                    '<label for="id_timeOfDay_4"><input class="exposure_export_widget" id="id_timeOfDay_4" name="timeOfDay" type="radio" value="off" /> Off</label></br></b>'+
-                    '</p>'+
-                    '<p><label for="id_residential_0">Residential:</label></br>'+
-                    '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
-                    '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
-                    '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
-                    '</p>'+
-                    '<p><label for="id_outputType_0">Output Type:</label></br>'+
-                    '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
-                    '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
-                    '</p>'+
-                    '<input type="hidden" name="iso" value="'+study.iso+'">'+
-                    '<input type="hidden" name="study" value="'+study.study+'">'+
-                    '<br>'+
-                '</form>';
+        return '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
+            '<form id="exposure-building-form"'+
+                '<b>Building Exposure Download Form:</b></br>'+
+                '<p><label for="id_timeOfDay_0">Time of Day:</label></br>'+
+                '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
+                '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
+                '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
+                '<label for="id_timeOfDay_3"><input class="exposure_export_widget" id="id_timeOfDay_3" name="timeOfDay" type="radio" value="all" /> All</label></br></b>'+
+                '<label for="id_timeOfDay_4"><input class="exposure_export_widget" id="id_timeOfDay_4" name="timeOfDay" type="radio" value="off" /> Off</label></br></b>'+
+                '</p>'+
+                '<p><label for="id_residential_0">Residential:</label></br>'+
+                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
+                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
+                '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
+                '</p>'+
+                '<p><label for="id_outputType_0">Output Type:</label></br>'+
+                '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
+                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                '</p>'+
+                '<input type="hidden" name="iso" value="'+study.iso+'">'+
+                '<input type="hidden" name="study" value="'+study.study+'">'+
+                '<br>'+
+            '</form>';
     }
 
     // Watch for a selection from the national list
@@ -132,6 +151,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                         // ..
                     //});
                 });
+
+                downloadFractions();
 
                 $('#selectBbox').button().click(function() {
                     $('#countriesListDialog').dialog('close');
@@ -193,8 +214,9 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     // Sub-national level building exposure download form
     function subNationalForm(study) {
-        return '<form id="exposure-building-form" class="exposure_export_form">'+
-                '<h3>Sub-National Building Exposure Download Form</h3></br>'+
+        return '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
+            '<form id="exposure-building-form" class="exposure_export_form">'+
+                '<b>Sub-National Building Exposure Download Form</b></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
                 '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
@@ -240,6 +262,8 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 // ..
             //});
         });
+
+        downloadFractions();
     };
 });
 
