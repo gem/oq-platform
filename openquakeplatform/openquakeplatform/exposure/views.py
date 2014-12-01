@@ -290,7 +290,6 @@ def get_geographic_regions_by_iso(request):
         msg = ('A country ISO code must be provided.')
         response = HttpResponse(msg, status="400")
         return response
-    iso = request.GET['iso']
     geographic_regions = util._get_geographic_region_id_and_name_by_iso(iso)
     response_data = json.dumps(geographic_regions)
     response = HttpResponse(response_data, mimetype='text/json')
