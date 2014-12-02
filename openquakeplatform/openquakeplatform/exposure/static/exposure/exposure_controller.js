@@ -17,10 +17,10 @@
 
 var app = angular.module('exposureApp', ['ngTable']);
 var data = [];
+var sr_id, outputType, residential;
 
 var activateDrawTool = function() {
     // draw tool
-    console.log('hi, im the draw tool:');
     drawControl = new L.Control.Draw({
         position: 'topleft',
         rectangle: {
@@ -32,6 +32,7 @@ var activateDrawTool = function() {
         }
     });
     map.addControl(drawControl);
+    activateDrawFunction();
 };
 
 var downloadFractions = function() {
@@ -39,7 +40,7 @@ var downloadFractions = function() {
         var sr_id = $('#dwellingFractionsDownload').val();
         $.ajax({
             type: 'get',
-            url: 'get_fractions_by_study_region_id?sr_id='+sr_id,
+            url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
             success: function(data, textStatus, jqXHR) {
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
@@ -50,6 +51,24 @@ var downloadFractions = function() {
             }
         });
     });
+};
+
+// Generic jquery error dialog, which renders to the '#error-dialog' div
+var showErrorDialog = function(message, options) {
+    // Options are optional
+    if (typeof options === 'undefined') {
+        options = {};
+    }
+    options.modal = true;
+    options.close = function(event, ui) {
+        $("#error-dialog").empty();
+    };
+    if (typeof options.title === 'undefined') {
+        // Use a default title
+        options.title = 'Woops!';
+    }
+    $("#error-dialog").append(message);
+    $("#error-dialog").dialog(options);
 };
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
@@ -82,19 +101,14 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // National level building exposure download form
     function nationalForm(study) {
+        console.log('study:');
+        console.log(study);
         return '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
             '<form id="exposure-building-form"'+
                 '<b>Building Exposure Download Form:</b></br>'+
-                '<p><label for="id_timeOfDay_0">Time of Day:</label></br>'+
-                '<label for="id_timeOfDay_0"><input class="exposure_export_widget" id="id_timeOfDay_0" name="timeOfDay" type="radio" value="day" /> Day</label></br></b>'+
-                '<label for="id_timeOfDay_1"><input class="exposure_export_widget" id="id_timeOfDay_1" name="timeOfDay" type="radio" value="night" /> Night</label></br></b>'+
-                '<label for="id_timeOfDay_2"><input class="exposure_export_widget" id="id_timeOfDay_2" name="timeOfDay" type="radio" value="transit" /> Transit</label></br></b>'+
-                '<label for="id_timeOfDay_3"><input class="exposure_export_widget" id="id_timeOfDay_3" name="timeOfDay" type="radio" value="all" /> All</label></br></b>'+
-                '<label for="id_timeOfDay_4"><input class="exposure_export_widget" id="id_timeOfDay_4" name="timeOfDay" type="radio" value="off" /> Off</label></br></b>'+
-                '</p>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
-                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
+                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="residential" /> Residential</label></br>'+
+                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non_residential" /> Non-Residential</label></br>'+
                 '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
@@ -102,7 +116,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
                 '<input type="hidden" name="iso" value="'+study.iso+'">'+
-                '<input type="hidden" name="study" value="'+study.study+'">'+
+                '<input type="hidden" name="study" value="'+study.study_id+'">'+
                 '<br>'+
             '</form>';
     }
@@ -137,7 +151,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
                 } else{
-                    console.log('hi there:');
                     $('#exposure-building-form').append(
                         '<p>The selected study region is too larger to be downloaded in it`s entirety. To proceed you will need to '+
                         'draw a bounding box over the map to make a sub-selection of the region</p>'+
@@ -155,8 +168,23 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 downloadFractions();
 
                 $('#selectBbox').button().click(function() {
-                    $('#countriesListDialog').dialog('close');
-                    activateDrawTool();
+                    // Gather the selected options into global vars
+                    sr_id = $('[name="study"]').val();
+                    console.log('sr_id:');
+                    console.log(sr_id);
+                    outputType = $('input[name="outputType"]:checked', '#exposure-building-form').val();
+                    residential = $('input[name="residential"]:checked', '#exposure-building-form').val();
+
+                    // Check that the form has been filled in
+                    if (outputType === undefined || residential === undefined) {
+                        var errorMsg = 'The form has not been completed';
+                        showErrorDialog(errorMsg);
+                    } else{
+                        // Close the dialog box
+                        $('#countriesListDialog').dialog('close');
+                        // Activate the drawing tool
+                        activateDrawTool();
+                    }
                 });
             });
         } else if (study.num_l1_studies > 1) {
@@ -323,5 +351,80 @@ app.factory('myService', function($http, $q) {
         }
     };
 });
+
+var selectArea = function(topLeft, bottomRight) {
+    latlonTopLeft = topLeft;
+    latlonBottomRight = bottomRight;
+    var rectBounds = [[topLeft.lat, topLeft.lng],
+                      [bottomRight.lat, bottomRight.lng]];
+    var rect = new L.rectangle(rectBounds);
+    rect.options.color = DRAW_TOOL_COLOR;
+    // Clear drawn layer
+    drawnItems.clearLayers();
+    // Add the new selection
+    drawnItems.addLayer(rect);
+};
+
+var onRectangleDraw = function(e) {
+    console.log('hi, im the rectange:');
+    // Record the bounds of the bounding box
+    latlonBottomRight = e.rect._latlngs[1];
+    latlonTopLeft = e.rect._latlngs[3];
+    selectArea(latlonTopLeft, latlonBottomRight);
+
+    var latDiff = Math.abs(e.rect._latlngs[0].lat - e.rect._latlngs[1].lat);
+    var lonDiff = Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng);
+    var LatLngBox = latDiff + lonDiff;
+    console.log('LatLngBox:');
+    console.log(LatLngBox);
+    if (LatLngBox > 8) {
+        var msg = 'The selected area is to large.';
+        showErrorDialog(msg);
+    } else {
+        $.ajax({
+            type: 'get',
+            data: data,
+            url:
+                '/exposure/export_exposure?'+
+                'output_type='+outputType+
+                '&sr_id='+sr_id+
+                '&occupancy_filter='+residential+
+                '&lng1='+latlonBottomRight.lng+
+                '&lat1='+latlonBottomRight.lat+
+                '&lng2='+latlonTopLeft.lng+
+                '&lat2='+latlonTopLeft.lat,
+            error: function(response, error) {
+                if (response.status == 412) {
+                    var msg = 'The selected area is to large.';
+                    showErrorDialog(msg);
+                }
+            },
+            success: function(data, textStatus, jqXHR) {
+                if (jqXHR.status == 204) {
+                    // No data for the given bounding box selection
+                    var msg = 'No exposure data available in the selected area.';
+                    showErrorDialog(msg, {title: 'Nothing here'});
+                }
+                else {
+                    if (navigator.appName != 'Microsoft Internet Explorer') {
+                        window.open('data:text/csv;charset=utf-8,' + escape(data));
+                    } else {
+                        var popup = window.open('','csv','');
+                        popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+                    }
+                }
+            },
+            complete: function() {
+                var msg = 'The download is complete';
+                showErrorDialog(msg, {title: 'Looks good!'});
+            },
+        });
+    }
+};
+
+var activateDrawFunction = function() {
+    map.on('draw:rectangle-created', onRectangleDraw);
+};
+
 
 

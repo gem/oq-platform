@@ -190,20 +190,7 @@ var startApp = function() {
     };
 
 
-    var selectArea = function(topLeft, bottomRight) {
-        latlonTopLeft = topLeft;
-        latlonBottomRight = bottomRight;
 
-        var rectBounds = [[topLeft.lat, topLeft.lng],
-                          [bottomRight.lat, bottomRight.lng]];
-        var rect = new L.rectangle(rectBounds);
-        rect.options.color = DRAW_TOOL_COLOR;
-
-        // Clear drawn layer
-        drawnItems.clearLayers();
-        // Add the new selection
-        drawnItems.addLayer(rect);
-    };
 
 /*
     var boundingBoxCenter = function(topLeft, bottomRight) {
@@ -529,77 +516,7 @@ var startApp = function() {
         });
     };
 */
-    var onRectangleDraw = function(e) {
-        // Record the bounds of the bounding box
-        latlonBottomRight = e.rect._latlngs[1];
-        latlonTopLeft = e.rect._latlngs[3];
-        selectArea(latlonTopLeft, latlonBottomRight);
 
-        console.log('lat diff:');
-        console.log(Math.abs(e.rect._latlngs[0].lat - e.rect._latlngs[1].lat));
-
-        console.log('long diff:');
-        console.log(Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng));
-
-        var latDiff = Math.abs(e.rect._latlngs[0].lat - e.rect._latlngs[1].lat);
-        var lonDiff = Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng);
-        var LatLngBox = latDiff + lonDiff;
-
-        if (LatLngBox > 16) {
-            var msg = 'The selected area is to large.';
-            showErrorDialog(msg);
-        } else {
-            /*
-            $.ajax({
-                type: 'get',
-                data: data,
-                url: '/exposure/get_exposure_building_form/',
-                error: function(response, error) {
-                    if (response.status == 401) {
-                        // Ask the user to login and redirect back here when
-                        // they're done logging in:
-                        var signInMsg = (
-                            // Include the error message from the server
-                            response.responseText
-                            + '<br/><a href="/accounts/login?next='
-                            + '/oq-platform2/exposure_export.html'
-                            + '%3Flat1=' + data.lat1
-                            + '%26lng1=' + data.lng1
-                            + '%26lat2=' + data.lat2
-                            + '%26lng2=' + data.lng2
-                            + '%26zoom=' + map.getZoom()
-                            + '%26export_type=building'
-                            + '">Sign in</a>'
-                        );
-                        showErrorDialog(signInMsg);
-                    }
-                    else if (response.status == 403) {
-                        showErrorDialog(
-                            response.responseText,
-                            {height: 175, width: 420}
-                        );
-                    }
-                },
-                success: function(data, textStatus, jqXHR) {
-                    if (jqXHR.status == 204) {
-                        // No data for the given bounding box selection
-                        var msg = 'No exposure data available in the selected area.';
-                        showErrorDialog(msg, {title: 'Nothing here'});
-                    }
-                    else {
-                        console.log('data:');
-                        console.log(data);
-                        $('#export_form_placeholder').html(data);
-                        var requestType = "coordinate";
-                        showBuildingExportForm(requestType);
-                    }
-                },
-                complete: function() { map.closePopup(exportPopup); },
-            });
-*/
-        }
-    };
-    map.on('draw:rectangle-created', onRectangleDraw);
 };
 
 app.initialize(startApp);
