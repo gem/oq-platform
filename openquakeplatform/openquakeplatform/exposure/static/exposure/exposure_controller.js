@@ -38,6 +38,7 @@ var activateDrawTool = function() {
 var downloadFractions = function() {
     $('#dwellingFractionsDownload').button().click(function() {
         var sr_id = $('#dwellingFractionsDownload').val();
+        console.log('download fractions ...');
         $.ajax({
             type: 'get',
             url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
@@ -71,8 +72,9 @@ var showErrorDialog = function(message, options) {
     $("#error-dialog").dialog(options);
 };
 
-app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams)  {
+app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
+        console.log('get national list:');
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -122,6 +124,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // Watch for a selection from the national list
     $scope.changeSelection = function(study) {
+        console.log('national level selection ..');
         // Restet vars to null
         sr_id = (function () { return; })();
         outputType = (function () { return; })();
@@ -140,6 +143,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             console.log(study);
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
+                console.log('get national level data..');
                 console.log('data:');
                 console.log(data);
                 // Focus the map on the selected region
@@ -161,20 +165,13 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     $('#exposure-building-form').append(
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
-                } else{
+                } else {
                     $('#exposure-building-form').append(
                         '<p>The selected study region is too larger to be downloaded in it`s entirety. To proceed you will need to '+
                         'draw a bounding box over the map to make a sub-selection of the region</p>'+
                         '<button id="selectBbox" type="button">Proceed</button>'
                     );
                 }
-
-                $('#nationalExposureBldgDownload').button().click(function() {
-                    console.log('download click:');
-                    //myService.getSubNationalBuildingFractions(study.iso).then(function(bar) {
-                        // ..
-                    //});
-                });
 
                 downloadFractions();
 
@@ -197,6 +194,20 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                         activateDrawTool();
                     }
                 });
+
+                $('#nationalExposureBldgDownload').button().click(function() {
+                    // Gather the selected options into global vars
+                    sr_id = $('[name="study"]').val();
+                    outputType = $('input[name="outputType"]:checked', '#exposure-building-form').val();
+                    residential = $('input[name="residential"]:checked', '#exposure-building-form').val();
+
+                    var url =
+                        '/exposure/export_exposure?'+
+                        'output_type='+outputType+
+                        '&sr_id='+sr_id+
+                        '&occupancy_filter='+residential;
+                    exposureExport(url);
+                });
             });
         } else if (study.num_l1_studies > 1) {
             // The user has selected a sub-national study
@@ -209,7 +220,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
             $('#countrySelectionForm').empty();
             // Populate the table
-            lookupAddress(study.iso);
+            populateSubNationalList(study.iso);
             //createRegionList(study);
             // Show html elements for the table
             $("#ragionTable").show();
@@ -222,13 +233,15 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     $scope.subNationalData = [];
 
-    lookupAddress = function (iso) {
+    populateSubNationalList = function (iso) {
+        console.log('populateSubNationalList:');
         var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
         $http.get(url).success(function (data) {
             console.log('data:');
             console.log(data);
             $scope.subNationalData = data;
             $scope.tableParams2.reload();
+            console.log('reload table:');
         });
     };
 
@@ -273,6 +286,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     }
 
     $scope.changeSelection = function(study) {
+        console.log('select sub national region...');
         // Restet vars to null
         sr_id = (function () { return; })();
         outputType = (function () { return; })();
@@ -312,14 +326,25 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         }
 
         $('#subNationalExposureBldgDownload').button().click(function() {
-            //..
+            console.log('sub national download:');
+            // Gather the selected options into global vars
+            sr_id = $('[name="sub-study"]').val();
+            outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
+            residential = $('input[name="sub-residential"]:checked', '#sub-exposure-building-form').val();
+
+            var url =
+                '/exposure/export_exposure?'+
+                'output_type='+outputType+
+                '&sr_id='+sr_id+
+                '&occupancy_filter='+residential;
+                console.log('url:');
+                console.log(url);
+            exposureExport(url);
         });
 
         $('#subSelectBbox').button().click(function() {
             // Gather the selected options into global vars
             sr_id = $('[name="sub-study"]').val();
-            console.log('sr_id:');
-            console.log(sr_id);
             outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
             residential = $('input[name="sub-residential"]:checked', '#sub-exposure-building-form').val();
             // Check that the form has been filled in
@@ -424,55 +449,59 @@ var onRectangleDraw = function(e) {
         var msg = 'The selected area is to large.';
         showErrorDialog(msg);
     } else {
-        $.ajax({
-            type: 'get',
-            data: data,
-            url:
-                '/exposure/export_exposure?'+
-                'output_type='+outputType+
-                '&sr_id='+sr_id+
-                '&occupancy_filter='+residential+
-                '&lng1='+latlonBottomRight.lng+
-                '&lat1='+latlonBottomRight.lat+
-                '&lng2='+latlonTopLeft.lng+
-                '&lat2='+latlonTopLeft.lat,
-            error: function(response, error) {
-                console.log('response:');
-                console.log(response);
-                if (response.status == 412) {
-                    var msg = 'The selected area is to large.';
-                    showErrorDialog(msg);
-                }
-            },
-            success: function(data, textStatus, jqXHR) {
-                console.log('jqXHR:');
-                console.log(jqXHR);
-                console.log('data:');
-                console.log(data);
-                if (jqXHR.status == 204) {
-                    // No data for the given bounding box selection
-                    var msg = 'No exposure data available in the selected area.';
-                    showErrorDialog(msg, {title: 'Nothing here'});
-                }
-                else if (jqXHR.status == 400) {
-                    var msg2 = 'Something went wrong with that request';
-                    showErrorDialog(msg2);
-                }
-                else {
-                    if (navigator.appName != 'Microsoft Internet Explorer') {
-                        window.open('data:text/csv;charset=utf-8,' + escape(data));
-                    } else {
-                        var popup = window.open('','csv','');
-                        popup.document.body.innerHTML = '<pre>' + data + '</pre>';
-                    }
-                }
-            },
-            complete: function() {
-                var msg = 'The download is complete';
-                showErrorDialog(msg, {title: 'Looks good!'});
-            },
-        });
+        var url =
+            '/exposure/export_exposure?'+
+            'output_type='+outputType+
+            '&sr_id='+sr_id+
+            '&occupancy_filter='+residential+
+            '&lng1='+latlonBottomRight.lng+
+            '&lat1='+latlonBottomRight.lat+
+            '&lng2='+latlonTopLeft.lng+
+            '&lat2='+latlonTopLeft.lat;
+
+        exposureExport(url);
     }
+};
+
+var exposureExport = function(url) {
+    $.ajax({
+        type: 'get',
+        data: data,
+        url: url,
+        error: function(response, error) {
+            console.log('response:');
+            console.log(response);
+            if (response.status == 412) {
+                var msg = 'The selected area is to large.';
+                showErrorDialog(msg);
+            }
+        },
+        success: function(data, textStatus, jqXHR) {
+            console.log('jqXHR:');
+            console.log(jqXHR);
+            if (jqXHR.status == 204) {
+                // No data for the given bounding box selection
+                var msg = 'No exposure data available in the selected area.';
+                showErrorDialog(msg, {title: 'Nothing here'});
+            }
+            else if (jqXHR.status == 400) {
+                var msg2 = 'Something went wrong with that request';
+                showErrorDialog(msg2);
+            }
+            else {
+                if (navigator.appName != 'Microsoft Internet Explorer') {
+                    window.open('data:text/csv;charset=utf-8,' + escape(data));
+                } else {
+                    var popup = window.open('','csv','');
+                    popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+                }
+            }
+        },
+        complete: function() {
+            var msg = 'The download is complete';
+            showErrorDialog(msg, {title: 'Looks good!'});
+        },
+    });
 };
 
 var activateDrawFunction = function() {
