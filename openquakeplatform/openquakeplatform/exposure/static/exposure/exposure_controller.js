@@ -103,8 +103,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     function nationalForm(study) {
         console.log('study:');
         console.log(study);
-        return '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
-            '<form id="exposure-building-form"'+
+        return '<form id="exposure-building-form"'+
+                '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
                 '<b>Building Exposure Download Form:</b></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="residential" /> Residential</label></br>'+
@@ -115,7 +115,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
                 '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
-                '<input type="hidden" name="iso" value="'+study.iso+'">'+
                 '<input type="hidden" name="study" value="'+study.study_id+'">'+
                 '<br>'+
             '</form>';
@@ -123,6 +122,18 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // Watch for a selection from the national list
     $scope.changeSelection = function(study) {
+        // Restet vars to null
+        sr_id = (function () { return; })();
+        outputType = (function () { return; })();
+        residential = (function () { return; })();
+
+        // Remove the drawing tool
+        try {
+            map.removeControl(drawControl);
+        } catch (e) {
+            // continue
+        }
+
         if (study.num_l1_studies <= 1) {
             // The user has selected a national study
             console.log('study:');
@@ -242,53 +253,85 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     // Sub-national level building exposure download form
     function subNationalForm(study) {
-        return '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
-            '<form id="exposure-building-form" class="exposure_export_form">'+
+        console.log('study:');
+        console.log(study);
+        return '<form id="sub-exposure-building-form" class="exposure_export_form">'+
+                '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
                 '<b>Sub-National Building Exposure Download Form</b></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
-                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="res" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-res" /> Non-Residential</label></br>'+
-                '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
+                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" value="residential" /> Residential</label></br>'+
+                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non_residential" /> Non-Residential</label></br>'+
+                '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="sub-residential" type="radio" value="both" /> Both</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
-                '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
-                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" value="csv" /> CSV</label></br>'+
+                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
-                '<input type="hidden" name="iso" value="'+study.iso+'">'+
-                '<input type="hidden" name="study" value="'+study.study+'">'+
+                '<input type="hidden" name="sub-study" value="'+study.study_region_id+'">'+
                 '<br>'+
             '</form>';
     }
 
     $scope.changeSelection = function(study) {
+        // Restet vars to null
+        sr_id = (function () { return; })();
+        outputType = (function () { return; })();
+        residential = (function () { return; })();
+
+        // Remove the drawing tool
+        try {
+            map.removeControl(drawControl);
+        } catch (e) {
+            // continue
+        }
+
         console.log('study:');
         console.log(study);
         // Focus the map on the selected region
         map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
 
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
-        $('#exposure-building-form').empty();
+        $('#sub-exposure-building-form').empty();
         $('#subRegionForm').show();
         $('#subRegionFormBack').show();
         $('#subRegionList').insertAfter('#subRegionForm');
         $('#subRegionList').hide();
         $('#subRegionForm').prepend(subNationalForm(study));
+
+        // check the grid count
         if (study.tot_grid_count < 300000) {
-            $('#exposure-building-form').append(
-                '<button id="subNationalExposureBldgDownload" type="button">Download</button>'+
-                '<img id="download-button-spinner" src="/static/img/ajax-loader.gif" style="display: none;" />'
+            $('#sub-exposure-building-form').append(
+                '<button id="subNationalExposureBldgDownload" type="button">Download</button>'
             );
         } else {
-            $('#exposure-building-form').append(
+            $('#sub-exposure-building-form').append(
                 '<p>The selected study region is too larger to be downloaded in it`s entirety. To proceed you will need to '+
-                'draw a bounding box over the map to make a sub-selection of the region</p>'
+                'draw a bounding box over the map to make a sub-selection of the region</p>'+
+                '<button id="subSelectBbox" type="button">Proceed</button>'
             );
         }
+
         $('#subNationalExposureBldgDownload').button().click(function() {
-            console.log('download click:');
-            //myService.getSubNationalBuildingFractions(study.iso).then(function(bar) {
-                // ..
-            //});
+            //..
+        });
+
+        $('#subSelectBbox').button().click(function() {
+            // Gather the selected options into global vars
+            sr_id = $('[name="sub-study"]').val();
+            console.log('sr_id:');
+            console.log(sr_id);
+            outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
+            residential = $('input[name="sub-residential"]:checked', '#sub-exposure-building-form').val();
+            // Check that the form has been filled in
+            if (outputType === undefined || residential === undefined) {
+                var errorMsg = 'The form has not been completed';
+                showErrorDialog(errorMsg);
+            } else{
+                // Close the dialog box
+                $('#countriesListDialog').dialog('close');
+                // Activate the drawing tool
+                activateDrawTool();
+            }
         });
 
         downloadFractions();
@@ -394,16 +437,26 @@ var onRectangleDraw = function(e) {
                 '&lng2='+latlonTopLeft.lng+
                 '&lat2='+latlonTopLeft.lat,
             error: function(response, error) {
+                console.log('response:');
+                console.log(response);
                 if (response.status == 412) {
                     var msg = 'The selected area is to large.';
                     showErrorDialog(msg);
                 }
             },
             success: function(data, textStatus, jqXHR) {
+                console.log('jqXHR:');
+                console.log(jqXHR);
+                console.log('data:');
+                console.log(data);
                 if (jqXHR.status == 204) {
                     // No data for the given bounding box selection
                     var msg = 'No exposure data available in the selected area.';
                     showErrorDialog(msg, {title: 'Nothing here'});
+                }
+                else if (jqXHR.status == 400) {
+                    var msg2 = 'Something went wrong with that request';
+                    showErrorDialog(msg2);
                 }
                 else {
                     if (navigator.appName != 'Microsoft Internet Explorer') {
