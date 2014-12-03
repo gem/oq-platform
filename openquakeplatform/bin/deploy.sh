@@ -574,7 +574,8 @@ oq_platform_install () {
     DJANGO_SETTINGS_MODULE='openquakeplatform.settings' python -c "from django.contrib.sites.models import Site; from openquakeplatform import settings; mysite = Site.objects.all()[0]; mysite.domain = settings.SITEURL; mysite.name = settings.SITENAME; mysite.save()"
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
-        openquakeplatform createsuperuser --username=admin --email=the_mail@openquake.org --noinput
+        # Load our users. Default password must be changed
+        openquakeplatform loaddata ${bdir}/fixtures/*.json
     fi
 
     service apache2 restart
