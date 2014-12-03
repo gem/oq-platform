@@ -27,13 +27,29 @@
             "country": null, 
             "zipcode": null, 
             "delivery": null, 
-            "user": [
-                "admin"
-            ], 
+            "user": 1, 
             "position": null, 
             "organization": null, 
             "voice": null, 
-            "email": "ad@m.in"
+            "email": "ch@nge.me"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "people.profile", 
+        "fields": {
+            "profile": "", 
+            "city": "Pavia", 
+            "fax": "", 
+            "name": "GEM", 
+            "area": "(PV)", 
+            "country": "ITA", 
+            "zipcode": "27100", 
+            "delivery": "", 
+            "user": 2, 
+            "position": "", 
+            "organization": "GEM Foundation", 
+            "voice": "+3903825169865", 
+            "email": "info@openquake.org"
         }
     }
-]
