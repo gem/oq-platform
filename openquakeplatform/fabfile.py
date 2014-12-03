@@ -97,6 +97,8 @@ def baseenv(host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
     setup()
     # We need to start geoserver
     init_start()
+    # Import our users
+    _set_auth()
     # Update Django 'sites' with real hostname
     _set_sites()
 
@@ -335,6 +337,11 @@ def _add_vulnerability():
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
+
+
+def _set_auth():
+    local('python manage.py loaddata '
+          './openquakeplatform/maps_viewer/fixtures/*.json' )
 
 
 def _set_sites():
