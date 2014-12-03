@@ -4,7 +4,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 1
         }
     }, 
@@ -13,7 +13,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 1
         }
     }, 
@@ -22,7 +22,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 2
         }
     }, 
@@ -31,7 +31,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 2
         }
     }, 
@@ -40,7 +40,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 3
         }
     }, 
@@ -49,7 +49,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 3
         }
     }, 
@@ -58,7 +58,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 4
         }
     }, 
@@ -67,7 +67,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 4
         }
     }, 
@@ -76,7 +76,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 5
         }
     }, 
@@ -85,7 +85,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 5
         }
     }, 
@@ -94,7 +94,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 6
         }
     }, 
@@ -103,7 +103,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 6
         }
     }, 
@@ -112,7 +112,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 7
         }
     }, 
@@ -121,7 +121,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 7
         }
     }, 
@@ -130,7 +130,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 8
         }
     }, 
@@ -139,7 +139,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 8
         }
     }, 
@@ -148,7 +148,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 9
         }
     }, 
@@ -157,7 +157,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 9
         }
     }, 
@@ -166,7 +166,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 10
         }
     }, 
@@ -175,7 +175,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 10
         }
     }, 
@@ -184,7 +184,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 11
         }
     }, 
@@ -193,7 +193,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 11
         }
     }, 
@@ -202,7 +202,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 12
         }
     }, 
@@ -211,7 +211,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 12
         }
     }, 
@@ -220,7 +220,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 13
         }
     }, 
@@ -229,7 +229,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 13
         }
     }, 
@@ -238,7 +238,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 14
         }
     }, 
@@ -247,7 +247,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 14
         }
     }, 
@@ -256,7 +256,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 15
         }
     }, 
@@ -265,7 +265,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 15
         }
     }, 
@@ -274,7 +274,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 16
         }
     }, 
@@ -283,7 +283,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 16
         }
     }, 
@@ -292,7 +292,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 17
         }
     }, 
@@ -301,7 +301,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 17
         }
     }, 
@@ -310,7 +310,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 18
         }
     }, 
@@ -319,7 +319,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 18
         }
     }, 
@@ -328,7 +328,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 19
         }
     }, 
@@ -337,7 +337,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 19
         }
     }, 
@@ -346,7 +346,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 20
         }
     }, 
@@ -355,7 +355,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 20
         }
     }, 
@@ -364,7 +364,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 21
         }
     }, 
@@ -373,7 +373,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 21
         }
     }, 
@@ -382,7 +382,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 22
         }
     }, 
@@ -391,7 +391,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 22
         }
     }, 
@@ -409,7 +409,7 @@
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
+            "contact": 2, 
             "resource": 25
         }
     }, 
