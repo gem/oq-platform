@@ -396,57 +396,57 @@
         }
     }, 
     {
-        "pk": 51, 
+        "pk": 57, 
         "model": "base.contactrole", 
         "fields": {
             "role": 1, 
-            "contact": 1, 
-            "resource": 24
+            "contact": 2, 
+            "resource": 25
         }
     }, 
     {
-        "pk": 52, 
+        "pk": 58, 
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
-            "resource": 24
-        }
-    }, 
-    {
-        "pk": 53, 
-        "model": "base.contactrole", 
-        "fields": {
-            "role": 1, 
-            "contact": 1, 
-            "resource": 23
-        }
-    }, 
-    {
-        "pk": 54, 
-        "model": "base.contactrole", 
-        "fields": {
-            "role": 2, 
-            "contact": 1, 
-            "resource": 23
-        }
-    }, 
-    {
-        "pk": 55, 
-        "model": "base.contactrole", 
-        "fields": {
-            "role": 1, 
             "contact": 1, 
             "resource": 25
         }
     }, 
     {
-        "pk": 56, 
+        "pk": 59, 
+        "model": "base.contactrole", 
+        "fields": {
+            "role": 1, 
+            "contact": 2, 
+            "resource": 24
+        }
+    }, 
+    {
+        "pk": 60, 
         "model": "base.contactrole", 
         "fields": {
             "role": 2, 
-            "contact": 1, 
-            "resource": 25
+            "contact": 2, 
+            "resource": 24
+        }
+    }, 
+    {
+        "pk": 61, 
+        "model": "base.contactrole", 
+        "fields": {
+            "role": 1, 
+            "contact": 2, 
+            "resource": 23
+        }
+    }, 
+    {
+        "pk": 62, 
+        "model": "base.contactrole", 
+        "fields": {
+            "role": 2, 
+            "contact": 2, 
+            "resource": 23
         }
     }, 
     {
@@ -3842,7 +3842,7 @@
             "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"/>", 
             "edition": "", 
             "owner": [
-                "admin"
+                "GEM"
             ], 
             "category": null, 
             "spatial_representation_type": null, 
@@ -3887,7 +3887,7 @@
             "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"/>", 
             "edition": "", 
             "owner": [
-                "admin"
+                "GEM"
             ], 
             "category": null, 
             "spatial_representation_type": null, 
@@ -3932,7 +3932,7 @@
             "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"/>", 
             "edition": "", 
             "owner": [
-                "admin"
+                "GEM"
             ], 
             "category": null, 
             "spatial_representation_type": null, 
