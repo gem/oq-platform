@@ -186,7 +186,7 @@ isc_viewer_dataloader () {
 initial_data_postlayers () {
     local oqpdir="$1" db_name="$2" bdir wdir
 
-    bdir="${oqpdir}/initial_data"
+    bdir="${oqpdir}/common"
     wdir="${GEM_WEBDIR}/uploaded/thumbs"
     openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
     if [ ! -d "$wdir" ]; then
@@ -575,7 +575,7 @@ oq_platform_install () {
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # Load our users. Default password must be changed
-        openquakeplatform loaddata ${oqpdir}/initial_data/fixtures/*.json
+        openquakeplatform loaddata ${oqpdir}/common/fixtures/*.json
     fi
 
     service apache2 restart

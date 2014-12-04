@@ -124,9 +124,9 @@ def apps(db_name, db_user, db_pass):
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
-    local('python manage.py loaddata openquakeplatform/initial_data/post_fixtures/*.json')
+    local('python manage.py loaddata openquakeplatform/common/post_fixtures/*.json')
     local('mkdir -p /tmp/thumbs')
-    local('cp openquakeplatform/initial_data/thumbs/*.png /tmp/thumbs/')
+    local('cp openquakeplatform/common/thumbs/*.png /tmp/thumbs/')
 
 
 def clean(db_name='oqplatform', db_user='oqplatform'):
@@ -341,7 +341,7 @@ def _add_vulnerability():
 
 def _set_auth():
     local('python manage.py loaddata '
-          './openquakeplatform/initial_data/fixtures/*.json' )
+          './openquakeplatform/common/fixtures/*.json' )
 
 
 def _set_sites():
