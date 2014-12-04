@@ -38,7 +38,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
+GEM_APP_LIST=('common' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -185,12 +185,15 @@ isc_viewer_dataloader () {
 
 #
 #
-maps_viewer_postlayers () {
-    local oqpdir="$1" db_name="$2" bdir
+common_postlayers () {
+    local oqpdir="$1" db_name="$2" bdir wdir
 
-    bdir="${oqpdir}/maps_viewer/post_fixtures"
-    openquakeplatform loaddata "${bdir}/*.json"
-    openquakeplatform map_title
+    bdir="${oqpdir}/common"
+    wdir="${GEM_WEBDIR}/uploaded/thumbs"
+    openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
+    mkdir -p  "$wdir"
+    cp ${bdir}/thumbs/*.png $wdir/
+    chown -R www-data.www-data ${bdir}/thumbs/
 }
 
 #
@@ -461,7 +464,7 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository ppa:openquake-automatic-team/latest-master
+    add-apt-repository -y ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
     apt-get update
     apt-get install -y geonode python-geonode-user-accounts
@@ -572,7 +575,8 @@ oq_platform_install () {
     DJANGO_SETTINGS_MODULE='openquakeplatform.settings' python -c "from django.contrib.sites.models import Site; from openquakeplatform import settings; mysite = Site.objects.all()[0]; mysite.domain = settings.SITEURL; mysite.name = settings.SITENAME; mysite.save()"
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
-        openquakeplatform createsuperuser --username=admin --email=the_mail@openquake.org --noinput
+        # Load our users. Default password must be changed
+        openquakeplatform loaddata ${oqpdir}/common/fixtures/*.json
     fi
 
     service apache2 restart
@@ -603,7 +607,6 @@ oq_platform_install () {
             "${app}_postlayers" "$oqpdir" "$gem_db_name"
         fi
     done
-
 }
 
 
