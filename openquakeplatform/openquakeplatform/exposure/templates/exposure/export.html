@@ -33,6 +33,7 @@ Exposure Export {{ block.super }}
 
 {% block body_outer %}
 {{block.super}}
+<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" style="display: none;" />
 {% verbatim %}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Admin Level 0 Selection Table">

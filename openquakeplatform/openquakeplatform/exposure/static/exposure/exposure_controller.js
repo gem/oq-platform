@@ -38,7 +38,6 @@ var activateDrawTool = function() {
 var downloadFractions = function() {
     $('#dwellingFractionsDownload').button().click(function() {
         var sr_id = $('#dwellingFractionsDownload').val();
-        console.log('download fractions ...');
         $.ajax({
             type: 'get',
             url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
@@ -75,7 +74,8 @@ var showErrorDialog = function(message, options) {
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
         $scope.nationalData = data;
-        console.log('get national list:');
+        console.log('$scope.nationalData:');
+        console.log($scope.nationalData);
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -105,8 +105,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // National level building exposure download form
     function nationalForm(study) {
-        console.log('study:');
-        console.log(study);
         return '<form id="exposure-building-form"'+
                 '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
                 '<b>Building Exposure Download Form:</b></br>'+
@@ -126,7 +124,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // Watch for a selection from the national list
     $scope.changeSelection = function(study) {
-        console.log('national level selection ..');
+        console.log('$scope.tableParams:');
+        console.log($scope.tableParams);
+        console.log('$scope.nationalData:');
+        console.log($scope.nationalData);
         // Restet vars to null
         sr_id = (function () { return; })();
         outputType = (function () { return; })();
@@ -134,7 +135,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
         // Remove the drawing tool
         try {
-            console.log('try and remove the draw controller:');
             map.removeControl(drawControl);
         } catch (e) {
             // continue
@@ -142,18 +142,16 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
         if (study.num_l1_studies <= 1) {
             // The user has selected a national study
-            console.log('national study selected:');
-            console.log(study);
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
-                console.log('get national level data..');
-                console.log('data:');
-                console.log(data);
+                $scope.foo = data;
+                console.log('$scope.foo:');
+                console.log($scope.foo);
+                console.log('get national grid count:');
                 // Focus the map on the selected region
-                console.log('map fit bounds:');
-                //map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
+                map.fitBounds(L.latLngBounds(L.latLng($scope.foo[0].ymax, $scope.foo[0].xmax), L.latLng($scope.foo[0].ymin, $scope.foo[0].xmin)));
 
-                console.log('some jquery dialog settings:');
+                console.log('modify some jquery stuff:');
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countrySelectionForm').insertAfter('#countryList');
@@ -163,12 +161,12 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
-                console.log('append form to dialog:');
+                console.log('append the form to the dialog:');
                 $('#countrySelectionForm').append(nationalForm(study));
 
                 // Check the grid count
-                if (data[0].tot_grid_count < 300000) {
-                    console.log('if the grid count is small append the button to download');
+                if ($scope.foo[0].tot_grid_count < 300000) {
+                    console.log('check the grid count:');
                     $('#exposure-building-form').append(
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
@@ -180,14 +178,12 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 }
 
-                console.log('download fractions function:');
+                console.log('download the fractions:');
                 downloadFractions();
 
                 $('#selectBbox').button().click(function() {
                     // Gather the selected options into global vars
                     sr_id = $('[name="study"]').val();
-                    console.log('sr_id:');
-                    console.log(sr_id);
                     outputType = $('input[name="outputType"]:checked', '#exposure-building-form').val();
                     residential = $('input[name="residential"]:checked', '#exposure-building-form').val();
 
@@ -242,14 +238,10 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     $scope.subNationalData = [];
 
     populateSubNationalList = function (iso) {
-        console.log('populateSubNationalList:');
         var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
         $http.get(url).success(function (data) {
-            console.log('data:');
-            console.log(data);
             $scope.subNationalData = data;
             $scope.tableParams2.reload();
-            console.log('reload table:');
         });
     };
 
@@ -274,8 +266,6 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     // Sub-national level building exposure download form
     function subNationalForm(study) {
-        console.log('study:');
-        console.log(study);
         return '<form id="sub-exposure-building-form" class="exposure_export_form">'+
                 '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
                 '<b>Sub-National Building Exposure Download Form</b></br>'+
@@ -294,7 +284,9 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     }
 
     $scope.changeSelection = function(study) {
-        console.log('select sub national region...');
+        console.log('$scope.tableParams2:');
+        console.log($scope.tableParams2);
+
         // Restet vars to null
         sr_id = (function () { return; })();
         outputType = (function () { return; })();
@@ -307,25 +299,19 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
             // continue
         }
 
-        console.log('study:');
-        console.log(study);
         // Focus the map on the selected region
-        console.log('fit the map to the region:');
-        //map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
+        map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
 
-        console.log('modify some dialog settings:');
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
         $('#sub-exposure-building-form').empty();
         $('#subRegionForm').show();
         $('#subRegionFormBack').show();
         $('#subRegionList').insertAfter('#subRegionForm');
         $('#subRegionList').hide();
-        console.log('prepend the form to the subRegionForm dialog div:');
         $('#subRegionForm').prepend(subNationalForm(study));
 
         // check the grid count
         if (study.tot_grid_count < 300000) {
-            console.log('check the gid count is small and append the download button');
             $('#sub-exposure-building-form').append(
                 '<button id="subNationalExposureBldgDownload" type="button">Download</button>'
             );
@@ -338,7 +324,6 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         }
 
         $('#subNationalExposureBldgDownload').button().click(function() {
-            console.log('sub national download:');
             // Gather the selected options into global vars
             sr_id = $('[name="sub-study"]').val();
             outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
@@ -349,8 +334,6 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 'output_type='+outputType+
                 '&sr_id='+sr_id+
                 '&occupancy_filter='+residential;
-                console.log('url:');
-                console.log(url);
             exposureExport(url);
         });
 
@@ -446,7 +429,6 @@ var selectArea = function(topLeft, bottomRight) {
 };
 
 var onRectangleDraw = function(e) {
-    console.log('hi, im the rectange:');
     // Record the bounds of the bounding box
     latlonBottomRight = e.rect._latlngs[1];
     latlonTopLeft = e.rect._latlngs[3];
@@ -476,7 +458,8 @@ var onRectangleDraw = function(e) {
 };
 
 var exposureExport = function(url) {
-    console.log('now calling the export ajax:');
+    console.log('hi, im ajax:');
+    $("#download-button-spinner").css("display", "");
     $.ajax({
         type: 'get',
         data: data,
@@ -488,6 +471,10 @@ var exposureExport = function(url) {
                 var msg = 'The selected area is to large.';
                 showErrorDialog(msg);
             }
+            else if (jqXHR.status == 400) {
+                var msg2 = 'Something went wrong with that request';
+                showErrorDialog(msg2);
+            }
         },
         success: function(data, textStatus, jqXHR) {
             console.log('jqXHR:');
@@ -496,10 +483,6 @@ var exposureExport = function(url) {
                 // No data for the given bounding box selection
                 var msg = 'No exposure data available in the selected area.';
                 showErrorDialog(msg, {title: 'Nothing here'});
-            }
-            else if (jqXHR.status == 400) {
-                var msg2 = 'Something went wrong with that request';
-                showErrorDialog(msg2);
             }
             else if (jqXHR.status == 200) {
                 if (navigator.appName != 'Microsoft Internet Explorer') {
@@ -513,6 +496,7 @@ var exposureExport = function(url) {
             }
         },
         complete: function() {
+            $("#download-button-spinner").css("display", "none");
         },
     });
 };
