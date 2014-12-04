@@ -74,24 +74,26 @@ var showErrorDialog = function(message, options) {
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
+        $scope.nationalData = data;
         console.log('get national list:');
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
-            count: 10,          // count per page
+            count: 9,          // count per page
             filter: {
                 country_name: ''       // initial filter
             }
         }, {
-            total: data.length, // length of data
+            total: $scope.nationalData.length, // length of data
             getData: function($defer, params) {
+                var currentData = $scope.nationalData;
                 // use build-in angular filter
                 var filteredData = params.filter() ?
-                    $filter('filter')(data, params.filter()) :
-                    data;
+                    $filter('filter')(currentData, params.filter()) :
+                    currentData;
                 var orderedData = params.filter() ?
-                       $filter('filter')(data, params.filter()) :
-                       data;
+                       $filter('filter')(currentData, params.filter()) :
+                       currentData;
 
                 $scope.users = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 
@@ -110,7 +112,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<b>Building Exposure Download Form:</b></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="residential" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non_residential" /> Non-Residential</label></br>'+
+                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
@@ -132,6 +134,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
         // Remove the drawing tool
         try {
+            console.log('try and remove the draw controller:');
             map.removeControl(drawControl);
         } catch (e) {
             // continue
@@ -139,7 +142,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
         if (study.num_l1_studies <= 1) {
             // The user has selected a national study
-            console.log('study:');
+            console.log('national study selected:');
             console.log(study);
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
@@ -147,8 +150,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 console.log('data:');
                 console.log(data);
                 // Focus the map on the selected region
-                map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
+                console.log('map fit bounds:');
+                //map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
 
+                console.log('some jquery dialog settings:');
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countrySelectionForm').insertAfter('#countryList');
@@ -158,10 +163,12 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
+                console.log('append form to dialog:');
                 $('#countrySelectionForm').append(nationalForm(study));
 
                 // Check the grid count
                 if (data[0].tot_grid_count < 300000) {
+                    console.log('if the grid count is small append the button to download');
                     $('#exposure-building-form').append(
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
@@ -173,6 +180,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 }
 
+                console.log('download fractions function:');
                 downloadFractions();
 
                 $('#selectBbox').button().click(function() {
@@ -247,7 +255,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     $scope.tableParams2 = new ngTableParams({
         page: 1,            // show first page
-        count: 10           // count per page
+        count: 9           // count per page
     }, {
         total: $scope.subNationalData.length, // length of data
         getData: function($defer, params) {
@@ -273,7 +281,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 '<b>Sub-National Building Exposure Download Form</b></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" value="residential" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non_residential" /> Non-Residential</label></br>'+
+                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="sub-residential" type="radio" value="both" /> Both</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
@@ -302,18 +310,22 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         console.log('study:');
         console.log(study);
         // Focus the map on the selected region
-        map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
+        console.log('fit the map to the region:');
+        //map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
 
+        console.log('modify some dialog settings:');
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
         $('#sub-exposure-building-form').empty();
         $('#subRegionForm').show();
         $('#subRegionFormBack').show();
         $('#subRegionList').insertAfter('#subRegionForm');
         $('#subRegionList').hide();
+        console.log('prepend the form to the subRegionForm dialog div:');
         $('#subRegionForm').prepend(subNationalForm(study));
 
         // check the grid count
         if (study.tot_grid_count < 300000) {
+            console.log('check the gid count is small and append the download button');
             $('#sub-exposure-building-form').append(
                 '<button id="subNationalExposureBldgDownload" type="button">Download</button>'
             );
@@ -464,6 +476,7 @@ var onRectangleDraw = function(e) {
 };
 
 var exposureExport = function(url) {
+    console.log('now calling the export ajax:');
     $.ajax({
         type: 'get',
         data: data,
@@ -488,18 +501,18 @@ var exposureExport = function(url) {
                 var msg2 = 'Something went wrong with that request';
                 showErrorDialog(msg2);
             }
-            else {
+            else if (jqXHR.status == 200) {
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
                 } else {
                     var popup = window.open('','csv','');
                     popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+                    var msg = 'The download is complete';
+                    showErrorDialog(msg, {title: 'Looks good!'});
                 }
             }
         },
         complete: function() {
-            var msg = 'The download is complete';
-            showErrorDialog(msg, {title: 'Looks good!'});
         },
     });
 };

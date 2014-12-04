@@ -43,14 +43,14 @@ var startApp = function() {
     drawnItems = new L.LayerGroup();
 
     // Create a dropdown list of all the countries
-    var winH = $(window).height() - 200;
-    var winW = $(window).width() - 200;
+    var winH = $(window).height() - 100;
+    var winW = $(window).width() - 100;
     $('#countriesListDialog').dialog({
         autoOpen: false,
         height: winH,
         width: winW,
         modal: true,
-        position: [100,150]
+        //position: [100,150]
     });
 
     $('#map-tools').append('<button type="button" id="countries-list">Load Data by Region</button>');
