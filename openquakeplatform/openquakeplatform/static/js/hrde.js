@@ -97,6 +97,7 @@ var startApp = function() {
             '<option value="4">Historic Earthquake Catalogue</option>'+
         '</select>'
     );
+    $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
     $('#map-tools').append('<button type="button" id="help">Help</button>');
 
@@ -106,6 +107,14 @@ var startApp = function() {
     if (winHelp > 760) {
         winHelp = 760;
     }
+
+    // Hazard Map download warning dialog
+    $('#HMDownloadWarning').dialog({
+        autoOpen: false,
+        height: 150,
+        width: 400,
+        closeOnEscape: true
+    });
 
     // Help dialog
     $('#helpDialog').dialog({
@@ -813,6 +822,61 @@ var startApp = function() {
     });
 
     map.addControl(AppVars.layerControl.setPosition('topleft'));
+
+    // Logic for downloading hazard map csv
+    $('#HMDownload').button().click(function() {
+
+        if (AppVars.utfGrid !== undefined && AppVars.utfGrid.utfGridType == 'map') {
+            var zoomLevel = map.getZoom();
+            var bounds = map.getBounds();
+            var tempPolygon = L.polygon([
+                [bounds._northEast.lat, bounds._northEast.lng],
+                [bounds._southWest.lat, bounds._southWest.lng]
+            ]);
+
+            if (zoomLevel >= 6) {
+                var hazardMapValues = [];
+
+                // get information out of the utfgrid for use in Download
+                for (var l in AppVars.utfGrid._cache) {
+                    if (AppVars.utfGrid._cache[l] !== null && typeof AppVars.utfGrid._cache[l] === 'object') {
+                        for (var m in AppVars.utfGrid._cache[l].data) {
+                            // download only the values that are within the map bounds
+                            var tempRecord = AppVars.utfGrid._cache[l].data[m];
+                            var tmpLatLng = L.latLng(tempRecord.latitude, tempRecord.longitude);
+                            if (tmpLatLng == undefined) {
+                                alert("There is a problem with this hazard map, please alert the systems administration of this issue")
+                            }
+                            if (tempPolygon.getBounds().contains(tmpLatLng)) {
+                                hazardMapValues.push([tempRecord.VAL, tempRecord.longitude, tempRecord.latitude]);
+                            }
+                        }
+                    }
+                }
+
+                var header = "val, longitude, latitude],";
+                var stringForDownload = JSON.stringify(hazardMapValues);
+                var stringForDownload = header.concat(stringForDownload);
+
+                stringForDownload = stringForDownload
+                    .replace(/{/g, '')
+                    .replace(/}/g, '')
+                    .replace(/\],/g, '\r\n')
+                    .replace(/\[/g, '')
+                    .replace(/\]/g, '');
+
+                downloadJSON2CSV(stringForDownload);
+            } else {
+                $('#HMDownloadWarning').empty();
+                $('#HMDownloadWarning').append("Hazard map data can only be downloaded at zoom level 6 or greater. The current zoom level is: "+zoomLevel );
+                $('#HMDownloadWarning').dialog('open');
+            }
+        } else {
+            $('#HMDownloadWarning').empty();
+            $('#HMDownloadWarning').append("A hazard map needs to be loaded into the map before a csv can be downloaded");
+            $('#HMDownloadWarning').dialog('open');
+        }
+    });
 
     function Opacity(tileLayer) {
         $('#opacity-slider').slider({

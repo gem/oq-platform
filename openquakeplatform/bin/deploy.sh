@@ -1,5 +1,7 @@
 #!/bin/bash
-# set -x
+if [ $GEM_SET_DEBUG ]; then
+    set -x
+fi
 set -e
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
@@ -462,6 +464,7 @@ oq_platform_install () {
         service tomcat7 start                      || true
     fi
 
+    apt-get update
     apt-get install -y python-software-properties
     add-apt-repository -y ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
