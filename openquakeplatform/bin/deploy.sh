@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ $GEM_SET_DEBUG ]; then
     set -x
 fi
