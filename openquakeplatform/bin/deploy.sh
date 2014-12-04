@@ -36,7 +36,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
+GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -183,10 +183,10 @@ isc_viewer_dataloader () {
 
 #
 #
-maps_viewer_postlayers () {
+initial_data_postlayers () {
     local oqpdir="$1" db_name="$2" bdir wdir
 
-    bdir="${oqpdir}/maps_viewer"
+    bdir="${oqpdir}/initial_data"
     wdir="${GEM_WEBDIR}/uploaded/thumbs"
     openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
     if [ ! -d "$wdir" ]; then
@@ -575,7 +575,7 @@ oq_platform_install () {
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # Load our users. Default password must be changed
-        openquakeplatform loaddata ${bdir}/fixtures/*.json
+        openquakeplatform loaddata ${oqpdir}/initial_data/fixtures/*.json
     fi
 
     service apache2 restart
@@ -606,6 +606,9 @@ oq_platform_install () {
             "${app}_postlayers" "$oqpdir" "$gem_db_name"
         fi
     done
+
+    # Push post-layers initial data
+    initial_data_postlayers "$oqpdir" "$gem_db_name"
 
 }
 
