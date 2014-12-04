@@ -191,9 +191,7 @@ common_postlayers () {
     bdir="${oqpdir}/common"
     wdir="${GEM_WEBDIR}/uploaded/thumbs"
     openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
-    if [ ! -d "$wdir" ]; then
-        mkdir -p  "$wdir"
-    fi
+    mkdir -p  "$wdir"
     cp ${bdir}/thumbs/*.png $wdir/
     chown -R www-data.www-data ${bdir}/thumbs/
 }
