@@ -27,7 +27,9 @@
             "country": null, 
             "zipcode": null, 
             "delivery": null, 
-            "user": 1, 
+            "user": [
+                "admin"
+            ], 
             "position": null, 
             "organization": null, 
             "voice": null, 
@@ -46,7 +48,9 @@
             "country": "ITA", 
             "zipcode": "27100", 
             "delivery": "", 
-            "user": 2, 
+            "user": [
+                "GEM"
+            ], 
             "position": "", 
             "organization": "GEM Foundation", 
             "voice": "+3903825169865", 
