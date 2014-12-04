@@ -265,6 +265,7 @@ def export_variables_data_by_ids(request):
         if export_geometries:
             row.append(country.the_geom)
         writer.writerow(row)
+    response['content-length'] = len(response.content)
     return response
 
 
