@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+#set -x
 set -e
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 export PS4='+${LINENO}:${FUNCNAME[0]}: '
