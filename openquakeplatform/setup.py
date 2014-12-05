@@ -29,6 +29,7 @@ setup(
               'openquakeplatform.geodetic',
               'openquakeplatform.exposure',
               'openquakeplatform.icebox',
+              'openquakeplatform.world',
               'openquakeplatform.svir',
               'openquakeplatform.vulnerability',
               'openquakeplatform.econd',
