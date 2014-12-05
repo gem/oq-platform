@@ -311,6 +311,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         }
 
         // Focus the map on the selected region
+        var bBox = L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin));
         var tempPolygon = L.polygon([
             [study.ymax, study.xmax],
             [study.ymin, study.xmin]
