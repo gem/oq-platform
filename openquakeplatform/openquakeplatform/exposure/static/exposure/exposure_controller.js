@@ -475,8 +475,8 @@ var onRectangleDraw = function(e) {
 
 $("#cover").css("display", "none");
 
-
 var exposureExport = function(url) {
+    $('#countriesListDialog').dialog('close');
     $("#cover").css("display", "");
     $(window).load(function(){
         $('#cover').fadeOut(1000);
@@ -509,14 +509,13 @@ var exposureExport = function(url) {
                 } else {
                     var popup = window.open('','csv','');
                     popup.document.body.innerHTML = '<pre>' + data + '</pre>';
-                    var msg = 'The download is complete';
-                    showErrorDialog(msg, {title: 'Looks good!'});
                 }
             }
         },
         complete: function() {
-            $("#download-button-spinner").css("display", "none");
             $("#cover").css("display", "none");
+            //var msg = 'The download is complete';
+            //showErrorDialog(msg, {title: 'Looks good!'});
         },
     });
 };

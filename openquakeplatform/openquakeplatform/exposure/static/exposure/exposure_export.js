@@ -44,12 +44,15 @@ var startApp = function() {
 
     // Create a dropdown list of all the countries
     var winH = $(window).height() - 100;
-    var winW = $(window).width() - 100;
+    var winW = $(window).width() - 300;
     $('#countriesListDialog').dialog({
         autoOpen: false,
         height: winH,
         width: winW,
         modal: true,
+        open: function() {
+            $('.ui-widget-overlay').addClass('custom-style');
+        }
         //position: [100,150]
     });
 
