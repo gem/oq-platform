@@ -290,10 +290,10 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     $scope.changeSelection = function(study) {
 
-        if (selectedRow)
+        if (selectedRow) {
             selectedRow.$selected = false;
             selectedRow = selection;
-        };
+        }
 
         console.log('$scope.tableParams2:');
         console.log($scope.tableParams2);
