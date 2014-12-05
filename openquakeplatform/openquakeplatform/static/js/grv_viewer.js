@@ -277,7 +277,7 @@ var startApp = function() {
         autoOpen: false,
         height: winH / 1.5,
         width: 500,
-        modal: true
+        //modal: true
     });
 
     $("#edu-chart-options").dialog({
@@ -378,7 +378,7 @@ var startApp = function() {
     ////////////////////////////////////////////
 
     function buildD3Chart(chartCat, countryName, attrSelection, selectedValue1, selectedValue2, selectedValue3, selectedValue4, selectedValue5, selectedValue6, countriesArray) {
-
+        chartArray = [];
         var numberOfCountries = $("#chart-var-numb option:selected").val();
         obj0.country = countriesArray[0];
         obj0[attrSelection[0]] = selectedValue1[0];
@@ -432,8 +432,8 @@ var startApp = function() {
             chartArray[i] = window["obj" + i];
         }
 
-        var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]],
-            attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
+        var country = [countriesArray[0], countriesArray[1], countriesArray[2], countriesArray[3], countriesArray[4], countriesArray[5]];
+        var attributes = [attrSelection[0], attrSelection[1], attrSelection[2], attrSelection[3], attrSelection[4], attrSelection[5]];
 
         for (var i=0; i<numberOfCountries; i++) {
             country.splice(numberOfCountries,10);
@@ -471,6 +471,7 @@ var startApp = function() {
                 .y(y[d])
                 .on("brush", brush);
         });
+
         // Add a legend.
         var legend = svg.selectAll("g.legend")
             .data(country)
@@ -567,7 +568,8 @@ var startApp = function() {
 
 
     // Change the utfGrid layer when the tabs are clicked
-    $("#econ").click(function(){
+    $("#econ").click(function() {
+        $('#econ-chart-options').empty();
         dataCat = "econ-table";
         chartCat = "econ-chart";
 
@@ -603,16 +605,16 @@ var startApp = function() {
 
         }).done(function() {
             for (var i = 0; i < econIndicatorsArray.length; i++) {
-                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+econIndicatorsArray[i]+'" value="'+econIndicatorsArray[i]+'">'+econIndicatorsArray[i]+'<br>';
+                var chartDropDown = '<input class="attributeOption econ-chart" type="checkbox" name="'+econIndicatorsArray[i]+'" value="'+econIndicatorsArray[i]+'">'+econIndicatorsArray[i]+'<br>';
                 $('#econ-chart-options').append(chartDropDown);
             }
-            $('.attributeOption:lt(6)').prop('checked', true);
+            $('.econ-chart:lt(6)').prop('checked', true);
             $('#econ-chart-options').append('<input id="econ-chart-optionsButton" type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
                 var max = 7;
-                var checkboxes = $('input[type="checkbox"]');
+                var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
                     checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
@@ -623,7 +625,8 @@ var startApp = function() {
         utfGridClickEvent(dataCat, chartCat);
     });
 
-    $("#pop").click(function(){
+    $("#pop").click(function() {
+        $('#pop-chart-options').empty();
         dataCat = "pop-table";
         chartCat = "pop-chart";
         try {
@@ -659,16 +662,16 @@ var startApp = function() {
 
         }).done(function() {
             for (var i = 0; i < popIndicatorsArray.length; i++) {
-                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+popIndicatorsArray[i]+'" value="'+popIndicatorsArray[i]+'">'+popIndicatorsArray[i]+'<br>';
+                var chartDropDown = '<input class="attributeOption pop-chart" type="checkbox" name="'+popIndicatorsArray[i]+'" value="'+popIndicatorsArray[i]+'">'+popIndicatorsArray[i]+'<br>';
                 $('#pop-chart-options').append(chartDropDown);
             }
-            $('.attributeOption:lt(6)').prop('checked', true);
+            $('.pop-chart:lt(6)').prop('checked', true);
             $('#pop-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
                 var max = 7;
-                var checkboxes = $('input[type="checkbox"]');
+                var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
                     checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
@@ -679,7 +682,8 @@ var startApp = function() {
         utfGridClickEvent(dataCat, chartCat);
     });
 
-    $("#infra").click(function(){
+    $("#infra").click(function() {
+        $('#infra-chart-options').empty();
         dataCat = "infra-table";
         chartCat = "infra-chart";
         try {
@@ -715,16 +719,16 @@ var startApp = function() {
 
         }).done(function() {
             for (var i = 0; i < infraIndicatorsArray.length; i++) {
-                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+infraIndicatorsArray[i]+'" value="'+infraIndicatorsArray[i]+'">'+infraIndicatorsArray[i]+'<br>';
+                var chartDropDown = '<input class="attributeOption infra-chart" type="checkbox" name="'+infraIndicatorsArray[i]+'" value="'+infraIndicatorsArray[i]+'">'+infraIndicatorsArray[i]+'<br>';
                 $('#infra-chart-options').append(chartDropDown);
             }
-            $('.attributeOption:lt(6)').prop('checked', true);
+            $('.infra-chart:lt(6)').prop('checked', true);
             $('#infra-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
                 var max = 7;
-                var checkboxes = $('input[type="checkbox"]');
+                var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
                     checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
@@ -735,7 +739,8 @@ var startApp = function() {
         utfGridClickEvent(dataCat, chartCat);
     });
 
-    $("#gov").click(function(){
+    $("#gov").click(function() {
+        $('#gov-chart-options').empty();
         dataCat = "gov-table";
         chartCat = "gov-chart";
         try {
@@ -771,16 +776,16 @@ var startApp = function() {
 
         }).done(function() {
             for (var i = 0; i < govIndicatorsArray.length; i++) {
-                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+govIndicatorsArray[i]+'" value="'+govIndicatorsArray[i]+'">'+govIndicatorsArray[i]+'<br>';
+                var chartDropDown = '<input class="attributeOption gov-chart" type="checkbox" name="'+govIndicatorsArray[i]+'" value="'+govIndicatorsArray[i]+'">'+govIndicatorsArray[i]+'<br>';
                 $('#gov-chart-options').append(chartDropDown);
             }
-            $('.attributeOption:lt(6)').prop('checked', true);
+            $('.gov-chart:lt(6)').prop('checked', true);
             $('#gov-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
                 var max = 7;
-                var checkboxes = $('input[type="checkbox"]');
+                var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
                     checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
@@ -791,7 +796,8 @@ var startApp = function() {
         utfGridClickEvent(dataCat, chartCat);
     });
 
-    $("#edu").click(function(){
+    $("#edu").click(function() {
+        $('#edu-chart-options').empty();
         dataCat = "edu-table";
         chartCat = "edu-chart";
         try {
@@ -826,16 +832,16 @@ var startApp = function() {
 
         }).done(function() {
             for (var i = 0; i < eduIndicatorsArray.length; i++) {
-                var chartDropDown = '<input class="attributeOption" type="checkbox" name="'+eduIndicatorsArray[i]+'" value="'+eduIndicatorsArray[i]+'">'+eduIndicatorsArray[i]+'<br>';
+                var chartDropDown = '<input class="attributeOption edu-chart" type="checkbox" name="'+eduIndicatorsArray[i]+'" value="'+eduIndicatorsArray[i]+'">'+eduIndicatorsArray[i]+'<br>';
                 $('#edu-chart-options').append(chartDropDown);
             }
-            $('.attributeOption:lt(6)').prop('checked', true);
+            $('.edu-chart:lt(6)').prop('checked', true);
             $('#edu-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
                 var max = 7;
-                var checkboxes = $('input[type="checkbox"]');
+                var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
                     checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
@@ -848,7 +854,6 @@ var startApp = function() {
 
     var utfGridClickEvent = function(dataCat, chartCat) {
         utfGrid.on('click', function (e) {
-            // TODO allow the user to control the number of countries/attributes to interrogate
             $("#"+chartCat+"-bar").empty();
             svirRankValues = [];
             svirRankKeys = [];
@@ -881,7 +886,7 @@ var startApp = function() {
                 $("#chartOptionsButton").click(function(){
                     $('#'+chartCat+'-options').dialog('close');
                     // Grab the check box values to be used in the chart
-                    attrSelection = $('#'+chartCat+'-options input[class="attributeOption"]:checked')
+                    attrSelection = $('#'+chartCat+'-options input:checked')
                         .map(function(){
                             return this.name;
                         });
@@ -891,7 +896,7 @@ var startApp = function() {
                 });
 
                 var attrSelection = [];
-                $('#'+chartCat+'-options input[class="attributeOption"]:checked').map(function(){
+                $('#'+chartCat+'-options input:checked').map(function(){
                     attrSelection.push(this.name);
                 });
 
