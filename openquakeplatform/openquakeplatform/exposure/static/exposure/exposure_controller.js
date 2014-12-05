@@ -150,7 +150,13 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
                 $scope.foo = data;
                 // Focus the map on the selected region
-                map.fitBounds(L.latLngBounds(L.latLng($scope.foo[0].ymax, $scope.foo[0].xmax), L.latLng($scope.foo[0].ymin, $scope.foo[0].xmin)));
+                //map.fitBounds(L.latLngBounds(L.latLng($scope.foo[0].ymax, $scope.foo[0].xmax), L.latLng($scope.foo[0].ymin, $scope.foo[0].xmin)));
+                //map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
+
+                var bBox = L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin));
+                map.fitBounds(bBox);
+                console.log('L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));:');
+                console.log(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
 
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
@@ -164,7 +170,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#countrySelectionForm').append(nationalForm(study));
 
                 // Check the grid count
-                if ($scope.foo[0].tot_grid_count < 300000) {
+                if ( $scope.foo[0].tot_grid_count < 300000) {
                     $('#exposure-building-form').append(
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
@@ -302,7 +308,9 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         }
 
         // Focus the map on the selected region
-        map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
+        //map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
+        var bBox = L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin));
+        map.fitBounds(bBox);
 
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
         $('#sub-exposure-building-form').empty();
@@ -482,14 +490,7 @@ var exposureExport = function(url) {
                 showErrorDialog(msg, {title: 'Nothing here'});
             }
             else if (jqXHR.status == 200) {
-                response.Clear();
-                response.AddHeader("content-disposition", "attachment;filename=file.csv");
 
-                response.ContentType = "application/pdf";
-                response.BinaryWrite(data);
-
-                response.End();
-                /*
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
                 } else {
@@ -498,7 +499,6 @@ var exposureExport = function(url) {
                     var msg = 'The download is complete';
                     showErrorDialog(msg, {title: 'Looks good!'});
                 }
-                */
             }
         },
         complete: function() {
