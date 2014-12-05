@@ -38,7 +38,7 @@ var activateDrawTool = function() {
 var downloadFractions = function() {
     $('#dwellingFractionsDownload').button().click(function() {
         var sr_id = $('#dwellingFractionsDownload').val();
-        console.log('about to run ajax call for export_fractions_by_study_region_id :');
+
         $.ajax({
             type: 'get',
             url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
@@ -77,8 +77,6 @@ var showErrorDialog = function(message, options) {
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
         $scope.nationalData = data;
-        //console.log('$scope.nationalData:');
-        //console.log($scope.nationalData);
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -125,12 +123,15 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             '</form>';
     }
 
+    var selectedRow;
+
     // Watch for a selection from the national list
     $scope.changeSelection = function(study) {
-        console.log('$scope.tableParams:');
-        console.log($scope.tableParams);
-        console.log('$scope.nationalData:');
-        console.log($scope.nationalData);
+        if (selectedRow) {
+            selectedRow.$selected = false;
+            selectedRow = selection;
+        }
+
         // Restet vars to null
         sr_id = (function () { return; })();
         outputType = (function () { return; })();
@@ -148,13 +149,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
                 $scope.foo = data;
-                console.log('$scope.foo:');
-                console.log($scope.foo);
-                console.log('get national grid count:');
                 // Focus the map on the selected region
                 map.fitBounds(L.latLngBounds(L.latLng($scope.foo[0].ymax, $scope.foo[0].xmax), L.latLng($scope.foo[0].ymin, $scope.foo[0].xmin)));
 
-                console.log('modify some jquery stuff:');
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countrySelectionForm').insertAfter('#countryList');
@@ -164,12 +161,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
-                console.log('append the form to the dialog:');
                 $('#countrySelectionForm').append(nationalForm(study));
 
                 // Check the grid count
                 if ($scope.foo[0].tot_grid_count < 300000) {
-                    console.log('check the grid count:');
                     $('#exposure-building-form').append(
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
@@ -181,7 +176,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 }
 
-                //console.log('download the fractions:');
                 downloadFractions();
 
                 $('#selectBbox').button().click(function() {
@@ -294,9 +288,6 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
             selectedRow.$selected = false;
             selectedRow = selection;
         }
-
-        console.log('$scope.tableParams2:');
-        console.log($scope.tableParams2);
 
         // Restet vars to null
         sr_id = (function () { return; })();
@@ -448,8 +439,7 @@ var onRectangleDraw = function(e) {
     var latDiff = Math.abs(e.rect._latlngs[0].lat - e.rect._latlngs[1].lat);
     var lonDiff = Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng);
     var LatLngBox = latDiff + lonDiff;
-    console.log('LatLngBox:');
-    console.log(LatLngBox);
+
     if (LatLngBox > 8) {
         var msg = 'The selected area is to large.';
         showErrorDialog(msg);
@@ -469,15 +459,12 @@ var onRectangleDraw = function(e) {
 };
 
 var exposureExport = function(url) {
-    console.log('hi, im ajax:');
     $("#download-button-spinner").css("display", "");
     $.ajax({
         type: 'get',
         data: data,
         url: url,
         error: function(response, error) {
-            console.log('response:');
-            console.log(response);
             if (response.status == 412) {
                 var msg = 'The selected area is to large.';
                 showErrorDialog(msg);
