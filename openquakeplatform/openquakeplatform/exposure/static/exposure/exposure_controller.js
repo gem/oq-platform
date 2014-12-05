@@ -112,11 +112,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" value="residential" /> Residential</label></br>'+
                 '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
-                '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="residential" type="radio" value="both" /> Both</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
-                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                //'<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
                 '<input type="hidden" name="study" value="'+study.study_id+'">'+
                 '<br>'+
@@ -151,6 +150,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $scope.foo = data;
                 // Focus the map on the selected region
                 var bBox = L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin));
+                map.fitBounds(bBox);
+
                 var tempPolygon = L.polygon([
                     [data[0].ymax, data[0].xmax],
                     [data[0].ymin, data[0].xmin]
@@ -278,11 +279,10 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 '<p><label for="id_residential_0">Residential:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" value="residential" /> Residential</label></br>'+
                 '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
-                '<label for="id_residential_2"><input class="exposure_export_widget" id="id_residential_2" name="sub-residential" type="radio" value="both" /> Both</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" value="csv" /> CSV</label></br>'+
-                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                //'<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
                 '<input type="hidden" name="sub-study" value="'+study.study_region_id+'">'+
                 '<br>'+
@@ -312,8 +312,8 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
         // Focus the map on the selected region
         var tempPolygon = L.polygon([
-            [study[0].ymax, study[0].xmax],
-            [study[0].ymin, study[0].xmin]
+            [study.ymax, study.xmax],
+            [study.ymin, study.xmin]
         ]);
         var selectedRegionCenter = tempPolygon.getBounds().getCenter();
         var zoomLevel = map.getBoundsZoom(bBox);
@@ -473,8 +473,14 @@ var onRectangleDraw = function(e) {
     }
 };
 
+$("#cover").css("display", "none");
+
+
 var exposureExport = function(url) {
-    $("#download-button-spinner").css("display", "");
+    $("#cover").css("display", "");
+    $(window).load(function(){
+        $('#cover').fadeOut(1000);
+    });
     $.ajax({
         type: 'get',
         data: data,
@@ -510,6 +516,7 @@ var exposureExport = function(url) {
         },
         complete: function() {
             $("#download-button-spinner").css("display", "none");
+            $("#cover").css("display", "none");
         },
     });
 };
