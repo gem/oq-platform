@@ -150,13 +150,16 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
                 $scope.foo = data;
                 // Focus the map on the selected region
-                //map.fitBounds(L.latLngBounds(L.latLng($scope.foo[0].ymax, $scope.foo[0].xmax), L.latLng($scope.foo[0].ymin, $scope.foo[0].xmin)));
-                //map.fitBounds(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
-
                 var bBox = L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin));
-                map.fitBounds(bBox);
-                console.log('L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));:');
-                console.log(L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin)));
+                var tempPolygon = L.polygon([
+                    [data[0].ymax, data[0].xmax],
+                    [data[0].ymin, data[0].xmin]
+                ]);
+
+                var selectedRegionCenter = tempPolygon.getBounds().getCenter();
+
+                var zoomLevel = map.getBoundsZoom(bBox);
+                map.setView(L.latLng(selectedRegionCenter.lat, selectedRegionCenter.lng), zoomLevel);
 
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
@@ -308,9 +311,13 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         }
 
         // Focus the map on the selected region
-        //map.fitBounds(L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin)));
-        var bBox = L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin));
-        map.fitBounds(bBox);
+        var tempPolygon = L.polygon([
+            [study[0].ymax, study[0].xmax],
+            [study[0].ymin, study[0].xmin]
+        ]);
+        var selectedRegionCenter = tempPolygon.getBounds().getCenter();
+        var zoomLevel = map.getBoundsZoom(bBox);
+        map.setView(L.latLng(selectedRegionCenter.lat, selectedRegionCenter.lng), zoomLevel);
 
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
         $('#sub-exposure-building-form').empty();
