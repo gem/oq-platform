@@ -38,10 +38,13 @@ var activateDrawTool = function() {
 var downloadFractions = function() {
     $('#dwellingFractionsDownload').button().click(function() {
         var sr_id = $('#dwellingFractionsDownload').val();
+        console.log('about to run ajax call for export_fractions_by_study_region_id :');
         $.ajax({
             type: 'get',
             url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
             success: function(data, textStatus, jqXHR) {
+                console.log('jqXHR:');
+                console.log(jqXHR);
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
                 } else {
@@ -74,8 +77,8 @@ var showErrorDialog = function(message, options) {
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
         $scope.nationalData = data;
-        console.log('$scope.nationalData:');
-        console.log($scope.nationalData);
+        //console.log('$scope.nationalData:');
+        //console.log($scope.nationalData);
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -178,7 +181,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 }
 
-                console.log('download the fractions:');
+                //console.log('download the fractions:');
                 downloadFractions();
 
                 $('#selectBbox').button().click(function() {
@@ -283,7 +286,15 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
             '</form>';
     }
 
+    var selectedRow;
+
     $scope.changeSelection = function(study) {
+
+        if (selectedRow)
+            selectedRow.$selected = false;
+            selectedRow = selection;
+        };
+
         console.log('$scope.tableParams2:');
         console.log($scope.tableParams2);
 
@@ -477,14 +488,21 @@ var exposureExport = function(url) {
             }
         },
         success: function(data, textStatus, jqXHR) {
-            console.log('jqXHR:');
-            console.log(jqXHR);
+
             if (jqXHR.status == 204) {
                 // No data for the given bounding box selection
                 var msg = 'No exposure data available in the selected area.';
                 showErrorDialog(msg, {title: 'Nothing here'});
             }
             else if (jqXHR.status == 200) {
+                response.Clear();
+                response.AddHeader("content-disposition", "attachment;filename=file.csv");
+
+                response.ContentType = "application/pdf";
+                response.BinaryWrite(data);
+
+                response.End();
+                /*
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
                 } else {
@@ -493,6 +511,7 @@ var exposureExport = function(url) {
                     var msg = 'The download is complete';
                     showErrorDialog(msg, {title: 'Looks good!'});
                 }
+                */
             }
         },
         complete: function() {
