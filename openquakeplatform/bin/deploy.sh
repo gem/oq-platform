@@ -36,7 +36,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability', 'world', 'svir')
+GEM_APP_LIST=('world' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'maps_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability' 'svir')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
