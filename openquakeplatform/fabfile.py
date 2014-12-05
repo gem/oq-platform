@@ -97,11 +97,13 @@ def baseenv(host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
     setup()
     # We need to start geoserver
     init_start()
+    # Import our users
+    _set_auth()
     # Update Django 'sites' with real hostname
     _set_sites()
 
 APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
-             'maps_viewer', 'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
+             'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
              'icebox']
 
 
@@ -122,8 +124,9 @@ def apps(db_name, db_user, db_pass):
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
-    local('python manage.py loaddata openquakeplatform/maps_viewer/post_fixtures/*.json')
-    local('python manage.py map_title')
+    local('python manage.py loaddata openquakeplatform/common/post_fixtures/*.json')
+    local('mkdir -p /tmp/thumbs')
+    local('cp openquakeplatform/common/thumbs/*.png /tmp/thumbs/')
 
 
 def clean(db_name='oqplatform', db_user='oqplatform'):
@@ -334,6 +337,11 @@ def _add_vulnerability():
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
+
+
+def _set_auth():
+    local('python manage.py loaddata '
+          './openquakeplatform/common/fixtures/*.json' )
 
 
 def _set_sites():

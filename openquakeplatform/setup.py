@@ -25,7 +25,6 @@ setup(
               'openquakeplatform.isc_viewer',
               'openquakeplatform.ghec_viewer',
               'openquakeplatform.gaf_viewer',
-              'openquakeplatform.maps_viewer',
               'openquakeplatform.faulted_earth',
               'openquakeplatform.geodetic',
               'openquakeplatform.exposure',
