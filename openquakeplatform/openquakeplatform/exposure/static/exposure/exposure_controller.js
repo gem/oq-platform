@@ -147,20 +147,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             // The user has selected a national study
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
-                $scope.foo = data;
-                // Focus the map on the selected region
-                var bBox = L.latLngBounds(L.latLng(data[0].ymax, data[0].xmax), L.latLng(data[0].ymin, data[0].xmin));
-                map.fitBounds(bBox);
-
-                var tempPolygon = L.polygon([
-                    [data[0].ymax, data[0].xmax],
-                    [data[0].ymin, data[0].xmin]
-                ]);
-
-                var selectedRegionCenter = tempPolygon.getBounds().getCenter();
-
-                var zoomLevel = map.getBoundsZoom(bBox);
-                map.setView(L.latLng(selectedRegionCenter.lat, selectedRegionCenter.lng), zoomLevel);
+                $scope.selectedRegion = data;
 
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
                 $('#ragionTable').hide();
@@ -174,7 +161,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#countrySelectionForm').append(nationalForm(study));
 
                 // Check the grid count
-                if ( $scope.foo[0].tot_grid_count < 300000) {
+                if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
                     $('#exposure-building-form').append(
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
@@ -189,6 +176,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 downloadFractions();
 
                 $('#selectBbox').button().click(function() {
+                    // Focus the map on the selected region
+                    map.fitBounds(L.latLngBounds(L.latLng($scope.selectedRegion[0].ymax, $scope.selectedRegion[0].xmax), L.latLng($scope.selectedRegion[0].ymin, $scope.selectedRegion[0].xmin)));
+
                     // Gather the selected options into global vars
                     sr_id = $('[name="study"]').val();
                     outputType = $('input[name="outputType"]:checked', '#exposure-building-form').val();
@@ -293,6 +283,8 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     $scope.changeSelection = function(study) {
 
+        $scope.selectedSubRegion = study;
+
         if (selectedRow) {
             selectedRow.$selected = false;
             selectedRow = selection;
@@ -309,16 +301,6 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         } catch (e) {
             // continue
         }
-
-        // Focus the map on the selected region
-        var bBox = L.latLngBounds(L.latLng(study.ymax, study.xmax), L.latLng(study.ymin, study.xmin));
-        var tempPolygon = L.polygon([
-            [study.ymax, study.xmax],
-            [study.ymin, study.xmin]
-        ]);
-        var selectedRegionCenter = tempPolygon.getBounds().getCenter();
-        var zoomLevel = map.getBoundsZoom(bBox);
-        map.setView(L.latLng(selectedRegionCenter.lat, selectedRegionCenter.lng), zoomLevel);
 
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
         $('#sub-exposure-building-form').empty();
@@ -356,6 +338,8 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         });
 
         $('#subSelectBbox').button().click(function() {
+            // Focus the map on the selected region
+            map.fitBounds(L.latLngBounds(L.latLng($scope.selectedSubRegion.ymax, $scope.selectedSubRegion.xmax), L.latLng($scope.selectedSubRegion.ymin, $scope.selectedSubRegion.xmin)));
             // Gather the selected options into global vars
             sr_id = $('[name="sub-study"]').val();
             outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
