@@ -461,48 +461,9 @@ var onRectangleDraw = function(e) {
 $("#cover").css("display", "none");
 
 var exposureExport = function(url) {
-    $('#countriesListDialog').dialog('close');
-    $("#cover").css("display", "");
-    $(window).load(function(){
-        $('#cover').fadeOut(1000);
-    });
-    $.ajax({
-        type: 'get',
-        data: data,
-        url: url,
-        error: function(response, error) {
-            if (response.status == 412) {
-                var msg = 'The selected area is to large.';
-                showErrorDialog(msg);
-            }
-            else if (jqXHR.status == 400) {
-                var msg2 = 'Something went wrong with that request';
-                showErrorDialog(msg2);
-            }
-        },
-        success: function(data, textStatus, jqXHR) {
-
-            if (jqXHR.status == 204) {
-                // No data for the given bounding box selection
-                var msg = 'No exposure data available in the selected area.';
-                showErrorDialog(msg, {title: 'Nothing here'});
-            }
-            else if (jqXHR.status == 200) {
-
-                if (navigator.appName != 'Microsoft Internet Explorer') {
-                    window.open('data:text/csv;charset=utf-8,' + escape(data));
-                } else {
-                    var popup = window.open('','csv','');
-                    popup.document.body.innerHTML = '<pre>' + data + '</pre>';
-                }
-            }
-        },
-        complete: function() {
-            $("#cover").css("display", "none");
-            //var msg = 'The download is complete';
-            //showErrorDialog(msg, {title: 'Looks good!'});
-        },
-    });
+    var host = window.location.host;
+    var path = host+url;
+    window.open("http://"+path);
 };
 
 var activateDrawFunction = function() {
