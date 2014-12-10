@@ -32,7 +32,7 @@ from openquakeplatform.exposure import util
 COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
 
- Copyright (C) 2013 GEM Foundation
+ Copyright (C) 2014 GEM Foundation
 
  Contributions by: see http://www.globalquakemodel.org/contributors
 
