@@ -90,7 +90,7 @@ var startApp = function() {
     $('#map-tools').append('<button type="button" id="hazard-data">Load Hazard Data</button>');
     $('#map-tools').append('<button type="button" id="risk-data">Load Risk Data</button>');
     $('#map-tools').append('<select id="external-layers-menu">'+
-            '<option>Select additinal layers</option>'+
+            '<option>Select additional layers</option>'+
             '<option value="1">Strain</option>'+
             '<option value="2">Strain Arrows</option>'+
             '<option value="3">Instrumental Earthquake Catalogue</option>'+
