@@ -96,7 +96,7 @@ NRML_FOOTER = """
 
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
-MAX_TOT_GRID_COUNT = 300000
+MAX_TOT_GRID_COUNT = 100000
 
 @allowed_methods(('GET', ))
 @sign_in_required
@@ -339,8 +339,8 @@ def export_exposure(request):
             return response
     if lng1 and lat1 and lng2 and lat2:
         filter_by_bounding_box = True
-        # For max area we are not using the default MAX_EXPORT_AREA_SQ_DEG here
-        valid, error = _export_area_valid(lat1, lng1, lat2, lng2, max_area=8)
+        # the default max_area would be MAX_EXPORT_AREA_SQ_DEG
+        valid, error = _export_area_valid(lat1, lng1, lat2, lng2, max_area=4)
         if not valid:
             return HttpResponse(content=error,
                                 content_type="text/html",
