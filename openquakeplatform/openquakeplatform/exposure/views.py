@@ -423,26 +423,42 @@ def export_exposure(request):
             return response
     else:
         occupancy = 0  # 'residential' by default
-    response = HttpResponse(mimetype=mimetype)
+    if filter_by_bounding_box:
+        response_data = _stream_exposure_by_bb_and_sr_id(
+            output_type, lng1, lat1, lng2, lat2, sr_id, occupancy)
+    else:
+        response_data = _stream_exposure_by_sr_id(
+            output_type, sr_id, occupancy)
+    response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
+    return response
+
+def _stream_exposure_by_bb_and_sr_id(
+        output_type, lng1, lat1, lng2, lat2, sr_id, occupancy):
     if output_type == 'csv':
         copyright = copyright_csv(COPYRIGHT_HEADER)
-        response.write(copyright + "\n")
-        writer = csv.writer(response, delimiter=',', quotechar='"')
-        if filter_by_bounding_box:
-            for row in util._stream_exposure_by_bb_and_sr_id(
-                    lng1, lat1, lng2, lat2, sr_id, occupancy):
-                writer.writerow(row)
-        else:  # no bounding box provided
-            for row in util._stream_exposure_by_sr_id(sr_id, occupancy):
-                writer.writerow(row)
+        yield copyright
+        for row in util._stream_exposure_by_bb_and_sr_id(
+                lng1, lat1, lng2, lat2, sr_id, occupancy):
+            row_str = ','.join([str(x) for x in row]) + "\n"
+            yield row_str
     elif output_type == 'nrml':
         # TODO: Implement export for nrml
         raise NotImplementedError(
             'output_type [%s] is not available' % output_type)
-    response['content-length'] = len(response.content)
-    return response
 
+def _stream_exposure_by_sr_id(
+        output_type, sr_id, occupancy):
+    if output_type == 'csv':
+        copyright = copyright_csv(COPYRIGHT_HEADER)
+        yield copyright
+        for row in util._stream_exposure_by_sr_id(sr_id, occupancy):
+            row_str = ','.join([str(x) for x in row]) + "\n"
+            yield row_str
+    elif output_type == 'nrml':
+        # TODO: Implement export for nrml
+        raise NotImplementedError(
+            'output_type [%s] is not available' % output_type)
 
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
@@ -628,7 +644,7 @@ def export_fractions_by_study_region_id(request):
     response = HttpResponse(mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     copyright = copyright_csv(COPYRIGHT_HEADER)
-    response.write(copyright + "\n")
+    response.write(copyright)
     writer = csv.writer(response, delimiter=',', quotechar='"')
     for row in util._stream_fractions_by_study_region_id(sr_id):
         writer.writerow(row)
@@ -945,7 +961,7 @@ def copyright_csv(cr_text):
     # prepend the # comment character to each line
     lines = ['#%s' % line for line in lines]
     # rejoin into a single multiline string:
-    return '\n'.join(lines)
+    return '\n'.join(lines) + "\n"
 
 
 def copyright_nrml(cr_text):
