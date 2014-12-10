@@ -442,7 +442,7 @@ var startApp = function() {
         var winH = ($(window).height() / 2);
         var winW = ($(window).width());
 
-        var margin = {top: 80, right: 80, bottom: 100, left: 80},
+        var margin = {top: 80, right: 80, bottom: 100, left: 180},
             width = winW - margin.left - margin.right,
             height = winH - margin.top - margin.bottom;
 
@@ -457,7 +457,7 @@ var startApp = function() {
         $("#"+chartCat+"-pcc").attr("height", winH);
 
         var svg = d3.select("#"+chartCat+"-pcc").append("svg")
-            .attr("viewBox", "-80 -40 " + winW +" " + winH)
+            .attr("viewBox", "-180 -40 " + winW +" " + winH)
             .append("g");
 
         // Create a scale and brush for each trait.
@@ -472,19 +472,21 @@ var startApp = function() {
                 .on("brush", brush);
         });
 
+
         // Add a legend.
         var legend = svg.selectAll("g.legend")
             .data(country)
             .enter().append("svg:g")
             .attr("class", "legend");
         legend.append("svg:line")
+        // ** left off here
             .attr("class", String)
             .attr("x2", 20)
             .attr("y2", 0)
-            .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 335) + ")"; });
+            .attr("transform", function(d, i) { return "translate(-170," + (i * 20 + 20) + ")"; });
         legend.append("svg:text")
-            .attr("x", -10)
-            .attr("y", -250)
+            .attr("x", -180)
+            .attr("y", -565)
             .attr("dy", ".31em")
             .text(function(d) { return d; })
             .attr("transform", function(d, i) { return "translate(35," + (i * 20 + 584) + ")"; });
