@@ -38,13 +38,10 @@ var activateDrawTool = function() {
 var downloadFractions = function() {
     $('#dwellingFractionsDownload').button().click(function() {
         var sr_id = $('#dwellingFractionsDownload').val();
-
         $.ajax({
             type: 'get',
             url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
             success: function(data, textStatus, jqXHR) {
-                console.log('jqXHR:');
-                console.log(jqXHR);
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
                 } else {
@@ -464,6 +461,8 @@ var exposureExport = function(url) {
     var host = window.location.host;
     var path = host+url;
     window.open("http://"+path);
+    var msg = 'The download is underway, please allow the download to complete before making new requests.';
+    showErrorDialog(msg, {title: 'Download'});
 };
 
 var activateDrawFunction = function() {
