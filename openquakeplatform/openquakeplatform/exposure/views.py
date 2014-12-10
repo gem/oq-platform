@@ -440,6 +440,7 @@ def export_exposure(request):
         # TODO: Implement export for nrml
         raise NotImplementedError(
             'output_type [%s] is not available' % output_type)
+    response['content-length'] = len(response.content)
     return response
 
 
