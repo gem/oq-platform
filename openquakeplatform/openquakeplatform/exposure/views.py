@@ -373,7 +373,6 @@ def export_exposure(request):
                             sr_id=sr_id, occupancy=occupancy,
                             filter_by_bounding_box=filter_by_bounding_box)
             response_data = _stream_exposure_as_nrml(req_pars)
-            pass
         else:
             raise NotImplementedError(
                 'output_type [%s] is not available' % output_type)
@@ -385,7 +384,6 @@ def export_exposure(request):
             req_pars = dict(sr_id=sr_id, occupancy=occupancy,
                             filter_by_bounding_box=filter_by_bounding_box)
             response_data = _stream_exposure_as_nrml(req_pars)
-            pass
         else:
             raise NotImplementedError(
                 'output_type [%s] is not available' % output_type)
@@ -434,20 +432,6 @@ def _stream_exposure_as_nrml(req_pars):
          bldg_fraction, type_pop, day_pop, night_pop, transit_pop, bldg_count,
          bldg_count_quality, bldg_area, bldg_area_quality, bldg_cost,
          bldg_cost_quality) in exposure_data:
-        # if all([x is None for x in (type_pop,
-        #                             day_pop,
-        #                             night_pop,
-        #                             transit_pop)]):
-        #     asset_params = dict(
-        #         gml_id='%s_%s' % (grid_id, bldg_type),
-        #         lon=lon,
-        #         lat=lat,
-        #         bldg_count=bldg_count,
-        #         tax=bldg_type,
-        #     )
-        #     asset = NRML_ASSET_FMT % asset_params
-        #     yield '%s' % asset
-        # else:
         occ = ''
         for tod, occupants in (('all', type_pop),
                                ('day', day_pop),
