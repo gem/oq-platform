@@ -67,7 +67,7 @@ POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
-    <exposureModel id="ep" category="%(cat)s" taxonomySource="%(taxonomy_name)s">
+    <exposureModel id="ep" category="%(cat)s" taxonomySource="%(taxonomy_name)s %(taxonomy_version)s">
         <description>Source: OQP exposure export tool</description>
             <conversions>
                 <costTypes>
@@ -322,6 +322,8 @@ def export_exposure(request):
             return response
     else:
         occupancy = 0  # 'residential' by default
+    currency, taxonomy_name, taxonomy_version = \
+        util._get_currency_and_taxonomy_name(sr_id, occupancy)
     output_type = request.GET.get('output_type')
     if not output_type or output_type not in ('csv', 'nrml'):
         msg = ('Please provide the parameter "output_type".'
@@ -334,8 +336,6 @@ def export_exposure(request):
     elif output_type == "nrml":
         content_disp = 'attachment; filename="exposure_export.xml"'
         mimetype = 'text/plain'
-        currency, taxonomy_name = \
-            util._get_currency_and_taxonomy_name(sr_id, occupancy)
     else:
         msg = ("Unrecognized output type '%s', only 'nrml' and 'csv' are "
                "supported" % output_type)
@@ -369,12 +369,14 @@ def export_exposure(request):
     if filter_by_bounding_box:
         if output_type == 'csv':
             response_data = _stream_exposure_by_bb_and_sr_id_as_csv(
-                lng1, lat1, lng2, lat2, sr_id, occupancy)
+                lng1, lat1, lng2, lat2, sr_id, occupancy, currency,
+                taxonomy_name, taxonomy_version)
         elif output_type == 'nrml':
             req_pars = dict(lng1=lng1, lat1=lat1, lng2=lng2, lat2=lat2,
                             sr_id=sr_id, occupancy=occupancy,
                             filter_by_bounding_box=filter_by_bounding_box,
-                            currency=currency, taxonomy_name=taxonomy_name)
+                            currency=currency, taxonomy_name=taxonomy_name,
+                            taxonomy_version=taxonomy_version)
             response_data = _stream_exposure_as_nrml(req_pars)
         else:
             raise NotImplementedError(
@@ -382,11 +384,13 @@ def export_exposure(request):
     else:
         if output_type == 'csv':
             response_data = _stream_exposure_by_sr_id_as_csv(
-                output_type, sr_id, occupancy)
+                output_type, sr_id, occupancy, currency, taxonomy_name,
+                taxonomy_version)
         elif output_type == 'nrml':
             req_pars = dict(sr_id=sr_id, occupancy=occupancy,
                             filter_by_bounding_box=filter_by_bounding_box,
-                            currency=currency, taxonomy_name=taxonomy_name)
+                            currency=currency, taxonomy_name=taxonomy_name,
+                            taxonomy_version=taxonomy_version)
             response_data = _stream_exposure_as_nrml(req_pars)
         else:
             raise NotImplementedError(
@@ -395,31 +399,51 @@ def export_exposure(request):
     response['Content-Disposition'] = content_disp
     return response
 
+def _csv_currency_and_taxonomy_header(currency, taxonomy_name, taxonomy_version):
+    return """\
+# currency = %s
+# taxonomy = %s %s
+#
+""" % (currency, taxonomy_name, taxonomy_version)
+
+def raw_to_csv_row(row):
+    elements = ["\"" + str(x) + "\"" if type(x) == unicode
+                else str(x) if x is not None
+                else ""
+                for x in row]
+    row_str = ','.join(elements) + "\n"
+    return row_str
+
 def _stream_exposure_by_bb_and_sr_id_as_csv(
-        lng1, lat1, lng2, lat2, sr_id, occupancy):
+        lng1, lat1, lng2, lat2, sr_id, occupancy,
+        currency, taxonomy_name, taxonomy_version):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
+    yield _csv_currency_and_taxonomy_header(
+        currency, taxonomy_name, taxonomy_version)
     for row in util._stream_exposure_by_bb_and_sr_id(
             lng1, lat1, lng2, lat2, sr_id, occupancy):
-        row_str = ','.join(
-            ["\"" + str(x) + "\"" if type(x) == unicode else str(x)
-             for x in row]) + "\n"
+        row_str = raw_to_csv_row(row)
         yield row_str
 
-def _stream_exposure_by_sr_id_as_csv(sr_id, occupancy):
+def _stream_exposure_by_sr_id_as_csv(
+        sr_id, occupancy, currency, taxonomy_name, taxonomy_version):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
+    yield _csv_currency_and_taxonomy_header(
+        currency, taxonomy_name, taxonomy_version)
     for row in util._stream_exposure_by_sr_id(sr_id, occupancy):
-        row_str = ','.join(
-            ["\"" + str(x) + "\"" if type(x) == unicode else str(x)
-             for x in row]) + "\n"
+        row_str = raw_to_csv_row(row)
         yield row_str
 
 def _stream_exposure_as_nrml(req_pars):
     yield XML_HEADER
+    copyright = copyright_nrml(COPYRIGHT_HEADER)
+    yield copyright
     yield NRML_HEADER % dict(cat='buildings',
                              currency=req_pars['currency'],
-                             taxonomy_name=req_pars['taxonomy_name'])
+                             taxonomy_name=req_pars['taxonomy_name'],
+                             taxonomy_version=req_pars['taxonomy_version'])
     if req_pars['filter_by_bounding_box']:
         exposure_data = util._stream_exposure_by_bb_and_sr_id(
             req_pars['lng1'],

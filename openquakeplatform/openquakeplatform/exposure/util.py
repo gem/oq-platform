@@ -481,8 +481,9 @@ def _get_currency_and_taxonomy_name(sr_id, occupancy=0):
     #       i.e., there are different currencies, or different taxonomies, for
     #       the same study
     query = """\
-SELECT DISTINCT ON (replace_cost_per_area_currency, taxonomy_name)
-       replace_cost_per_area_currency, taxonomy_name
+SELECT DISTINCT
+    ON (replace_cost_per_area_currency, taxonomy_name, taxonomy_version)
+       replace_cost_per_area_currency, taxonomy_name, taxonomy_version
   FROM ged2.study_region sr
   JOIN ged2.distribution_group dg
     ON dg.study_region_id=sr.id
