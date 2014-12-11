@@ -104,9 +104,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     // National level building exposure download form
     function nationalForm(study) {
         return '<form id="exposure-building-form" class="exposure_export_form"'+
-                '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
-                '<b>Building Exposure Download Form:</b></br>'+
-                '<p><label for="id_residential_0">Residential:</label></br>'+
+                '<p><b>Download Study Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
+                '<b>Download Gridded Building Exposure:</b></br>'+
+                '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
                 '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '</p>'+
@@ -166,7 +166,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 } else {
                     $('#exposure-building-form').append(
-                        '<p>The selected study region is too large to be downloaded in it`s entirety. To proceed you will need to '+
+                        '<p>The selected study region is too large to be downloaded in it&#39s entirety. To proceed you will need to '+
                         'draw a bounding box over the map to make a sub-selection of the region</p>'+
                         '<button id="selectBbox" type="button">Proceed</button>'
                     );
@@ -263,9 +263,9 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     // Sub-national level building exposure download form
     function subNationalForm(study) {
         return '<form id="sub-exposure-building-form" class="exposure_export_form">'+
-                '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
-                '<b>Sub-National Building Exposure Download Form</b></br>'+
-                '<p><label for="id_residential_0">Residential:</label></br>'+
+                '<p><b>Download Region Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
+                '<b>Download Gridded Sub-National Building Exposure:</b></br>'+
+                '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
                 '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '</p>'+
@@ -316,7 +316,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
             );
         } else {
             $('#sub-exposure-building-form').append(
-                '<p>The selected study region is too large to be downloaded in it`s entirety. To proceed you will need to '+
+                '<p>The selected study region is too large to be downloaded in it&#39s entirety. To proceed you will need to '+
                 'draw a bounding box over the map to make a sub-selection of the region</p>'+
                 '<button id="subSelectBbox" type="button">Proceed</button>'
             );
