@@ -67,11 +67,11 @@ POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
-    <exposureModel id="ep" category="%(cat)s" taxonomySource="GEM/PAGER">
+    <exposureModel id="ep" category="%(cat)s" taxonomySource="%(taxonomy_name)s">
         <description>Source: OQP exposure export tool</description>
             <conversions>
                 <costTypes>
-                    <costType name="structural" unit="USD" type="aggregated"/>
+                    <costType name="structural" unit="%(currency)s" type="aggregated"/>
                 </costTypes>
             </conversions>
         <assets>"""
@@ -296,6 +296,32 @@ def export_exposure(request):
             * 'occupancy_filter' (optional, default is residential
                                             specify non_residential otherwise)
     """
+    sr_id = request.GET.get('sr_id')
+    if sr_id:
+        try:
+            sr_id = int(sr_id)
+        except ValueError:
+            msg = 'Please provide a valid (numeric) study region id'
+            response = HttpResponse(msg, status="400")
+            return response
+    else:
+        msg = 'Please provide a study region id (numeric parameter sr_id)'
+        response = HttpResponse(msg, status="400")
+        return response
+    occupancy_filter = request.GET.get('occupancy_filter')
+    if occupancy_filter:
+        if occupancy_filter == 'residential':
+            occupancy = 0
+        elif occupancy_filter == 'non-residential':
+            occupancy = 1
+        else:
+            msg = ("Invalid 'occupancy_filter' selection: '%s'."
+                   " Expected 'residential' or 'non-residential'."
+                   % occupancy_filter)
+            response = HttpResponse(msg, status="400")
+            return response
+    else:
+        occupancy = 0  # 'residential' by default
     output_type = request.GET.get('output_type')
     if not output_type or output_type not in ('csv', 'nrml'):
         msg = ('Please provide the parameter "output_type".'
@@ -308,21 +334,11 @@ def export_exposure(request):
     elif output_type == "nrml":
         content_disp = 'attachment; filename="exposure_export.xml"'
         mimetype = 'text/plain'
+        currency, taxonomy_name = \
+            util._get_currency_and_taxonomy_name(sr_id, occupancy)
     else:
         msg = ("Unrecognized output type '%s', only 'nrml' and 'csv' are "
                "supported" % output_type)
-        response = HttpResponse(msg, status="400")
-        return response
-    sr_id = request.GET.get('sr_id')
-    if sr_id:
-        try:
-            sr_id = int(sr_id)
-        except ValueError:
-            msg = 'Please provide a valid (numeric) study region id'
-            response = HttpResponse(msg, status="400")
-            return response
-    else:
-        msg = 'Please provide a study region id (numeric parameter sr_id)'
         response = HttpResponse(msg, status="400")
         return response
     filter_by_bounding_box = False
@@ -350,20 +366,6 @@ def export_exposure(request):
             return HttpResponse(content=error,
                                 content_type="text/html",
                                 status=403)
-    occupancy_filter = request.GET.get('occupancy_filter')
-    if occupancy_filter:
-        if occupancy_filter == 'residential':
-            occupancy = 0
-        elif occupancy_filter == 'non-residential':
-            occupancy = 1
-        else:
-            msg = ("Invalid 'occupancy_filter' selection: '%s'."
-                   " Expected 'residential' or 'non-residential'."
-                   % occupancy_filter)
-            response = HttpResponse(msg, status="400")
-            return response
-    else:
-        occupancy = 0  # 'residential' by default
     if filter_by_bounding_box:
         if output_type == 'csv':
             response_data = _stream_exposure_by_bb_and_sr_id_as_csv(
@@ -371,7 +373,8 @@ def export_exposure(request):
         elif output_type == 'nrml':
             req_pars = dict(lng1=lng1, lat1=lat1, lng2=lng2, lat2=lat2,
                             sr_id=sr_id, occupancy=occupancy,
-                            filter_by_bounding_box=filter_by_bounding_box)
+                            filter_by_bounding_box=filter_by_bounding_box,
+                            currency=currency, taxonomy_name=taxonomy_name)
             response_data = _stream_exposure_as_nrml(req_pars)
         else:
             raise NotImplementedError(
@@ -382,7 +385,8 @@ def export_exposure(request):
                 output_type, sr_id, occupancy)
         elif output_type == 'nrml':
             req_pars = dict(sr_id=sr_id, occupancy=occupancy,
-                            filter_by_bounding_box=filter_by_bounding_box)
+                            filter_by_bounding_box=filter_by_bounding_box,
+                            currency=currency, taxonomy_name=taxonomy_name)
             response_data = _stream_exposure_as_nrml(req_pars)
         else:
             raise NotImplementedError(
@@ -413,7 +417,9 @@ def _stream_exposure_by_sr_id_as_csv(sr_id, occupancy):
 
 def _stream_exposure_as_nrml(req_pars):
     yield XML_HEADER
-    yield NRML_HEADER % dict(cat='buildings')
+    yield NRML_HEADER % dict(cat='buildings',
+                             currency=req_pars['currency'],
+                             taxonomy_name=req_pars['taxonomy_name'])
     if req_pars['filter_by_bounding_box']:
         exposure_data = util._stream_exposure_by_bb_and_sr_id(
             req_pars['lng1'],

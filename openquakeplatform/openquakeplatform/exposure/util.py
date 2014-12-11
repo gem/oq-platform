@@ -410,7 +410,7 @@ SELECT gr.tot_pop, gr.tot_grid_count, ST_AsText(gr.bounding_box)
     return cursor.fetchall()
 
 
-def _stream_exposure_by_sr_id(sr_id, occupancy):
+def _stream_exposure_by_sr_id(sr_id, occupancy=0):
     """
     Generator exporting the exposure, given a study region id
     Return fields: grid_id,lon,lat,bldg_type,occ_type,is_urban,
@@ -438,7 +438,8 @@ def _stream_exposure_by_sr_id(sr_id, occupancy):
     return
 
 
-def _stream_exposure_by_bb_and_sr_id(lng1, lat1, lng2, lat2, sr_id, occupancy):
+def _stream_exposure_by_bb_and_sr_id(
+        lng1, lat1, lng2, lat2, sr_id, occupancy=0):
     """
     Generator exporting the exposure, given a bounding box and a study region id
     Return fields: grid_id,lon,lat,bldg_type,occ_type,is_urban,
@@ -464,3 +465,27 @@ def _stream_exposure_by_bb_and_sr_id(lng1, lat1, lng2, lat2, sr_id, occupancy):
                 break
             yield row
     return
+
+
+def _get_currency_and_taxonomy_name(sr_id, occupancy=0):
+    """
+    Given a study region id and an occupancy code (0 is the default, for
+    'residential', 1 stands for 'non-residential), get the currency name
+    and the taxonomy name, as a tuple
+    """
+    # NOTE: There could be ambiguity in case rural and urban are not consistent
+    #       i.e., there are different currencies, or different taxonomies, for
+    #       the same study
+    query = """\
+SELECT DISTINCT ON (replace_cost_per_area_currency, taxonomy_name)
+       replace_cost_per_area_currency, taxonomy_name
+  FROM ged2.study_region sr
+  JOIN ged2.distribution_group dg
+    ON dg.study_region_id=sr.id
+ WHERE sr.id=%s
+   AND occupancy_id=%s;
+"""
+    cursor = connections['geddb'].cursor()
+    cursor.execute(query, [sr_id, occupancy])
+
+    return cursor.fetchone()
