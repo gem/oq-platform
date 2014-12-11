@@ -103,7 +103,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // National level building exposure download form
     function nationalForm(study) {
-        return '<form id="exposure-building-form"'+
+        return '<form id="exposure-building-form" class="exposure_export_form"'+
                 '<p><b>Download Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
                 '<b>Building Exposure Download Form:</b></br>'+
                 '<p><label for="id_residential_0">Residential:</label></br>'+
@@ -152,6 +152,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#countryList').hide();
                 $('#countrySelectionForm').empty();
                 $('#countrySelectionForm').show();
+                //$('#selectionFormBack').insertAfter('#exposure-building-form');
+                //$("#exposure-building-form").insertBefore("#selectionFormBack");
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
@@ -441,17 +443,18 @@ var onRectangleDraw = function(e) {
         var msg = 'The selected area is to large.';
         showErrorDialog(msg);
     } else {
-        var url =
-            '/exposure/export_exposure?'+
-            'output_type='+outputType+
-            '&sr_id='+sr_id+
-            '&occupancy_filter='+residential+
-            '&lng1='+latlonBottomRight.lng+
-            '&lat1='+latlonBottomRight.lat+
-            '&lng2='+latlonTopLeft.lng+
-            '&lat2='+latlonTopLeft.lat;
-
-        exposureExport(url);
+        if (outputType != undefined && residential != undefined && sr_id != undefined ) {
+            var url =
+                '/exposure/export_exposure?'+
+                'output_type='+outputType+
+                '&sr_id='+sr_id+
+                '&occupancy_filter='+residential+
+                '&lng1='+latlonBottomRight.lng+
+                '&lat1='+latlonBottomRight.lat+
+                '&lng2='+latlonTopLeft.lng+
+                '&lat2='+latlonTopLeft.lat;
+            exposureExport(url);
+        }
     }
 };
 
