@@ -24,7 +24,6 @@ var drawnItems;
 var drawControl;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var DRAW_TOOL_COLOR = '#FFA54F';
-var AJAX_SPINNER = '/static/img/ajax-loader.gif';
 
 var objToUrlParams = function(obj) {
     var url;
@@ -75,9 +74,6 @@ var startApp = function() {
     var width = $(window).width();
     $("#oq-body-content").width(width - 30);
 
-    // Leaflet popup for the map-interactive export function
-    //var exportPopup;
-
     /******************
      * Overlay layers *
      ******************/
@@ -88,13 +84,8 @@ var startApp = function() {
 
     var grump_rural = L.tileLayer(TS_URL + '/v2/gdal-custom-rural/{z}/{x}/{y}.png');
     var grump_urban = L.tileLayer(TS_URL + '/v2/gdal-custom-urban/{z}/{x}/{y}.png',{opacity: 0.8});
-    var df_admin0 = L.tileLayer(
-        TS_URL + '/v2/dwelling-fractions/{z}/{x}/{y}.png',
-        {wax: TS_URL + '/v2/dwelling-fractions.json'}
-    );
 
     var overlays = {
-        "Dwelling Fractions PAGER" : df_admin0,
         "GRUMP Urban" : grump_urban,
         "GRUMP Rural" : grump_rural,
         "HAZUS Level 1 Building Counts" : hazus1,
@@ -111,67 +102,12 @@ var startApp = function() {
     map.addLayer(drawnItems);
     L.control.layers(app.baseLayers, overlays).addTo(map).setPosition("topleft");
 
-    // Add Wax support
-    L.wax(map);
     L.control.coordinates({
         position: "bottomleft",
         labelTemplateLat: "Latitude: {y}",
         labelTemplateLng: "Longitude: {x}",
         enableUserInput: false,
     }).addTo(map);
-
-    /*
-     * Sliding side panel animation functions:
-     */
-    var legendSlidingPanel = function() {
-        $('#panelHandle-leg').hover(
-            function() {
-                $('#sidePanel-leg').stop(true, false).animate(
-                    {left: '0px'}, 900
-                );
-            },
-            function() {
-                // Do nothing
-            }
-        );
-
-        $('#sidePanel-leg').hover(
-            function() {
-                // Do nothing
-            },
-            function() {
-                $('#sidePanel-leg').animate(
-                    { left: '-201px' }, 800
-                );
-            }
-        );
-    };
-    var dwellingFractionSlidingPanel = function() {
-        $('#panelHandle-dwel').hover(
-            function() {
-                $('#sidePanel-dwel').stop(true, false).animate(
-                    {left: '0px'}, 900
-                );
-            },
-            function() {
-                // Do nothing
-            }
-        );
-
-        $('#sidePanel-dwel').hover(
-            function() {
-                // Do nothing
-            },
-            function() {
-                $('#sidePanel-dwel').animate(
-                    {left: '-328px'}, 800
-                );
-            }
-        );
-    };
-
-    $(document).ready(dwellingFractionSlidingPanel);
-    $(document).ready(legendSlidingPanel);
 
     /* Generic jquery error dialog, which renders to the '#error-dialog' div */
     var showErrorDialog = function(message, options) {
