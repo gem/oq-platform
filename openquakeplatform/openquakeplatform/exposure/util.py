@@ -234,6 +234,10 @@ def _get_iso_and_name_for_all_countries():
     Get iso and name for each of the countries for which at least one study
     is present in the DB
     """
+    # NOTE: this approach is OK only because we know that we always have
+    #       at least one study for each nation. If this were not the case
+    #       we would have to do a
+    #       SELECT DISTINCT(iso) FROM ged2.geographic_region_gadm.
     query = """\
 SELECT iso, name
 FROM ged2.gadm_country
