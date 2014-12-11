@@ -32,7 +32,7 @@ from openquakeplatform.exposure import util
 COPYRIGHT_HEADER = """\
  Version 1.0 released on 31.01.2013
 
- Copyright (C) 2013 GEM Foundation
+ Copyright (C) 2014 GEM Foundation
 
  Contributions by: see http://www.globalquakemodel.org/contributors
 
@@ -67,22 +67,21 @@ POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
-    <exposureModel
-        id="ep"
-        category="%(cat)s"
-        taxonomySource="GEM/PAGER">
-
+    <exposureModel id="ep" category="%(cat)s" taxonomySource="GEM/PAGER">
         <description>Source: OQP exposure export tool</description>
-        <assets>
-"""
+            <conversions>
+                <costTypes>
+                    <costType name="structural" unit="USD" type="aggregated"/>
+                </costTypes>
+            </conversions>
+        <assets>"""
 NRML_ASSET_FMT = """
-            <asset id="%(gml_id)s" number="%(pop)s" taxonomy="%(tax)s">
+            <asset id="%(gml_id)s" number="%(bldg_count)s" taxonomy="%(tax)s">
                 <location lon="%(lon)s" lat="%(lat)s" />
             </asset>"""
 NRML_ASSET_ADMIN_0_FMT = """
-            <asset id="%(gml_id)s" number="%(pop)s" taxonomy="%(tax)s">
+            <asset id="%(gml_id)s" number="%(bldg_count)s" taxonomy="%(tax)s">
                 <location lon="%(lon)s" lat="%(lat)s" />
-
                 <occupancies>%(occ)s
                 </occupancies>
             </asset>"""
@@ -96,7 +95,7 @@ NRML_FOOTER = """
 
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
-MAX_TOT_GRID_COUNT = 300000
+MAX_TOT_GRID_COUNT = 100000
 
 @allowed_methods(('GET', ))
 @sign_in_required
@@ -397,8 +396,8 @@ def export_exposure(request):
             return response
     if lng1 and lat1 and lng2 and lat2:
         filter_by_bounding_box = True
-        # For max area we are not using the default MAX_EXPORT_AREA_SQ_DEG here
-        valid, error = _export_area_valid(lat1, lng1, lat2, lng2, max_area=8)
+        # the default max_area would be MAX_EXPORT_AREA_SQ_DEG
+        valid, error = _export_area_valid(lat1, lng1, lat2, lng2, max_area=4)
         if not valid:
             return HttpResponse(content=error,
                                 content_type="text/html",
@@ -424,41 +423,91 @@ def export_exposure(request):
     else:
         occupancy = 0  # 'residential' by default
     if filter_by_bounding_box:
-        response_data = _stream_exposure_by_bb_and_sr_id(
-            output_type, lng1, lat1, lng2, lat2, sr_id, occupancy)
+        if output_type == 'csv':
+            response_data = _stream_exposure_by_bb_and_sr_id_as_csv(
+                lng1, lat1, lng2, lat2, sr_id, occupancy)
+        elif output_type == 'nrml':
+            req_pars = dict(lng1=lng1, lat1=lat1, lng2=lng2, lat2=lat2,
+                            sr_id=sr_id, occupancy=occupancy,
+                            filter_by_bounding_box=filter_by_bounding_box)
+            response_data = _stream_exposure_as_nrml(req_pars)
+        else:
+            raise NotImplementedError(
+                'output_type [%s] is not available' % output_type)
     else:
-        response_data = _stream_exposure_by_sr_id(
-            output_type, sr_id, occupancy)
+        if output_type == 'csv':
+            response_data = _stream_exposure_by_sr_id_as_csv(
+                output_type, sr_id, occupancy)
+        elif output_type == 'nrml':
+            req_pars = dict(sr_id=sr_id, occupancy=occupancy,
+                            filter_by_bounding_box=filter_by_bounding_box)
+            response_data = _stream_exposure_as_nrml(req_pars)
+        else:
+            raise NotImplementedError(
+                'output_type [%s] is not available' % output_type)
     response = HttpResponse(response_data, mimetype=mimetype)
     response['Content-Disposition'] = content_disp
     return response
 
-def _stream_exposure_by_bb_and_sr_id(
-        output_type, lng1, lat1, lng2, lat2, sr_id, occupancy):
-    if output_type == 'csv':
-        copyright = copyright_csv(COPYRIGHT_HEADER)
-        yield copyright
-        for row in util._stream_exposure_by_bb_and_sr_id(
-                lng1, lat1, lng2, lat2, sr_id, occupancy):
-            row_str = ','.join([str(x) for x in row]) + "\n"
-            yield row_str
-    elif output_type == 'nrml':
-        # TODO: Implement export for nrml
-        raise NotImplementedError(
-            'output_type [%s] is not available' % output_type)
+def _stream_exposure_by_bb_and_sr_id_as_csv(
+        lng1, lat1, lng2, lat2, sr_id, occupancy):
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    for row in util._stream_exposure_by_bb_and_sr_id(
+            lng1, lat1, lng2, lat2, sr_id, occupancy):
+        row_str = ','.join(
+            ["\"" + str(x) + "\"" if type(x) == unicode else str(x)
+             for x in row]) + "\n"
+        yield row_str
 
-def _stream_exposure_by_sr_id(
-        output_type, sr_id, occupancy):
-    if output_type == 'csv':
-        copyright = copyright_csv(COPYRIGHT_HEADER)
-        yield copyright
-        for row in util._stream_exposure_by_sr_id(sr_id, occupancy):
-            row_str = ','.join([str(x) for x in row]) + "\n"
-            yield row_str
-    elif output_type == 'nrml':
-        # TODO: Implement export for nrml
-        raise NotImplementedError(
-            'output_type [%s] is not available' % output_type)
+def _stream_exposure_by_sr_id_as_csv(sr_id, occupancy):
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    for row in util._stream_exposure_by_sr_id(sr_id, occupancy):
+        row_str = ','.join(
+            ["\"" + str(x) + "\"" if type(x) == unicode else str(x)
+             for x in row]) + "\n"
+        yield row_str
+
+def _stream_exposure_as_nrml(req_pars):
+    yield XML_HEADER
+    yield NRML_HEADER % dict(cat='buildings')
+    if req_pars['filter_by_bounding_box']:
+        exposure_data = util._stream_exposure_by_bb_and_sr_id(
+            req_pars['lng1'],
+            req_pars['lat1'],
+            req_pars['lng2'],
+            req_pars['lat2'],
+            req_pars['sr_id'],
+            req_pars['occupancy'])
+    else:  # no bounding box provided
+        exposure_data = util._stream_exposure_by_sr_id(
+            req_pars['sr_id'],
+            req_pars['occupancy'])
+    # discard column_names
+    column_names = exposure_data.next()
+    for (grid_id, lon, lat, bldg_type, occ_type, is_urban, dwelling_fraction,
+         bldg_fraction, type_pop, day_pop, night_pop, transit_pop, bldg_count,
+         bldg_count_quality, bldg_area, bldg_area_quality, bldg_cost,
+         bldg_cost_quality) in exposure_data:
+        occ = ''
+        for tod, occupants in (('all', type_pop),
+                               ('day', day_pop),
+                               ('night', night_pop),
+                               ('transit', transit_pop)):
+            occ += OCCUPANCY_FMT % (occupants, tod)
+        asset_params = dict(
+            gml_id='%s_%s' % (grid_id, bldg_type),
+            lon=lon,
+            lat=lat,
+            bldg_count=bldg_count,
+            tax=bldg_type,
+            occ=occ,
+        )
+        asset = NRML_ASSET_ADMIN_0_FMT % asset_params
+        yield '%s' % asset
+    # finalize the document:
+    yield NRML_FOOTER
 
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
