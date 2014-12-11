@@ -112,7 +112,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" value="csv" /> CSV</label></br>'+
-                //'<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
                 '<input type="hidden" name="study" value="'+study.study_id+'">'+
                 '<br>'+
@@ -271,7 +271,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" value="csv" /> CSV</label></br>'+
-                //'<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
+                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
                 '<input type="hidden" name="sub-study" value="'+study.study_region_id+'">'+
                 '<br>'+
