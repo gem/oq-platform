@@ -384,8 +384,7 @@ def export_exposure(request):
     else:
         if output_type == 'csv':
             response_data = _stream_exposure_by_sr_id_as_csv(
-                output_type, sr_id, occupancy, currency, taxonomy_name,
-                taxonomy_version)
+                sr_id, occupancy, currency, taxonomy_name, taxonomy_version)
         elif output_type == 'nrml':
             req_pars = dict(sr_id=sr_id, occupancy=occupancy,
                             filter_by_bounding_box=filter_by_bounding_box,
