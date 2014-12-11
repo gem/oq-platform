@@ -166,7 +166,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     );
                 } else {
                     $('#exposure-building-form').append(
-                        '<p>The selected study region is too larger to be downloaded in it`s entirety. To proceed you will need to '+
+                        '<p>The selected study region is too large to be downloaded in it`s entirety. To proceed you will need to '+
                         'draw a bounding box over the map to make a sub-selection of the region</p>'+
                         '<button id="selectBbox" type="button">Proceed</button>'
                     );
@@ -316,7 +316,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
             );
         } else {
             $('#sub-exposure-building-form').append(
-                '<p>The selected study region is too larger to be downloaded in it`s entirety. To proceed you will need to '+
+                '<p>The selected study region is too large to be downloaded in it`s entirety. To proceed you will need to '+
                 'draw a bounding box over the map to make a sub-selection of the region</p>'+
                 '<button id="subSelectBbox" type="button">Proceed</button>'
             );
