@@ -30,8 +30,6 @@ from openquakeplatform.utils import allowed_methods, sign_in_required
 from openquakeplatform.exposure import util
 
 COPYRIGHT_HEADER = """\
- Version 1.0 released on 31.01.2013
-
  Copyright (C) 2014 GEM Foundation
 
  Contributions by: see http://www.globalquakemodel.org/contributors
@@ -81,10 +79,14 @@ NRML_ASSET_FMT = """
             </asset>"""
 NRML_ASSET_ADMIN_0_FMT = """
             <asset id="%(gml_id)s" number="%(bldg_count)s" taxonomy="%(tax)s">
-                <location lon="%(lon)s" lat="%(lat)s" />
+                <location lon="%(lon)s" lat="%(lat)s" />%(costs)s
                 <occupancies>%(occ)s
                 </occupancies>
             </asset>"""
+COSTS_FMT = """
+                <costs>
+                    <cost type="structural" value="%s"/>
+                </costs>"""
 OCCUPANCY_FMT = """
                     <occupancy occupants="%s" period="%s" />"""
 NRML_FOOTER = """
@@ -525,12 +527,17 @@ def _stream_exposure_as_nrml(req_pars):
                                ('night', night_pop),
                                ('transit', transit_pop)):
             occ += OCCUPANCY_FMT % (occupants, tod)
+            if bldg_cost is not None:
+                costs = COSTS_FMT % (bldg_cost)
+            else:
+                costs = ""
         asset_params = dict(
             gml_id='%s_%s' % (grid_id, bldg_type),
             lon=lon,
             lat=lat,
             bldg_count=bldg_count,
             tax=bldg_type,
+            costs=costs,
             occ=occ,
         )
         asset = NRML_ASSET_ADMIN_0_FMT % asset_params
