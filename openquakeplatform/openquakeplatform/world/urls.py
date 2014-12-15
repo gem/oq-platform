@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2010-2013, GEM Foundation.
+# Copyright (c) 2014, GEM Foundation.
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,11 +18,8 @@
 #    <https://www.gnu.org/licenses/agpl.html>.
 
 
-# from django.conf.urls.defaults import patterns
-# from django.conf.urls.defaults import url
 from django.conf.urls import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 

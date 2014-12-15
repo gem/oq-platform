@@ -26,6 +26,9 @@ class Indicator(models.Model):
     code = models.CharField(max_length=CHMAX, primary_key=True)
     theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
+    # NOTE: Some field names were changed with respect to those written in the
+    #       spreadsheet containing the socioeconomic data. The original names
+    #       are added here as comments
     # ~"Variable Name"
     name = models.TextField()
     # ~"Unit of Measurement"
@@ -193,6 +196,7 @@ class CountryIndicatorManager(models.Manager):
 class CountryIndicator(models.Model):
     objects = CountryIndicatorManager()
 
+    # Using the simplified geometries instead of the original GADM ones
     # country = models.ForeignKey('world.Country')
     country = models.ForeignKey('world.CountrySimplified1000M')
     indicator = models.ForeignKey('Indicator')
@@ -207,5 +211,8 @@ class CountryIndicator(models.Model):
             self.indicator.measurement_type)
 
     class Meta:
+        # NOTE: I am not sure, but it looks like changing the automatic name
+        #       assigned to the table, it might create problems when building
+        #       the "updatures"
         # db_table = 'svir_country_indicators'
         unique_together = ('country', 'indicator')

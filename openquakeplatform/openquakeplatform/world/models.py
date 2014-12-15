@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2013, GEM Foundation.
+# Copyright (c) 2014, GEM Foundation.
 #
 # This program is free software: you can redistribute it and/or modify
 # under the terms of the GNU Affero General Public License as published
@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.gis.db import models
-# from django.db import models
 
 
 class CountrySimplified1000M(models.Model):
@@ -27,6 +26,7 @@ class CountrySimplified1000M(models.Model):
     # objects = models.GeoManager()
 
     class Meta:
+        # NOTE: We might decide to set managed = False
         # managed = False
         db_table = 'gadm_countries_simplified_1000m'
         verbose_name_plural = "countries simplified (1000m tolerance)"

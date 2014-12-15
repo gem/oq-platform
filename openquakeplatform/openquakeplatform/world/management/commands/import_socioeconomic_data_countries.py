@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2013, GEM Foundation.
+# Copyright (c) 2014, GEM Foundation.
 #
 # This program is free software: you can redistribute it and/or modify
 # under the terms of the GNU Affero General Public License as published
@@ -21,7 +21,6 @@
 
 import sys
 import csv
-from django.db import connections, transaction
 from django.core.management.base import BaseCommand
 from openquakeplatform.world.models import Country
 

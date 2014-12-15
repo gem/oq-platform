@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2013, GEM Foundation.
+# Copyright (c) 2014, GEM Foundation.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -32,9 +32,7 @@ from openquakeplatform.svir.models import (Theme,
                                            CountryIndicator,)
 
 COPYRIGHT_HEADER = u"""\
- Version 1.0 released on 31.01.2013
-
- Copyright (C) 2013 GEM Foundation
+ Copyright (C) 2014 GEM Foundation
 
  Contributions by: see http://www.globalquakemodel.org/contributors
 
@@ -251,6 +249,7 @@ def export_variables_data_by_ids(request):
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
+        # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
         row = [country.iso, country.name_0.encode('utf-8')]
         ind_vals = []
