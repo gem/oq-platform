@@ -253,13 +253,16 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     # add the item again to the key based list of items
     updatesk_gr[model][key_get(md, item)] = item
 
+    ret = True
     for backinhe in item.get('__bachinhe__', []):
-        update_pk(updates_gr, updatesk_gr, backinhe.model.name, backinhe.item, maxpks, new_pk)
+        ret = ret and update_pk(updates_gr, updatesk_gr, backinhe.model.name, backinhe.item, maxpks, new_pk)
 
     # if another item had the same pk value of new_pk before swap it
     # with the old pk value of the updated item
     if item_same_pk is not None:
-        update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, old_pk)
+        ret = ret and update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, old_pk)
+
+    return ret
 
 def fk_compare(a, b):
     b = list(b)
