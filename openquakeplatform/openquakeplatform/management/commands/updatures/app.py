@@ -241,8 +241,8 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
                             break
                 else:
                     if ref_value == item['pk']:
+                        pdebug(3, "UPDATE KEY: %s" % itemod)
                         set_value(itemod, ref_reffield, new_pk)
-                        break
 
     # remove the item from the key based list of items
     updatesk_gr[model].pop(key_get(md, item))
