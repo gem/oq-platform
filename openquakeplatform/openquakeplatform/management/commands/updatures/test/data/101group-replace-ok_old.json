@@ -1,39 +1,552 @@
 [
     {
         "fields": {
-            "codename": "add_analysistype", 
-            "content_type": [
-                "vulnerability", 
-                "analysistype"
-            ], 
-            "name": "Can add analysis type"
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "admin"
+            ]
         }, 
-        "model": "auth.permission", 
-        "pk": 289
+        "model": "account.account", 
+        "pk": 1
     }, 
     {
         "fields": {
-            "codename": "change_analysistype", 
-            "content_type": [
-                "vulnerability", 
-                "analysistype"
-            ], 
-            "name": "Can change analysis type"
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "dvigano"
+            ]
         }, 
-        "model": "auth.permission", 
-        "pk": 290
+        "model": "account.account", 
+        "pk": 2
     }, 
     {
         "fields": {
-            "codename": "delete_analysistype", 
-            "content_type": [
-                "vulnerability", 
-                "analysistype"
-            ], 
-            "name": "Can delete analysis type"
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "mtahara"
+            ]
         }, 
-        "model": "auth.permission", 
-        "pk": 291
+        "model": "account.account", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "pslh"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 4
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "ntoyama"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 5
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "nkeller"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 6
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "kstillwell"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 7
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "hcrowley"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 8
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "nastasi"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 9
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "gweatherill"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 10
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "vsilva"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 11
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "jbrown"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 12
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "dmonelli"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 13
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "sozcebe"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 14
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "bmwyss"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 15
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "ptormene"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 16
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "cyepes"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 17
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "vuln-editor"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 18
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "mpagani"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 19
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "simple-user"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 20
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "vuln-simple"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 21
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "daniele"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 23
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "timezone": "", 
+            "user": [
+                "mbernasocchi"
+            ]
+        }, 
+        "model": "account.account", 
+        "pk": 24
+    }, 
+    {
+        "fields": {
+            "email": "the_mail@openquake.org", 
+            "primary": true, 
+            "user": [
+                "admin"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "email": "daniele@vigano.me", 
+            "primary": true, 
+            "user": [
+                "dvigano"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "email": "tahara-michitaka@oyonet.oyo.co.jp", 
+            "primary": true, 
+            "user": [
+                "mtahara"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "email": "paul.henshaw@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "pslh"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 4
+    }, 
+    {
+        "fields": {
+            "email": "toyama-nobuhiko@oyonet.oyo.co.jp", 
+            "primary": true, 
+            "user": [
+                "ntoyama"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 5
+    }, 
+    {
+        "fields": {
+            "email": "nicole.keller@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "nkeller"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 6
+    }, 
+    {
+        "fields": {
+            "email": "kate.stillwell@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "kstillwell"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 7
+    }, 
+    {
+        "fields": {
+            "email": "helen.crowley@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "hcrowley"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 8
+    }, 
+    {
+        "fields": {
+            "email": "matteo.nastasi@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "nastasi"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 9
+    }, 
+    {
+        "fields": {
+            "email": "graeme.weatherill@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "gweatherill"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 10
+    }, 
+    {
+        "fields": {
+            "email": "vitor.silva@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "vsilva"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 11
+    }, 
+    {
+        "fields": {
+            "email": "james.brown@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "jbrown"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 12
+    }, 
+    {
+        "fields": {
+            "email": "damiano.monelli@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "dmonelli"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 13
+    }, 
+    {
+        "fields": {
+            "email": "sevgi.ozcebe@eucentre.it", 
+            "primary": true, 
+            "user": [
+                "sozcebe"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 14
+    }, 
+    {
+        "fields": {
+            "email": "ben.wyss@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "bmwyss"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 15
+    }, 
+    {
+        "fields": {
+            "email": "paolo.tormene@globalquakemodel.org", 
+            "primary": true, 
+            "user": [
+                "ptormene"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 16
+    }, 
+    {
+        "fields": {
+            "email": "dennyvatwork@gmail.com", 
+            "primary": true, 
+            "user": [
+                "daniele"
+            ], 
+            "verified": false
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 18
+    }, 
+    {
+        "fields": {
+            "email": "marco@opengis.ch", 
+            "primary": true, 
+            "user": [
+                "mbernasocchi"
+            ], 
+            "verified": true
+        }, 
+        "model": "account.emailaddress", 
+        "pk": 19
+    }, 
+    {
+        "fields": {
+            "created": "2014-10-07T12:36:16.462", 
+            "email_address": 18, 
+            "key": "d1dca5bf800a74da867ec33d58771f2cf27dddddb93ed9066fd1723ff3992d66", 
+            "sent": "2014-10-07T12:37:53.173"
+        }, 
+        "model": "account.emailconfirmation", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "created": "2014-10-07T12:36:16.462", 
+            "email_address": 19, 
+            "key": "a3b9ca292a1e0a661bfaf19d9b71284bb248baccc6be52a31ed37d63e7b77e7d", 
+            "sent": "2014-10-14T08:14:03.324"
+        }, 
+        "model": "account.emailconfirmation", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "code": "dec7c290-bdef-41af-9cc6-fff76300a4b8", 
+            "created": "2014-11-04T14:58:05.154", 
+            "email": "", 
+            "expiry": null, 
+            "inviter": null, 
+            "max_uses": 0, 
+            "notes": "", 
+            "sent": null, 
+            "use_count": 0
+        }, 
+        "model": "account.signupcode", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "code": "30cb90b8-4a7c-4b27-a84a-4f6ee6929bff", 
+            "created": "2014-11-04T14:59:22.670", 
+            "email": "", 
+            "expiry": null, 
+            "inviter": null, 
+            "max_uses": 0, 
+            "notes": "", 
+            "sent": null, 
+            "use_count": 0
+        }, 
+        "model": "account.signupcode", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "code": "4221c8d7-3870-4d44-9daa-1a912a3389be", 
+            "created": "2014-11-04T14:59:31.497", 
+            "email": "", 
+            "expiry": null, 
+            "inviter": null, 
+            "max_uses": 0, 
+            "notes": "", 
+            "sent": null, 
+            "use_count": 0
+        }, 
+        "model": "account.signupcode", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "code": "70139c3d-c88f-44ff-a8f9-791461a4e84d", 
+            "created": "2014-11-04T15:00:30.061", 
+            "email": "", 
+            "expiry": null, 
+            "inviter": null, 
+            "max_uses": 0, 
+            "notes": "", 
+            "sent": "2014-11-04T15:00:30.136", 
+            "use_count": 0
+        }, 
+        "model": "account.signupcode", 
+        "pk": 4
     }, 
     {
         "fields": {
@@ -77,6 +590,42 @@
         }, 
         "model": "auth.group", 
         "pk": 2
+    }, 
+    {
+        "fields": {
+            "codename": "add_analysistype", 
+            "content_type": [
+                "vulnerability", 
+                "analysistype"
+            ], 
+            "name": "Can add analysis type"
+        }, 
+        "model": "auth.permission", 
+        "pk": 289
+    }, 
+    {
+        "fields": {
+            "codename": "change_analysistype", 
+            "content_type": [
+                "vulnerability", 
+                "analysistype"
+            ], 
+            "name": "Can change analysis type"
+        }, 
+        "model": "auth.permission", 
+        "pk": 290
+    }, 
+    {
+        "fields": {
+            "codename": "delete_analysistype", 
+            "content_type": [
+                "vulnerability", 
+                "analysistype"
+            ], 
+            "name": "Can delete analysis type"
+        }, 
+        "model": "auth.permission", 
+        "pk": 291
     }, 
     {
         "fields": {
@@ -513,552 +1062,63 @@
     }, 
     {
         "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "admin"
-            ]
+            "is_visible": true, 
+            "name": "Portugal", 
+            "region": 7, 
+            "the_geom": null
         }, 
-        "model": "account.account", 
-        "pk": 1
+        "model": "vulnerability.country", 
+        "pk": "PRT"
     }, 
     {
         "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "dvigano"
-            ]
+            "aggr_unit_def": 4, 
+            "building_aggr": null, 
+            "building_aggr_min_num": null, 
+            "building_x_class_num": 200, 
+            "empirical_data_src": "Survey buildings", 
+            "evaluation_of_im": 1, 
+            "fragility_func": 129, 
+            "owner": [
+                "cyepes"
+            ], 
+            "structural_unit": 2, 
+            "vulnerability_func": null
         }, 
-        "model": "account.account", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "mtahara"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 3
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "pslh"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "ntoyama"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 5
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "nkeller"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 6
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "kstillwell"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 7
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "hcrowley"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 8
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "nastasi"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 9
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "gweatherill"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 10
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "vsilva"
-            ]
-        }, 
-        "model": "account.account", 
+        "model": "vulnerability.empiricalmodelinfo", 
         "pk": 11
     }, 
     {
         "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "jbrown"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 12
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "dmonelli"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 13
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "sozcebe"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 14
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "bmwyss"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 15
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "ptormene"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 16
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
+            "damage_scale": 3, 
+            "engineering_demand_par": 5, 
+            "func_distr_type": 1, 
+            "general_information": [
+                "D'Ayala etal (1997) - MUR+STDRE (PGA)"
+            ], 
+            "limit_states_desc": "Negligible;Moderate;Substantial;Veryheavy;Destruction", 
+            "method_of_estimation": 2, 
+            "owner": [
                 "cyepes"
             ]
         }, 
-        "model": "account.account", 
-        "pk": 17
+        "model": "vulnerability.fragilityfunc", 
+        "pk": 129
     }, 
     {
         "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "vuln-editor"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 18
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "mpagani"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 19
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "simple-user"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 20
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "vuln-simple"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 21
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "daniele"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 23
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "timezone": "", 
-            "user": [
-                "mbernasocchi"
-            ]
-        }, 
-        "model": "account.account", 
-        "pk": 24
-    }, 
-    {
-        "fields": {
-            "code": "dec7c290-bdef-41af-9cc6-fff76300a4b8", 
-            "created": "2014-11-04T14:58:05.154", 
-            "email": "", 
-            "expiry": null, 
-            "inviter": null, 
-            "max_uses": 0, 
-            "notes": "", 
-            "sent": null, 
-            "use_count": 0
-        }, 
-        "model": "account.signupcode", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "code": "30cb90b8-4a7c-4b27-a84a-4f6ee6929bff", 
-            "created": "2014-11-04T14:59:22.670", 
-            "email": "", 
-            "expiry": null, 
-            "inviter": null, 
-            "max_uses": 0, 
-            "notes": "", 
-            "sent": null, 
-            "use_count": 0
-        }, 
-        "model": "account.signupcode", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "code": "4221c8d7-3870-4d44-9daa-1a912a3389be", 
-            "created": "2014-11-04T14:59:31.497", 
-            "email": "", 
-            "expiry": null, 
-            "inviter": null, 
-            "max_uses": 0, 
-            "notes": "", 
-            "sent": null, 
-            "use_count": 0
-        }, 
-        "model": "account.signupcode", 
-        "pk": 3
-    }, 
-    {
-        "fields": {
-            "code": "70139c3d-c88f-44ff-a8f9-791461a4e84d", 
-            "created": "2014-11-04T15:00:30.061", 
-            "email": "", 
-            "expiry": null, 
-            "inviter": null, 
-            "max_uses": 0, 
-            "notes": "", 
-            "sent": "2014-11-04T15:00:30.136", 
-            "use_count": 0
-        }, 
-        "model": "account.signupcode", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "email": "the_mail@openquake.org", 
-            "primary": true, 
-            "user": [
-                "admin"
+            "data_pts_num": 7, 
+            "fragility_func": 129, 
+            "limit_state_prob_exceed": "0.076;0.489;0.739;0.908;0.989;0.995;1\n0.016;0.081;0.558;0.781;0.918;0.979;0.994\n0.015;0.071;0.263;0.548;0.791;0.928;0.989\n0;0.011;0.051;0.248;0.532;0.781;0.959\n0;0;0.005;0.051;0.381;0.659;0.949", 
+            "limit_state_prob_exceed_05": "", 
+            "limit_state_prob_exceed_95": "", 
+            "owner": [
+                "cyepes"
             ], 
-            "verified": false
+            "predictor_var_im_val": "43;89;162;268;471;872;1200"
         }, 
-        "model": "account.emailaddress", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "email": "daniele@vigano.me", 
-            "primary": true, 
-            "user": [
-                "dvigano"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "email": "tahara-michitaka@oyonet.oyo.co.jp", 
-            "primary": true, 
-            "user": [
-                "mtahara"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 3
-    }, 
-    {
-        "fields": {
-            "email": "paul.henshaw@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "pslh"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "email": "toyama-nobuhiko@oyonet.oyo.co.jp", 
-            "primary": true, 
-            "user": [
-                "ntoyama"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 5
-    }, 
-    {
-        "fields": {
-            "email": "nicole.keller@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "nkeller"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 6
-    }, 
-    {
-        "fields": {
-            "email": "kate.stillwell@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "kstillwell"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 7
-    }, 
-    {
-        "fields": {
-            "email": "helen.crowley@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "hcrowley"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 8
-    }, 
-    {
-        "fields": {
-            "email": "matteo.nastasi@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "nastasi"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
+        "model": "vulnerability.funcdistrfragdiscr", 
         "pk": 9
-    }, 
-    {
-        "fields": {
-            "email": "graeme.weatherill@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "gweatherill"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 10
-    }, 
-    {
-        "fields": {
-            "email": "vitor.silva@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "vsilva"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 11
-    }, 
-    {
-        "fields": {
-            "email": "james.brown@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "jbrown"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 12
-    }, 
-    {
-        "fields": {
-            "email": "damiano.monelli@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "dmonelli"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 13
-    }, 
-    {
-        "fields": {
-            "email": "sevgi.ozcebe@eucentre.it", 
-            "primary": true, 
-            "user": [
-                "sozcebe"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 14
-    }, 
-    {
-        "fields": {
-            "email": "ben.wyss@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "bmwyss"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 15
-    }, 
-    {
-        "fields": {
-            "email": "paolo.tormene@globalquakemodel.org", 
-            "primary": true, 
-            "user": [
-                "ptormene"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 16
-    }, 
-    {
-        "fields": {
-            "email": "dennyvatwork@gmail.com", 
-            "primary": true, 
-            "user": [
-                "daniele"
-            ], 
-            "verified": false
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 18
-    }, 
-    {
-        "fields": {
-            "email": "marco@opengis.ch", 
-            "primary": true, 
-            "user": [
-                "mbernasocchi"
-            ], 
-            "verified": true
-        }, 
-        "model": "account.emailaddress", 
-        "pk": 19
-    }, 
-    {
-        "fields": {
-            "created": "2014-10-07T12:36:16.462", 
-            "email_address": 18, 
-            "key": "d1dca5bf800a74da867ec33d58771f2cf27dddddb93ed9066fd1723ff3992d66", 
-            "sent": "2014-10-07T12:37:53.173"
-        }, 
-        "model": "account.emailconfirmation", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "created": "2014-10-07T12:36:16.462", 
-            "email_address": 19, 
-            "key": "a3b9ca292a1e0a661bfaf19d9b71284bb248baccc6be52a31ed37d63e7b77e7d", 
-            "sent": "2014-10-14T08:14:03.324"
-        }, 
-        "model": "account.emailconfirmation", 
-        "pk": 3
     }, 
     {
         "fields": {
@@ -1087,73 +1147,6 @@
     }, 
     {
         "fields": {
-            "damage_scale": 3, 
-            "engineering_demand_par": 5, 
-            "func_distr_type": 1, 
-            "general_information": [
-                "D'Ayala etal (1997) - MUR+STDRE (PGA)"
-            ], 
-            "limit_states_desc": "Negligible;Moderate;Substantial;Veryheavy;Destruction", 
-            "method_of_estimation": 2, 
-            "owner": [
-                "cyepes"
-            ]
-        }, 
-        "model": "vulnerability.fragilityfunc", 
-        "pk": 129
-    }, 
-    {
-        "fields": {
-            "aggr_unit_def": 4, 
-            "building_aggr": null, 
-            "building_aggr_min_num": null, 
-            "building_x_class_num": 200, 
-            "empirical_data_src": "Survey buildings", 
-            "evaluation_of_im": 1, 
-            "fragility_func": 129, 
-            "owner": [
-                "cyepes"
-            ], 
-            "structural_unit": 2, 
-            "vulnerability_func": null
-        }, 
-        "model": "vulnerability.empiricalmodelinfo", 
-        "pk": 11
-    }, 
-    {
-        "fields": {
-            "fragility_func": 129, 
-            "intensity_measure_type": "1", 
-            "intensity_measure_unit": "2", 
-            "maximum_im": 11.0, 
-            "minimum_im": 5.0, 
-            "owner": [
-                "cyepes"
-            ], 
-            "period": null, 
-            "type_of_period": null, 
-            "vulnerability_func": null
-        }, 
-        "model": "vulnerability.predictorvar", 
-        "pk": 147
-    }, 
-    {
-        "fields": {
-            "data_pts_num": 7, 
-            "fragility_func": 129, 
-            "limit_state_prob_exceed": "0.076;0.489;0.739;0.908;0.989;0.995;1\n0.016;0.081;0.558;0.781;0.918;0.979;0.994\n0.015;0.071;0.263;0.548;0.791;0.928;0.989\n0;0.011;0.051;0.248;0.532;0.781;0.959\n0;0;0.005;0.051;0.381;0.659;0.949", 
-            "limit_state_prob_exceed_05": "", 
-            "limit_state_prob_exceed_95": "", 
-            "owner": [
-                "cyepes"
-            ], 
-            "predictor_var_im_val": "43;89;162;268;471;872;1200"
-        }, 
-        "model": "vulnerability.funcdistrfragdiscr", 
-        "pk": 9
-    }, 
-    {
-        "fields": {
             "address": "", 
             "area": "Lisbon (Alfama district)", 
             "countries": [
@@ -1173,12 +1166,19 @@
     }, 
     {
         "fields": {
-            "is_visible": true, 
-            "name": "Portugal", 
-            "region": 7, 
-            "the_geom": null
+            "fragility_func": 129, 
+            "intensity_measure_type": "1", 
+            "intensity_measure_unit": "2", 
+            "maximum_im": 11.0, 
+            "minimum_im": 5.0, 
+            "owner": [
+                "cyepes"
+            ], 
+            "period": null, 
+            "type_of_period": null, 
+            "vulnerability_func": null
         }, 
-        "model": "vulnerability.country", 
-        "pk": "PRT"
+        "model": "vulnerability.predictorvar", 
+        "pk": 147
     }
 ]

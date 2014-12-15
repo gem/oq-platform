@@ -1,0 +1,18 @@
+[
+    {
+        "fields": {
+            "one": "yes old", 
+            "two": "yessss old"
+        }, 
+        "model": "test2.generic", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "three": "yes2 old", 
+            "four": "yessss3 old"
+        }, 
+        "model": "test2.specific", 
+        "pk": 1
+    }
+]

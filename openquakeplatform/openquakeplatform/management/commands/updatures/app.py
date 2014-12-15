@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import copy
+import types
 from pprint import pprint
 from collections import OrderedDict
 from django.core.management import call_command, execute_manager
@@ -12,6 +13,8 @@ from updatures.classes import backinheritance, model_refs, model_description, mo
 import updatures.models_descr.tests
 import updatures.models_descr.auth
 import updatures.models_descr.vulnerability
+import updatures.models_descr.maps
+import updatures.models_descr.taggit
 import pdb
 
 def pdebug(level, s):
@@ -50,6 +53,8 @@ def rebuild_order():
                     models_descr_rest[model] = descr
             else:
                 for ref_field, ref in descr.refs.iteritems():
+                    if isinstance(ref.model, types.FunctionType):
+                        continue
                     if not ref.model in models_order:
                         models_descr_rest[model] = descr
                         break
@@ -141,19 +146,32 @@ def key_get(md, item):
 
 def group_objs(base):
     group = {}
+    dyn_refs = {}
     groupk = {}
 
     for model in models_order:
         group[model] = []
+        dyn_refs[model] = {}
         groupk[model] = {}
 
     for item in base:
         model = item['model']
         md = models_descr[model]
 
+        # if dynamic references populate the model_description with more virtual references
+        for ref_field, ref in md.refs.iteritems():
+            if isinstance(ref.model, types.FunctionType):
+                dyn_key = "__dynamic__.%s.fk" % ref.model(item)
+                if not dyn_refs[model].get(dyn_key, None):
+                    dyn_refs[model][dyn_key] = model_refs(ref.model(item), False)
+                item['fields'][dyn_key] = get_value(item, ref_field)
+
         group[model].append(item)
         k = key_get(md, item)
         groupk[model][k] = item
+
+    for model in models_order:
+        models_descr[model].refs = dict(models_descr[model].refs.items() + dyn_refs[model].items())
 
     return (group, groupk)
 
@@ -196,11 +214,15 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
 
     # update all references
     for ref_model, ref_md in models_descr.iteritems():
-        pdebug(3, "MDREF: %s" % ref_model)
         # found each model has a refs value associated with the current item model
         for ref_reffield, ref in ref_md.refs.iteritems():
+            if isinstance(ref.model, types.FunctionType):
+                continue
+
             if ref.model != model:
                 continue
+
+            pdebug(3, "MDREF: %s" % ref_model)
 
             for itemod in updates_gr[ref_model]:
                 # if field not set or empty list continue
@@ -208,10 +230,10 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
                 if not ref_value:
                     continue
 
-                pdebug(2, "ITEMOD: %s" % itemod)
+                pdebug(3, "ITEMOD: %s" % itemod)
                 if ref.is_many:
                     if type(ref_value[0]) is list:
-                        pdebug(0, "itemod list of lists case not managed")
+                        pdebug(3, "itemod list of lists case not managed")
                         sys.exit(10)
                     for i, pk in enumerate(ref_value):
                         if pk == item['pk']:
@@ -321,6 +343,8 @@ def consistencymeter(dates_gr):
         for item in dates_gr[model]:
             pdebug(2, "CC: ITEM: %s" % item)
             for ref_field, ref in md.refs.iteritems():
+                if isinstance(ref.model, types.FunctionType):
+                    continue
                 ref_md = models_descr[ref.model]
                 pdebug(2, "CC: REF_FIELD, REF.MODEL: %s, %s, %s" % (ref_field, ref.model, ref_md.natural))
                 ref_value = get_value(item, ref_field)
@@ -422,7 +446,7 @@ def grouping_set(dates_gr, datesk_gr):
 
         if md.group not in group_heads:
             group_heads.append(md.group)
-        dirref_groups = [(k,v) for k,v in md.refs.iteritems() if v.model == md.group]
+        dirref_groups = [(k,v) for k,v in md.refs.iteritems() if not isinstance(v.model, types.FunctionType) and v.model == md.group]
         if dirref_groups:
             pdebug(2, "Direct group for model %s" % model)
             for item in dates_gr[model]:
@@ -452,6 +476,9 @@ def grouping_set(dates_gr, datesk_gr):
             pdebug(2, "No direct group for model %s" % model)
             for item in dates_gr[model]:
                 for ref_field, ref in md.refs.iteritems():
+                    if isinstance(ref.model, types.FunctionType):
+                        continue
+
                     if ref.is_many or not item['fields'][ref_field]:
                         continue
                     ref_record = reference_get(dates_gr, ref.model, item['fields'][ref_field])
@@ -641,12 +668,19 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     else:
         oldates = json.load(file(fakeold, 'r'))
 
+    # models_order is currently not ordered by reference dependencies
+    models_order = []
+    for model in models_descr:
+        models_order.append(model)
+
+    updates_gr, updatesk_gr = group_objs(updates)
+    oldates_gr, oldatesk_gr = group_objs(oldates)
+
     models_order = rebuild_order()
     model_groups = model_groups_get()
 
     pdebug(3, "MOP UPDATES: %s" % str(updates))
 
-    updates_gr, updatesk_gr = group_objs(updates)
     updates_gheads = grouping_set(updates_gr, updatesk_gr)
     inheriting_set(updates_gr, updatesk_gr)
 
@@ -665,7 +699,6 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     pdebug(3, "MOP GROUPS: %s" % str(updates_gr))
     models = inspect(updates)
 
-    oldates_gr,oldatesk_gr = group_objs(oldates)
     oldates_gheads = grouping_set(oldates_gr, oldatesk_gr)
 
     oldels = inspect(oldates)
@@ -737,7 +770,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         for otem in oldates_gr[model] + finals_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
-                                pdebug(1, "NEWPK: %d" % new_pk)
+                                pdebug(3, "NEWPK: %d" % new_pk)
                                 update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk)
                                 break
 
@@ -818,12 +851,23 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
     model_groups = model_groups_get()
 
-    for final in finals:
-        final.pop('__backrefs__', None)
-        final.pop('__replace__', None)
-        final.pop('__backinhe__', None)
-        final['fields'].pop('__group__', None)
+    for model in models_order:
+        md = models_descr[model]
 
+        for final in finals_gr[model]:
+            final.pop('__backrefs__', None)
+            final.pop('__replace__', None)
+            final.pop('__backinhe__', None)
+            final['fields'].pop('__group__', None)
+            for ref_field, ref in md.refs.iteritems():
+                if isinstance(ref.model, types.FunctionType):
+                    dyn_key = "__dynamic__.%s.fk" % ref.model(item)
+                    try:
+                        if final['fields'][dyn_key]:
+                            final['fields'][ref_field] = final['fields'][dyn_key]
+                        final['fields'].pop(dyn_key, None)
+                    except KeyError:
+                        pass
 
     fin_n = len(finals)
     if sort_output:
