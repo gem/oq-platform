@@ -760,7 +760,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                 #
                 #  found identical item with different pk
                 pdebug(3, "ITEM: [%s]" % item)
-                skip_it = False
+                substitute_it = False
 
 
                 # item already exists ?
@@ -768,18 +768,18 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                     if item_compare(item, otem, pk_included=True):
                         pdebug(2, "identical items, skip it")
                         # identical case: continue
-                        skip_it = True
+                        substitute_it = True
                         break
 
                     # no: pk key case
                     if item_compare(item, otem, pk_included=False):
                         # identical items except for pk, skip it and update all references
                         pdebug(1, "identical item except for pk, skip it and update all references")
-                        skip_it = True
+                        substitute_it = True
                         update_pk(updates_gr, updatesk_gr, model, item, maxpks, otem['pk'])
                         break
 
-                if skip_it:
+                if substitute_it:
                     apply_update_strategy(md, item, otem)
                     pdebug(2, "SKIP IT")
                 else:
@@ -803,7 +803,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
             else: # if not md.natural:
                 pdebug(3, "ITEM: [%s]" % item)
-                skip_it = False
+                substitute_it = False
                 found_it = False
 
                 # item already exists ?
@@ -813,7 +813,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         pdebug(2, "identical items, skip it")
                         # identical case: continue
                         found_it = True
-                        skip_it = True
+                        substitute_it = True
                         break
 
                     if md.natural(item) == md.natural(otem):
@@ -826,11 +826,11 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         if item_compare(item, otem, pk_included=True):
                             # identical items except for pk, skip it and update all references
                             pdebug(1, "identical item except for pk, skip it and update all references")
-                            skip_it = True
+                            substitute_it = True
 
                         break
 
-                if skip_it:
+                if substitute_it:
                     apply_update_strategy(md, item, otem)
                     pdebug(2, "SKIP IT")
                 else:
