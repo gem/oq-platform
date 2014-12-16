@@ -289,6 +289,9 @@ def item_compare(a, b, pk_included=True):
     b_fie = b['fields']
 
     for a_key in a_fie:
+        if md.type_get(a_key) != md.FIE_TY_IDENT:
+            b_keys.remove(a_key)
+            continue
         if not a_key in b_fie:
             return False
 
@@ -303,6 +306,7 @@ def item_compare(a, b, pk_included=True):
 
     # not all b keys are processed => the 2 items are different
     if b_keys:
+        pdebug(1, "differences between fields list, return False")
         return False
 
     for idx, backinhe_a in enumerate(a.get('__bachinhe__', [])):
@@ -622,6 +626,20 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
     return result
 
 
+def apply_update_strategy(model_descr, item, otem):
+    for field, value in (model_descr.fie_type or {}).iteritems():
+        if value == model_descr.FIE_TY_IDENT:
+            continue
+        if value == model_descr.FIE_TY_UNION:
+            if (not isinstance(item['fields'][field], list) or
+                not isinstance(otem['fields'][field], list)):
+                return False
+            item['fields'][field] = list(set(item['fields'][field]) | set(otem['fields'][field]))
+        elif value == model_descr.FIE_TY_OLD:
+            item['fields'][field] = otem['fields'][field]
+        # no further actions for FIE_TY_NEW
+
+
 def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort_output=False, debug=None):
     """
 
@@ -642,8 +660,6 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
     if debug is not None:
         updatures.debug_level = debug
-
-    include_skipped = True if check_consistency else False
 
     if output == None:
         output = sys.stdout
@@ -764,9 +780,8 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         break
 
                 if skip_it:
+                    apply_update_strategy(md, item, otem)
                     pdebug(2, "SKIP IT")
-                    if not include_skipped:
-                        continue
                 else:
                     if not md.pk_natural:
                         # loop to identify if new item has the same pk of old item
@@ -816,9 +831,8 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         break
 
                 if skip_it:
-                    if not include_skipped:
-                        pdebug(1, "SKIP IT")
-                        continue
+                    apply_update_strategy(md, item, otem)
+                    pdebug(2, "SKIP IT")
                 else:
                     # loop to identify if new item has the same pk of old item
                     if not found_it and not md.pk_natural:

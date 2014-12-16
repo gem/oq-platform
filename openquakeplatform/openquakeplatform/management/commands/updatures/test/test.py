@@ -15,7 +15,7 @@ sys.excepthook = info
 test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
                    '003nat-identical', '004nat-pk-already-exists',
                    '005inher-ok', '006inher-skip-generic',
-                   '007inher-change-pk',
+                   '007inher-change-pk', '008strategies',
                    '100auth-vulnerability', '101group-replace-ok',
                    '102group-replace-fail',  '300taggit',
                    '400maps', '401maps-pkrename' ]

@@ -28,3 +28,12 @@ models_descr['test2.specific'] = model_description(
     {'pk': model_refs('test2.generic', False)},
     inher='test2.generic')
 
+
+models_descr['test3.strategies'] = model_description(
+    'test3.strategies',
+    None,
+    {},
+    fie_type={'fie_old': model_description.FIE_TY_OLD,
+              'fie_new': model_description.FIE_TY_NEW,
+              'fie_union': model_description.FIE_TY_UNION}
+    )
