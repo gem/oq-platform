@@ -61,6 +61,7 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
 var startApp = function() {
+
     $('#map').height("300px");
 
     map = new L.Map('map', {
@@ -322,8 +323,8 @@ var startApp = function() {
     $(function() {
         $( "#categoryTabs" ).tabs({
             collapsible: true,
-            selected: -1,
-            active: false
+            //selected: -1,
+            active: 0
         });
     });
 
@@ -333,6 +334,8 @@ var startApp = function() {
             "aaSorting": [ [0,'asc'], [1,'asc'] ],
             "sPaginationType": "full_numbers"
         });
+        // select first tab by default
+        $( "#econ" ).trigger( "click" );
     });
 
     $(document).ready(function() {
