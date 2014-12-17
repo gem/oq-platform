@@ -103,6 +103,8 @@ setup(
         "django-chained-multi-checkboxes==0.4",
         "django-chained-selectbox==0.1",
         "scipy==0.9.0",
+        "Pillow==2.3.1",
+        "South==0.8.4",
     ],
     include_package_data=True,
     zip_safe=False,
