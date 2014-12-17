@@ -9,13 +9,16 @@ models_descr['auth.permission'] = model_description(
 models_descr['auth.group'] = model_description(
     'auth.group',
     lambda i: [ i['fields']['name'] ],
-    {'permissions': model_refs('auth.permission', True)})
+    {'permissions': model_refs('auth.permission', True)},
+    fie_type={'permissions': model_description.FIE_TY_UNION})
 
 models_descr['auth.user'] = model_description(
     'auth.user',
     lambda i: [ i['fields']['username'] ],
     {'user_permissions': model_refs('auth.permission', True),
-     'groups':           model_refs('auth.group', True)})
+     'groups':           model_refs('auth.group', True)},
+    fie_type={'user_permissions': model_description.FIE_TY_UNION,
+              'groups': model_description.FIE_TY_UNION})
 
 models_descr['account.account'] = model_description(
     'account.account',

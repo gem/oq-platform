@@ -289,11 +289,11 @@ def item_compare(a, b, pk_included=True):
     b_fie = b['fields']
 
     for a_key in a_fie:
-        if md.type_get(a_key) != md.FIE_TY_IDENT:
-            b_keys.remove(a_key)
-            continue
         if not a_key in b_fie:
             return False
+        if not md.is_comparable(a_key):
+            b_keys.remove(a_key)
+            continue
 
         if a_key in md.refs and md.refs[a_key].is_many:
             # foreign key case fk_compare
@@ -625,21 +625,6 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
                     result = False
     return result
 
-
-def apply_update_strategy(model_descr, item, otem):
-    for field, value in (model_descr.fie_type or {}).iteritems():
-        if value == model_descr.FIE_TY_IDENT:
-            continue
-        if value == model_descr.FIE_TY_UNION:
-            if (not isinstance(item['fields'][field], list) or
-                not isinstance(otem['fields'][field], list)):
-                return False
-            item['fields'][field] = list(set(item['fields'][field]) | set(otem['fields'][field]))
-        elif value == model_descr.FIE_TY_OLD:
-            item['fields'][field] = otem['fields'][field]
-        # no further actions for FIE_TY_NEW
-
-
 def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort_output=False, debug=None):
     """
 
@@ -780,7 +765,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         break
 
                 if substitute_it:
-                    apply_update_strategy(md, item, otem)
+                    md.apply_strategy(item, otem)
                     pdebug(2, "SKIP IT")
                 else:
                     if not md.pk_natural:
@@ -831,7 +816,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         break
 
                 if substitute_it:
-                    apply_update_strategy(md, item, otem)
+                    md.apply_strategy(item, otem)
                     pdebug(2, "SKIP IT")
                 else:
                     # loop to identify if new item has the same pk of old item
@@ -904,6 +889,13 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     return 0
 
 if __name__ == "__main__":
+    for k,v in models_descr.iteritems():
+        if not v.refs:
+            continue
+        for kr,r in v.refs.iteritems():
+            if r.is_many:
+                print "model: %s, field %s is_many" % (k, kr)
+    sys.exit(0)
     argv = []
     debug = 0
     check_consistency = False

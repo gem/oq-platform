@@ -7,6 +7,9 @@
                 "one", 
                 "two"
             ], 
+            "fie_ident": "ident value",
+            "fie_or": true,
+            "fie_and": true,
             "finger": "aaaaa"
         }, 
         "model": "test3.strategies", 
@@ -20,6 +23,9 @@
                 "one b", 
                 "two b"
             ], 
+            "fie_ident": "ident value",
+            "fie_or": true,
+            "fie_and": true,
             "finger": "bbbbb"
         }, 
         "model": "test3.strategies", 
@@ -33,6 +39,9 @@
                 "one c", 
                 "two c"
             ], 
+            "fie_ident": "ident value",
+            "fie_or": true,
+            "fie_and": true,
             "finger": "ccccc"
         }, 
         "model": "test3.strategies", 

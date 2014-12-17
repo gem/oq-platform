@@ -35,5 +35,8 @@ models_descr['test3.strategies'] = model_description(
     {},
     fie_type={'fie_old': model_description.FIE_TY_OLD,
               'fie_new': model_description.FIE_TY_NEW,
-              'fie_union': model_description.FIE_TY_UNION}
+              'fie_union': model_description.FIE_TY_UNION,
+              'fie_ident': model_description.FIE_TY_IDENT,
+              'fie_or': model_description.FIE_TY_OR,
+              'fie_and': model_description.FIE_TY_AND}
     )
