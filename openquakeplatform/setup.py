@@ -93,7 +93,7 @@ setup(
         "psycopg2==2.4.5",
         "numpy==1.6.1",
         "Django==1.5.5",
-        "GeoNode==2.0",
+        "GeoNode==2.0.1",
         "django-photologue==2.6.1",
         "requests==0.8.2",
         "fabric",
