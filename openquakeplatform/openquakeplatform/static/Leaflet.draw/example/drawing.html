@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet Draw</title>
+
+	<link rel="stylesheet" href="../libs/leaflet/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="../libs/leaflet/leaflet.ie.css" /><![endif]-->
+	<link rel="stylesheet" href="../dist/leaflet.draw.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="../dist/leaflet.draw.ie.css" /><![endif]-->
+
+	<script src="../libs/leaflet/leaflet-src.js"></script>
+	<script src="../src/ext/LineUtil.js"></script>
+	<script src="../src/ext/Polygon.js"></script>
+	<script src="../src/ext/Polyline.js"></script>
+	<script src="../src/draw/Handler.Draw.js"></script>
+	<script src="../src/draw/shapes/Polyline.Draw.js"></script>
+	<script src="../src/draw/shapes/Polygon.Draw.js"></script>
+	<script src="../src/draw/shapes/SimpleShape.Draw.js"></script>
+	<script src="../src/draw/shapes/Rectangle.Draw.js"></script>
+	<script src="../src/draw/shapes/Circle.Draw.js"></script>
+	<script src="../src/draw/shapes/Marker.Draw.js"></script>
+	<script src="../src/draw/Control.Draw.js"></script>
+</head>
+<body>
+	<div id="map" style="width: 800px; height: 600px; border: 1px solid #ccc"></div>
+	
+	<script>
+		
+		var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png',
+			cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18}),
+			map = new L.Map('map', {layers: [cloudmade], center: new L.LatLng(-37.7772, 175.2756), zoom: 15 });
+
+		var drawControl = new L.Control.Draw({
+			position: 'topleft',
+			polygon: {
+				title: 'Draw a sexy polygon!',
+				allowIntersection: false,
+				drawError: {
+					color: '#b00b00',
+					timeout: 1000
+				},
+				shapeOptions: {
+					color: '#bada55'
+				}
+			},
+			circle: {
+				shapeOptions: {
+					color: '#662d91'
+				}
+			}
+		});
+		map.addControl(drawControl);
+		
+		var drawnItems = new L.LayerGroup();
+		map.on('draw:poly-created', function (e) {
+			drawnItems.addLayer(e.poly);
+		});
+		map.on('draw:rectangle-created', function (e) {
+			drawnItems.addLayer(e.rect);
+		});
+		map.on('draw:circle-created', function (e) {
+			drawnItems.addLayer(e.circ);
+		});
+		map.on('draw:marker-created', function (e) {
+			e.marker.bindPopup('A popup!');
+			drawnItems.addLayer(e.marker);
+		});
+		map.addLayer(drawnItems);
+		
+	</script>
+</body>
+</html>
