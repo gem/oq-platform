@@ -323,7 +323,6 @@ var startApp = function() {
     $(function() {
         $( "#categoryTabs" ).tabs({
             collapsible: true,
-            //selected: -1,
             active: 0
         });
     });
