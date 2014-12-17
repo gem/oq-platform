@@ -619,12 +619,12 @@ var startApp = function() {
                 var chartDropDown = '<input class="attributeOption econ-chart" type="checkbox" name="'+econIndicatorsArray[i]+'" value="'+econIndicatorsArray[i]+'">'+econIndicatorsArray[i]+'<br>';
                 $('#econ-chart-options').append(chartDropDown);
             }
-            $('.econ-chart:lt(6)').prop('checked', true);
+            $('.econ-chart:lt(5)').prop('checked', true);
             $('#econ-chart-options').append('<input id="econ-chart-optionsButton" type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
-                var max = 7;
+                var max = 6;
                 var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
@@ -676,12 +676,12 @@ var startApp = function() {
                 var chartDropDown = '<input class="attributeOption pop-chart" type="checkbox" name="'+popIndicatorsArray[i]+'" value="'+popIndicatorsArray[i]+'">'+popIndicatorsArray[i]+'<br>';
                 $('#pop-chart-options').append(chartDropDown);
             }
-            $('.pop-chart:lt(6)').prop('checked', true);
+            $('.pop-chart:lt(5)').prop('checked', true);
             $('#pop-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
-                var max = 7;
+                var max = 6;
                 var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
@@ -733,12 +733,12 @@ var startApp = function() {
                 var chartDropDown = '<input class="attributeOption infra-chart" type="checkbox" name="'+infraIndicatorsArray[i]+'" value="'+infraIndicatorsArray[i]+'">'+infraIndicatorsArray[i]+'<br>';
                 $('#infra-chart-options').append(chartDropDown);
             }
-            $('.infra-chart:lt(6)').prop('checked', true);
+            $('.infra-chart:lt(5)').prop('checked', true);
             $('#infra-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
-                var max = 7;
+                var max = 6;
                 var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
@@ -790,12 +790,12 @@ var startApp = function() {
                 var chartDropDown = '<input class="attributeOption gov-chart" type="checkbox" name="'+govIndicatorsArray[i]+'" value="'+govIndicatorsArray[i]+'">'+govIndicatorsArray[i]+'<br>';
                 $('#gov-chart-options').append(chartDropDown);
             }
-            $('.gov-chart:lt(6)').prop('checked', true);
+            $('.gov-chart:lt(5)').prop('checked', true);
             $('#gov-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
-                var max = 7;
+                var max = 6;
                 var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
@@ -846,12 +846,12 @@ var startApp = function() {
                 var chartDropDown = '<input class="attributeOption edu-chart" type="checkbox" name="'+eduIndicatorsArray[i]+'" value="'+eduIndicatorsArray[i]+'">'+eduIndicatorsArray[i]+'<br>';
                 $('#edu-chart-options').append(chartDropDown);
             }
-            $('.edu-chart:lt(6)').prop('checked', true);
+            $('.edu-chart:lt(5)').prop('checked', true);
             $('#edu-chart-options').append('<input type="button" value="Apply"/>');
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
-                var max = 7;
+                var max = 6;
                 var checkboxes = $('#'+chartCat+'-options input[type="checkbox"]');
                 checkboxes.change(function() {
                     var current = checkboxes.filter(':checked').length;
