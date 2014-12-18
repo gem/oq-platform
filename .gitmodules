@@ -1,9 +1,0 @@
-[submodule "openquakeplatform/openquakeplatform/static/wax"]
-	path = openquakeplatform/openquakeplatform/static/wax
-	url = git://github.com/mapbox/wax.git
-[submodule "openquakeplatform/openquakeplatform/static/Leaflet.draw"]
-	path = openquakeplatform/openquakeplatform/static/Leaflet.draw
-	url = git://github.com/gem/Leaflet.draw.git
-[submodule "openquakeplatform/openquakeplatform/static/Leaflet"]
-	path = openquakeplatform/openquakeplatform/static/Leaflet
-	url = https://github.com/Leaflet/Leaflet
