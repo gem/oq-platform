@@ -49,10 +49,9 @@ GRV - {{block.super}}
 </div>
 {% endblock %}
 
-
-{% block extra_script %}
-    {{block.super}}
-    <!-- Category tags-->
+{% block middle %}
+{{block.super}}
+<!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="econ"><a href="#economy">Economy</a></li>
@@ -190,5 +189,8 @@ GRV - {{block.super}}
   </div>
 
 </div>
+{% endblock middle %}
+{% block extra_script %}
+    {{block.super}}
     <script src="{{ STATIC_URL }}js/grv_viewer.js"></script>
 {% endblock extra_script %}
