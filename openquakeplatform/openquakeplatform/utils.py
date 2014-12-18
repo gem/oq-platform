@@ -31,6 +31,7 @@ def oq_context_processor(request):
     context['tilestream_url'] = settings.TILESTREAM_URL
     context['bing_key'] = settings.BING_KEY
     context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
+    context['help_url'] = settings.HELP_URL
 
     return context
 

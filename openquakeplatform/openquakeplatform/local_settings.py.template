@@ -124,6 +124,8 @@ THIRD_PARTY_URLS = {
 
 TILESTREAM_URL = '//tilestream.openquake.org'
 
+HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform/help'
+
 GEOSERVER_URL = '/geoserver/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
