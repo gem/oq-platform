@@ -966,10 +966,10 @@
             "first_name": "", 
             "groups": [
                 [
-                    "vulnerability-editors"
+                    "vulnerability-admins"
                 ], 
                 [
-                    "vulnerability-admins"
+                    "vulnerability-editors"
                 ]
             ], 
             "is_active": true, 

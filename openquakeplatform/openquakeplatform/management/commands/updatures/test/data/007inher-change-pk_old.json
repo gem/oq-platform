@@ -9,8 +9,8 @@
     }, 
     {
         "fields": {
-            "three": "yes2 old", 
-            "four": "yessss3 old"
+            "four": "yessss3 old", 
+            "three": "yes2 old"
         }, 
         "model": "test2.specific", 
         "pk": 1

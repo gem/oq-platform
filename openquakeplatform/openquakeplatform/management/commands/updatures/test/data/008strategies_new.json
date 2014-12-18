@@ -1,15 +1,15 @@
 [
     {
         "fields": {
+            "fie_and": true, 
+            "fie_ident": "ident value", 
             "fie_new": "new value 2", 
             "fie_old": "new value 1", 
+            "fie_or": true, 
             "fie_union": [
                 "two", 
                 "three"
             ], 
-            "fie_ident": "ident value",
-            "fie_or": true,
-            "fie_and": true,
             "finger": "aaaaa"
         }, 
         "model": "test3.strategies", 
@@ -17,34 +17,34 @@
     }, 
     {
         "fields": {
-            "fie_new": "new value 2 b", 
-            "fie_old": "new value 1 b", 
-            "fie_union": [
-                "two b", 
-                "three b"
-            ], 
-            "fie_ident": "ident value",
-            "fie_or": true,
-            "fie_and": true,
-            "finger": "bbbbb"
-        }, 
-        "model": "test3.strategies", 
-        "pk": 222
-    }, 
-    {
-        "fields": {
+            "fie_and": false, 
+            "fie_ident": "ident value", 
             "fie_new": "new value 2 c", 
             "fie_old": "new value 1 c", 
+            "fie_or": false, 
             "fie_union": [
                 "two c", 
                 "three c"
             ], 
-            "fie_ident": "ident value",
-            "fie_or": false,
-            "fie_and": false,
             "finger": "ccccc different"
         }, 
         "model": "test3.strategies", 
         "pk": 3
+    }, 
+    {
+        "fields": {
+            "fie_and": true, 
+            "fie_ident": "ident value", 
+            "fie_new": "new value 2 b", 
+            "fie_old": "new value 1 b", 
+            "fie_or": true, 
+            "fie_union": [
+                "two b", 
+                "three b"
+            ], 
+            "finger": "bbbbb"
+        }, 
+        "model": "test3.strategies", 
+        "pk": 222
     }
 ]

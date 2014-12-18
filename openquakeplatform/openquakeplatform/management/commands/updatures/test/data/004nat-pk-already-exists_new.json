@@ -1,18 +1,6 @@
 [
     {
         "fields": {
-            "codename": "add_permission", 
-            "content_type": [
-                "auth", 
-                "permission"
-            ], 
-            "name": "Can add permission new"
-        }, 
-        "model": "auth.permission", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
             "name": "vulnerability-admins", 
             "permissions": [
                 [
@@ -23,6 +11,18 @@
             ]
         }, 
         "model": "auth.group", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "codename": "add_permission", 
+            "content_type": [
+                "auth", 
+                "permission"
+            ], 
+            "name": "Can add permission new"
+        }, 
+        "model": "auth.permission", 
         "pk": 1
     }
 ]

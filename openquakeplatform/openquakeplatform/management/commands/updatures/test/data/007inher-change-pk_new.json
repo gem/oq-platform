@@ -17,8 +17,8 @@
     }, 
     {
         "fields": {
-            "three": "yes2", 
-            "four": "yessss3"
+            "four": "yessss3", 
+            "three": "yes2"
         }, 
         "model": "test2.specific", 
         "pk": 1

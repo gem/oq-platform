@@ -60,6 +60,9 @@ class model_description(object):
                         not used in the comparison, the field must be a multi foreign-key
                  OLD: not used in the comparison, the old value override the new
                  NEW: not used in the comparison, the new value will override the old
+                 IDENT: rise an error if the two field are different
+                 OR: old val OR new val (must be both boolean)
+                 AND: old val AND new val (must be both boolean)
     '''
     # normal field, used for comparison
     FIE_TY_NORM  = 1

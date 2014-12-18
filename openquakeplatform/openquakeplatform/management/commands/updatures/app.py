@@ -861,7 +861,11 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
             final.pop('__replace__', None)
             final.pop('__backinhe__', None)
             final['fields'].pop('__group__', None)
+
             for ref_field, ref in md.refs.iteritems():
+                if ref.is_many:
+                    final['fields'][ref_field].sort()
+
                 if isinstance(ref.model, types.FunctionType):
                     dyn_key = "__dynamic__.%s.fk" % ref.model(item)
                     try:

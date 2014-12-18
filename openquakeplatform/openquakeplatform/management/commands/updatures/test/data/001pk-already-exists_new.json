@@ -9,11 +9,11 @@
     }, 
     {
         "fields": {
-            "one": "forty", 
-            "two": "four"
+            "one": "twenty", 
+            "two": "two"
         }, 
         "model": "test.leaf", 
-        "pk": 44
+        "pk": 22
     }, 
     {
         "fields": {
@@ -25,29 +25,11 @@
     }, 
     {
         "fields": {
-            "one": "twenty", 
-            "two": "two"
+            "one": "forty", 
+            "two": "four"
         }, 
         "model": "test.leaf", 
-        "pk": 22
-    }, 
-    {
-        "fields": {
-            "leaf": 44, 
-            "one": "yesx", 
-            "two": "yessssx"
-        }, 
-        "model": "test.one2one", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "leaf": 1, 
-            "one": "yesx", 
-            "two": "yessssx"
-        }, 
-        "model": "test.one2one", 
-        "pk": 2
+        "pk": 44
     }, 
     {
         "fields": {
@@ -65,14 +47,32 @@
     {
         "fields": {
             "leafs": [
-                22, 
                 1, 
+                22, 
                 44
             ], 
             "one": "yesy", 
             "two": "yessssy"
         }, 
         "model": "test.one2many", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "leaf": 44, 
+            "one": "yesx", 
+            "two": "yessssx"
+        }, 
+        "model": "test.one2one", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "leaf": 1, 
+            "one": "yesx", 
+            "two": "yessssx"
+        }, 
+        "model": "test.one2one", 
         "pk": 2
     }
 ]
