@@ -34,11 +34,12 @@ Exposure Export {{ block.super }}
 {% block body_outer %}
 {{block.super}}
 
-<div id="cover" ><img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+<div id="cover" ><img id="download-button-spinner" src="/static/img/ajax-loader.gif" /></div>
 {% verbatim %}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Admin Level 0 Selection Table">
     <div id="countryList" ng-controller="ExposureCountryList">
+    <div id="national-spinner" >Loading ...<img id="download-button-spinner" src="/static/img/ajax-loader.gif" /></div>
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                 ng-class="{'active': record.$selected}">
@@ -51,6 +52,7 @@ Exposure Export {{ block.super }}
     </div>
     <div id="subRegionList" ng-controller="ExposureRegionList">
       <div id="ragionTable">
+      <div id="subnational-spinner" >Loading ...<img id="download-button-spinner" src="/static/img/ajax-loader.gif" /></div>
         <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
           <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                   ng-class="{'active': record.$selected}">

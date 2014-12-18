@@ -84,6 +84,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
         }, {
             total: $scope.nationalData.length, // length of data
             getData: function($defer, params) {
+                $('#national-spinner').hide();
                 var currentData = $scope.nationalData;
                 // use build-in angular filter
                 var filteredData = params.filter() ?
@@ -257,6 +258,8 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                     orderedData;
             params.total(orderedData.length);
             $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+            console.log('hi theres:');
+            //$('#subnational-spinner').hide();
         }
     });
 
