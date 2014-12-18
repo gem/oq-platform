@@ -54,9 +54,9 @@ IRV - {{block.super}}
 {% endblock %}
 
 
-{% block extra_script %}
-    {{block.super}}
-    <!-- Category tags-->
+{% block middle %}
+{{block.super}}
+<!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="1" ><a href="#project-def">Project Def</a></li>
@@ -85,6 +85,9 @@ IRV - {{block.super}}
   </div>
 
 </div>
+{% endblock middle %}
+{% block extra_script %}
+    {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_d3_tree.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
