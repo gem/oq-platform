@@ -78,8 +78,16 @@
                         <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a
                         <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a> -->
                         <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><img src="{{ STATIC_URL }}img/oq-help.png" /></a>
-                        <a href="#" rel="tooltip" title="Share"><img src="{{ STATIC_URL }}img/oq-share.png" /></a>
                       </li>
+                      <li class="dropdown actions">
+                        <a href="#" class="" data-toggle="dropdown" rel="tooltip" title="Share"><img src="{{ STATIC_URL }}img/oq-share.png" /></a>
+                        <ul class="dropdown-menu">
+
+                        <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb"><i class="icon-user"></i>facebook</a></li>
+                        <li><a href="https://twitter.com/share?url=http://{{ request.get_host }}{{ request.get_full_path }}" class="tw"><i class="icon-user"></i>twitter</a></li>
+                        <li><a href="https://plusone.google.com/_/1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp"><i class="icon-user"></i>google+</a></li>
+                        </ul>
+                      </li> <!-- ./dropdown user -->
                     {% else %}
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
