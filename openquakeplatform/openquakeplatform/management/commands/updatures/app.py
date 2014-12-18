@@ -344,7 +344,7 @@ def consistencymeter(dates_gr):
 
     for model in models_order:
         pdebug(2, "CC: MODEL: %s" % model)
-        cm_out_gr[model] = { 'fields_n': 0, 'incons': 0 }
+        cm_out_gr[model] = { 'fields_n': 0, 'incons': 0, 'incons_is_many': 0 }
         cm_out = cm_out_gr[model]
         md = models_descr[model]
         for item in dates_gr[model]:
@@ -395,7 +395,7 @@ def consistencymeter(dates_gr):
                                 break
                         else:
                             pdebug(1, "CC: natural")
-                            cm_out['incons'] += 1
+                            cm_out['incons'+('_is_many' if ref.is_many else '')] += 1
 
                 else: # if ref_md.natural
                     pdebug(2, "CC: NOT NATURAL")
@@ -413,7 +413,7 @@ def consistencymeter(dates_gr):
                                 break
                         else:
                             pdebug(1, "CC: not natural model: %s %s" % (model, item))
-                            cm_out['incons'] += 1
+                            cm_out['incons'+('_is_many' if ref.is_many else '')] += 1
 
     return cm_out_gr
 
@@ -847,7 +847,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
             if v['fields_n'] > 0:
                 pdebug(1, "k: %s v: %s" % (v, k))
             if cm_new[k] != cm_fin[k]:
-                print "Consistency Report: WARNING: k: %s new: %s fin: %s" % (
+                print "WARNING: consistency Report: k: %s new: %s fin: [%s]" % (
                     k, v, cm_fin[k])
                 # sys.exit(2)
 
