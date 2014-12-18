@@ -86,4 +86,8 @@
 {% block extra_script %}
     {{block.super}}
     {% include 'search_scripts.html' %}
+    <script>
+        help=document.getElementById("help_url").href;
+        document.getElementById("help_url").href=help+'/explore/';
+    </script>
 {% endblock extra_script %}
