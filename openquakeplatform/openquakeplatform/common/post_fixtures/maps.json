@@ -49,7 +49,7 @@
         "model": "maps.map",
         "fields": {
             "projection": "EPSG:900913",
-            "popular_count": 2,
+            "popular_count": 0,
             "zoom": 3,
             "regions": [],
             "center_x": 0.0,
