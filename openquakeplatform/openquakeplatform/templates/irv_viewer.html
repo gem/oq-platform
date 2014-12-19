@@ -93,4 +93,8 @@ IRV - {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
+    <script>
+        help=document.getElementById("help_url").href;
+        document.getElementById("help_url").href=help+'/irv/';
+    </script>
 {% endblock extra_script %}
