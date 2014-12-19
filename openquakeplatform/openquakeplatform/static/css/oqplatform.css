@@ -95,8 +95,7 @@ h2 {
 
 .navbar .nav.account-bar > li.actions > a,
 .navbar .nav.account-bar > li.search > a,
-.navbar .nav.account-bar > li.share > a
-{
+.navbar .nav.account-bar > li.share > a {
     padding-left: 0;
     padding-right: 0;
 }
