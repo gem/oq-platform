@@ -246,6 +246,7 @@ var startApp = function() {
     }
 
     $(document).ready(function() {
+        $('#cover').remove();
         $('#worning-no-layer').dialog({
             autoOpen: false,
             height: 100,
