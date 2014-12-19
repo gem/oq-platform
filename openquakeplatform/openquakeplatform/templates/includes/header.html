@@ -67,7 +67,10 @@
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
                         <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a
                         <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a> -->
+                        {# if HELP_URL is not set or empty, don't show the help button #}
+                        {% if HELP_URL %}
                         <a href="{{ help_url }}" id="help_url" rel="tooltip" target="_blank" title="{% trans 'Help' %}"><img src="{{ STATIC_URL }}img/oq-help.png" /></a>
+                        {% endif %}
                       </li>
                       {% if SOCIAL_BUTTONS %}
                       <li class="dropdown share">
