@@ -21,11 +21,8 @@ import csv
 from collections import namedtuple
 
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.views.decorators.http import condition
 
-from openquakeplatform.exposure import forms
 from openquakeplatform.utils import allowed_methods, sign_in_required
 from openquakeplatform.exposure import util
 
@@ -54,14 +51,6 @@ COPYRIGHT_HEADER = """\
  More information on licensing: http://www.globalquakemodel.org/licensing\n
 """
 
-BLDG_ADMIN_0_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-                           'study_region, gadm_level_id, GEM_taxonomy, '
-                           'time_of_day\n')
-BLDG_SUBNAT_CSV_HEADER = ('ISO, pop_calculated_value, pop_cell_ID, lon, lat, '
-                          'study_region, gadm_level_id, GEM_taxonomy\n')
-
-POP_CSV_HEADER = ('ISO, population_value, pop_cell_ID, lon, lat\n')
-
 XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
@@ -75,19 +64,15 @@ NRML_HEADER = """
         <assets>"""
 NRML_ASSET_FMT = """
             <asset id="%(gml_id)s" number="%(bldg_count)s" taxonomy="%(tax)s">
-                <location lon="%(lon)s" lat="%(lat)s" />
-            </asset>"""
-NRML_ASSET_ADMIN_0_FMT = """
-            <asset id="%(gml_id)s" number="%(bldg_count)s" taxonomy="%(tax)s">
                 <location lon="%(lon)s" lat="%(lat)s" />%(costs)s
                 <occupancies>%(occ)s
                 </occupancies>
             </asset>"""
-COSTS_FMT = """
+NRML_COSTS_FMT = """
                 <costs>
                     <cost type="structural" value="%s"/>
                 </costs>"""
-OCCUPANCY_FMT = """
+NRML_OCCUPANCY_FMT = """
                     <occupancy occupants="%s" period="%s" />"""
 NRML_FOOTER = """
         </assets>
@@ -98,63 +83,6 @@ NRML_FOOTER = """
 #: The maximum bounding box area which can be exported.
 MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
 MAX_TOT_GRID_COUNT = 100000
-
-@allowed_methods(('GET', ))
-@sign_in_required
-def get_exposure_building_form(request):
-    # get the lat long variables from the client
-    lat1 = request.GET['lat1']
-    lng1 = request.GET['lng1']
-    lat2 = request.GET['lat2']
-    lng2 = request.GET['lng2']
-
-    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
-    if not valid:
-        return HttpResponse(content=error,
-                            content_type="text/html",
-                            status=403)
-
-    admin_levels = util._get_available_admin_levels(lng1, lat1, lng2, lat2)
-
-    if not admin_levels:
-        # There is no grid data for any admin level; this can happen if, for
-        # example, the bounding box is drawn over the ocean somewhere.
-        return HttpResponse(status=204)
-
-    # if the admin level is okay, display the admin level selection form
-    form = forms.BuildingExposureForm(admin_levels=admin_levels)
-    return render_to_response('exposure/building_form.html',
-                              {'exposure_form': form,
-                               'lat1': lat1,
-                               'lng1': lng1,
-                               'lat2': lat2,
-                               'lng2': lng2},
-                              context_instance=RequestContext(request))
-
-
-@allowed_methods(('GET', ))
-@sign_in_required
-def get_exposure_population_form(request):
-    lat1 = request.GET['lat1']
-    lng1 = request.GET['lng1']
-    lat2 = request.GET['lat2']
-    lng2 = request.GET['lng2']
-
-    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
-    if not valid:
-        return HttpResponse(content=error,
-                            content_type="text/html",
-                            status=403)
-
-    else:
-        form = forms.PopulationExposureForm()
-        return render_to_response('exposure/population_form.html',
-                                  {'exposure_form': form,
-                                   'lat1': lat1,
-                                   'lng1': lng1,
-                                   'lat2': lat2,
-                                   'lng2': lng2},
-                                  context_instance=RequestContext(request))
 
 
 def _export_area_valid(
@@ -224,58 +152,6 @@ def validate_export(request):
         return HttpResponse(
             content='Export is allowed with the given parameters'
         )
-
-
-@condition(etag_func=None)
-@allowed_methods(('GET', ))
-@sign_in_required
-def export_building(request):
-    """
-    Perform a streaming export of the requested exposure data.
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameters::
-
-            * 'outputType' ('csv' or 'nrml')
-            * 'timeOfDay' ('day', 'night', 'transit', 'all', 'off')
-            * 'adminLevel' ('admin0', 'admin1', 'admin2', or 'admin3')
-            * 'lng1'
-            * 'lat1'
-            * 'lng2'
-            * 'lat2'
-    """
-    lng1 = request.GET['lng1']
-    lat1 = request.GET['lat1']
-    lng2 = request.GET['lng2']
-    lat2 = request.GET['lat2']
-
-    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
-    if not valid:
-        return HttpResponse(content=error,
-                            content_type="text/html",
-                            status=403)
-
-    output_type = request.GET['outputType']
-    content_disp = None
-    mimetype = None
-
-    if output_type == "csv":
-        content_disp = 'attachment; filename="exposure_export.csv"'
-        mimetype = 'text/csv'
-    elif output_type == "nrml":
-        content_disp = 'attachment; filename="exposure_export.xml"'
-        mimetype = 'text/plain'
-    else:
-        raise ValueError(
-            "Unrecognized output type '%s', only 'nrml' and 'csv' are "
-            "supported" % output_type
-        )
-
-    response_data = _stream_building_exposure(request, output_type)
-    response = HttpResponse(response_data, mimetype=mimetype)
-    response['Content-Disposition'] = content_disp
-    return response
 
 
 @condition(etag_func=None)
@@ -468,9 +344,9 @@ def _stream_exposure_as_nrml(req_pars):
                                ('day', day_pop),
                                ('night', night_pop),
                                ('transit', transit_pop)):
-            occ += OCCUPANCY_FMT % (occupants, tod)
+            occ += NRML_OCCUPANCY_FMT % (occupants, tod)
             if bldg_cost is not None:
-                costs = COSTS_FMT % (bldg_cost)
+                costs = NRML_COSTS_FMT % (bldg_cost)
             else:
                 costs = ""
         asset_params = dict(
@@ -482,7 +358,7 @@ def _stream_exposure_as_nrml(req_pars):
             costs=costs,
             occ=occ,
         )
-        asset = NRML_ASSET_ADMIN_0_FMT % asset_params
+        asset = NRML_ASSET_FMT % asset_params
         yield '%s' % asset
     # finalize the document:
     yield NRML_FOOTER
@@ -676,311 +552,6 @@ def export_fractions_by_study_region_id(request):
     for row in util._stream_fractions_by_study_region_id(sr_id):
         writer.writerow(row)
     return response
-
-
-@condition(etag_func=None)
-@allowed_methods(('GET', ))
-@sign_in_required
-def export_population(request):
-    """
-    Perform a streaming export of the requested exposure data.
-
-    :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameters::
-
-            * 'outputType' ('csv' or 'nrml')
-            * 'lng1'
-            * 'lat1'
-            * 'lng2'
-            * 'lat2'
-    """
-    lng1 = request.GET['lng1']
-    lat1 = request.GET['lat1']
-    lng2 = request.GET['lng2']
-    lat2 = request.GET['lat2']
-
-    valid, error = _export_area_valid(lat1, lng1, lat2, lng2)
-    if not valid:
-        return HttpResponse(content=error,
-                            content_type="text/html",
-                            status=403)
-
-    output_type = request.GET['outputType']
-    content_disp = None
-    mimetype = None
-
-    if output_type == "csv":
-        content_disp = 'attachment; filename="exposure_export.csv"'
-        mimetype = 'text/csv'
-    elif output_type == "nrml":
-        content_disp = 'attachment; filename="exposure_export.xml"'
-        mimetype = 'text/plain'
-    else:
-        raise ValueError(
-            "Unrecognized output type '%s', only 'nrml' and 'csv' are "
-            "supported" % output_type
-        )
-
-    response_data = _stream_population_exposure(request, output_type)
-    response = HttpResponse(response_data, mimetype=mimetype)
-    response['Content-Disposition'] = content_disp
-    return response
-
-
-def _bldg_csv_admin0_generator(exposure_data):
-    """
-    Helper function for generating admin level 0 CSV data for building
-    exposure.
-    """
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    yield BLDG_ADMIN_0_CSV_HEADER
-
-    for (grid_id, lon, lat, pop_value, country_id, iso,
-         study_region_id, building_type, dwelling_fraction,
-         day_pop_ratio, night_pop_ratio,
-         transit_pop_ratio) in exposure_data:
-
-        if all([x is None for x in (day_pop_ratio,
-                                    night_pop_ratio,
-                                    transit_pop_ratio)]):
-            row = [iso, pop_value, grid_id, lon, lat,
-                   study_region_id, country_id, building_type, '']
-            row = [str(x) for x in row]
-            yield '%s\n' % ','.join(row)
-        else:
-            for tod, pop_ratio in (('day', day_pop_ratio),
-                                   ('night', night_pop_ratio),
-                                   ('transit', transit_pop_ratio)):
-                if pop_ratio is not None:
-                    calc_pop_value = pop_value * dwelling_fraction * pop_ratio
-                    row = [iso, calc_pop_value, grid_id, lon, lat,
-                           study_region_id, country_id, building_type, tod]
-                    row = [str(x) for x in row]
-                    yield '%s\n' % ','.join(row)
-
-
-def _bldg_nrml_admin0_generator(exposure_data):
-    """
-    Helper function for generating admin level 0 NRML data for building
-    exposure.
-    """
-    yield XML_HEADER
-    copyright = copyright_nrml(COPYRIGHT_HEADER)
-    yield copyright
-    yield NRML_HEADER % dict(cat='buildings')
-
-    for (grid_id, lon, lat, pop_value, country_id, iso,
-         study_region_id, building_type, dwelling_fraction,
-         day_pop_ratio, night_pop_ratio,
-         transit_pop_ratio) in exposure_data:
-
-        if all([x is None for x in (day_pop_ratio,
-                                    night_pop_ratio,
-                                    transit_pop_ratio)]):
-            asset_params = dict(
-                gml_id='%s_%s' % (grid_id, building_type),
-                lon=lon,
-                lat=lat,
-                pop=pop_value,
-                tax=building_type,
-            )
-            asset = NRML_ASSET_FMT % asset_params
-            yield '%s' % asset
-        else:
-            occ = ''
-            for tod, pop_ratio in (('day', day_pop_ratio),
-                                   ('night', night_pop_ratio),
-                                   ('transit', transit_pop_ratio)):
-                if pop_ratio is not None:
-                    calc_pop_value = pop_value * dwelling_fraction * pop_ratio
-                    occ += OCCUPANCY_FMT % (calc_pop_value, tod)
-
-            asset_params = dict(
-                gml_id='%s_%s' % (grid_id, building_type),
-                lon=lon,
-                lat=lat,
-                pop=calc_pop_value,
-                tax=building_type,
-                occ=occ,
-            )
-            asset = NRML_ASSET_ADMIN_0_FMT % asset_params
-            yield '%s' % asset
-    # finalize the document:
-    yield NRML_FOOTER
-
-
-def _bldg_csv_subnat_generator(exposure_data):
-    """
-    Helper function for generating admin level 1-3 CSV data for building
-    exposure.
-    """
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    yield BLDG_SUBNAT_CSV_HEADER
-
-    for (grid_id, lon, lat, pop_value, country_id, iso,
-         study_region_id, building_type,
-         dwelling_fraction) in exposure_data:
-        calc_pop_value = pop_value * dwelling_fraction
-        row = [iso, calc_pop_value, grid_id, lon, lat, study_region_id,
-               country_id, building_type]
-        row = [str(x) for x in row]
-        yield '%s\n' % ','.join(row)
-
-
-def _bldg_nrml_subnat_generator(exposure_data):
-    """
-    Helper function for generating admin level 1-3 NRML data for building
-    exposure.
-    """
-    yield XML_HEADER
-    copyright = copyright_nrml(COPYRIGHT_HEADER)
-    yield copyright
-    yield NRML_HEADER % dict(cat='buildings')
-
-    for (grid_id, lon, lat, pop_value, country_id, iso,
-         study_region_id, building_type,
-         dwelling_fraction) in exposure_data:
-        calc_pop_value = pop_value * dwelling_fraction
-
-        asset = NRML_ASSET_FMT % dict(
-            gml_id='%s_%s' % (grid_id, building_type),
-            lon=lon,
-            lat=lat,
-            pop=calc_pop_value,
-            tax=building_type,
-        )
-        yield asset
-    # finalize the document:
-    yield NRML_FOOTER
-
-
-def _pop_csv_generator(exposure_data):
-    """
-    Helper function for generating CSV data for population exposure.
-    """
-    copyright = copyright_csv(COPYRIGHT_HEADER)
-    yield copyright
-    yield POP_CSV_HEADER
-    for grid_id, lon, lat, pop_value, iso in exposure_data:
-        row = [iso, pop_value, grid_id, lon, lat]
-        row = [str(x) for x in row]
-        yield '%s\n' % ','.join(row)
-
-
-def _pop_nrml_generator(exposure_data):
-    """
-    Helper function for generating CSV data for population exposure.
-    """
-    yield XML_HEADER
-    copyright = copyright_nrml(COPYRIGHT_HEADER)
-    yield copyright
-    yield NRML_HEADER % dict(cat='population')
-
-    for grid_id, lon, lat, pop_value, iso in exposure_data:
-        asset = NRML_ASSET_FMT % dict(
-            gml_id=grid_id,
-            lon=lon,
-            lat=lat,
-            pop=pop_value,
-            tax='',
-        )
-        yield asset
-    yield NRML_FOOTER
-
-
-def _stream_building_exposure(request, output_type):
-    """
-    Stream building exposure data from the database into a file of the
-    specified ``output_type``.
-
-    :param request:
-        A :class:`django.http.request.HttpRequest` object.
-    :param str output_type:
-        A string indicating the desired output type. Valid values are 'csv'
-        and 'nrml' (XML).
-    """
-    # possible values are 'res', 'non-res', or 'both'
-    res_select = request.GET['residential']
-    tod_select = request.GET['timeOfDay']
-    admin_select = request.GET['adminLevel']
-    lng1 = request.GET['lng1']
-    lat1 = request.GET['lat1']
-    lng2 = request.GET['lng2']
-    lat2 = request.GET['lat2']
-
-    if res_select == 'res':
-        occupancy = [0]
-    elif res_select == 'non-res':
-        occupancy = [1]
-    elif res_select == 'both':
-        occupancy = [0, 1]
-    else:
-        msg = ("Invalid 'residential' selection: '%s'."
-               " Expected 'res', 'non-res', or 'both'."
-               % res_select)
-        raise ValueError(msg)
-
-    if admin_select == 'admin0':
-        # National
-        exposure_data = util._get_national_exposure(lng1, lat1, lng2, lat2,
-                                                    tod_select, occupancy)
-
-        if output_type == 'csv':
-            for text in _bldg_csv_admin0_generator(exposure_data):
-                yield text
-        elif output_type == 'nrml':
-            for text in _bldg_nrml_admin0_generator(exposure_data):
-                yield text
-
-    elif admin_select in ('admin1', 'admin2', 'admin3'):
-        # Subnational
-        exposure_data = util._get_subnational_exposure(lng1, lat1, lng2, lat2,
-                                                       occupancy, admin_select)
-
-        if output_type == 'csv':
-            for text in _bldg_csv_subnat_generator(exposure_data):
-                yield text
-
-        elif output_type == 'nrml':
-            for text in _bldg_nrml_subnat_generator(exposure_data):
-                yield text
-    else:
-        msg = (
-            "Invalid 'adminLevel' selection: '%s'."
-            " Expected 'admin0', 'admin1', 'admin2', or 'admin3'."
-            % admin_select
-        )
-        raise ValueError(msg)
-
-
-def _stream_population_exposure(request, output_type):
-    """
-    Stream population exposure data from the database into a file of the
-    specified ``output_type``.
-
-    :param request:
-        A :class:`django.http.request.HttpRequest` object.
-    :param str output_type:
-        A string indicating the desired output type. Valid values are 'csv'
-        and 'nrml' (XML).
-    """
-    lng1 = request.GET['lng1']
-    lat1 = request.GET['lat1']
-    lng2 = request.GET['lng2']
-    lat2 = request.GET['lat2']
-
-    exposure_data = util._get_population_exposure(lng1, lat1, lng2, lat2)
-
-    if output_type == 'csv':
-        for text in _pop_csv_generator(exposure_data):
-            yield text
-
-    elif output_type == 'nrml':
-        for text in _pop_nrml_generator(exposure_data):
-            yield text
 
 
 def copyright_csv(cr_text):
