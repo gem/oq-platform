@@ -28,7 +28,8 @@ li.search > ul.dropdown-menu {
     padding: 0;
 }
 
-.pull-right > li.search > .dropdown-menu {
+.pull-right > li.search > .dropdown-menu,
+.pull-right > li.share > .dropdown-menu {
     right: -3px;
 }
 
@@ -93,7 +94,9 @@ h2 {
 }
 
 .navbar .nav.account-bar > li.actions > a,
-.navbar .nav.account-bar > li.search > a {
+.navbar .nav.account-bar > li.search > a,
+.navbar .nav.account-bar > li.share > a
+{
     padding-left: 0;
     padding-right: 0;
 }
