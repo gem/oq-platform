@@ -55,13 +55,14 @@ XML_HEADER = "<?xml version='1.0' encoding='utf-8'?> \n"
 NRML_HEADER = """
 <nrml xmlns="http://openquake.org/xmlns/nrml/0.4">
     <exposureModel id="ep" category="%(cat)s" taxonomySource="%(taxonomy_name)s %(taxonomy_version)s">
-        <description>Source: OQP exposure export tool</description>
+        <description>Source: OQP exposure export tool</description>%(conversions)s
+        <assets>"""
+NRML_CONVERSIONS_FMT = """
             <conversions>
                 <costTypes>
-                    <costType name="structural" unit="%(currency)s" type="aggregated"/>
+                    <costType name="structural" unit="%s" type="aggregated"/>
                 </costTypes>
-            </conversions>
-        <assets>"""
+            </conversions>"""
 NRML_ASSET_FMT = """
             <asset id="%(gml_id)s" number="%(bldg_count)s" taxonomy="%(tax)s">
                 <location lon="%(lon)s" lat="%(lat)s" />%(costs)s
@@ -204,11 +205,12 @@ def export_exposure(request):
         currency, taxonomy_name, taxonomy_version = \
             util._get_currency_and_taxonomy_name(sr_id, occupancy)
     except TypeError:
-        occ = 'residential' if occupancy == 0 else 'non-residential'
-        msg = ('It was not possible to get the currency and taxonomy '
-               'name/version for sr_id=%s and occupancy_filter=%s') % (sr_id,
-                                                                       occ)
-        response = HttpResponse(msg, status="404")
+        # No records were found, corresponding to the given sr_id and occupancy
+        # ==> we return a 204 (the server successfully processed the request,
+        #                      but is not returning any content)
+        #     because it means there's no study corresponding to
+        #     the given combination of parameters
+        response = HttpResponse(status="204")
         return response
     output_type = request.GET.get('output_type')
     if not output_type or output_type not in ('csv', 'nrml'):
@@ -285,11 +287,14 @@ def export_exposure(request):
     return response
 
 def _csv_currency_and_taxonomy_header(currency, taxonomy_name, taxonomy_version):
-    return """\
-# currency = %s
+    details_str = ""
+    if currency is not None:
+        details_str += "# currency = %s" % currency
+    details_str += """
 # taxonomy = %s %s
 #
-""" % (currency, taxonomy_name, taxonomy_version)
+""" % (taxonomy_name, taxonomy_version)
+    return details_str
 
 def raw_to_csv_row(row):
     elements = ["\"" + str(x) + "\"" if type(x) == unicode
@@ -324,9 +329,14 @@ def _stream_exposure_by_sr_id_as_csv(
 def _stream_exposure_as_nrml(req_pars):
     yield XML_HEADER
     copyright = copyright_nrml(COPYRIGHT_HEADER)
+    currency = req_pars['currency']
     yield copyright
+    if currency is not None:
+        conversions = NRML_CONVERSIONS_FMT % (currency)
+    else:
+        conversions = ""
     yield NRML_HEADER % dict(cat='buildings',
-                             currency=req_pars['currency'],
+                             conversions=conversions,
                              taxonomy_name=req_pars['taxonomy_name'],
                              taxonomy_version=req_pars['taxonomy_version'])
     if req_pars['filter_by_bounding_box']:
