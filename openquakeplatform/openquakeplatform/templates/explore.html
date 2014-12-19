@@ -83,7 +83,7 @@
     {{block.super}}
     {% include 'search_scripts.html' %}
     <script>
-        help=document.getElementById("help_url").href;
-        document.getElementById("help_url").href=help+'/explore/';
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/explore/'; }
     </script>
 {% endblock extra_script %}
