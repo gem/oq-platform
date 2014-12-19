@@ -24,18 +24,6 @@ var drawnItems;
 var drawControl;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var DRAW_TOOL_COLOR = '#FFA54F';
-
-var objToUrlParams = function(obj) {
-    var url;
-
-    var params = [];
-    for (var key in obj) {
-        params.push(key + '=' + obj[key]);
-    }
-    url = params.join('&');
-    return url;
-};
-
 var app = new OQLeaflet.OQLeafletApp(THIRD_PARTY_URLS.leaflet_base_map);
 
 var startApp = function() {
@@ -67,10 +55,6 @@ var startApp = function() {
         $("#ragionTable").hide();
     });
 
-    // TODO remove this hack. This hack has been implemented in order to
-    // temporarily remove the left side panel and should be remove once
-    // the left side panel is completed
-    $("#oq-body-sidebar").remove();
     var width = $(window).width();
     $("#oq-body-content").width(width - 30);
 
@@ -108,24 +92,6 @@ var startApp = function() {
         labelTemplateLng: "Longitude: {x}",
         enableUserInput: false,
     }).addTo(map);
-
-    /* Generic jquery error dialog, which renders to the '#error-dialog' div */
-    var showErrorDialog = function(message, options) {
-        // Options are optional
-        if (typeof options === 'undefined') {
-            options = {};
-        }
-        options.modal = true;
-        options.close = function(event, ui) {
-            $("#error-dialog").empty();
-        };
-        if (typeof options.title === 'undefined') {
-            // Use a default title
-            options.title = 'Woops!';
-        }
-        $("#error-dialog").append(message);
-        $("#error-dialog").dialog(options);
-    };
 };
 
 app.initialize(startApp);
