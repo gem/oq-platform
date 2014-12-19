@@ -28,10 +28,10 @@ def oq_context_processor(request):
     context = {}
 
     context['third_party_urls'] = settings.THIRD_PARTY_URLS
-    context['tilestream_url'] = settings.TILESTREAM_URL
     context['bing_key'] = settings.BING_KEY
     context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
-    context['help_url'] = settings.HELP_URL
+    context['TILESTREAM_URL'] = settings.TILESTREAM_URL
+    context['HELP_URL'] = settings.HELP_URL
 
     return context
 
