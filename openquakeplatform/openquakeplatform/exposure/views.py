@@ -200,8 +200,16 @@ def export_exposure(request):
             return response
     else:
         occupancy = 0  # 'residential' by default
-    currency, taxonomy_name, taxonomy_version = \
-        util._get_currency_and_taxonomy_name(sr_id, occupancy)
+    try:
+        currency, taxonomy_name, taxonomy_version = \
+            util._get_currency_and_taxonomy_name(sr_id, occupancy)
+    except TypeError:
+        occ = 'residential' if occupancy == 0 else 'non-residential'
+        msg = ('It was not possible to get the currency and taxonomy '
+               'name/version for sr_id=%s and occupancy_filter=%s') % (sr_id,
+                                                                       occ)
+        response = HttpResponse(msg, status="404")
+        return response
     output_type = request.GET.get('output_type')
     if not output_type or output_type not in ('csv', 'nrml'):
         msg = ('Please provide the parameter "output_type".'
