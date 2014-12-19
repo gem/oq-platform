@@ -237,6 +237,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     populateSubNationalList = function (iso) {
         var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
         $http.get(url).success(function (data) {
+            $('#subnational-spinner').hide();
             $scope.subNationalData = data;
             $scope.tableParams2.reload();
         });
@@ -258,8 +259,6 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                     orderedData;
             params.total(orderedData.length);
             $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-            console.log('hi theres:');
-            //$('#subnational-spinner').hide();
         }
     });
 
@@ -401,15 +400,6 @@ app.factory('myService', function($http, $q) {
         getNationalGridCount: function(iso, study_id) {
             var deferred = $q.defer();
             $http.get('get_studies_by_country?iso='+iso+'&study_filter='+study_id+'&level_filter=national').success(function(data) {
-                deferred.resolve(data);
-            }).error(function(){
-                deferred.reject();
-            });
-            return deferred.promise;
-        },
-        getSubNationalBuildingFractions: function(iso) {
-            var deferred = $q.defer();
-            $http.get('get_studies_by_country?iso='+iso+'&level_filter=subnational').success(function(data) {
                 deferred.resolve(data);
             }).error(function(){
                 deferred.reject();
