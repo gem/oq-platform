@@ -34,72 +34,7 @@ HRDE - {{block.super}}
   <div id="chartDialog" title="Plot" style="overflow: hidden;"></div>
   <div id="HMDownloadWarning" title="Whoops" style="overflow: hidden;"></div>
   <div id="legendDialog" title="Legend" style="overflow: hidden;"></div>
-  <div id="helpDialog" title="Help" style="overflow: hidden;">
-    <h1><center>Hazard & Risk Data Explorer</h1></center>
-    <center>
-    Explore hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves</center>
 
-    <br>
-    <h2><center>About</center></h2>
-
-    <p>The HRDE is an interactive map created by GEM that explores the hazard input models, hazard maps, hazard spectra curves risk maps & risk loss curves. The application also allows for other GEM maps, like the Instrumental Earthquake Categlouge to be mixed into the map view. The application alows one to view data for each location on the map in an interactive way.</p>
-    <br>
-
-    <ul>
-      <li><h3>Base Layers:</h3>
-        <dl>Alternative base maps can be selected on the top left of the toolbar</dl>
-      </li>
-
-      <li><h3>Loading layers into the map:</h3>
-        <dl>Select 'Load Hazard Data' or 'Load Risk Data'. From the respective dialog one can choose to load layers into the map</dl>
-
-        <dl>Multiple hazard map layers can be loaded into the map simultaneously. This is not the case for all other layers (curves & input models). For curves & input models, each time a layer is added, the previously loaded layer is automatically removed from the map, while hazard maps layers will remain in the map</dl>
-
-        <dl>Once a hazard map has been selected and loaded, the layer opacity can be adjusted in the Hazard Data dialog using the slider</dl>
-
-        <dl>Once a hazard map has been selected and loaded, one can download the hazard map into a csv file. Please note that the downloaded data is limited to the extent of the map that is visible on the screen.</dl>
-
-        <dl>Each layer that is added to the map gets added to the layer controller <img src="{{ STATIC_URL }}/Leaflet/dist/images/layers.png" alt="controller image" style="width:26px;height:26px">, from the controller layers can be turned on and off</dl>
-
-        <dl>When adding hazard maps the order in which layers are added to the map matters, new layers will be rendered on top of previously added layers</dl>
-
-      </li>
-      <li><h3>The Data:</h3>
-        <dl>Information about the data can be accessed from inside the Hazard Data dialog, once a category is seleced, a hyper link is provided to the GEM Hazard Wiki</dl>
-
-      </li>
-      <li><h3>Interactivity:</h3>
-        <dl>Hazard maps: hover the mouse over each hazard map and view the point value in the dialog popup (bottom right)</dl>
-        <dl>Curves and input models: click points in the grid on the map layer to render the curve(s) into the plot dialog</dl>
-        <dl>Zoom in on the map to get more detail</dl>
-        <dl>Curve plots: hover the mouse over any point along the line to view it's value</dl>
-        <dl>Inside the plot dialog one can download a CSV that will incude the values of the plot</dl>
-      </li>
-      <li><h3>Legend:</h3>
-        <dl>Only the hazard map and input model layers have a thematic representation that can be described by a legend</dl>
-        <dl>Each time a hazard map or input model layer is loaded into the map, a legend is automatically displayed into the legend dialog. When closed, this dialog can be opened again by clicking the 'Legend' button in the toolbar </dl>
-      </li>
-      <li><h3>Attribution:</h3>
-        <dl><b>Data: </b> Information about the data accesable in this applicaiton can be found at <a style="color: rgb(0,102,204)" href="https://hazardwiki.openquake.org/hazard_models">here</a></dl>
-        <dl><b>Basemaps: <br></b><a style="color: rgb(0,102,204)" href="http://visibleearth.nasa.gov/view_cat.php?categoryID=1484">Blue Marble</a>, Source: NASA Earth Observatory/NOAA NGDC
-        <br>
-        <a style="color: rgb(0,102,204)" href="http://msdn.microsoft.com/enus/library/dd877180.aspx">Bing Maps</a>
-        <br>
-        <a style="color: rgb(0,102,204)" href="http://developer.mapquest.com/web/tools/gettingstarted/platform/licensedvsopen">MapQuest</a>
-        <a style="color: rgb(0,102,204)" href="http://www.openstreetmap.org/copyright">OpenStreetMaps</a>
-        <br>
-        <br>
-        <b>Graph: </b><a style="color: rgb(0,102,204)" href="http://d3js.org/">d3.js</a> by <a style="color: rgb(0,102,204)" href="http://bost.ocks.org/mike/">Mike Bostock</a>was used to generate the hazard and risk plots
-        <br>
-        <br>
-        <b>Map: </b><a style="color: rgb(0,102,204)" href="http://leafletjs.com/">Leaflet.js</a> was used to generate the web maps
-        <br>
-        </dl>
-
-      </li>
-    </ul>
-
-  </div>
   {% verbatim %}
   <div id="hazardDataDialog" title="Hazard Data" style="overflow: hidden;">
     <form id="tile-form-list-curves">

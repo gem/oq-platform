@@ -99,7 +99,6 @@ var startApp = function() {
     );
     $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
-    $('#map-tools').append('<button type="button" id="help">Help</button>');
 
     var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
@@ -115,21 +114,6 @@ var startApp = function() {
         width: 400,
         closeOnEscape: true
     });
-
-    // Help dialog
-    $('#helpDialog').dialog({
-        autoOpen: false,
-        height: winHelp,
-        width: winW,
-        closeOnEscape: true
-    });
-
-    $('#help').button().click(function(e) {
-        $('#helpDialog').dialog('open');
-        $('#helpDialog').scrollTop( 0 );
-    });
-
-    $('#helpDialog').css({ 'overflow' : 'auto' });
 
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
     $('#map-tools').append($('#base-map-menu'));
