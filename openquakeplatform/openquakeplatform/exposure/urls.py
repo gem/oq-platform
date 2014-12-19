@@ -21,11 +21,7 @@
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 from django.views.generic import TemplateView
-from openquakeplatform.exposure.views import (export_building,
-                                              export_population,
-                                              get_exposure_building_form,
-                                              get_exposure_population_form,
-                                              validate_export,
+from openquakeplatform.exposure.views import (validate_export,
                                               get_country_list,
                                               get_geographic_regions_by_iso,
                                               get_all_studies,
@@ -44,10 +40,6 @@ urlpatterns = patterns(
 
 
     url(r'^validate_export', validate_export),
-    url(r'^get_exposure_building_form', get_exposure_building_form),
-    url(r'^get_exposure_population_form', get_exposure_population_form),
-    url(r'^export_building', export_building),
-    url(r'^export_population', export_population),
     url(r'^get_country_list', get_country_list),
     url(r'^get_geographic_regions_by_iso', get_geographic_regions_by_iso),
     url(r'^get_all_studies', get_all_studies),
