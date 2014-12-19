@@ -27,6 +27,21 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
+            <b>Data Sets:</b>
+            <ul>
+              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
+              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
+              <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
+              <li><a href="{% url 'grv_viewer' %}">Social Vulnerability Global Risk Viewer</a></li>
+{% if is_gem_experimental %}<li><a href="{% url 'irv_viewer' %}">Social Vulnerability Integrated Risk Viewer</a></li>{% endif %}
+              <li><a href="/vulnerability/list/">Vulnerability</a></li>
+              <!-- TODO add links to the inst cat, hist cat, active faults and geo strain map layers here-->
+              <li><a href="/maps/23">Instrumental Seismic Catalogue [1900 - 2009]</a></li>
+              <li><a href="/maps/24">Global Historic Catalogue</a></li>
+              <li><a href="/maps/25">Global Active Faults</a></li>
+              <!-- TODO PH added this map manually via the UI - ensure that this link is valid for ingested data -->
+              <li><a href="/maps/26">Geodetic Strain Rate</a></li>
+            </ul>
 
             <b>Explore:</b>
             <ul>
@@ -37,18 +52,8 @@
               <li><a href="{% url 'profile_browse' %}">People</a></li>
             </ul>
 
-            <b>Data Sets:</b>
-            <ul>
-              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
-              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
-              <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
-              <li><a href="{% url 'grv_viewer' %}">Social Vulnerability Global Risk Viewer</a></li>
-{% if is_gem_experimental %}<li><a href="{% url 'irv_viewer' %}">Social Vulnerability Integrated Risk Viewer</a></li>{% endif %}
-              <li><a href="/vulnerability/list/">Vulnerability</a></li>
-              <!-- TODO add links to the inst cat, hist cat, active faults and geo strain map layers here-->
-            </ul>
 
-            <b>Taxonomy:</b>
+            <b>GEM Building Taxonomy Tool:</b>
             <ul>
               <li>
                 <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
