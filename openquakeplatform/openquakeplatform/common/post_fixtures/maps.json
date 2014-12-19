@@ -45,6 +45,21 @@
         }
     },
     {
+        "pk": 26,
+        "model": "maps.map",
+        "fields": {
+            "projection": "EPSG:900913",
+            "popular_count": 2,
+            "zoom": 3,
+            "regions": [],
+            "center_x": 0.0,
+            "center_y": 0.0,
+            "last_modified": "2014-12-19T12:23:26.079",
+            "share_count": 0,
+            "owner": 2
+        }
+    },
+    {
         "pk": 8,
         "model": "maps.maplayer",
         "fields": {
@@ -483,5 +498,146 @@
             "local": true,
             "transparent": true
         }
+    },
+    {
+        "pk": 38,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "background",
+            "name": "No background",
+            "format": null,
+            "visibility": false,
+            "source_params": "{\"id\": \"1\", \"ptype\": \"gxp_olsource\"}",
+            "layer_params": "{\"selected\": false, \"title\": \"No background\", \"args\": [\"No background\"], \"type\": \"OpenLayers.Layer\"}",
+            "ows_url": null,
+            "stack_order": 0,
+            "styles": null,
+            "fixed": true,
+            "local": false,
+            "transparent": false
+        }
+    },
+    {
+        "pk": 39,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "background",
+            "name": "mapnik",
+            "format": null,
+            "visibility": false,
+            "source_params": "{\"id\": \"2\", \"ptype\": \"gxp_osmsource\"}",
+            "layer_params": "{\"title\": \"OpenStreetMap\", \"selected\": false}",
+            "ows_url": null,
+            "stack_order": 1,
+            "styles": null,
+            "fixed": true,
+            "local": false,
+            "transparent": false
+        }
+    },
+    {
+        "pk": 40,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "background",
+            "name": "osm",
+            "format": null,
+            "visibility": true,
+            "source_params": "{\"id\": \"3\", \"ptype\": \"gxp_mapquestsource\"}",
+            "layer_params": "{\"title\": \"MapQuest OpenStreetMap\", \"selected\": false}",
+            "ows_url": null,
+            "stack_order": 2,
+            "styles": null,
+            "fixed": true,
+            "local": false,
+            "transparent": false
+        }
+    },
+    {
+        "pk": 41,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "background",
+            "name": "naip",
+            "format": null,
+            "visibility": false,
+            "source_params": "{\"id\": \"3\", \"ptype\": \"gxp_mapquestsource\"}",
+            "layer_params": "{\"title\": \"MapQuest Imagery\", \"selected\": false}",
+            "ows_url": null,
+            "stack_order": 3,
+            "styles": null,
+            "fixed": true,
+            "local": false,
+            "transparent": false
+        }
+    },
+    {
+        "pk": 42,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "background",
+            "name": "AerialWithLabels",
+            "format": null,
+            "visibility": false,
+            "source_params": "{\"id\": \"4\", \"ptype\": \"gxp_bingsource\"}",
+            "layer_params": "{\"title\": \"Bing Aerial With Labels\", \"selected\": false}",
+            "ows_url": null,
+            "stack_order": 4,
+            "styles": null,
+            "fixed": true,
+            "local": false,
+            "transparent": false
+        }
+    },
+    {
+        "pk": 43,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "background",
+            "name": "bluemarble",
+            "format": null,
+            "visibility": false,
+            "source_params": "{\"id\": \"1\", \"ptype\": \"gxp_olsource\"}",
+            "layer_params": "{\"selected\": false, \"title\": \"bluemarble\", \"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
+            "ows_url": null,
+            "stack_order": 5,
+            "styles": null,
+            "fixed": true,
+            "local": false,
+            "transparent": false
+        }
+    },
+    {
+        "pk": 44,
+        "model": "maps.maplayer",
+        "fields": {
+            "opacity": 1.0,
+            "map": 26,
+            "group": "",
+            "name": "strain",
+            "format": null,
+            "visibility": true,
+            "source_params": "{\"id\": \"5\", \"ptype\": \"gxp_tilestreamsource\"}",
+            "layer_params": "{\"title\": \"strain\", \"selected\": true}",
+            "ows_url": null,
+            "stack_order": 6,
+            "styles": null,
+            "fixed": false,
+            "local": false,
+            "transparent": false
+        }
     }
+
 ]
