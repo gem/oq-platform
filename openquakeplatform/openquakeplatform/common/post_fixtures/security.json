@@ -715,25 +715,6 @@
         }
     },
     {
-        "pk": 33,
-        "model": "security.userobjectrolemapping",
-        "fields": {
-            "role": [
-                "map_admin",
-                "maps",
-                "map"
-            ],
-            "object_ct": [
-                "maps",
-                "map"
-            ],
-            "user": [
-                "admin"
-            ],
-            "object_id": 26
-        }
-    },
-    {
         "pk": 35,
         "model": "security.userobjectrolemapping",
         "fields": {
