@@ -95,4 +95,8 @@ Exposure Export {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_export.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_controller.js"></script>
+    <script>
+        help=document.getElementById("help_url").href;
+        document.getElementById("help_url").href=help+'/exposure/';
+    </script>
 {% endblock extra_script %}
