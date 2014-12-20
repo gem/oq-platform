@@ -145,6 +145,12 @@ class Calculation(models.Model):
                     local=True))
         map.set_bounds_from_layers(map.local_layers)
         map.set_default_permissions()
+        perm_spec = {'authenticated': '_none', 'users': [[self.user, 'map_readwrite'], [self.user, 'map_admin']], 'anonymous': '_none'}
+        # GeoNode doesn't provide a 'map_set_permissions', so the
+        # 'layer_set_permissions' function is used since it works even
+        # with maps (maps and layers are both mapped as ObjectRole by
+        # the security app
+        layer_set_permissions(map, perm_spec)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
 
