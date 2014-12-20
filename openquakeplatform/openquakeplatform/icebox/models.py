@@ -37,6 +37,7 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
 from geonode.maps.signals import map_changed_signal
 from geonode.layers.models import set_attributes
+from geonode.layers.utils import layer_set_permissions
 from geonode.utils import http_client, ogc_server_settings
 
 from openquakeplatform.icebox import fields
@@ -124,6 +125,8 @@ class Calculation(models.Model):
                 info_format = "text/html"
             else:
                 info_format = "application/vnd.ogc.gml"
+            perm_spec = {'authenticated': '_none', 'users': [[self.user, 'layer_readwrite'], [self.user, 'layer_admin']], 'anonymous': '_none'}
+            layer_set_permissions(layer, perm_spec)
 
             map.layer_set.add(
                 maps.MapLayer.objects.create(
