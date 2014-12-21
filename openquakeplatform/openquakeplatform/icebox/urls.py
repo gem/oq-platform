@@ -32,8 +32,8 @@ urlpatterns = patterns(
         name="calculations"),
     url(r'^outputs$', login_required(views.OutputsView.as_view()),
         name="outputs"),
-    url(r'^calculation/(?P<pk>\d+)$',
-        login_required(views.CalculationView.as_view()), name="calculation"),
+    url(r'^calculation/(?P<pk>\d+)$', views.CalculationView.as_view(),
+        name="calculation"),
     url(r'^remove_calculation/(?P<pk>\d+)$',
         login_required(views.remove_calculation), name="remove_calculation")
 )
