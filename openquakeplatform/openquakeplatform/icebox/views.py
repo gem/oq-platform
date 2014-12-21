@@ -24,6 +24,7 @@ import zipfile
 import tempfile
 
 import requests
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseServerError
@@ -62,6 +63,7 @@ class JSONResponseMixin(object):
         raise NotImplementedError
 
 
+@login_required
 class CalculationsView(JSONResponseMixin, generic.list.ListView):
     model = icebox.Calculation
 
@@ -125,6 +127,7 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
             model_to_dict(obj) for obj in context['object_list']])
 
 
+@login_required
 class OutputsView(JSONResponseMixin, generic.list.ListView):
     model = icebox.OutputLayer
 
@@ -139,6 +142,7 @@ class OutputsView(JSONResponseMixin, generic.list.ListView):
         return json.dumps(outputs)
 
 
+@login_required
 class CalculationView(JSONResponseMixin, generic.detail.DetailView):
     model = icebox.Calculation
 
