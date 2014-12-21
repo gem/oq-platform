@@ -72,6 +72,13 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         """
         calculation_type = request.POST['calculation_type']
 
+        filesize = request.FILES['calc_archive'].size
+
+        if filesize > settings.MAX_ICEBOX_SIZE*1024*1024:
+            # FIXME error must be improved
+            raise RuntimeError(
+                "File too big: %s" % filesize)
+
         calculation = self.model.objects.create(
             user=request.user,
             calculation_type=calculation_type)

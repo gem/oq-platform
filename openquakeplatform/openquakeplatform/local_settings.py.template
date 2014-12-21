@@ -56,6 +56,7 @@ ALLOWED_DOCUMENT_TYPES = [
     'tgz', 'tbz', 'tar.gz', 'tar.bz2'
 ]
 MAX_DOCUMENT_SIZE = 100
+MAX_ICEBOX_SIZE = 10
 
 try:
     from openquakeplatform import ged_settings
