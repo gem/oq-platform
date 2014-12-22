@@ -7,7 +7,7 @@ register = template.Library()
 
 
 @register.assignment_tag(takes_context=True)
-def latest_maps(context, count=7):
+def latest_maps(context, count=5):
     request = context['request']
     maps = Map.objects.order_by("-last_modified")
     maps = _filter_security(maps, request.user, Map, 'view_map')[:count]
