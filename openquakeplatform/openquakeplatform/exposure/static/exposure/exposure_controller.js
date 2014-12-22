@@ -156,14 +156,12 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
                 $scope.selectedRegion = data;
 
-                $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
+                $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countrySelectionForm').insertAfter('#countryList');
                 $('#countryList').hide();
                 $('#countrySelectionForm').empty();
                 $('#countrySelectionForm').show();
-                //$('#selectionFormBack').insertAfter('#exposure-building-form');
-                //$("#exposure-building-form").insertBefore("#selectionFormBack");
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
