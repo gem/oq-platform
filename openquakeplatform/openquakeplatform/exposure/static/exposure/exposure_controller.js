@@ -170,7 +170,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 // deactivate residential option as needed
                 if (study.has_nonres != 'yes') {
                     $('#id_residential_1').attr("disabled", "disabled");
-                    $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.6'});
+                    $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.8'});
                 }
 
                 // Check the grid count
@@ -327,7 +327,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         // deactivate residential option as needed
         if (study.has_nonres != true) {
             $('#id_residential_1').attr("disabled", "disabled");
-            $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.6'});
+            $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.8'});
         }
 
         // check the grid count
