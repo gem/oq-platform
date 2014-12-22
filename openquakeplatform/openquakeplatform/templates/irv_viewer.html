@@ -17,12 +17,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "data_viewer_base.html" %}
 
 {% block title %}
-Explore - {{block.super}}
+IRV - {{block.super}}
 {% endblock %}
 
-{% block body_outer %}
-{% include "base_map_options.html" %}
-
+{% block map_tools %}
+{{block.super}}
 <button type="button" id="load-project">Load Project</button>
 <div id="loadProjectDialog" title="Load Project">
   <form id="tile-form-list">
@@ -37,7 +36,6 @@ Explore - {{block.super}}
   </form>
 </div>
 
-
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
 
@@ -48,16 +46,17 @@ Explore - {{block.super}}
 <div id="warning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
 </div>
+{% endblock %}
 
+{% block body_outer %}
 {{block.super}}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/irv_viewer.css" />
-
 {% endblock %}
 
 
-{% block extra_script %}
-    {{block.super}}
-    <!-- Category tags-->
+{% block middle %}
+{{block.super}}
+<!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="1" ><a href="#project-def">Project Def</a></li>
@@ -83,16 +82,19 @@ Explore - {{block.super}}
     <div id="primary-chart"></div>
   </div>
 
-  <!-- TODO fix this-->
-  <div id="empty" style="height:500px;">
   </div>
 
 </div>
+{% endblock middle %}
+{% block extra_script %}
+    {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_d3_tree.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
-    
+    <script>
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/irv/'; }
+    </script>
 {% endblock extra_script %}

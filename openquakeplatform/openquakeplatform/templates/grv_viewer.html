@@ -17,12 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "data_viewer_base.html" %}
 
 {% block title %}
-Explore - {{block.super}}
+GRV - {{block.super}}
 {% endblock %}
 
-{% block body_outer %}
-{% include "base_map_options.html" %}
-
+{% block map_tools %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/irv_viewer.css" />
+{{block.super}}
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>
@@ -36,10 +36,26 @@ Explore - {{block.super}}
   </form>
 </div>
 
-<div id="chartOptions" title="Chart Options">
-  <p>whoops, first interact with the map to load some data, then you can set the chart options</p>
+<div id="econ-chart-options" title="Chart Options">
   <!-- Chart attribute picker gets loaded here-->
 </div>
+
+<div id="pop-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
+<div id="infra-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
+<div id="gov-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
+<div id="edu-chart-options" title="Chart Options">
+  <!-- Chart attribute picker gets loaded here-->
+</div>
+
 
 <div id="worning-duplicate" title="Woops!" class="ui-helper-hidden">
     <p>This layer has already been added to the map</p>
@@ -48,28 +64,22 @@ Explore - {{block.super}}
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer in not loaded in the map</p>
 </div>
-
-{{block.super}}
-
 {% endblock %}
 
-
-{% block extra_script %}
-    {{block.super}}
-    <!-- Category tags-->
+{% block middle %}
+{{block.super}}
+<!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="econ"><a href="#economy">Economy</a></li>
     <li id="pop"><a href="#population">Population</a></li>
-    <li id="health"><a href="#heal">Health</a></li>
     <li id="infra"><a href="#infrastructure">Infrastructure</a></li>
     <li id="gov"><a href="#governance">Governance</a></li>
     <li id="edu"><a href="#education">Education</a></li>
   </ul>
 
     <br>
-    <button type="button" id="thematic-map">Map Options</button> 
-    <button type="button" id="chart-options">Chart Options</button>
+    <button type="button" id="thematic-map">Map Options</button>
     <select id="chart-var-numb">
       <option value=1>1 countries</option>
       <option value=2>2 countries</option>
@@ -80,15 +90,14 @@ Explore - {{block.super}}
     </select>
 
   <div id="economy">
- 
-    <div id="econ-chart-spider" style="display:inline-block;" >
+    <div id="econ-menu">
+      <button type="button" id="econChartOptions">Chart Options</button>
+    </div>
+    <div id="econ-chart-pcc">
       <svg></svg>
     </div>
-  
+
     <div style="display:inline-block;" id='econ-chart-bar'></div>
- <!--
-    <div id="example" class="parcoords" style="width:960px;height:200px;"></div>
-      -->
     <table id="econ-table" >
       <thead id="tablehead">
         <tr>
@@ -102,7 +111,10 @@ Explore - {{block.super}}
 
 
   <div id="population">
-    <div id="pop-chart-spider" >
+    <div id="pop-menu">
+      <button type="button" id="popChartOptions">Chart Options</button>
+    </div>
+    <div id="pop-chart-pcc" >
       <svg></svg>
     </div>
     <div style="display:inline-block;" id='pop-chart-bar'></div>
@@ -119,26 +131,11 @@ Explore - {{block.super}}
     <br><br>
   </div>
 
-  <div id="heal">
-    <div id="health-chart-spider" >
-      <svg></svg>
-    </div>
-    <div style="display:inline-block;" id='health-chart-bar'></div>
-    <div class="table-header"></div>
-
-    <table id="health-table" >
-      <thead id="tablehead">
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-    </table>
-    <br><br>
-  </div>
-
   <div id="infrastructure">
-    <div id="infra-chart-spider" >
+    <div id="infra-menu">
+      <button type="button" id="infraChartOptions">Chart Options</button>
+    </div>
+    <div id="infra-chart-pcc" >
       <svg></svg>
     </div>
     <div style="display:inline-block;" id='infra-chart-bar'></div>
@@ -156,7 +153,10 @@ Explore - {{block.super}}
   </div>
 
   <div id="governance">
-    <div id="gov-chart-spider">
+    <div id="gov-menu">
+      <button type="button" id="govChartOptions">Chart Options</button>
+    </div>
+    <div id="gov-chart-pcc">
       <svg></svg>
     </div>
     <div style="display:inline-block;" id='gov-chart-bar'></div>
@@ -175,7 +175,10 @@ Explore - {{block.super}}
   </div>
 
   <div id="education">
-    <div id="edu-chart-spider">
+    <div id="edu-menu">
+      <button type="button" id="eduChartOptions">Chart Options</button>
+    </div>
+    <div id="edu-chart-pcc">
       <svg></svg>
     </div>
     <div style="display:inline-block;" id='edu-chart-bar'></div>
@@ -193,11 +196,9 @@ Explore - {{block.super}}
     <br><br>
   </div>
 
-  <!-- TODO fix this-->
-  <div id="empty" style="height:500px;">
-  </div>
-
 </div>
+{% endblock middle %}
+{% block extra_script %}
+    {{block.super}}
     <script src="{{ STATIC_URL }}js/grv_viewer.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 {% endblock extra_script %}

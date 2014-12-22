@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
+{% block title %} Calculate - {{ block.super }} {% endblock title %}
 
 {% block extra_head %}
     {{block.super}}
@@ -38,8 +38,6 @@
                 <li>Get an <a href="http://www.globalquakemodel.org/gem/terms/oats/" target="_blank">OATS </a>account to begin using the OpenQuake Engine. An OATS account will allow you to run calculations through a web interface, and the calcualtions and data are in the cloud</li>
                 <li> <!-- TODO replace calculate with 'icebox'--><a href="{% url 'icebox' %}">Run a demo calculation now</a></li>
               </ul>
-
-
             <b>Calculate on a desktop computer or server:</b>
               <ul>
                 <li><a href="http://www.globalquakemodel.org/openquake/start/download/" target="_blank">Download the OpenQuake Engine </a></li>
@@ -55,9 +53,6 @@
                 </li>
                 <li>
                   <a href="https://github.com/gem/oq-risklib" target="_blank">oq-risklib</a> - OpenQuake Risk Library
-                </li>
-                <li>
-                  <a href="https://github.com/gem/oq-nrmllib" target="_blank">oq-nrmllib</a> - Natural hazards' Risk Markup Language
                 </li>
               </ul>
 
@@ -77,9 +72,6 @@
                 </li>
               </ul>
 
-
-
-
             <b>Supporting material:</b>
               <ul>
                 <li>
@@ -93,7 +85,6 @@
                 </li>
               </ul>
             <br/><br/>
-
           </div>
         {% endblock oq_body_content %}
       </div>
@@ -107,7 +98,6 @@
             <a class="btn btn-large" href="{% url "maps_browse" %}">
               {% trans "Explore Maps" %}
             </a>
-
           </div>
         {% endblock oq_body_sidebar %}
       </div>

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
+{% block title %} Share - {{ block.super }} {% endblock title %}
 
 {% block extra_head %}
     {{block.super}}
@@ -28,10 +28,10 @@
           <div class="oq-intro">
             <!-- Main page content goes here -->
 
-            The OpenQuake Platform includes a number of tool for contributing to the existing datasets. 
+            The OpenQuake Platform includes a number of tool for contributing to the existing datasets.
             <br><br>
 
-            <b>Data Capture/Collection</b> 
+            <b>Data Capture/Collection</b>
             <ul>
               <li>
                 <a href="{% url 'faulted_earth' %}">The Faulted Earth </a> tool allows users to input fault information
@@ -43,7 +43,7 @@
                 SIDD
               </li>
               <li>
-                <a href="/admin/vulnerability/generalinformation/">The vulnerability suite</a>  is a set of tool that allow users to explore and contribute to a comprehensive global vulnerability database that includes fragility, vulnerability, damage-to-loss functions and capacity curves for different types of structure
+                <a href="/vulnerability/list/">The vulnerability suite</a>  is a set of tool that allow users to explore and contribute to a comprehensive global vulnerability database that includes fragility, vulnerability, damage-to-loss functions and capacity curves for different types of structure
               </li>
             </ul>
 
@@ -54,12 +54,11 @@
               </li>
             </ul>
 
-            <b>Upload:</b> 
+            <b>Upload:</b>
             <ul>
               <li><a href="{% url "document_upload" %}">Documents</a></li>
               <li><a href="{% url "layer_upload" %}">Layers</a></li>
             </ul>
-
           </div>
         {% endblock oq_body_content %}
       </div>
@@ -73,7 +72,6 @@
             <a class="btn btn-large" href="{% url "maps_browse" %}">
               {% trans "Explore Maps" %}
             </a>
-            
           </div>
         {% endblock oq_body_sidebar %}
       </div>

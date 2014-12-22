@@ -112,8 +112,8 @@ LOCALE_PATHS = (
 )
 
 OQ_ENGINE_SERVER_URLS = {
-    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/hazard/run',  # i.e. : 'http://oq-platform:8800'
-    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/risk/run',        # i.e. : 'http://oq-platform:8800'
+    'run_hazard_calc_form': '%(hazard_calc_addr)s/v1/calc/run',  # i.e. : 'http://oq-platform:8800'
+    'run_risk_calc_form': '%(risk_calc_addr)s/v1/calc/run',        # i.e. : 'http://oq-platform:8800'
 }
 
 THIRD_PARTY_URLS = {
@@ -123,6 +123,8 @@ THIRD_PARTY_URLS = {
 }
 
 TILESTREAM_URL = '//tilestream.openquake.org'
+
+HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform/help'
 
 GEOSERVER_URL = '/geoserver/'
 
@@ -276,7 +278,6 @@ INSTALLED_APPS = (
     'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
-    'openquakeplatform.maps_viewer',
 
     # gemecd
     'openquakeplatform.weblib',

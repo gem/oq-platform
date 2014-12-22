@@ -1,11 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}
-{% endblock title %}
-
 {% block extra_head %}
     <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
-    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link href="{{ STATIC_URL }}img/favicon.ico" rel="shortcut icon"/>
 
     <!-- Constants, rendered here from app configuration through Django templates.
          This is a simple way to make variables from the backend available to the
@@ -18,7 +15,7 @@
         {% for k, v in third_party_urls.iteritems %}
         THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
         {% endfor %}
-        var TS_URL = '{{ tilestream_url }}';
+        var TS_URL = '{{ TILESTREAM_URL }}';
         var BING_KEY = {};
         {% for k, v in bing_key.iteritems %}
         BING_KEY.{{ k }} = "{{ v }}";

@@ -17,25 +17,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "data_viewer_base.html" %}
 
 {% block title %}
-Explore - {{block.super}}
+HAZUS - {{block.super}}
 {% endblock %}
 
 {% block body_outer %}
-{% include "base_map_options.html" %}
-
 {{block.super}}
-
     <div id="dialog" title="Hazus Building Fractions">
-    	<svg></svg>
+        <svg></svg>
     </div>
-
 {% endblock %}
-
 
 {% block extra_script %}
     {{block.super}}
     <!-- Category tags-->
 
     <script src="{{ STATIC_URL }}js/hazus.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
 {% endblock extra_script %}
