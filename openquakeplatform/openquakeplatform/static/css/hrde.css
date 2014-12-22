@@ -119,3 +119,11 @@ a {
 .raster a {
   color: #777;
 }
+
+#cover {
+  text-align: center;
+  background: no-repeat scroll center center #FFF;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}

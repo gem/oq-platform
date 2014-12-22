@@ -99,7 +99,6 @@ var startApp = function() {
     );
     $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
-    $('#map-tools').append('<button type="button" id="help">Help</button>');
 
     var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
@@ -115,21 +114,6 @@ var startApp = function() {
         width: 400,
         closeOnEscape: true
     });
-
-    // Help dialog
-    $('#helpDialog').dialog({
-        autoOpen: false,
-        height: winHelp,
-        width: winW,
-        closeOnEscape: true
-    });
-
-    $('#help').button().click(function(e) {
-        $('#helpDialog').dialog('open');
-        $('#helpDialog').scrollTop( 0 );
-    });
-
-    $('#helpDialog').css({ 'overflow' : 'auto' });
 
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
     $('#map-tools').append($('#base-map-menu'));
@@ -246,6 +230,7 @@ var startApp = function() {
     }
 
     $(document).ready(function() {
+        $('#cover').remove();
         $('#worning-no-layer').dialog({
             autoOpen: false,
             height: 100,
@@ -273,7 +258,8 @@ var startApp = function() {
     var tileStreamLayer = '';
     var category = '';
     var selLayer = document.getElementById('layer-list');
-    var selCat = $('#hazard-curve-category')[0];
+    //var selCat = $('#hazard-curve-category')[0];
+    var selCat = document.getElementById('hazard-curve-category');
     var selLossCat = document.getElementById('risk-curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
@@ -321,8 +307,9 @@ var startApp = function() {
             var grid, gridName;
             var wiki = json[i].wiki_link;
 
-            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds') {
-                AppVars.curveCategoryList.push(cat);
+            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
+
+
                 if (wiki !== undefined ) {
                     AppVars.wikiLinkList[cat] = wiki;
                 }
@@ -334,7 +321,11 @@ var startApp = function() {
                 AppVars.curveLayerGrids.push(gridName);
 
             }
-
+            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'input-mfds' || type == 'map') {
+                if (cat != undefined) {
+                    AppVars.curveCategoryList.push(cat);
+                }
+            }
             if (type == 'curve-uhs') {
                 AppVars.uhsLayersByCat[cat] = [];
                 AppVars.uhsLayerNames[name] = [];
@@ -462,9 +453,9 @@ var startApp = function() {
             return i == AppVars.lossCategoryList.indexOf(itm);
         });
 
-        for (var i in curveCategoryUnique) {
+        for (var o in curveCategoryUnique) {
             // Append category names to curve dropdown list
-            var curveCategoryTitle = curveCategoryUnique[i];
+            var curveCategoryTitle = curveCategoryUnique[o];
             var curveOpt = document.createElement('option');
             curveOpt.innerHTML = curveCategoryTitle;
             curveOpt.value = curveCategoryTitle;
@@ -473,13 +464,13 @@ var startApp = function() {
             var layerCurveOpt = document.createElement('option');
         }
 
-        for (var i in curveCategoryUnique) {
+        for (var p in lossCategoryUnique) {
             // Append category names to loss dropdown list
-            var lossCategoryTitle = curveCategoryUnique[i];
+            var lossCategoryTitle = lossCategoryUnique[p];
             var lossOpt = document.createElement('option');
             lossOpt.innerHTML = lossCategoryTitle;
             lossOpt.value = lossCategoryTitle;
-            selLossCat.appendChild(curveOpt);
+            selLossCat.appendChild(lossOpt);
             // Append layer list to dowpdown
             var layerlossOpt = document.createElement('option');
         }

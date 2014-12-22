@@ -1,17 +1,8 @@
-<!--********
-  *********
-  *********
-  This is a temporary pages TODO remove it when the customizable
-  categories can be implemented
-  *********
-  *********
--->
-
 {% extends "site_base.html" %}
 {% load i18n %}
 {% load url from future %}
 
-{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
+{% block title %} Explore - {{ block.super }} {% endblock title %}
 
 {% block extra_head %}
     {{block.super}}
@@ -36,6 +27,19 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
+            <b>Data Sets:</b>
+            <ul>
+              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
+              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
+              <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
+              <li><a href="{% url 'grv_viewer' %}">Social Vulnerability Global Risk Viewer</a></li>
+{% if is_gem_experimental %}<li><a href="{% url 'irv_viewer' %}">Social Vulnerability Integrated Risk Viewer</a></li>{% endif %}
+              <li><a href="/vulnerability/list/">Vulnerability</a></li>
+              <li><a href="/maps/23">Instrumental Seismic Catalogue [1900 - 2009]</a></li>
+              <li><a href="/maps/24">Global Historic Catalogue</a></li>
+              <li><a href="/maps/25">Global Active Faults</a></li>
+              <li><a href="/maps/26">Geodetic Strain Rate</a></li>
+            </ul>
 
             <b>Explore:</b>
             <ul>
@@ -46,18 +50,8 @@
               <li><a href="{% url 'profile_browse' %}">People</a></li>
             </ul>
 
-            <b>Data Sets:</b>
-            <ul>
-              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
-              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
-              <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
-              <li><a href="{% url 'grv_viewer' %}">Social Vulnerability Global Risk Viewer</a></li>
-{% if is_gem_experimental %}<li><a href="{% url 'irv_viewer' %}">Social Vulnerability Integrated Risk Viewer</a></li>{% endif %}
-              <li><a href="/vulnerability/list/">Vulnerability</a></li>
-              <!-- TODO add links to the inst cat, hist cat, active faults and geo strain map layers here-->
-            </ul>
 
-            <b>Taxonomy:</b>
+            <b>GEM Building Taxonomy Tool:</b>
             <ul>
               <li>
                 <a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only
@@ -86,4 +80,8 @@
 {% block extra_script %}
     {{block.super}}
     {% include 'search_scripts.html' %}
+    <script>
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/explore/'; }
+    </script>
 {% endblock extra_script %}
