@@ -74,6 +74,8 @@ var showErrorDialog = function(message, options) {
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
         $scope.nationalData = data;
+        console.log('data:');
+        console.log(data);
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -109,7 +111,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<b>Download Gridded Building Exposure:</b></br>'+
                 '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
+                '<label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
@@ -140,6 +142,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
         } catch (e) {
             // continue
         }
+        console.log('study:');
+        console.log(study);
 
         if (study.num_l1_studies <= 1) {
             // The user has selected a national study
@@ -159,6 +163,12 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
                 $('#countrySelectionForm').append(nationalForm(study));
+
+                // residential option
+                if (study.has_nonres != true) {
+                    $('#id_residential_1').attr("disabled", "disabled");
+                    $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.6'});
+                }
 
                 // Check the grid count
                 if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
