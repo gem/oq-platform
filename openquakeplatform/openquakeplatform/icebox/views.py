@@ -89,10 +89,10 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         archive = request.FILES['calc_archive']
 
         # Save the zip file to a local storage
+        filename = str(calculation.id) + '_' + calculation_type + '.zip'
         default_storage.save(
             settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' +
-            str(calculation.id) + "_" + calculation_type +
-            '.zip', ContentFile(archive.read()))
+            filename, ContentFile(archive.read()))
         archive.seek(0)
 
         try:
@@ -226,6 +226,17 @@ Login into Openquake platform to see them.
         except smtplib.SMTPException as e:
             logger.warn(
                 "Failed to send mail to %s: %s" % (calculation.user.email, e))
+
+
+def input_download(request, calculation_type, pk):
+    filename = str(pk) + '_' + calculation_type + '.zip'
+    fsock = open(
+        settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' + filename,
+        'r'
+        )
+    response = HttpResponse(fsock, mimetype='application/zip')
+    response['Content-Disposition'] = "attachment; filename=%s" % (filename)
+    return response
 
 
 def remove_calculation(request, pk):
