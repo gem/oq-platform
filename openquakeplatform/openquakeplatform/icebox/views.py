@@ -17,18 +17,16 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
-import os
 import json
 import smtplib
-import zipfile
-import tempfile
 
 import requests
 from django.core.urlresolvers import reverse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import (HttpResponse, HttpResponseServerError,
+                         HttpResponseNotAllowed)
 from django.conf import settings
 from django.core.mail import send_mail
 from django.views import generic
@@ -89,7 +87,7 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         archive = request.FILES['calc_archive']
 
         # Save the zip file to a local storage
-        filename = str(calculation.id) + '_' + calculation_type + '.zip'
+        filename = _input_filename(calculation.id, calculation_type)
         default_storage.save(
             settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' +
             filename, ContentFile(archive.read()))
@@ -229,7 +227,7 @@ Login into Openquake platform to see them.
 
 
 def input_download(request, calculation_type, pk):
-    filename = str(pk) + '_' + calculation_type + '.zip'
+    filename = _input_filename(pk, calculation_type)
     fsock = open(
         settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' + filename,
         'r'
@@ -239,9 +237,26 @@ def input_download(request, calculation_type, pk):
     return response
 
 
+def input_delete(request, pk, calculation_type):
+    filename = _input_filename(pk, calculation_type)
+    try:
+        default_storage.delete(
+            settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' +
+            filename)
+    except:
+        pass
+
+
+def _input_filename(pk, calculation_type):
+    filename = str(pk) + '_' + calculation_type + '.zip'
+    return filename
+
+
 def remove_calculation(request, pk):
     if request.method == "POST":
-        icebox.Calculation.objects.get(pk=pk).delete()
-    # TODO: This should be an error
-    return HttpResponse("OK")
-
+        calculation = icebox.Calculation.objects.get(pk=pk)
+        calculation.delete()
+        input_delete(request, pk, calculation.calculation_type)
+        return HttpResponse("OK")
+    else:
+        return HttpResponseNotAllowed("GET is not allowed here")
