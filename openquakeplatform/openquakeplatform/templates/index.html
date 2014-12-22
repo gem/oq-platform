@@ -36,6 +36,7 @@
 
             This platform has been created by the <a href="http://www.globalquakemodel.org/">GEM Foundation</a>.<br><br>
 
+      {% if user.is_authenticated %}
       {% block mainbody %}
       <div class="row">
         <div class="span8">
@@ -49,6 +50,7 @@
         </div>
       </div>
       {% endblock %}
+      {% endif %}
 
       </div>
         {% endblock oq_body_content %}
