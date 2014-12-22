@@ -25,6 +25,8 @@ import tempfile
 
 import requests
 from django.core.urlresolvers import reverse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseServerError
 from django.conf import settings
@@ -85,11 +87,15 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
                 "Unknown calculation_type %s" % calculation_type)
 
         archive = request.FILES['calc_archive']
+
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
             hazard_job_id = request.POST.get('hazard_job_id')
 
-            post_data=dict(
+            default_storage.save(settings.MEDIA_ROOT + '/icebox/'
+                                + calculation_type + , ContentFile(archive.read()))
+
+            post_data = dict(
                 database=settings.OQ_ENGINE_SERVER_DATABASE,
                 callback_url="%s%s" % (
                     settings.SITEURL.rstrip("/"), reverse(
