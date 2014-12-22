@@ -71,7 +71,7 @@ Calculate - {{block.super}}
     <tbody>
       <% _.each(calculations, function(calc) { %>
       <tr class="<%= calc.get('status') == 'complete' ? 'success' : 'warning' %>">
-        <td><%= calc.get('engine_id') || 'New' %></td>
+        <td><%= calc.get('id') || 'New' %></td>
         <td><%= calc.get('calculation_type') %></td>
         <td><%= calc.get('description') %></td>
         <td><%= calc.get('status') %></td>
