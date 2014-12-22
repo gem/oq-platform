@@ -269,6 +269,7 @@ INSTALLED_APPS = (
     'geonode.social',
 
     # Our apps
+    'openquakeplatform.common',
     'openquakeplatform.isc_viewer',
     'openquakeplatform.ghec_viewer',
     'openquakeplatform.gaf_viewer',
