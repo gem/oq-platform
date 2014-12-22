@@ -623,6 +623,9 @@ var startApp = function() {
             }
             $('.econ-chart:lt(5)').prop('checked', true);
             $('#econ-chart-options').append('<input id="econ-chart-optionsButton" type="button" value="Apply"/>');
+            $('#econ-chart-optionsButton').click(function() {
+                $('#econ-chart-options').dialog('close');
+            });
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -679,7 +682,10 @@ var startApp = function() {
                 $('#pop-chart-options').append(chartDropDown);
             }
             $('.pop-chart:lt(5)').prop('checked', true);
-            $('#pop-chart-options').append('<input type="button" value="Apply"/>');
+            $('#pop-chart-options').append('<input id="pop-chart-optionsButton" type="button" value="Apply"/>');
+            $('#pop-chart-optionsButton').click(function() {
+                $('#pop-chart-options').dialog('close');
+            });
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
@@ -736,7 +742,10 @@ var startApp = function() {
                 $('#infra-chart-options').append(chartDropDown);
             }
             $('.infra-chart:lt(5)').prop('checked', true);
-            $('#infra-chart-options').append('<input type="button" value="Apply"/>');
+            $('#infra-chart-options').append('<input id="infra-chart-optionsButton" type="button" value="Apply"/>');
+            $('#infra-chart-optionsButton').click(function() {
+                $('#infra-chart-options').dialog('close');
+            });
 
             // don't allow more than 6 check boxes to be selected
             $(function() {
