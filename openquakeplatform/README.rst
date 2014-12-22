@@ -19,11 +19,6 @@ Change directory to the downloaded repository directory::
 
     $ cd oq-platform
 
-Initialize submodules::
-
-    $ git submodule init
-    $ git submodule update
-
 Install PostgreSQL and PostGIS. For best results, stick with PostgreSQL 9.1
 and PostGIS 1.5.
 

@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "data_viewer_base.html" %}
 
 {% block title %}
-Explore - {{block.super}}
+IRV - {{block.super}}
 {% endblock %}
 
 {% block map_tools %}
@@ -54,9 +54,9 @@ Explore - {{block.super}}
 {% endblock %}
 
 
-{% block extra_script %}
-    {{block.super}}
-    <!-- Category tags-->
+{% block middle %}
+{{block.super}}
+<!-- Category tags-->
 <div id="categoryTabs">
   <ul>
     <li id="1" ><a href="#project-def">Project Def</a></li>
@@ -85,9 +85,16 @@ Explore - {{block.super}}
   </div>
 
 </div>
+{% endblock middle %}
+{% block extra_script %}
+    {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_d3_tree.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
+    <script>
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/irv/'; }
+    </script>
 {% endblock extra_script %}
