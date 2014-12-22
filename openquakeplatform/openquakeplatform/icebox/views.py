@@ -88,12 +88,13 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
 
         archive = request.FILES['calc_archive']
 
+        default_storage.save(settings.MEDIA_ROOT + '/' +
+                             calculation_type + "_" + str(calculation.id) +
+                             '.zip', ContentFile(archive.read()))
+
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
             hazard_job_id = request.POST.get('hazard_job_id')
-
-            default_storage.save(settings.MEDIA_ROOT + '/icebox/'
-                                + calculation_type + , ContentFile(archive.read()))
 
             post_data = dict(
                 database=settings.OQ_ENGINE_SERVER_DATABASE,
