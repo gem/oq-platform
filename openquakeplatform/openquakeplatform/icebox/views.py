@@ -88,9 +88,12 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
 
         archive = request.FILES['calc_archive']
 
-        default_storage.save(settings.MEDIA_ROOT + '/' +
-                             calculation_type + "_" + str(calculation.id) +
-                             '.zip', ContentFile(archive.read()))
+        # Save the zip file to a local storage
+        default_storage.save(
+            settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' +
+            str(calculation.id) + "_" + calculation_type +
+            '.zip', ContentFile(archive.read()))
+        archive.seek(0)
 
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
