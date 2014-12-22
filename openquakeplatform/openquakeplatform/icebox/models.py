@@ -35,6 +35,7 @@ from django.db import connection
 
 from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
+from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
 from geonode.layers.models import set_attributes
 from geonode.layers.utils import layer_set_permissions
@@ -156,11 +157,7 @@ class Calculation(models.Model):
                       [self.user, 'map_admin']],
             'anonymous': '_none'
             }
-        # GeoNode doesn't provide a 'map_set_permissions' function so the
-        # 'layer_set_permissions' function is used instead. It works also
-        # with maps (maps and layers are both mapped as ObjectRole by
-        # the security app)
-        layer_set_permissions(map, perm_spec)
+        map_set_permissions(map, perm_spec)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
 
