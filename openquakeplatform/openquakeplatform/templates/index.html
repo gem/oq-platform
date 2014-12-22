@@ -1,8 +1,7 @@
 {% extends "site_base.html" %}
 {% load i18n %}
 {% load url from future %}
-{% load maps_tags %}
-{% load layers_tags %}
+{% load oqp_tags %}
 
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
@@ -42,8 +41,8 @@
         <div class="span8">
             <section class="widget list latest-maps paginate-contents">
               <h2>{% trans "Latest Maps" %}</h2>
-              {% featured_maps as featured_maps %}
-              {% for map in featured_maps %}
+              {% latest_maps as latest_maps %}
+              {% for map in latest_maps %}
                 {% include "maps/_map_list_item.html" %}
               {% endfor %}
             </section>
