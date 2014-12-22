@@ -164,7 +164,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#subRegionFormBack').hide();
                 $('#countrySelectionForm').append(nationalForm(study));
 
-                // residential option
+                // deactivate residential option as needed
                 if (study.has_nonres != true) {
                     $('#id_residential_1').attr("disabled", "disabled");
                     $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.6'});
@@ -279,7 +279,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 '<b>Download Gridded Sub-National Building Exposure:</b></br>'+
                 '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
+                '<label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
@@ -320,6 +320,12 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         $('#subRegionList').insertAfter('#subRegionForm');
         $('#subRegionList').hide();
         $('#subRegionForm').prepend(subNationalForm(study));
+
+        // deactivate residential option as needed
+        if (study.has_nonres != true) {
+            $('#id_residential_1').attr("disabled", "disabled");
+            $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.6'});
+        }
 
         // check the grid count
         if (study.tot_grid_count < 300000) {
