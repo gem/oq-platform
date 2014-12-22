@@ -125,7 +125,12 @@ class Calculation(models.Model):
                 info_format = "text/html"
             else:
                 info_format = "application/vnd.ogc.gml"
-            perm_spec = {'authenticated': '_none', 'users': [[self.user, 'layer_readwrite'], [self.user, 'layer_admin']], 'anonymous': '_none'}
+            perm_spec = {
+                'authenticated': '_none',
+                'users': [[self.user, 'layer_readwrite'],
+                          [self.user, 'layer_admin']],
+                'anonymous': '_none'
+                }
             layer_set_permissions(layer, perm_spec)
 
             map.layer_set.add(
@@ -145,7 +150,12 @@ class Calculation(models.Model):
                     local=True))
         map.set_bounds_from_layers(map.local_layers)
         map.set_default_permissions()
-        perm_spec = {'authenticated': '_none', 'users': [[self.user, 'map_readwrite'], [self.user, 'map_admin']], 'anonymous': '_none'}
+        perm_spec = {
+            'authenticated': '_none',
+            'users': [[self.user, 'map_readwrite'],
+                      [self.user, 'map_admin']],
+            'anonymous': '_none'
+            }
         # GeoNode doesn't provide a 'map_set_permissions' function so the
         # 'layer_set_permissions' function is used instead. It works also
         # with maps (maps and layers are both mapped as ObjectRole by
