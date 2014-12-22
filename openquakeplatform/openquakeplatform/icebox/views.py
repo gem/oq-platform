@@ -87,10 +87,10 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         archive = request.FILES['calc_archive']
 
         if archive.size > settings.MAX_ICEBOX_SIZE*1024*1024:
-            # FIXME error must be improved
-            raise RuntimeError(
-                "File too big: %s > %s" % (archive.size,
-                                           settings.MAX_ICEBOX_SIZE))
+            # FIXME error must be improved in client page
+            return HttpResponseServerError("Uploaded file is too big: %s > %s"
+                                           % (archive.size,
+                                              settings.MAX_ICEBOX_SIZE))
 
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
