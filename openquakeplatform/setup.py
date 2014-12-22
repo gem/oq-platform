@@ -58,6 +58,7 @@ setup(
                         'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
                         'http://github.com/gem/django-chained-selectbox/tarball/master#egg=django-chained-selectbox-0.1',
                         'http://github.com/gem/django-chained-multi-checkboxes/tarball/v0.4#egg=django-chained-multi-checkboxes-0.4',
+                        'http://github.com/gem/django-taggit/tarball/v0.10a2#egg=django-taggit-0.10a2',
                         ],
     install_requires=[
         "agon-ratings==0.2",
@@ -81,7 +82,7 @@ setup(
         "django-notification==1.0",
         "django-pagination==1.0.7",
         "django-photologue==2.6.1",
-        "django-taggit==0.10a1",
+        "django-taggit==0.10a2",
         "django-taggit-templatetags==0.4.6dev",
         "django-templatetag-sugar==0.1",
         "fabric",
