@@ -21,6 +21,7 @@ import csv
 from django.http import (HttpResponse,
                          HttpResponseBadRequest,
                          HttpResponseNotFound,)
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.http import condition
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
@@ -85,8 +86,8 @@ def list_subthemes_by_theme(request):
             'Please provide a theme to get the corresponding subthemes.')
     try:
         theme_obj = Theme.objects.get(name=theme_str)
-    except:
-        return HttpResponseNotFound('Theme not found')
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Theme %s not found' % theme_str)
     subthemes = theme_obj.subtheme_set.all()
     if not subthemes:
         return HttpResponseNotFound(
@@ -160,11 +161,17 @@ def export_variables_info(request):
 
     theme_obj = None
     if theme_str:
-        theme_obj = Theme.objects.get(name=theme_str)
+        try:
+            theme_obj = Theme.objects.get(name=theme_str)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound('Theme %s not found' % theme_str)
 
     subtheme_obj = None
     if subtheme_str:
-        subtheme_obj = Subtheme.objects.get(name=subtheme_str)
+        try:
+            subtheme_obj = Subtheme.objects.get(name=subtheme_str)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound('Subtheme %s not found' % subtheme_str)
 
     # start with the whole set of indicators, then refine filtering
     indicators = Indicator.objects.all()
