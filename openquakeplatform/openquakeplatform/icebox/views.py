@@ -72,13 +72,6 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
         """
         calculation_type = request.POST['calculation_type']
 
-        filesize = request.FILES['calc_archive'].size
-
-        if filesize > settings.MAX_ICEBOX_SIZE*1024*1024:
-            # FIXME error must be improved
-            raise RuntimeError(
-                "File too big: %s" % filesize)
-
         calculation = self.model.objects.create(
             user=request.user,
             calculation_type=calculation_type)
@@ -92,11 +85,18 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
                 "Unknown calculation_type %s" % calculation_type)
 
         archive = request.FILES['calc_archive']
+
+        if archive.size > settings.MAX_ICEBOX_SIZE*1024*1024:
+            # FIXME error must be improved
+            raise RuntimeError(
+                "File too big: %s > %s" % (archive.size,
+                                           settings.MAX_ICEBOX_SIZE))
+
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
             hazard_job_id = request.POST.get('hazard_job_id')
 
-            post_data=dict(
+            post_data = dict(
                 database=settings.OQ_ENGINE_SERVER_DATABASE,
                 callback_url="%s%s" % (
                     settings.SITEURL.rstrip("/"), reverse(
