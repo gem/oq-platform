@@ -73,9 +73,16 @@ var showErrorDialog = function(message, options) {
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
+        // change the has_nonres flag to be more human readable
+        for (var k  in data) {
+            if (data[k].has_nonres) {
+                data[k].has_nonres = 'yes';
+            } else {
+                data[k].has_nonres = 'no';
+            }
+        }
         $scope.nationalData = data;
-        console.log('data:');
-        console.log(data);
+
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -142,8 +149,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
         } catch (e) {
             // continue
         }
-        console.log('study:');
-        console.log(study);
 
         if (study.num_l1_studies <= 1) {
             // The user has selected a national study
@@ -165,7 +170,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#countrySelectionForm').append(nationalForm(study));
 
                 // deactivate residential option as needed
-                if (study.has_nonres != true) {
+                if (study.has_nonres != 'yes') {
                     $('#id_residential_1').attr("disabled", "disabled");
                     $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.6'});
                 }
