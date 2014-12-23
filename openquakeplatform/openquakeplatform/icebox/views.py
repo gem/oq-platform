@@ -85,11 +85,18 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
                 "Unknown calculation_type %s" % calculation_type)
 
         archive = request.FILES['calc_archive']
+
+        if archive.size > settings.ICEBOX_MAX_SIZE_MB * 1024 * 1024:
+            # FIXME error must be improved in client page
+            return HttpResponseServerError("Uploaded file is too big: %s > %s"
+                                           % (archive.size,
+                                              settings.ICEBOX_MAX_SIZE_MB))
+
         try:
             hazard_output_id = request.POST.get('hazard_output_id')
             hazard_job_id = request.POST.get('hazard_job_id')
 
-            post_data=dict(
+            post_data = dict(
                 database=settings.OQ_ENGINE_SERVER_DATABASE,
                 callback_url="%s%s" % (
                     settings.SITEURL.rstrip("/"), reverse(
@@ -173,7 +180,9 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
                     raise
                 else:
                     calculation.status = "complete"
-                #self._send_email(calculation)
+
+                if settings.ICEBOX_SEND_EMAIL:
+                    self._send_email(calculation)
         if request.POST.get('einfo'):
             calculation.einfo = request.POST['einfo']
             calculation.save()
