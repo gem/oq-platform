@@ -291,7 +291,7 @@ var startApp = function() {
     selLossCat.appendChild(catLossMenuHeader);
     $('#risk-curve-category option:empty').remove();
 
-    function checkForMissingData(name, cat, type, grids, chartType, app, grid) {
+    function checkForMissingData(name, cat, type, grids, app) {
         // Use only valid  data returned from the tilestream server in the application
         return (
             name !== undefined && name !== "" && name !== null &&
@@ -316,7 +316,7 @@ var startApp = function() {
             var grid, gridName;
             var wiki = json[i].wiki_link;
 
-            if (checkForMissingData(name, cat, type, grids, chartType, app, grid)) {
+            if (checkForMissingData(name, cat, type, grids, app)) {
 
                 if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
 
@@ -385,7 +385,7 @@ var startApp = function() {
             var chartType = json[j].chartType;
             var template = json[j].template;
 
-            if (checkForMissingData(name, cat, type, grids, chartType, app, grid)) {
+            if (checkForMissingData(name, cat, type, grids, app)) {
 
                 // Crazy clean up
                 template = template.replace(/{{#__location__}}{{/, '');
