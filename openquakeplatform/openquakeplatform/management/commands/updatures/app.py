@@ -245,8 +245,8 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     updatesk_gr[model][key_get(md, item)] = item
 
     ret = True
-    for backinhe in item.get('__bachinhe__', []):
-        ret = ret and update_pk(updates_gr, updatesk_gr, backinhe.model.name, backinhe.item, maxpks, new_pk)
+    for backinhe in item.get('__backinhe__', []):
+        ret = ret and update_pk(updates_gr, updatesk_gr, backinhe.model_descr.name, backinhe.item, maxpks, new_pk)
 
     # if another item had the same pk value of new_pk before swap it
     # with the old pk value of the updated item
@@ -300,7 +300,7 @@ def item_compare(a, b, pk_included=True):
         pdebug(1, "differences between fields list, return False")
         return False
 
-    for idx, backinhe_a in enumerate(a.get('__bachinhe__', [])):
+    for idx, backinhe_a in enumerate(a.get('__backinhe__', [])):
         try:
             backinhe_b = b['__backinhe__'][idx]
         except (KeyError, IndexError):
@@ -308,9 +308,9 @@ def item_compare(a, b, pk_included=True):
                    (a, b))
             return False
 
-        if backinhe_a.model_descr.model.name != backinhe_b.model_descr.model.name:
+        if backinhe_a.model_descr.name != backinhe_b.model_descr.name:
             return False
-        ret = item_compare(backinhe_a, backinhe_b, pk_included=pk_included)
+        ret = item_compare(backinhe_a.item, backinhe_b.item, pk_included=pk_included)
         if not ret:
             return False
 
@@ -668,16 +668,24 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     for model in models_descr:
         models_order.append(model)
 
+    pdebug(1, "grouping data")
     updates_gr, updatesk_gr = group_objs(updates)
     oldates_gr, oldatesk_gr = group_objs(oldates)
 
+    pdebug(1, "ordering models")
     models_order = rebuild_order()
+
+    pdebug(1, "grouping models")
     model_groups = model_groups_get()
 
     pdebug(3, "MOP UPDATES: %s" % str(updates))
 
+    pdebug(1, "grouping set")
     updates_gheads = grouping_set(updates_gr, updatesk_gr)
+
+    pdebug(1, "inheriting set")
     inheriting_set(updates_gr, updatesk_gr)
+    inheriting_set(oldates_gr, oldatesk_gr)
 
     if updatures.debug_level > 0:
         for ghead in updates_gheads:
@@ -772,6 +780,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
                 finals.append(item)
+
                 for backinhe in item.get('__backinhe__', []):
                     finals_gr[backinhe.model_descr.name].append(backinhe.item)
                     kappend(finalsk_gr, backinhe.model_descr.name, backinhe.item)
@@ -820,8 +829,8 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                                 update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk)
                                 item['pk'] = new_pk
                                 break
-
-                for backinhe in item.get('__bachinhe__', []):
+                            
+                for backinhe in item.get('__backinhe__', []):
                     finals_gr[backinhe.model_descr.name].append(backinhe.item)
                     kappend(finalsk_gr, backinhe.model_descr.name, backinhe.item)
                     finals.append(backinhe.item)
@@ -858,7 +867,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                     final['fields'][ref_field].sort()
 
                 if isinstance(ref.model, types.FunctionType):
-                    dyn_key = "__dynamic__.%s.fk" % ref.model(item)
+                    dyn_key = "__dynamic__.%s.fk" % ref.model(final)
                     try:
                         if final['fields'][dyn_key]:
                             final['fields'][ref_field] = final['fields'][dyn_key]
