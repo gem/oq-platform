@@ -35,8 +35,10 @@ from django.db import connection
 
 from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
+from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
 from geonode.layers.models import set_attributes
+from geonode.layers.utils import layer_set_permissions
 from geonode.utils import http_client, ogc_server_settings
 
 from openquakeplatform.icebox import fields
@@ -124,6 +126,13 @@ class Calculation(models.Model):
                 info_format = "text/html"
             else:
                 info_format = "application/vnd.ogc.gml"
+            perm_spec = {
+                'authenticated': '_none',
+                'users': [[self.user, 'layer_readwrite'],
+                          [self.user, 'layer_admin']],
+                'anonymous': '_none'
+                }
+            layer_set_permissions(layer, perm_spec)
 
             map.layer_set.add(
                 maps.MapLayer.objects.create(
@@ -142,6 +151,13 @@ class Calculation(models.Model):
                     local=True))
         map.set_bounds_from_layers(map.local_layers)
         map.set_default_permissions()
+        perm_spec = {
+            'authenticated': '_none',
+            'users': [[self.user, 'map_readwrite'],
+                      [self.user, 'map_admin']],
+            'anonymous': '_none'
+            }
+        map_set_permissions(map, perm_spec)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
 
