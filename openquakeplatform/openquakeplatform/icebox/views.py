@@ -180,7 +180,9 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
                     raise
                 else:
                     calculation.status = "complete"
-                #self._send_email(calculation)
+
+                if settings.ICEBOX_SEND_EMAIL:
+                    self._send_email(calculation)
         if request.POST.get('einfo'):
             calculation.einfo = request.POST['einfo']
             calculation.save()
