@@ -484,7 +484,7 @@
             "is_choice": true, 
             "gn_description": "Hazard", 
             "identifier": "hazard", 
-            "description": "some hazard description"
+            "description": "Seismic Hazard"
         }
     }, 
     {
@@ -494,7 +494,7 @@
             "is_choice": true, 
             "gn_description": "Risk", 
             "identifier": "risk", 
-            "description": "some risk description"
+            "description": "Seismic Risk"
         }
     }, 
     {
@@ -504,157 +504,7 @@
             "is_choice": true, 
             "gn_description": "SVIR", 
             "identifier": "svir", 
-            "description": "some svir description"
-        }
-    }, 
-    {
-        "pk": 5, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Oceans", 
-            "identifier": "oceans", 
-            "description": "features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs"
-        }
-    }, 
-    {
-        "pk": 6, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Boundaries", 
-            "identifier": "boundaries", 
-            "description": "legal land descriptions. Examples: political and administrative boundaries"
-        }
-    }, 
-    {
-        "pk": 7, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Inland Waters", 
-            "identifier": "inlandWaters", 
-            "description": "inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts"
-        }
-    }, 
-    {
-        "pk": 8, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Intelligence Military", 
-            "identifier": "intelligenceMilitary", 
-            "description": "military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection"
-        }
-    }, 
-    {
-        "pk": 9, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Environment", 
-            "identifier": "environment", 
-            "description": "environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape"
-        }
-    }, 
-    {
-        "pk": 10, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Location", 
-            "identifier": "location", 
-            "description": "positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names"
-        }
-    }, 
-    {
-        "pk": 11, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Economy", 
-            "identifier": "economy", 
-            "description": "economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas"
-        }
-    }, 
-    {
-        "pk": 12, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Planning Cadastre", 
-            "identifier": "planningCadastre", 
-            "description": "information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership"
-        }
-    }, 
-    {
-        "pk": 13, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Biota", 
-            "identifier": "biota", 
-            "description": "flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat"
-        }
-    }, 
-    {
-        "pk": 14, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Health", 
-            "identifier": "health", 
-            "description": "health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services"
-        }
-    }, 
-    {
-        "pk": 15, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Imagery Base Maps Earth Cover", 
-            "identifier": "imageryBaseMapsEarthCover", 
-            "description": "base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations"
-        }
-    }, 
-    {
-        "pk": 16, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Transportation", 
-            "identifier": "transportation", 
-            "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways"
-        }
-    }, 
-    {
-        "pk": 17, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Society", 
-            "identifier": "society", 
-            "description": "characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information"
-        }
-    }, 
-    {
-        "pk": 18, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Structure", 
-            "identifier": "structure", 
-            "description": "man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers"
-        }
-    }, 
-    {
-        "pk": 19, 
-        "model": "base.topiccategory", 
-        "fields": {
-            "is_choice": true, 
-            "gn_description": "Climatology Meteorology Atmosphere", 
-            "identifier": "climatologyMeteorologyAtmosphere", 
-            "description": "processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation"
+            "description": "Social Vulnerability and Integrated Risk"
         }
     }, 
     {
