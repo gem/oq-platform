@@ -216,6 +216,7 @@ common_postlayers () {
 
     bdir="${oqpdir}/common"
     wdir="${GEM_WEBDIR}/uploaded/thumbs"
+    openquakeplatform categories_cleanup
     openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
     mkdir -p  "$wdir"
     cp ${bdir}/thumbs/*.png $wdir/
