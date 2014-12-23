@@ -22,6 +22,7 @@ setup(
     keywords="openquakeplatform geonode django",
     url='https://github.com/gem/oq-platform',
     packages=['openquakeplatform',
+              'openquakeplatform.common',
               'openquakeplatform.isc_viewer',
               'openquakeplatform.ghec_viewer',
               'openquakeplatform.gaf_viewer',

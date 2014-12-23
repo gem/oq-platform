@@ -269,6 +269,7 @@ INSTALLED_APPS = (
     'geonode.social',
 
     # Our apps
+    'openquakeplatform.common',
     'openquakeplatform.world',
     'openquakeplatform.isc_viewer',
     'openquakeplatform.ghec_viewer',
@@ -361,7 +362,8 @@ MAP_BASELAYERS = [{
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
-AUTH_EXEMPT_URLS = ('/account/signup/',
+AUTH_EXEMPT_URLS = ('/$',
+                    '/account/signup/',
                     '/icebox/calculation/(\d+)',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
