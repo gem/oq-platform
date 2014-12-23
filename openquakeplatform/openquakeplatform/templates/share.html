@@ -65,7 +65,7 @@
       <div id="oq-body-sidebar">
         {% block oq_body_sidebar %}
           <div class="oq-btns">
-            <img src="../static/img/OQ-logo-blue.png"><br/><br/>
+            <img src="{{ STATIC_URL }}img/OQ-logo-blue.png"><br/><br/>
             <a class="btn btn-large" href="{% url "layer_browse" %}">
               {% trans "Explore Layers" %}
             </a>
