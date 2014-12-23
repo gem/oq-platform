@@ -86,6 +86,12 @@ class CalculationsView(JSONResponseMixin, generic.list.ListView):
 
         archive = request.FILES['calc_archive']
 
+        if archive.size > settings.ICEBOX_MAX_SIZE_MB * 1024 * 1024:
+            # FIXME error must be improved in client page
+            return HttpResponseServerError("Uploaded file is too big: %s > %s"
+                                           % (archive.size,
+                                              settings.ICEBOX_MAX_SIZE_MB))
+
         # Save the zip file to a local storage
         filename = _input_filename(calculation.id, calculation_type)
         default_storage.save(
@@ -181,7 +187,9 @@ class CalculationView(JSONResponseMixin, generic.detail.DetailView):
                     raise
                 else:
                     calculation.status = "complete"
-                #self._send_email(calculation)
+
+                if settings.ICEBOX_SEND_EMAIL:
+                    self._send_email(calculation)
         if request.POST.get('einfo'):
             calculation.einfo = request.POST['einfo']
             calculation.save()
