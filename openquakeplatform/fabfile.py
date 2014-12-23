@@ -352,6 +352,6 @@ def _set_sites():
     from django.contrib.sites.models import Site
     mysite = Site.objects.all()[0]
     from openquakeplatform import settings
-    mysite.domain = settings.SITEURL
+    mysite.domain = 'oq-platform'
     mysite.name = settings.SITENAME
     mysite.save()
