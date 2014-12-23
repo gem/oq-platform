@@ -38,7 +38,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('common' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
+GEM_APP_LIST=('common' 'world' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability' 'svir')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -141,6 +141,32 @@ parsargs () {
             fi
         fi
     done
+}
+
+#
+#
+world_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/world.json.bz2" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/world/dev_data"
+    fi
+    openquakeplatform loaddata "${bdir}/world.json.bz2"
+}
+
+#
+#
+svir_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/svir.json.bz2" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/svir/dev_data"
+    fi
+    openquakeplatform loaddata "${bdir}/svir.json.bz2"
 }
 
 #

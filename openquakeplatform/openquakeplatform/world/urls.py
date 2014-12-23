@@ -19,20 +19,12 @@
 
 
 from django.conf.urls import patterns, include, url
-from openquakeplatform.svir.views import (list_themes,
-                                          list_subthemes_by_theme,
-                                          export_variables_info,
-                                          export_variables_data_by_ids)
 
 from django.contrib import admin
 admin.autodiscover()
 
 
 urlpatterns = patterns(
-    'geonode.svir.views',
+    'geonode.world.views',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^list_themes', list_themes),
-    url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
-    url(r'^export_variables_info', export_variables_info),
-    url(r'^export_variables_data_by_ids', export_variables_data_by_ids),
 )
