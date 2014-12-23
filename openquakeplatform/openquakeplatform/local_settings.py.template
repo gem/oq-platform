@@ -56,7 +56,6 @@ ALLOWED_DOCUMENT_TYPES = [
     'tgz', 'tbz', 'tar.gz', 'tar.bz2'
 ]
 MAX_DOCUMENT_SIZE = 100
-MAX_ICEBOX_SIZE = 10
 
 try:
     from openquakeplatform import ged_settings
@@ -387,5 +386,10 @@ AUTH_EXEMPT_URLS = ('/account/signup/',
 
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
+
+# Max input upload size for Icebox
+ICEBOX_MAX_SIZE_MB = 10
+# Send an email with an Icebox job report
+ICEBOX_SEND_EMAIL = False
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
