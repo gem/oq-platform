@@ -92,6 +92,7 @@ urlpatterns = patterns('',
         template_name="hrde.html"), name='hrde'),
 
 
+    (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
