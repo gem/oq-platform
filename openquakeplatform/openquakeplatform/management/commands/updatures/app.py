@@ -531,7 +531,7 @@ def inheriting_set(dates_gr, datesk_gr):
         if not md.is_inherited:
             continue
 
-        for item in dates_gr[model]:
+        for item in list(dates_gr[model]):
             if item.get('__backinhe__', None) is None:
                 pk = item['pk']
                 pdebug(1, "WARNING: generic instance of %s with pk [%s] not inherited, remove it" %
@@ -646,10 +646,11 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
     pdebug(1, "DEBUG LEVEL: %d" % updatures.debug_level)
 
+    pdebug(1, "loading updates")
     for fname in argv:
         pdebug(1, "FNAME %s" % fname)
         updates += json.load(file(fname, 'r'))
-
+    pdebug(1, "retrieving current data")
     if not fakeold:
         # load the associated data from db
         for k in models:
