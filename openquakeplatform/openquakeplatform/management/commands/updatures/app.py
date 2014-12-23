@@ -37,7 +37,6 @@ def rebuild_order():
         for model, descr in models_descr_old.iteritems():
             pdebug(2, "rebuild_order: model %s" % model)
             if first_loop:
-                first_loop = False
                 if descr.refs == {}:
                     models_order.append(model)
                 else:
@@ -55,6 +54,7 @@ def rebuild_order():
         models_descr_rest = {}
         if models_descr_old == {}:
             reloop = False
+        first_loop = False
 
     return models_order
 
