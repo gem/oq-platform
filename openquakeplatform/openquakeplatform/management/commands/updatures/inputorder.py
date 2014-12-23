@@ -3,11 +3,15 @@ import sys
 import json
 import updatures
 from updatures.classes import backinheritance, model_refs, model_description, models_descr
-import updatures.models_descr.tests
 import updatures.models_descr.auth
-import updatures.models_descr.vulnerability
+import updatures.models_descr.base
+import updatures.models_descr.contenttypes
 import updatures.models_descr.maps
+import updatures.models_descr.people
+import updatures.models_descr.security
 import updatures.models_descr.taggit
+import updatures.models_descr.tests
+import updatures.models_descr.vulnerability
 
 finals = json.load(sys.stdin)
 

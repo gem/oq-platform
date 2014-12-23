@@ -10,30 +10,21 @@ from collections import OrderedDict
 from django.core.management import call_command, execute_manager
 import updatures
 from updatures.classes import backinheritance, model_refs, model_description, models_descr
-import updatures.models_descr.tests
 import updatures.models_descr.auth
-import updatures.models_descr.vulnerability
+import updatures.models_descr.base
+import updatures.models_descr.contenttypes
 import updatures.models_descr.maps
+import updatures.models_descr.people
+import updatures.models_descr.security
 import updatures.models_descr.taggit
+import updatures.models_descr.tests
+import updatures.models_descr.vulnerability
 import pdb
 
 def pdebug(level, s):
     if updatures.debug_level < level:
         return
     print s
-
-
-# maps models
-models_descr['maps.map'] = model_description(
-    'maps.map',
-    None,
-    {})
-
-models_descr['maps.maplayer'] = model_description(
-    'maps.maplayer',
-    None,
-    {'map':              model_refs('maps.map', False)})
-
 
 
 def rebuild_order():
