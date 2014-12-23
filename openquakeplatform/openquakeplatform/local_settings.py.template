@@ -270,6 +270,7 @@ INSTALLED_APPS = (
 
     # Our apps
     'openquakeplatform.common',
+    'openquakeplatform.world',
     'openquakeplatform.isc_viewer',
     'openquakeplatform.ghec_viewer',
     'openquakeplatform.gaf_viewer',

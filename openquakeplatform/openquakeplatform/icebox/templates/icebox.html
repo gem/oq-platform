@@ -70,6 +70,7 @@ Calculate - {{block.super}}
     </thead>
     <tbody>
       <% _.each(calculations, function(calc) { %>
+      <% if(calc.get('user') ==  {{ user.id }}) { %>
       <tr class="<%= calc.get('status') == 'complete' ? 'success' : 'warning' %>">
         <td><%= calc.get('engine_id') || 'New' %></td>
         <td><%= calc.get('calculation_type') %></td>
@@ -102,6 +103,7 @@ Calculate - {{block.super}}
          <% } %>
         </td>
       </tr>
+      <% } %>
       <% }); %>
     </tbody>
   </table>
@@ -127,6 +129,7 @@ Calculate - {{block.super}}
     </thead>
     <tbody>
       <% _.each(outputs, function(out) { %>
+      <% if(calc.get('user') ==  {{ user.id }}) { %>
       <tr>
         <td><%= out.get('engine_id') %></td>
         <td><%= out.get('calculation') %></td>
@@ -140,6 +143,7 @@ Calculate - {{block.super}}
           <% } %>
         </td>
       </tr>
+      <% } %>
       <% }); %>
     </tbody>
   </table>
