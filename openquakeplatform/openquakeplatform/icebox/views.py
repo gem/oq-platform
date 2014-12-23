@@ -247,12 +247,10 @@ def input_download(request, calculation_type, pk):
 
 def input_delete(request, pk, calculation_type):
     filename = _input_filename(pk, calculation_type)
-    try:
-        default_storage.delete(
-            settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' +
-            filename)
-    except:
-        pass
+    filepath = (settings.MEDIA_ROOT + '/icebox/' + str(request.user) + '/' +
+                filename)
+    if default_storage.exists(filepath):
+        default_storage.delete(filepath)
 
 
 def _input_filename(pk, calculation_type):
