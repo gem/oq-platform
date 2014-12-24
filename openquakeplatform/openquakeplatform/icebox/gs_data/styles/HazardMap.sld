@@ -11,9 +11,17 @@
       <sld:Title>0.00 - 0.01</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -45,6 +53,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#053061</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -57,9 +69,17 @@
       <sld:Title>0.01 - 0.05</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -91,6 +111,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#2166AC</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -103,9 +127,17 @@
       <sld:Title>0.05 - 0.08</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -137,6 +169,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#4393C3</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -149,9 +185,17 @@
       <sld:Title>0.08 - 0.09</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -183,6 +227,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#92C5DE</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -195,9 +243,17 @@
       <sld:Title>0.09 - 0.10</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -229,6 +285,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#D1E5F0</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -241,9 +301,17 @@
       <sld:Title>0.10 - 0.30</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -275,6 +343,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#F7F7F7</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -287,9 +359,17 @@
       <sld:Title>0.30 - 0.50</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -321,6 +401,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#FDDBC7</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -333,9 +417,17 @@
       <sld:Title>0.50 - 0.75</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -367,6 +459,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#F4A582</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -379,9 +475,17 @@
       <sld:Title>0.75 - 1.00</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -413,6 +517,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#D6604D</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -425,9 +533,17 @@
       <sld:Title>1.00 - 2.50</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -459,6 +575,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#B2182B</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -471,9 +591,17 @@
       <sld:Title>2.50 - 10.00</sld:Title>
       <ogc:Filter>
         <ogc:And>
+          <ogc:PropertyIsEqualTo>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
+                <ogc:PropertyIsEqualTo>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -505,6 +633,10 @@
             <sld:Fill>
               <sld:CssParameter name="fill">#67001F</sld:CssParameter>
             </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#CCCCCC</sld:CssParameter>
+              <sld:CssParameter name="stroke-opacity">0.10000000149011612</sld:CssParameter>
+            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
