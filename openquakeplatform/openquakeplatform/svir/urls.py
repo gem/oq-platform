@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2010-2013, GEM Foundation.
+# Copyright (c) 2014, GEM Foundation.
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,21 @@
 #    <https://www.gnu.org/licenses/agpl.html>.
 
 
-from django.conf.urls.defaults import patterns
-from django.conf.urls.defaults import url
-from openquakeplatform.svir.views import export_sv_category_names
-from openquakeplatform.svir.views import export_sv_data_by_variables_ids
+from django.conf.urls import patterns, include, url
+from openquakeplatform.svir.views import (list_themes,
+                                          list_subthemes_by_theme,
+                                          export_variables_info,
+                                          export_variables_data_by_ids)
+
+from django.contrib import admin
+admin.autodiscover()
 
 
 urlpatterns = patterns(
     'geonode.svir.views',
-    url(r'^export_sv_category_names', export_sv_category_names),
-    url(r'^export_sv_data_by_variables_ids', export_sv_data_by_variables_ids),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^list_themes', list_themes),
+    url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
+    url(r'^export_variables_info', export_variables_info),
+    url(r'^export_variables_data_by_ids', export_variables_data_by_ids),
 )

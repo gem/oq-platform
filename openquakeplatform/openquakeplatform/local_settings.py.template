@@ -124,6 +124,8 @@ THIRD_PARTY_URLS = {
 
 TILESTREAM_URL = '//tilestream.openquake.org'
 
+HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform'
+
 GEOSERVER_URL = '/geoserver/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
@@ -267,6 +269,8 @@ INSTALLED_APPS = (
     'geonode.social',
 
     # Our apps
+    'openquakeplatform.common',
+    'openquakeplatform.world',
     'openquakeplatform.isc_viewer',
     'openquakeplatform.ghec_viewer',
     'openquakeplatform.gaf_viewer',
@@ -276,7 +280,6 @@ INSTALLED_APPS = (
     'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
-    'openquakeplatform.maps_viewer',
 
     # gemecd
     'openquakeplatform.weblib',
@@ -359,7 +362,8 @@ MAP_BASELAYERS = [{
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
-AUTH_EXEMPT_URLS = ('/account/signup/',
+AUTH_EXEMPT_URLS = ('/$',
+                    '/account/signup/',
                     '/icebox/calculation/(\d+)',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
@@ -385,5 +389,11 @@ AUTH_EXEMPT_URLS = ('/account/signup/',
 
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
+
+# Max input upload size for Icebox
+ICEBOX_MAX_SIZE_MB = 10
+# Send an email with an Icebox job report
+# WARNING: untested feature
+ICEBOX_SEND_EMAIL = False
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'

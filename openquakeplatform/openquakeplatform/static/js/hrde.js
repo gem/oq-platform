@@ -97,8 +97,8 @@ var startApp = function() {
             '<option value="4">Historic Earthquake Catalogue</option>'+
         '</select>'
     );
+    $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
-    $('#map-tools').append('<button type="button" id="help">Help</button>');
 
     var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
@@ -107,20 +107,13 @@ var startApp = function() {
         winHelp = 760;
     }
 
-    // Help dialog
-    $('#helpDialog').dialog({
+    // Hazard Map download warning dialog
+    $('#HMDownloadWarning').dialog({
         autoOpen: false,
-        height: winHelp,
-        width: winW,
+        height: 150,
+        width: 400,
         closeOnEscape: true
     });
-
-    $('#help').button().click(function(e) {
-        $('#helpDialog').dialog('open');
-        $('#helpDialog').scrollTop( 0 );
-    });
-
-    $('#helpDialog').css({ 'overflow' : 'auto' });
 
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
     $('#map-tools').append($('#base-map-menu'));
@@ -237,6 +230,7 @@ var startApp = function() {
     }
 
     $(document).ready(function() {
+        $('#cover').remove();
         $('#worning-no-layer').dialog({
             autoOpen: false,
             height: 100,
@@ -264,7 +258,8 @@ var startApp = function() {
     var tileStreamLayer = '';
     var category = '';
     var selLayer = document.getElementById('layer-list');
-    var selCat = $('#hazard-curve-category')[0];
+    //var selCat = $('#hazard-curve-category')[0];
+    var selCat = document.getElementById('hazard-curve-category');
     var selLossCat = document.getElementById('risk-curve-category');
     var selCurve = document.getElementById('curve-list');
     var selUhs = document.getElementById('uhs-list');
@@ -296,7 +291,16 @@ var startApp = function() {
     selLossCat.appendChild(catLossMenuHeader);
     $('#risk-curve-category option:empty').remove();
 
-
+    function checkForMissingData(name, cat, type, grids, app) {
+        // Use only valid  data returned from the tilestream server in the application
+        return (
+            name !== undefined && name !== "" && name !== null &&
+            cat !== undefined && cat !== "" && cat !== null &&
+            type !== undefined && type !== "" && type !== null &&
+            grids !== undefined && grids !== "" && grids !== null &&
+            app !== undefined && app !== "" && app !== null
+        );
+    }
 
     $.getJSON(TILESTREAM_API_URL, function(json) {
         $('#hazard-data').attr('disabled', true);
@@ -312,56 +316,63 @@ var startApp = function() {
             var grid, gridName;
             var wiki = json[i].wiki_link;
 
-            if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds') {
-                AppVars.curveCategoryList.push(cat);
-                if (wiki !== undefined ) {
-                    AppVars.wikiLinkList[cat] = wiki;
-                }
+            if (checkForMissingData(name, cat, type, grids, app)) {
 
-                AppVars.curveLayersByCat[cat] = [];
-                AppVars.curveLayerNames[name] = [];
-                grid = grids.toString();
-                gridName = grid.split('/')[4];
-                AppVars.curveLayerGrids.push(gridName);
+                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
 
-            }
+                    if (wiki !== undefined ) {
+                        AppVars.wikiLinkList[cat] = wiki;
+                    }
 
-            if (type == 'curve-uhs') {
-                AppVars.uhsLayersByCat[cat] = [];
-                AppVars.uhsLayerNames[name] = [];
-                grid = grids.toString();
-                gridName = grid.split('/')[4];
-                AppVars.uhsLayerGrids.push(gridName);
-            }
-            if (type == 'curve-loss') {
-                AppVars.lossCategoryList.push(cat);
-                AppVars.lossLayersByCat[cat] = [];
-                AppVars.lossLayerNames[name] = [];
-                grid = grids.toString();
-                gridName = grid.split('/')[4];
-                AppVars.lossLayerGrids.push(gridName);
-            }
-
-            if (type == 'input-mfds') {
-                AppVars.inputLayersByCat[cat] = [];
-                AppVars.inputLayerNames[name] = [];
-                grid = grids.toString();
-                gridName = grid.split('/')[4];
-                AppVars.inputLayerGrids.push(gridName);
-            }
-
-            if (type == 'map') {
-                AppVars.mapLayerNames[name] = [];
-                AppVars.mapLayersByCat[cat] = [];
-                if (grids !== undefined) {
+                    AppVars.curveLayersByCat[cat] = [];
+                    AppVars.curveLayerNames[name] = [];
                     grid = grids.toString();
                     gridName = grid.split('/')[4];
-                    AppVars.mapLayerGrids.push(gridName);
-                }
-            }
+                    AppVars.curveLayerGrids.push(gridName);
 
-            if (grids !== undefined) {
-                AppVars.mapLayerNames[grids] = [];
+                }
+                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'input-mfds' || type == 'map') {
+                    if (cat != undefined && cat != 'None') {
+                        AppVars.curveCategoryList.push(cat);
+                    }
+                }
+                if (type == 'curve-uhs') {
+                    AppVars.uhsLayersByCat[cat] = [];
+                    AppVars.uhsLayerNames[name] = [];
+                    grid = grids.toString();
+                    gridName = grid.split('/')[4];
+                    AppVars.uhsLayerGrids.push(gridName);
+                }
+                if (type == 'curve-loss') {
+                    AppVars.lossCategoryList.push(cat);
+                    AppVars.lossLayersByCat[cat] = [];
+                    AppVars.lossLayerNames[name] = [];
+                    grid = grids.toString();
+                    gridName = grid.split('/')[4];
+                    AppVars.lossLayerGrids.push(gridName);
+                }
+
+                if (type == 'input-mfds') {
+                    AppVars.inputLayersByCat[cat] = [];
+                    AppVars.inputLayerNames[name] = [];
+                    grid = grids.toString();
+                    gridName = grid.split('/')[4];
+                    AppVars.inputLayerGrids.push(gridName);
+                }
+
+                if (type == 'map') {
+                    AppVars.mapLayerNames[name] = [];
+                    AppVars.mapLayersByCat[cat] = [];
+                    if (grids !== undefined) {
+                        grid = grids.toString();
+                        gridName = grid.split('/')[4];
+                        AppVars.mapLayerGrids.push(gridName);
+                    }
+                }
+
+                if (grids !== undefined) {
+                    AppVars.mapLayerNames[grids] = [];
+                }
             }
         }
 
@@ -373,74 +384,78 @@ var startApp = function() {
             var grids = json[j].grids;
             var chartType = json[j].chartType;
             var template = json[j].template;
-            // Crazy clean up
-            template = template.replace(/{{#__location__}}{{/, '');
-            template = template.replace('/', '');
-            template = template.replace(/__location__}}{{#__teaser__}}/, '');
-            template = template.replace(/{{{/g, '').replace(/}}}/g, '');
-            template = template.substring(0, template.indexOf('{{'));
 
-            if (type == 'curve-hc') {
-                var curveLayerId = json[j].id;
-                var curveLayerTitle = json[j].mapped_value;
-                AppVars.curveLayerNames[name].push(curveLayerId);
-                AppVars.curveLayersByCat[cat].push(curveLayerTitle);
+            if (checkForMissingData(name, cat, type, grids, app)) {
 
-                if (chartType == 'single') {
-                    AppVars.CurvesByInvestSingle[j] = name;
+                // Crazy clean up
+                template = template.replace(/{{#__location__}}{{/, '');
+                template = template.replace('/', '');
+                template = template.replace(/__location__}}{{#__teaser__}}/, '');
+                template = template.replace(/{{{/g, '').replace(/}}}/g, '');
+                template = template.substring(0, template.indexOf('{{'));
+
+                if (type == 'curve-hc') {
+                    var curveLayerId = json[j].id;
+                    var curveLayerTitle = json[j].mapped_value;
+                    AppVars.curveLayerNames[name].push(curveLayerId);
+                    AppVars.curveLayersByCat[cat].push(curveLayerTitle);
+
+                    if (chartType == 'single') {
+                        AppVars.CurvesByInvestSingle[j] = name;
+                    }
+                    else if (chartType == 'mixed') {
+                        AppVars.curvesByInvestMixed[j] = name;
+                        AppVars.curvesAvailable[j] = template;
+                    }
                 }
-                else if (chartType == 'mixed') {
-                    AppVars.curvesByInvestMixed[j] = name;
-                    AppVars.curvesAvailable[j] = template;
+
+                if (type == 'curve-uhs') {
+                    var uhsLayerId = json[j].id;
+                    var uhsLayerTitle = json[j].mapped_value;
+                    AppVars.uhsLayerNames[name].push(uhsLayerId);
+                    AppVars.uhsLayersByCat[cat].push(uhsLayerTitle);
+
+                    if (chartType == 'mixed') {
+                        AppVars.uhsByInvestMixed[j] = name;
+                        AppVars.uhsAvailable[j] = template;
+                    }
+                    else if (chartType == 'single') {
+                        AppVars.uhsByInvestSingle[j] = name;
+                    }
                 }
-            }
 
-            if (type == 'curve-uhs') {
-                var uhsLayerId = json[j].id;
-                var uhsLayerTitle = json[j].mapped_value;
-                AppVars.uhsLayerNames[name].push(uhsLayerId);
-                AppVars.uhsLayersByCat[cat].push(uhsLayerTitle);
-
-                if (chartType == 'mixed') {
-                    AppVars.uhsByInvestMixed[j] = name;
-                    AppVars.uhsAvailable[j] = template;
+                if (type == 'curve-loss') {
+                    AppVars.lossLayerId = json[j].id;
+                    AppVars.lossLayerTitle = json[j].mapped_value;
+                    AppVars.lossLayerNames[name].push(AppVars.lossLayerId);
+                    AppVars.lossLayersByCat[cat].push(AppVars.lossLayerTitle);
+                    AppVars.lossByInvestMixed[j] = name;
+                    AppVars.lossAvailable[j] = template;
+                    AppVars.lossByInvestSingle[j] = name;
                 }
-                else if (chartType == 'single') {
-                    AppVars.uhsByInvestSingle[j] = name;
+
+                if (type == 'input-mfds') {
+                    var inputLayerId = json[j].id;
+                    var inputLayerTitle = json[j].mapped_value;
+                    AppVars.inputLayerNames[name].push(inputLayerId);
+                    AppVars.inputLayersByCat[cat].push(inputLayerTitle);
+
+                    if (chartType == 'mixed') {
+                        AppVars.InputByInvestMixed[j] = name;
+                        AppVars.inputAvailable[j] = template;
+                    }
+                    else if (chartType == 'single') {
+                        AppVars.InputbyInvestSingle[j] = name;
+                    }
                 }
-            }
 
-            if (type == 'curve-loss') {
-                AppVars.lossLayerId = json[j].id;
-                AppVars.lossLayerTitle = json[j].mapped_value;
-                AppVars.lossLayerNames[name].push(AppVars.lossLayerId);
-                AppVars.lossLayersByCat[cat].push(AppVars.lossLayerTitle);
-                AppVars.lossByInvestMixed[j] = name;
-                AppVars.lossAvailable[j] = template;
-                AppVars.lossByInvestSingle[j] = name;
-            }
-
-            if (type == 'input-mfds') {
-                var inputLayerId = json[j].id;
-                var inputLayerTitle = json[j].mapped_value;
-                AppVars.inputLayerNames[name].push(inputLayerId);
-                AppVars.inputLayersByCat[cat].push(inputLayerTitle);
-
-                if (chartType == 'mixed') {
-                    AppVars.InputByInvestMixed[j] = name;
-                    AppVars.inputAvailable[j] = template;
+                if (type == 'map') {
+                    mapLayerId = json[j].id;
+                    mapLayerTitle = json[j].mapped_value;
+                    chartType = json[j].chartType;
+                    AppVars.mapLayerNames[name].push(mapLayerId);
+                    AppVars.mapLayersByCat[cat].push(mapLayerTitle);
                 }
-                else if (chartType == 'single') {
-                    AppVars.InputbyInvestSingle[j] = name;
-                }
-            }
-
-            if (type == 'map') {
-                mapLayerId = json[j].id;
-                mapLayerTitle = json[j].mapped_value;
-                chartType = json[j].chartType;
-                AppVars.mapLayerNames[name].push(mapLayerId);
-                AppVars.mapLayersByCat[cat].push(mapLayerTitle);
             }
         }
 
@@ -453,9 +468,9 @@ var startApp = function() {
             return i == AppVars.lossCategoryList.indexOf(itm);
         });
 
-        for (var i in curveCategoryUnique) {
+        for (var o in curveCategoryUnique) {
             // Append category names to curve dropdown list
-            var curveCategoryTitle = curveCategoryUnique[i];
+            var curveCategoryTitle = curveCategoryUnique[o];
             var curveOpt = document.createElement('option');
             curveOpt.innerHTML = curveCategoryTitle;
             curveOpt.value = curveCategoryTitle;
@@ -464,13 +479,13 @@ var startApp = function() {
             var layerCurveOpt = document.createElement('option');
         }
 
-        for (var i in curveCategoryUnique) {
+        for (var p in lossCategoryUnique) {
             // Append category names to loss dropdown list
-            var lossCategoryTitle = curveCategoryUnique[i];
+            var lossCategoryTitle = lossCategoryUnique[p];
             var lossOpt = document.createElement('option');
             lossOpt.innerHTML = lossCategoryTitle;
             lossOpt.value = lossCategoryTitle;
-            selLossCat.appendChild(curveOpt);
+            selLossCat.appendChild(lossOpt);
             // Append layer list to dowpdown
             var layerlossOpt = document.createElement('option');
         }
@@ -813,6 +828,61 @@ var startApp = function() {
     });
 
     map.addControl(AppVars.layerControl.setPosition('topleft'));
+
+    // Logic for downloading hazard map csv
+    $('#HMDownload').button().click(function() {
+
+        if (AppVars.utfGrid !== undefined && AppVars.utfGrid.utfGridType == 'map') {
+            var zoomLevel = map.getZoom();
+            var bounds = map.getBounds();
+            var tempPolygon = L.polygon([
+                [bounds._northEast.lat, bounds._northEast.lng],
+                [bounds._southWest.lat, bounds._southWest.lng]
+            ]);
+
+            if (zoomLevel >= 6) {
+                var hazardMapValues = [];
+
+                // get information out of the utfgrid for use in Download
+                for (var l in AppVars.utfGrid._cache) {
+                    if (AppVars.utfGrid._cache[l] !== null && typeof AppVars.utfGrid._cache[l] === 'object') {
+                        for (var m in AppVars.utfGrid._cache[l].data) {
+                            // download only the values that are within the map bounds
+                            var tempRecord = AppVars.utfGrid._cache[l].data[m];
+                            var tmpLatLng = L.latLng(tempRecord.latitude, tempRecord.longitude);
+                            if (tmpLatLng == undefined) {
+                                alert("There is a problem with this hazard map, please alert the systems administration of this issue")
+                            }
+                            if (tempPolygon.getBounds().contains(tmpLatLng)) {
+                                hazardMapValues.push([tempRecord.VAL, tempRecord.longitude, tempRecord.latitude]);
+                            }
+                        }
+                    }
+                }
+
+                var header = "val, longitude, latitude],";
+                var stringForDownload = JSON.stringify(hazardMapValues);
+                var stringForDownload = header.concat(stringForDownload);
+
+                stringForDownload = stringForDownload
+                    .replace(/{/g, '')
+                    .replace(/}/g, '')
+                    .replace(/\],/g, '\r\n')
+                    .replace(/\[/g, '')
+                    .replace(/\]/g, '');
+
+                downloadJSON2CSV(stringForDownload);
+            } else {
+                $('#HMDownloadWarning').empty();
+                $('#HMDownloadWarning').append("Hazard map data can only be downloaded at zoom level 6 or greater. The current zoom level is: "+zoomLevel );
+                $('#HMDownloadWarning').dialog('open');
+            }
+        } else {
+            $('#HMDownloadWarning').empty();
+            $('#HMDownloadWarning').append("A hazard map needs to be loaded into the map before a csv can be downloaded");
+            $('#HMDownloadWarning').dialog('open');
+        }
+    });
 
     function Opacity(tileLayer) {
         $('#opacity-slider').slider({

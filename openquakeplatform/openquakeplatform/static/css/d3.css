@@ -3,13 +3,6 @@ svg {
   font-size: 14px;
 }
 
-#attrLable {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);   
-  -o-transform: rotate(45deg);
-  font: 1em 'QuicksandBold', Arial, sans-serif;
-}
-
 .foreground path {
   fill: none;
   stroke-opacity: .5;

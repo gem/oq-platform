@@ -15,7 +15,7 @@
         {% for k, v in third_party_urls.iteritems %}
         THIRD_PARTY_URLS.{{ k }} = "{{ v }}";
         {% endfor %}
-        var TS_URL = '{{ tilestream_url }}';
+        var TS_URL = '{{ TILESTREAM_URL }}';
         var BING_KEY = {};
         {% for k, v in bing_key.iteritems %}
         BING_KEY.{{ k }} = "{{ v }}";
