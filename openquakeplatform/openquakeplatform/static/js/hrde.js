@@ -297,8 +297,7 @@ var startApp = function() {
             name !== undefined && name !== "" && name !== null &&
             cat !== undefined && cat !== "" && cat !== null &&
             type !== undefined && type !== "" && type !== null &&
-            grids !== undefined && grids !== "" && grids !== null &&
-            app !== undefined && app !== "" && app !== null
+            grids !== undefined && grids !== "" && grids !== null
         );
     }
 
@@ -315,8 +314,11 @@ var startApp = function() {
             var app = json[i].application;
             var grid, gridName;
             var wiki = json[i].wiki_link;
+            console.log('app:');
+            console.log(app);
 
             if (checkForMissingData(name, cat, type, grids, app)) {
+
 
                 if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
 
@@ -386,7 +388,6 @@ var startApp = function() {
             var template = json[j].template;
 
             if (checkForMissingData(name, cat, type, grids, app)) {
-
                 // Crazy clean up
                 template = template.replace(/{{#__location__}}{{/, '');
                 template = template.replace('/', '');
