@@ -201,10 +201,10 @@ def export_exposure(request):
             return response
     else:
         occupancy = 0  # 'residential' by default
-    try:
-        currency, taxonomy_name, taxonomy_version = \
-            util._get_currency_and_taxonomy_name(sr_id, occupancy)
-    except TypeError:
+    data = util._get_currency_and_taxonomy_name(sr_id, occupancy)
+    if data:
+        currency, taxonomy_name, taxonomy_version = data
+    else:
         # No records were found, corresponding to the given sr_id and occupancy
         # ==> we return a 204 (the server successfully processed the request,
         #                      but is not returning any content)
@@ -332,7 +332,7 @@ def _stream_exposure_as_nrml(req_pars):
     currency = req_pars['currency']
     yield copyright
     if currency is not None:
-        conversions = NRML_CONVERSIONS_FMT % (currency)
+        conversions = NRML_CONVERSIONS_FMT % currency
     else:
         conversions = ""
     yield NRML_HEADER % dict(cat='buildings',
@@ -364,7 +364,7 @@ def _stream_exposure_as_nrml(req_pars):
                                ('transit', transit_pop)):
             occ += NRML_OCCUPANCY_FMT % (occupants, tod)
             if bldg_cost is not None:
-                costs = NRML_COSTS_FMT % (bldg_cost)
+                costs = NRML_COSTS_FMT % bldg_cost
             else:
                 costs = ""
         asset_params = dict(
