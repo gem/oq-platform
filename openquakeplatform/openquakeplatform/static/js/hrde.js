@@ -315,8 +315,6 @@ var startApp = function() {
             var application = json[i].application;
             var grid, gridName;
             var wiki = json[i].wiki_link;
-            console.log('app:');
-            console.log(app);
 
             if (checkForMissingData(name, cat, type, grids, application)) {
 
