@@ -291,14 +291,14 @@ var startApp = function() {
     selLossCat.appendChild(catLossMenuHeader);
     $('#risk-curve-category option:empty').remove();
 
-    function checkForMissingData(name, cat, type, grids, app) {
+    function checkForMissingData(name, cat, type, grids, application) {
         // Use only valid  data returned from the tilestream server in the application
         return (
             name !== undefined && name !== "" && name !== null &&
             cat !== undefined && cat !== "" && cat !== null &&
             type !== undefined && type !== "" && type !== null &&
             grids !== undefined && grids !== "" && grids !== null &&
-            app !== undefined && app !== "" && app !== null
+            application == 'hazard-viewer'
         );
     }
 
@@ -312,11 +312,12 @@ var startApp = function() {
             var type = json[i].type;
             var grids = json[i].grids;
             var chartType = json[i].chartType;
-            var app = json[i].application;
+            var application = json[i].application;
             var grid, gridName;
             var wiki = json[i].wiki_link;
 
-            if (checkForMissingData(name, cat, type, grids, app)) {
+            if (checkForMissingData(name, cat, type, grids, application)) {
+
 
                 if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
 
@@ -384,9 +385,9 @@ var startApp = function() {
             var grids = json[j].grids;
             var chartType = json[j].chartType;
             var template = json[j].template;
+            var application = json[j].application;
 
-            if (checkForMissingData(name, cat, type, grids, app)) {
-
+            if (checkForMissingData(name, cat, type, grids, application)) {
                 // Crazy clean up
                 template = template.replace(/{{#__location__}}{{/, '');
                 template = template.replace('/', '');
