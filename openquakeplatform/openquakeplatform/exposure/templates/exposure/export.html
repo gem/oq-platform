@@ -26,184 +26,54 @@ Exposure Export {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.draw.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/bootstrap.css" />
 {% endblock extra_head %}
 
 {% block body_outer %}
 {{block.super}}
-<div id="sidePanel-leg">
-  <div id="panelContent-leg">
-    <div class="map-legend-urban">
-    <p>
-      <div class='legend-title'>GRUMP Population Data<br/></div>
-        <div class='legend-title-part'>Urban Population Classification<br/>
-        </div>
-        <div class='legend-scale'>
-          <ul class='legend-labels'>
-            <li><span style='background:#FFFF00;'></span>1 - 5<li>
-            <li><span style='background:#FFF300;'></span>5 - 10<li>
-            <li><span style='background:#FFDC00;'></span>10 - 50<li>
-            <li><span style='background:#FFB900;'></span>50 - 100<li>
-            <li><span style='background:#FF9700;'></span>100 - 250<li>
-            <li><span style='background:#FF7000;'></span>250 - 500<li>
-            <li><span style='background:#FF4000;'></span>500 - 1000<li>
-            <li><span style='background:#FF1000;'></span>1000 - 2000<li>
-            <li><span style='background:#D02E2E;'></span>over 2000<li>
-          </ul>
-        </div>
-      </div><br><br><br><br><br><br><br>
-            <br><br><br></p><p>
-      <div class="map-legend-rural">
-        <div class='legend-title-part'>Rural Population Classification<br/>
-        </div>
-        <div class='legend-scale'>
-          <ul class='legend-labels'>
-            <li><span style='background:#B8B8B8;'></span>1 - 5<li>
-            <li><span style='background:#B0B0B0;'></span>5 - 10<li>
-            <li><span style='background:#A8A8A8;'></span>10 - 25<li>
-            <li><span style='background:#909090;'></span>50 - 75<li>
-            <li><span style='background:#888888;'></span>75 - 100<li>
-            <li><span style='background:#787878;'></span>100 - 150<li>
-            <li><span style='background:#707070;'></span>150 - 200<li>
-            <li><span style='background:#6B6B6B;'></span>200 - 300<li>
-            <li><span style='background:#646464;'></span>300 - 400<li>
-            <li><span style='background:#585858;'></span>400 - 500<li>
-            <li><span style='background:#414141;'></span>500 - 600<li>
-            <li><span style='background:#383838;'></span>600 - 700<li>
-            <li><span style='background:#292929;'></span>800 - 1000<li>
-            <li><span style='background:#181818;'></span>over 1000<li>
-          </ul>
-        <div class='legend-source'> Source: <a href="#link to source">GRUMP population data attribution...</a>
-        </div> </p>
+
+<div id="cover" ><img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+{% verbatim %}
+<div ng-app="exposureApp" >
+  <div id="countriesListDialog" title="Admin Level 0 Selection Table">
+    <div id="countryList" ng-controller="ExposureCountryList">
+    <div id="national-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+      <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
+        <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
+                ng-class="{'active': record.$selected}">
+          <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{record.country_name}}</td>
+          <td data-title="'Number of Studies'">{{record.num_l1_studies}}</td>
+          <td data-title="'Study'">{{record.study_name}}</td>
+          <td data-title="'Has Residential'">{{record.has_nonres}}</td>
+        </tr>
+      </table>
+    </div>
+    <div id="subRegionList" ng-controller="ExposureRegionList">
+      <div id="ragionTable">
+      <div id="subnational-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+        <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
+          <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
+                  ng-class="{'active': record.$selected}">
+            <td data-title="'Region Level 1'" filter="{ 'g1name': 'text' }">{{record.g1name}}</td>
+            <td data-title="'Region Level 2'" filter="{ 'g2name': 'text' }">{{record.g2name}}</td>
+          </tr>
+        </table>
       </div>
+      <input type="button" id="subRegionListBack" value="< Back">
+    </div>
+    <div id="selectionForm">
+      <div id="countrySelectionForm"></div>
+      <input type="button" id="selectionFormBack" value="< Back">
+    </div>
+    <div id="subRegionForm">
+      <input type="button" id="subRegionFormBack" value="< Back">
     </div>
   </div>
-  <div id="panelHandle-leg">
-  <p>Legend</p>
-  </div>
 </div>
-<div id="sidePanel-dwel">
-  <div id="panelContent-dwel">
-    <p><a href="http://176.58.99.54/demos/building_code.html" target="_blank">PAGER Dwelling Descriptions</a>
-    <table border="1" cellspacing="1" class="scrollable" align="center">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tr><td>    W   </td><td>   Wood Building   </td></tr>
-      <tr><td>    W1  </td><td>   Wood Frame, Wood Stud, Wood, Stucco, or Brick Veneer    </td></tr>
-      <tr><td>    W2  </td><td>   Wood Frame, Heavy Members, Diagonals or Bamboo Lattice, Mud Infill  </td></tr>
-      <tr><td>    W3  </td><td>   Wood Frame, Prefabricated Steel Stud Panels, Wood or Stucco Exterior Walls  </td></tr>
-      <tr><td>    W4  </td><td>   Log Building    </td></tr>
-      <tr><td>    S   </td><td>   Steel Building  </td></tr>
-      <tr><td>    S1  </td><td>   Steel Moment Frame  </td></tr>
-      <tr><td>    S1L </td><td>   Low-Rise Steel Moment Frame </td></tr>
-      <tr><td>    S1M </td><td>   Mid-Rise Steel Moment Frame </td></tr>
-      <tr><td>    S1H </td><td>   High-Rise Steel Moment Frame    </td></tr>
-      <tr><td>    S2  </td><td>   Steel Braced Frame  </td></tr>
-      <tr><td>    S2L </td><td>   Low-Rise Steel Braced Frame </td></tr>
-      <tr><td>    S2M </td><td>   Mid-Rise Steel Braced Frame </td></tr>
-      <tr><td>    S2H </td><td>   High-Rise Steel Braced Frame    </td></tr>
-      <tr><td>    S3  </td><td>   Steel Light Frame   </td></tr>
-      <tr><td>    S4  </td><td>   Steel Frame with Cast-in-Place Concrete Shear Walls </td></tr>
-      <tr><td>    S4L </td><td>   Low-Rise Steel Frame with Cast-in-Place Concrete Shear Walls    </td></tr>
-      <tr><td>    S4M </td><td>   Mid-Rise Steel Frame with Cast-in-Place Concrete Shear Walls    </td></tr>
-      <tr><td>    S4H </td><td>   High-Rise Steel Frame with Cast-in-Place Concrete Shear Walls   </td></tr>
-      <tr><td>    S5  </td><td>   Steel Frame with Un-reinforced Masonry Infill Walls </td></tr>
-      <tr><td>    S5L </td><td>   Low-Rise Steel Frame with Un-reinforced Masonry Infill Walls    </td></tr>
-      <tr><td>    S5M </td><td>   Mid-Rise Steel Frame with Un-reinforced Masonry Infill Walls    </td></tr>
-      <tr><td>    S5H </td><td>   High-Rise Steel Frame with Un-reinforced Masonry Infill Walls   </td></tr>
-      <tr><td>    C   </td><td>   Reinforced Concrete Building    </td></tr>
-      <tr><td>    C1  </td><td>   Ductile Reinforced Concrete Moment Frame    </td></tr>
-      <tr><td>    C1L </td><td>   Low-Rise Ductile Reinforced Concrete Moment Frame   </td></tr>
-      <tr><td>    C1M </td><td>   Mid-Rise Ductile Reinforced Concrete Moment Frame   </td></tr>
-      <tr><td>    C1H </td><td>   High-Rise Ductile Reinforced Concrete Moment Frame  </td></tr>
-      <tr><td>    C2  </td><td>   Reinforced Concrete Shear Walls </td></tr>
-      <tr><td>    C2L </td><td>   Low-Rise Reinforced Concrete Shear Walls    </td></tr>
-      <tr><td>    C2M </td><td>   Mid-Rise Reinforced Concrete Shear Walls    </td></tr>
-      <tr><td>    C2H </td><td>   High-Rise Reinforced Concrete Shear Walls   </td></tr>
-      <tr><td>    C3  </td><td>   Nonductile Reinforced Concrete Frame with Masonry Infill Walls  </td></tr>
-      <tr><td>    C3L </td><td>   Low-Rise Nonductile Reinforced Concrete Frame with Masonry Infill Walls </td></tr>
-      <tr><td>    C3M </td><td>   Mid-Rise Nonductile Reinforced Concrete Frame with Masonry Infill Walls </td></tr>
-      <tr><td>    C3H </td><td>   High-Rise Nonductile Reinforced Concrete Frame with Masonry Infill Walls    </td></tr>
-      <tr><td>    C4  </td><td>   Nonductile Reinforced Concrete Frame without Masonry Infill Walls   </td></tr>
-      <tr><td>    C4L </td><td>   Low-Rise Nonductile Reinforced Concrete Frame without Masonry Infill Walls  </td></tr>
-      <tr><td>    C4M </td><td>   Mid-Rise Nonductile Reinforced Concrete Frame without Masonry Infill Walls  </td></tr>
-      <tr><td>    C4H </td><td>   High-Rise Nonductile Reinforced Concrete Frame without Masonry Infill Walls </td></tr>
-      <tr><td>    C5  </td><td>   Steel Reinforced Concrete (Steel Members Encased in Reinforced Concrete)    </td></tr>
-      <tr><td>    C5L </td><td>   Low-Rise Steel Reinforced Concrete (Steel Members Encased in Reinforced Concrete)   </td></tr>
-      <tr><td>    C5M </td><td>   Mid-Rise Steel Reinforced Concrete (Steel Members Encased in Reinforced Concrete)   </td></tr>
-      <tr><td>    C5H </td><td>   High-Rise Steel Reinforced Concrete (Steel Members Encased in Reinforced Concrete)  </td></tr>
-      <tr><td>    PC1 </td><td>   Precast Concrete Tilt-Up Walls  </td></tr>
-      <tr><td>    PC2 </td><td>   Precast Concrete Frames with Concrete Shear Walls   </td></tr>
-      <tr><td>    PC2L    </td><td>   Low-Rise Precast Concrete Frames with Concrete Shear Walls  </td></tr>
-      <tr><td>    PC2M    </td><td>   Mid-Rise Precast Concrete Frames with Concrete Shear Walls  </td></tr>
-      <tr><td>    PC2H    </td><td>   High-Rise Precast Concrete Frames with Concrete Shear Walls </td></tr>
-      <tr><td>    RM  </td><td>   Reinforced Masonry  </td></tr>
-      <tr><td>    RM1 </td><td>   Reinforced Masonry Bearing Walls with Wood or Metal Deck Diaphragms </td></tr>
-      <tr><td>    RM1L    </td><td>   Low-Rise Reinforced Masonry Bearing Walls with Wood or Metal Deck Diaphragms    </td></tr>
-      <tr><td>    RM1M    </td><td>   Mid-Rise (4+ stories) Reinforced Masonry Bearing Walls with Wood or Metal Deck Diaphragms   </td></tr>
-      <tr><td>    RM2 </td><td>   Reinforced Masonry Bearing Walls with Concrete Diaphragms   </td></tr>
-      <tr><td>    RM2L    </td><td>   Low-Rise Reinforced Masonry Bearing Walls with Concrete Diaphragms  </td></tr>
-      <tr><td>    RM2M    </td><td>   Mid-Rise Reinforced Masonry Bearing Walls with Concrete Diaphragms  </td></tr>
-      <tr><td>    RM2H    </td><td>   High-Rise Reinforced Masonry Bearing Walls with Concrete Diaphragms </td></tr>
-      <tr><td>    MH  </td><td>   Mobile Homes    </td></tr>
-      <tr><td>    M   </td><td>   Mud Walls   </td></tr>
-      <tr><td>    M1  </td><td>   Mud walls without horizontal wood elements  </td></tr>
-      <tr><td>    M2  </td><td>   Mud walls with horizontal wood elements </td></tr>
-      <tr><td>    A   </td><td>   Adobe block (unbaked dried mud block) walls </td></tr>
-      <tr><td>    A1  </td><td>   Adobe block, mud mortar, wood roof and floors   </td></tr>
-      <tr><td>    A2  </td><td>   Adobe block, mud mortar, bamboo, straw, and thatch roof </td></tr>
-      <tr><td>    A3  </td><td>   Adobe block, cement-sand mortar, wood roof and floors,  </td></tr>
-      <tr><td>    A4  </td><td>   Abobe block, mud mortar, reinforced concrete bond beam, cane and mud roof   </td></tr>
-      <tr><td>    A5  </td><td>   Adobe block, mud mortar, wood roof and floors, with bamboo or rope reinforcement    </td></tr>
-      <tr><td>    RE  </td><td>   Rammed Earth/Pneumatically Impacted Stabilized Earth    </td></tr>
-      <tr><td>    RS  </td><td>   Rubble Stone (Field Stone) Masonry  </td></tr>
-      <tr><td>    RS1 </td><td>   Local field stones dry stacked (no mortar). Timber floors. Timber, earth, or metal roof.    </td></tr>
-      <tr><td>    RS2 </td><td>   Local field stones dry stacked (mud mortar). Timber floors. Timber, earth, or metal roof.   </td></tr>
-      <tr><td>    RS3 </td><td>   Local field stones dry stacked (lime mortar). Timber floors. Timber, earth, or metal roof.      </td></tr>
-      <tr><td>    RS4 </td><td>   Local field stones dry stacked (cement mortar). vaulted brick roof and floors   </td></tr>
-      <tr><td>    RS5 </td><td>   Local field stones dry stacked (cement mortar). Timber floors. Timber, earth, or metal roof. Reinforced concrete bond b
-      <tr><td>    DS  </td><td>   Rectangular cut stone masonry block
-      <tr><td>    DS1 </td><td>   Rectangular cut stone masonry block with mud mortar, timber roof and floors
-      <tr><td>    DS2 </td><td>   Rectangular cut stone masonry block with lime mortar, timber roof and floors
-      <tr><td>    DS3 </td><td>   Rectangular cut stone masonry block with cement mortar, timber roof and floo
-      <tr><td>    DS4 </td><td>   Rectangular cut stone masonry block with mud mortar, reinforced concrete flo
-      <tr><td>    UFB </td><td>   Unreinforced fired brick masonry
-      <tr><td>    UFB1    </td><td>   Unreinforced brick masonry in muithout timber posts
-      <tr><td>    UFB2    </td><td>   Unreinforced brick masonry in muith timber posts
-      <tr><td>    UFB3    </td><td>   Unreinforced fired brick masonryortar, timber flooer or steel beams and columns, tie courseed perpendicular to the plane of the wall)
-      <tr><td>    UFB4    </td><td>   Unreinforced fired nry, cement mortar, reinforced concrete floor and slabs, timber or steel beams andes (bricks aligned perpendicular to the plane l)
-      <tr><td>    UCB </td><td>   Unreinforced concrete bry, limortar </td></tr>
-      <tr><td>    MS  </td><td>   Massive stone masonry ient mo</tr>
-      <tr><td>    TU  </td><td>   Precast concrete tilt-up walls (Precastl Construction (Mid to high rise, Former Soviet Union style))  </td></tr>
-      <tr><td>    INF </td><td>   Informal constructions (parts of slums/squatters)   </td></tr>
-      <tr><td>    UNK </td><td>   Unknown Category (Not specified)    </td></tr>
-    </table>
-    </p>
-  </div>
-  <div id="panelHandle-dwel">
-    <p>Dwelling_Types</p>
-  </div>
-</div>
-<div id="export_form_placeholder" style="display:none"></div>
-<div id="tooltip">
+{% endverbatim %}
 
-    <a href="#" class="tooltip">Help
-      <span>
-        <strong>Exposure Export Tool</strong><br />
-<p>Begin by zooming in to an area of interest.</p>
-<p>Activate the selection tool <img src="{{ STATIC_URL }}img/draw-rectangle.png"> and pull a box on the map over the area of interest.</p>
-<p>Make selections from the following dialog boxes to download data.</p>
-        <strong>Explore Dwelling Fractions</strong><br /><p>To view dwelling fraction information, first activate one of the dwelling fraction layers from the layer menu.<br><img src="/static/Leaflet/dist/images/layers.png"></p>
-<p>Next, hover the mouse over the area of interest and view the pie chart popup.</p>
-<p>Hover the mouse over the side panels to view the dwelling fraction types list & the GRUMP layer legend.</p>
-      </span>
-    </a>
-</div>
+<div id="export_form_placeholder" style="display:none"></div>
 
 <!-- Placeholder div for holding/displaying error messages/dialogs -->
 <div id="error-dialog"></div>
@@ -223,6 +93,8 @@ Exposure Export {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_export.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_controller.js"></script>
+
     <script>
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/exposure/'; }

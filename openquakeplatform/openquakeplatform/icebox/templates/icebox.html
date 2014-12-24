@@ -51,10 +51,10 @@ Calculate - {{block.super}}
 {% endblock body %}
 
 {% block extra_script %}
-    <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}bootstrap-extend/js/jasny-bootstrap.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
+<script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap-extend/js/jasny-bootstrap.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
 
 <script type="text/template" id="calculation-table-template">
   <table id="calculation_table" class="table table-hover">
@@ -63,45 +63,50 @@ Calculate - {{block.super}}
       <tr>
         <th>ID</th>
         <th>Type</th>
-        <th  width="40%">Description</th>
-        <th>Status</th>
+        <th width="300px">Description</th>
+        <th width="215px">Status</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <% _.each(calculations, function(calc) { %>
+      <% if(calc.get('user') ==  {{ user.id }}) { %>
       <tr class="<%= calc.get('status') == 'complete' ? 'success' : 'warning' %>">
-        <td><%= calc.get('engine_id') || 'New' %></td>
+        <td><%= calc.get('id') || 'New' %></td>
         <td><%= calc.get('calculation_type') %></td>
         <td><%= calc.get('description') %></td>
         <td><%= calc.get('status') %></td>
         <td>
           <% if(calc.get('map')) { %>
+            <p>
+              <a href="/maps/<%= calc.get('map') %>" class="btn btn-sm btn-success">Open</a>
+              <a href="download/input/<%= calc.get('calculation_type') %>/<%= calc.get('id') %>" class="btn btn-sm">Download input</a>
+            </p>
             <% if(calc.get('calculation_type') == 'hazard') { %>
-        <form class="calc-form" enctype="multipart/form-data"
+            <form class="calc-form" enctype="multipart/form-data"
               style="margin: 0; display: inline-block"
               method="post" action="{% url "calculations" %}">
-          <input type="hidden" name="calculation_type" value="risk"/>
+            <input type="hidden" name="calculation_type" value="risk"/>
             <div class="fileinput-new" data-provides="fileinput" style="margin: 0 2px 0 0">
-              <span class="btn btn-default btn-file"><span class="fileinput-new">Run Risk</span><input type="file" name="calc_archive"/></span>
+              <span class="btn btn-default btn-sm btn-file"><span class="fileinput-new">Run Risk</span><input type="file" name="calc_archive"/></span>
             </div>
             <input type="hidden" name="callback_url" value=""/>
             <input type="hidden" name="foreign_calculation_id" value=""/>
             <input type="hidden" name="hazard_job_id" value="<%= calc.get('engine_id') %>"/>
-        </form>
+            </form>
             <% } %>
-            <a href="/maps/<%= calc.get('map') %>" class="btn btn-success">Open</a>
           <% } %>
 
           <% if(calc.get('status') == 'complete' || calc.get('status') == 'failed' || calc.get('status') == 'queued') { %>
             <% if(calc.get('status') == 'failed') { %>
               <% traceback = calc.get('einfo') %>
-              <button class="btn" onclick="popup_error_traceback(traceback)">Traceback</button>
+              <button class="btn btn-sm" onclick="popup_error_traceback(traceback)">Traceback</button>
             <% } %>
-            <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-danger">Remove</a>
+            <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-sm btn-danger">Remove</a>
          <% } %>
         </td>
       </tr>
+      <% } %>
       <% }); %>
     </tbody>
   </table>
@@ -127,6 +132,7 @@ Calculate - {{block.super}}
     </thead>
     <tbody>
       <% _.each(outputs, function(out) { %>
+      <% if(calc.get('user') ==  {{ user.id }}) { %>
       <tr>
         <td><%= out.get('engine_id') %></td>
         <td><%= out.get('calculation') %></td>
@@ -140,6 +146,7 @@ Calculate - {{block.super}}
           <% } %>
         </td>
       </tr>
+      <% } %>
       <% }); %>
     </tbody>
   </table>

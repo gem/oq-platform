@@ -124,6 +124,7 @@ def apps(db_name, db_user, db_pass):
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
+    local('python manage.py categories_cleanup')
     local('python manage.py loaddata openquakeplatform/common/post_fixtures/*.json')
     local('mkdir -p /tmp/thumbs')
     local('cp openquakeplatform/common/thumbs/*.png /tmp/thumbs/')
@@ -351,6 +352,6 @@ def _set_sites():
     from django.contrib.sites.models import Site
     mysite = Site.objects.all()[0]
     from openquakeplatform import settings
-    mysite.domain = settings.SITEURL
+    mysite.domain = 'oq-platform'
     mysite.name = settings.SITENAME
     mysite.save()
