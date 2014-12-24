@@ -73,7 +73,16 @@ var showErrorDialog = function(message, options) {
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
     myService.getAllStudies().then(function(data) {
+        // change the has_nonres flag to be more human readable
+        for (var k  in data) {
+            if (data[k].has_nonres) {
+                data[k].has_nonres = 'yes';
+            } else {
+                data[k].has_nonres = 'no';
+            }
+        }
         $scope.nationalData = data;
+
         // National level selection form
         $scope.tableParams = new ngTableParams({
             page: 1,            // show first page
@@ -84,6 +93,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
         }, {
             total: $scope.nationalData.length, // length of data
             getData: function($defer, params) {
+                $('#national-spinner').hide();
                 var currentData = $scope.nationalData;
                 // use build-in angular filter
                 var filteredData = params.filter() ?
@@ -108,7 +118,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<b>Download Gridded Building Exposure:</b></br>'+
                 '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
+                '<label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
@@ -146,18 +156,22 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
                 $scope.selectedRegion = data;
 
-                $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.country_name+' '+study.study_name+'');
+                $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countrySelectionForm').insertAfter('#countryList');
                 $('#countryList').hide();
                 $('#countrySelectionForm').empty();
                 $('#countrySelectionForm').show();
-                //$('#selectionFormBack').insertAfter('#exposure-building-form');
-                //$("#exposure-building-form").insertBefore("#selectionFormBack");
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
                 $('#countrySelectionForm').append(nationalForm(study));
+
+                // deactivate residential option as needed
+                if (study.has_nonres != 'yes') {
+                    $('#id_residential_1').attr("disabled", "disabled");
+                    $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.8'});
+                }
 
                 // Check the grid count
                 if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
@@ -236,6 +250,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     populateSubNationalList = function (iso) {
         var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
         $http.get(url).success(function (data) {
+            $('#subnational-spinner').hide();
             $scope.subNationalData = data;
             $scope.tableParams2.reload();
         });
@@ -267,7 +282,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
                 '<b>Download Gridded Sub-National Building Exposure:</b></br>'+
                 '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
-                '<label for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
+                '<label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
                 '</p>'+
                 '<p><label for="id_outputType_0">Output Type:</label></br>'+
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
@@ -308,6 +323,12 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         $('#subRegionList').insertAfter('#subRegionForm');
         $('#subRegionList').hide();
         $('#subRegionForm').prepend(subNationalForm(study));
+
+        // deactivate residential option as needed
+        if (study.has_nonres != true) {
+            $('#id_residential_1').attr("disabled", "disabled");
+            $('#id_residential_1_text').css({'color': 'gray', 'opacity': '0.8'});
+        }
 
         // check the grid count
         if (study.tot_grid_count < 300000) {
@@ -398,15 +419,6 @@ app.factory('myService', function($http, $q) {
         getNationalGridCount: function(iso, study_id) {
             var deferred = $q.defer();
             $http.get('get_studies_by_country?iso='+iso+'&study_filter='+study_id+'&level_filter=national').success(function(data) {
-                deferred.resolve(data);
-            }).error(function(){
-                deferred.reject();
-            });
-            return deferred.promise;
-        },
-        getSubNationalBuildingFractions: function(iso) {
-            var deferred = $q.defer();
-            $http.get('get_studies_by_country?iso='+iso+'&level_filter=subnational').success(function(data) {
                 deferred.resolve(data);
             }).error(function(){
                 deferred.reject();

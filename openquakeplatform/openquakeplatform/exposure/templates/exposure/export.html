@@ -26,7 +26,6 @@ Exposure Export {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.draw.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-tooltip.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/bootstrap.css" />
 {% endblock extra_head %}
@@ -39,6 +38,7 @@ Exposure Export {{ block.super }}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Admin Level 0 Selection Table">
     <div id="countryList" ng-controller="ExposureCountryList">
+    <div id="national-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                 ng-class="{'active': record.$selected}">
@@ -51,6 +51,7 @@ Exposure Export {{ block.super }}
     </div>
     <div id="subRegionList" ng-controller="ExposureRegionList">
       <div id="ragionTable">
+      <div id="subnational-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
         <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
           <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                   ng-class="{'active': record.$selected}">
@@ -92,6 +93,8 @@ Exposure Export {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.draw/dist/leaflet.draw.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_export.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exposure/exposure_controller.js"></script>
+
     <script>
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/exposure/'; }
