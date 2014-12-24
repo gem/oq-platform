@@ -11,17 +11,9 @@
       <sld:Title>0.00 - 0.01</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -51,12 +43,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#A50026</sld:CssParameter>
+              <sld:CssParameter name="fill">#053061</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -69,17 +57,9 @@
       <sld:Title>0.01 - 0.05</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -109,12 +89,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#D73027</sld:CssParameter>
+              <sld:CssParameter name="fill">#2166AC</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -124,20 +100,12 @@
     </sld:Rule>
     <sld:Rule>
       <sld:Name>AS: 3/11 GraduatedColorPointRuleList</sld:Name>
-      <sld:Title>0.05 - 0.10</sld:Title>
+      <sld:Title>0.05 - 0.08</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -155,7 +123,7 @@
                 <ogc:Literal>0.05</ogc:Literal>
               </ogc:LowerBoundary>
               <ogc:UpperBoundary>
-                <ogc:Literal>0.1</ogc:Literal>
+                <ogc:Literal>0.07500000000000001</ogc:Literal>
               </ogc:UpperBoundary>
             </ogc:PropertyIsBetween>
           </ogc:And>
@@ -167,12 +135,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#F46D43</sld:CssParameter>
+              <sld:CssParameter name="fill">#4393C3</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -182,20 +146,104 @@
     </sld:Rule>
     <sld:Rule>
       <sld:Name>AS: 4/11 GraduatedColorPointRuleList</sld:Name>
-      <sld:Title>0.10 - 0.15</sld:Title>
+      <sld:Title>0.08 - 0.09</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
+                <ogc:Or>
+                  <ogc:PropertyIsNull>
+                    <ogc:PropertyName>iml</ogc:PropertyName>
+                  </ogc:PropertyIsNull>
+                  <ogc:PropertyIsEqualTo>
+                    <ogc:Literal>NEVER</ogc:Literal>
+                    <ogc:Literal>TRUE</ogc:Literal>
+                  </ogc:PropertyIsEqualTo>
+                </ogc:Or>
+              </ogc:And>
+            </ogc:Not>
+            <ogc:PropertyIsBetween>
+              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:LowerBoundary>
+                <ogc:Literal>0.07500000000000001</ogc:Literal>
+              </ogc:LowerBoundary>
+              <ogc:UpperBoundary>
+                <ogc:Literal>0.08750000000000001</ogc:Literal>
+              </ogc:UpperBoundary>
+            </ogc:PropertyIsBetween>
+          </ogc:And>
+        </ogc:And>
+      </ogc:Filter>
+      <sld:MaxScaleDenominator>1.0E20</sld:MaxScaleDenominator>
+      <sld:PointSymbolizer>
+        <sld:Graphic>
+          <sld:Mark>
+            <sld:WellKnownName>circle</sld:WellKnownName>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#92C5DE</sld:CssParameter>
+            </sld:Fill>
+          </sld:Mark>
+          <sld:Size>
+            <ogc:Literal>8.0</ogc:Literal>
+          </sld:Size>
+        </sld:Graphic>
+      </sld:PointSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <sld:Name>AS: 5/11 GraduatedColorPointRuleList</sld:Name>
+      <sld:Title>0.09 - 0.10</sld:Title>
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:And>
+            <ogc:Not>
+              <ogc:And>
+                <ogc:Or>
+                  <ogc:PropertyIsNull>
+                    <ogc:PropertyName>iml</ogc:PropertyName>
+                  </ogc:PropertyIsNull>
+                  <ogc:PropertyIsEqualTo>
+                    <ogc:Literal>NEVER</ogc:Literal>
+                    <ogc:Literal>TRUE</ogc:Literal>
+                  </ogc:PropertyIsEqualTo>
+                </ogc:Or>
+              </ogc:And>
+            </ogc:Not>
+            <ogc:PropertyIsBetween>
+              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:LowerBoundary>
+                <ogc:Literal>0.08750000000000001</ogc:Literal>
+              </ogc:LowerBoundary>
+              <ogc:UpperBoundary>
+                <ogc:Literal>0.1</ogc:Literal>
+              </ogc:UpperBoundary>
+            </ogc:PropertyIsBetween>
+          </ogc:And>
+        </ogc:And>
+      </ogc:Filter>
+      <sld:MaxScaleDenominator>1.0E20</sld:MaxScaleDenominator>
+      <sld:PointSymbolizer>
+        <sld:Graphic>
+          <sld:Mark>
+            <sld:WellKnownName>circle</sld:WellKnownName>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#D1E5F0</sld:CssParameter>
+            </sld:Fill>
+          </sld:Mark>
+          <sld:Size>
+            <ogc:Literal>8.0</ogc:Literal>
+          </sld:Size>
+        </sld:Graphic>
+      </sld:PointSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <sld:Name>AS: 6/11 GraduatedColorPointRuleList</sld:Name>
+      <sld:Title>0.10 - 0.30</sld:Title>
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:And>
+            <ogc:Not>
+              <ogc:And>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -211,122 +259,6 @@
               <ogc:PropertyName>iml</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>0.1</ogc:Literal>
-              </ogc:LowerBoundary>
-              <ogc:UpperBoundary>
-                <ogc:Literal>0.15000000000000002</ogc:Literal>
-              </ogc:UpperBoundary>
-            </ogc:PropertyIsBetween>
-          </ogc:And>
-        </ogc:And>
-      </ogc:Filter>
-      <sld:MaxScaleDenominator>1.0E20</sld:MaxScaleDenominator>
-      <sld:PointSymbolizer>
-        <sld:Graphic>
-          <sld:Mark>
-            <sld:WellKnownName>circle</sld:WellKnownName>
-            <sld:Fill>
-              <sld:CssParameter name="fill">#FDAE61</sld:CssParameter>
-            </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
-          </sld:Mark>
-          <sld:Size>
-            <ogc:Literal>8.0</ogc:Literal>
-          </sld:Size>
-        </sld:Graphic>
-      </sld:PointSymbolizer>
-    </sld:Rule>
-    <sld:Rule>
-      <sld:Name>AS: 5/11 GraduatedColorPointRuleList</sld:Name>
-      <sld:Title>0.15 - 0.20</sld:Title>
-      <ogc:Filter>
-        <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          <ogc:And>
-            <ogc:Not>
-              <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
-                <ogc:Or>
-                  <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
-                  </ogc:PropertyIsNull>
-                  <ogc:PropertyIsEqualTo>
-                    <ogc:Literal>NEVER</ogc:Literal>
-                    <ogc:Literal>TRUE</ogc:Literal>
-                  </ogc:PropertyIsEqualTo>
-                </ogc:Or>
-              </ogc:And>
-            </ogc:Not>
-            <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
-              <ogc:LowerBoundary>
-                <ogc:Literal>0.15000000000000002</ogc:Literal>
-              </ogc:LowerBoundary>
-              <ogc:UpperBoundary>
-                <ogc:Literal>0.2</ogc:Literal>
-              </ogc:UpperBoundary>
-            </ogc:PropertyIsBetween>
-          </ogc:And>
-        </ogc:And>
-      </ogc:Filter>
-      <sld:MaxScaleDenominator>1.0E20</sld:MaxScaleDenominator>
-      <sld:PointSymbolizer>
-        <sld:Graphic>
-          <sld:Mark>
-            <sld:WellKnownName>circle</sld:WellKnownName>
-            <sld:Fill>
-              <sld:CssParameter name="fill">#FEE090</sld:CssParameter>
-            </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
-          </sld:Mark>
-          <sld:Size>
-            <ogc:Literal>8.0</ogc:Literal>
-          </sld:Size>
-        </sld:Graphic>
-      </sld:PointSymbolizer>
-    </sld:Rule>
-    <sld:Rule>
-      <sld:Name>AS: 6/11 GraduatedColorPointRuleList</sld:Name>
-      <sld:Title>0.20 - 0.30</sld:Title>
-      <ogc:Filter>
-        <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          <ogc:And>
-            <ogc:Not>
-              <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
-                <ogc:Or>
-                  <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
-                  </ogc:PropertyIsNull>
-                  <ogc:PropertyIsEqualTo>
-                    <ogc:Literal>NEVER</ogc:Literal>
-                    <ogc:Literal>TRUE</ogc:Literal>
-                  </ogc:PropertyIsEqualTo>
-                </ogc:Or>
-              </ogc:And>
-            </ogc:Not>
-            <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
-              <ogc:LowerBoundary>
-                <ogc:Literal>0.2</ogc:Literal>
               </ogc:LowerBoundary>
               <ogc:UpperBoundary>
                 <ogc:Literal>0.30000000000000004</ogc:Literal>
@@ -341,12 +273,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#FFFFBF</sld:CssParameter>
+              <sld:CssParameter name="fill">#F7F7F7</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -359,17 +287,9 @@
       <sld:Title>0.30 - 0.50</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -399,12 +319,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#E0F3F8</sld:CssParameter>
+              <sld:CssParameter name="fill">#FDDBC7</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -417,17 +333,9 @@
       <sld:Title>0.50 - 0.75</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -457,12 +365,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#ABD9E9</sld:CssParameter>
+              <sld:CssParameter name="fill">#F4A582</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -475,17 +379,9 @@
       <sld:Title>0.75 - 1.00</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -515,12 +411,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#74ADD1</sld:CssParameter>
+              <sld:CssParameter name="fill">#D6604D</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -533,17 +425,9 @@
       <sld:Title>1.00 - 2.50</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -573,12 +457,8 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#4575B4</sld:CssParameter>
+              <sld:CssParameter name="fill">#B2182B</sld:CssParameter>
             </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
           </sld:Mark>
           <sld:Size>
             <ogc:Literal>8.0</ogc:Literal>
@@ -591,17 +471,9 @@
       <sld:Title>2.50 - 10.00</sld:Title>
       <ogc:Filter>
         <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
           <ogc:And>
             <ogc:Not>
               <ogc:And>
-                <ogc:PropertyIsEqualTo>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                  <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-                </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
                     <ogc:PropertyName>iml</ogc:PropertyName>
@@ -631,46 +503,7 @@
           <sld:Mark>
             <sld:WellKnownName>circle</sld:WellKnownName>
             <sld:Fill>
-              <sld:CssParameter name="fill">#313695</sld:CssParameter>
-            </sld:Fill>
-            <sld:Stroke>
-              <sld:CssParameter name="stroke">#999999</sld:CssParameter>
-              <sld:CssParameter name="stroke-opacity">0.5</sld:CssParameter>
-            </sld:Stroke>
-          </sld:Mark>
-          <sld:Size>
-            <ogc:Literal>8.0</ogc:Literal>
-          </sld:Size>
-        </sld:Graphic>
-      </sld:PointSymbolizer>
-    </sld:Rule>
-    <sld:Rule>
-      <sld:Name>NODATA_RULE</sld:Name>
-      <sld:Title>No data</sld:Title>
-      <ogc:Filter>
-        <ogc:And>
-          <ogc:PropertyIsEqualTo>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-            <ogc:Literal>ALL_LABEL_CLASSES_ENABLED</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          <ogc:Or>
-            <ogc:PropertyIsNull>
-              <ogc:PropertyName>iml</ogc:PropertyName>
-            </ogc:PropertyIsNull>
-            <ogc:PropertyIsEqualTo>
-              <ogc:Literal>NEVER</ogc:Literal>
-              <ogc:Literal>TRUE</ogc:Literal>
-            </ogc:PropertyIsEqualTo>
-          </ogc:Or>
-        </ogc:And>
-      </ogc:Filter>
-      <sld:MaxScaleDenominator>1.0E20</sld:MaxScaleDenominator>
-      <sld:PointSymbolizer>
-        <sld:Graphic>
-          <sld:Mark>
-            <sld:WellKnownName>circle</sld:WellKnownName>
-            <sld:Fill>
-              <sld:CssParameter name="fill">#FFFFFF</sld:CssParameter>
+              <sld:CssParameter name="fill">#67001F</sld:CssParameter>
             </sld:Fill>
           </sld:Mark>
           <sld:Size>
