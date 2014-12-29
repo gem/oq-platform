@@ -22,13 +22,10 @@
 # We should move them to a separate file
 
 
-import json
-import uuid
 import collections
 import os
 import logging
 
-from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.auth import models as auth_models
 from django.db import connection
@@ -37,18 +34,17 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
 from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
-from geonode.layers.models import Layer
 from geonode.layers.models import set_attributes
 from geonode.layers.utils import layer_set_permissions
 from geonode.utils import default_map_config
-from geonode.utils import http_client, ogc_server_settings
 
 from openquakeplatform.icebox import fields
 from openquakeplatform import geoserver_api as geoserver
 
 logger = logging.getLogger(__name__)
 
-DS_NAME='icebox'
+DS_NAME = 'icebox'
+
 
 class Calculation(models.Model):
     calculation_type = models.TextField(choices=(('hazard', 'hazard'),
