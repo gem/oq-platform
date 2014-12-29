@@ -90,8 +90,15 @@ class Calculation(models.Model):
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
+        perm_spec = {
+            'authenticated': '_none',
+            'users': [[self.user, 'layer_readwrite'],
+                      [self.user, 'layer_admin']],
+            'anonymous': '_none'
+            }
         layer_name = []
-        for i, layer in enumerate(layers):
+        for layer in enumerate(layers):
+            layer_set_permissions(layer, perm_spec)
             layer_name.append(layer.typename)
 
         map = maps.Map()
