@@ -60,6 +60,8 @@ AppProtoType.prototype = {
     inputByInvestSingle: {},
     inputLayerGrids: [],
     mappedValue: null,
+    selectedHazardMapName: null,
+    selectedMappedValue: null,
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -276,7 +278,6 @@ var startApp = function() {
     selCat.appendChild(catCurveMenuHeader);
 
     // Create a header for the menu drop down
-
     var catUhsMenuHeader = document.createElement('option');
     selCat.appendChild(catUhsMenuHeader);
     $('#hazard-curve-category option:empty').remove();
@@ -970,6 +971,10 @@ var startApp = function() {
 
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                console.log('json:');
+                console.log(json);
+                AppVars.selectedHazardMapName = json.name;
+                AppVars.selectedMappedValue = json.mapped_value;
                 var bounds = json.bounds;
                 var htmlLegend = json.html_legend;
                 $('#legendDialog').empty();
@@ -1182,10 +1187,10 @@ var startApp = function() {
         utfGrid.on('click', function (e) {
             var spotValue = "";
             try {
-                    spotValue = e.data.VAL;
-                } catch (e) {
-                    // continue
-                }
+                spotValue = e.data.VAL;
+            } catch (e) {
+                // continue
+            }
 
             try {
                 $('#chartDialog').empty();
@@ -1214,6 +1219,10 @@ var startApp = function() {
                     } catch (e) {
                         // continue
                     }
+                }
+
+                if (curveType == 'uhs') {
+                    prob = e.data.imls;
                 }
 
                 if (e.data) {
@@ -1256,14 +1265,12 @@ var startApp = function() {
                 // continue
             }
 
-            //hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt, selectedLayer, spotValue);
-
             //////////////////////////////////////////////////
             //// Single hazard Chart, and Hazard map info ////
             //////////////////////////////////////////////////
 
             if (utfGrid.utfGridType == "map") {
-                $('#chartDialog').append("<strong>"+selectedLayer+"</strong><br>Gravity Acceleration: "+spotValue);
+                $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>Gravity Acceleration: "+spotValue);
             } else if (utfGrid.utfGridType == "curve") {
             var lon = lng;
             // grid line functions
