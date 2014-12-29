@@ -971,8 +971,6 @@ var startApp = function() {
 
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                console.log('json:');
-                console.log(json);
                 AppVars.selectedHazardMapName = json.name;
                 AppVars.selectedMappedValue = json.mapped_value;
                 var bounds = json.bounds;
@@ -1270,7 +1268,7 @@ var startApp = function() {
             //////////////////////////////////////////////////
 
             if (utfGrid.utfGridType == "map") {
-                $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>Gravity Acceleration: "+spotValue);
+                $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>"+spotValue+" [g]");
             } else if (utfGrid.utfGridType == "curve") {
             var lon = lng;
             // grid line functions
@@ -1286,6 +1284,15 @@ var startApp = function() {
                     .scale(y)
                     .orient('left')
                     .ticks(5);
+            }
+
+            var yAxisLable = "";
+            console.log('curveType:');
+            console.log(curveType);
+            if (curveType == "uhs") {
+                yAxisLable = 'Spectral Acceleration, Sa [g]';
+            } else if (curveType == "hc") {
+                yAxisLable = 'Probability of exceedance in '+AppVars.layerInvestigationTime+' years';
             }
 
             if(!(AppVars.layerIml instanceof Array)) {
@@ -1380,15 +1387,7 @@ var startApp = function() {
                 .style('font-size','12px')
                 .text(AppVars.layerImt);
 
-            svg.append('g')
-                .attr('class', 'x axis')
-                .append('text')
-                .attr('x', width / 2)
-                .attr('y',  (height + margin.bottom)- 35)
-                //.attr('dy', '.71em')
-                .attr('text-anchor', 'middle')
-                .style('font-size','12px')
-                .text(AppVars.layerImt);
+
 
             svg.append('g')
                 .attr('class', 'y axis')
@@ -1400,7 +1399,7 @@ var startApp = function() {
                 .attr('dy', '.71em')
                 .style('font-size','12px')
                 .style('text-anchor', 'end')
-                .text('Probability of exceedance in '+AppVars.layerInvestigationTime+' years');
+                .text(yAxisLable);
 
             var legend = d3.select('#chartDialog').append('svg')
                 .attr('height', 25);
