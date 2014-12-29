@@ -1287,8 +1287,7 @@ var startApp = function() {
             }
 
             var yAxisLable = "";
-            console.log('curveType:');
-            console.log(curveType);
+
             if (curveType == "uhs") {
                 yAxisLable = 'Spectral Acceleration, Sa [g]';
             } else if (curveType == "hc") {
@@ -1387,7 +1386,15 @@ var startApp = function() {
                 .style('font-size','12px')
                 .text(AppVars.layerImt);
 
-
+            svg.append('g')
+                .attr('class', 'x axis')
+                .append('text')
+                .attr('x', width / 2)
+                .attr('y',  (height + margin.bottom)- 35)
+                //.attr('dy', '.71em')
+                .attr('text-anchor', 'middle')
+                .style('font-size','12px')
+                .text(AppVars.layerImt);
 
             svg.append('g')
                 .attr('class', 'y axis')
