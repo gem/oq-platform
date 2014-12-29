@@ -27,12 +27,13 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
-            <b>Seismic Hazard Data Sets:</b>
+            <b>Seismic Hazard Data Sets and Models:</b>
             <ul>
               <li><a href="/maps/23">Global Instrumental Earthquake Catalogue (1900 - 2009)</a></li>
               <li><a href="/maps/24">Global Historical Earthquake Catalogue and Archive (1000-1903)</a></li>
               <li><a href="/maps/25">Homogeneous Active Faults</a></li>
               <li><a href="/maps/26">Geodetic Strain Rate Model</a></li>
+              <li><a href="{% url 'hrde' %}">Explore Hazard Models</a></li>
             </ul>
 
             <b>Physical Risk Data Sets:</b>
@@ -60,7 +61,6 @@
 
             <b>Explore:</b>
             <ul>
-              <li><a href="{% url 'hrde' %}">Hazard Models</a></li>
               <li><a href="{% url "maps_browse" %}">Maps</a></li>
               <li><a href="{% url "layer_browse" %}">Individual Datasets (Layers)</a></li>
               <li><a href="{% url 'documents_browse' %}">Documents</a></li>
