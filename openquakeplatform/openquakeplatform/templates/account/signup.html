@@ -25,6 +25,13 @@
                     {% if redirect_field_value %}
                         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                     {% endif %}
+                    <div id="div_id_terms" class="control-group  ">
+                        <p>Please type 'accept' (lowercase, without quotes) to accept the <a href="{% url "terms" %}">Terms of Use</a></p>
+                        <label for="id_terms" class="control-label required-field">Terms</label>
+                        <div class="controls">
+                            <input id="terms" name="terms" type="text">
+                        </div>
+                    </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
                     </div>
@@ -44,6 +51,13 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#id_username').focus();
+        });
+        $( "#signup_form" ).submit(function( event ) {
+          if ( $('#terms').val() != 'accept') {
+            $( '#div_id_terms' ).addClass( "error" );
+            $( '#div_id_terms > .controls' ).append('<span id="error_id_terms" class="help-inline">Please accept the Terms.</span>');
+            event.preventDefault();
+          }
         });
     </script>
 {% endblock %}
