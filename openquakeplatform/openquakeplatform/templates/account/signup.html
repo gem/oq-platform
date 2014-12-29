@@ -13,7 +13,7 @@
 
            <h2>SIGN UP</h2>
            <p style="margin-bottom: 50px;">
-           Registering is free and open to anyone worldwide. 
+           Registering is free and open to anyone worldwide.
            By registering you agree to the <a href="{% url "terms" %}">OpenQuake Platform Terms of Use</a> and declare to have read and understood our <a href="http://www.globalquakemodel.org/gem/terms/privacy/">Privacy Policy</a>.
            </p>
 
@@ -29,7 +29,8 @@
                         <p>Please type 'accept' (lowercase, without quotes) to accept the <a href="{% url "terms" %}">Terms of Use</a>:</p>
                         <label for="id_terms" class="control-label required-field">Terms</label>
                         <div class="controls">
-                            <input id="terms" name="terms" type="text">
+                            <input id="id_terms" name="terms" type="text">
+                            <span id="error_id_terms" class="help-inline"></span>
                         </div>
                     </div>
                     <div class="form-actions">
@@ -53,9 +54,10 @@
             $('#id_username').focus();
         });
         $( "#signup_form" ).submit(function( event ) {
-          if ( $('#terms').val() != 'accept') {
-            $( '#div_id_terms' ).addClass( "error" );
-            $( '#div_id_terms > .controls' ).append('<span id="error_id_terms" class="help-inline">Please accept the Terms.</span>');
+          if ( $('#id_terms').val() != 'accept') {
+            $('#div_id_terms').addClass('error');
+            $('#error_id_terms').text('Please accept the Terms');
+            $('#id_terms').focus();
             event.preventDefault();
           }
         });
