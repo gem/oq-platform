@@ -37,8 +37,10 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
 from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
+from geonode.layers.models import Layer
 from geonode.layers.models import set_attributes
 from geonode.layers.utils import layer_set_permissions
+from geonode.utils import default_map_config
 from geonode.utils import http_client, ogc_server_settings
 
 from openquakeplatform.icebox import fields
@@ -89,68 +91,16 @@ class Calculation(models.Model):
         :param list layers:
            the :class:`geonode.maps.Layer` instances representing the results
         """
-        map = maps.Map.objects.create(
-            owner=self.user,
-            title=self.description,
-            abstract="",
-            zoom=0,
-            center_x=0, center_y=0,
-            projection="EPSG:900913",
-            uuid=str(uuid.uuid1()))
 
-        baselayers = [l for l in settings.MAP_BASELAYERS
-                      if l.get("group") == "background"]
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
-        for i, baselayer in enumerate(baselayers):
-            name = baselayer.get(
-                "name", baselayer.get("args", [baselayer.get("type")])[0])
-            map.layer_set.add(
-                maps.MapLayer.objects.create(
-                    map=map,
-                    stack_order=i,
-                    name=name,
-                    group=baselayer["group"],
-                    visibility=name == "osm",
-                    layer_params=json.dumps(
-                        dict(title=name, selected=name == "osm",
-                             type=baselayer.get("type"))),
-                    source_params=json.dumps(
-                        dict(id=str(i),
-                             args=baselayer.get("args", []),
-                             ptype=baselayer["source"]["ptype"]))))
-
+        layer_name = []
         for i, layer in enumerate(layers):
-            if layer.outputlayer.output_type in [HazardCurve,
-                                                 LossCurve,
-                                                 AggregateLossCurve]:
-                info_format = "text/html"
-            else:
-                info_format = "application/vnd.ogc.gml"
-            perm_spec = {
-                'authenticated': '_none',
-                'users': [[self.user, 'layer_readwrite'],
-                          [self.user, 'layer_admin']],
-                'anonymous': '_none'
-                }
-            layer_set_permissions(layer, perm_spec)
+            layer_name.append(layer.typename)
 
-            map.layer_set.add(
-                maps.MapLayer.objects.create(
-                    map=map,
-                    stack_order=i + len(baselayers),
-                    name=layer.typename,
-                    format="image/png",
-            # The following commented line makes GeoExplorer break
-            # group=layer.outputlayer.output_type.__name__,
-
-            # show only the first output layer
-                    visibility=(i == 0),
-                    transparent=True,
-                    ows_url=ogc_server_settings.public_url + "wms",
-                    layer_params=json.dumps({"infoFormat": info_format}),
-                    local=True))
-        map.set_bounds_from_layers(map.local_layers)
-        map.set_default_permissions()
+        map = maps.Map()
+        map.create_from_layer_list(self.user, layer_name, self.description, "")
+        map.update_from_viewer(map.viewer_json(*(DEFAULT_BASE_LAYERS)))
         perm_spec = {
             'authenticated': '_none',
             'users': [[self.user, 'map_readwrite'],
@@ -160,7 +110,6 @@ class Calculation(models.Model):
         map_set_permissions(map, perm_spec)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
-
         self.map = map
         self.save()
 
