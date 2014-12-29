@@ -305,11 +305,13 @@ MAP_BASELAYERS = [{
         "ptype": "gxp_wmscsource",
         "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
         "restUrl": "/gs/rest"
-     }
+     },
+    "name":"geoserver"
   },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
+    "name":"nobackground",
     "visibility": False,
     "fixed": True,
     "group":"background"
@@ -338,8 +340,10 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source": {"ptype": "gxp_tilestreamsource" },
+    "name":"tilestream"
   }, {
     "source": {"ptype": "gxp_mapboxsource"},
+    "name":"mapbox"
   }, {
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.WMS",
