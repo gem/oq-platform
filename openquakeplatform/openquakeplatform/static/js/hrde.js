@@ -1271,21 +1271,6 @@ var startApp = function() {
                 $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>"+spotValue+" [g]");
             } else if (utfGrid.utfGridType == "curve") {
             var lon = lng;
-            // grid line functions
-            function make_x_axis() {
-                return d3.svg.axis()
-                    .scale(x)
-                    .orient('bottom')
-                    .ticks(5);
-            }
-
-            function make_y_axis() {
-                return d3.svg.axis()
-                    .scale(y)
-                    .orient('left')
-                    .ticks(5);
-            }
-
             var yAxisLable = "";
 
             if (curveType == "uhs") {
@@ -1313,6 +1298,9 @@ var startApp = function() {
             var x = d3.scale.log().domain([0, width]).range([0, width]);
             var y = d3.scale.log().range([height, 0]);
 
+            var x2 = d3.scale.linear().domain([0, width]).range([0, width]);
+            var y2 = d3.scale.log().range([height, 0]);
+
             var xAxis = d3.svg.axis()
                 .scale(x)
                 .tickFormat(function (d) { return Math.round(d * 100) / 100; })
@@ -1336,6 +1324,30 @@ var startApp = function() {
                 .append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+            var dataCallback = function(d) {
+                d.x = +d[0];
+                d.y = +d[1];
+            };
+
+            data.forEach(dataCallback);
+            x.domain(d3.extent(data, function(d) { return d.x; }));
+            y.domain(d3.extent(data, function(d) { return d.y; }));
+
+            // grid line functions
+            function make_x_axis() {
+                return d3.svg.axis()
+                    .scale(x)
+                    .orient('bottom')
+                    .ticks(5);
+            }
+
+            function make_y_axis() {
+                return d3.svg.axis()
+                    .scale(y)
+                    .orient('left')
+                    .ticks(5);
+            }
+
             // grid lines
             svg.append('g')
                 .attr('class', 'grid')
@@ -1351,15 +1363,6 @@ var startApp = function() {
                     .tickSize(-width, 0, 0)
                     .tickFormat('')
                 );
-
-            var dataCallback = function(d) {
-                d.x = +d[0];
-                d.y = +d[1];
-            };
-
-            data.forEach(dataCallback);
-            x.domain(d3.extent(data, function(d) { return d.x; }));
-            y.domain(d3.extent(data, function(d) { return d.y; }));
 
             svg.append('path')
                 .data([data])
