@@ -117,8 +117,8 @@ class Calculation(models.Model):
         map.update_from_viewer(map.viewer_json(*(base_layers)))
         map_set_permissions(map, MAP_PERM_SPEC)
         map.save()
-
         map_changed_signal.send_robust(sender=map, what_changed='layers')
+
         self.map = map
         self.save()
 
