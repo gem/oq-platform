@@ -25,6 +25,8 @@
 import collections
 import os
 import logging
+import json
+import uuid
 
 from django.contrib.gis.db import models
 from django.contrib.auth import models as auth_models
@@ -36,10 +38,11 @@ from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
 from geonode.layers.models import set_attributes
 from geonode.layers.utils import layer_set_permissions
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, ogc_server_settings
 
-from openquakeplatform.icebox import fields
 from openquakeplatform import geoserver_api as geoserver
+from openquakeplatform.icebox import fields
+from openquakeplatform.icebox.utils import set_bbox
 
 logger = logging.getLogger(__name__)
 
@@ -103,18 +106,45 @@ class Calculation(models.Model):
             'anonymous': '_none'
             }
 
-        layer_name = []
-        for layer in layers:
+        map = maps.Map.objects.create(
+            owner=self.user,
+            title=self.description,
+            abstract="",
+            zoom=0,
+            center_x=0, center_y=0,
+            projection="EPSG:900913",
+            uuid=str(uuid.uuid1()))
+
+        for i, layer in enumerate(layers):
+            if layer.outputlayer.output_type in [HazardCurve,
+                                                 LossCurve,
+                                                 AggregateLossCurve]:
+                info_format = "text/html"
+            else:
+                info_format = "application/vnd.ogc.gml"
+
             layer_set_permissions(layer, LAYER_PERM_SPEC)
-            layer_name.append(layer.typename)
-        map = maps.Map()
-        map.create_from_layer_list(self.user, layer_name, self.description, "")
+
+            map.layer_set.add(
+                maps.MapLayer.objects.create(
+                    map=map,
+                    stack_order=i,
+                    name=layer.typename,
+                    format="image/png",
+                    visibility=(i == 0),
+                    transparent=True,
+                    ows_url=ogc_server_settings.public_url + "wms",
+                    layer_params=json.dumps({"infoFormat": info_format}),
+                    local=True))
+
+        set_bbox(map)
 
         base_layers = []
         for layer in DEFAULT_BASE_LAYERS:
             if layer.group == "background":
                 base_layers.append(layer)
         map.update_from_viewer(map.viewer_json(*(base_layers)))
+
         map_set_permissions(map, MAP_PERM_SPEC)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
