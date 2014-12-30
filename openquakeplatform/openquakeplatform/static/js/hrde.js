@@ -1158,6 +1158,7 @@ var startApp = function() {
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.periods;
                 AppVars.layerPoe = json.poe;
+                AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1254,15 +1255,22 @@ var startApp = function() {
                         imlArray = iml.split(',');
                     }
                     imt = e.data.imt;
-                    if(imt == 'PGA') {
-                        imt = 'Peak Ground Acceleration (g)';
-                    } else if (imt == 'PGV') {
-                        imt = 'Peak Ground Velocity (cm/s)';
-                    } else if (imt == 'PGD') {
-                        imt = 'Peak Ground Displacement (cm)';
-                    } else if (imt == 'SA') {
-                        imt = 'Spectral Acceleration (g)';
+                    if (curveType == 'hc') {
+                        if(imt == 'PGA') {
+                            imt = 'Peak Ground Acceleration (g)';
+                        } else if (imt == 'PGV') {
+                            imt = 'Peak Ground Velocity (cm/s)';
+                        } else if (imt == 'PGD') {
+                            imt = 'Peak Ground Displacement (cm)';
+                        } else if (imt == 'SA') {
+                            imt = 'Spectral Acceleration (g)';
+                        }
+                    } else if (curveType == 'uhs') {
+                        imt = 'Period (s)';
                     }
+
+                    console.log('imt:');
+                    console.log(imt);
 
                     lat = e.data.lat;
                     lng = e.data.lon;
@@ -1387,11 +1395,22 @@ var startApp = function() {
                 svg.append('g')
                     .attr('class', 'x axis')
                     .attr('transform', 'translate(0,' + height + ')')
+                    //.attr('transform', 'rotate(-90)')
                     .call(xAxis)
+                    .selectAll("text")
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.8em")
+                    .attr("dy", ".15em")
+                    .attr("transform", function(d) {
+                        return "rotate(-65)"
+                        });
+
+                svg.append('g')
+                    .attr('class', 'x axis')
                     .append('text')
-                    .attr("x", width / 2)
-                    .attr('y', 30)
-                    .attr('dy', '.71em')
+                    .attr('x', width / 2)
+                    .attr('y',  (height + margin.bottom)- 15)
+                    //.attr('dy', '.71em')
                     .attr('text-anchor', 'middle')
                     .style('font-size','12px')
                     .text(AppVars.layerImt);
@@ -1441,8 +1460,6 @@ var startApp = function() {
                             .style('fill', 'gray');
                     });
 
-                var chartHeader = 'Investigation Time: '+AppVars.layerInvestigationTime;
-
                 textTopTitle = svg.append("text")
                     .attr("x", 0)
                     .attr("y", -45)
@@ -1464,7 +1481,7 @@ var startApp = function() {
                     .attr("y", -15)
                     .attr("dy", ".35em")
                     .attr("font-size","12px")
-                    .text(chartHeader+' (Lon/Lat): '+lng+', '+lat);
+                    .text('Point coordinates (lon, lat [in DD]): '+lng+', '+lat);
 
                 textBottom = svg.append('text')
                     .attr('x', 0)
@@ -2050,6 +2067,9 @@ var startApp = function() {
         } else if (curveType == 'uhs') {
             xAxisLable = 'Period (s)';
         }
+
+        console.log('xAxisLable:');
+        console.log(xAxisLable);
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
