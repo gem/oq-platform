@@ -62,6 +62,8 @@ AppProtoType.prototype = {
     mappedValue: null,
     selectedHazardMapName: null,
     selectedMappedValue: null,
+    selectedHazardLayerName: null,
+    selectedLayerValue: null,
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -909,6 +911,8 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
                 AppVars.mappedValue = json.mapped_value;
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.iml;
@@ -932,6 +936,8 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.periods;
                 AppVars.layerPoe = json.poe;
@@ -953,6 +959,8 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1183,11 +1191,24 @@ var startApp = function() {
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
+            // format the selected map and layer names
+            try {
+                AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
+            } catch (e) {
+                // continue
+            }
+
+            try {
+                AppVars.selectedMappedValue = AppVars.selectedMappedValue.split(":").pop();
+            } catch (e) {
+                // continue
+            }
+
             // Do stuff only if data is not null
             if (e.data) {
                 var spotValue = "";
                 try {
-                    spotValue = e.data.VAL;
+                    spotValue = e.data.iml;
                 } catch (e) {
                     // continue
                 }
@@ -1289,7 +1310,7 @@ var startApp = function() {
                     }
                 }
 
-                var margin = {top: 45, right: 20, bottom: 80, left: 60},
+                var margin = {top: 60, right: 20, bottom: 80, left: 60},
                 width = 580 - margin.left - margin.right,
                 height = 380 - margin.top - margin.bottom;
 
@@ -1424,11 +1445,19 @@ var startApp = function() {
 
                 textTopTitle = svg.append("text")
                     .attr("x", 0)
+                    .attr("y", -45)
+                    .attr("dy", ".35em")
+                    .style("font-weight", "bold")
+                    .attr("font-size","14px")
+                    .text(AppVars.selectedHazardLayerName);
+
+                textTopTitle2 = svg.append("text")
+                    .attr("x", 0)
                     .attr("y", -30)
                     .attr("dy", ".35em")
                     .style("font-weight", "bold")
                     .attr("font-size","14px")
-                    .text(AppVars.mappedValue);
+                    .text(AppVars.selectedLayerValue);
 
                 textTopLable = svg.append("text")
                     .attr("x", 0)
@@ -1439,7 +1468,7 @@ var startApp = function() {
 
                 textBottom = svg.append('text')
                     .attr('x', 0)
-                    .attr('y', 320)
+                    .attr('y', 300)
                     .attr('dy', '.35em')
                     .text('');
 
