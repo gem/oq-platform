@@ -14,7 +14,6 @@
     <div class="hero-unit">
       <div id="oq-context-ribbon">
         {% block oq_context_ribbon %}
-          <!-- Subtemplates can add context-sensitive components to the page-->
         {% endblock oq_context_ribbon %}
       </div>
       <div id="oq-body-heading">
@@ -44,7 +43,6 @@
               <li><a href="/vulnerability/list/">Physical Vulnerability</a></li>
             </ul>
 
-
             <b>Social Vulnerability and Integrated Risk Data Sets:</b>
             <ul>
               <li><a href="{% url 'grv_viewer' %}">Social Vulnerability Global Risk Viewer</a></li>
@@ -55,14 +53,14 @@
 
             <b>GEM Building Taxonomy Tools:</b>
             <ul>
-              <li><a href="http://taxtweb.openquake.org/">TaxTweb</a> Online graphical tool for editing GEM Taxonomy strings</li>
-              <li><a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical desktop tool for editing GEM Taxonomy strings, Windows only</li>
+              <li><a href="http://taxtweb.openquake.org/" target="_blank">TaxTweb</a> Online graphical tool for editing GEM Taxonomy strings</li>
+              <li><a href="https://github.com/GEMScienceTools/TaxT" target="_blank">TaxT</a> Graphical desktop tool for editing GEM Taxonomy strings, Windows only</li>
             </ul>
 
             <b>Explore:</b>
             <ul>
-              <li><a href="{% url "maps_browse" %}">Maps</a></li>
-              <li><a href="{% url "layer_browse" %}">Individual Datasets (Layers)</a></li>
+              <li><a href="{% url 'maps_browse' %}">Maps</a></li>
+              <li><a href="{% url 'layer_browse' %}">Individual Datasets (Layers)</a></li>
               <li><a href="{% url 'documents_browse' %}">Documents</a></li>
               <li><a href="{% url 'profile_browse' %}">People</a></li>
             </ul>
