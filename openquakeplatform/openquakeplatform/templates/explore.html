@@ -40,7 +40,7 @@
               <li><a href="/ecd/eventsmap/?&amp;f_b=False&amp;f_c=False&amp;f_i=False&amp;f_p=False&amp;f_s=False&amp;all=True">Earthquake Consequences Database</a></li>
               <li><a href="{% url 'exposure' %}">Exposure Export</a></li>
               <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
-              <li><a href="/vulnerability/list/">Physical Vulnerability</a></li>
+              <li><a href="{% url 'vulnerability.views.list_entries' %}">Physical Vulnerability</a></li>
             </ul>
 
             <b>Social Vulnerability and Integrated Risk Data Sets:</b>
