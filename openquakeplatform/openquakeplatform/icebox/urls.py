@@ -25,7 +25,7 @@ from openquakeplatform.icebox import views
 
 
 urlpatterns = patterns(
-    'geonode.icebox.views',
+    'openquakeplatform.icebox.views',
     url(r'^$', login_required(TemplateView.as_view(
         template_name="icebox.html")), name="icebox"),
     url(r'^calculations$', login_required(views.CalculationsView.as_view()),
