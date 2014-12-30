@@ -90,28 +90,34 @@ class Calculation(models.Model):
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
-        perm_spec = {
+        LAYER_PERM_SPEC = {
             'authenticated': '_none',
             'users': [[self.user, 'layer_readwrite'],
                       [self.user, 'layer_admin']],
             'anonymous': '_none'
             }
-        layer_name = []
-        for layer in enumerate(layers):
-            layer_set_permissions(layer, perm_spec)
-            layer_name.append(layer.typename)
-
-        map = maps.Map()
-        map.create_from_layer_list(self.user, layer_name, self.description, "")
-        map.update_from_viewer(map.viewer_json(*(DEFAULT_BASE_LAYERS)))
-        perm_spec = {
+        MAP_PERM_SPEC = {
             'authenticated': '_none',
             'users': [[self.user, 'map_readwrite'],
                       [self.user, 'map_admin']],
             'anonymous': '_none'
             }
-        map_set_permissions(map, perm_spec)
+
+        layer_name = []
+        for layer in layers:
+            layer_set_permissions(layer, LAYER_PERM_SPEC)
+            layer_name.append(layer.typename)
+        map = maps.Map()
+        map.create_from_layer_list(self.user, layer_name, self.description, "")
+
+        base_layers = []
+        for layer in DEFAULT_BASE_LAYERS:
+            if layer.group == "background":
+                base_layers.append(layer)
+        map.update_from_viewer(map.viewer_json(*(base_layers)))
+        map_set_permissions(map, MAP_PERM_SPEC)
         map.save()
+
         map_changed_signal.send_robust(sender=map, what_changed='layers')
         self.map = map
         self.save()
