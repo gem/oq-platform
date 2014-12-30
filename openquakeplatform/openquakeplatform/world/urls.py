@@ -25,6 +25,5 @@ admin.autodiscover()
 
 
 urlpatterns = patterns(
-    'geonode.world.views',
-    url(r'^admin/', include(admin.site.urls)),
+    'openquakeplatform.world.views',
 )
