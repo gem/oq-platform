@@ -1052,10 +1052,11 @@ var startApp = function() {
         var utfGrid = createUtfLayerGroups(selectedLayer);
 
         AppVars.utfGrid.on('click', function (e) {
-            $('#chartDialog').empty();
-            $('#chartDialog').dialog('open');
-            var mfds, binWidth, minMag, occurRate, mags;
             if (e.data) {
+                $('#chartDialog').empty();
+                $('#chartDialog').dialog('open');
+                var mfds, binWidth, minMag, occurRate, mags;
+
                 mfds = e.data.mfds;
                 var mfdsJsonObj = $.parseJSON(mfds);
                 var inputObject = {};
@@ -1766,7 +1767,7 @@ var startApp = function() {
         }
 
         var margin = {top: 55, right: 80, bottom: 45, left: 60};
-        var width = 480 - margin.left - margin.right;
+        var width = 580 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
         var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
         var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
