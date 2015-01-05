@@ -1682,7 +1682,7 @@ var startApp = function() {
         /* associative array of arrays [ x, y ] to describe the curve on the plane */
         curve_coup = [];
 
-        yAxisLable = 'Number of events / years';
+        yAxisLable = 'Number of events / year';
         xAxisLable = 'Magnitude';
 
         for (var k in mfdsJsonObj) {
