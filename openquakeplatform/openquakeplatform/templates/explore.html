@@ -14,7 +14,6 @@
     <div class="hero-unit">
       <div id="oq-context-ribbon">
         {% block oq_context_ribbon %}
-          <!-- Subtemplates can add context-sensitive components to the page-->
         {% endblock oq_context_ribbon %}
       </div>
       <div id="oq-body-heading">
@@ -27,35 +26,45 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
-            <b>Data Sets:</b>
+            <b>Seismic Hazard Data Sets and Models:</b>
             <ul>
-              <li><a href="/ecd/eventsmap/?&f_b=False&f_c=False&f_i=False&f_p=False&f_s=False&all=True">Consequences Database</a></li>
-              <li><a href="{% url 'exposure' %}">Exposure Exporter</a></li>
+              <li><a href="/maps/23">Global Instrumental Earthquake Catalogue (1900 - 2009)</a></li>
+              <li><a href="/maps/24">Global Historical Earthquake Catalogue and Archive (1000-1903)</a></li>
+              <li><a href="/maps/25">Homogeneous Active Faults</a></li>
+              <li><a href="/maps/26">Geodetic Strain Rate Model</a></li>
+              <li><a href="{% url 'hrde' %}">Explore Hazard Models</a></li>
+            </ul>
+
+            <b>Physical Risk Data Sets:</b>
+            <ul>
+              <li><a href="/ecd/eventsmap/?&amp;f_b=False&amp;f_c=False&amp;f_i=False&amp;f_p=False&amp;f_s=False&amp;all=True">Earthquake Consequences Database</a></li>
+              <li><a href="{% url 'exposure' %}">Exposure Export</a></li>
               <li><a href="{% url 'hazus' %}">HAZUS Building Fractions </a></li>
+              <li><a href="{% url 'vulnerability.views.list_entries' %}">Physical Vulnerability</a></li>
+            </ul>
+
+            <b>Social Vulnerability and Integrated Risk Data Sets:</b>
+            <ul>
               <li><a href="{% url 'grv_viewer' %}">Social Vulnerability Global Risk Viewer</a></li>
-{% if is_gem_experimental %}<li><a href="{% url 'irv_viewer' %}">Social Vulnerability Integrated Risk Viewer</a></li>{% endif %}
-              <li><a href="/vulnerability/list/">Vulnerability</a></li>
-              <li><a href="/maps/23">Instrumental Seismic Catalogue [1900 - 2009]</a></li>
-              <li><a href="/maps/24">Global Historic Catalogue</a></li>
-              <li><a href="/maps/25">Global Active Faults</a></li>
-              <li><a href="/maps/26">Geodetic Strain Rate</a></li>
+             {% if is_gem_experimental %}
+              <li><a href="{% url 'irv_viewer' %}">Social Vulnerability Integrated Risk Viewer</a></li>
+             {% endif %}
+            </ul>
+
+            <b>GEM Building Taxonomy Tools:</b>
+            <ul>
+              <li><a href="http://taxtweb.openquake.org/" target="_blank">TaxTweb</a> Online graphical tool for editing GEM Taxonomy strings</li>
+              <li><a href="https://github.com/GEMScienceTools/TaxT" target="_blank">TaxT</a> Graphical desktop tool for editing GEM Taxonomy strings, Windows only</li>
             </ul>
 
             <b>Explore:</b>
             <ul>
+              <li><a href="{% url 'maps_browse' %}">Maps</a></li>
+              <li><a href="{% url 'layer_browse' %}">Individual Datasets (Layers)</a></li>
               <li><a href="{% url 'documents_browse' %}">Documents</a></li>
-              <li><a href="{% url "layer_browse" %}">Layers</a></li>
-              <li><a href="{% url "maps_browse" %}">Maps</a></li>
-              <li><a href="{% url 'hrde' %}">Hazard and Risk Data Explorer</a></li>
               <li><a href="{% url 'profile_browse' %}">People</a></li>
             </ul>
 
-
-            <b>GEM Building Taxonomy Tool:</b>
-            <ul>
-              <li><a href="https://github.com/GEMScienceTools/TaxT">TaxT</a> Graphical tool for editing GEM Taxonomy strings, Windows only</li>
-              <li><a href="http://taxtweb.openquake.org/">TaxTweb</a> Graphical tool for editing GEM Taxonomy strings, web version</li>
-            </ul>
           </div>
         {% endblock oq_body_content %}
       </div>
