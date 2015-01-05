@@ -126,7 +126,7 @@ TILESTREAM_URL = '//tilestream.openquake.org'
 
 HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform'
 
-GEOSERVER_URL = '/geoserver/'
+GEOSERVER_URL = SITEURL + 'geoserver/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'openquakeplatform.utils.oq_context_processor',
