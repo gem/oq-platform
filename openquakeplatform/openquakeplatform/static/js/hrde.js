@@ -449,7 +449,7 @@ var startApp = function() {
                         AppVars.inputAvailable[j] = template;
                     }
                     else if (chartType == 'single') {
-                        AppVars.InputbyInvestSingle[j] = name;
+                        AppVars.inputByInvestSingle[j] = name;
                     }
                 }
 
