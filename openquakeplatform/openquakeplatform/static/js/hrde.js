@@ -1269,9 +1269,6 @@ var startApp = function() {
                         imt = 'Period (s)';
                     }
 
-                    console.log('imt:');
-                    console.log(imt);
-
                     lat = e.data.lat;
                     lng = e.data.lon;
 
@@ -1320,7 +1317,7 @@ var startApp = function() {
 
                 var margin = {top: 60, right: 20, bottom: 80, left: 60},
                 width = 580 - margin.left - margin.right,
-                height = 380 - margin.top - margin.bottom;
+                height = 400 - margin.top - margin.bottom;
 
                 var x = d3.scale.log().domain([0, width]).range([0, width]);
                 var y = d3.scale.log().range([height, 0]);
@@ -1409,10 +1406,10 @@ var startApp = function() {
                     .attr('class', 'x axis')
                     .append('text')
                     .attr('x', width / 2)
-                    .attr('y',  (height + margin.bottom)- 15)
+                    .attr('y',  (height + margin.bottom)- 17)
                     //.attr('dy', '.71em')
                     .attr('text-anchor', 'middle')
-                    .style('font-size','12px')
+                    .style('font-size','14px')
                     .text(AppVars.layerImt);
 
                 svg.append('g')
@@ -1485,7 +1482,7 @@ var startApp = function() {
 
                 textBottom = svg.append('text')
                     .attr('x', 0)
-                    .attr('y', 300)
+                    .attr('y', 335)
                     .attr('dy', '.35em')
                     .text('');
 
@@ -2067,9 +2064,6 @@ var startApp = function() {
         } else if (curveType == 'uhs') {
             xAxisLable = 'Period (s)';
         }
-
-        console.log('xAxisLable:');
-        console.log(xAxisLable);
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
