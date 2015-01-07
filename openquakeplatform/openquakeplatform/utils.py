@@ -32,6 +32,8 @@ def oq_context_processor(request):
     context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
     context['TILESTREAM_URL'] = settings.TILESTREAM_URL
     context['HELP_URL'] = settings.HELP_URL
+    if hasattr(settings, 'GOOGLE_UA'):
+        context['GOOGLE_UA'] = settings.GOOGLE_UA
 
     return context
 
