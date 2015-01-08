@@ -1679,6 +1679,9 @@ var startApp = function() {
 
         // format the data for use in histogram
         var dataArray = [];
+        var selectedCurves = [];
+        var curve_name;
+        var curve_vals = [];
         var keys = Object.keys(mfdsJsonObj);
         var mfdsJsonObjMags = mfdsJsonObj[keys].mags;
         var mfdsJsonObjOccurRates = mfdsJsonObj[keys].occur_rates;
@@ -1689,9 +1692,13 @@ var startApp = function() {
             associativeArray['value'] = mfdsJsonObjOccurRates[i];
             dataArray.push(associativeArray);
         }
-        console.log('dataArray:');
-        console.log(dataArray);
 
+        for (var k in mfdsJsonObj) {
+            curve_name = k;
+            curve_vals[curve_name] = mfdsJsonObj[k].occur_rates;
+            selectedCurves.push(k);
+            yAxisVariable = mfdsJsonObj[k].mags;
+        }
 
         var margin = {top: 60, right: 20, bottom: 80, left: 90},
             width = 580 - margin.left - margin.right,
@@ -1789,7 +1796,67 @@ var startApp = function() {
             .attr("font-size","14px")
             .attr('text-anchor', 'middle')
             .text(AppVars.mappedValue);
+/*
+        $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+        $('#downloadCurve').on("hover", function(){
+            $(this).css("cursor", "pointer");
+        });
 
+        var h = $("#chartDialog").height();
+        h = h + 40;
+        $("#chartDialog").css({"height": h+"px"});
+
+        // Prep data for download to CSV
+        $('#downloadCurve').click(function(event) {
+            var csvHeader = selectedCurves;
+            var csvData = [];
+
+            //csvData = csvData.concat(csvHeader);
+            csvData.push("mfds");
+            csvData.push("binWidth");
+            csvData.push("minMag");
+            csvData.push("occurRate");
+            csvData.push("mags");
+            csvData = JSON.stringify(csvData);
+            var lineBreak = "lineBreak";
+            csvData = csvData.concat(lineBreak);
+            var quotationMark = '"';
+
+            csvData = csvData
+                .replace(/lineBreak/, '\r\n')
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/","/g, ',')
+                .replace(/"/g, '');
+
+            for (var k in selectedCurves) {
+                curve_name = selectedCurves[k];
+                var curveValue = mfdsJsonObj[curve_name];
+
+                console.log('curve_name:');
+                console.log(curve_name);
+                console.log('csvData:');
+                console.log(csvData);
+
+                csvData.push(curve_name);
+                csvData.push(',');
+                csvData.push(curveValue.bin_width);
+                csvData.push(',');
+                csvData.push(curveValue.min_mag);
+                csvData.push(',');
+                csvData.push(quotationMark);
+                csvData.push(curveValue.occur_rates);
+                csvData.push(quotationMark);
+                csvData.push(',');
+                csvData.push(quotationMark);
+                csvData.push(curveValue.mags);
+                csvData.push(quotationMark);
+                csvData.push('\r\n');
+            }
+
+            downloadJSON2CSV(csvData);
+        });
+*/
     } // End Chart
 
     /////////////////////////////////////////////
