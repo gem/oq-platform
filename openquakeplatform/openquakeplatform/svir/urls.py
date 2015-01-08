@@ -29,8 +29,7 @@ admin.autodiscover()
 
 
 urlpatterns = patterns(
-    'geonode.svir.views',
-    url(r'^admin/', include(admin.site.urls)),
+    'openquakeplatform.svir.views',
     url(r'^list_themes', list_themes),
     url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
     url(r'^export_variables_info', export_variables_info),

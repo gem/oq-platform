@@ -22,13 +22,12 @@
 # We should move them to a separate file
 
 
-import json
-import uuid
 import collections
 import os
 import logging
+import json
+import uuid
 
-from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.auth import models as auth_models
 from django.db import connection
@@ -39,14 +38,16 @@ from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
 from geonode.layers.models import set_attributes
 from geonode.layers.utils import layer_set_permissions
-from geonode.utils import http_client, ogc_server_settings
+from geonode.utils import default_map_config, ogc_server_settings
 
-from openquakeplatform.icebox import fields
 from openquakeplatform import geoserver_api as geoserver
+from openquakeplatform.icebox import fields
+from openquakeplatform.icebox.utils import set_bbox
 
 logger = logging.getLogger(__name__)
 
-DS_NAME='icebox'
+DS_NAME = 'icebox'
+
 
 class Calculation(models.Model):
     calculation_type = models.TextField(choices=(('hazard', 'hazard'),
@@ -89,6 +90,22 @@ class Calculation(models.Model):
         :param list layers:
            the :class:`geonode.maps.Layer` instances representing the results
         """
+
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+
+        LAYER_PERM_SPEC = {
+            'authenticated': '_none',
+            'users': [[self.user, 'layer_readwrite'],
+                      [self.user, 'layer_admin']],
+            'anonymous': '_none'
+            }
+        MAP_PERM_SPEC = {
+            'authenticated': '_none',
+            'users': [[self.user, 'map_readwrite'],
+                      [self.user, 'map_admin']],
+            'anonymous': '_none'
+            }
+
         map = maps.Map.objects.create(
             owner=self.user,
             title=self.description,
@@ -98,27 +115,6 @@ class Calculation(models.Model):
             projection="EPSG:900913",
             uuid=str(uuid.uuid1()))
 
-        baselayers = [l for l in settings.MAP_BASELAYERS
-                      if l.get("group") == "background"]
-
-        for i, baselayer in enumerate(baselayers):
-            name = baselayer.get(
-                "name", baselayer.get("args", [baselayer.get("type")])[0])
-            map.layer_set.add(
-                maps.MapLayer.objects.create(
-                    map=map,
-                    stack_order=i,
-                    name=name,
-                    group=baselayer["group"],
-                    visibility=name == "osm",
-                    layer_params=json.dumps(
-                        dict(title=name, selected=name == "osm",
-                             type=baselayer.get("type"))),
-                    source_params=json.dumps(
-                        dict(id=str(i),
-                             args=baselayer.get("args", []),
-                             ptype=baselayer["source"]["ptype"]))))
-
         for i, layer in enumerate(layers):
             if layer.outputlayer.output_type in [HazardCurve,
                                                  LossCurve,
@@ -126,38 +122,30 @@ class Calculation(models.Model):
                 info_format = "text/html"
             else:
                 info_format = "application/vnd.ogc.gml"
-            perm_spec = {
-                'authenticated': '_none',
-                'users': [[self.user, 'layer_readwrite'],
-                          [self.user, 'layer_admin']],
-                'anonymous': '_none'
-                }
-            layer_set_permissions(layer, perm_spec)
+
+            layer_set_permissions(layer, LAYER_PERM_SPEC)
 
             map.layer_set.add(
                 maps.MapLayer.objects.create(
                     map=map,
-                    stack_order=i + len(baselayers),
+                    stack_order=i,
                     name=layer.typename,
                     format="image/png",
-            # The following commented line makes GeoExplorer break
-            # group=layer.outputlayer.output_type.__name__,
-
-            # show only the first output layer
                     visibility=(i == 0),
                     transparent=True,
                     ows_url=ogc_server_settings.public_url + "wms",
                     layer_params=json.dumps({"infoFormat": info_format}),
                     local=True))
-        map.set_bounds_from_layers(map.local_layers)
-        map.set_default_permissions()
-        perm_spec = {
-            'authenticated': '_none',
-            'users': [[self.user, 'map_readwrite'],
-                      [self.user, 'map_admin']],
-            'anonymous': '_none'
-            }
-        map_set_permissions(map, perm_spec)
+
+        set_bbox(map)
+
+        base_layers = []
+        for layer in DEFAULT_BASE_LAYERS:
+            if layer.group == "background":
+                base_layers.append(layer)
+        map.update_from_viewer(map.viewer_json(*(base_layers)))
+
+        map_set_permissions(map, MAP_PERM_SPEC)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
 
