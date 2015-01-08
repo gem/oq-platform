@@ -126,7 +126,10 @@ TILESTREAM_URL = '//tilestream.openquake.org'
 
 HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform'
 
-GEOSERVER_URL = '/geoserver/'
+# The GEOSERVER_URL must be an absolute URL to let GXP working correctly.
+# To produce fixture for maps to be installed during setup it must be set
+# to the '/geoserver/' relative path
+GEOSERVER_URL = SITEURL + 'geoserver/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'openquakeplatform.utils.oq_context_processor',
@@ -137,7 +140,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
          # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
+        'LOCATION': 'http://localhost:8080/geoserver/',
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
