@@ -126,7 +126,7 @@ TILESTREAM_URL = '//tilestream.openquake.org'
 
 HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform'
 
-# The GEOSERVER_URL must be an absoulute URL to let GXP working correctly.
+# The GEOSERVER_URL must be an absolute URL to let GXP working correctly.
 # To produce fixture for maps to be installed during setup it must be set
 # to the '/geoserver/' relative path
 GEOSERVER_URL = SITEURL + 'geoserver/'
