@@ -1675,6 +1675,18 @@ var startApp = function() {
 
     function hazardInputD3Chart(mfdsJsonObj) {
 
+        console.log('AppVars.mappedValue:');
+        console.log(AppVars.mappedValue);
+
+        var mappedValue1 = AppVars.mappedValue.split(':')[0];
+        var mappedValue2 = AppVars.mappedValue.substring(AppVars.mappedValue.indexOf(":") + 1);
+
+        console.log('mappedValue1:');
+        console.log(mappedValue1);
+
+        console.log('mappedValue2:');
+        console.log(mappedValue2);
+
         var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
         var selectedCurves = [];
@@ -1928,7 +1940,7 @@ var startApp = function() {
             .call(xAxis[i]);
             if (i == (xAxis_n - 1))
                 g.append("text")
-                .attr("x", 160)
+                .attr("x", width / 2)
                 .attr("y", 30)
                 .attr("dy", ".71em")
                 .attr("text-anchor", "middle")
@@ -1941,10 +1953,10 @@ var startApp = function() {
             .append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", -60)
-            .attr("x", -20)
+            .attr("x", -120)
             .attr("dy", ".71em")
             .style("font-size","12px")
-            .style("text-anchor", "end")
+            .style("text-anchor", "middle")
             .text(yAxisLable);
 
         textTopTitle = svg.append("text")
@@ -1953,7 +1965,15 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(AppVars.mappedValue);
+            .text(mappedValue1);
+
+        textTopTitle2 = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -30)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","14px")
+            .text(mappedValue2);
 
         textTop = svg.append("text")
             .attr("x", 0)
@@ -1999,20 +2019,26 @@ var startApp = function() {
                 curve_name = selectedCurves[k];
                 var curveValue = mfdsJsonObj[curve_name];
 
-                csvData.push(curve_name);
-                csvData.push(',');
-                csvData.push(curveValue.bin_width);
-                csvData.push(',');
-                csvData.push(curveValue.min_mag);
-                csvData.push(',');
-                csvData.push(quotationMark);
-                csvData.push(curveValue.occur_rates);
-                csvData.push(quotationMark);
-                csvData.push(',');
-                csvData.push(quotationMark);
-                csvData.push(curveValue.mags);
-                csvData.push(quotationMark);
-                csvData.push('\r\n');
+                console.log('csvData:');
+                console.log(csvData);
+
+                console.log('curve_name:');
+                console.log(curve_name);
+
+                csvData += curve_name;
+                csvData += ',';
+                csvData += curveValue.bin_width;
+                csvData += ',';
+                csvData += curveValue.min_mag;
+                csvData += ',';
+                csvData += quotationMark;
+                csvData += curveValue.occur_rates;
+                csvData += quotationMark;
+                csvData += ',';
+                csvData += quotationMark;
+                csvData += curveValue.mags;
+                csvData += quotationMark;
+                csvData += '\r\n';
             }
 
             downloadJSON2CSV(csvData);
@@ -2491,7 +2517,6 @@ var startApp = function() {
             var i;
             for (i = 0 ; i < length ; i++) {
                 curve_valsX[curve_name][i] = Math.log(parseFloat(curve_valsX[curve_name][i]));
-                //curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
                 curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
             };
         }
