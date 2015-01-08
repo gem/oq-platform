@@ -1042,10 +1042,13 @@ var startApp = function() {
             AppVars.mappedValue = json.category +' '+ json.mapped_value;
             var bounds = json.bounds;
             var htmlLegend = json.html_legend;
+            var htmlLegendHeight = htmlLegend.split(/\r\n|\r|\n/).length;
+            htmlLegendHeight = htmlLegendHeight * 21;
+
             $('#legendDialog').empty();
-            $("#legendDialog").dialog({height:230});
             $('#legendDialog').dialog('open');
             $('#legendDialog').append(htmlLegend);
+            $('#legendDialog').dialog({height:htmlLegendHeight});
             map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
@@ -1675,19 +1678,10 @@ var startApp = function() {
 
     function hazardInputD3Chart(mfdsJsonObj) {
 
-        console.log('AppVars.mappedValue:');
-        console.log(AppVars.mappedValue);
-
         var mappedValue1 = AppVars.mappedValue.split(':')[0];
         var mappedValue2 = AppVars.mappedValue.substring(AppVars.mappedValue.indexOf(":") + 1);
 
-        console.log('mappedValue1:');
-        console.log(mappedValue1);
-
-        console.log('mappedValue2:');
-        console.log(mappedValue2);
-
-        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
+        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
         var selectedCurves = [];
         // associative array of arrays of values
@@ -2018,12 +2012,6 @@ var startApp = function() {
             for (var k in selectedCurves) {
                 curve_name = selectedCurves[k];
                 var curveValue = mfdsJsonObj[curve_name];
-
-                console.log('csvData:');
-                console.log(csvData);
-
-                console.log('curve_name:');
-                console.log(curve_name);
 
                 csvData += curve_name;
                 csvData += ',';
