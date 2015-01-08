@@ -1674,16 +1674,12 @@ var startApp = function() {
     /////////////////////////////////////
 
     function hazardInputD3Chart(mfdsJsonObj) {
-        console.log('mfdsJsonObj:');
-        console.log(mfdsJsonObj);
 
         var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
         var selectedCurves = [];
         // associative array of arrays of values
         curve_vals = [];
-        // associative array of arrays [ x, y ] to describe the curve on the plane
-        curve_coup = [];
 
         yAxisLable = 'Number of events / year';
         xAxisLable = 'Magnitude';
@@ -1710,34 +1706,22 @@ var startApp = function() {
 
         // prep data for multiple curve plots
         var multiplePlotData = [];
-        if (keys > 1) {
-            var foo = [];
-            for (var m in mfdsJsonObj) {
+        var allyAxisVariable = [];
 
+        for (var m in mfdsJsonObj) {
+            var bar = [];
+            for (var i = 0; i < mfdsJsonObj[m].mags.length; i++) {
+                allyAxisVariable.push(mfdsJsonObj[m].mags[i]);
+                bar.push([mfdsJsonObj[m].mags[i], mfdsJsonObj[m].occur_rates[i]]);
+                multiplePlotData[m] = bar;
             }
         }
-
-
-        console.log('multipleMfdsMinValue:');
-        console.log(multipleMfdsMinValue);
-        console.log('multipleMfdsMaxValue:');
-        console.log(multipleMfdsMaxValue);
 
         for (var k in mfdsJsonObj) {
             curve_name = k;
             curve_vals[curve_name] = mfdsJsonObj[k].occur_rates;
             selectedCurves.push(k);
             yAxisVariable = mfdsJsonObj[k].mags;
-        }
-
-        for (var k in selectedCurves) {
-            curve_name = selectedCurves[k];
-            curve_coup[curve_name] = [];
-            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (yAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
-                    curve_coup[curve_name].push([ yAxisVariable[i], curve_vals[curve_name][i] ]);
-                }
-            }
         }
 
         for (var k in selectedCurves) {
@@ -1802,9 +1786,6 @@ var startApp = function() {
                 });
         }
 
-        console.log('yAxisVariable:');
-        console.log(yAxisVariable);
-
         var margin = {top: 55, right: 80, bottom: 45, left: 60};
         var width = 580 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
@@ -1819,16 +1800,15 @@ var startApp = function() {
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
 
-        xAxis_n = parseInt(Math.ceil(yAxisVariable.length / 5));
-        console.log('xAxis_n:');
-        console.log(xAxis_n);
+        xAxis_n = parseInt(Math.ceil(allyAxisVariable.length / 5));
+
         if (xAxis_n > 4)
             xAxis_n = 4;
 
         for (var i = 0 ; i < xAxis_n ; i++) {
             xAxis_vals[i] = [];
-            for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
-                xAxis_vals[i].push(yAxisVariable[e]);
+            for (var e = i ; e < allyAxisVariable.length ; e += xAxis_n) {
+                xAxis_vals[i].push(allyAxisVariable[e]);
             }
 
             xAxis[i] = d3.svg.axis()
@@ -1846,9 +1826,6 @@ var startApp = function() {
                 xAxis[i].tickFormat(function (d) { return ''; })
             }
         }
-
-        console.log('xAxis_vals:');
-        console.log(xAxis_vals);
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
@@ -1890,24 +1867,11 @@ var startApp = function() {
             .attr("x", 460)
             .attr("y", -25)
             .attr("dy", ".35em")
-            .text("MFDS *:");
-
+            .text("MFDS *");
 
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
-            console.log('curve_coup:');
-            console.log(curve_coup);
-
-            var data = curve_coup[curve_name];
-            console.log('data:');
-            console.log(data);
-
-            /*
-            svg.append("path")
-                .data([curve_coup[curve_name]])
-                .attr("class", "line"+k)
-                .attr("d", line);
-                */
+            var data = multiplePlotData[curve_name];
 
             // Update the css for each line
             colors = [
