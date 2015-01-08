@@ -386,3 +386,7 @@ ICEBOX_MAX_SIZE_MB = 10
 ICEBOX_SEND_EMAIL = False
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
+
+# Enable Google Analytics tracking code
+# You must provide a valid UA code
+# GOOGLE_UA = 'UA-********-*'
