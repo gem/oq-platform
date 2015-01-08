@@ -1680,13 +1680,48 @@ var startApp = function() {
         var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
         var selectedCurves = [];
-        /* associative array of arrays of values */
+        // associative array of arrays of values
         curve_vals = [];
-        /* associative array of arrays [ x, y ] to describe the curve on the plane */
+        // associative array of arrays [ x, y ] to describe the curve on the plane
         curve_coup = [];
 
         yAxisLable = 'Number of events / year';
         xAxisLable = 'Magnitude';
+
+        // find the min and max value when there are multipe MFDs
+        var keys = Object.keys(mfdsJsonObj).length
+        var max = [];
+        for (var k in mfdsJsonObj) {
+            for (var i = 0; i < mfdsJsonObj[k].mags.length; i++) {
+                max.push(mfdsJsonObj[k].mags[i]);
+            }
+        }
+
+        function findMaxMagValue( max ){
+            return Math.max.apply( Math, max );
+        };
+
+        function findMinMagValue( max ){
+            return Math.min.apply( Math, max );
+        };
+
+        var multipleMfdsMinValue = findMinMagValue(max);
+        var multipleMfdsMaxValue = findMaxMagValue(max);
+
+        // prep data for multiple curve plots
+        var multiplePlotData = [];
+        if (keys > 1) {
+            var foo = [];
+            for (var m in mfdsJsonObj) {
+
+            }
+        }
+
+
+        console.log('multipleMfdsMinValue:');
+        console.log(multipleMfdsMinValue);
+        console.log('multipleMfdsMaxValue:');
+        console.log(multipleMfdsMaxValue);
 
         for (var k in mfdsJsonObj) {
             curve_name = k;
@@ -1697,7 +1732,6 @@ var startApp = function() {
 
         for (var k in selectedCurves) {
             curve_name = selectedCurves[k];
-
             curve_coup[curve_name] = [];
             for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
                 if (yAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
@@ -1768,16 +1802,26 @@ var startApp = function() {
                 });
         }
 
+        console.log('yAxisVariable:');
+        console.log(yAxisVariable);
+
         var margin = {top: 55, right: 80, bottom: 45, left: 60};
         var width = 580 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        if (keys == 1) {
+            var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        } else {
+            var x_scale = d3.scale.log().range([0, width]).domain([multipleMfdsMinValue, multipleMfdsMaxValue]);
+        }
+
         var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
 
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
 
         xAxis_n = parseInt(Math.ceil(yAxisVariable.length / 5));
+        console.log('xAxis_n:');
+        console.log(xAxis_n);
         if (xAxis_n > 4)
             xAxis_n = 4;
 
@@ -1802,6 +1846,9 @@ var startApp = function() {
                 xAxis[i].tickFormat(function (d) { return ''; })
             }
         }
+
+        console.log('xAxis_vals:');
+        console.log(xAxis_vals);
 
         var yAxis = d3.svg.axis()
             .scale(y_scale)
@@ -1840,20 +1887,27 @@ var startApp = function() {
             );
 
         svg.append("text")
-            .attr("x", 335)
+            .attr("x", 460)
             .attr("y", -25)
             .attr("dy", ".35em")
             .text("MFDS *:");
 
+
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
+            console.log('curve_coup:');
+            console.log(curve_coup);
 
             var data = curve_coup[curve_name];
+            console.log('data:');
+            console.log(data);
 
+            /*
             svg.append("path")
                 .data([curve_coup[curve_name]])
                 .attr("class", "line"+k)
                 .attr("d", line);
+                */
 
             // Update the css for each line
             colors = [
@@ -1886,7 +1940,7 @@ var startApp = function() {
             makeCircles(data, k, color, curveTitle);
 
             svg.append("text")
-                .attr("x", 360)
+                .attr("x", 465)
                 .attr("y", 0+(k*20))
                 .attr("dy", ".35em")
                 .text(curveTitle);
@@ -1894,7 +1948,7 @@ var startApp = function() {
             svg.append("svg:circle")
                 //.attr("cx", 50)
                 .attr("cy", 0+(k*20))
-                .attr("cx", 350)
+                .attr("cx", 460)
                 .attr("r", 3)
                 .style("fill", color)
 
