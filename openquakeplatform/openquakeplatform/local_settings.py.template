@@ -126,7 +126,10 @@ TILESTREAM_URL = '//tilestream.openquake.org'
 
 HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform'
 
-GEOSERVER_URL = '/geoserver/'
+# The GEOSERVER_URL must be an absolute URL to let GXP working correctly.
+# To produce fixture for maps to be installed during setup it must be set
+# to the '/geoserver/' relative path
+GEOSERVER_URL = SITEURL + 'geoserver/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'openquakeplatform.utils.oq_context_processor',
@@ -137,7 +140,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
          # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
+        'LOCATION': 'http://localhost:8080/geoserver/',
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
@@ -305,11 +308,13 @@ MAP_BASELAYERS = [{
         "ptype": "gxp_wmscsource",
         "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
         "restUrl": "/gs/rest"
-     }
+     },
+    "name":"geoserver"
   },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
+    "name":"nobackground",
     "visibility": False,
     "fixed": True,
     "group":"background"
@@ -338,26 +343,10 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source": {"ptype": "gxp_tilestreamsource" },
+    "name":"tilestream"
   }, {
     "source": {"ptype": "gxp_mapboxsource"},
-  }, {
-    "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": False,
-    "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin": [-20037508.34, -20037508.34]
-      },
-      {"buffer": 0}
-    ]
-
+    "name":"mapbox"
 }]
 
 # Add additional paths (as regular expressions) that don't require
@@ -397,3 +386,7 @@ ICEBOX_MAX_SIZE_MB = 10
 ICEBOX_SEND_EMAIL = False
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
+
+# Enable Google Analytics tracking code
+# You must provide a valid UA code
+# GOOGLE_UA = 'UA-********-*'
