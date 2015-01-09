@@ -354,26 +354,6 @@ def consistencymeter(dates_gr):
                 cm_out['fields_n'] += 1
                 ty = type(ref_value)
 
-                if ref_md.natural and ref.is_many:
-                    if type(ref_value[0]) is not list:
-                        pdebug(1, "consistencymeter:\n  model: %s\n"
-                               + "natural key field: %s  ref.model: %s\n"
-                               + "item: %s\nwrong field fk type\n" %
-                               (model, ref_field, ref.model, str(item)))
-                        return False
-                elif ((ref_md.natural and not ref.is_many) or
-                      (not ref_md.natural and ref.is_many)):
-                    if type(ref_value) is not list:
-                        pdebug(1, "consistencymeter:\n  model: %s\nref field: %s  ref.model: %s\nitem: %s\nwrong field fk type\n" % (model, ref_field, ref.model, str(item)))
-                        return False
-                elif (not ref_md.natural and not ref.is_many):
-                    if type(ref_value) is list:
-                        pdebug(1, "consistencymeter:\n  model: %s\n"
-                               + "natural key field: %s  ref.model: %s\n"
-                               + "item: %s\nwrong field fk type\n" %
-                               (model, ref_field, ref.model, str(item)))
-                        return False
-
                 if ref_md.natural is not None:
                     if ref.is_many:
                         # one2many case
