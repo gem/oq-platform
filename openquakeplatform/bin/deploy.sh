@@ -491,8 +491,8 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
+    add-apt-repository -y ppa:openquake/ppa
     apt-get update
     apt-get install -y geonode python-geonode-user-accounts
 
