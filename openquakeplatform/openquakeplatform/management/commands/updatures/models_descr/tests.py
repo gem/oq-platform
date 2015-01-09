@@ -17,17 +17,16 @@ models_descr['test.leaf'] = model_description(
     {})
 
 # test2
-models_descr['test2.generic'] = model_description(
-    'test2.generic',
-    None,
-    {})
-
 models_descr['test2.specific'] = model_description(
     'test2.specific',
     None,
     {'pk': model_refs('test2.generic', False)},
     inher='test2.generic')
 
+models_descr['test2.generic'] = model_description(
+    'test2.generic',
+    None,
+    {})
 
 models_descr['test3.strategies'] = model_description(
     'test3.strategies',

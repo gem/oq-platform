@@ -37,7 +37,7 @@ def rebuild_order():
         for model, descr in models_descr_old.iteritems():
             pdebug(2, "rebuild_order: model %s" % model)
             if first_loop:
-                if descr.refs == {}:
+                if descr.refs == {} and not descr.inher:
                     models_order.append(model)
                 else:
                     models_descr_rest[model] = descr
@@ -45,11 +45,15 @@ def rebuild_order():
                 for ref_field, ref in descr.refs.iteritems():
                     if isinstance(ref.model, types.FunctionType):
                         continue
-                    if not ref.model in models_order:
+                    if ref.model not in models_order:
                         models_descr_rest[model] = descr
                         break
                 else:
-                    models_order.append(model)
+                    if (not descr.inher) or (descr.inher in models_order):
+                        models_order.append(model)
+                    else:
+                        models_descr_rest[model] = descr
+
         models_descr_old = models_descr_rest.copy()
         models_descr_rest = {}
         if models_descr_old == {}:
@@ -134,7 +138,6 @@ def key_get(md, item):
     return tuple(k)
 
 
-
 def group_objs(base):
     group = {}
     dyn_refs = {}
@@ -187,7 +190,6 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     new_pk       new key
     """
     md = models_descr[model]
-
     if md.pk_natural:
         return False
 
@@ -729,6 +731,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
         if md.inher:
             pdebug(2, "Model: %s inher, skip it" % md.name )
             continue
+
 
         for item in updates_gr[model]:
             if item.get('__replace__', None):
