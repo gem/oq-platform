@@ -103,6 +103,7 @@ var startApp = function() {
     );
     $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
+    $('#map-tools').append('<button type="button" id="terms">Terms of Use</button>');
 
     var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
@@ -160,6 +161,10 @@ var startApp = function() {
 
     $('#legend').button().click(function() {
         $('#legendDialog').dialog('open');
+    });
+
+    $('#terms').button().click(function() {
+        window.location = "../account/terms/";
     });
 
     map = new L.Map('map', {
