@@ -55,7 +55,7 @@ setup(
     #        the lifecicle of all the bugfix versions of the repository and pip depends on it.
     #        Follow the same rule for all the other gem dependencies when an update is needed.
     # ATTENTION: Please, do not split following lines, the deploy.sh script manages them automatically.
-    dependency_links = ['http://github.com/gem/geonode/tarball/master#egg=GeoNode-2.0.2gem04',
+    dependency_links = ['http://github.com/gem/geonode/tarball/2.0.2#egg=GeoNode-2.0.2gem04',
                         'http://github.com/gem/django-extras/tarball/master#egg=django-extras-0.3',
                         'http://github.com/gem/wadofstuff-django-serializers/tarball/master#egg=wadofstuff-django-serializers-1.1.2',
                         'http://github.com/gem/django-nested-inlines/tarball/0.1.4#egg=django-nested-inlines-0.1.4',
