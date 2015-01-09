@@ -174,7 +174,7 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.layers(app.baseLayers);
+    AppVars.layerControl = L.control.orderlayers(app.baseLayers);
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
 
@@ -994,7 +994,7 @@ var startApp = function() {
                 $('#legendDialog').append(htmlLegend);
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
-
+/*
             // prevent duplicate hazard maps to be loaded
             for (var k in AppVars.layerControl._layers) {
                 var nameTemp = AppVars.layerControl._layers[k].name;
@@ -1002,7 +1002,7 @@ var startApp = function() {
                     delete AppVars.layerControl._layers[k];
                 }
             }
-
+*/
             utfGrid = createUtfLayerGroups(selectedLayer, curveType);
             utfGrid.utfGridType = "map";
         }
@@ -1122,8 +1122,12 @@ var startApp = function() {
             tileLayer
         ]);
 
-        AppVars.layerControl.addOverlay(utfGrid, selectedLayer);
+        console.log('AppVars.layerControl:');
+        console.log(AppVars.layerControl);
+
         map.addLayer(utfGrid);
+        AppVars.layerControl.addOverlay(utfGrid);
+
         lossCurveUtfGridClickEvent(utfGridLoss);
     }
 
