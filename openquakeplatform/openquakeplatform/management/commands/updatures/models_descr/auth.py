@@ -18,7 +18,17 @@ models_descr['auth.user'] = model_description(
     {'user_permissions': model_refs('auth.permission', True),
      'groups':           model_refs('auth.group', True)},
     fie_type={'user_permissions': model_description.FIE_TY_UNION,
-              'groups': model_description.FIE_TY_UNION})
+              'groups': model_description.FIE_TY_UNION,
+              "date_joined": model_description.FIE_TY_OLD,
+              "email": model_description.FIE_TY_OLD,
+              "first_name": model_description.FIE_TY_OLD,
+              "is_active": model_description.FIE_TY_OLD,
+              "is_staff": model_description.FIE_TY_OR,
+              "is_superuser": model_description.FIE_TY_OR,
+              "last_login": model_description.FIE_TY_OLD,
+              "last_name": model_description.FIE_TY_OLD,
+              "password": model_description.FIE_TY_OLD,
+              })
 
 models_descr['account.account'] = model_description(
     'account.account',
