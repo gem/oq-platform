@@ -1,87 +1,82 @@
-describe('DomUtil', function() {
+describe('DomUtil', function () {
 	var el;
 
-	beforeEach(function() {
+	beforeEach(function () {
 		el = document.createElement('div');
 		el.style.position = 'absolute';
 		el.style.top = el.style.left = '-10000px';
 		document.body.appendChild(el);
 	});
 
-	afterEach(function() {
+	afterEach(function () {
 		document.body.removeChild(el);
 	});
 
-	describe('#get', function() {
-		it('should get element by id if the given argument is string', function() {
+	describe('#get', function () {
+		it('gets element by id if the given argument is string', function () {
 			el.id = 'testId';
-			expect(L.DomUtil.get(el.id)).toBe(el);
+			expect(L.DomUtil.get(el.id)).to.eql(el);
 		});
 
-		it('should return the element if it is given as an argument', function() {
-			expect(L.DomUtil.get(el)).toBe(el);
+		it('returns the element if it is given as an argument', function () {
+			expect(L.DomUtil.get(el)).to.eql(el);
 		});
 	});
 
-	describe('#addClass, #removeClass, #hasClass', function() {
-		it('should has defined class for test element', function() {
+	describe('#addClass, #removeClass, #hasClass', function () {
+		it('has defined class for test element', function () {
 			el.className = 'bar foo baz ';
-			expect(L.DomUtil.hasClass(el, 'foo')).toBeTruthy();
-			expect(L.DomUtil.hasClass(el, 'bar')).toBeTruthy();
-			expect(L.DomUtil.hasClass(el, 'baz')).toBeTruthy();
-			expect(L.DomUtil.hasClass(el, 'boo')).toBeFalsy();
+			expect(L.DomUtil.hasClass(el, 'foo')).to.be.ok();
+			expect(L.DomUtil.hasClass(el, 'bar')).to.be.ok();
+			expect(L.DomUtil.hasClass(el, 'baz')).to.be.ok();
+			expect(L.DomUtil.hasClass(el, 'boo')).to.not.be.ok();
 		});
 
-		it('should properly addClass and removeClass for element', function() {
+		it('adds or removes the class', function () {
 			el.className = '';
 			L.DomUtil.addClass(el, 'foo');
 
-			expect(el.className).toEqual('foo');
-			expect(L.DomUtil.hasClass(el, 'foo')).toBeTruthy();
+			expect(el.className).to.eql('foo');
+			expect(L.DomUtil.hasClass(el, 'foo')).to.be.ok();
 
 			L.DomUtil.addClass(el, 'bar');
-			expect(el.className).toEqual('foo bar');
-			expect(L.DomUtil.hasClass(el, 'foo')).toBeTruthy();
+			expect(el.className).to.eql('foo bar');
+			expect(L.DomUtil.hasClass(el, 'foo')).to.be.ok();
 
 			L.DomUtil.removeClass(el, 'foo');
-			expect(el.className).toEqual('bar');
-			expect(L.DomUtil.hasClass(el, 'foo')).toBeFalsy();
+			expect(el.className).to.eql('bar');
+			expect(L.DomUtil.hasClass(el, 'foo')).to.not.be.ok();
 
 			el.className = 'foo bar barz';
 			L.DomUtil.removeClass(el, 'bar');
-			expect(el.className).toEqual('foo barz');
-		})
-	});
-
-	describe('#documentIsLtr', function () {
-		it('should return true if doc direction is ltr', function () {
-			expect(L.DomUtil.documentIsLtr()).toBe(true);
-			expect(L.DomUtil.documentIsLtr()).toBe(true); // cached
+			expect(el.className).to.eql('foo barz');
 		});
 	});
 
 	describe('#getViewportOffset', function () {
-		var div = document.createElement('div');
-		div.style.position = 'absolute';
-		div.style.top = '100px';
-		div.style.left = '200px';
-		div.style.border = '10px solid black';
-		div.style.padding = '50px';
-		div.style.visibility = 'hidden';
+		it('calculates the viewport offset of an element', function () {
+			var div = document.createElement('div');
+			div.style.position = 'absolute';
+			div.style.top = '100px';
+			div.style.left = '200px';
+			div.style.border = '10px solid black';
+			div.style.padding = '50px';
+			div.style.visibility = 'hidden';
 
-		var div2 = document.createElement('div');
-		div.style.marginTop = '100px';
+			var div2 = document.createElement('div');
+			div.style.marginTop = '100px';
 
-		div.appendChild(div2);
+			div.appendChild(div2);
 
-		document.body.appendChild(div);
+			document.body.appendChild(div);
 
-		expect(L.DomUtil.getViewportOffset(div2)).toEqual(new L.Point(260, 260));
+			expect(L.DomUtil.getViewportOffset(div2)).to.eql(new L.Point(260, 260));
 
-		document.body.removeChild(div);
+			document.body.removeChild(div);
+		});
 	});
 
-	describe('#setPosition', noSpecs);
+	// describe('#setPosition', noSpecs);
 
-	describe('#getStyle', noSpecs);
+	// describe('#getStyle', noSpecs);
 });

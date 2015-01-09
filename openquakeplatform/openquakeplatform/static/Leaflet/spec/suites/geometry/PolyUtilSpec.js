@@ -1,7 +1,7 @@
 describe('PolyUtil', function () {
 
 	describe('#clipPolygon', function () {
-		it('should clip polygon by bounds correctly', function () {
+		it('clips polygon by bounds', function () {
 			var bounds = L.bounds([0, 0], [10, 10]);
 
 			var points = [
@@ -16,7 +16,7 @@ describe('PolyUtil', function () {
 				delete clipped[i]._code;
 			}
 
-			expect(clipped).toEqual([
+			expect(clipped).to.eql([
 				new L.Point(7.5, 10),
 				new L.Point(5, 5),
 				new L.Point(10, 7.5),
