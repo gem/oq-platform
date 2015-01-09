@@ -37,6 +37,7 @@ if __name__ == "__main__":
     test_result = 0
     for test in test_list:
         output = StringIO.StringIO()
+        # NOTE: sort must be False to be able to upload fixture to a real environment
         result = updatures_app(['data/' + test + '_new.json'], output=output,
                            fakeold='data/' + test + '_old.json',
                            sort_output=True, debug=debug)
