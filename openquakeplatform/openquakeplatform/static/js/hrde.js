@@ -1026,9 +1026,6 @@ var startApp = function() {
             tileLayer
         ]);
 
-        console.log('AppVars.mappedValue:');
-        console.log(AppVars.mappedValue);
-
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
         if (curveType == undefined || curveType == 'map') {
@@ -1206,8 +1203,6 @@ var startApp = function() {
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
-            console.log('e:');
-            console.log(e);
             // format the selected map and layer names
             try {
                 AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
@@ -1284,9 +1279,6 @@ var startApp = function() {
                     } else if (curveType == 'uhs') {
                         imt = 'Period (s)';
                     }
-        
-                    console.log('iml:');
-                    console.log(iml);
 
                     lat = e.data.lat;
                     lng = e.data.lon;
@@ -1315,6 +1307,7 @@ var startApp = function() {
                 } else if (utfGrid.utfGridType == "curve") {
                 var lon = lng;
                 var yAxisLable = "";
+                var maxYAxis, minYaxis, percent;
 
                 if (curveType == "uhs") {
                     yAxisLable = 'Spectral Acceleration, Sa [g]';
@@ -1325,9 +1318,6 @@ var startApp = function() {
                 if(!(AppVars.layerIml instanceof Array)) {
                     AppVars.layerIml = AppVars.layerIml.split(',');
                 }
-
-                console.log('curveType:');
-                console.log(curveType);
 
                 var data = [];
                 for(i=0; i<probArray.length; i++) {
@@ -1341,15 +1331,21 @@ var startApp = function() {
                     }
                 }
 
+                // Find min and max y axis values
+                maxYAxis = Math.max.apply(Math, probArray);
+                minYAxis = Math.min.apply(Math, probArray);
+                percent = 0.1 * maxYAxis;
+                maxYAxis = percent + maxYAxis;
+
                 var margin = {top: 60, right: 20, bottom: 80, left: 60},
                 width = 580 - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
 
                 if (curveType == 'uhs') {
-                    var x = d3.scale.linear().domain([0, width]).range([0, width]);
+                    var x = d3.scale.linear().range([0, width]);
                     var y = d3.scale.linear().range([height, 0]);
                 } else {
-                    var x = d3.scale.log().domain([0, width]).range([0, width]);
+                    var x = d3.scale.log().range([0, width]);
                     var y = d3.scale.log().range([height, 0]);
                 }
 
@@ -1382,9 +1378,11 @@ var startApp = function() {
 
                 data.forEach(dataCallback);
                 x.domain(d3.extent(data, function(d) { return d.x; }));
-                y.domain(d3.extent(data, function(d) { return d.y; }));
-                console.log('data:');
-                console.log(data);
+                if (curveType == 'uhs') {
+                    y.domain([minYAxis, maxYAxis]);
+                } else {
+                    y.domain([d3.extent(data, function(d) { return d.y; })[0], 3]);
+                }
 
                 // grid line functions
                 function make_x_axis() {
@@ -1431,7 +1429,7 @@ var startApp = function() {
                     .attr("dx", "-.8em")
                     .attr("dy", ".15em")
                     .attr("transform", function(d) {
-                        return "rotate(-65)";
+                        return "rotate(-35)";
                         });
 
                 svg.append('g')
