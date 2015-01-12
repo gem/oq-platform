@@ -1206,6 +1206,8 @@ var startApp = function() {
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
+            console.log('e:');
+            console.log(e);
             // format the selected map and layer names
             try {
                 AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
@@ -1282,6 +1284,9 @@ var startApp = function() {
                     } else if (curveType == 'uhs') {
                         imt = 'Period (s)';
                     }
+        
+                    console.log('iml:');
+                    console.log(iml);
 
                     lat = e.data.lat;
                     lng = e.data.lon;
@@ -1301,9 +1306,9 @@ var startApp = function() {
                 }
 
 
-                //////////////////////////////////////////////////
-                //// Single hazard Chart, and Hazard map info ////
-                //////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////
+                //// Single hazard UHS, curveChart and hazard map plots ////
+                ////////////////////////////////////////////////////////////
 
                 if (utfGrid.utfGridType == "map") {
                     $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>"+spotValue+" [g]");
@@ -1321,11 +1326,18 @@ var startApp = function() {
                     AppVars.layerIml = AppVars.layerIml.split(',');
                 }
 
+                console.log('curveType:');
+                console.log(curveType);
+
                 var data = [];
                 for(i=0; i<probArray.length; i++) {
-                    // Only push into data if the values are greater then 0
-                    if (parseFloat(AppVars.layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
-                        data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
+                    if (curveType == 'hc') {
+                        // Only push into data if the values are greater then 0
+                        if (parseFloat(AppVars.layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
+                            data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
+                        }
+                    } else {
+                         data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
                     }
                 }
 
@@ -1333,8 +1345,13 @@ var startApp = function() {
                 width = 580 - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
 
-                var x = d3.scale.log().domain([0, width]).range([0, width]);
-                var y = d3.scale.log().range([height, 0]);
+                if (curveType == 'uhs') {
+                    var x = d3.scale.linear().domain([0, width]).range([0, width]);
+                    var y = d3.scale.linear().range([height, 0]);
+                } else {
+                    var x = d3.scale.log().domain([0, width]).range([0, width]);
+                    var y = d3.scale.log().range([height, 0]);
+                }
 
                 var xAxis = d3.svg.axis()
                     .scale(x)
@@ -1366,6 +1383,8 @@ var startApp = function() {
                 data.forEach(dataCallback);
                 x.domain(d3.extent(data, function(d) { return d.x; }));
                 y.domain(d3.extent(data, function(d) { return d.y; }));
+                console.log('data:');
+                console.log(data);
 
                 // grid line functions
                 function make_x_axis() {
