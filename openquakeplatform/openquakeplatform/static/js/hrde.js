@@ -946,6 +946,7 @@ var startApp = function() {
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.periods;
                 AppVars.layerPoe = json.poe;
+                AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1024,6 +1025,9 @@ var startApp = function() {
             AppVars.utfGrid,
             tileLayer
         ]);
+
+        console.log('AppVars.mappedValue:');
+        console.log(AppVars.mappedValue);
 
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
@@ -1402,14 +1406,13 @@ var startApp = function() {
                 svg.append('g')
                     .attr('class', 'x axis')
                     .attr('transform', 'translate(0,' + height + ')')
-                    //.attr('transform', 'rotate(-90)')
                     .call(xAxis)
                     .selectAll("text")
                     .style("text-anchor", "end")
                     .attr("dx", "-.8em")
                     .attr("dy", ".15em")
                     .attr("transform", function(d) {
-                        return "rotate(-65)"
+                        return "rotate(-65)";
                         });
 
                 svg.append('g')
@@ -1417,7 +1420,6 @@ var startApp = function() {
                     .append('text')
                     .attr('x', width / 2)
                     .attr('y',  (height + margin.bottom)- 17)
-                    //.attr('dy', '.71em')
                     .attr('text-anchor', 'middle')
                     .style('font-size','14px')
                     .text(AppVars.layerImt);
