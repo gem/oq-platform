@@ -56,7 +56,11 @@
   {% if resourcebase.license %}
     <li>
       <strong>{% trans "License" %}:</strong>
-      <a href="{{ resourcebase.license.url }}" target="_blank">{{ resourcebase.license.name }}</a>
+      {% if resourcebase.license.url %}
+        <a href="{{ resourcebase.license.url }}" target="_blank">{{ resourcebase.license.name }}</a>
+      {% else %}
+        {{ resourcebase.license.name }}
+      {% endif %}
     </li>
   {% endif %}
           
