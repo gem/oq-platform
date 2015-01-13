@@ -100,7 +100,7 @@
       <binding>java.lang.Double</binding>
     </attribute>
     <attribute>
-      <name>smajaz</name>
+      <name>smajax</name>
       <minOccurs>0</minOccurs>
       <maxOccurs>1</maxOccurs>
       <nillable>true</nillable>
