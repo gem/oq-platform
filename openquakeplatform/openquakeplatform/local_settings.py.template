@@ -288,6 +288,9 @@ INSTALLED_APPS = (
     'openquakeplatform.weblib',
     'openquakeplatform.econd',
     'openquakeplatform.gemecdwebsite',
+
+    'openquakeplatform.taxtweb',
+
 )
 
 MIDDLEWARE_CLASSES = (
