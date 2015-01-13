@@ -854,16 +854,18 @@ var startApp = function() {
 
                 // get information out of the utfgrid for use in Download
                 for (var l in AppVars.utfGrid._cache) {
+                    console.log('AppVars.utfGrid._cache:');
+                    console.log(AppVars.utfGrid._cache);
                     if (AppVars.utfGrid._cache[l] !== null && typeof AppVars.utfGrid._cache[l] === 'object') {
                         for (var m in AppVars.utfGrid._cache[l].data) {
                             // download only the values that are within the map bounds
                             var tempRecord = AppVars.utfGrid._cache[l].data[m];
-                            var tmpLatLng = L.latLng(tempRecord.latitude, tempRecord.longitude);
+                            var tmpLatLng = L.latLng(tempRecord.lat, tempRecord.lon);
                             if (tmpLatLng == undefined) {
                                 alert("There is a problem with this hazard map, please alert the systems administration of this issue")
                             }
                             if (tempPolygon.getBounds().contains(tmpLatLng)) {
-                                hazardMapValues.push([tempRecord.VAL, tempRecord.longitude, tempRecord.latitude]);
+                                hazardMapValues.push([tempRecord.iml, tempRecord.lon, tempRecord.lat]);
                             }
                         }
                     }
