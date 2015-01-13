@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 
 # WARNING: this model is unmanaged, custom SQL is used to create the table (look inside sql/*.sql)
 
-# date, lat, lon, smajaz, sminax, strike, depth, unc , mw, unc , s, mo, fac, auth ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt
+# date, lat, lon, smajax, sminax, strike, depth, unc , mw, unc , s, mo, fac, auth ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt
 
 
 class Measure(models.Model):
@@ -11,7 +11,7 @@ class Measure(models.Model):
     lat = models.FloatField(null=False, blank=False)
     lon = models.FloatField(null=False, blank=False)
     the_geom = models.PointField(srid=4326, dim=2)
-    smajaz = models.FloatField(null=True, blank=True)
+    smajax = models.FloatField(null=True, blank=True)
     sminax = models.FloatField(null=True, blank=True)
     strike = models.FloatField(null=True, blank=True)
     epic_q = models.CharField(max_length=1, choices=(('A', 'Highest quality'), ('B', 'Medium quality'), ('C', 'Lowest quality')), default = '', null=False, blank=True)
