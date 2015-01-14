@@ -1,4 +1,19 @@
 #!/bin/bash
+# Copyright (c) 2013-2015, GEM Foundation.
+#
+# OpenQuake is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenQuake is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with OpenQuake.  If not, see <http://www.gnu.org/licenses/>.
+
 if [ $GEM_SET_DEBUG ]; then
     set -x
 fi
@@ -435,7 +450,7 @@ deps_install () {
     pipsrc="/usr/local/openquake/platform"
     mkdir -p "$pipsrc"
     old_IFS="$IFS"
-    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1); do
+    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1 | grep -v '^http://github.com/gem/geonode/tarball'); do
         pip install "$pkg"
     done
     IFS="$old_IFS"
@@ -491,8 +506,8 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
+    add-apt-repository -y ppa:openquake/ppa
     apt-get update
     apt-get install -y geonode python-geonode-user-accounts
 
