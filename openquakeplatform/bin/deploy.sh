@@ -450,7 +450,7 @@ deps_install () {
     pipsrc="/usr/local/openquake/platform"
     mkdir -p "$pipsrc"
     old_IFS="$IFS"
-    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1 | grep -v GeoNode); do
+    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1 | grep -v '^http://github.com/gem/geonode/tarball'); do
         pip install "$pkg"
     done
     IFS="$old_IFS"
