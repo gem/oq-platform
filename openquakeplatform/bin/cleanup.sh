@@ -47,6 +47,7 @@ sudo -u postgres dropuser geonode
 sudo -u postgres dropuser openquakeplatform
 
 # Remove leaves
-rm -Rf /var/www/geonode/ /var/www/openquake/ /etc/openquake/ /usr/local/lib/python2.7/dist-packages/openquakeplatform* /usr/local/lib/python2.7/dist-packages/geonode /usr/share/geonode
-rm -f /etc/apache2/sites-available/oqplatform /etc/apache2/sites-enabled/*
+rm -Rf /var/www/geonode/ /var/www/openquake/ /etc/openquake/ /usr/local/lib/python2.7/dist-packages/openquakeplatform /usr/local/lib/python2.7/dist-packages/geonode /usr/share/geonode
+rm -f /etc/apache2/sites-available/oqplatform
+rm -if /etc/apache2/sites-enabled/*
 
