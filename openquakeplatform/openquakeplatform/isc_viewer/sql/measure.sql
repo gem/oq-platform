@@ -5,7 +5,7 @@ CREATE TABLE "isc_viewer_measure" (
     "date" timestamp with time zone NOT NULL,
     "lat" double precision NOT NULL,
     "lon" double precision NOT NULL,
-    "smajaz" double precision,
+    "smajax" double precision,
     "sminax" double precision,
     "strike" double precision,
     "epic_q" varchar(1) NOT NULL,

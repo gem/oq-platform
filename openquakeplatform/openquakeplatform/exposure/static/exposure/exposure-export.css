@@ -44,3 +44,7 @@
 label {
     display: inline !important
 }
+
+.leaflet-control-layers-overlays label {
+    display: block !important
+}

@@ -49,7 +49,8 @@ setup(
               'openquakeplatform.gemecdwebsite.uploadnrml',
               'openquakeplatform.gemecdwebsite.lookup',
               'openquakeplatform.weblib',
-              'openquakeplatform.weblib.baseclasses'
+              'openquakeplatform.weblib.baseclasses',
+              'openquakeplatform.taxtweb',
               ],
     # NOTE:  django-chained-multi-checkboxes is following the new convention: a floating tag on github v<major>.<minor> only follows
     #        the lifecicle of all the bugfix versions of the repository and pip depends on it.
