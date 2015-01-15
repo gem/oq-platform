@@ -15,6 +15,5 @@
 
 import utils
 
-# the version is managed by packager.sh with a sed
 __version__ = '1.0.0'
 __version__ += utils.git_suffix(__file__)
