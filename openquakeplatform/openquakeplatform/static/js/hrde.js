@@ -164,7 +164,7 @@ var startApp = function() {
     });
 
     $('#terms').button().click(function() {
-        window.location = "../account/terms/";
+        window.location = "/account/terms/";
     });
 
     map = new L.Map('map', {
@@ -503,8 +503,6 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
-
-        //$('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -589,7 +587,6 @@ var startApp = function() {
 
 
     $('#addTileUhs').click(function() {
-        //$('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -650,7 +647,6 @@ var startApp = function() {
     }); // end add uhs curve
 
     $('#addTileLoss').click(function() {
-        //$('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -854,8 +850,6 @@ var startApp = function() {
 
                 // get information out of the utfgrid for use in Download
                 for (var l in AppVars.utfGrid._cache) {
-                    console.log('AppVars.utfGrid._cache:');
-                    console.log(AppVars.utfGrid._cache);
                     if (AppVars.utfGrid._cache[l] !== null && typeof AppVars.utfGrid._cache[l] === 'object') {
                         for (var m in AppVars.utfGrid._cache[l].data) {
                             // download only the values that are within the map bounds
