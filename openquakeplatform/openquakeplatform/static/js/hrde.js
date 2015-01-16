@@ -277,11 +277,11 @@ var startApp = function() {
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
-    catMenuHeader.innerHTML = 'Category:';
+    catMenuHeader.innerHTML = 'Choose a model:';
 
     // Create a header for the menu drop down
     var catCurveMenuHeader = document.createElement('option');
-    catCurveMenuHeader.innerHTML = 'Category:';
+    catCurveMenuHeader.innerHTML = 'Choose a model:';
     selCat.appendChild(catCurveMenuHeader);
 
     // Create a header for the menu drop down
@@ -295,7 +295,7 @@ var startApp = function() {
 
     // Create a header for the menu drop down
     var catLossMenuHeader = document.createElement('option');
-    catLossMenuHeader.innerHTML = 'Category:';
+    catLossMenuHeader.innerHTML = 'Choose a model:';
     selLossCat.appendChild(catLossMenuHeader);
     $('#risk-curve-category option:empty').remove();
 
@@ -1954,9 +1954,7 @@ var startApp = function() {
 
         for (i = 0 ; i < xAxis_n ; i++) {
             var g = svg.append("g");
-
             g.attr("class", "x axis")
-
             g.attr("transform", "translate(0," + height + ")")
             .call(xAxis[i]);
             if (i == (xAxis_n - 1))
