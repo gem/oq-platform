@@ -30,7 +30,8 @@ def git_suffix(fname):
         po = subprocess.Popen(
             ['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE,
             stderr=open(os.devnull, 'w'), cwd=os.path.dirname(fname))
-        return "-git" + po.stdout.read().strip()
+        git_hash = po.stdout.read().strip() if po else ''
+        return git_hash
     except:
         # trapping everything on purpose; git may not be installed or it
         # may not work properly

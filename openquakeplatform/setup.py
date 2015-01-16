@@ -1,6 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
+from openquakeplatform import __version__ as oqp_version
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
@@ -8,7 +9,7 @@ def read(*rnames):
 
 setup(
     name="openquakeplatform",
-    version="0.1",
+    version=oqp_version,
     author="",
     author_email="",
     description="openquakeplatform, based on GeoNode",
