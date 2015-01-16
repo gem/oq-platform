@@ -60,6 +60,10 @@ AppProtoType.prototype = {
     inputByInvestSingle: {},
     inputLayerGrids: [],
     mappedValue: null,
+    selectedHazardMapName: null,
+    selectedMappedValue: null,
+    selectedHazardLayerName: null,
+    selectedLayerValue: null,
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -80,7 +84,7 @@ var startApp = function() {
         $('#chartDialog').dialog({
             autoOpen: false,
             height: 520,
-            width: 520,
+            width: 620,
             closeOnEscape: true,
             position: {at: 'right bottom'}
         });
@@ -99,6 +103,7 @@ var startApp = function() {
     );
     $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
+    $('#map-tools').append('<button type="button" id="terms">Terms of Use</button>');
 
     var winHelp = $(window).height() - 200;
     var winHaz = $(window).height() - 200;
@@ -156,6 +161,10 @@ var startApp = function() {
 
     $('#legend').button().click(function() {
         $('#legendDialog').dialog('open');
+    });
+
+    $('#terms').button().click(function() {
+        window.location = "/account/terms/";
     });
 
     map = new L.Map('map', {
@@ -268,15 +277,14 @@ var startApp = function() {
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
-    catMenuHeader.innerHTML = 'Category:';
+    catMenuHeader.innerHTML = 'Choose a model:';
 
     // Create a header for the menu drop down
     var catCurveMenuHeader = document.createElement('option');
-    catCurveMenuHeader.innerHTML = 'Category:';
+    catCurveMenuHeader.innerHTML = 'Choose a model:';
     selCat.appendChild(catCurveMenuHeader);
 
     // Create a header for the menu drop down
-
     var catUhsMenuHeader = document.createElement('option');
     selCat.appendChild(catUhsMenuHeader);
     $('#hazard-curve-category option:empty').remove();
@@ -287,7 +295,7 @@ var startApp = function() {
 
     // Create a header for the menu drop down
     var catLossMenuHeader = document.createElement('option');
-    catLossMenuHeader.innerHTML = 'Category:';
+    catLossMenuHeader.innerHTML = 'Choose a model:';
     selLossCat.appendChild(catLossMenuHeader);
     $('#risk-curve-category option:empty').remove();
 
@@ -446,7 +454,7 @@ var startApp = function() {
                         AppVars.inputAvailable[j] = template;
                     }
                     else if (chartType == 'single') {
-                        AppVars.InputbyInvestSingle[j] = name;
+                        AppVars.inputByInvestSingle[j] = name;
                     }
                 }
 
@@ -495,8 +503,6 @@ var startApp = function() {
         });
 
     $('#addTileCurve').click(function() {
-
-        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -581,7 +587,6 @@ var startApp = function() {
 
 
     $('#addTileUhs').click(function() {
-        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -642,7 +647,6 @@ var startApp = function() {
     }); // end add uhs curve
 
     $('#addTileLoss').click(function() {
-        $('#chartDialog').dialog({width: 520,height:520});
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
@@ -850,12 +854,12 @@ var startApp = function() {
                         for (var m in AppVars.utfGrid._cache[l].data) {
                             // download only the values that are within the map bounds
                             var tempRecord = AppVars.utfGrid._cache[l].data[m];
-                            var tmpLatLng = L.latLng(tempRecord.latitude, tempRecord.longitude);
+                            var tmpLatLng = L.latLng(tempRecord.lat, tempRecord.lon);
                             if (tmpLatLng == undefined) {
                                 alert("There is a problem with this hazard map, please alert the systems administration of this issue")
                             }
                             if (tempPolygon.getBounds().contains(tmpLatLng)) {
-                                hazardMapValues.push([tempRecord.VAL, tempRecord.longitude, tempRecord.latitude]);
+                                hazardMapValues.push([tempRecord.iml, tempRecord.lon, tempRecord.lat]);
                             }
                         }
                     }
@@ -908,6 +912,8 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
                 AppVars.mappedValue = json.mapped_value;
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.iml;
@@ -931,9 +937,12 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.periods;
                 AppVars.layerPoe = json.poe;
+                AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -952,6 +961,8 @@ var startApp = function() {
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -970,6 +981,8 @@ var startApp = function() {
 
             // get more information about the selected layer
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardMapName = json.name;
+                AppVars.selectedMappedValue = json.mapped_value;
                 var bounds = json.bounds;
                 var htmlLegend = json.html_legend;
                 $('#legendDialog').empty();
@@ -1008,6 +1021,7 @@ var startApp = function() {
             AppVars.utfGrid,
             tileLayer
         ]);
+
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
         if (curveType == undefined || curveType == 'map') {
@@ -1031,20 +1045,24 @@ var startApp = function() {
             AppVars.mappedValue = json.category +' '+ json.mapped_value;
             var bounds = json.bounds;
             var htmlLegend = json.html_legend;
+            var htmlLegendHeight = htmlLegend.split(/\r\n|\r|\n/).length;
+            htmlLegendHeight = htmlLegendHeight * 21;
+
             $('#legendDialog').empty();
-            $("#legendDialog").dialog({height:230});
             $('#legendDialog').dialog('open');
             $('#legendDialog').append(htmlLegend);
+            $('#legendDialog').dialog({height:htmlLegendHeight});
             map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
         });
 
         var utfGrid = createUtfLayerGroups(selectedLayer);
 
         AppVars.utfGrid.on('click', function (e) {
-            $('#chartDialog').empty();
-            $('#chartDialog').dialog('open');
-            var mfds, binWidth, minMag, occurRate, mags;
             if (e.data) {
+                $('#chartDialog').empty();
+                $('#chartDialog').dialog('open');
+                var mfds, binWidth, minMag, occurRate, mags;
+
                 mfds = e.data.mfds;
                 var mfdsJsonObj = $.parseJSON(mfds);
                 var inputObject = {};
@@ -1147,6 +1165,7 @@ var startApp = function() {
                 AppVars.layerInvestigationTime = json.investigationTime;
                 AppVars.layerIml = json.periods;
                 AppVars.layerPoe = json.poe;
+                AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
@@ -1180,61 +1199,81 @@ var startApp = function() {
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
-            var spotValue = "";
+            // format the selected map and layer names
             try {
-                    spotValue = e.data.VAL;
+                AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
+            } catch (e) {
+                // continue
+            }
+
+            try {
+                AppVars.selectedMappedValue = AppVars.selectedMappedValue.split(":").pop();
+            } catch (e) {
+                // continue
+            }
+
+            // Do stuff only if data is not null
+            if (e.data) {
+                var spotValue = "";
+                try {
+                    spotValue = e.data.iml;
                 } catch (e) {
                     // continue
                 }
-
-            try {
-                $('#chartDialog').empty();
-                if ($("#chartDialog").dialog("isOpen") == false) {
-                    $('#chartDialog').dialog('open');
-                }
-
-                var prob;
-                var iml;
-                var probArray = [];
-                var imlArray = [];
-                var lat;
-                var lng;
-                var invest_time;
-                var imt;
 
                 try {
-                    prob = e.data.poe;
-                } catch (e) {
-                    // continue
-                }
+                    $('#chartDialog').empty();
+                    if ($("#chartDialog").dialog("isOpen") == false) {
+                        $('#chartDialog').dialog('open');
+                    }
 
-                if (prob == undefined) {
+                    var prob;
+                    var iml;
+                    var probArray = [];
+                    var imlArray = [];
+                    var lat;
+                    var lng;
+                    var invest_time;
+                    var imt;
+
                     try {
-                        prob = e.data.prob;
+                        prob = e.data.poe;
                     } catch (e) {
                         // continue
                     }
-                }
 
-                if (e.data) {
+                    if (prob == undefined) {
+                        try {
+                            prob = e.data.prob;
+                        } catch (e) {
+                            // continue
+                        }
+                    }
+
+                    if (curveType == 'uhs') {
+                        prob = e.data.imls;
+                    }
+
                     probArray = prob.split(',');
                     iml = e.data.iml;
-
                     if (iml == undefined) {
                         iml = AppVars.layerIml;
                     } else {
                         imlArray = iml.split(',');
                     }
-
                     imt = e.data.imt;
-                    if(imt == 'PGA') {
-                        imt = 'Peak Ground Acceleration (g)';
-                    } else if (imt == 'PGV') {
-                        imt = 'Peak Ground Velocity (cm/s)';
-                    } else if (imt == 'PGD') {
-                        imt = 'Peak Ground Displacement (cm)';
-                    } else if (imt == 'SA') {
-                        imt = 'Spectral Acceleration (g)';
+                    if (curveType == 'hc') {
+                        if(imt == 'PGA') {
+                            imt = 'Peak Ground Acceleration (g)';
+                        } else if (imt == 'PGV') {
+                            imt = 'Peak Ground Velocity (cm/s)';
+                        } else if (imt == 'PGD') {
+                            imt = 'Peak Ground Displacement (cm)';
+                        } else if (imt == 'SA') {
+                            imt = 'Spectral Acceleration (g)';
+                        }
+                    } else if (curveType == 'uhs') {
+                        imt = 'Period (s)';
                     }
 
                     lat = e.data.lat;
@@ -1248,249 +1287,271 @@ var startApp = function() {
                         lat = e.data.latitude;
                         lng = e.data.longitude;
                     }
-
                     invest_time = e.data.invest_tim;
+
+                } catch (e) {
+                    // continue
                 }
 
-            } catch (e) {
-                // continue
-            }
 
-            //hazardD3Chart(probArray, imlArray, lat, lng, invest_time, imt, selectedLayer, spotValue);
+                ////////////////////////////////////////////////////////////
+                //// Single hazard UHS, curveChart and hazard map plots ////
+                ////////////////////////////////////////////////////////////
 
-            //////////////////////////////////////////////////
-            //// Single hazard Chart, and Hazard map info ////
-            //////////////////////////////////////////////////
+                if (utfGrid.utfGridType == "map") {
+                    $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>"+spotValue+" [g]");
+                } else if (utfGrid.utfGridType == "curve") {
+                var lon = lng;
+                var yAxisLable = "";
+                var maxYAxis, minYaxis, percent;
 
-            if (utfGrid.utfGridType == "map") {
-                $('#chartDialog').append("<strong>"+selectedLayer+"</strong><br>Gravity Acceleration: "+spotValue);
-            } else if (utfGrid.utfGridType == "curve") {
-            var lon = lng;
-            // grid line functions
-            function make_x_axis() {
-                return d3.svg.axis()
+                if (curveType == "uhs") {
+                    yAxisLable = 'Spectral Acceleration, Sa [g]';
+                } else if (curveType == "hc") {
+                    yAxisLable = 'Probability of exceedance in '+AppVars.layerInvestigationTime+' years';
+                }
+
+                if(!(AppVars.layerIml instanceof Array)) {
+                    AppVars.layerIml = AppVars.layerIml.split(',');
+                }
+
+                var data = [];
+                for(i=0; i<probArray.length; i++) {
+                    if (curveType == 'hc') {
+                        // Only push into data if the values are greater then 0
+                        if (parseFloat(AppVars.layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
+                            data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
+                        }
+                    } else {
+                         data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
+                    }
+                }
+
+                // Find min and max y axis values
+                maxYAxis = Math.max.apply(Math, probArray);
+                minYAxis = Math.min.apply(Math, probArray);
+                percent = 0.1 * maxYAxis;
+                maxYAxis = percent + maxYAxis;
+
+                var margin = {top: 60, right: 20, bottom: 80, left: 60},
+                width = 580 - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+
+                if (curveType == 'uhs') {
+                    var x = d3.scale.linear().range([0, width]);
+                    var y = d3.scale.linear().range([height, 0]);
+                } else {
+                    var x = d3.scale.log().range([0, width]);
+                    var y = d3.scale.log().range([height, 0]);
+                }
+
+                var xAxis = d3.svg.axis()
                     .scale(x)
-                    .orient('bottom')
-                    .ticks(5);
-            }
+                    .orient('bottom');
 
-            function make_y_axis() {
-                return d3.svg.axis()
+                var yAxis = d3.svg.axis()
                     .scale(y)
-                    .orient('left')
-                    .ticks(5);
-            }
+                    .orient('left');
 
-            if(!(AppVars.layerIml instanceof Array)) {
-                AppVars.layerIml = AppVars.layerIml.split(',');
-            }
+                var line = d3.svg.line()
+                    .x(function(d) {
+                        return x(d.x);
+                    })
+                    .y(function(d) {
+                        return y(d.y);
+                    });
 
-            var data = [];
-            for(i=0; i<probArray.length; i++) {
-                // Only push into data if the values are greater then 0
-                if (parseFloat(AppVars.layerIml[i]) > 0 && parseFloat(probArray[i]) > 0) {
-                    data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
+                var svg = d3.select('#chartDialog').append('svg')
+                    .attr('width', width + margin.left + margin.right)
+                    .attr('height', height + margin.top + margin.bottom)
+                    .append('g')
+                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+                var dataCallback = function(d) {
+                    d.x = +d[0];
+                    d.y = +d[1];
+                };
+
+                data.forEach(dataCallback);
+                x.domain(d3.extent(data, function(d) { return d.x; }));
+                if (curveType == 'uhs') {
+                    y.domain([minYAxis, maxYAxis]);
+                } else {
+                    y.domain([d3.extent(data, function(d) { return d.y; })[0], 3]);
                 }
-            }
 
-            var margin = {top: 45, right: 20, bottom: 80, left: 60},
-            width = 400 - margin.left - margin.right,
-            height = 380 - margin.top - margin.bottom;
+                // grid line functions
+                function make_x_axis() {
+                    return d3.svg.axis()
+                        .scale(x)
+                        .orient('bottom')
+                        .ticks(5);
+                }
 
-            var x = d3.scale.log().domain([0, width]).range([0, width]);
-            var y = d3.scale.log().range([height, 0]);
+                function make_y_axis() {
+                    return d3.svg.axis()
+                        .scale(y)
+                        .orient('left')
+                        .ticks(5);
+                }
 
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .tickFormat(function (d) { return Math.round(d * 100) / 100; })
-                .orient('bottom');
+                // grid lines
+                svg.append('g')
+                    .attr('class', 'grid')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(make_x_axis()
+                        .tickSize(-height, 0, 0)
+                        .tickFormat('')
+                    );
 
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient('left');
+                svg.append('g')
+                    .attr('class', 'grid')
+                    .call(make_y_axis()
+                        .tickSize(-width, 0, 0)
+                        .tickFormat('')
+                    );
 
-            var line = d3.svg.line()
-                .x(function(d) {
-                    return x(d.x);
-                })
-                .y(function(d) {
-                    return y(d.y);
-                });
+                svg.append('path')
+                    .data([data])
+                    .attr('class', 'line')
+                    .attr('d', line);
 
-            var svg = d3.select('#chartDialog').append('svg')
-                .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom)
-                .append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-            // grid lines
-            svg.append('g')
-                .attr('class', 'grid')
-                .attr('transform', 'translate(0,' + height + ')')
-                .call(make_x_axis()
-                    .tickSize(-height, 0, 0)
-                    .tickFormat('')
-                );
-
-            svg.append('g')
-                .attr('class', 'grid')
-                .call(make_y_axis()
-                    .tickSize(-width, 0, 0)
-                    .tickFormat('')
-                );
-
-            var dataCallback = function(d) {
-                d.x = +d[0];
-                d.y = +d[1];
-            };
-
-            data.forEach(dataCallback);
-            x.domain(d3.extent(data, function(d) { return d.x; }));
-            y.domain(d3.extent(data, function(d) { return d.y; }));
-
-            svg.append('path')
-                .data([data])
-                .attr('class', 'line')
-                .attr('d', line);
-            svg.append('g')
-                .attr('class', 'x axis')
-                .attr('transform', 'translate(0,' + height + ')')
-                .call(xAxis)
-                .selectAll("text")
+                svg.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis)
+                    .selectAll("text")
+                    .style("text-anchor", "end")
                     .attr("dx", "-.8em")
-                    .attr("dy", "-0.6em")
-                    .attr('x', 30)
-                    .style('font-family', 'myriad pro')
-                    .style('font-size','11px')
+                    .attr("dy", ".15em")
                     .attr("transform", function(d) {
-                        return "rotate(90)";
-                            })
-                .append('text')
-                .attr('x', 160)
-                .attr('y', 30)
-                .attr('dy', '.71em')
-                .attr('text-anchor', 'middle')
-                .style('font-size','12px')
-                .text(AppVars.layerImt);
+                        return "rotate(-35)";
+                        });
 
-            svg.append('g')
-                .attr('class', 'x axis')
-                .append('text')
-                .attr('x', width / 2)
-                .attr('y',  (height + margin.bottom)- 35)
-                //.attr('dy', '.71em')
-                .attr('text-anchor', 'middle')
-                .style('font-size','12px')
-                .text(AppVars.layerImt);
+                svg.append('g')
+                    .attr('class', 'x axis')
+                    .append('text')
+                    .attr('x', width / 2)
+                    .attr('y',  (height + margin.bottom)- 17)
+                    .attr('text-anchor', 'middle')
+                    .style('font-size','14px')
+                    .text(AppVars.layerImt);
 
-            svg.append('g')
-                .attr('class', 'y axis')
-                .call(yAxis)
-                .append('text')
-                .attr('transform', 'rotate(-90)')
-                .attr('y', -60)
-                .attr('x', -20)
-                .attr('dy', '.71em')
-                .style('font-size','12px')
-                .style('text-anchor', 'end')
-                .text('Probability of exceedance in '+AppVars.layerInvestigationTime+' years');
+                svg.append('g')
+                    .attr('class', 'y axis')
+                    .call(yAxis)
+                    .append('text')
+                    .attr('transform', 'rotate(-90)')
+                    .attr('y', -60)
+                    .attr('x', -20)
+                    .attr('dy', '.71em')
+                    .style('font-size','12px')
+                    .style('text-anchor', 'end')
+                    .text(yAxisLable);
 
-            var legend = d3.select('#chartDialog').append('svg')
-                .attr('height', 25);
+                var legend = d3.select('#chartDialog').append('svg')
+                    .attr('height', 25);
 
-            // points along the line
-            svg.selectAll('circle.line')
-                .data(data)
-                .enter().append('circle')
-                .attr('class', 'line')
-                .attr('cx', function(d) { return x(d.x); })
-                .attr('cy', function(d) { return y(d.y); })
-                .attr('r', 4.5)
-                .style('fill', 'gray')
-                .on('mouseover', function() {
-                    d3.select(this)
-                        .attr('r', 6.6)
-                        .text(circleX + ', ' + circleY)
-                        .style('fill', 'red');
-                    var circleX = d3.select(this.__data__.x);
-                    circleX = circleX.toString();
-                    circleX = circleX.split(','[0]);
+                // points along the line
+                svg.selectAll('circle.line')
+                    .data(data)
+                    .enter().append('circle')
+                    .attr('class', 'line')
+                    .attr('cx', function(d) { return x(d.x); })
+                    .attr('cy', function(d) { return y(d.y); })
+                    .attr('r', 4.5)
+                    .style('fill', 'gray')
+                    .on('mouseover', function() {
+                        d3.select(this)
+                            .attr('r', 6.6)
+                            .text(circleX + ', ' + circleY)
+                            .style('fill', 'red');
+                        var circleX = d3.select(this.__data__.x);
+                        circleX = circleX.toString();
+                        circleX = circleX.split(','[0]);
 
-                    var circleY = d3.select(this.__data__.y);
-                    circleY = circleY.toString();
-                    circleY = circleY.split(','[0]);
+                        var circleY = d3.select(this.__data__.y);
+                        circleY = circleY.toString();
+                        circleY = circleY.split(','[0]);
 
-                    textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
+                        textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
 
-                }).on('mouseout', function() {
-                    d3.select(this)
-                        .attr('r', 4.5)
-                        .style('fill', 'gray');
+                    }).on('mouseout', function() {
+                        d3.select(this)
+                            .attr('r', 4.5)
+                            .style('fill', 'gray');
+                    });
+
+                textTopTitle = svg.append("text")
+                    .attr("x", 0)
+                    .attr("y", -45)
+                    .attr("dy", ".35em")
+                    .style("font-weight", "bold")
+                    .attr("font-size","14px")
+                    .text(AppVars.selectedHazardLayerName);
+
+                textTopTitle2 = svg.append("text")
+                    .attr("x", 0)
+                    .attr("y", -30)
+                    .attr("dy", ".35em")
+                    .style("font-weight", "bold")
+                    .attr("font-size","14px")
+                    .text(AppVars.selectedLayerValue);
+
+                textTopLable = svg.append("text")
+                    .attr("x", 0)
+                    .attr("y", -15)
+                    .attr("dy", ".35em")
+                    .attr("font-size","12px")
+                    .text('Point coordinates (lon, lat [in DD]): '+lng+', '+lat);
+
+                textBottom = svg.append('text')
+                    .attr('x', 0)
+                    .attr('y', 335)
+                    .attr('dy', '.35em')
+                    .text('');
+
+                $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+                $('#downloadCurve').on('hover', function(){
+                    $(this).css('cursor', 'pointer');
                 });
 
-            var chartHeader = 'Investigation Time: '+AppVars.layerInvestigationTime;
+                var h = $('#chartDialog').height();
+                h = h + 20;
+                $('#chartDialog').css({'height': h+'px'});
 
-            textTopTitle = svg.append("text")
-                .attr("x", 0)
-                .attr("y", -30)
-                .attr("dy", ".35em")
-                .style("font-weight", "bold")
-                .attr("font-size","14px")
-                .text(AppVars.mappedValue);
+                // Prep data for download to CSV
+                $('#downloadCurve').click(function(event) {
+                    var csvData = [];
+                    csvData = csvData.concat('prob');
+                    csvData = csvData.concat('iml');
+                    csvData = csvData.concat('investigationTime');
+                    csvData = csvData.concat('lon');
+                    csvData = csvData.concat('lat');
+                    csvData = JSON.stringify(csvData);
+                    var lineBreak = 'lineBreak';
+                    csvData = csvData.concat(lineBreak);
+                    var quotationMark = '"';
 
-            textTopLable = svg.append("text")
-                .attr("x", 0)
-                .attr("y", -15)
-                .attr("dy", ".35em")
-                .attr("font-size","12px")
-                .text(chartHeader+' (Lon/Lat): '+lng+', '+lat);
-
-            textBottom = svg.append('text')
-                .attr('x', 0)
-                .attr('y', 320)
-                .attr('dy', '.35em')
-                .text('');
-
-            $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
-            $('#downloadCurve').on('hover', function(){
-                $(this).css('cursor', 'pointer');
-            });
-
-            var h = $('#chartDialog').height();
-            h = h + 20;
-            $('#chartDialog').css({'height': h+'px'});
-
-            // Prep data for download to CSV
-            $('#downloadCurve').click(function(event) {
-                var csvData = [];
-                csvData = csvData.concat('prob');
-                csvData = csvData.concat('iml');
-                csvData = csvData.concat('investigationTime');
-                csvData = csvData.concat('lon');
-                csvData = csvData.concat('lat');
-                csvData = JSON.stringify(csvData);
-                var lineBreak = 'lineBreak';
-                csvData = csvData.concat(lineBreak);
-                var quotationMark = '"';
-
-                csvData = csvData.concat('"');
-                csvData = csvData.concat(probArray);
-                csvData = csvData.concat('","');
-                csvData = csvData.concat(AppVars.layerIml);
-                csvData = csvData.concat('",');
-                csvData = csvData.concat(AppVars.layerInvestigationTime);
-                csvData = csvData.concat(',');
-                csvData = csvData.concat(lon);
-                csvData = csvData.concat(',');
-                csvData = csvData.concat(lat);
-                csvData = csvData
-                    .replace(/lineBreak/, '\r\n')
-                    .replace(/\[/g, '')
-                    .replace(/\]/g, '')
-                    .replace(/''/g, '","');
-                downloadJSON2CSV(csvData);
-            });
-            } // End chart
+                    csvData = csvData.concat('"');
+                    csvData = csvData.concat(probArray);
+                    csvData = csvData.concat('","');
+                    csvData = csvData.concat(AppVars.layerIml);
+                    csvData = csvData.concat('",');
+                    csvData = csvData.concat(AppVars.layerInvestigationTime);
+                    csvData = csvData.concat(',');
+                    csvData = csvData.concat(lon);
+                    csvData = csvData.concat(',');
+                    csvData = csvData.concat(lat);
+                    csvData = csvData
+                        .replace(/lineBreak/, '\r\n')
+                        .replace(/\[/g, '')
+                        .replace(/\]/g, '')
+                        .replace(/''/g, '","');
+                    downloadJSON2CSV(csvData);
+                });
+                } // End chart
+            } // End if data is not null
         }); // End utfGrid click
     }; // End hazardCurveUtfGridClickEvent
 
@@ -1638,33 +1699,56 @@ var startApp = function() {
 
     function hazardInputD3Chart(mfdsJsonObj) {
 
-        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, legend, colors;
+        var mappedValue1 = AppVars.mappedValue.split(':')[0];
+        var mappedValue2 = AppVars.mappedValue.substring(AppVars.mappedValue.indexOf(":") + 1);
+
+        var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, colors;
         var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
         var selectedCurves = [];
-        /* associative array of arrays of values */
+        // associative array of arrays of values
         curve_vals = [];
-        /* associative array of arrays [ x, y ] to describe the curve on the plane */
-        curve_coup = [];
 
-        yAxisLable = 'Number of events / years';
+        yAxisLable = 'Number of events / year';
         xAxisLable = 'Magnitude';
+
+        // find the min and max value when there are multipe MFDs
+        var keys = Object.keys(mfdsJsonObj).length
+        var max = [];
+        for (var k in mfdsJsonObj) {
+            for (var i = 0; i < mfdsJsonObj[k].mags.length; i++) {
+                max.push(mfdsJsonObj[k].mags[i]);
+            }
+        }
+
+        function findMaxMagValue( max ){
+            return Math.max.apply( Math, max );
+        };
+
+        function findMinMagValue( max ){
+            return Math.min.apply( Math, max );
+        };
+
+        var multipleMfdsMinValue = findMinMagValue(max);
+        var multipleMfdsMaxValue = findMaxMagValue(max);
+
+        // prep data for multiple curve plots
+        var multiplePlotData = [];
+        var allyAxisVariable = [];
+
+        for (var m in mfdsJsonObj) {
+            var bar = [];
+            for (var i = 0; i < mfdsJsonObj[m].mags.length; i++) {
+                allyAxisVariable.push(mfdsJsonObj[m].mags[i]);
+                bar.push([mfdsJsonObj[m].mags[i], mfdsJsonObj[m].occur_rates[i]]);
+                multiplePlotData[m] = bar;
+            }
+        }
 
         for (var k in mfdsJsonObj) {
             curve_name = k;
             curve_vals[curve_name] = mfdsJsonObj[k].occur_rates;
             selectedCurves.push(k);
             yAxisVariable = mfdsJsonObj[k].mags;
-        }
-
-        for (var k in selectedCurves) {
-            curve_name = selectedCurves[k];
-
-            curve_coup[curve_name] = [];
-            for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-                if (yAxisVariable[i] > 0.0 && curve_vals[curve_name][i] > 0.0) {
-                    curve_coup[curve_name].push([ yAxisVariable[i], curve_vals[curve_name][i] ]);
-                }
-            }
         }
 
         for (var k in selectedCurves) {
@@ -1730,22 +1814,28 @@ var startApp = function() {
         }
 
         var margin = {top: 55, right: 80, bottom: 45, left: 60};
-        var width = 480 - margin.left - margin.right;
+        var width = 580 - margin.left - margin.right;
         var height = 380 - margin.top - margin.bottom;
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        if (keys == 1) {
+            var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        } else {
+            var x_scale = d3.scale.log().range([0, width]).domain([multipleMfdsMinValue, multipleMfdsMaxValue]);
+        }
+
         var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
 
         var xAxis = [], xAxis_n = 1;
         var xAxis_vals = [];
 
-        xAxis_n = parseInt(Math.ceil(yAxisVariable.length / 5));
+        xAxis_n = parseInt(Math.ceil(allyAxisVariable.length / 5));
+
         if (xAxis_n > 4)
             xAxis_n = 4;
 
         for (var i = 0 ; i < xAxis_n ; i++) {
             xAxis_vals[i] = [];
-            for (var e = i ; e < yAxisVariable.length ; e += xAxis_n) {
-                xAxis_vals[i].push(yAxisVariable[e]);
+            for (var e = i ; e < allyAxisVariable.length ; e += xAxis_n) {
+                xAxis_vals[i].push(allyAxisVariable[e]);
             }
 
             xAxis[i] = d3.svg.axis()
@@ -1801,20 +1891,14 @@ var startApp = function() {
             );
 
         svg.append("text")
-            .attr("x", 335)
+            .attr("x", 460)
             .attr("y", -25)
             .attr("dy", ".35em")
-            .text("MFDS *:");
+            .text("MFDS *");
 
         for (k in selectedCurves) {
             var curve_name = selectedCurves[k];
-
-            var data = curve_coup[curve_name];
-
-            svg.append("path")
-                .data([curve_coup[curve_name]])
-                .attr("class", "line"+k)
-                .attr("d", line);
+            var data = multiplePlotData[curve_name];
 
             // Update the css for each line
             colors = [
@@ -1847,7 +1931,7 @@ var startApp = function() {
             makeCircles(data, k, color, curveTitle);
 
             svg.append("text")
-                .attr("x", 360)
+                .attr("x", 465)
                 .attr("y", 0+(k*20))
                 .attr("dy", ".35em")
                 .text(curveTitle);
@@ -1855,7 +1939,7 @@ var startApp = function() {
             svg.append("svg:circle")
                 //.attr("cx", 50)
                 .attr("cy", 0+(k*20))
-                .attr("cx", 350)
+                .attr("cx", 460)
                 .attr("r", 3)
                 .style("fill", color)
 
@@ -1864,14 +1948,12 @@ var startApp = function() {
 
         for (i = 0 ; i < xAxis_n ; i++) {
             var g = svg.append("g");
-
             g.attr("class", "x axis")
-
             g.attr("transform", "translate(0," + height + ")")
             .call(xAxis[i]);
             if (i == (xAxis_n - 1))
                 g.append("text")
-                .attr("x", 160)
+                .attr("x", width / 2)
                 .attr("y", 30)
                 .attr("dy", ".71em")
                 .attr("text-anchor", "middle")
@@ -1884,10 +1966,10 @@ var startApp = function() {
             .append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", -60)
-            .attr("x", -20)
+            .attr("x", -120)
             .attr("dy", ".71em")
             .style("font-size","12px")
-            .style("text-anchor", "end")
+            .style("text-anchor", "middle")
             .text(yAxisLable);
 
         textTopTitle = svg.append("text")
@@ -1896,7 +1978,15 @@ var startApp = function() {
             .attr("dy", ".35em")
             .style("font-weight", "bold")
             .attr("font-size","14px")
-            .text(AppVars.mappedValue);
+            .text(mappedValue1);
+
+        textTopTitle2 = svg.append("text")
+            .attr("x", 0)
+            .attr("y", -30)
+            .attr("dy", ".35em")
+            .style("font-weight", "bold")
+            .attr("font-size","14px")
+            .text(mappedValue2);
 
         textTop = svg.append("text")
             .attr("x", 0)
@@ -1942,20 +2032,20 @@ var startApp = function() {
                 curve_name = selectedCurves[k];
                 var curveValue = mfdsJsonObj[curve_name];
 
-                csvData.push(curve_name);
-                csvData.push(',');
-                csvData.push(curveValue.bin_width);
-                csvData.push(',');
-                csvData.push(curveValue.min_mag);
-                csvData.push(',');
-                csvData.push(quotationMark);
-                csvData.push(curveValue.occur_rates);
-                csvData.push(quotationMark);
-                csvData.push(',');
-                csvData.push(quotationMark);
-                csvData.push(curveValue.mags);
-                csvData.push(quotationMark);
-                csvData.push('\r\n');
+                csvData += curve_name;
+                csvData += ',';
+                csvData += curveValue.bin_width;
+                csvData += ',';
+                csvData += curveValue.min_mag;
+                csvData += ',';
+                csvData += quotationMark;
+                csvData += curveValue.occur_rates;
+                csvData += quotationMark;
+                csvData += ',';
+                csvData += quotationMark;
+                csvData += curveValue.mags;
+                csvData += quotationMark;
+                csvData += '\r\n';
             }
 
             downloadJSON2CSV(csvData);
@@ -2434,7 +2524,6 @@ var startApp = function() {
             var i;
             for (i = 0 ; i < length ; i++) {
                 curve_valsX[curve_name][i] = Math.log(parseFloat(curve_valsX[curve_name][i]));
-                //curve_valsX[curve_name][i] = parseFloat(curve_valsX[curve_name][i]);
                 curve_valsY[curve_name][i] = parseFloat(curve_valsY[curve_name][i]);
             };
         }
