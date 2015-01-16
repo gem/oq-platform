@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 
 from openquakeplatform import __version__ as oqp_version
 
+
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
@@ -17,7 +18,7 @@ setup(
     # Full list of classifiers can be found at:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha'
+        'Development Status :: 4 - Beta'
     ],
     license="BSD",
     keywords="openquakeplatform geonode django",
@@ -80,7 +81,7 @@ setup(
         "django-extras==0.3",
         "django-forms-bootstrap==2.0.3.post1",
         "django-friendly-tag-loader==1.1",
-        "django-geoexplorer==3.0.5",
+        "django-geoexplorer==4.0.2",
         "django-jsonfield==0.9.10",
         "django-nested-inlines==0.1.4",
         "django-nose==1.2",
