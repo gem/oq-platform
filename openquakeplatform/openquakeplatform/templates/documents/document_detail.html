@@ -7,6 +7,11 @@
 {% load url from future %}
 {% load base_tags %}
 
+{% comment %}
+This code has been copied from geonode/documents/templates/documents/document_detail.html
+and overrides the original GeoNode template.
+{% endcomment %}
+
 {% block title %}{{ document.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
@@ -18,10 +23,10 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-  <div class="span6">
+  <div class="span5">
     <h2 class="page-title">{{ document.title }}</h2>
   </div>
-  <div class="span6 action-group">
+  <div class="span7 action-group">
     <!-- <div class="pull-right">
       <div class="btn-group">
       </div>
@@ -29,6 +34,11 @@
       </div>
     </div> -->
 	<div class="btn-group pull-right">
+        <a class="btn btn-large btn-primary" href="{% url "document_download" document.id %}">
+          {% trans "Download" %}
+        </a>
+    </div>
+    <div class="btn-group pull-right">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Metadata" %}
           <span class="caret"></span>
