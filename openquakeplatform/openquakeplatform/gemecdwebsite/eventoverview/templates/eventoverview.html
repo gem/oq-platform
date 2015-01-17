@@ -136,7 +136,18 @@
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
-                                                            e.target._layers[json.markerid].bindPopup(html).openPopup();
+                                                            // this switch covers stable and master leaflet branch cases
+                                                            if (typeof(e.target._layers) != 'undefined') {
+                                                                e.target._layers[json.markerid].bindPopup(html).openPopup();
+                                                            }
+                                                            else if (typeof(e.target._map._layers) != 'undefined') {
+                                                                e.target._map._layers[json.markerid].bindPopup(html).openPopup();
+                                                            }
+                                                            else {
+                                                                alert('leaflet internals changed, please fix them');
+                                                            }
+
+
                                                             //jQuery("#id_locationid").val(json.locationid);
                                                             //jQuery("#currentlocationname").text(json.locationname);
                                                         }
@@ -223,7 +234,16 @@
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
                                                             //e.target._layers[json.markerid].bindPopup(html);
-                                                            var bounds = e.target._layers[json.markerid].getBounds();
+                                                            // this switch covers stable and master leaflet branch cases
+                                                            if (typeof(e.target._layers) != 'undefined') {
+                                                                var bounds = e.target._layers[json.markerid].getBounds();
+                                                            }
+                                                            else if (typeof(e.target._map._layers) != 'undefined') {
+                                                                var bounds = e.target._map._layers[json.markerid].getBounds();
+                                                            }
+                                                            else {
+                                                                alert('leaflet internals changed, please fix them');
+                                                            }
                                                             pop = new L.Popup();
                                                             pop.setLatLng(bounds.getCenter());
                                                             pop.setContent(html);
