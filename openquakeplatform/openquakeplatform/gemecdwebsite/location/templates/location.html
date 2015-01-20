@@ -261,6 +261,14 @@
             try
             {
                 var bounds = boundsGroup.getBounds();
+                if (bounds._northEast.lat == bounds._southWest.lat &&
+                    bounds._northEast.lon == bounds._southWest.lon) {
+                    // if bounds collapsed to single point we expand it +- 0.1 degrees
+                    bounds._northEast.lat -= 0.1; 
+                    bounds._southWest.lat += 0.1;
+                    bounds._northEast.lon -= 0.1; 
+                    bounds._southWest.lon += 0.1;
+                }
                 if (bounds && bounds.getNorthEast() && bounds.getSouthWest())
                 {
                     map.fitBounds(bounds);
