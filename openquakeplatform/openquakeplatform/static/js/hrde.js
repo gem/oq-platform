@@ -186,7 +186,7 @@ var startApp = function() {
             map.addLayer(strain);
             AppVars.layerControl.addOverlay(strain, "Strain");
         } else if (externalLayerSelection == 3) {
-            var iec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
+            var iec = L.tileLayer.wms("/geoserver/wms", {
                 layers: 'oqplatform:isc_viewer_measure',
                 format: 'image/png',
                 transparent: true,
@@ -195,7 +195,7 @@ var startApp = function() {
             map.addLayer(iec);
             AppVars.layerControl.addOverlay(iec, "Instrumental Earthquake Catalogue");
         } else if (externalLayerSelection == 4) {
-            var hec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
+            var hec = L.tileLayer.wms("/geoserver/wms", {
                 layers: 'oqplatform:ghec_viewer_measure',
                 format: 'image/png',
                 transparent: true,
