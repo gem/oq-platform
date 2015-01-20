@@ -226,7 +226,7 @@ div#ecd-leftpanel
 div#panelcontainer
 {
     margin-left:10px;
-    max-width: 200px;
+    /* max-width: 200px; */
 }
 
 div#ecd-leftpanel h1
@@ -263,7 +263,8 @@ div#ecd-leftpanel select.locationdropdown
 div#ecd-leftpanel div.spanlist
 {
     height:550px;
-    overflow:scroll;
+    overflow:auto;
+    width: 90%;
 }
 
 div#ecd-leftpanel div.spanlist ul
