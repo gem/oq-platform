@@ -17,7 +17,7 @@ and overrides the original GeoNode template.
   {% if resourcebase.abstract %}
     <li>
       <strong>{% trans "Abstract" %}:</strong>
-      {{ resourcebase.abstract|escape|urlize|linebreaks|safe|truncatechars:160 }}
+      {{ resourcebase.abstract|escape|urlize|linebreaks|safe }}
     </li>
   {% endif %}
 
@@ -82,78 +82,72 @@ and overrides the original GeoNode template.
       <a href="{{ resourcebase.poc.user.get_profile.get_absolute_url }}"> {{ resourcebase.poc.user.username }} </a>
     <li>
   {% endif %}
+
+  {% if resourcebase.maintenance_frequency %}
+    <li>
+      <strong>{% trans "Maintenance Frequency" %}:</strong>
+      {{ resourcebase.maintenance_frequency_title }}
+    </li>
+  {% endif %}
+  
+  {% if resourcebase.restriction_code_type or resourcebase.constraints_other %}
+    <li>
+      <strong>{% trans "Restrictions" %}:</strong>
+      {% if resourcebase.constraints_other %}
+          {{ resourcebase.constraints_other }}
+      {% else %}
+          {{ resourcebase.restriction_code_type }}
+      {% endif %}
+    </li>
+  {% endif %}
+        
+  {% if resourcebase.edition %}
+    <li>
+      <strong>{% trans "Edition" %}:</strong>
+      {{ resourcebase.edition}}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.purpose %}
+    <li>
+      <strong>{% trans "Purpose" %}:</strong>
+      {{ resourcebase.purpose|escape|urlize|linebreaks|safe }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.language %}
+    <li>
+      <strong>{% trans "Language" %}:</strong>
+      {{ resourcebase.language_title }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.temporal_extent_start and resourcebase.temporal_extent_end %}
+    <li>
+      <strong>{% trans "Temporal Extent" %}:</strong>
+      {{ resourcebase.temporal_extent_start }} - {{ resourcebase.temporal_extent_end }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.data_quality_statement %}
+    <li>
+      <strong>{% trans "Data Quality" %}:</strong>
+      {{ resourcebase.data_quality_statement }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.supplemental_information %}
+    <li>
+      <strong>{% trans "Supplemental Information" %}:</strong> 
+      {{ resourcebase.supplemental_information|escape|urlize|linebreaks|safe }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.spatial_representation_type %}
+    <li>
+      <strong>{% trans "Spatial Representation Type" %}:</strong>
+      {{ resourcebase.spatial_representation_type }}
+    </li>
+  {% endif %}
   </ul>
-
-  <a href="#more" data-toggle="collapse" data-target=".more">More info</a>
-
-  <div class="more collapse"> 
-    <ul class="unstyled wide">
-    {% if resourcebase.maintenance_frequency %}
-      <li>
-        <strong>{% trans "Maintenance Frequency" %}:</strong>
-        {{ resourcebase.maintenance_frequency_title }}
-      </li>
-    {% endif %}
-    
-    {% if resourcebase.restriction_code_type or resourcebase.constraints_other %}
-      <li>
-        <strong>{% trans "Restrictions" %}:</strong>
-        {% if resourcebase.constraints_other %}
-            {{ resourcebase.constraints_other }}
-        {% else %}
-            {{ resourcebase.restriction_code_type }}
-        {% endif %}
-      </li>
-    {% endif %}
-          
-    {% if resourcebase.edition %}
-      <li>
-        <strong>{% trans "Edition" %}:</strong>
-        {{ resourcebase.edition}}
-      </li>
-    {% endif %}
-
-    {% if resourcebase.purpose %}
-      <li>
-        <strong>{% trans "Purpose" %}:</strong>
-        {{ resourcebase.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}
-      </li>
-    {% endif %}
-
-    {% if resourcebase.language %}
-      <li>
-        <strong>{% trans "Language" %}:</strong>
-        {{ resourcebase.language_title }}
-      </li>
-    {% endif %}
-
-    {% if resourcebase.temporal_extent_start and resourcebase.temporal_extent_end %}
-      <li>
-        <strong>{% trans "Temporal Extent" %}:</strong>
-        {{ resourcebase.temporal_extent_start }} - {{ resourcebase.temporal_extent_end }}
-      </li>
-    {% endif %}
-
-    {% if resourcebase.data_quality_statement %}
-      <li>
-        <strong>{% trans "Data Quality" %}:</strong>
-        {{ resourcebase.data_quality_statement }}
-      </li>
-    {% endif %}
-
-    {% if resourcebase.supplemental_information %}
-      <li>
-        <strong>{% trans "Supplemental Information" %}:</strong> 
-        {{ resourcebase.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}
-      </li>
-    {% endif %}
-
-    {% if resourcebase.spatial_representation_type %}
-      <li>
-        <strong>{% trans "Spatial Representation Type" %}:</strong>
-        {{ resourcebase.spatial_representation_type }}
-      </li>
-    {% endif %}
-    </ul>
-  </div>
 </article>

@@ -238,6 +238,11 @@ def formviewastable( context, field_structure ):
 
     return iteratefieldstructure( field_structure, context)
 
+@register.inclusion_tag ('formviewastablecompr.html', takes_context=True)
+def formviewastablecompr( context, field_structure ):
+
+    return iteratefieldstructure( field_structure, context)
+
 @register.inclusion_tag ('gridlist.html', takes_context=True)
 def gridlist( context, field_structure ):
 

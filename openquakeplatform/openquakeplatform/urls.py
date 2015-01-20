@@ -97,9 +97,8 @@ urlpatterns = patterns('',
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
-    #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
-        #name='index'),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
+    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
