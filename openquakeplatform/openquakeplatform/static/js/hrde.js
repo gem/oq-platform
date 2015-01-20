@@ -96,7 +96,6 @@ var startApp = function() {
     $('#map-tools').append('<select id="external-layers-menu">'+
             '<option>Select additional layers</option>'+
             '<option value="1">Strain</option>'+
-            '<option value="2">Strain Arrows</option>'+
             '<option value="3">Instrumental Earthquake Catalogue</option>'+
             '<option value="4">Historic Earthquake Catalogue</option>'+
         '</select>'
@@ -183,16 +182,11 @@ var startApp = function() {
         var externalLayerSelection = document.getElementById('external-layers-menu').value;
 
         if (externalLayerSelection == 1) {
-            var strain = new L.TileLayer(TILESTREAM_URL+'strain/{z}/{x}/{y}.png');
+            var strain = new L.TileLayer(TILESTREAM_URL+'geodetic-strain-v2-1/{z}/{x}/{y}.png');
             map.addLayer(strain);
             AppVars.layerControl.addOverlay(strain, "Strain");
-
-        } else if (externalLayerSelection == 2) {
-            var strainArrows = new L.TileLayer(TILESTREAM_URL+'strain-arrows/{z}/{x}/{y}.png');
-            map.addLayer(strainArrows);
-            AppVars.layerControl.addOverlay(strainArrows, "Strain with arrows");
         } else if (externalLayerSelection == 3) {
-            var iec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
+            var iec = L.tileLayer.wms("/geoserver/wms", {
                 layers: 'oqplatform:isc_viewer_measure',
                 format: 'image/png',
                 transparent: true,
@@ -201,7 +195,7 @@ var startApp = function() {
             map.addLayer(iec);
             AppVars.layerControl.addOverlay(iec, "Instrumental Earthquake Catalogue");
         } else if (externalLayerSelection == 4) {
-            var hec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
+            var hec = L.tileLayer.wms("/geoserver/wms", {
                 layers: 'oqplatform:ghec_viewer_measure',
                 format: 'image/png',
                 transparent: true,
