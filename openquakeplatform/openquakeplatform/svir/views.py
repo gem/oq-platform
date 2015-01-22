@@ -109,7 +109,7 @@ def list_subthemes_by_theme(request):
 def export_variables_info(request):
     """
     Export a csv file containing information about the socioeconomic
-    indicators which have the specified keywords and/or subtheme
+    indicators which have the specified name, keywords, theme and/or subtheme
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing at least
@@ -141,8 +141,8 @@ def export_variables_info(request):
     # We don't need 'Tag' anymore, but we need to show other fields
     # We don't display update_periodicity and internal_consistency_metric
     response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="socioeconomic_indicators_export.csv"'
-    response['Content-Disposition'] = content_disp
+    response['Content-Disposition'] = \
+        'attachment; filename="socioeconomic_indicators_export.csv"'
     name_str = request.GET.get('name')
     keywords_str = request.GET.get('keywords')
     theme_str = request.GET.get('theme')
@@ -217,16 +217,45 @@ def export_variables_info(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def export_variables_data_by_ids(request):
+def export_countries_info(request):
+    """
+    Export a csv file containing iso codes and names of countries for which
+    socioeconomic data are available
+    """
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = \
+        'attachment; filename="countries_info_export.csv"'
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    writer = csv.writer(response)
+    response.write(copyright + "\n")
+    writer.writerow(['ISO', 'NAME'])
+    inclusive_region = CustomRegion.objects.get(
+        name='Countries with socioeconomic data')
+    for country in inclusive_region.countries.all():
+        # NOTE: It depends on which country model is being used
+        # row = [country.iso, country.name_engli.encode('utf-8')]
+        row = [country.iso, country.name_0.encode('utf-8')]
+        writer.writerow(row)
+    return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def export_variables_data(request):
     """
     Export a csv file containing data corresponding to the social vulnerability
     variables which ids are given in input
+    If country iso codes are also provided, only the corresponding data will
+    be exported
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing the
         following parameter:
             * 'sv_variables_ids': a string of comma-separated ids of social
                                   vulnerability variables
+            * 'country_iso_codes': a string of comma-separated country iso
+                                   codes
             * 'export_geometries': a boolean indicating if the geometries of
                                    countries need to be exported too
     """
@@ -235,9 +264,14 @@ def export_variables_data_by_ids(request):
                ' must be specified')
         response = HttpResponse(msg, status="400")
         return response
+    country_iso_codes = request.GET.get('country_iso_codes')
+    country_iso_codes_list = []
+    if country_iso_codes:
+        country_iso_codes_list = [iso.strip()
+                                  for iso in country_iso_codes.split(',')]
     response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="sv_data_by_variables_ids_export.csv"'
-    response['Content-Disposition'] = content_disp
+    response['Content-Disposition'] = \
+        'attachment; filename="sv_data_by_variables_ids_export.csv"'
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
     response.write(copyright + "\n")
@@ -256,6 +290,8 @@ def export_variables_data_by_ids(request):
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
+        if country_iso_codes and country.iso not in country_iso_codes_list:
+            continue
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
         row = [country.iso, country.name_0.encode('utf-8')]
