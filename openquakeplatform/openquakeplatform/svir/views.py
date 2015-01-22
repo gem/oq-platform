@@ -141,8 +141,8 @@ def export_variables_info(request):
     # We don't need 'Tag' anymore, but we need to show other fields
     # We don't display update_periodicity and internal_consistency_metric
     response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="socioeconomic_indicators_export.csv"'
-    response['Content-Disposition'] = content_disp
+    response['Content-Disposition'] = \
+        'attachment; filename="socioeconomic_indicators_export.csv"'
     name_str = request.GET.get('name')
     keywords_str = request.GET.get('keywords')
     theme_str = request.GET.get('theme')
@@ -223,8 +223,8 @@ def export_countries_info(request):
     socioeconomic data are available
     """
     response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="countries_info_export.csv"'
-    response['Content-Disposition'] = content_disp
+    response['Content-Disposition'] = \
+        'attachment; filename="countries_info_export.csv"'
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
     response.write(copyright + "\n")
@@ -270,8 +270,8 @@ def export_variables_data(request):
         country_iso_codes_list = [iso.strip()
                                   for iso in country_iso_codes.split(',')]
     response = HttpResponse(content_type='text/csv')
-    content_disp = 'attachment; filename="sv_data_by_variables_ids_export.csv"'
-    response['Content-Disposition'] = content_disp
+    response['Content-Disposition'] = \
+        'attachment; filename="sv_data_by_variables_ids_export.csv"'
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
     response.write(copyright + "\n")
