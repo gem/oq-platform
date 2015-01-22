@@ -22,7 +22,9 @@ from django.conf.urls import patterns, include, url
 from openquakeplatform.svir.views import (list_themes,
                                           list_subthemes_by_theme,
                                           export_variables_info,
-                                          export_variables_data_by_ids)
+                                          export_variables_data,
+                                          export_countries_info,
+                                         )
 
 from django.contrib import admin
 admin.autodiscover()
@@ -33,5 +35,9 @@ urlpatterns = patterns(
     url(r'^list_themes', list_themes),
     url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
     url(r'^export_variables_info', export_variables_info),
-    url(r'^export_variables_data_by_ids', export_variables_data_by_ids),
+    # export_variables_data_by_ids has been renamed; the following line
+    # is to avoid breaking clients using the old API
+    url(r'^export_variables_data_by_ids', export_variables_data),
+    url(r'^export_variables_data', export_variables_data),
+    url(r'^export_countries_info', export_countries_info),
 )
