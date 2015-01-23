@@ -44,12 +44,17 @@ var startApp = function() {
             '<option>Select layers</option>'+
             '<option value="1">Hazus Level 1 Building Fractions</option>'+
             '<option value="2">US Counties</option>'+
+            '<option value="3">PAGER Dwelling Fractions Level 0>'+
         '</select>'
     );
 
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
 
-    function createUtfLayerGroups(selectedLayer, selecedGrid) {
+    function createUtfLayerGroups(selectedLayer, selectedGrid, layerType) {
+        // Sometimes a UtfGrid is thematicly represented by a seperate mbtile
+        if (selectedGrid == "n/a") {
+            selectedGrid = selectedLayer;
+        }
         var tileLayer = L.tileLayer(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
@@ -57,7 +62,7 @@ var startApp = function() {
             '.json'});
 
         utfGrid = new L.UtfGrid(TILESTREAM_URL +
-            selecedGrid +
+            selectedGrid +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
         var utfGridGroup = L.layerGroup([
             utfGrid,
@@ -66,24 +71,29 @@ var startApp = function() {
 
         layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
-        utfGridClickEvent();
+        utfGridClickEvent(layerType);
 
         return utfGrid;
     }
 
-        // switch additional data layers
+    // switch additional data layers
     $('#external-layers-menu').change(function() {
         var externalLayerSelection = document.getElementById('external-layers-menu').value;
 
         if (externalLayerSelection == 1) {
             var selectedLayer = "ged-hazus-level1";
-            var selecedGrid = "hazus_US_building_fractions"
-            createUtfLayerGroups(selectedLayer, selecedGrid);
+            var selectedGrid = "hazus_US_building_fractions";
+            var layerType = "hazus";
+            createUtfLayerGroups(selectedLayer, selectedGrid, layerType);
         } else if (externalLayerSelection == 2) {
             var building_fractions = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
             layerControl.addOverlay(building_fractions, "US Counties");
             map.addLayer(building_fractions);
-        } else if (externalLayerSelection == 4) {
+        } else if (externalLayerSelection == 3) {
+            var selectedLayer = "dwelling_fractions_non_res";
+            var selectedGrid = "n/a";
+            var layerType = "fractions";
+            createUtfLayerGroups(selectedLayer, selectedGrid, layerType);
         }
     });
 
@@ -91,7 +101,7 @@ var startApp = function() {
     /////////////// Pie Chart //////////////////
     ////////////////////////////////////////////
 
-    function buildD3PieChart(keys, values, name) {
+    function HazusChart(keys, values, name) {
         var w = 400,
             h = 400,
             r = 180,
@@ -107,6 +117,9 @@ var startApp = function() {
         var total = d3.sum(data, function(d) {
             return d3.sum(d3.values(d));
         });
+
+        console.log('data:');
+        console.log(data);
 
         var vis = d3.select("#dialog")
             .append("svg:svg")
@@ -196,22 +209,44 @@ var startApp = function() {
             .text(function(d) { return d.label; });
     }
 
-    var utfGridClickEvent = function() {
+    var utfGridClickEvent = function(layerType) {
         utfGrid.on('click', function (e) {
+            console.log('e:');
+            console.log(e);
             if (e.data) {
-                $("#dialog").empty();
-                var b = e.data.bf_json;
-                var bfClean = b.replace(/[\{\}\/"]/g, "");
-                var data = eval('({' + bfClean + '})');
-                var keys = [];
-                var values = [];
-                var name = e.data.name;
-
-                for (var prop in data) {
-                    keys.push(prop);
-                    values.push(data[prop]);
+                if (layerType == "hazus") {
+                    $("#dialog").empty();
+                    var b = e.data.bf_json;
+                    var bfClean = b.replace(/[\{\}\/"]/g, "");
+                    var data = eval('({' + bfClean + '})');
+                    var keys = [];
+                    var values = [];
+                    var name = e.data.name;
+                    for (var prop in data) {
+                        keys.push(prop);
+                        values.push(data[prop]);
+                    }
+                    HazusChart(keys, values, name);
                 }
-                buildD3PieChart(keys, values, name);
+                if (layerType == "fractions") {
+                    $("#dialog").empty();
+                    console.log('e.data:');
+                    console.log(e.data);
+                    var ruralArray = [];
+                    var temp = e.data.gem_shorth.split(',') ;
+                    var temp2 = e.data.ms_value.split(',');
+                    console.log('temp:');
+                    console.log(temp);
+                    for (var i = 0; i < temp.length; i++) {
+                        var temp3 = [];
+                        temp3.label = temp[i];
+                        temp3.value = temp2[i];
+                        ruralArray.push(temp3);
+                    }
+                    console.log('ruralArray:');
+                    console.log(ruralArray);
+                    
+                }
             }
         });
 
