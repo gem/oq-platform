@@ -232,20 +232,63 @@ var startApp = function() {
                     $("#dialog").empty();
                     console.log('e.data:');
                     console.log(e.data);
-                    var ruralArray = [];
-                    var temp = e.data.gem_shorth.split(',') ;
-                    var temp2 = e.data.ms_value.split(',');
-                    console.log('temp:');
-                    console.log(temp);
+
+                    // create the rural res data for d3
+                    var ruralResArray = [];
+                    var temp = e.data.rur_res_l.split(',') ;
+                    var temp2 = e.data.rur_res_v.split(',');
+
                     for (var i = 0; i < temp.length; i++) {
                         var temp3 = [];
                         temp3.label = temp[i];
-                        temp3.value = temp2[i];
-                        ruralArray.push(temp3);
+                        temp3.values = temp2[i];
+                        ruralResArray.push(temp3);
                     }
-                    console.log('ruralArray:');
-                    console.log(ruralArray);
-                    
+
+                    // create the rural non res data for d3
+                    var ruralNonResArray = [];
+                    var temp = e.data.rurn_res_l.split(',') ;
+                    var temp2 = e.data.rurn_res_v.split(',');
+
+                    for (var i = 0; i < temp.length; i++) {
+                        var temp3 = [];
+                        temp3.label = temp[i];
+                        temp3.values = temp2[i];
+                        ruralNonResArray.push(temp3);
+                    }
+
+                    // create the urban res data for d3
+                    var urbanResArray = [];
+                    var temp = e.data.urb_res_l.split(',') ;
+                    var temp2 = e.data.urb_res_v.split(',');
+
+                    for (var i = 0; i < temp.length; i++) {
+                        var temp3 = [];
+                        temp3.label = temp[i];
+                        temp3.values = temp2[i];
+                        urbanResArray.push(temp3);
+                    }
+
+                    // create the urban non res data for d3
+                    var urbanNonResArray = [];
+                    var temp = e.data.urbn_res_l.split(',') ;
+                    var temp2 = e.data.urbn_res_v.split(',');
+
+                    for (var i = 0; i < temp.length; i++) {
+                        var temp3 = [];
+                        temp3.label = temp[i];
+                        temp3.values = temp2[i];
+                        urbanNonResArray.push(temp3);
+                    }
+
+                    console.log('ruralResArray:');
+                    console.log(ruralResArray);
+                    console.log('ruralNonResArray:');
+                    console.log(ruralNonResArray);
+                    console.log('urbanResArray:');
+                    console.log(urbanResArray);
+                    console.log('urbanNonResArray:');
+                    console.log(urbanNonResArray);
                 }
             }
         });
