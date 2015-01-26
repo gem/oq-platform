@@ -98,6 +98,18 @@ HRDE - {{block.super}}
         <br>
         <div id="uhs-mixed-selection"></div><br>
       </div>
+
+      <!-- Spectrum Code dropdown -->
+      <div ng-controller="SpectrumDropdown">
+        <br>Hazard Spectrum Code:<br>
+        Filter <input type="text" ng-model="search">
+        <br>
+        <select id="spectrum-list" size="5" ng-model="selected_spectrum" ng-options="spectrum.name for spectrum in spectrums | filter:search | orderBy:'name'"></select>
+        <br>
+        <input type="button" id="addTileSpectrum" value="Add Layer">
+        <br>
+        <div id="spectrum-mixed-selection"></div><br>
+      </div>
   </div>
 
   <div id="riskDataDialog" title="Risk Data" style="overflow: hidden;">

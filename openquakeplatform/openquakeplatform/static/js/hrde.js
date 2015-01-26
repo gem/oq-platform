@@ -59,6 +59,11 @@ AppProtoType.prototype = {
     inputAvailable: {},
     inputByInvestSingle: {},
     inputLayerGrids: [],
+    spectrumLayerNames: {},
+    spectrumLayersByCat: {},
+    spectrumAvailable: {},
+    spectrumByInvestSingle: {},
+    spectrumLayerGrids: [],
     mappedValue: null,
     selectedHazardMapName: null,
     selectedMappedValue: null,
@@ -257,35 +262,18 @@ var startApp = function() {
 
     };
 
-    // Get layer names from tilestream
-    var tileStreamLayer = '';
-    var category = '';
-    var selLayer = document.getElementById('layer-list');
-    //var selCat = $('#hazard-curve-category')[0];
     var selCat = document.getElementById('hazard-curve-category');
     var selLossCat = document.getElementById('risk-curve-category');
-    var selCurve = document.getElementById('curve-list');
-    var selUhs = document.getElementById('uhs-list');
     var selLoss = document.getElementById('loss-list');
-    var selInput = document.getElementById('input-list');
 
     // Create a header for the menu map drop down
     var catMenuHeader = document.createElement('option');
     catMenuHeader.innerHTML = 'Choose a model:';
 
-    // Create a header for the menu drop down
     var catCurveMenuHeader = document.createElement('option');
     catCurveMenuHeader.innerHTML = 'Choose a model:';
     selCat.appendChild(catCurveMenuHeader);
 
-    // Create a header for the menu drop down
-    var catUhsMenuHeader = document.createElement('option');
-    selCat.appendChild(catUhsMenuHeader);
-    $('#hazard-curve-category option:empty').remove();
-
-    var catInputMenuHeader = document.createElement('option');
-    selCat.appendChild(catInputMenuHeader);
-    $('#hazard-curve-category option:empty').remove();
 
     // Create a header for the menu drop down
     var catLossMenuHeader = document.createElement('option');
@@ -319,9 +307,7 @@ var startApp = function() {
             var wiki = json[i].wiki_link;
 
             if (checkForMissingData(name, cat, type, grids, application)) {
-
-
-                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
+                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-spectrum' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
 
                     if (wiki !== undefined ) {
                         AppVars.wikiLinkList[cat] = wiki;
@@ -334,9 +320,11 @@ var startApp = function() {
                     AppVars.curveLayerGrids.push(gridName);
 
                 }
-                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'input-mfds' || type == 'map') {
+                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-spectrum' ||  type == 'input-mfds' || type == 'map') {
                     if (cat != undefined && cat != 'None') {
                         AppVars.curveCategoryList.push(cat);
+                        //console.log('AppVars.curveCategoryList:');
+                        //console.log(AppVars.curveCategoryList);
                     }
                 }
                 if (type == 'curve-uhs') {
@@ -346,6 +334,13 @@ var startApp = function() {
                     gridName = grid.split('/')[4];
                     AppVars.uhsLayerGrids.push(gridName);
                 }
+                if (type == 'curve-spectrum') {
+                    AppVars.spectrumLayersByCat[cat] = [];
+                    AppVars.spectrumLayerNames[name] = [];
+                    grid = grids.toString();
+                    gridName = grid.split('/')[4];
+                    AppVars.spectrumLayerGrids.push(gridName);
+                }
                 if (type == 'curve-loss') {
                     AppVars.lossCategoryList.push(cat);
                     AppVars.lossLayersByCat[cat] = [];
@@ -354,7 +349,6 @@ var startApp = function() {
                     gridName = grid.split('/')[4];
                     AppVars.lossLayerGrids.push(gridName);
                 }
-
                 if (type == 'input-mfds') {
                     AppVars.inputLayersByCat[cat] = [];
                     AppVars.inputLayerNames[name] = [];
@@ -362,7 +356,6 @@ var startApp = function() {
                     gridName = grid.split('/')[4];
                     AppVars.inputLayerGrids.push(gridName);
                 }
-
                 if (type == 'map') {
                     AppVars.mapLayerNames[name] = [];
                     AppVars.mapLayersByCat[cat] = [];
@@ -372,7 +365,6 @@ var startApp = function() {
                         AppVars.mapLayerGrids.push(gridName);
                     }
                 }
-
                 if (grids !== undefined) {
                     AppVars.mapLayerNames[grids] = [];
                 }
@@ -425,6 +417,18 @@ var startApp = function() {
                     else if (chartType == 'single') {
                         AppVars.uhsByInvestSingle[j] = name;
                     }
+                }
+
+                if (type == 'curve-spectrum') {
+                    console.log('json[j].id:');
+                    console.log(json[j].id);
+                    var spectrumLayerId = json[j].id;
+                    var spectrumLayerTitle = json[j].mapped_value;
+                    AppVars.spectrumLayerNames[name].push(spectrumLayerId);
+                    AppVars.spectrumLayersByCat[cat].push(spectrumLayerTitle);
+                    AppVars.spectrumByInvestSingle[j] = name;
+                    console.log('AppVars.spectrumByInvestSingle[j]:');
+                    console.log(AppVars.spectrumByInvestSingle[j]);
                 }
 
                 if (type == 'curve-loss') {
@@ -545,6 +549,7 @@ var startApp = function() {
             if (curveType == 'hc') {
                 $('#hc-mixed-selection').empty();
                 $('#uhs-mixed-selection').empty();
+                $('#spectrum-mixed-selection').empty();
                 $('#hc-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
                 for (var j = 0; j < curvesList.length; j++) {
                     var checkbox = '<input type="checkbox" id="'+curvesList[j]+'" class="curve-list" value=" ' +
@@ -639,6 +644,19 @@ var startApp = function() {
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
     }); // end add uhs curve
+
+
+    $('#addTileSpectrum').click(function() {
+        $('#chartDialog').dialog('option', 'title', 'Plot');
+        $('#chartDialog').empty();
+
+        var scope = angular.element($("#spectrum-list")).scope();
+        var option = scope.selected_spectrum.name;
+        var curveType = 'spectrum';
+
+        singleCurve(curveType);
+
+    }); // end add spectrum curve
 
     $('#addTileLoss').click(function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
@@ -792,6 +810,30 @@ var startApp = function() {
             $('#addTileUhs').attr('disabled', true);
             uhsScope.uhss = null;
         }
+
+        ////////////////////////////////////////////////////////////
+        // Create dynamic categorized spectrum curve layer dialog //
+        ////////////////////////////////////////////////////////////
+        var spectrumScope = angular.element($("#spectrum-list")).scope();
+        var spectrumLayersArray = AppVars.spectrumLayersByCat[strUser];
+
+        if (spectrumLayersArray instanceof Array) {
+            var spectrumLayerList = [];
+
+            for (var j = 0; j < spectrumLayersArray.length; j++) {
+                spectrumLayerList.push({name: spectrumLayersArray[j]});
+            }
+
+            spectrumScope.$apply(function(){
+                spectrumScope.spectrums = spectrumLayerList;
+            });
+
+            $('#addTileSpectrum').attr('disabled', false);
+        } else {
+            $('#spectrum-list').find('option').empty();
+            $('#addTileSpectrum').attr('disabled', true);
+            spectrumScope.spectrums = null;
+        }
     });
 
     // Create dynamic categorized loss layer dialog
@@ -928,6 +970,32 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
+
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.selectedHazardLayerName = json.name;
+                AppVars.selectedLayerValue = json.mapped_value;
+                AppVars.layerInvestigationTime = json.investigationTime;
+                AppVars.layerIml = json.periods;
+                AppVars.layerPoe = json.poe;
+                AppVars.layerImt = json.imt;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+            });
+
+            utfGrid = createUtfLayerGroups(selectedLayer);
+            utfGrid.utfGridType = "curve";
+
+        } else if (curveType == 'spectrum') {
+
+            var scope = angular.element($("#spectrum-list")).scope();
+            console.log('scope:');
+            console.log(scope);
+            var spectrumLayerId = scope.selected_spectrum.name;
+
+            // Look up the layer id using the layer name
+            var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
+            var selectedLayer = spectrumLayerIdArray.toString();
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -1144,14 +1212,31 @@ var startApp = function() {
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
 
-        }
-        else if (curveType == 'uhs') {
+        } else if (curveType == 'uhs') {
             var scope = angular.element($("#uhs-list")).scope();
             var uhsLayerId = scope.selected_uhs.name;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
+
+            // get more information about the selected layer for use in chart
+            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                AppVars.mappedValue = json.mapped_value;
+                AppVars.layerInvestigationTime = json.investigationTime;
+                AppVars.layerIml = json.periods;
+                AppVars.layerPoe = json.poe;
+                AppVars.layerImt = json.imt;
+                var bounds = json.bounds;
+                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+            });
+        } else if (curveType == 'spectrum') {
+            var scope = angular.element($("#spectrum-list")).scope();
+            var spectrumLayerId = scope.selected_spectrum.name;
+
+            // Look up the layer id using the layer name
+            var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
+            var selectedLayer = spectrumLayerIdArray.toString();
 
             // get more information about the selected layer for use in chart
             $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
@@ -1248,6 +1333,10 @@ var startApp = function() {
                         prob = e.data.imls;
                     }
 
+                    if (curveType == 'spectrum') {
+                        prob = e.data.imls;
+                    }
+
                     probArray = prob.split(',');
                     iml = e.data.iml;
                     if (iml == undefined) {
@@ -1267,6 +1356,8 @@ var startApp = function() {
                             imt = 'Spectral Acceleration (g)';
                         }
                     } else if (curveType == 'uhs') {
+                        imt = 'Period (s)';
+                    } else if (curveType == 'spectrum') {
                         imt = 'Period (s)';
                     }
 
@@ -1288,9 +1379,9 @@ var startApp = function() {
                 }
 
 
-                ////////////////////////////////////////////////////////////
-                //// Single hazard UHS, curveChart and hazard map plots ////
-                ////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////
+                //// Single hazard UHS, spectrum, curveChart and hazard map plots ////
+                //////////////////////////////////////////////////////////////////////
 
                 if (utfGrid.utfGridType == "map") {
                     $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>"+spotValue+" [g]");
