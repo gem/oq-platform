@@ -240,7 +240,7 @@ def export_countries_info(request):
 
 
 @condition(etag_func=None)
-@allowed_methods(('GET', ))
+@allowed_methods(('GET', 'POST',))
 @sign_in_required
 def export_variables_data(request):
     """
@@ -250,21 +250,25 @@ def export_variables_data(request):
     be exported
 
     :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameter:
+        A "GET" or "POST" :class:`django.http.HttpRequest` object containing
+        the following parameters:
             * 'sv_variables_ids': a string of comma-separated ids of social
                                   vulnerability variables
             * 'country_iso_codes': a string of comma-separated country iso
-                                   codes
-            * 'export_geometries': a boolean indicating if the geometries of
-                                   countries need to be exported too
+                                   codes (optional - default: all countries)
+            * 'export_geometries': 'True' or 'False', indicating if also the
+                                   geometries of countries have to be exported
+                                   (optional - default: 'False')
     """
-    if not request.GET.get('sv_variables_ids'):
-        msg = ('A list of comma-separated social vulnerability variable names'
+    req_dict = request.GET if request.method == 'GET' else request.POST
+    if not req_dict.get('sv_variables_ids'):
+        msg = ('A list of comma-separated social vulnerability variable codes'
                ' must be specified')
         response = HttpResponse(msg, status="400")
         return response
-    country_iso_codes = request.GET.get('country_iso_codes')
+    sv_variables_ids = req_dict['sv_variables_ids']
+    country_iso_codes = req_dict.get('country_iso_codes')
+    export_geometries = req_dict.get('export_geometries') == 'True'
     country_iso_codes_list = []
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
@@ -275,14 +279,12 @@ def export_variables_data(request):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
     response.write(copyright + "\n")
-    sv_variables_ids = request.GET['sv_variables_ids']
     sv_variables_ids_list = [var_id.strip()
                              for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
     for sv_variable_id in sv_variables_ids_list:
         header_list.append(sv_variable_id)
-    export_geometries = request.GET.get('export_geometries') == 'True'
     if export_geometries:
         header_list.append("GEOMETRY")
     writer.writerow(header_list)
