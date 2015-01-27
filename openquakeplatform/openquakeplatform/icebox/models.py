@@ -452,24 +452,6 @@ class GMF(Output):
                 cls.Attribute("rupture_tag", "java.lang.String")]
 
 
-class SES(Output):
-    hypocenter = models.PointField(srid=4326, dim=2)
-    rupture_tag = models.TextField()
-    magnitude = models.FloatField()
-
-    @classmethod
-    def sql_attributes(cls):
-        return ["hypocenter", "magnitude", "rupture_tag"]
-
-    @classmethod
-    def attributes(cls):
-        return [
-            cls.Attribute("hypocenter",
-                          "com.vividsolutions.jts.geom.Geometry"),
-            cls.Attribute("magnitude", "java.lang.Double"),
-            cls.Attribute("rupture_tag", "java.lang.String")]
-
-
 class AggregateLossCurve(Output):
     region = models.PolygonField()
     losses = fields.FloatArrayField()
