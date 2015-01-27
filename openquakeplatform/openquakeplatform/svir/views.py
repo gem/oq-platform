@@ -260,21 +260,15 @@ def export_variables_data(request):
                                    geometries of countries have to be exported
                                    (optional - default: 'False')
     """
-    is_get = request.method == 'GET'  # otherwise it's a post
-    if ((is_get and not request.GET.get('sv_variables_ids'))
-            or (not is_get and not request.POST.get('sv_variables_ids'))):
+    req_dict = request.GET if request.method == 'GET' else request.POST
+    if not req_dict.get('sv_variables_ids'):
         msg = ('A list of comma-separated social vulnerability variable names'
                ' must be specified')
         response = HttpResponse(msg, status="400")
         return response
-    if is_get:
-        sv_variables_ids = request.GET['sv_variables_ids']
-        country_iso_codes = request.GET.get('country_iso_codes')
-        export_geometries = request.GET.get('export_geometries') == 'True'
-    else:  # it's a post
-        sv_variables_ids = request.POST['sv_variables_ids']
-        country_iso_codes = request.POST.get('country_iso_codes')
-        export_geometries = request.POST.get('export_geometries') == 'True'
+    sv_variables_ids = req_dict['sv_variables_ids']
+    country_iso_codes = req_dict.get('country_iso_codes')
+    export_geometries = req_dict.get('export_geometries') == 'True'
     country_iso_codes_list = []
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
