@@ -262,7 +262,7 @@ def export_variables_data(request):
     """
     req_dict = request.GET if request.method == 'GET' else request.POST
     if not req_dict.get('sv_variables_ids'):
-        msg = ('A list of comma-separated social vulnerability variable names'
+        msg = ('A list of comma-separated social vulnerability variable codes'
                ' must be specified')
         response = HttpResponse(msg, status="400")
         return response
