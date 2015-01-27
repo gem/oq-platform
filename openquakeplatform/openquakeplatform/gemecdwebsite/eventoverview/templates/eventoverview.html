@@ -1,10 +1,15 @@
 {% extends "gemecd_base.html" %}
 {% load generictablerenderer %}
 
+{% block filterbarright %}
+                <div id="filterbarright">
+                    {{ page_backlink|safe }}
+                </div>
+{% endblock filterbarright %}
+
 {% block leftpanel %}
         <div id="ecd-leftpanel">
             <div id="panelcontainer">
-                <div id="backlink">{{ page_backlink|safe }}</div>
                 <h1>{{ paneltitle }}</h1>
                 {% if iconicimage != "" %}
                 <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
