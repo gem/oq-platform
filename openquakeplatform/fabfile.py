@@ -141,6 +141,7 @@ def clean(db_name='oqplatform', db_user='oqplatform'):
         _pgsudo('dropdb %s' % db_name)
         _pgsudo('dropuser %s' % db_user)
         local('rm -r geoserver')
+        local('rm -rf openquakeplatform/build-gs-tree')
 
 
 def setup():
