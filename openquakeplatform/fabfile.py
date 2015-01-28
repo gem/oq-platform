@@ -174,6 +174,7 @@ def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, ris
                                        db_user=db_user,
                                        db_pass=db_pass,
                                        host=host,
+                                       siteurl="%s:8000" % host,
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
                                        oq_engserv_key=oq_engserv_key,
