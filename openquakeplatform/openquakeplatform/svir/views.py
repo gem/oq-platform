@@ -32,6 +32,9 @@ from openquakeplatform.svir.models import (Theme,
                                            CustomRegion,
                                            CountryIndicator,)
 
+from geonode.base.models import Link
+
+
 COPYRIGHT_HEADER = u"""\
  Copyright (C) 2014 GEM Foundation
 
@@ -56,6 +59,37 @@ COPYRIGHT_HEADER = u"""\
 
  More information on licensing: http://www.globalquakemodel.org/licensing
 """
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_layer_metadata_url(request):
+    """
+    Given a layer name, return the url to be called to download the layer's
+    TC211 metadata XML
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing
+        the following parameter:
+            * 'layer_name': the layer identifier
+
+    :return:
+        The url needed to download the layer's metadata
+    """
+    layer_name = request.GET.get('layer_name')
+    if not layer_name:
+        return HttpResponseBadRequest(
+            'Please provide the layer_name parameter')
+    try:
+        resource_id = Link.objects.get(name=layer_name).resource_id
+        response_url = Link.objects.get(
+            resource_id=resource_id, name='TC211').url
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Metadata url not found')
+    response = HttpResponse()
+    response.write(response_url)
+    return HttpResponse(response)
 
 
 @condition(etag_func=None)
