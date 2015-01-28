@@ -3,10 +3,12 @@ __author__ = 'Simon Ruffle, CAR'
 from django.forms import ModelForm
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms.util import force_text
 from openquakeplatform.weblib.baseclasses.pagebase import Pagebase
 from openquakeplatform.weblib.models import WebLibPhoto
 from openquakeplatform.econd.models import Location
 from openquakeplatform.econd.models import Study, Event
+from openquakeplatform import settings
 from django.http import HttpResponseRedirect
 from datetime import datetime
 
@@ -47,7 +49,11 @@ class PhotoPage (Pagebase):
 
             cachedphotofilename = current_object._get_SIZE_url('photopage_large')
 
-            photofilename = unicode(current_object.image_filename())
+            pimg=force_text(current_object.image.path)
+            if pimg.startswith(settings.MEDIA_ROOT + '/'):
+                pimg = pimg[len(settings.MEDIA_ROOT + '/'):]
+            photofilename = unicode(pimg)
+
             page_title = current_object.caption
 
             locationid = current_object.parentid # get the location id

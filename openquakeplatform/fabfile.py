@@ -47,12 +47,15 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
               risk_calc_addr='http://oq-platform:8800',
               oq_engserv_key='oq-platform',
               oq_bing_key='',
-              mediaroot='/tmp', staticroot='/home'):
+              mediaroot=None, staticroot='/home'):
 
     """
     :param str db_pass:
         Should match the one in settings.py.
     """
+    if mediaroot is None:
+        mediaroot = os.path.join(os.getcwd(), "uploaded")
+
     # check for xmlstarlet installation
     local("which xmlstarlet")
 
@@ -66,7 +69,7 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
             staticroot=staticroot)
 
     # fix it in a proper way
-    apps(db_name, db_user, db_pass)
+    apps(db_name, db_user, db_pass, mediaroot)
 
     # Install the libs needs to `test` and `test_with_xunit`:
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
@@ -83,7 +86,10 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
 def baseenv(host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
             oq_secret_key, oq_bing_key='', db_name='oqplatform',
             db_user='oqplatform', db_pass=DB_PASSWORD,
-            mediaroot='/tmp', staticroot='/home'):
+            mediaroot=None, staticroot='/home'):
+    if mediaroot is None:
+        mediaroot = os.path.join(os.getcwd(), "uploaded")
+
     _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
@@ -107,7 +113,7 @@ APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
              'icebox']
 
 
-def apps(db_name, db_user, db_pass):
+def apps(db_name, db_user, db_pass, mediaroot):
     globs = globals()
     apps_list = ""
     # Add the apps
@@ -126,8 +132,8 @@ def apps(db_name, db_user, db_pass):
     local('python manage.py updatelayers')
     local('python manage.py categories_cleanup')
     local('python manage.py loaddata openquakeplatform/common/post_fixtures/*.json')
-    local('mkdir -p /tmp/thumbs')
-    local('cp openquakeplatform/common/thumbs/*.png /tmp/thumbs/')
+    local('mkdir -p ' + mediaroot + '/thumbs/')
+    local('cp openquakeplatform/common/thumbs/*.png ' + mediaroot + '/thumbs/')
 
 
 def clean(db_name='oqplatform', db_user='oqplatform'):
@@ -322,7 +328,7 @@ def _add_gaf_viewer():
 
 def _add_econd():
     local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
-    local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png openquakeplatform/uploaded')
+    local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png uploaded')
 
 
 def _add_weblib():
