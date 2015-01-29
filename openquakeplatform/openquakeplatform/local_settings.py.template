@@ -14,6 +14,7 @@ ROOT_URLCONF = 'openquakeplatform.urls'
 
 # GEM Experimental apps enabled
 GEM_EXPERIMENTAL = %(is_gem_experimental)s
+USE_I18N = False
 
 SERIALIZATION_MODULES = {
     'json': 'wadofstuff.django.serializers.json'
