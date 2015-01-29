@@ -342,6 +342,7 @@ import string, random
 local_settings = open('${oqpdir}/$GEM_LOCAL_SETTINGS_TMPL', 'r').read()
 with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
     fh.write(local_settings % dict(host='${gem_host_name}',
+                                   siteurl='${gem_host_name}',
                                    db_name='${gem_db_name}',
                                    db_user='${gem_db_user}',
                                    db_pass='${gem_db_pass}',
