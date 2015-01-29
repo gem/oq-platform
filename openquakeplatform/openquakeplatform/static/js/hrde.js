@@ -1329,13 +1329,11 @@ var startApp = function() {
                         }
                     }
 
-                    if (curveType == 'uhs') {
+                    if (curveType == 'uhs' || curveType == 'spectrum') {
                         prob = e.data.imls;
                     }
-
-                    if (curveType == 'spectrum') {
-                        prob = e.data.imls;
-                    }
+                    console.log('e.data:');
+                    console.log(e.data);
 
                     probArray = prob.split(',');
                     iml = e.data.iml;
@@ -1394,6 +1392,8 @@ var startApp = function() {
                     yAxisLable = 'Spectral Acceleration, Sa [g]';
                 } else if (curveType == "hc") {
                     yAxisLable = 'Probability of exceedance in '+AppVars.layerInvestigationTime+' years';
+                } else if (curveType == "spectrum") {
+                    yAxisLable = 'Pseudo Acceleration, Sa [g]';
                 }
 
                 if(!(AppVars.layerIml instanceof Array)) {
@@ -1412,17 +1412,29 @@ var startApp = function() {
                     }
                 }
 
+                console.log('AppVars.layerIml:');
+                console.log(AppVars.layerIml);
+
+                console.log('probArray:');
+                console.log(probArray);
+
+                console.log('data:');
+                console.log(data);
+
                 // Find min and max y axis values
                 maxYAxis = Math.max.apply(Math, probArray);
                 minYAxis = Math.min.apply(Math, probArray);
                 percent = 0.1 * maxYAxis;
                 maxYAxis = percent + maxYAxis;
 
-                var margin = {top: 60, right: 20, bottom: 80, left: 60},
+                console.log('maxYAxis:');
+                console.log(maxYAxis);
+
+                var margin = {top: 60, right: 20, bottom: 80, left: 70},
                 width = 580 - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
 
-                if (curveType == 'uhs') {
+                if (curveType == 'uhs' || curveType == 'spectrum') {
                     var x = d3.scale.linear().range([0, width]);
                     var y = d3.scale.linear().range([height, 0]);
                 } else {
@@ -1459,7 +1471,7 @@ var startApp = function() {
 
                 data.forEach(dataCallback);
                 x.domain(d3.extent(data, function(d) { return d.x; }));
-                if (curveType == 'uhs') {
+                if (curveType == 'uhs' || curveType == 'spectrum') {
                     y.domain([minYAxis, maxYAxis]);
                 } else {
                     y.domain([d3.extent(data, function(d) { return d.y; })[0], 3]);
@@ -1527,7 +1539,7 @@ var startApp = function() {
                     .call(yAxis)
                     .append('text')
                     .attr('transform', 'rotate(-90)')
-                    .attr('y', -60)
+                    .attr('y', -70)
                     .attr('x', -20)
                     .attr('dy', '.71em')
                     .style('font-size','12px')
@@ -1538,34 +1550,36 @@ var startApp = function() {
                     .attr('height', 25);
 
                 // points along the line
-                svg.selectAll('circle.line')
-                    .data(data)
-                    .enter().append('circle')
-                    .attr('class', 'line')
-                    .attr('cx', function(d) { return x(d.x); })
-                    .attr('cy', function(d) { return y(d.y); })
-                    .attr('r', 4.5)
-                    .style('fill', 'gray')
-                    .on('mouseover', function() {
-                        d3.select(this)
-                            .attr('r', 6.6)
-                            .text(circleX + ', ' + circleY)
-                            .style('fill', 'red');
-                        var circleX = d3.select(this.__data__.x);
-                        circleX = circleX.toString();
-                        circleX = circleX.split(','[0]);
+                if (curveType != 'spectrum') {
+                    svg.selectAll('circle.line')
+                        .data(data)
+                        .enter().append('circle')
+                        .attr('class', 'line')
+                        .attr('cx', function(d) { return x(d.x); })
+                        .attr('cy', function(d) { return y(d.y); })
+                        .attr('r', 4.5)
+                        .style('fill', 'gray')
+                        .on('mouseover', function() {
+                            d3.select(this)
+                                .attr('r', 6.6)
+                                .text(circleX + ', ' + circleY)
+                                .style('fill', 'red');
+                            var circleX = d3.select(this.__data__.x);
+                            circleX = circleX.toString();
+                            circleX = circleX.split(','[0]);
 
-                        var circleY = d3.select(this.__data__.y);
-                        circleY = circleY.toString();
-                        circleY = circleY.split(','[0]);
+                            var circleY = d3.select(this.__data__.y);
+                            circleY = circleY.toString();
+                            circleY = circleY.split(','[0]);
 
-                        textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
+                            textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
 
-                    }).on('mouseout', function() {
-                        d3.select(this)
-                            .attr('r', 4.5)
-                            .style('fill', 'gray');
-                    });
+                        }).on('mouseout', function() {
+                            d3.select(this)
+                                .attr('r', 4.5)
+                                .style('fill', 'gray');
+                        });
+                    }
 
                 textTopTitle = svg.append("text")
                     .attr("x", 0)
