@@ -113,13 +113,18 @@ div#backlink a
     color:#555;
 }
 
+div#filterbar
+{ 
+  height: 30px;
+}
+
 /* filter bar with dropdown and iconic buttons */
 div#ecd-filterbar
 {
     height:30px;
     width:100%;
     background-color:#ccc;
-    margin-bottom:10px;
+    margin-bottom:4px;
     font-size:11px;
     color:#555;
 }
@@ -132,6 +137,14 @@ div#ecd-filterbar div#filterbarleft
 div#ecd-filterbar div#filterbarright
 {
     float:right;
+    margin-top: 6px;
+    margin-right: 16px;
+}
+
+div#ecd-filterbar div#filterbarright a
+{
+    color: black;
+    font-size: 14px;
 }
 
 div#ecd-filterbar input
@@ -155,7 +168,6 @@ div#ecd-filterbar p
 div#ecd-filterbar div.filterlabel
 {
     float:left;
-    height:30px;
     color:#666;
     font-size:12px;
     overflow:hidden;
@@ -186,6 +198,14 @@ div#ecd-filterbar input.iconbutton
     display:block;
 
 }
+
+div#list_trimmer
+{ 
+  min-height: 100px;
+  height: 100px;
+  overflow: auto;
+ }
+
 
 .ui-buildings-unchecked {
     background-image: url(/static/gemecdwebsite/img/buildings-off.png)!important;
@@ -225,8 +245,8 @@ div#ecd-leftpanel
 
 div#panelcontainer
 {
-    margin-left:10px;
-    /* max-width: 200px; */
+  margin-left:4px;
+  margin-right: 4px;
 }
 
 div#ecd-leftpanel h1
@@ -262,7 +282,6 @@ div#ecd-leftpanel select.locationdropdown
 
 div#ecd-leftpanel div.spanlist
 {
-    height:550px;
     overflow:auto;
     width: 90%;
 }

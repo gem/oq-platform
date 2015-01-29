@@ -527,5 +527,4 @@ class EventOverview (Pagebase):
                     self.page_context['locationslabel'] = 'No locations in selected studies'
 
                 self.page_context['pageclass'] = 'eventoverview'
-
             return render(request, template_name, self.page_context)
