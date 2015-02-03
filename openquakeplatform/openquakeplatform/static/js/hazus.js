@@ -118,9 +118,6 @@ var startApp = function() {
             return d3.sum(d3.values(d));
         });
 
-        console.log('data:');
-        console.log(data);
-
         var vis = d3.select("#dialog")
             .append("svg:svg")
             .data([data])
@@ -326,8 +323,6 @@ var startApp = function() {
 
     var utfGridClickEvent = function(layerType) {
         utfGrid.on('click', function (e) {
-            console.log('e:');
-            console.log(e);
             if (e.data) {
                 if (layerType == "hazus") {
                     $("#dialog").empty();
@@ -347,8 +342,6 @@ var startApp = function() {
                 if (layerType == "fractions") {
                     $("#dialog").empty();
                     modifyDialogDiv();
-                    console.log('e.data:');
-                    console.log(e.data.rur_res_v);
 
                     // create the rural res data for d3
                     var keysArray = e.data.rur_res_l.split(',') ;
@@ -359,8 +352,6 @@ var startApp = function() {
                     dwellingFractionsChart(ruralResArray, div, name);
 
                     // create the rural non res data for d3
-                    console.log('e.data:');
-                    console.log(e.data.rurn_res_v);
                     keysArray = e.data.rurn_res_l.split(',') ;
                     valuesArray = e.data.rurn_res_v.split(',');
                     var ruralNonResArray =  prepData(keysArray, valuesArray);
