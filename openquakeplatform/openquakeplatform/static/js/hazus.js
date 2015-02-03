@@ -44,7 +44,7 @@ var startApp = function() {
             '<option>Select layers</option>'+
             '<option value="1">Hazus Level 1 Building Fractions</option>'+
             '<option value="2">US Counties</option>'+
-            '<option value="3">PAGER Dwelling Fractions Level 0>'+
+            '<option value="3">PAGER Dwelling Fractions Level 0'+
         '</select>'
     );
 
@@ -134,9 +134,9 @@ var startApp = function() {
             .style("text-anchor", "middle")
             .attr("class", "textTop")
             .text( "TOTAL" )
-            .attr("y", -10),
+            .attr("y", -10);
 
-        textBottom = vis.append("text")
+        var textBottom = vis.append("text")
             .attr("dy", ".35em")
             .style("text-anchor", "middle")
             .attr("class", "textBottom")
@@ -213,58 +213,71 @@ var startApp = function() {
     ///// Dwelling Fractions Pie Chart /////
     ////////////////////////////////////////
 
-    function dwellingFractionsChart(ruralResArray, ruralNonResArray, urbanResArray, urbanNonResArray) {
-        var w = 400,
-            h = 400,
-            r = 180,
-            inner = 70,
-            color = d3.scale.category20c();
+    function modifyDialogDiv() {
+        $('#dialog').append('<div id="rur_res">'+
+            '</div><div id="rur_non_res">'+
+            '</div><div id="urban_res">'+
+            '</div><div id="urban_non_res"></div>'
+        );
+        $('#rur_res').css({'float': 'left'});
+        $('#rur_non_res').css({'float': 'left'});
+        $('#urban_res').css({'float': 'left'});
+        $('#urban_non_res').css({'float': 'left'});
+    }
 
-        data = ruralResArray;
+    function dwellingFractionsChart(data, div, name) {
+        var textLabelXY = [-100, 120];
+        var textValueXY = [-25, 0];
+
+        var width = 200,
+            height = 225,
+            radius = 90,
+            inner = 35,
+            color = d3.scale.category20c();
 
         var total = d3.sum(data, function(d) {
             return d3.sum(d3.values(d));
         });
 
-        console.log('data:');
-        console.log(data);
-
-        var vis = d3.select("#dialog")
+        var vis = d3.select("#" +div)
             .append("svg:svg")
             .data([data])
-            .attr("width", w)
-            .attr("height", h)
+            .attr("width", width)
+            .attr("height", height)
             .append("svg:g")
-            .attr("transform", "translate(" + r * 1.1 + "," + r * 1.1 + ")");
+            .attr("transform", "translate(" + radius * 1.1 + "," + radius * 1.1 + ")");
 
-        var textTop = vis.append("text")
+        var textLabel = vis.append("text")
             .attr("dy", ".35em")
-            .style("text-anchor", "middle")
-            .attr("class", "textTop")
+            .style("text-anchor", "left")
+            .attr("class", "textLabel")
             .text( "TOTAL" )
-            .attr("y", -10),
+            .style('font-size','10px')
+            .attr("y", textLabelXY[1])
+            .attr("x", textLabelXY[0]);
 
-        textBottom = vis.append("text")
+        var textValue = vis.append("text")
             .attr("dy", ".35em")
-            .style("text-anchor", "middle")
-            .attr("class", "textBottom")
+            .style("text-anchor", "left")
+            .attr("class", "textValue")
             .text(total.toFixed(2))
-            .attr("y", 10);
+            .attr("x", -25)
+            .attr("y", 0);
 
         vis.append("text")
             .attr("text-anchor", "left")
             .style("font-size", "16px")
             .text(name)
-            .attr("y", -185)
-            .attr("x", -195);
+            .attr("y", 110)
+            .attr("x", -100);
 
         var arc = d3.svg.arc()
             .innerRadius(inner)
-            .outerRadius(r);
+            .outerRadius(radius);
 
         var arcOver = d3.svg.arc()
             .innerRadius(inner + 5)
-            .outerRadius(r + 5);
+            .outerRadius(radius + 5);
 
         var pie = d3.layout.pie()
             .value(function(d) { return d.value; });
@@ -278,52 +291,35 @@ var startApp = function() {
                         d3.select(this).select("path").transition()
                             .duration(200)
                             .attr("d", arcOver);
-                        textTop.text(d3.select(this).datum().data.label)
-                            .attr("y", -10);
-                        textBottom.text(d3.select(this).datum().data.value.toFixed(3))
-                            .attr("y", 10);
+                        textLabel.text(d3.select(this).datum().data.label)
+                            .style('font-size','10px')
+                            .attr("y", textLabelXY[1])
+                            .attr("x", textLabelXY[0]);
+                        textValue.text(d3.select(this).datum().data.value.toFixed(3))
+                            .attr("y", 0)
+                            .attr("x", -25);
                     })
                     .on("mouseout", function(d) {
                         d3.select(this).select("path").transition()
                             .duration(100)
                             .attr("d", arc);
-                        textTop.text( "TOTAL" )
-                            .attr("y", -10);
-                        textBottom.text(total.toFixed(2));
+                        textLabel.text( "TOTAL" )
+                            .style('font-size','10px')
+                            .attr("y", textLabelXY[1])
+                            .attr("x", textLabelXY[0]);
+                        textValue.text(total.toFixed(2));
                     });
 
         arcs.append("svg:path")
             .attr("fill", function(d, i) { return color(i); } )
             .attr("d", arc);
-
-        var legend = d3.select("#dialog").append("svg")
-            .attr("class", "legend-hazus")
-            .attr("width", 400)
-            .attr("height", 40)
-            .selectAll("g")
-            .data(data)
-            .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(" + i * 27 + ",0)"; });
-
-        legend.append("rect")
-            .attr("width", 18)
-            .attr("height", 18)
-            .style("fill", function(d, i) { return color(i); });
-
-        legend.append("text")
-            .attr("x", 0)
-            .attr("y", 30)
-            .attr("dy", ".35em")
-            .text(function(d) { return d.label; });
     }
 
-    function prepData(temp, temp2) {
+    function prepData(keys, values) {
         tempArray = [];
-        for (var i = 0; i < temp.length; i++) {
-            var temp3 = [];
-            temp3.label = temp[i];
-            temp3.values = parseFloat(temp2[i]);
-            tempArray.push(temp3);
+
+        for (var i = 0; i < values.length; i++) {
+           tempArray[i] = {"label":keys[i], "value":parseFloat(values[i])};
         }
         return tempArray;
     }
@@ -340,6 +336,7 @@ var startApp = function() {
                     var data = eval('({' + bfClean + '})');
                     var keys = [];
                     var values = [];
+                    var div;
                     var name = e.data.name;
                     for (var prop in data) {
                         keys.push(prop);
@@ -349,39 +346,43 @@ var startApp = function() {
                 }
                 if (layerType == "fractions") {
                     $("#dialog").empty();
+                    modifyDialogDiv();
                     console.log('e.data:');
-                    console.log(e.data);
+                    console.log(e.data.rur_res_v);
 
                     // create the rural res data for d3
-                    var temp = e.data.rur_res_l.split(',') ;
-                    var temp2 = e.data.rur_res_v.split(',');
-                    var ruralResArray =  prepData(temp, temp2);
+                    var keysArray = e.data.rur_res_l.split(',') ;
+                    var valuesArray = e.data.rur_res_v.split(',');
+                    var ruralResArray = prepData(keysArray, valuesArray);
+                    div = 'rur_res';
+                    var name = "Rural Residential";
+                    dwellingFractionsChart(ruralResArray, div, name);
 
                     // create the rural non res data for d3
-                    temp = e.data.rurn_res_l.split(',') ;
-                    temp2 = e.data.rurn_res_v.split(',');
-                    var ruralNonResArray =  prepData(temp, temp2);
+                    console.log('e.data:');
+                    console.log(e.data.rurn_res_v);
+                    keysArray = e.data.rurn_res_l.split(',') ;
+                    valuesArray = e.data.rurn_res_v.split(',');
+                    var ruralNonResArray =  prepData(keysArray, valuesArray);
+                    div = 'rur_non_res';
+                    var name = "Rural Non Residential";
+                    dwellingFractionsChart(ruralNonResArray, div, name);
 
                     // create the urban res data for d3
-                    temp = e.data.urb_res_l.split(',') ;
-                    temp2 = e.data.urb_res_v.split(',');
-                    var urbanResArray =  prepData(temp, temp2);
+                    keysArray = e.data.urb_res_l.split(',') ;
+                    valuesArray = e.data.urb_res_v.split(',');
+                    var urbanResArray =  prepData(keysArray, valuesArray);
+                    div = 'urban_res';
+                    var name = "Urban Residential";
+                    dwellingFractionsChart(urbanResArray, div, name);
 
                     // create the urban non res data for d3
-                    var temp = e.data.urbn_res_l.split(',') ;
-                    var temp2 = e.data.urbn_res_v.split(',');
-                    var urbanNonResArray =  prepData(temp, temp2);
-
-                    console.log('ruralResArray:');
-                    console.log(ruralResArray);
-                    console.log('ruralNonResArray:');
-                    console.log(ruralNonResArray);
-                    console.log('urbanResArray:');
-                    console.log(urbanResArray);
-                    console.log('urbanNonResArray:');
-                    console.log(urbanNonResArray);
-
-                    dwellingFractionsChart(ruralResArray, ruralNonResArray, urbanResArray, urbanNonResArray);
+                    keysArray = e.data.urbn_res_l.split(',') ;
+                    valuesArray = e.data.urbn_res_v.split(',');
+                    var urbanNonResArray =  prepData(keysArray, valuesArray);
+                    div = 'urban_non_res';
+                    var name = "Urban Non Residential";
+                    dwellingFractionsChart(urbanNonResArray, div, name);
                 }
             }
         });
