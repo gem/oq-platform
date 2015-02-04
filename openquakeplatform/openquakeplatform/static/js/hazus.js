@@ -84,6 +84,7 @@ var startApp = function() {
             var selectedLayer = "ged-hazus-level1";
             var selectedGrid = "hazus_US_building_fractions";
             var layerType = "hazus";
+            $('#dialog').dialog('option', 'title', 'Hazus Bulding Fractions Level 1');
             createUtfLayerGroups(selectedLayer, selectedGrid, layerType);
         } else if (externalLayerSelection == 2) {
             var building_fractions = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
@@ -93,6 +94,7 @@ var startApp = function() {
             var selectedLayer = "dwelling_fractions_non_res";
             var selectedGrid = "n/a";
             var layerType = "fractions";
+            $('#dialog').dialog('option', 'title', 'PAGER Dwelling Fractions Level 0');
             createUtfLayerGroups(selectedLayer, selectedGrid, layerType);
         }
     });
