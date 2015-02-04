@@ -96,7 +96,6 @@ var startApp = function() {
     $('#map-tools').append('<select id="external-layers-menu">'+
             '<option>Select additional layers</option>'+
             '<option value="1">Strain</option>'+
-            '<option value="2">Strain Arrows</option>'+
             '<option value="3">Instrumental Earthquake Catalogue</option>'+
             '<option value="4">Historic Earthquake Catalogue</option>'+
         '</select>'
@@ -174,7 +173,13 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.orderlayers(app.baseLayers);
+    AppVars.layerControl = L.staticLayerSwitcher({}, {editable: true});
+    map.addControl(AppVars.layerControl);
+
+    console.log('AppVars.layerControl:');
+    console.log(AppVars.layerControl);
+
+
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
 
@@ -185,12 +190,7 @@ var startApp = function() {
         if (externalLayerSelection == 1) {
             var strain = new L.TileLayer(TILESTREAM_URL+'strain/{z}/{x}/{y}.png');
             map.addLayer(strain);
-            AppVars.layerControl.addOverlay(strain, "Strain");
-
-        } else if (externalLayerSelection == 2) {
-            var strainArrows = new L.TileLayer(TILESTREAM_URL+'strain-arrows/{z}/{x}/{y}.png');
-            map.addLayer(strainArrows);
-            AppVars.layerControl.addOverlay(strainArrows, "Strain with arrows");
+            AppVars.layerControl.addLayer("Strain", strain);
         } else if (externalLayerSelection == 3) {
             var iec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
                 layers: 'oqplatform:isc_viewer_measure',
@@ -199,7 +199,7 @@ var startApp = function() {
                 version: '1.1.0'
             });
             map.addLayer(iec);
-            AppVars.layerControl.addOverlay(iec, "Instrumental Earthquake Catalogue");
+            AppVars.layerControl.addLayer("Instrumental Earthquake Catalogue", iec);
         } else if (externalLayerSelection == 4) {
             var hec = L.tileLayer.wms("https://platform-staging.openquake.org/geoserver/wms", {
                 layers: 'oqplatform:ghec_viewer_measure',
@@ -208,7 +208,7 @@ var startApp = function() {
                 version: '1.1.0'
             });
             map.addLayer(hec);
-            AppVars.layerControl.addOverlay(hec, "Historic Earthquake Catalogue");
+            AppVars.layerControl.addLayer("Historic Earthquake Catalogue", hec);
         }
     });
 
@@ -836,7 +836,8 @@ var startApp = function() {
         }
     });
 
-    map.addControl(AppVars.layerControl.setPosition('topleft'));
+    map.addControl(AppVars.layerControl);
+
 
     // Logic for downloading hazard map csv
     $('#HMDownload').button().click(function() {
@@ -1024,7 +1025,9 @@ var startApp = function() {
             AppVars.utfGrid,
             tileLayer
         ]);
-        AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
+        AppVars.layerControl.addLayer(selectedLayer, utfGridGroup);
+        console.log(' AppVars.layerControl:');
+        console.log( AppVars.layerControl);
         map.addLayer(utfGridGroup);
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
@@ -1126,7 +1129,7 @@ var startApp = function() {
         console.log(AppVars.layerControl);
 
         map.addLayer(utfGrid);
-        AppVars.layerControl.addOverlay(utfGrid);
+        AppVars.layerControl.addLayer("test", utfGrid);
 
         lossCurveUtfGridClickEvent(utfGridLoss);
     }
@@ -1190,7 +1193,7 @@ var startApp = function() {
 
         var utfGridMixed = L.layerGroup([utfGrid, tileLayer]);
 
-        AppVars.layerControl.addOverlay(utfGridMixed, selectedLayer);
+        AppVars.layerControl.addLayer(selectedLayer, utfGridMixed);
         map.addLayer(utfGridMixed);
         hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
     }
