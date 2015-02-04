@@ -326,6 +326,7 @@ var startApp = function() {
             if (e.data) {
                 if (layerType == "hazus") {
                     $("#dialog").empty();
+                    $("#dialog").dialog('open');
                     var b = e.data.bf_json;
                     var bfClean = b.replace(/[\{\}\/"]/g, "");
                     var data = eval('({' + bfClean + '})');
@@ -341,6 +342,7 @@ var startApp = function() {
                 }
                 if (layerType == "fractions") {
                     $("#dialog").empty();
+                    $("#dialog").dialog('open');
                     modifyDialogDiv();
 
                     // create the rural res data for d3
