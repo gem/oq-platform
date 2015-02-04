@@ -25,6 +25,7 @@ var startApp = function() {
 
     $(function() {
         $( "#dialog" ).dialog({height: 520, width: 430, position: {at: "right bottom"}});
+        $('#dialog').dialog('close');
     });
 
     map = new L.Map('map', {
@@ -84,7 +85,6 @@ var startApp = function() {
             var selectedLayer = "ged-hazus-level1";
             var selectedGrid = "hazus_US_building_fractions";
             var layerType = "hazus";
-            $('#dialog').dialog('option', 'title', 'Hazus Bulding Fractions Level 1');
             createUtfLayerGroups(selectedLayer, selectedGrid, layerType);
         } else if (externalLayerSelection == 2) {
             var building_fractions = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
@@ -94,7 +94,17 @@ var startApp = function() {
             var selectedLayer = "dwelling_fractions_non_res";
             var selectedGrid = "n/a";
             var layerType = "fractions";
-            $('#dialog').dialog('option', 'title', 'PAGER Dwelling Fractions Level 0');
+
+            // prevent duplicate hazard maps to be loaded
+            for (var k in layerControl._layers) {
+                console.log('layerControl:');
+                console.log(layerControl);
+                var nameTemp = layerControl._layers[k].name;
+                if (nameTemp == selectedLayer) {
+                    delete layerControl._layers[k];
+                }
+            }
+
             createUtfLayerGroups(selectedLayer, selectedGrid, layerType);
         }
     });
@@ -329,6 +339,7 @@ var startApp = function() {
                 if (layerType == "hazus") {
                     $("#dialog").empty();
                     $("#dialog").dialog('open');
+                    $('#dialog').dialog('option', 'title', 'Hazus Bulding Fractions Level 1');
                     var b = e.data.bf_json;
                     var bfClean = b.replace(/[\{\}\/"]/g, "");
                     var data = eval('({' + bfClean + '})');
@@ -345,6 +356,7 @@ var startApp = function() {
                 if (layerType == "fractions") {
                     $("#dialog").empty();
                     $("#dialog").dialog('open');
+                    $('#dialog').dialog('option', 'title', 'PAGER Dwelling Fractions Level 0');
                     modifyDialogDiv();
 
                     // create the rural res data for d3
