@@ -39,6 +39,8 @@ export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
 openquakeplatform/openquakeplatform/static/wax"
 
+export MIGRATIONS_HISTORY="/var/lib/openquake/platform/migrations/history"
+
 if [ -f /etc/openquake/platform/local_settings.py ]; then
     GEM_IS_INSTALL=n
 else
@@ -650,6 +652,12 @@ oq_platform_install () {
             "${app}_postlayers" "$oqpdir" "$gem_db_name"
         fi
     done
+
+    if [ ! -d "$MIGRATIONS_HISTORY" ]; then
+        mkdir -p "$MIGRATIONS_HISTORY"
+    fi
+    cp oq-platform/openquakeplatform/migrations/*.{py,sh,sql} "${MIGRATIONS_HISTORY}/"
+
 }
 
 
