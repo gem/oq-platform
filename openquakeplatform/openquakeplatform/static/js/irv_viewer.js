@@ -171,6 +171,38 @@ var startApp = function() {
         }
     };
 
+    // Get layers from GeoServer
+    var SVIRLayerNames = [];
+    var url = "/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
+
+    $.ajax({
+        url: url,
+        contentType: 'application/json',
+        success: function(xml) {
+            console.log('xml:');
+            console.log(xml);
+
+            //convert XML to JSON
+            var xmlText = new XMLSerializer().serializeToString(xml);
+            var x2js = new X2JS();
+
+            var jsonElement = x2js.xml_str2json(xmlText);
+            console.log('jsonElement:');
+            console.log(jsonElement);
+            console.log('jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType:');
+            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
+
+            // Find the SVIR keywords
+            for (var i = 0; i < featureType.length; i++) {
+                if (featureType[i].Keywords == "SVIR_QGIS_Plugin" ) {
+                    console.log('featureType[i].name:');
+                    console.log(featureType[i].name);
+                }
+            }
+        }
+    });
+
+
     // Get layer names from tilestream
     var tileStreamLayer = '';
     var category = '';
