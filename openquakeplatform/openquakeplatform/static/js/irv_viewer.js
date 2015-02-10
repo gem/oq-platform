@@ -92,8 +92,6 @@ var startApp = function() {
     layers = {};
 
     layerControl = L.control.layers(app.baseLayers);
-    map.panTo(new L.LatLng(39.399, -8.22));
-    map.setZoom(6);
 
     // Duplicate layer warnning message
     function showDuplicateMsg() {
@@ -215,9 +213,14 @@ var startApp = function() {
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
-
-                // TEMP****
-                layerMetadataURL = "http://192.168.56.10:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
+                /*
+                var n = layerMetadataURL.indexOf('/catalogue');
+                layerMetadataURL = layerMetadataURL.substring(0, n != -1 ? n : layerMetadataURL.length);
+                console.log('layerMetadataURL:');
+                console.log(layerMetadataURL);
+                */
+                // *****TEMP****
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
@@ -230,6 +233,31 @@ var startApp = function() {
                     console.log('projectDef:');
                     console.log(projectDef);
                 });
+            }
+        });
+        // Get WMS layer
+        //http://192.168.56.10:8080/geoserver/oqplatform/wms?service=WMS&version=1.1.0&request=GetMap&layers=oqplatform:ben2&styles=&bbox=-109.450553894043,-55.9840278625488,-28.8472194671629,13.3945837020875&width=512&height=440&srs=EPSG:4326&format=image%2Fpng
+        var mywms = L.tileLayer.wms("/geoserver/oqplatform/wms", {
+            //layers: selectedLayer,
+            layers: 'oqplatform:ben2',
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.0',
+            attribution: "",
+            //CRS: 'EPSG:900913'
+            crs: L.CRS.EPSG4326
+        });
+        console.log('mywms:');
+        console.log(mywms);
+        mywms.addTo(map);
+
+        // Get layer attributes from GeoServer
+        $.ajax({
+            type: 'get',
+            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&maxFeatures=50&outputFormat=json',
+            success: function(layerAttributes) {
+                console.log('layerAttributes:');
+                console.log(layerAttributes);
             }
         });
     });
