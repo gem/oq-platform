@@ -16,8 +16,17 @@
 
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 
+#
+#  vars
+
 MIGRATIONS_HISTORY="/var/lib/openquake/platform/migrations/history"
 PLATFORM_LOG="/var/log/openquake/platform"
+export NL='
+'
+export TB='	'
+
+#
+#  functions
 
 sighand () {
     echo "===== ERROR OCCURRED =====" >> "$PLATFORM_LOG"/migrations.log
@@ -178,6 +187,7 @@ migrate () {
 
     return 0
 }
+
 #
 #  MAIN
 #
