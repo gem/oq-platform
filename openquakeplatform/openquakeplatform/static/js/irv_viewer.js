@@ -144,6 +144,13 @@ var startApp = function() {
         modal: true
     });
 
+    $('#map-tools').append('<select id="svir-project-list">'+
+            '<option selected disabled>Select Project</option>'+
+        '</select>'
+    );
+
+    $('#svir-project-list').css({ 'margin-bottom' : 0 });
+
     // Set custom map div height
     $('#map').height("300px");
 
@@ -172,6 +179,7 @@ var startApp = function() {
     };
 
     // Get layers from GeoServer
+    $('#svir-project-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -179,27 +187,51 @@ var startApp = function() {
         url: url,
         contentType: 'application/json',
         success: function(xml) {
-            console.log('xml:');
-            console.log(xml);
-
             //convert XML to JSON
             var xmlText = new XMLSerializer().serializeToString(xml);
             var x2js = new X2JS();
 
             var jsonElement = x2js.xml_str2json(xmlText);
-            console.log('jsonElement:');
-            console.log(jsonElement);
-            console.log('jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType:');
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
             // Find the SVIR keywords
             for (var i = 0; i < featureType.length; i++) {
                 if (featureType[i].Keywords == "SVIR_QGIS_Plugin" ) {
-                    console.log('featureType[i].name:');
-                    console.log(featureType[i].name);
+                    SVIRLayerNames.push(featureType[i].Name);
                 }
             }
+            // Append the layer to the selection dropdown menu
+            for (var i = 0; i < SVIRLayerNames.length; i++) {
+                $('#svir-project-list').append('<option>'+ SVIRLayerNames[i] +'</option>');
+            }
+            $('#svir-project-list').show();
         }
+    });
+
+    $('#svir-project-list').change(function() {
+        // Get the layer metadata
+        var selectedLayer = document.getElementById('svir-project-list').value;
+        $.ajax({
+            type: 'get',
+            url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
+            success: function(layerMetadataURL) {
+
+                // TEMP****
+                layerMetadataURL = "http://192.168.56.10:8000/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
+                $.get( layerMetadataURL, function( layerMetadata ) {
+                    //convert XML to JSON
+                    var xmlText = new XMLSerializer().serializeToString(layerMetadata);
+                    var x2js = new X2JS();
+                    var jsonElement = x2js.xml_str2json(xmlText);
+                    console.log('jsonElement:');
+                    console.log(jsonElement);
+                    var projectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+                    projectDef = jQuery.parseJSON(projectDef);
+                    console.log('projectDef:');
+                    console.log(projectDef);
+                });
+            }
+        });
     });
 
 
