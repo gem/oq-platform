@@ -99,7 +99,7 @@ events with magnitude &gt;= 5.5, occurred between 1960 and 2009</abstract>
   </metadata>
   <store class="dataStore">
     <name>oqplatform</name>
-    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8000/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://127.0.0.1:8080/geoserver/rest/workspaces/oqplatform/datastores/oqplatform.xml" type="application/xml"/>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>
