@@ -100,6 +100,9 @@
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
+
+            console.log('pdData:');
+            console.log(pdData);
             // Find out how many elements are in tree branch
             if (pdLevel.some(function(currentValue) {
                 return (pdData.level == currentValue);
@@ -115,6 +118,9 @@
         }
 
         function updateTreeBranch(pdData, id, pdWeight) {
+
+            console.log('pdData:');
+            console.log(pdData);
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
@@ -152,6 +158,9 @@
         d3.select(self.frameElement).style("height", "800px");
 
         function updateD3Tree(source) {
+
+            console.log('source:');
+            console.log(source);
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);

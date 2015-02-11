@@ -15,6 +15,8 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var projectDef = [];
+
 var utfGrid = {};
 var layerControl;
 var selectedPDef;
@@ -156,7 +158,7 @@ var startApp = function() {
         $('#loadProjectDialog').dialog('open');
     });
 
-    // Remove layer 
+    // Remove layer
     var removeLayer = function () {
         var e = document.getElementById('layer-list');
         var layerId = e.options[e.selectedIndex].value;
@@ -207,7 +209,7 @@ var startApp = function() {
     });
 
     $('#svir-project-list').change(function() {
-        // Get the layer metadata
+        // Get the layer metadata (project def)
         var selectedLayer = document.getElementById('svir-project-list').value;
         $.ajax({
             type: 'get',
@@ -228,7 +230,7 @@ var startApp = function() {
                     var jsonElement = x2js.xml_str2json(xmlText);
                     console.log('jsonElement:');
                     console.log(jsonElement);
-                    var projectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+                    projectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
                     projectDef = jQuery.parseJSON(projectDef);
                     console.log('projectDef:');
                     console.log(projectDef);
@@ -237,19 +239,19 @@ var startApp = function() {
         });
         // Get WMS layer
         //http://192.168.56.10:8080/geoserver/oqplatform/wms?service=WMS&version=1.1.0&request=GetMap&layers=oqplatform:ben2&styles=&bbox=-109.450553894043,-55.9840278625488,-28.8472194671629,13.3945837020875&width=512&height=440&srs=EPSG:4326&format=image%2Fpng
-        var mywms = L.tileLayer.wms("/geoserver/oqplatform/wms", {
-            //layers: selectedLayer,
-            layers: 'oqplatform:ben2',
+        var WMSLayer = L.tileLayer.wms("/geoserver/oqplatform/wms", {
+            layers: selectedLayer,
+            //layers: 'oqplatform:ben2',
             format: 'image/png',
             transparent: true,
             version: '1.1.0',
             attribution: "",
-            //CRS: 'EPSG:900913'
             crs: L.CRS.EPSG4326
         });
-        console.log('mywms:');
-        console.log(mywms);
-        mywms.addTo(map);
+        console.log('WMSLayer:');
+        console.log(WMSLayer);
+        WMSLayer.addTo(map);
+        layerControl.addOverlay(selectedLayer, selectedLayer);
 
         // Get layer attributes from GeoServer
         $.ajax({
@@ -258,6 +260,7 @@ var startApp = function() {
             success: function(layerAttributes) {
                 console.log('layerAttributes:');
                 console.log(layerAttributes);
+                processIndicatorsNew(layerAttributes);
             }
         });
     });
@@ -539,9 +542,63 @@ var startApp = function() {
 
     function utfGridClickEvent(utfGrid) {
         utfGrid.on('click', function(e) {
+            console.log('e:');
+            console.log(e);
             processIndicators(e);
             selectedGrid = e;
         });
+    }
+
+    function processIndicatorsNew(layerAttributes) {
+
+        //loadPD(projectDef);
+
+        //////////////////////////////////////////////////////
+        //// Create the primary indicator objects  *** NEW ///
+        //////////////////////////////////////////////////////
+
+        var socialVulnIndex;
+
+        // Find all the nodes of type Social Vulnerability Index in the project def
+        for (var k in projectDef.children) {
+            if (projectDef.children[k].type == "Social Vulnerability Index") {
+                console.log('projectDef[k]:');
+                console.log(projectDef.children[k].children);
+                socialVulnIndex = projectDef.children[k].children;
+            }
+        }
+
+        console.log('socialVulnIndex:');
+        console.log(socialVulnIndex);
+
+        // process each Social Vulnerability Index nodes
+
+        // Get all the primary indicators
+        var allPrimaryIndicators = [];
+        var allPrimaryIndicatorsObj = {};
+        var ct = 0;
+        for (var i = 0; i < socialVulnIndex.length; i++) {
+            console.log('socialVulnIndex[i]:');
+            console.log(socialVulnIndex[i]);
+            for (var e = 0 ; e < socialVulnIndex[i].children.length ; e++, ct++ ) {
+                allPrimaryIndicators.push(socialVulnIndex[i].children[e].name);
+            }
+        }
+        console.log('allPrimaryIndicators:');
+        console.log(allPrimaryIndicators);
+
+        // Match each primary indicator with it's respective data value
+        for (var h = 0; h < layerAttributes.features.length; h++) {
+            var tempObj = layerAttributes.features[h].properties;
+            console.log('tempObj[h]:');
+            console.log(tempObj.COUNTRY_NA);
+            for (var l in tempObj) {
+                if ($.inArray(tempObj[l], allPrimaryIndicators) > -1) {
+                    console.log('tempObj[l]:');
+                    console.log(tempObj[l]);
+                }
+            }
+        }
     }
 
     function processIndicators(e) {
@@ -576,6 +633,7 @@ var startApp = function() {
             }
             var munic_num = e.data['municipio'].split(',').length;
             municipality = e.data['municipio'].split(',');
+
 
 
             /////////////////////////////////////////////
@@ -672,6 +730,9 @@ var startApp = function() {
                     numberFormat: "n",
                 });
             });
+
+            console.log('primaryData:');
+            console.log(primaryData);
 
             Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint);
 
@@ -869,11 +930,21 @@ var startApp = function() {
             // TODO remove this concat if need be
             var concat = catData.concat(previousCatData);
 
+            console.log('catData:');
+            console.log(catData);
+
             Category_PCP_Chart(catData, municipality, districName, concat);
 
             for (var k in scaledCatIndicator) {
                 previousCatData.push(scaledCatIndicator[k]);
             }
+
+
+            /////////////////////////////////////////////////////
+            /// Create the category indicator objects *** NEW ///
+            /////////////////////////////////////////////////////
+
+
 
             /////////////////////////////////////////////
             /////////// Create the svi object ///////////
