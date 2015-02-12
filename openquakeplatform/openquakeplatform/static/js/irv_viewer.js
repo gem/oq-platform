@@ -588,16 +588,30 @@ var startApp = function() {
         console.log(allPrimaryIndicators);
 
         // Match each primary indicator with it's respective data value
+        var primaryIndicatorObj = {};
         for (var h = 0; h < layerAttributes.features.length; h++) {
             var tempObj = layerAttributes.features[h].properties;
-            console.log('tempObj[h]:');
-            console.log(tempObj.COUNTRY_NA);
-            for (var l in tempObj) {
-                if ($.inArray(tempObj[l], allPrimaryIndicators) > -1) {
-                    console.log('tempObj[l]:');
-                    console.log(tempObj[l]);
+            //console.log('Object.keys(tempObj[l]):');
+            //console.log(Object.getOwnPropertyNames(tempObj));
+            for (var d = 0; d < allPrimaryIndicators.length; d++) {
+                for (var l in tempObj) {
+                    if (allPrimaryIndicators[d] == l) {
+                        var tempValue = allPrimaryIndicators[d];
+                        var tempValue2 = tempObj[l];
+                        var tempValue3 = tempObj.COUNTRY_NA;
+
+                        if (primaryIndicatorObj[tempValue] == undefined) {
+                            primaryIndicatorObj[tempValue] = tempValue2;
+                            primaryIndicatorObj['municipio'] = tempValue3;
+                        } else {
+                            primaryIndicatorObj[tempValue] = primaryIndicatorObj[tempValue] + ", " +tempValue2;
+                            primaryIndicatorObj['municipio'] = primaryIndicatorObj.municipio + ", " +tempValue3;
+                        }
+                    }
                 }
             }
+            console.log('primaryIndicatorObj:');
+            console.log(primaryIndicatorObj);
         }
     }
 
