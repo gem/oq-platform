@@ -182,6 +182,8 @@ var startApp = function() {
     $('#svir-project-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
+    // **** TODO remove this, its only for dev
+    //var url = "https://platform.openquake.org/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson"
 
     $.ajax({
         url: url,
@@ -580,12 +582,10 @@ var startApp = function() {
         for (var i = 0; i < socialVulnIndex.length; i++) {
             console.log('socialVulnIndex[i]:');
             console.log(socialVulnIndex[i]);
-            for (var e = 0 ; e < socialVulnIndex[i].children.length ; e++, ct++ ) {
+            for (var e = 0 ; e < socialVulnIndex[i].children.length; e++, ct++ ) {
                 allPrimaryIndicators.push(socialVulnIndex[i].children[e].name);
             }
         }
-        console.log('allPrimaryIndicators:');
-        console.log(allPrimaryIndicators);
 
         // Match each primary indicator with it's respective data value
         var primaryIndicatorObj = {};
@@ -610,10 +610,43 @@ var startApp = function() {
                     }
                 }
             }
-            console.log('primaryIndicatorObj:');
-            console.log(primaryIndicatorObj);
         }
-    }
+        console.log('primaryIndicatorObj:');
+        console.log(primaryIndicatorObj);
+
+        ////////////////////////////////////////////////
+        //// Compute the Category indicators ** NEW ////
+        ////////////////////////////////////////////////
+
+        // Find the computation operator
+        for (var m = 0; m < socialVulnIndex.length; m++) {
+            var cateData = [];
+            var operator = socialVulnIndex[m].operator;
+            var weight = socialVulnIndex[m].weight;
+            if (operator == "Average (ignore weights)") {
+                var tempChildren = socialVulnIndex[m].children;
+                // Loop through the project definition children
+                for (var n = 0; n < tempChildren.length; n++, ct++) {
+                    var tempField = tempChildren[n].field;
+                    console.log('tempField:');
+                    console.log(tempField);
+                    // Get the values for each pd primary indicator and average them
+                    var tempAverage = primaryIndicatorObj[tempField].split(",");
+                    
+                    console.log('tempAverage:');
+                    console.log(tempAverage);  
+                    //var tempField = tempChildren[d]
+                }
+            }
+        }
+
+        // Find weight if needed
+
+        // Apply operator to primary indicators
+
+        // Build object for D3 chart
+
+    } // End processIndicatorsNew
 
     function processIndicators(e) {
         var districName = e.data.name_1;
