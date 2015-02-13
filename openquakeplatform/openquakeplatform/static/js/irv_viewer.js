@@ -181,7 +181,7 @@ var startApp = function() {
     // Get layers from GeoServer
     $('#svir-project-list').hide();
     var SVIRLayerNames = [];
-    var url = "/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
+    var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
     // **** TODO remove this, its only for dev
     //var url = "https://platform.openquake.org/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson"
 
@@ -604,13 +604,14 @@ var startApp = function() {
                             primaryIndicatorObj[tempValue] = tempValue2;
                             primaryIndicatorObj['municipio'] = tempValue3;
                         } else {
-                            primaryIndicatorObj[tempValue] = primaryIndicatorObj[tempValue] + ", " +tempValue2;
-                            primaryIndicatorObj['municipio'] = primaryIndicatorObj.municipio + ", " +tempValue3;
+                            primaryIndicatorObj[tempValue] = primaryIndicatorObj[tempValue] + "," +tempValue2;
+                            primaryIndicatorObj['municipio'] = primaryIndicatorObj.municipio + "," +tempValue3;
                         }
                     }
                 }
             }
         }
+
         console.log('primaryIndicatorObj:');
         console.log(primaryIndicatorObj);
 
@@ -618,26 +619,67 @@ var startApp = function() {
         //// Compute the Category indicators ** NEW ////
         ////////////////////////////////////////////////
 
+        //build the category indicator object
+        var catData = [];
+        var foo = [];
+        bar = [];
+        function generateObject(munic, theme, average) {
+            //console.log('catData:');
+            //console.log(catData);
+
+            var tempBar = [];
+            bar.push(munic + ' '+ name+' '+average);
+        }
+
         // Find the computation operator
         for (var m = 0; m < socialVulnIndex.length; m++) {
-            var cateData = [];
+            var tempObj = [];
             var operator = socialVulnIndex[m].operator;
             var weight = socialVulnIndex[m].weight;
+            var name = socialVulnIndex[m].name;
             if (operator == "Average (ignore weights)") {
                 var tempChildren = socialVulnIndex[m].children;
+                var indicatorChildrenKey = [];
+                // Get the indicators children keys
+                for (var q = 0; q < tempChildren.length; q++) {
+                    indicatorChildrenKey.push(tempChildren[q].field);
+                }
+                var la = layerAttributes.features;
                 // Loop through the project definition children
-                for (var n = 0; n < tempChildren.length; n++, ct++) {
-                    var tempField = tempChildren[n].field;
-                    console.log('tempField:');
-                    console.log(tempField);
-                    // Get the values for each pd primary indicator and average them
-                    var tempAverage = primaryIndicatorObj[tempField].split(",");
-                    
-                    console.log('tempAverage:');
-                    console.log(tempAverage);  
-                    //var tempField = tempChildren[d]
+                var tempField;
+                // iterate over the layerAttributes
+                for (var o = 0; o < la.length; o++, ct++) {
+                    var tempSum = 0;
+                    // iterate over the layerAttributes properties
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
+                            if (p == indicatorChildrenKey[r]) {
+                                // Sum the theme indicators
+                                tempSum = tempSum + la[o].properties[p];
+                            }
+                        }
+                    }
+                    var munic = la[o].properties['COUNTRY_NA'];
+                    var theme = name;
+                    var average = tempSum / indicatorChildrenKey.length;
+
+                    generateObject(munic, theme, average);
                 }
             }
+        }
+
+        console.log('bar:');
+        console.log(bar);
+        for (var i = 0; i < bar.length; i++) {
+            var temp ;
+            temp = bar[i];
+            console.log('temp:');
+            console.log(temp);
+            temp = temp.split(" ");
+            console.log('temp:');
+            console.log(temp);
+
         }
 
         // Find weight if needed
