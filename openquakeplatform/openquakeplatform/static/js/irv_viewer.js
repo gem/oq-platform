@@ -648,21 +648,22 @@ var startApp = function() {
             var operator = socialVulnIndex[m].operator;
             var weight = socialVulnIndex[m].weight;
             var name = socialVulnIndex[m].name;
-            if (operator == "Average (ignore weights)") {
-                var tempChildren = socialVulnIndex[m].children;
-                var indicatorChildrenKey = [];
-                // Get the indicators children keys
-                for (var q = 0; q < tempChildren.length; q++) {
-                    indicatorChildrenKey.push(tempChildren[q].field);
-                }
-                var la = layerAttributes.features;
-                // Loop through the project definition children
-                var tempField;
-                // iterate over the layerAttributes
-                for (var o = 0; o < la.length; o++, ct++) {
-                    var tempSum = 0;
-                    // iterate over the layerAttributes properties
-                    var temp = {};
+            var tempChildren = socialVulnIndex[m].children;
+            var indicatorChildrenKey = [];
+            // Get the indicators children keys
+            for (var q = 0; q < tempChildren.length; q++) {
+                indicatorChildrenKey.push(tempChildren[q].field);
+            }
+            var la = layerAttributes.features;
+            // Loop through the project definition children
+            var tempField;
+            // iterate over the layerAttributes
+            for (var o = 0; o < la.length; o++, ct++) {
+                var tempSum = 0;
+                // iterate over the layerAttributes properties
+                var temp = {};
+
+                if (operator == "Average (ignore weights)") {
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
                         for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
@@ -674,13 +675,92 @@ var startApp = function() {
                     }
                     var munic = la[o].properties.COUNTRY_NA;
                     var theme = name;
+                    // Grab the average
                     var average = tempSum / indicatorChildrenKey.length;
                     tempString.push(munic + ' '+ name+' '+average);
+                } else if (operator == "Average") {
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
+                            if (p == indicatorChildrenKey[r]) {
+                                // Sum the theme indicators and apply the weights
+                                var weight = tempChildren[r].weight;
+                                tempSum = tempSum + (la[o].properties[p] * weight);
+                            }
+                        }
+                    }
+                    var munic = la[o].properties.COUNTRY_NA;
+                    var theme = name;
+                    var average = tempSum / indicatorChildrenKey.length;
+                    tempString.push(munic + ' '+ name+' '+average);
+                } else if ( operator == "simple sum") {
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
+                            if (p == indicatorChildrenKey[r]) {
+                                // Sum the theme indicators
+                                tempSum = tempSum + la[o].properties[p];
+                            }
+                        }
+                    }
+                    var munic = la[o].properties.COUNTRY_NA;
+                    var theme = name;
+                    tempString.push(munic + ' '+ name+' '+tempSum);
+                } else if ( operator == "weighted sum") {
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
+                            if (p == indicatorChildrenKey[r]) {
+                                // Sum the theme indicators
+                                var weight = tempChildren[r].weight;
+                                tempSum = tempSum + (la[o].properties[p] * weight);
+                            }
+                        }
+                    }
+                    var munic = la[o].properties.COUNTRY_NA;
+                    var theme = name;
+                    tempString.push(munic + ' '+ name+' '+tempSum);
+                } else if ( operator == "simple multiplication") {
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
+                            if (p == indicatorChildrenKey[r]) {
+                                // Sum the theme indicators
+                                if (tempSum == 0) {
+                                    tempSum = la[o].properties[p];
+                                } else {
+                                    tempSum = tempSum * la[o].properties[p];
+                                }
+                            }
+                        }
+                    }
+                    var munic = la[o].properties.COUNTRY_NA;
+                    var theme = name;
+                    tempString.push(munic + ' '+ name+' '+tempSum);
+                } else if ( operator == "weighted multiplication") {
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
+                            if (p == indicatorChildrenKey[r]) {
+                                // Sum the theme indicators
+                                var weight = tempChildren[r].weight;
+                                if (tempSum == 0) {
+                                    tempSum = (la[o].properties[p] * weight);
+                                } else {
+                                    tempSum = tempSum * (la[o].properties[p] * weight);
+                                }
+                            }
+                        }
+                    }
+                    var munic = la[o].properties.COUNTRY_NA;
+                    var theme = name;
+                    tempString.push(munic + ' '+ name+' '+tempSum);
                 }
             }
         }
 
         for (var i = 0; i < tempString.length; i++) {
+            // capture an array for each record
             var temp;
             temp = tempString[i];
             temp = temp.split(" ");
