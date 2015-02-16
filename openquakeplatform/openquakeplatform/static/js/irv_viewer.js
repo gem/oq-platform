@@ -621,14 +621,25 @@ var startApp = function() {
 
         //build the category indicator object
         var catData = [];
-        var foo = [];
-        bar = [];
-        function generateObject(munic, theme, average) {
-            //console.log('catData:');
-            //console.log(catData);
+        tempString = [];
+        function generateObject(temp) {
+            var munic = temp[0];
+            var theme = temp[1];
+            var value = parseFloat(temp[2]);
+            // add the theme and value to each category data object
+            for (var i = 0; i < catData.length; i++) {
+                if (catData[i].municipality == munic) {
+                    catData[i][theme] = value;
+                }
+            }
+        }
 
-            var tempBar = [];
-            bar.push(munic + ' '+ name+' '+average);
+        // setup catData with all the municipalities
+        var la = layerAttributes.features;
+        for (var s = 0; s < la.length; s++) {
+            var temp = {};
+            temp.municipality = la[s].properties.COUNTRY_NA;
+            catData.push(temp);
         }
 
         // Find the computation operator
@@ -651,6 +662,7 @@ var startApp = function() {
                 for (var o = 0; o < la.length; o++, ct++) {
                     var tempSum = 0;
                     // iterate over the layerAttributes properties
+                    var temp = {};
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
                         for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
@@ -660,33 +672,23 @@ var startApp = function() {
                             }
                         }
                     }
-                    var munic = la[o].properties['COUNTRY_NA'];
+                    var munic = la[o].properties.COUNTRY_NA;
                     var theme = name;
                     var average = tempSum / indicatorChildrenKey.length;
-
-                    generateObject(munic, theme, average);
+                    tempString.push(munic + ' '+ name+' '+average);
                 }
             }
         }
 
-        console.log('bar:');
-        console.log(bar);
-        for (var i = 0; i < bar.length; i++) {
-            var temp ;
-            temp = bar[i];
-            console.log('temp:');
-            console.log(temp);
+        for (var i = 0; i < tempString.length; i++) {
+            var temp;
+            temp = tempString[i];
             temp = temp.split(" ");
-            console.log('temp:');
-            console.log(temp);
+            generateObject(temp);
 
         }
-
-        // Find weight if needed
-
-        // Apply operator to primary indicators
-
-        // Build object for D3 chart
+        console.log('catData:');
+        console.log(catData);
 
     } // End processIndicatorsNew
 
