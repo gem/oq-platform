@@ -72,14 +72,14 @@ class Calculation(models.Model):
         # we create a database View per each output, then we publish the
         # db view on geoserver as a postgis vector layer. Finally, we
         # let geonode slurp the geoserver layer
-        if len(self.outputlayer_set.all()) > 0:
-            for olayer in self.outputlayer_set.all():
-                model = olayer.output_type
-                if model:
-                    layers.append(
-                        olayer.create_geonode_layer(
-                            olayer.geoserver_publish_view(
-                                olayer.create_view())))
+        for olayer in self.outputlayer_set.all():
+            model = olayer.output_type
+            if model:
+                layers.append(
+                    olayer.create_geonode_layer(
+                        olayer.geoserver_publish_view(
+                            olayer.create_view())))
+        if len(layers) > 0:
             self.create_geonode_map(layers)
         self.status = 'complete'
         self.save()
