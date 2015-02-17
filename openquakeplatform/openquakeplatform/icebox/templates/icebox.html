@@ -99,7 +99,7 @@ Calculate - {{block.super}}
             <% } %>
           <% } %>
 
-          <% if(calc.get('status')) { %>
+          <% if(calc.get('id')) { %>
             <% if(calc.get('status') == 'failed') { %>
               <% traceback = calc.get('einfo') %>
               <button class="btn btn-sm" onclick="popup_error_traceback(traceback)">Traceback</button>
