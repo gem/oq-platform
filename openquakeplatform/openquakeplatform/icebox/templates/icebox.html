@@ -134,7 +134,7 @@ Calculate - {{block.super}}
     </thead>
     <tbody>
       <% _.each(outputs, function(out) { %>
-      <% if(calc.get('user') ==  {{ user.id }}) { %>
+      <% if(out.get('user') ==  {{ user.id }}) { %>
       <tr>
         <td><%= out.get('engine_id') %></td>
         <td><%= out.get('calculation') %></td>
