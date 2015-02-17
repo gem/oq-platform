@@ -79,7 +79,8 @@ class Calculation(models.Model):
                     olayer.create_geonode_layer(
                         olayer.geoserver_publish_view(
                             olayer.create_view())))
-        self.create_geonode_map(layers)
+        if len(layers) > 0:
+            self.create_geonode_map(layers)
         self.status = 'complete'
         self.save()
 
