@@ -602,10 +602,10 @@ var startApp = function() {
 
                         if (primaryIndicatorObj[tempValue] == undefined) {
                             primaryIndicatorObj[tempValue] = tempValue2;
-                            primaryIndicatorObj['municipio'] = tempValue3;
+                            primaryIndicatorObj.municipio = tempValue3;
                         } else {
                             primaryIndicatorObj[tempValue] = primaryIndicatorObj[tempValue] + "," +tempValue2;
-                            primaryIndicatorObj['municipio'] = primaryIndicatorObj.municipio + "," +tempValue3;
+                            primaryIndicatorObj.municipio = primaryIndicatorObj.municipio + "," +tempValue3;
                         }
                     }
                 }
@@ -614,6 +614,10 @@ var startApp = function() {
 
         console.log('primaryIndicatorObj:');
         console.log(primaryIndicatorObj);
+        var districName = "temp";
+        var outlierBreakPoint = 0.75;
+
+        //Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint);
 
         ////////////////////////////////////////////////
         //// Compute the Category indicators ** NEW ////
@@ -642,7 +646,7 @@ var startApp = function() {
             catData.push(temp);
         }
 
-        // Find the computation operator
+        // Find the computation operator and weight
         for (var m = 0; m < socialVulnIndex.length; m++) {
             var tempObj = [];
             var operator = socialVulnIndex[m].operator;
@@ -655,14 +659,13 @@ var startApp = function() {
                 indicatorChildrenKey.push(tempChildren[q].field);
             }
             var la = layerAttributes.features;
-            // Loop through the project definition children
             var tempField;
             // iterate over the layerAttributes
             for (var o = 0; o < la.length; o++, ct++) {
                 var tempSum = 0;
                 // iterate over the layerAttributes properties
                 var temp = {};
-
+                // check the operator type and compute accordingly
                 if (operator == "Average (ignore weights)") {
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
@@ -678,22 +681,7 @@ var startApp = function() {
                     // Grab the average
                     var average = tempSum / indicatorChildrenKey.length;
                     tempString.push(munic + ' '+ name+' '+average);
-                } else if (operator == "Average") {
-                    for (var p in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
-                            if (p == indicatorChildrenKey[r]) {
-                                // Sum the theme indicators and apply the weights
-                                var weight = tempChildren[r].weight;
-                                tempSum = tempSum + (la[o].properties[p] * weight);
-                            }
-                        }
-                    }
-                    var munic = la[o].properties.COUNTRY_NA;
-                    var theme = name;
-                    var average = tempSum / indicatorChildrenKey.length;
-                    tempString.push(munic + ' '+ name+' '+average);
-                } else if ( operator == "simple sum") {
+                } else if ( operator == "Simple sum (ignore weights)") {
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
                         for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
@@ -706,7 +694,7 @@ var startApp = function() {
                     var munic = la[o].properties.COUNTRY_NA;
                     var theme = name;
                     tempString.push(munic + ' '+ name+' '+tempSum);
-                } else if ( operator == "weighted sum") {
+                } else if ( operator == "Weighted sum") {
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
                         for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
@@ -720,7 +708,7 @@ var startApp = function() {
                     var munic = la[o].properties.COUNTRY_NA;
                     var theme = name;
                     tempString.push(munic + ' '+ name+' '+tempSum);
-                } else if ( operator == "simple multiplication") {
+                } else if ( operator == "Simple multiplication (ignore weights)") {
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
                         for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
@@ -737,7 +725,7 @@ var startApp = function() {
                     var munic = la[o].properties.COUNTRY_NA;
                     var theme = name;
                     tempString.push(munic + ' '+ name+' '+tempSum);
-                } else if ( operator == "weighted multiplication") {
+                } else if ( operator == "Weighted multiplication") {
                     for (var p in la[o].properties) {
                         // iterate over the indicator child keys
                         for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
@@ -769,6 +757,111 @@ var startApp = function() {
         }
         console.log('catData:');
         console.log(catData);
+        var districName = "temp";
+        Category_PCP_Chart(catData, municipality, districName);
+
+        ////////////////////////////////
+        //// Compute the SVI ** NEW ////
+        ////////////////////////////////
+
+        var SVI = {};
+        var SVIOperator;
+        for (var y = 0; y < projectDef.children.length; y++) {
+            if (projectDef.children[y].name == "SVI_1") {
+                SVIOperator = projectDef.children[y].operator;
+            }
+        }
+
+        // first create an object with all of the district names
+        for (var t = 0; t < catData.length; t++) {
+            var temp = catData[t]['municipality'];
+            SVI[temp] = 0;
+        }
+
+        // get some info aobut the themes
+        var themekey = [];
+        var themeWeightObj = {};
+        for (var u = 0; u < socialVulnIndex.length; u++) {
+            var themeName = socialVulnIndex[u].name;
+            var themeWeight = socialVulnIndex[u].weight;
+            themekey.push(themeName);
+            themeWeightObj[themeName] = themeWeight;
+        }
+
+        // compute the SVI values based on operator
+        if (SVIOperator == 'Simple sum (ignore weights)') {
+            for (var v = 0; v < catData.length; v++) {
+                var tempSVIValue = 0;
+                var catDataMunic = catData[v].municipality;
+                // sum the themes
+                for (var w = 0; w < themekey.length; w++, ct++) {
+                    var tempThemeName = themekey[w];
+                    tempSVIValue = tempSVIValue + catData[v][tempThemeName];
+                }
+                SVI[catDataMunic] = tempSVIValue;
+            }
+        } else if (SVIOperator == 'Weighted sum') {
+            for (var v = 0; v < catData.length; v++) {
+                var tempSVIValue = 0;
+                var catDataMunic = catData[v].municipality;
+                // sum the themes
+                for (var w = 0; w < themekey.length; w++, ct++) {
+                    var tempThemeName = themekey[w];
+                    var themeWeightVal = themeWeightObj[tempThemeName];
+                    tempSVIValue = tempSVIValue + (catData[v][tempThemeName] * themeWeightVal);
+                }
+                SVI[catDataMunic] = tempSVIValue;
+            }
+        } else if (SVIOperator == 'Average (ignore weights)') {
+            for (var v = 0; v < catData.length; v++) {
+                var tempSVIValue = 0;
+                var catDataMunic = catData[v].municipality;
+                // sum the themes
+                for (var w = 0; w < themekey.length; w++, ct++) {
+                    var tempThemeName = themekey[w];
+                    tempSVIValue = tempSVIValue + catData[v][tempThemeName];
+                }
+                var themeAverage = tempSVIValue / themekey.length;
+                SVI[catDataMunic] = themeAverage;
+            }
+        } else if (SVIOperator == 'Simple multiplication (ignore weights)') {
+            for (var v = 0; v < catData.length; v++) {
+                var tempSVIValue = 0;
+                var catDataMunic = catData[v].municipality;
+                // sum the themes
+                for (var w = 0; w < themekey.length; w++, ct++) {
+                    var tempThemeName = themekey[w];
+                    if (tempSVIValue == 0) {
+                        tempSVIValue = catData[v][tempThemeName];
+                    } else {
+                        tempSVIValue = tempSVIValue * catData[v][tempThemeName];
+                    }
+                }
+                SVI[catDataMunic] = tempSVIValue;
+            }
+        } else if (SVIOperator == 'Weighted multiplication') {
+            for (var v = 0; v < catData.length; v++) {
+                var tempSVIValue = 0;
+                var catDataMunic = catData[v].municipality;
+                // sum the themes
+                for (var w = 0; w < themekey.length; w++, ct++) {
+                    var tempThemeName = themekey[w];
+                    var themeWeightVal = themeWeightObj[tempThemeName];
+                    if (tempSVIValue == 0) {
+                        tempSVIValue = (catData[v][tempThemeName] * themeWeightVal);
+                    } else {
+                        tempSVIValue = tempSVIValue * (catData[v][tempThemeName] * themeWeightVal);
+                    }
+                }
+                SVI[catDataMunic] = tempSVIValue;
+            }
+        }
+        console.log('SVI:');
+        console.log(SVI);
+
+        //find the SVI operator
+
+        // compute the svi value for each district
 
     } // End processIndicatorsNew
 
@@ -1104,7 +1197,8 @@ var startApp = function() {
             console.log('catData:');
             console.log(catData);
 
-            Category_PCP_Chart(catData, municipality, districName, concat);
+
+            Category_PCP_Chart(catData, municipality, districName);
 
             for (var k in scaledCatIndicator) {
                 previousCatData.push(scaledCatIndicator[k]);
@@ -1364,6 +1458,15 @@ var startApp = function() {
             iriIndicator.plotElement = "iri"; // Lable within the object
 
         }
+
+        console.log('iriIndicator:');
+        console.log(iriIndicator);
+
+        console.log('scaledSviIndicator:');
+        console.log(scaledSviIndicator);
+
+        console.log('scaledAalIndicator:');
+        console.log(scaledAalIndicator);
 
         var iriPcpData = [];
         iriPcpData.push(iriIndicator);

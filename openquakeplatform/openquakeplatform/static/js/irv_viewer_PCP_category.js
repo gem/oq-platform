@@ -22,10 +22,9 @@
 
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
-function Category_PCP_Chart(catData, municipality, districName, concat) {
+function Category_PCP_Chart(catData, municipality, districName) {
 
     catData.pop();
-    concat.pop();
 
     var data = catData;
     var winH = ($(window).height() / 1.5);
