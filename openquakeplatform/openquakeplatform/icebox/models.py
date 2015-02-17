@@ -224,6 +224,10 @@ class OutputLayer(models.Model):
 
         logger.warning("Layer creation for %s is not supported" % self)
 
+    @property
+    def user(self):
+        return self.calculation.user.id
+
     def __unicode__(self):
         return u"OL %s <%d>" % (self.display_name, self.pk)
 
