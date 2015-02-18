@@ -766,97 +766,11 @@ var startApp = function() {
         ////////////////////////////////
 
         var SVI = {};
-        var SVIOperator;
-        for (var y = 0; y < projectDef.children.length; y++) {
-            if (projectDef.children[y].field == "SVI_1") {
-                SVIOperator = projectDef.children[y].operator;
-            }
-        }
+        var sviFieldLookUp = 'SVI_1';
+        var sviJSONthemes = socialVulnIndex;
+        var SVI = combindIndicators(sviFieldLookUp, catData, sviJSONthemes );
 
-        // first create an object with all of the district names
-        for (var t = 0; t < catData.length; t++) {
-            var temp = catData[t]['municipality'];
-            SVI[temp] = 0;
-        }
 
-        // get some info aobut the themes
-        var themekey = [];
-        var themeWeightObj = {};
-        for (var u = 0; u < socialVulnIndex.length; u++) {
-            var themeName = socialVulnIndex[u].name;
-            var themeWeight = socialVulnIndex[u].weight;
-            themekey.push(themeName);
-            themeWeightObj[themeName] = themeWeight;
-        }
-
-        // compute the SVI values based on operator
-        if (SVIOperator == 'Simple sum (ignore weights)') {
-            for (var v = 0; v < catData.length; v++) {
-                var tempSVIValue = 0;
-                var catDataMunic = catData[v].municipality;
-                // sum the themes
-                for (var w = 0; w < themekey.length; w++, ct++) {
-                    var tempThemeName = themekey[w];
-                    tempSVIValue = tempSVIValue + catData[v][tempThemeName];
-                }
-                SVI[catDataMunic] = tempSVIValue;
-            }
-        } else if (SVIOperator == 'Weighted sum') {
-            for (var v1 = 0; v1 < catData.length; v1++) {
-                var tempSVIValue = 0;
-                var catDataMunic = catData[v1].municipality;
-                // sum the themes
-                for (var w1 = 0; w1 < themekey.length; w1++, ct++) {
-                    var tempThemeName = themekey[w1];
-                    var themeWeightVal = themeWeightObj[tempThemeName];
-                    tempSVIValue = tempSVIValue + (catData[v1][tempThemeName] * themeWeightVal);
-                }
-                SVI[catDataMunic] = tempSVIValue;
-            }
-        } else if (SVIOperator == 'Average (ignore weights)') {
-            for (var v2 = 0; v2 < catData.length; v2++) {
-                var tempSVIValue = 0;
-                var catDataMunic = catData[v2].municipality;
-                // sum the themes
-                for (var w2 = 0; w2 < themekey.length; w2++, ct++) {
-                    var tempThemeName = themekey[w2];
-                    tempSVIValue = tempSVIValue + catData[v2][tempThemeName];
-                }
-                var themeAverage = tempSVIValue / themekey.length;
-                SVI[catDataMunic] = themeAverage;
-            }
-        } else if (SVIOperator == 'Simple multiplication (ignore weights)') {
-            for (var v3 = 0; v3 < catData.length; v3++) {
-                var tempSVIValue = 0;
-                var catDataMunic = catData[v3].municipality;
-                // sum the themes
-                for (var w3 = 0; w3 < themekey.length; w3++, ct++) {
-                    var tempThemeName = themekey[w3];
-                    if (tempSVIValue == 0) {
-                        tempSVIValue = catData[v3][tempThemeName];
-                    } else {
-                        tempSVIValue = tempSVIValue * catData[v3][tempThemeName];
-                    }
-                }
-                SVI[catDataMunic] = tempSVIValue;
-            }
-        } else if (SVIOperator == 'Weighted multiplication') {
-            for (var v4 = 0; v4 < catData.length; v4++) {
-                var tempSVIValue = 0;
-                var catDataMunic = catData[v4].municipality;
-                // sum the themes
-                for (var w4 = 0; w4 < themekey.length; w4++, ct++) {
-                    var tempThemeName = themekey[w4];
-                    var themeWeightVal = themeWeightObj[tempThemeName];
-                    if (tempSVIValue == 0) {
-                        tempSVIValue = (catData[v4][tempThemeName] * themeWeightVal);
-                    } else {
-                        tempSVIValue = tempSVIValue * (catData[v4][tempThemeName] * themeWeightVal);
-                    }
-                }
-                SVI[catDataMunic] = tempSVIValue;
-            }
-        }
         console.log('SVI:');
         console.log(SVI);
 
@@ -919,102 +833,111 @@ var startApp = function() {
         //// Compute the Risk Indicator ** NEW ////
         ///////////////////////////////////////////
 
-        var RI = {};
-        var RIOperator;
-        for (var ie = 0; ie < projectDef.children.length; ie++) {
-            if (projectDef.children[ie].field == "RI_1") {
-                RIOperator = projectDef.children[ie].operator;
-            }
-        }
-
-        // create an object with all of the district names
-        for (var ig = 0; ig < riskIndicator.length; ig++) {
-            var temp = riskIndicator[ig]['municipality'];
-            RI[temp] = 0;
-        }
-
-        // get some info aobut the themes
-        var RIkey = [];
-        var RIWeightObj = {};
-        for (var ih = 0; ih < riskIndex.length; ih++) {
-            var IRName = riskIndex[ih].name;
-            var IRWeight = riskIndex[ih].weight;
-            RIkey.push(IRName);
-            RIWeightObj[IRName] = IRWeight;
-        }
-
-        if (RIOperator == 'Weighted sum') {
-            for (var ij = 0; ij < riskIndicator.length; ij++) {
-                var tempRIValue = 0;
-                var riskIndicatorMunic = riskIndicator[ij].municipality;
-                // sum the themes
-                for (var ii = 0; ii < RIkey.length; ii++, ct++) {
-                    var IRtempName = RIkey[ii];
-                    var IRWeightVal = RIWeightObj[IRtempName];
-                    tempRIValue = tempRIValue + (riskIndicator[ij][IRtempName] * IRWeightVal);
-                }
-                RI[riskIndicatorMunic] = tempRIValue;
-            }
-        } else if (RIOperator == 'Simple sum (ignore weights)') {
-            for (var ik = 0; ik < riskIndicator.length; ik++) {
-                var tempRIValue = 0;
-                var riskIndicatorMunic = riskIndicator[ik].municipality;
-                // sum the themes
-                for (var il = 0; il < RIkey.length; il++, ct++) {
-                    var IRtempName = RIkey[il];
-                    tempRIValue = tempRIValue + riskIndicator[ik][IRtempName];
-                }
-                RI[riskIndicatorMunic] = tempRIValue;
-            }
-        } else if (RIOperator == 'Average (ignore weights)') {
-            for (var im = 0; im < riskIndicator.length; im++) {
-                var tempRIValue = 0;
-                var riskIndicatorMunic = riskIndicator[im].municipality;
-                // sum the themes
-                for (var io = 0; io < RIkey.length; io++, ct++) {
-                    var IRtempName = RIkey[io];
-                    tempRIValue = tempRIValue + riskIndicator[im][IRtempName];
-                }
-                var IRAverage = tempRIValue / RIkey.length;
-                RI[riskIndicatorMunic] = IRAverage;
-            }
-        } else if (RIOperator == 'Simple multiplication (ignore weights)') {
-            for (var ip = 0; ip < riskIndicator.length; ip++) {
-                var tempRIValue = 0;
-                var riskIndicatorMunic = riskIndicator[ip].municipality;
-                // sum the themes
-                for (var iq = 0; iq < RIkey.length; iq++, ct++) {
-                    var IRtempName = RIkey[iq];
-                    if (tempRIValue == 0) {
-                        tempRIValue = riskIndicator[ip][IRtempName];
-                    } else {
-                        tempRIValue = tempRIValue * riskIndicator[ip][IRtempName];
-                    }
-                }
-                RI[riskIndicatorMunic] = tempRIValue;
-            }
-        } else if (RIOperator == 'Weighted multiplication') {
-            for (var ir = 0; ir < riskIndicator.length; ir++) {
-                var tempRIValue = 0;
-                var riskIndicatorMunic = riskIndicator[ir].municipality;
-                // sum the themes
-                for (var is = 0; is < RIkey.length; is++, ct++) {
-                    var IRtempName = RIkey[is];
-                    var IRWeightVal = RIWeightObj[IRtempName];
-                    if (tempRIValue == 0) {
-                        tempRIValue = (riskIndicator[ir][IRtempName] * IRWeightVal);
-                    } else {
-                        tempRIValue = tempRIValue * (riskIndicator[ir][IRtempName] * IRWeightVal);
-                    }
-                }
-                RI[riskIndicatorMunic] = tempRIValue;
-            }
-        }
+        var IR = {};
+        var riFieldLookUp = 'RI_1';
+        var riJSONthemes = riskIndex;
+        var RI = combindIndicators(riFieldLookUp, riskIndicator, riJSONthemes );
 
         console.log('RI:');
         console.log(RI);
 
     } // End processIndicatorsNew
+
+
+    function combindIndicators(fieldLookUp, themeObj, JSONthemes ) {
+        var ct = 0;
+        var newObj = {};
+        var operator;
+        for (var y = 0; y < projectDef.children.length; y++) {
+            if (projectDef.children[y].field == fieldLookUp) {
+                operator = projectDef.children[y].operator;
+            }
+        }
+        // first create an object with all of the district names
+        for (var t = 0; t < themeObj.length; t++) {
+            var temp = themeObj[t]['municipality'];
+            newObj[temp] = 0;
+        }
+        // get some info aobut the themes
+        var themekey = [];
+        var themeWeightObj = {};
+        for (var u = 0; u < JSONthemes.length; u++) {
+            var themeName = JSONthemes[u].name;
+            var themeWeight = JSONthemes[u].weight;
+            themekey.push(themeName);
+            themeWeightObj[themeName] = themeWeight;
+        }
+        // compute the newObj values based on operator
+        if (operator == 'Simple sum (ignore weights)') {
+            for (var v = 0; v < themeObj.length; v++) {
+                var tempElementValue = 0;
+                var themeObjMunic = themeObj[v].municipality;
+                // sum the themes
+                for (var w = 0; w < themekey.length; w++, ct++) {
+                    var tempThemeName = themekey[w];
+                    tempElementValue = tempElementValue + themeObj[v][tempThemeName];
+                }
+                newObj[themeObjMunic] = tempElementValue;
+            }
+        } else if (operator == 'Weighted sum') {
+            for (var v1 = 0; v1 < themeObj.length; v1++) {
+                var tempElementValue = 0;
+                var themeObjMunic = themeObj[v1].municipality;
+                // sum the themes
+                for (var w1 = 0; w1 < themekey.length; w1++, ct++) {
+                    var tempThemeName = themekey[w1];
+                    var themeWeightVal = themeWeightObj[tempThemeName];
+                    tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
+                }
+                newObj[themeObjMunic] = tempElementValue;
+            }
+        } else if (operator == 'Average (ignore weights)') {
+            for (var v2 = 0; v2 < themeObj.length; v2++) {
+                var tempElementValue = 0;
+                var themeObjMunic = themeObj[v2].municipality;
+                // sum the themes
+                for (var w2 = 0; w2 < themekey.length; w2++, ct++) {
+                    var tempThemeName = themekey[w2];
+                    tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
+                }
+                var themeAverage = tempElementValue / themekey.length;
+                newObj[themeObjMunic] = themeAverage;
+            }
+        } else if (operator == 'Simple multiplication (ignore weights)') {
+            for (var v3 = 0; v3 < themeObj.length; v3++) {
+                var tempElementValue = 0;
+                var themeObjMunic = themeObj[v3].municipality;
+                // sum the themes
+                for (var w3 = 0; w3 < themekey.length; w3++, ct++) {
+                    var tempThemeName = themekey[w3];
+                    if (tempElementValue == 0) {
+                        tempElementValue = themeObj[v3][tempThemeName];
+                    } else {
+                        tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
+                    }
+                }
+                newObj[themeObjMunic] = tempElementValue;
+            }
+        } else if (operator == 'Weighted multiplication') {
+            for (var v4 = 0; v4 < themeObj.length; v4++) {
+                var tempElementValue = 0;
+                var themeObjMunic = themeObj[v4].municipality;
+                // sum the themes
+                for (var w4 = 0; w4 < themekey.length; w4++, ct++) {
+                    var tempThemeName = themekey[w4];
+                    var themeWeightVal = themeWeightObj[tempThemeName];
+                    if (tempElementValue == 0) {
+                        tempElementValue = (themeObj[v4][tempThemeName] * themeWeightVal);
+                    } else {
+                        tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
+                    }
+                }
+                newObj[themeObjMunic] = tempElementValue;
+            }
+        }
+        return newObj;
+    }
+
 
     function processIndicators(e) {
         var districName = e.data.name_1;
