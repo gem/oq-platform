@@ -773,11 +773,6 @@ var startApp = function() {
             }
         }
 
-        console.log('SVIOperator:');
-        console.log(SVIOperator);
-
-        //SVIOperator = "Weighted multiplication";//******* REMOVE THIS ********
-
         // first create an object with all of the district names
         for (var t = 0; t < catData.length; t++) {
             var temp = catData[t]['municipality'];
@@ -866,7 +861,7 @@ var startApp = function() {
         console.log(SVI);
 
         ////////////////////////////////////////////
-        //// Compute the risk indicators ** NEW ////
+        //// Compute the risk index ** NEW ////
         ////////////////////////////////////////////
 
         var riskIndicator = [];
@@ -875,7 +870,7 @@ var startApp = function() {
         function generateRiskIndicatorObj(tempVal) {
             var tempRiskDist = tempVal[0];
             var tempRiskField  = tempVal[1];
-            var tempRiskVal = tempVal[2];
+            var tempRiskVal = parseFloat(tempVal[2]);
             // add the info to risk indicator object
             for (var ie = 0; ie < riskIndicator.length; ie++) {
                 if (riskIndicator[ie].municipality == tempRiskDist) {
@@ -920,9 +915,104 @@ var startApp = function() {
         console.log('riskIndicator:');
         console.log(riskIndicator);
 
-        ////////////////////////////////
-        //// Compute the RI ** NEW ////
-        ////////////////////////////////
+        ///////////////////////////////////////////
+        //// Compute the Risk Indicator ** NEW ////
+        ///////////////////////////////////////////
+
+        var RI = {};
+        var RIOperator;
+        for (var ie = 0; ie < projectDef.children.length; ie++) {
+            if (projectDef.children[ie].field == "RI_1") {
+                RIOperator = projectDef.children[ie].operator;
+            }
+        }
+
+        // create an object with all of the district names
+        for (var ig = 0; ig < riskIndicator.length; ig++) {
+            var temp = riskIndicator[ig]['municipality'];
+            RI[temp] = 0;
+        }
+
+        // get some info aobut the themes
+        var RIkey = [];
+        var RIWeightObj = {};
+        for (var ih = 0; ih < riskIndex.length; ih++) {
+            var IRName = riskIndex[ih].name;
+            var IRWeight = riskIndex[ih].weight;
+            RIkey.push(IRName);
+            RIWeightObj[IRName] = IRWeight;
+        }
+
+        if (RIOperator == 'Weighted sum') {
+            for (var ij = 0; ij < riskIndicator.length; ij++) {
+                var tempRIValue = 0;
+                var riskIndicatorMunic = riskIndicator[ij].municipality;
+                // sum the themes
+                for (var ii = 0; ii < RIkey.length; ii++, ct++) {
+                    var IRtempName = RIkey[ii];
+                    var IRWeightVal = RIWeightObj[IRtempName];
+                    tempRIValue = tempRIValue + (riskIndicator[ij][IRtempName] * IRWeightVal);
+                }
+                RI[riskIndicatorMunic] = tempRIValue;
+            }
+        } else if (RIOperator == 'Simple sum (ignore weights)') {
+            for (var ik = 0; ik < riskIndicator.length; ik++) {
+                var tempRIValue = 0;
+                var riskIndicatorMunic = riskIndicator[ik].municipality;
+                // sum the themes
+                for (var il = 0; il < RIkey.length; il++, ct++) {
+                    var IRtempName = RIkey[il];
+                    tempRIValue = tempRIValue + riskIndicator[ik][IRtempName];
+                }
+                RI[riskIndicatorMunic] = tempRIValue;
+            }
+        } else if (RIOperator == 'Average (ignore weights)') {
+            for (var im = 0; im < riskIndicator.length; im++) {
+                var tempRIValue = 0;
+                var riskIndicatorMunic = riskIndicator[im].municipality;
+                // sum the themes
+                for (var io = 0; io < RIkey.length; io++, ct++) {
+                    var IRtempName = RIkey[io];
+                    tempRIValue = tempRIValue + riskIndicator[im][IRtempName];
+                }
+                var IRAverage = tempRIValue / RIkey.length;
+                RI[riskIndicatorMunic] = IRAverage;
+            }
+        } else if (RIOperator == 'Simple multiplication (ignore weights)') {
+            for (var ip = 0; ip < riskIndicator.length; ip++) {
+                var tempRIValue = 0;
+                var riskIndicatorMunic = riskIndicator[ip].municipality;
+                // sum the themes
+                for (var iq = 0; iq < RIkey.length; iq++, ct++) {
+                    var IRtempName = RIkey[iq];
+                    if (tempRIValue == 0) {
+                        tempRIValue = riskIndicator[ip][IRtempName];
+                    } else {
+                        tempRIValue = tempRIValue * riskIndicator[ip][IRtempName];
+                    }
+                }
+                RI[riskIndicatorMunic] = tempRIValue;
+            }
+        } else if (RIOperator == 'Weighted multiplication') {
+            for (var ir = 0; ir < riskIndicator.length; ir++) {
+                var tempRIValue = 0;
+                var riskIndicatorMunic = riskIndicator[ir].municipality;
+                // sum the themes
+                for (var is = 0; is < RIkey.length; is++, ct++) {
+                    var IRtempName = RIkey[is];
+                    var IRWeightVal = RIWeightObj[IRtempName];
+                    if (tempRIValue == 0) {
+                        tempRIValue = (riskIndicator[ir][IRtempName] * IRWeightVal);
+                    } else {
+                        tempRIValue = tempRIValue * (riskIndicator[ir][IRtempName] * IRWeightVal);
+                    }
+                }
+                RI[riskIndicatorMunic] = tempRIValue;
+            }
+        }
+
+        console.log('RI:');
+        console.log(RI);
 
     } // End processIndicatorsNew
 
