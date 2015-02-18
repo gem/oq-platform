@@ -1,0 +1,104 @@
+#!/bin/bash
+fin="$1"
+ct=0
+IFS='
+'
+echo "var material = [ "
+comma=""
+for i in $(grep 'MaterialCB11.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*MaterialCB11\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# Material Technology
+echo "var mat_tech_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var MaterialCB21 = \[\];|MaterialCB21\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var MaterialCB21 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "mat_tech_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "MaterialCB21.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*MaterialCB21\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+# Material Properties
+echo "var mat_prop_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var MaterialCB31 = \[\];|MaterialCB31\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var MaterialCB31 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "mat_prop_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "MaterialCB31.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*MaterialCB31\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+# Material technology (additional)
+echo "var mat_tead_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var MaterialCB41 = \[\];|MaterialCB41\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var MaterialCB41 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "mat_tead_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "MaterialCB41.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*MaterialCB41\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+
