@@ -3,7 +3,7 @@ fin="$1"
 ct=0
 IFS='
 '
-echo "var material = [ "
+echo "var material = ["
 comma=""
 for i in $(grep 'MaterialCB11.push' $fin) ; do
     if [ "$comma" != "" ]; then
@@ -93,6 +93,64 @@ for i in $(egrep 'var MaterialCB41 = \[\];|MaterialCB41\.push' $fin ; echo "THE 
         fi
         id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
         desc="$(echo "$i" | sed "s@.*MaterialCB41\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+
+# Lateral load-resisting system
+echo "var llrs_type_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var SystemCB11 = \[\];|SystemCB11\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var SystemCB11 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "llrs_type_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "SystemCB11.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*SystemCB11\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+
+# Lateral load-resisting system ductility
+echo "var llrs_duct_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var SystemCB21 = \[\];|SystemCB21\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var SystemCB21 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "llrs_duct_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "SystemCB21.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*SystemCB21\.push('@@g;s@');\$@@g")"
         echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
         comma=","
     else

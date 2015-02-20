@@ -68,6 +68,38 @@ var mat_prop = { 'MAT99': [],
                  'MATO': []
                };
 
+var llrs_type = { 'MAT99':llrs_type_grp[2],
+                  'C99':  llrs_type_grp[2],
+                  'CU':   llrs_type_grp[2],
+                  'CR':   llrs_type_grp[2],
+                  'SRC':  llrs_type_grp[2],
+                  'S':    llrs_type_grp[2],
+                  'ME':   llrs_type_grp[2],
+                  'M99':  llrs_type_grp[1],
+                  'MUR':  llrs_type_grp[1],
+                  'MCF':  llrs_type_grp[1],
+                  'MR':   llrs_type_grp[1],
+                  'E99':  llrs_type_grp[0],
+                  'EU':   llrs_type_grp[0],
+                  'ER':   llrs_type_grp[0],
+                  'W':    llrs_type_grp[1],
+                  'MATO': llrs_type_grp[2]
+                };
+
+var llrs_duct = { 'L99': [],
+                  'LN': [],
+                  'LFM': llrs_duct_grp[0],
+                  'LINF': llrs_duct_grp[0],
+                  'LFBR': llrs_duct_grp[0],
+                  'LPB': llrs_duct_grp[0],
+                  'LWAL': llrs_duct_grp[0],
+                  'LDUAL': llrs_duct_grp[0],
+                  'LFLS': llrs_duct_grp[0],
+                  'LFLSINF': llrs_duct_grp[0],
+                  'LH': llrs_duct_grp[0],
+                  'LO': llrs_duct_grp[0]
+                };
+
 
 function populate_form()
 {
@@ -98,10 +130,10 @@ function taxt_ValidateSystem1() // Ok
     }
     else {
         var SystemCB21 = [];
-        SystemCB21.push('Ductility unknown');
-        SystemCB21.push('Ductile');
-        SystemCB21.push('Non-ductile');
-        SystemCB21.push('Base isolation and/or energy dissipation devices');
+        /* DU99  */ SystemCB21.push('Ductility unknown');
+        /* DUC   */ SystemCB21.push('Ductile');
+        /* DNO   */ SystemCB21.push('Non-ductile');
+        /* DBD   */ SystemCB21.push('Base isolation and/or energy dissipation devices');
         select_populate('SystemCB21', SystemCB21);
         $('SystemCB21').prop("disabled", false);
     }
@@ -272,39 +304,39 @@ function taxt_ValidateMaterial1() // Ok
 
     if ($('#MaterialCB11').val() > 10 && $('#MaterialCB11').val() < 14) {
         var SystemCB11 = [];
-        SystemCB11.push('Unknown lateral load-resisting system');
-        SystemCB11.push('No lateral load-resisting system');
-        SystemCB11.push('Wall');
-        SystemCB11.push('Hybrid lateral load-resisting system');
-        SystemCB11.push('Other lateral load-resisting system');
+        /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
+        /* LN   */ SystemCB11.push('No lateral load-resisting system');
+        /* LWAL */ SystemCB11.push('Wall');
+        /* LH   */ SystemCB11.push('Hybrid lateral load-resisting system');
+        /* LO   */ SystemCB11.push('Other lateral load-resisting system');
         select_populate('SystemCB11', SystemCB11);
     }
     else if (($('#MaterialCB11').val() > 6 && $('#MaterialCB11').val() < 11) ||
              $('#MaterialCB11').val() == 14) {
         var SystemCB11 = [];
-        SystemCB11.push('Unknown lateral load-resisting system');
-        SystemCB11.push('No lateral load-resisting system');
-        SystemCB11.push('Moment frame');
-        SystemCB11.push('Post and beam');
-        SystemCB11.push('Wall');
-        SystemCB11.push('Hybrid lateral load-resisting system');
-        SystemCB11.push('Other lateral load-resisting system');
+        /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
+        /* LN   */ SystemCB11.push('No lateral load-resisting system');
+        /* LFM  */ SystemCB11.push('Moment frame');
+        /* LPB  */ SystemCB11.push('Post and beam');
+        /* LWAL */ SystemCB11.push('Wall');
+        /* LH   */ SystemCB11.push('Hybrid lateral load-resisting system');
+        /* LO   */ SystemCB11.push('Other lateral load-resisting system');
         select_populate('SystemCB11', SystemCB11);
     }
     else {
         var SystemCB11 = [];
-        SystemCB11.push('Unknown lateral load-resisting system');
-        SystemCB11.push('No lateral load-resisting system');
-        SystemCB11.push('Moment frame');
-        SystemCB11.push('Infilled frame');
-        SystemCB11.push('Braced frame');
-        SystemCB11.push('Post and beam');
-        SystemCB11.push('Wall');
-        SystemCB11.push('Dual frame-wall system');
-        SystemCB11.push('Flat slab/plate or waffle slab');
-        SystemCB11.push('Infilled flat slab/plate or infilled waffle slab');
-        SystemCB11.push('Hybrid lateral load-resisting system');
-        SystemCB11.push('Other lateral load-resisting system');
+        /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
+        /* LN   */ SystemCB11.push('No lateral load-resisting system');
+        /* LFM  */ SystemCB11.push('Moment frame');
+        /* LINF */ SystemCB11.push('Infilled frame');
+        /* LFBR */ SystemCB11.push('Braced frame');
+        /* LPB  */ SystemCB11.push('Post and beam');
+        /* LWAL */ SystemCB11.push('Wall');
+        /* LDUAL */ SystemCB11.push('Dual frame-wall system');
+        /* LFLS */ SystemCB11.push('Flat slab/plate or waffle slab');
+        /* LFLSINF */ SystemCB11.push('Infilled flat slab/plate or infilled waffle slab');
+        /* LH   */ SystemCB11.push('Hybrid lateral load-resisting system');
+        /* LO   */ SystemCB11.push('Other lateral load-resisting system');
         select_populate('SystemCB11', SystemCB11);
     }
 
@@ -3407,13 +3439,30 @@ function populate(s) {
     var mat_tead_selec = [ taxt_MaterialCB41Select, taxt_MaterialCB42Select ];
     var mat_prop_ddown = [ '#MaterialCB31', '#MaterialCB32' ];
     var mat_prop_selec = [ taxt_MaterialCB31Select, taxt_MaterialCB32Select ];
-    var mat_id, mat_atom;
+    var llrs_ddown = [ '#SystemCB11', '#SystemCB12' ];
+    var llrs_selec = [ taxt_SystemCB11Select, taxt_SystemCB12Select ];
+    var llrs_duct_ddown = [ '#SystemCB21', '#SystemCB22' ];
+    var llrs_duct_selec = [ taxt_SystemCB21Select, taxt_SystemCB22Select ];
+
+    var mat_id, mat_atom, llrs, llrs_atom;
 
     for (direct = 0 ; direct < 2 ; direct++) {
-        mat = sar[1+(direct * 3)].split('+');
+        mat  = sar[1+(direct * 3)].split('+');
+        llrs = sar[2+(direct * 3)].split('+');
+        if (mat.length < 1) {
+            alert("Not defined material for 'Direction "+(direct == 0 ? "X" : "Y")+"'");
+            return (false);
+        }
+        if (llrs.length < 1) {
+            alert("Not defined LLRS for 'Direction "+(direct == 0 ? "X" : "Y")+"'");
+            return (false);
+        }
 
         for (i = 0 ; i < material.length ; i++) {
             if (mat[0] == material[i].id) {
+                mat_id = mat[0];
+                $(mat_ddown[direct]).val(i);
+                mat_selec[direct]();
                 break;
             }
         }
@@ -3421,10 +3470,6 @@ function populate(s) {
             alert("Not identified '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'");
             return (false);
         }
-        mat_id = mat[0];
-
-        $(mat_ddown[direct]).val(i);
-        mat_selec[direct]();
 
         for (sub_i = 1 ; sub_i < mat.length ; sub_i++) {
             mat_atom = mat[sub_i];
@@ -3437,6 +3482,8 @@ function populate(s) {
                     break;
                 }
             }
+            if (i < mat_tech[mat_id].length)
+                continue;
 
             // MATERIAL TECHNOLOGY ADDED
             for (i = 0 ; i < mat_tead[mat_id].length ;  i++) {
@@ -3446,6 +3493,8 @@ function populate(s) {
                     break;
                 }
             }
+            if (i < mat_tead[mat_id].length)
+                continue;
 
             // MATERIAL PROPERTIES
             for (i = 0 ; i < mat_prop[mat_id].length ;  i++) {
@@ -3456,6 +3505,44 @@ function populate(s) {
                     break;
                 }
             }
+            if (i < mat_prop[mat_id].length)
+                continue;
+
+            alert("Not identified '"+mat_atom+"' as specification of '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'.");
+            return (false);
+        }
+
+        // LATERAL LOAD RESISTING SYSTEM: TYPE
+        for (i = 0 ; i < llrs_type[mat_id].length ;  i++) {
+            llrs_id = llrs_type[mat_id][i].id;
+
+            if (llrs[0] == llrs_id) {
+                $(llrs_ddown[direct]).val(i);
+                llrs_selec[direct]();
+                break;
+            }
+        }
+        if (i == llrs_type[mat_id].length) {
+            alert("Not identified '"+llrs[0]+"' as LLRS of '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'.");
+        }
+
+
+        for (sub_i = 1 ; sub_i < llrs.length ; sub_i++) {
+            llrs_atom = llrs[sub_i];
+
+            // DUCTILITY
+            for (i = 0 ; i < llrs_duct[llrs_id].length ;  i++) {
+                if (llrs_atom == llrs_duct[llrs_id][i].id) {
+                    $(llrs_duct_ddown[direct]).val(i);
+                    llrs_duct_selec[direct]();
+                    break;
+                }
+            }
+            if (i < llrs_duct[llrs_id].length)
+                continue;
+
+            alert("Not identified '"+llrs_atom+"' as specification of '"+llrs[0]+"' LLRS of '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'.");
+            return (false);
         }
     }
 }

@@ -102,3 +102,41 @@ mat_tead_grp[0] = [
                     { id: 'RCM', desc: 'Fibre reinforcing mesh' },
                     { id: 'RCB', desc: 'Reinforced concrete bands' }
                   ];
+var llrs_type_grp = [];
+llrs_type_grp[0] = [
+                    { id: 'L99', desc: 'Unknown lateral load-resisting system' },
+                    { id: 'LN', desc: 'No lateral load-resisting system' },
+                    { id: 'LWAL', desc: 'Wall' },
+                    { id: 'LH', desc: 'Hybrid lateral load-resisting system' },
+                    { id: 'LO', desc: 'Other lateral load-resisting system' }
+                  ];
+llrs_type_grp[1] = [
+                    { id: 'L99', desc: 'Unknown lateral load-resisting system' },
+                    { id: 'LN', desc: 'No lateral load-resisting system' },
+                    { id: 'LFM', desc: 'Moment frame' },
+                    { id: 'LPB', desc: 'Post and beam' },
+                    { id: 'LWAL', desc: 'Wall' },
+                    { id: 'LH', desc: 'Hybrid lateral load-resisting system' },
+                    { id: 'LO', desc: 'Other lateral load-resisting system' }
+                  ];
+llrs_type_grp[2] = [
+                    { id: 'L99', desc: 'Unknown lateral load-resisting system' },
+                    { id: 'LN', desc: 'No lateral load-resisting system' },
+                    { id: 'LFM', desc: 'Moment frame' },
+                    { id: 'LINF', desc: 'Infilled frame' },
+                    { id: 'LFBR', desc: 'Braced frame' },
+                    { id: 'LPB', desc: 'Post and beam' },
+                    { id: 'LWAL', desc: 'Wall' },
+                    { id: 'LDUAL', desc: 'Dual frame-wall system' },
+                    { id: 'LFLS', desc: 'Flat slab/plate or waffle slab' },
+                    { id: 'LFLSINF', desc: 'Infilled flat slab/plate or infilled waffle slab' },
+                    { id: 'LH', desc: 'Hybrid lateral load-resisting system' },
+                    { id: 'LO', desc: 'Other lateral load-resisting system' }
+                  ];
+var llrs_duct_grp = [];
+llrs_duct_grp[0] = [
+                    { id: 'DU99', desc: 'Ductility unknown' },
+                    { id: 'DUC', desc: 'Ductile' },
+                    { id: 'DNO', desc: 'Non-ductile' },
+                    { id: 'DBD', desc: 'Base isolation and/or energy dissipation devices' }
+                  ];
