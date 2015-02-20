@@ -63,6 +63,7 @@ class model_description(object):
                  IDENT: rise an error if the two field are different
                  OR: old val OR new val (must be both boolean)
                  AND: old val AND new val (must be both boolean)
+      fie_tydf - default field comparison behavior for the model
     '''
     # normal field, used for comparison
     FIE_TY_NORM  = 1
@@ -79,7 +80,8 @@ class model_description(object):
     # old val AND new val (must be both boolean)
     FIE_TY_AND   = 7
 
-    def __init__(self, name, natural, refs, group=None, pk_natural=False, inher=None, fie_type=None):
+    def __init__(self, name, natural, refs, group=None, pk_natural=False,
+                 inher=None, fie_type=None, fie_tydf=0):
         self.name = name
         self.natural = natural
         self.refs = refs
@@ -88,6 +90,7 @@ class model_description(object):
         self.inher = inher
         self.is_inherited = False # set by inheriting_set function
         self.fie_type = fie_type
+        self.fie_tydf = fie_tydf
 
     def type_get(self, fie_name):
         '''
@@ -95,9 +98,12 @@ class model_description(object):
         '''
 
         try:
-            self.fie_type[fie_name]
+            return self.fie_type[fie_name]
         except (TypeError, KeyError):
-            return self.FIE_TY_NORM
+            if self.fie_tydf:
+                return self.fie_tydf
+            else:
+                return self.FIE_TY_NORM
             
     def is_comparable(self, fie_name):
         if self.type_get(fie_name) == self.FIE_TY_NORM:
@@ -148,4 +154,3 @@ class model_description(object):
 
 
 models_descr = OrderedDict()
-
