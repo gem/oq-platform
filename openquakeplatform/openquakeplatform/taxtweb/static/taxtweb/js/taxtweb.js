@@ -1377,6 +1377,8 @@ function taxt_BuildTaxonomy()
         if ($('#SystemCB11').val() == 2)
             Taxonomy[3] = 'LWAL';
         if ($('#SystemCB11').val() == 3)
+            Taxonomy[3] = 'LH';
+        if ($('#SystemCB11').val() == 4)
             Taxonomy[3] = 'LO';
     }
     else if ( (($('#MaterialCB11').val()>6) && ($('#MaterialCB11').val()<11)) || ($('#MaterialCB11').val() == 14)) {
@@ -1389,6 +1391,8 @@ function taxt_BuildTaxonomy()
         if ($('#SystemCB11').val() == 4)
             Taxonomy[3] = 'LWAL';
         if ($('#SystemCB11').val() == 5)
+            Taxonomy[3] = 'LH';
+        if ($('#SystemCB11').val() == 6)
             Taxonomy[3] = 'LO';
     }
     else {
@@ -1620,6 +1624,8 @@ function taxt_BuildTaxonomy()
         if ($('#SystemCB12').val() == 2)
             Taxonomy[8] = 'LWAL';
         if ($('#SystemCB12').val() == 3)
+            Taxonomy[8] = 'LH';
+        if ($('#SystemCB12').val() == 4)
             Taxonomy[8] = 'LO';
     }
     else if ( (($('#MaterialCB12').val()>6) && ($('#MaterialCB12').val()<11)) || ($('#MaterialCB12').val() == 14)) {
@@ -1632,6 +1638,8 @@ function taxt_BuildTaxonomy()
         if ($('#SystemCB12').val() == 4)
             Taxonomy[8] = 'LWAL';
         if ($('#SystemCB12').val() == 5)
+            Taxonomy[8] = 'LH';
+        if ($('#SystemCB12').val() == 6)
             Taxonomy[8] = 'LO';
     }
     else {
