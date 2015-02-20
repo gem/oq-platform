@@ -75,6 +75,7 @@ var tempAalValue = '';
 var tempIriWeight = '';
 var municipality = [];
 var outlierBreakPoint = 0.75; // used for the primary indicator outlier
+var districts = [];
 
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
@@ -182,8 +183,6 @@ var startApp = function() {
     $('#svir-project-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
-    // **** TODO remove this, its only for dev
-    //var url = "https://platform.openquake.org/geoserver/oqplatform/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson"
 
     $.ajax({
         url: url,
@@ -197,8 +196,9 @@ var startApp = function() {
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
             // Find the SVIR keywords
+            var stringToLookFor = 'SVIR_QGIS_Plugin';
             for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords == "SVIR_QGIS_Plugin" ) {
+                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
                     SVIRLayerNames.push(featureType[i].Name);
                 }
             }
@@ -213,10 +213,13 @@ var startApp = function() {
     $('#svir-project-list').change(function() {
         // Get the layer metadata (project def)
         var selectedLayer = document.getElementById('svir-project-list').value;
+        console.log('selectedLayer:');
+        console.log(selectedLayer);
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
+
                 /*
                 var n = layerMetadataURL.indexOf('/catalogue');
                 layerMetadataURL = layerMetadataURL.substring(0, n != -1 ? n : layerMetadataURL.length);
@@ -224,7 +227,8 @@ var startApp = function() {
                 console.log(layerMetadataURL);
                 */
                 // *****TEMP****
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
+                layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
@@ -243,7 +247,6 @@ var startApp = function() {
         //http://192.168.56.10:8080/geoserver/oqplatform/wms?service=WMS&version=1.1.0&request=GetMap&layers=oqplatform:ben2&styles=&bbox=-109.450553894043,-55.9840278625488,-28.8472194671629,13.3945837020875&width=512&height=440&srs=EPSG:4326&format=image%2Fpng
         var WMSLayer = L.tileLayer.wms("/geoserver/oqplatform/wms", {
             layers: selectedLayer,
-            //layers: 'oqplatform:ben2',
             format: 'image/png',
             transparent: true,
             version: '1.1.0',
@@ -561,6 +564,7 @@ var startApp = function() {
 
         var socialVulnIndex;
         var riskIndex;
+        var iriIndex = projectDef.children;
 
         // Find all the nodes of type social vulnerability and risk index in the project def
         for (var k in projectDef.children) {
@@ -575,6 +579,8 @@ var startApp = function() {
         console.log(socialVulnIndex);
         console.log('riskIndex:');
         console.log(riskIndex);
+        console.log('iriIndex:');
+        console.log(iriIndex);
 
         // process each Social Vulnerability Index nodes
 
@@ -583,19 +589,16 @@ var startApp = function() {
         var allPrimaryIndicatorsObj = {};
         var ct = 0;
         for (var i = 0; i < socialVulnIndex.length; i++) {
-            console.log('socialVulnIndex[i]:');
-            console.log(socialVulnIndex[i]);
             for (var e = 0 ; e < socialVulnIndex[i].children.length; e++, ct++ ) {
                 allPrimaryIndicators.push(socialVulnIndex[i].children[e].name);
             }
         }
 
+
         // Match each primary indicator with it's respective data value
         var primaryIndicatorObj = {};
         for (var h = 0; h < layerAttributes.features.length; h++) {
             var tempObj = layerAttributes.features[h].properties;
-            //console.log('Object.keys(tempObj[l]):');
-            //console.log(Object.getOwnPropertyNames(tempObj));
             for (var d = 0; d < allPrimaryIndicators.length; d++) {
                 for (var l in tempObj) {
                     if (allPrimaryIndicators[d] == l) {
@@ -615,8 +618,6 @@ var startApp = function() {
             }
         }
 
-        console.log('primaryIndicatorObj:');
-        console.log(primaryIndicatorObj);
         var districName = "temp";
         var outlierBreakPoint = 0.75;
 
@@ -681,7 +682,7 @@ var startApp = function() {
                     var theme = name;
                     // Grab the average
                     var average = tempSum / indicatorChildrenKey.length;
-                    tempString.push(munic + ' '+ name+' '+average);
+                    tempString.push(munic + '|'+ theme +'|'+ average);
                 } else if ( operator == "Simple sum (ignore weights)") {
                     for (var p1 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -694,7 +695,7 @@ var startApp = function() {
                     }
                     var munic1 = la[o].properties.COUNTRY_NA;
                     var theme1 = name;
-                    tempString.push(munic1 + ' '+ theme1 +' '+tempSum);
+                    tempString.push(munic1 + '|'+ theme1 +'|'+ tempSum);
                 } else if ( operator == "Weighted sum") {
                     for (var p2 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -708,7 +709,7 @@ var startApp = function() {
                     }
                     var munic2 = la[o].properties.COUNTRY_NA;
                     var theme2 = name;
-                    tempString.push(munic2 + ' '+ theme2 +' '+tempSum);
+                    tempString.push(munic2 + '|'+ theme2 +'|'+ tempSum);
                 } else if ( operator == "Simple multiplication (ignore weights)") {
                     for (var p3 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -725,7 +726,7 @@ var startApp = function() {
                     }
                     var munic3 = la[o].properties.COUNTRY_NA;
                     var theme3 = name;
-                    tempString.push(munic3 + ' '+ theme3 +' '+tempSum);
+                    tempString.push(munic3 + '|'+ theme3 +'|'+ tempSum);
                 } else if ( operator == "Weighted multiplication") {
                     for (var p4 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -743,7 +744,7 @@ var startApp = function() {
                     }
                     var munic4 = la[o].properties.COUNTRY_NA;
                     var theme4 = name;
-                    tempString.push(munic4 + ' '+ theme4 +' '+tempSum);
+                    tempString.push(munic4 + '|'+ theme4 +'|'+ tempSum);
                 }
             }
         }
@@ -752,7 +753,7 @@ var startApp = function() {
             // capture an array for each record
             var temp;
             temp = tempString[p5];
-            temp = temp.split(" ");
+            temp = temp.split("|");
             generateObject(temp);
 
         }
@@ -766,66 +767,42 @@ var startApp = function() {
         ////////////////////////////////
 
         var SVI = {};
-        var sviFieldLookUp = 'SVI_1';
+        var sviNameLookUp = 'SVI';
         var sviJSONthemes = socialVulnIndex;
-        var SVI = combindIndicators(sviFieldLookUp, catData, sviJSONthemes );
+        var SVI = combindIndicators(sviNameLookUp, catData, sviJSONthemes );
 
+
+        ///////////////
+        //// Scale ////
+        ///////////////
+
+        // Scale the iri values
+        var sviValueArray = [];
+        var scaleSVIvalues = [];
+        for (var v in SVI) {
+            sviValueArray.push(SVI[v]);
+        }
+        var tempSVImin = Math.min.apply(null, sviValueArray),
+            tempSVImax = Math.max.apply(null, sviValueArray);
+        for (var j = 0; j < sviValueArray.length; j++) {
+            scaleSVIvalues.push( (sviValueArray[j] - tempSVImin) / (tempSVImax - tempSVImin) );
+        }
+        var tempKeys = Object.keys(SVI);
+        for (var i = 0; i < tempKeys.length; i++) {
+            SVI[tempKeys[i]] = scaleSVIvalues[i];
+        }
+        SVI.plotElement = "svi"; // Lable within the object
 
         console.log('SVI:');
         console.log(SVI);
 
-        ////////////////////////////////////////////
+        ///////////////////////////////////////
         //// Compute the risk index ** NEW ////
-        ////////////////////////////////////////////
+        ///////////////////////////////////////
 
-        var riskIndicator = [];
-        var riskTempString = [];
+        var riskIndicatorObj = createIndexSimple(la, riskIndex);
 
-        function generateRiskIndicatorObj(tempVal) {
-            var tempRiskDist = tempVal[0];
-            var tempRiskField  = tempVal[1];
-            var tempRiskVal = parseFloat(tempVal[2]);
-            // add the info to risk indicator object
-            for (var ie = 0; ie < riskIndicator.length; ie++) {
-                if (riskIndicator[ie].municipality == tempRiskDist) {
-                    riskIndicator[ie][tempRiskField] = tempRiskVal;
-                }
-            }
-        }
-
-        // setup catData with all the municipalities
-        for (var ia = 0; ia < la.length; ia++) {
-            var temp = {};
-            temp.municipality = la[ia].properties.COUNTRY_NA;
-            riskIndicator.push(temp);
-        }
-
-        // find the risk indicator information
-        for (var ib = 0; ib < riskIndex.length; ib++) {
-            try {
-                var riskOperator = riskIndex[ib].operator;
-            } catch (e) {
-                var riskOperator = 'n/a';
-            }
-            var riskWeight = riskIndex[ib].weight;
-            var riskField = riskIndex[ib].field;
-
-            // iterate over the layerAttributes to access the data
-            for (var ic = 0; ic < la.length; ic++, ct++) { // la is layerAttributes.features
-                if (riskOperator == 'n/a' || riskOperator == undefined) {
-                    var riskIndicatorValue = la[ic].properties[riskField];
-                    var riskIndicatorDistrict = la[ic].properties.COUNTRY_NA;
-                    riskTempString.push(riskIndicatorDistrict + ' ' + riskField + ' ' + riskIndicatorValue);
-                } // TODO build in else conditions for all posible operators
-            }
-        }
-        // iterate over each temp string
-        for (var id = 0; id < riskTempString.length; id++) {
-            var tempVal = riskTempString[id];
-            tempVal = tempVal.split(' ');
-            generateRiskIndicatorObj(tempVal);
-        }
-
+        var riskIndicator = createIndex(la, riskIndex);
         console.log('riskIndicator:');
         console.log(riskIndicator);
 
@@ -834,22 +811,215 @@ var startApp = function() {
         ///////////////////////////////////////////
 
         var IR = {};
-        var riFieldLookUp = 'RI_1';
+        var nameLookUp = 'RI';
         var riJSONthemes = riskIndex;
-        var RI = combindIndicators(riFieldLookUp, riskIndicator, riJSONthemes );
+
+        var RI = combindIndicators(nameLookUp, riskIndicator, riJSONthemes );
+
+        ///////////////
+        //// Scale ////
+        ///////////////
+
+        // Scale the iri values
+        var riValueArray = [];
+        var scaleRIvalues = [];
+        for (var v in RI) {
+            riValueArray.push(RI[v]);
+        }
+        var tempRImin = Math.min.apply(null, riValueArray),
+            tempRImax = Math.max.apply(null, riValueArray);
+        for (var j = 0; j < riValueArray.length; j++) {
+            scaleRIvalues.push( (riValueArray[j] - tempRImin) / (tempRImax - tempRImin) );
+        }
+        var tempKeys = Object.keys(RI);
+        for (var i = 0; i < tempKeys.length; i++) {
+            RI[tempKeys[i]] = scaleRIvalues[i];
+        }
+        RI.plotElement = "ri"; // Lable within the object
 
         console.log('RI:');
         console.log(RI);
 
+        //////////////////////////////////////
+        //// Compute the IRI index ** NEW ////
+        //////////////////////////////////////
+
+        var IRI = {};
+/*
+        for (var ja = 0; ja < la.length; ja++) {
+            var temp = {};
+            temp.municipality = la[ja].properties.COUNTRY_NA;
+            tempIriArray.push(temp);
+        }
+*/
+        var iriOperator = projectDef.operator;
+        for (var ik = 0; ik < projectDef.children.length; ik++) {
+            if (projectDef.children[ik].name == 'RI') {
+                var riWeight = projectDef.children[ik].weight;
+            } else if (projectDef.children[ik].name == 'SVI') {
+                var sviWeight = projectDef.children[ik].weight;
+            }
+        }
+
+        if (iriOperator == "Average (ignore weights)") {
+            for (var jb in SVI) {
+                tempVal = SVI[jb] + RI[jb];
+                IRI[jb] = tempVal;
+            }
+            var iriAverage = tempVal / 2;
+        } else if (iriOperator == "Simple sum (ignore weights)") {
+            for (var jb in SVI) {
+                tempVal = SVI[jb] + RI[jb];
+                IRI[jb] = tempVal;
+            }
+        } else if (iriOperator == "Weighted sum") {
+            for (var jb in SVI) {
+                tempVal = (SVI[jb] * sviWeight) + (RI[jb] * riWeight);
+                IRI[jb] = tempVal;
+            }
+        } else if (iriOperator == "Simple multiplication (ignore weights)") {
+            for (var jb in SVI) {
+                tempVal = SVI[jb] * RI[jb];
+                IRI[jb] = tempVal;
+            }
+        } else if (iriOperator == "Weighted multiplication") {
+            for (var jb in SVI) {
+                tempVal = (SVI[jb] * sviWeight) * (RI[jb] * riWeight);
+                IRI[jb] = tempVal;
+            }
+        }
+
+
+
+        ///////////////
+        //// Scale ////
+        ///////////////
+
+        // Scale the iri values
+        var iriValueArray = [];
+        var scaleIRIvalues = [];
+        for (var v in IRI) {
+            iriValueArray.push(IRI[v]);
+        }
+        var tempIRImin = Math.min.apply(null, iriValueArray),
+            tempIRImax = Math.max.apply(null, iriValueArray);
+        for (var j = 0; j < iriValueArray.length; j++) {
+            scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
+        }
+        var tempKeys = Object.keys(IRI);
+        for (var i = 0; i < tempKeys.length; i++) {
+            IRI[tempKeys[i]] = scaleIRIvalues[i];
+        }
+        IRI.plotElement = "iri"; // Lable within the object
+
+        console.log('IRI:');
+        console.log(IRI);
+
+        var iriPcpData = [];
+        iriPcpData.push(IRI);
+        iriPcpData.push(SVI);
+        iriPcpData.push(RI);
+
+        console.log('iriPcpData:');
+        console.log(iriPcpData);
+
+        IRI_PCP_Chart(iriPcpData);
+
+
+        //////////////////////////////////////////
+        //// Compute the IRI Indicator ** NEW ////
+        //////////////////////////////////////////
+
+        var IRI = {};
+        var iriNameLookUp = "IRI";
+
     } // End processIndicatorsNew
 
+    function createIndexSimple(la, index) {
+        var ct = 0;
+        var indicator = [];
+        var tempString = [];
 
-    function combindIndicators(fieldLookUp, themeObj, JSONthemes ) {
+        // setup the indicator with all the municipalities
+        for (var ia = 0; ia < la.length; ia++) {
+            var temp = {};
+            temp.municipality = la[ia].properties.COUNTRY_NA;
+            indicator.push(temp);
+            districts.push(la[ia].properties.COUNTRY_NA);
+        }
+
+        // Get the indicators children keys
+        var indicatorChildrenKey = [];
+        for (var q = 0; q < index.length; q++) {
+            indicatorChildrenKey.push(index[q].name);
+        }
+        // Match each primary indicator with it's respective data value
+        var primaryRiskIndicatorObj = {};
+        for (var ic = 0; ic < la.length; ic++) {
+            var tempObj = la[ic].properties;
+            for (var d = 0; d < indicatorChildrenKey.length; d++) {
+                for(var o in tempObj) {
+                    if (indicatorChildrenKey[d] == o) {
+                        var tempValue = indicatorChildrenKey[d];
+                        var tempValue2 = tempObj[o];
+                        var tempValue3 = tempObj.COUNTRY_NA;
+                        if (primaryRiskIndicatorObj[tempValue] == undefined) {
+                            primaryRiskIndicatorObj[tempValue] = tempValue2;
+                            primaryRiskIndicatorObj.district = tempValue3;
+                        } else {
+                            primaryRiskIndicatorObj[tempValue] = primaryRiskIndicatorObj[tempValue] + "," +tempValue2;
+                            primaryRiskIndicatorObj.district = primaryRiskIndicatorObj.district + "," +tempValue3;
+                        }
+                    }
+                }
+            }
+        }
+        return primaryRiskIndicatorObj;
+
+    }
+
+    function createIndex(la, index) {
+        var ct = 0;
+        var indicator = [];
+        // setup the indicator with all the municipalities
+        for (var ia = 0; ia < la.length; ia++) {
+            var temp = {};
+            temp.municipality = la[ia].properties.COUNTRY_NA;
+            indicator.push(temp);
+        }
+
+        for (var i = 0; i < index.length; i++) {
+            for (var j = 0; j < la.length; j++, ct++) {
+                if (indicator[j].municipality == la[j].properties.COUNTRY_NA) {
+                    var tempName = index[i].name;
+                    var tempValue = la[j].properties[tempName];
+                    indicator[j][tempName] = tempValue;
+                }
+            }
+        }
+        return indicator;
+
+    }
+
+    function generateIndicatorObj(tempVal, indicator) {
+        var tempDist = tempVal[0];
+        var tempField  = tempVal[1];
+        var tempVal = parseFloat(tempVal[2]);
+        // add the info to risk indicator object
+        for (var ie = 0; ie < indicator.length; ie++) {
+            if (indicator[ie].municipality == tempDist) {
+                indicator[ie][tempField] = tempVal;
+            }
+        }
+    }
+
+
+    function combindIndicators(nameLookUp, themeObj, JSONthemes) {
         var ct = 0;
         var newObj = {};
         var operator;
         for (var y = 0; y < projectDef.children.length; y++) {
-            if (projectDef.children[y].field == fieldLookUp) {
+            if (projectDef.children[y].name == nameLookUp) {
                 operator = projectDef.children[y].operator;
             }
         }
@@ -1559,6 +1729,9 @@ var startApp = function() {
     }
 
     resize();
+
+    console.log('iriPcpData:');
+    console.log(iriPcpData);
 
         IRI_PCP_Chart(iriPcpData);
     } // End process indicators function

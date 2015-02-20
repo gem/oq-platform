@@ -34,7 +34,7 @@ function IRI_PCP_Chart(iriPcpData) {
         w = (winW - 100) - m[1] - m[3],
         h = winH - m[0] - m[2];
 
-    var x = d3.scale.ordinal().domain(municipality).rangePoints([0, w]),
+    var x = d3.scale.ordinal().domain(districts).rangePoints([0, w]),
         y = {};
 
     var line = d3.svg.line(),
@@ -42,7 +42,7 @@ function IRI_PCP_Chart(iriPcpData) {
         foreground;
 
     var x_scale = d3.scale.linear().domain([0, w]).range([0, w]);
-    var y_scale = d3.scale.linear().range([0, h]).domain([1, 0]);
+    var y_scale = d3.scale.linear().domain([h, 0]).range([0, h]);
 
     function yAxis() {
         return d3.svg.axis()
@@ -63,7 +63,7 @@ function IRI_PCP_Chart(iriPcpData) {
         .attr("transform", "translate(" + m[3] + ",5)");
 
     // Create a scale and brush for each trait.
-    municipality.forEach(function(d) {
+    districts.forEach(function(d) {
         // Coerce values to numbers.
         iriPcpData.forEach(function(p) { p[d] = +p[d]; });
         y[d] = d3.scale.linear()
@@ -202,11 +202,11 @@ function IRI_PCP_Chart(iriPcpData) {
     // Returns the path for a given data point.
 
     function path(d) {
-        return line(municipality.map(function(p) { return [x(p), y[p](d[p])]; }));
+        return line(districts.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
-        var actives = municipality.filter(function(p) { return !y[p].brush.empty(); }),
+        var actives = districts.filter(function(p) { return !y[p].brush.empty(); }),
             extents = actives.map(function(p) { return y[p].brush.extent(); });
         foreground.classed("fade", function(d) {
             return !actives.every(function(p, i) {
