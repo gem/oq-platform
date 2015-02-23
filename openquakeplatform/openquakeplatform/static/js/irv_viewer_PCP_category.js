@@ -24,8 +24,6 @@
 
 function Category_PCP_Chart(catData, municipality, districName) {
 
-    catData.pop();
-
     var data = catData;
     var winH = ($(window).height() / 1.5);
     var winW = ($(window).width());
@@ -47,8 +45,6 @@ function Category_PCP_Chart(catData, municipality, districName) {
     }
 
     var maxVal = Math.max.apply( Math, tmpArray );
-    console.log('maxVal:');
-    console.log(maxVal);
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 

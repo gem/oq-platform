@@ -20,7 +20,6 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
-
     var plotElements = ["iri", "svi", "aal"];
     var keys = [];
 
@@ -95,7 +94,6 @@ function IRI_PCP_Chart(iriPcpData) {
             .tickSize(h, 0, 0)
             .tickFormat("")
         );
-
 
     svg.append("g")
         .attr("class", "grid")

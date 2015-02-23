@@ -96,13 +96,13 @@
 
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
                     // get the elements that have been modified
-                    var tempNewWieght = [];
+                    var tempNewWeight = [];
                     var value = $('#'+pdTempSpinnerIds[i]).val();
                     var element = $('#'+pdTempSpinnerIds[i]).attr('element');
-                    tempNewWieght.push(element);
-                    tempNewWieght.push(parseFloat(value));
-                    // update the JSON with new wieghts
-                    traverse(sessionProjectDef, tempNewWieght);
+                    tempNewWeight.push(element);
+                    tempNewWeight.push(parseFloat(value));
+                    // update the JSON with new weights
+                    traverse(sessionProjectDef, tempNewWeight);
                 }
 
                 nodeEnter.remove("text");
@@ -110,29 +110,25 @@
             });
         }
 
-        function traverse(projectDef, tempNewWieght) {
+        function traverse(projectDef, tempNewWeight) {
             var projectDefUpdated = projectDef;
             var ct = 0;
-            if (projectDef.name == tempNewWieght[0]) {
-                projectDefUpdated.weight = tempNewWieght[1];
+            if (projectDef.name == tempNewWeight[0]) {
+                projectDefUpdated.weight = tempNewWeight[1];
             } else {
                 for (var i = 0; i < projectDef.children.length; i++) {
-                    if (projectDef.children[i].name == tempNewWieght[0]) {
-                        projectDefUpdated.children[i].wieght = tempNewWieght[1];
+                    if (projectDef.children[i].name == tempNewWeight[0]) {
+                        projectDefUpdated.children[i].weight = tempNewWeight[1];
                     } else {
                         for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
-                            if (projectDef.children[i].children[j].name == tempNewWieght[0]) {
-                                projectDefUpdated.children[i].children[j].weight = tempNewWieght[1];
+                            if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                                projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
                             }
                         }
                     }
                 }
             }
-            console.log('projectDefUpdated:');
-            console.log(projectDefUpdated);
-            console.log('processIndicatorsNew:');
-            console.log(processIndicatorsNew);
-            processIndicatorsNew(layerAttributes, projectDefUpdated);
+            processIndicatorsNew(projectLayerAttributes, projectDefUpdated);
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -189,9 +185,6 @@
         d3.select(self.frameElement).style("height", "800px");
 
         function updateD3Tree(source) {
-
-            console.log('source:');
-            console.log(source);
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
