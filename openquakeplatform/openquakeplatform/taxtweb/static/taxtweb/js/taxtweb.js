@@ -116,7 +116,7 @@ function select_populate(name, items)
     for (var i = 0 ; i < items.length ; i++) {
         item = items[i];
 
-        $('#'+name).append('<option value="'+i+'">'+item+'</option>');
+        $('#' + name).append('<option value="' + i + '">' + item + '</option>');
     }
 }
 
@@ -1565,17 +1565,17 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB12').val() == 10) {
             Taxonomy[5] = 'MR';
             if ( ($('#MaterialCB42').val() == 0) && !$('#OmitCB').prop('checked') )
-                Taxonomy[6] = Taxonomy[6]+'+MR99';
+                Taxonomy[6] = Taxonomy[6] + '+MR99';
             if ($('#MaterialCB42').val() == 1)
-                Taxonomy[6] = Taxonomy[6]+'+RS';
+                Taxonomy[6] = Taxonomy[6] + '+RS';
             if ($('#MaterialCB42').val() == 2)
-                Taxonomy[6] = Taxonomy[6]+'+RW';
+                Taxonomy[6] = Taxonomy[6] + '+RW';
             if ($('#MaterialCB42').val() == 3)
-                Taxonomy[6] = Taxonomy[6]+'+RB';
+                Taxonomy[6] = Taxonomy[6] + '+RB';
             if ($('#MaterialCB42').val() == 4)
-                Taxonomy[6] = Taxonomy[6]+'+RCM';
+                Taxonomy[6] = Taxonomy[6] + '+RCM';
             if ($('#MaterialCB42').val() == 5)
-                Taxonomy[6] = Taxonomy[6]+'+RCB';
+                Taxonomy[6] = Taxonomy[6] + '+RCB';
         }
 
         if (($('#MaterialCB32').val() == 0) && !$('#OmitCB').prop('checked') )
@@ -1727,29 +1727,29 @@ function taxt_BuildTaxonomy()
     }
     else {
         if ($('#HeightCB1').val() == 1)
-            Taxonomy[11] = 'HBET:'+$('#noStoreysE11').val()+','+$('#noStoreysE12').val();
+            Taxonomy[11] = 'HBET:' + $('#noStoreysE11').val() + ',' + $('#noStoreysE12').val();
         if ($('#HeightCB1').val() == 2)
-            Taxonomy[11] = 'HEX:'+$('#noStoreysE11').val();
+            Taxonomy[11] = 'HEX:' + $('#noStoreysE11').val();
         if ($('#HeightCB1').val() == 3)
-            Taxonomy[11] = 'HAPP:'+$('#noStoreysE11').val();
+            Taxonomy[11] = 'HAPP:' + $('#noStoreysE11').val();
 
         if ($('#HeightCB2').val() == 0 && !$('#OmitCB').prop('checked'))
             Taxonomy[12] = '+HB99';
         if ($('#HeightCB2').val() == 1)
-            Taxonomy[12] = '+HBBET:'+$('#noStoreysE21').val()+','+$('#noStoreysE22').val();
+            Taxonomy[12] = '+HBBET:' + $('#noStoreysE21').val() + ',' + $('#noStoreysE22').val();
         if ($('#HeightCB2').val() == 2)
-            Taxonomy[12] = '+HBEX:'+$('#noStoreysE21').val();
+            Taxonomy[12] = '+HBEX:' + $('#noStoreysE21').val();
         if ($('#HeightCB2').val() == 3)
-            Taxonomy[12] = '+HBAPP:'+$('#noStoreysE21').val();
+            Taxonomy[12] = '+HBAPP:' + $('#noStoreysE21').val();
 
         if ($('#HeightCB3').val() == 0 && !$('#OmitCB').prop('checked'))
             Taxonomy[13] = '+HF99';
         if ($('#HeightCB3').val() == 1)
-            Taxonomy[13] = '+HFBET:'+$('#noStoreysE31').val()+',' + $('#noStoreysE32').val();
+            Taxonomy[13] = '+HFBET:' + $('#noStoreysE31').val() + ',' + $('#noStoreysE32').val();
         if ($('#HeightCB3').val() == 2)
-            Taxonomy[13] = '+HFEX:'+$('#noStoreysE31').val();
+            Taxonomy[13] = '+HFEX:' + $('#noStoreysE31').val();
         if ($('#HeightCB3').val() == 3)
-            Taxonomy[13] = '+HFAPP:'+$('#noStoreysE31').val();
+            Taxonomy[13] = '+HFAPP:' + $('#noStoreysE31').val();
 
         if ($('#HeightCB4').val() == 0 && !$('#OmitCB').prop('checked'))
             Taxonomy[14] = '+HD99';
@@ -2272,14 +2272,17 @@ function taxt_BuildTaxonomy()
         direction2 = direction2 + '+D99';
         }
     else if ($('#Direction1RB2').prop('checked')) {
-        direction1 = direction1+'+PF';
-        direction2 = direction2+'+OF';
+        direction1 = direction1 + '+PF';
+        direction2 = direction2 + '+OF';
     }
 
-    ResTax = direction1+'/'+Taxonomy[0]+Taxonomy[1]+Taxonomy[2]+'/'+Taxonomy[3]+Taxonomy[4]+'/'+direction2+'/'+Taxonomy[5]+Taxonomy[6]+Taxonomy[7]+'/'+Taxonomy[8]+Taxonomy[9]+'/'
-        +Taxonomy[11]+Taxonomy[12]+Taxonomy[13]+Taxonomy[14]+'/'+Taxonomy[10]+'/'+Taxonomy[15]+Taxonomy[16]+'/'+Taxonomy[17]+'/'+Taxonomy[18]+'/'+Taxonomy[19]+Taxonomy[20]
-        +Taxonomy[22]+Taxonomy[21]+Taxonomy[23]+'/'+Taxonomy[24]+'/'+Taxonomy[25]+Taxonomy[26]+Taxonomy[27]+Taxonomy[28]+Taxonomy[29]+'/'+Taxonomy[30]
-        +Taxonomy[31]+Taxonomy[32]+'/'+Taxonomy[33];
+    ResTax = direction1 + '/' + Taxonomy[0] + Taxonomy[1] + Taxonomy[2] + '/' + Taxonomy[3] + Taxonomy[4] +
+        '/' + direction2 + '/' + Taxonomy[5] + Taxonomy[6] + Taxonomy[7] + '/' + Taxonomy[8] + Taxonomy[9] +
+        '/' + Taxonomy[11] + Taxonomy[12] + Taxonomy[13] + Taxonomy[14] + '/' + Taxonomy[10] +
+        '/' + Taxonomy[15] + Taxonomy[16] + '/' + Taxonomy[17] + '/' + Taxonomy[18] +
+        '/' + Taxonomy[19] + Taxonomy[20] + Taxonomy[22] + Taxonomy[21] + Taxonomy[23] +
+        '/' + Taxonomy[24] + '/' + Taxonomy[25] + Taxonomy[26] + Taxonomy[27] + Taxonomy[28] + Taxonomy[29] +
+        '/' + Taxonomy[30] + Taxonomy[31] + Taxonomy[32] + '/' + Taxonomy[33];
     $('#resultE').val(ResTax);
 }
 
@@ -3333,12 +3336,12 @@ function menu_set(id_or_obj) {
         if (menu_items[i].id == id) {
             $(menu_items[i]).removeClass("vuln_menu");
             $(menu_items[i]).addClass("vuln_menu_selected");
-            $("#main_content-"+(i+1)).css('display', '');
+            $("#main_content-" + (i+1)).css('display', '');
         }
         else {
             $(menu_items[i]).removeClass("vuln_menu_selected");
             $(menu_items[i]).addClass("vuln_menu");
-            $("#main_content-"+(i+1)).css('display', 'none');
+            $("#main_content-" + (i+1)).css('display', 'none');
         }
     }
     if (typeof(id_or_obj) == 'number' && id == "menu_id-1") {
@@ -3365,12 +3368,12 @@ function sub1menu_set(id_or_obj) {
             $(menu_items[i]).removeClass("vuln_submenu");
             $(menu_items[i]).addClass("vuln_submenu_selected");
             $(menu_items[i]).toggleClass("vuln_submenu_first");
-            $("#sub1_content-"+(i+1)).css('display', '');
+            $("#sub1_content-" + (i+1)).css('display', '');
         }
         else {
             $(menu_items[i]).removeClass("vuln_submenu_selected");
             $(menu_items[i]).addClass("vuln_submenu");
-            $("#sub1_content-"+(i+1)).css('display', 'none');
+            $("#sub1_content-" + (i+1)).css('display', 'none');
         }
     }
 }
@@ -3450,11 +3453,11 @@ function populate(s) {
         mat  = sar[1+(direct * 3)].split('+');
         llrs = sar[2+(direct * 3)].split('+');
         if (mat.length < 1) {
-            alert("Not defined material for 'Direction "+(direct == 0 ? "X" : "Y")+"'");
+            alert("Not defined material for 'Direction " + (direct == 0 ? "X" : "Y") + "'");
             return (false);
         }
         if (llrs.length < 1) {
-            alert("Not defined LLRS for 'Direction "+(direct == 0 ? "X" : "Y")+"'");
+            alert("Not defined LLRS for 'Direction " + (direct == 0 ? "X" : "Y") + "'");
             return (false);
         }
 
@@ -3467,7 +3470,7 @@ function populate(s) {
             }
         }
         if (i ==  material.length) {
-            alert("Not identified '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'");
+            alert("Not identified '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'");
             return (false);
         }
 
@@ -3498,7 +3501,6 @@ function populate(s) {
 
             // MATERIAL PROPERTIES
             for (i = 0 ; i < mat_prop[mat_id].length ;  i++) {
-                console.log(i+") id: "+mat_prop[mat_id][i].id);
                 if (mat_atom == mat_prop[mat_id][i].id) {
                     $(mat_prop_ddown[direct]).val(i);
                     mat_prop_selec[direct]();
@@ -3508,7 +3510,7 @@ function populate(s) {
             if (i < mat_prop[mat_id].length)
                 continue;
 
-            alert("Not identified '"+mat_atom+"' as specification of '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'.");
+            alert("Not identified '" + mat_atom + "' as specification of '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
             return (false);
         }
 
@@ -3523,7 +3525,7 @@ function populate(s) {
             }
         }
         if (i == llrs_type[mat_id].length) {
-            alert("Not identified '"+llrs[0]+"' as LLRS of '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'.");
+            alert("Not identified '" + llrs[0] + "' as LLRS of '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
         }
 
 
@@ -3541,7 +3543,7 @@ function populate(s) {
             if (i < llrs_duct[llrs_id].length)
                 continue;
 
-            alert("Not identified '"+llrs_atom+"' as specification of '"+llrs[0]+"' LLRS of '"+mat[0]+"' material for 'Direction "+(direct == 0 ? "X" : "Y")+"'.");
+            alert("Not identified '" + llrs_atom + "' as specification of '" + llrs[0] + "' LLRS of '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
             return (false);
         }
     }
