@@ -32,6 +32,23 @@ function Category_PCP_Chart(catData, municipality, districName) {
     var margin = {top: 100, right: 20, bottom: 10, left: 20},
         width = (winW - 200) - margin.left - margin.right,
         height = winH - margin.top - margin.bottom;
+    var tmpArray = [];
+    var array = [];
+    for (var i = 0; i < catData.length; i++) {
+        for (var k in catData[i]){
+            array.push(catData[i][k]);
+        }
+    }
+
+    for (var i = 0; i < array.length; i++) {
+        if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
+            tmpArray.push(array[i]);
+        }
+    }
+
+    var maxVal = Math.max.apply( Math, tmpArray );
+    console.log('maxVal:');
+    console.log(maxVal);
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
@@ -70,7 +87,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
         return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
-            .domain([0, 1])
+            .domain([0, maxVal])
             .range([height, 0]));
     }));
     var z = d3.scale.category20c();

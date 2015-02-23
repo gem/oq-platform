@@ -791,7 +791,6 @@ var startApp = function() {
         for (var i = 0; i < tempKeys.length; i++) {
             SVI[tempKeys[i]] = scaleSVIvalues[i];
         }
-        SVI.plotElement = "svi"; // Lable within the object
 
         console.log('SVI:');
         console.log(SVI);
@@ -835,7 +834,6 @@ var startApp = function() {
         for (var i = 0; i < tempKeys.length; i++) {
             RI[tempKeys[i]] = scaleRIvalues[i];
         }
-        RI.plotElement = "ri"; // Lable within the object
 
         console.log('RI:');
         console.log(RI);
@@ -911,6 +909,8 @@ var startApp = function() {
             IRI[tempKeys[i]] = scaleIRIvalues[i];
         }
         IRI.plotElement = "iri"; // Lable within the object
+        RI.plotElement = "ri"; // Lable within the object
+        SVI.plotElement = "svi"; // Lable within the object
 
         console.log('IRI:');
         console.log(IRI);
