@@ -91,13 +91,9 @@
 
                 // Upadte the json with new values
                 for (var i = 0; i < pdTempWeightsComputed.length; i++) {
-                    console.log('pdTempWeightsComputed:');
-                    console.log(pdTempWeightsComputed);
                     updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
                 }
 
-                console.log('pdTempSpinnerIds:');
-                console.log(pdTempSpinnerIds);
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
                     // get the elements that have been modified
                     var tempNewWieght = [];
@@ -105,12 +101,8 @@
                     var element = $('#'+pdTempSpinnerIds[i]).attr('element');
                     tempNewWieght.push(element);
                     tempNewWieght.push(parseFloat(value));
-                    console.log('tempNewWieght:');
-                    console.log(tempNewWieght);
-                    console.log('projectDef:');
-                    console.log(projectDef);
                     // update the JSON with new wieghts
-                    traverse(projectDef, tempNewWieght);
+                    traverse(sessionProjectDef, tempNewWieght);
                 }
 
                 nodeEnter.remove("text");
@@ -138,28 +130,9 @@
             }
             console.log('projectDefUpdated:');
             console.log(projectDefUpdated);
-            /*
-            for (var i in projectDef) {
-                count = count + 1;
-                if (typeof(projectDef[i])=="object" && projectDef[i] != null) {
-                    if (projectDef[i].name == tempNewWieght[0]) {
-                        console.log('match:');
-                        console.log(projectDef[i]);
-                        for (var j = 0; j < count; j++) {
-                           // projectDefUpdated[]
-                        }
-                        //projectDefUpdated[i].weight = tempNewWieght[1];
-                        console.log('projectDefUpdated:');
-                        console.log(projectDefUpdated);
-                        console.log('count:');
-                        console.log(count);
-
-                    } else {
-                        traverse(projectDef[i], tempNewWieght);
-                    }
-                }
-            }
-            */
+            console.log('processIndicatorsNew:');
+            console.log(processIndicatorsNew);
+            processIndicatorsNew(layerAttributes, projectDefUpdated);
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {

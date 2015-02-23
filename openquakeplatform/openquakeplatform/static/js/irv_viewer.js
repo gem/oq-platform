@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var projectDef = [];
+var sessionProjectDef = [];
 
 var utfGrid = {};
 var layerControl;
@@ -76,6 +76,7 @@ var tempIriWeight = '';
 var municipality = [];
 var outlierBreakPoint = 0.75; // used for the primary indicator outlier
 var districts = [];
+var projectLayerAttributes;
 
 // Keep track of the utfGrid that has been selected last
 var selectedGrid;
@@ -226,7 +227,7 @@ var startApp = function() {
                 console.log('layerMetadataURL:');
                 console.log(layerMetadataURL);
                 */
-                // *****TEMP****
+                // ***** TEMP remove this ****
                 layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
@@ -234,9 +235,9 @@ var startApp = function() {
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    projectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
-                    loadPD(projectDef);
-                    projectDef = jQuery.parseJSON(projectDef);
+                    sessionProjectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+                    loadPD(sessionProjectDef);
+                    sessionProjectDef = jQuery.parseJSON(sessionProjectDef);
                 });
             }
         });
@@ -262,7 +263,8 @@ var startApp = function() {
             success: function(layerAttributes) {
                 console.log('layerAttributes:');
                 console.log(layerAttributes);
-                processIndicatorsNew(layerAttributes);
+                projectLayerAttributes = layerAttributes;
+                processIndicatorsNew(layerAttributes, sessionProjectDef);
             }
         });
     });
@@ -553,11 +555,9 @@ var startApp = function() {
         });
     }
 
-    function modifyProjectDef() {
-        
-    }
-
-    function processIndicatorsNew(layerAttributes) {
+    function processIndicatorsNew(layerAttributes, projectDef) {
+        sessionProjectDef = projectDef;
+        console.log('HI THERE:');
 
         //loadPD(projectDef);
 
@@ -816,7 +816,7 @@ var startApp = function() {
         var nameLookUp = 'RI';
         var riJSONthemes = riskIndex;
 
-        var RI = combindIndicators(nameLookUp, riskIndicator, riJSONthemes );
+        var RI = combindIndicators(nameLookUp, riskIndicator, riJSONthemes);
 
         ///////////////
         //// Scale ////
@@ -1018,6 +1018,7 @@ var startApp = function() {
 
 
     function combindIndicators(nameLookUp, themeObj, JSONthemes) {
+        projectDef = sessionProjectDef;
         var ct = 0;
         var newObj = {};
         var operator;
