@@ -3545,4 +3545,15 @@ function populate(s) {
             return (false);
         }
     }
+    var dir_items = [ '#MaterialCB1', '#MaterialCB2', '#MaterialCB3', '#MaterialCB4',
+                      '#SystemCB1', '#SystemCB2' ];
+    for (i = 0 ; i < dir_items.length ; i++) {
+        if ($(dir_items[i]+'1').val() != $(dir_items[i]+'2').val()) {
+            break;
+        }
+    }
+    if (i == dir_items.length) {
+        $('#DirectionCB').prop('checked', true);
+    }
+
 }
