@@ -1743,7 +1743,7 @@ function taxt_BuildTaxonomy()
             Taxonomy[12] = '+HBAPP:'+$('#noStoreysE21').val();
 
         if ($('#HeightCB3').val() == 0 && !$('#OmitCB').prop('checked'))
-            Taxonomy[12] = '+HF99';
+            Taxonomy[13] = '+HF99';
         if ($('#HeightCB3').val() == 1)
             Taxonomy[13] = '+HFBET:'+$('#noStoreysE31').val()+',' + $('#noStoreysE32').val();
         if ($('#HeightCB3').val() == 2)
