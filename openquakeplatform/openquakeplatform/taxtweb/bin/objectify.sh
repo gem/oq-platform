@@ -3,6 +3,7 @@ fin="$1"
 ct=0
 IFS='
 '
+echo
 echo "var material = ["
 comma=""
 for i in $(grep 'MaterialCB11.push' $fin) ; do
@@ -18,6 +19,7 @@ echo
 echo "               ];"
 
 # Material Technology
+echo
 echo "var mat_tech_grp = [];"
 first_grp="true"
 grp=0
@@ -46,6 +48,7 @@ for i in $(egrep 'var MaterialCB21 = \[\];|MaterialCB21\.push' $fin ; echo "THE 
 done
 
 # Material Properties
+echo
 echo "var mat_prop_grp = [];"
 first_grp="true"
 grp=0
@@ -74,6 +77,7 @@ for i in $(egrep 'var MaterialCB31 = \[\];|MaterialCB31\.push' $fin ; echo "THE 
 done
 
 # Material technology (additional)
+echo
 echo "var mat_tead_grp = [];"
 first_grp="true"
 grp=0
@@ -103,6 +107,7 @@ done
 
 
 # Lateral load-resisting system
+echo
 echo "var llrs_type_grp = [];"
 first_grp="true"
 grp=0
@@ -132,6 +137,7 @@ done
 
 
 # Lateral load-resisting system ductility
+echo
 echo "var llrs_duct_grp = [];"
 first_grp="true"
 grp=0
@@ -159,4 +165,34 @@ for i in $(egrep 'var SystemCB21 = \[\];|SystemCB21\.push' $fin ; echo "THE END"
     fi
 done
 
-
+# Height
+declare -a h_names
+h_names=("notused" "h_aboveground" "h_belowground" "h_abovegrade" "h_slope")
+for n in 1 2 3 4; do
+    first_grp="true"
+    grp=0
+    for i in $(egrep "var HeightCB${n} = \[\];|HeightCB${n}\.push" $fin ; echo "THE END") ; do
+        if echo "$i" | grep -q "var HeightCB${n} = \[\];"; then
+            if [ "$first_grp" != "true" ]; then
+                echo
+                echo "                  ];"
+            fi
+            echo
+            echo "var ${h_names[$n]} = ["
+            first_grp="false"
+            comma=""
+            grp=$((grp + 1))
+        elif echo "$i" | grep -q "HeightCB${n}.push"; then
+            if [ "$comma" != "" ]; then
+                echo "$comma"
+            fi
+            id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+            desc="$(echo "$i" | sed "s@.*HeightCB${n}\.push('@@g;s@');\$@@g")"
+            echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+            comma=","
+        else
+            echo
+            echo "                  ];"
+        fi
+    done
+done

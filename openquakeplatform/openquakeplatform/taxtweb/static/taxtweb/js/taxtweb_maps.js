@@ -1,3 +1,4 @@
+
 var material = [
                  { id: 'MAT99', desc: 'Unknown Material' },
                  { id: 'C99', desc: 'Concrete, unknown reinforcement' },
@@ -16,6 +17,7 @@ var material = [
                  { id: 'W', desc: 'Wood' },
                  { id: 'MATO', desc: 'Other material' }
                ];
+
 var mat_tech_grp = [];
 mat_tech_grp[0] = [
                     { id: 'CT99', desc: 'Unknown concrete technology' },
@@ -70,6 +72,7 @@ mat_tech_grp[6] = [
                     { id: 'WBB', desc: 'Bamboo' },
                     { id: 'WO', desc: 'Wood, other' }
                   ];
+
 var mat_prop_grp = [];
 mat_prop_grp[0] = [
                     { id: 'SC99', desc: 'Unknown connection' },
@@ -93,6 +96,7 @@ mat_prop_grp[1] = [
                     { id: 'SPBA', desc: 'Basalt' },
                     { id: 'SPO', desc: 'Stone, other type' }
                   ];
+
 var mat_tead_grp = [];
 mat_tead_grp[0] = [
                     { id: 'MR99', desc: 'Unknown reinforcement' },
@@ -102,6 +106,7 @@ mat_tead_grp[0] = [
                     { id: 'RCM', desc: 'Fibre reinforcing mesh' },
                     { id: 'RCB', desc: 'Reinforced concrete bands' }
                   ];
+
 var llrs_type_grp = [];
 llrs_type_grp[0] = [
                     { id: 'L99', desc: 'Unknown lateral load-resisting system' },
@@ -133,10 +138,37 @@ llrs_type_grp[2] = [
                     { id: 'LH', desc: 'Hybrid lateral load-resisting system' },
                     { id: 'LO', desc: 'Other lateral load-resisting system' }
                   ];
+
 var llrs_duct_grp = [];
 llrs_duct_grp[0] = [
                     { id: 'DU99', desc: 'Ductility unknown' },
                     { id: 'DUC', desc: 'Ductile' },
                     { id: 'DNO', desc: 'Non-ductile' },
                     { id: 'DBD', desc: 'Base isolation and/or energy dissipation devices' }
+                  ];
+
+var h_aboveground = [
+                    { id: 'H99', desc: 'Unknown number of storeys' },
+                    { id: 'HBET', desc: 'Range of the number of storeys' },
+                    { id: 'HEX', desc: 'Exact number of storeys' },
+                    { id: 'HAPP', desc: 'Approximate number of storeys' }
+                  ];
+
+var h_belowground = [
+                    { id: 'HB99', desc: 'Unknown number of storeys' },
+                    { id: 'HBBET', desc: 'Range of the number of storeys' },
+                    { id: 'HBEX', desc: 'Exact number of storeys' },
+                    { id: 'HBAPP', desc: 'Approximate number of storeys' }
+                  ];
+
+var h_abovegrade = [
+                    { id: 'HF99', desc: 'Height above grade unknown' },
+                    { id: 'HFBET', desc: 'Range of height above grade' },
+                    { id: 'HFEX', desc: 'Exact height above grade' },
+                    { id: 'HFAPP', desc: 'Approximate height above grade' }
+                  ];
+
+var h_slope = [
+                    { id: 'HD99', desc: 'Unknown slope' },
+                    { id: 'HD', desc: 'Slope of the ground' }
                   ];
