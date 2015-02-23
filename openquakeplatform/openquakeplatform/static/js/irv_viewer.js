@@ -234,12 +234,9 @@ var startApp = function() {
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    console.log('jsonElement:');
-                    console.log(jsonElement);
                     projectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+                    loadPD(projectDef);
                     projectDef = jQuery.parseJSON(projectDef);
-                    console.log('projectDef:');
-                    console.log(projectDef);
                 });
             }
         });
@@ -389,6 +386,8 @@ var startApp = function() {
                 encodedData = pdJson.data.content;
                 selectedPDef = window.atob(encodedData);
                 pdData = JSON.parse(selectedPDef);
+                console.log('selectedPDef:');
+                console.log(selectedPDef);
                 loadPD(selectedPDef);
             });
 
@@ -552,6 +551,10 @@ var startApp = function() {
             processIndicators(e);
             selectedGrid = e;
         });
+    }
+
+    function modifyProjectDef() {
+        
     }
 
     function processIndicatorsNew(layerAttributes) {

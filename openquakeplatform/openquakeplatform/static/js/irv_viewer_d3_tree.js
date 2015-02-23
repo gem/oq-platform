@@ -49,7 +49,7 @@
         function createSpinner(id, weight, name) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" name="spinner" value="'+weight+'"></p>');
+            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'"></p>');
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
                     min: 0,
@@ -91,7 +91,26 @@
 
                 // Upadte the json with new values
                 for (var i = 0; i < pdTempWeightsComputed.length; i++) {
+                    console.log('pdTempWeightsComputed:');
+                    console.log(pdTempWeightsComputed);
                     updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
+                }
+
+                console.log('pdTempSpinnerIds:');
+                console.log(pdTempSpinnerIds);
+                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                    // get the elements that have been modified
+                    var tempNewWieght = [];
+                    var value = $('#'+pdTempSpinnerIds[i]).val();
+                    var element = $('#'+pdTempSpinnerIds[i]).attr('element');
+                    tempNewWieght.push(element);
+                    tempNewWieght.push(parseFloat(value));
+                    console.log('tempNewWieght:');
+                    console.log(tempNewWieght);
+                    console.log('projectDef:');
+                    console.log(projectDef);
+                    // update the JSON with new wieghts
+                    traverse(projectDef, tempNewWieght);
                 }
 
                 nodeEnter.remove("text");
@@ -99,10 +118,51 @@
             });
         }
 
-        function findTreeBranchInfo(pdData, pdName, pdLevel) {
+        function traverse(projectDef, tempNewWieght) {
+            var projectDefUpdated = projectDef;
+            var ct = 0;
+            if (projectDef.name == tempNewWieght[0]) {
+                projectDefUpdated.weight = tempNewWieght[1];
+            } else {
+                for (var i = 0; i < projectDef.children.length; i++) {
+                    if (projectDef.children[i].name == tempNewWieght[0]) {
+                        projectDefUpdated.children[i].wieght = tempNewWieght[1];
+                    } else {
+                        for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
+                            if (projectDef.children[i].children[j].name == tempNewWieght[0]) {
+                                projectDefUpdated.children[i].children[j].weight = tempNewWieght[1];
+                            }
+                        }
+                    }
+                }
+            }
+            console.log('projectDefUpdated:');
+            console.log(projectDefUpdated);
+            /*
+            for (var i in projectDef) {
+                count = count + 1;
+                if (typeof(projectDef[i])=="object" && projectDef[i] != null) {
+                    if (projectDef[i].name == tempNewWieght[0]) {
+                        console.log('match:');
+                        console.log(projectDef[i]);
+                        for (var j = 0; j < count; j++) {
+                           // projectDefUpdated[]
+                        }
+                        //projectDefUpdated[i].weight = tempNewWieght[1];
+                        console.log('projectDefUpdated:');
+                        console.log(projectDefUpdated);
+                        console.log('count:');
+                        console.log(count);
 
-            console.log('pdData:');
-            console.log(pdData);
+                    } else {
+                        traverse(projectDef[i], tempNewWieght);
+                    }
+                }
+            }
+            */
+        }
+
+        function findTreeBranchInfo(pdData, pdName, pdLevel) {
             // Find out how many elements are in tree branch
             if (pdLevel.some(function(currentValue) {
                 return (pdData.level == currentValue);
@@ -119,8 +179,6 @@
 
         function updateTreeBranch(pdData, id, pdWeight) {
 
-            console.log('pdData:');
-            console.log(pdData);
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
