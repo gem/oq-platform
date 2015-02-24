@@ -3361,9 +3361,14 @@ function taxt_Initiate() {
     taxt_BuildTaxonomy();
 }
 
-function menu_set(id_or_obj) {
-    var menu_items;
-    var submenu_cur = 1;
+var subtab_cur = -1;
+
+function tab_set(id_or_obj) {
+    var tab_items;
+
+    if (subtab_cur == -1) {
+        subtab_cur = 1;
+    }
 
     if (typeof(id_or_obj) == 'object') {
         id = id_or_obj.id;
@@ -3371,55 +3376,58 @@ function menu_set(id_or_obj) {
     else if (typeof(id_or_obj) == 'number') {
         taxt_Initiate();
 
-        id = "menu_id-" + id_or_obj;
+        id = "tab_id-" + id_or_obj;
         if (arguments.length > 1) {
-            submenu_cur = arguments[1];
+            subtab_cur = arguments[1];
         }
     }
 
-    menu_items = $('[id|="menu_id"]');
+    tab_items = $('[id|="tab_id"]');
 
-    for (i = 0 ; i < menu_items.length ; i++) {
-        if (menu_items[i].id == id) {
-            $(menu_items[i]).removeClass("vuln_menu");
-            $(menu_items[i]).addClass("vuln_menu_selected");
+    for (i = 0 ; i < tab_items.length ; i++) {
+        if (tab_items[i].id == id) {
+            $(tab_items[i]).removeClass("tab");
+            $(tab_items[i]).addClass("tab_selected");
             $("#main_content-" + (i+1)).css('display', '');
         }
         else {
-            $(menu_items[i]).removeClass("vuln_menu_selected");
-            $(menu_items[i]).addClass("vuln_menu");
+            $(tab_items[i]).removeClass("tab_selected");
+            $(tab_items[i]).addClass("tab");
             $("#main_content-" + (i+1)).css('display', 'none');
         }
     }
-    if (typeof(id_or_obj) == 'number' && id == "menu_id-1") {
-        sub1menu_set(submenu_cur);
+
+    if (id == "tab_id-1") {
+        sub1tab_set(subtab_cur);
     }
 }
 
-function sub1menu_set(id_or_obj) {
-    var menu_items;
+function sub1tab_set(id_or_obj) {
+    var tab_items;
 
     if (typeof(id_or_obj) == 'object') {
         id = id_or_obj.id;
+        subtab_cur = parseInt(id.substring(11));
     }
     else if (typeof(id_or_obj) == 'number') {
-        id = "sub1menu_id-" + id_or_obj;
+        id = "sub1tab_id-" + id_or_obj;
+        subtab_cur = id_or_obj;
     }
 
-    menu_items = $('[id|="sub1menu_id"]');
+    tab_items = $('[id|="sub1tab_id"]');
 
 
-    for (i = 0 ; i < menu_items.length ; i++) {
-        if (menu_items[i].id == id) {
-            $(menu_items[i]).toggleClass("vuln_submenu_first");
-            $(menu_items[i]).removeClass("vuln_submenu");
-            $(menu_items[i]).addClass("vuln_submenu_selected");
-            $(menu_items[i]).toggleClass("vuln_submenu_first");
+    for (i = 0 ; i < tab_items.length ; i++) {
+        if (tab_items[i].id == id) {
+            $(tab_items[i]).toggleClass("subtab_first");
+            $(tab_items[i]).removeClass("subtab");
+            $(tab_items[i]).addClass("subtab_selected");
+            $(tab_items[i]).toggleClass("subtab_first");
             $("#sub1_content-" + (i+1)).css('display', '');
         }
         else {
-            $(menu_items[i]).removeClass("vuln_submenu_selected");
-            $(menu_items[i]).addClass("vuln_submenu");
+            $(tab_items[i]).removeClass("subtab_selected");
+            $(tab_items[i]).addClass("subtab");
             $("#sub1_content-" + (i+1)).css('display', 'none');
         }
     }

@@ -29,8 +29,6 @@ from django.utils.cache import add_never_cache_headers
 from django.utils.text import slugify
 from django.contrib.messages.api import get_messages
 
-from openquakeplatform.vulnerability.models import TA, TYPES_OF_ASSESSMENT
-
 def populate(s):
     """
 function populate(s) {
@@ -85,38 +83,37 @@ for (i = 0 ; i < sar.length ; i++) {
 def index(request, **kwargs):
 
     try:
-        type_of_assessment = int(request.GET.get("type_of_assessment",
-                                                 TA.FRAGILITY))
-        if type_of_assessment not in dict(TYPES_OF_ASSESSMENT):
-            type_of_assessment = TA.FRAGILITY
+        tab_id = int(request.GET.get("tab_id", 1))
+        if tab_id < 1 or tab_id > 4:
+            tab_id = 1
     except ValueError as e:
-        type_of_assessment = TA.FRAGILITY
+        tab_id = 1
 
     desc = [ 'Structural System', 'Building Information', 'Exterior Attributes', 'Roof/Floor/foundation' ]
-    menu_content = ""
+    tab_content = ""
     for i in range(0, len(desc)):
-        menu_content = (menu_content +
-                        '<li id="menu_id-%d" class="vuln_menu%s%s" onclick="menu_set(this);"><span>%s</span></li>' %
-                        (i+1, ("_selected" if i + 1 == type_of_assessment else ""),
-                        (" vuln_menu_first" if i == 0 else ""), desc[i]))
+        tab_content = (tab_content +
+                        '<li id="tab_id-%d" class="tab%s%s" onclick="tab_set(this);"><span>%s</span></li>' %
+                        (i+1, ("_selected" if i + 1 == tab_id else ""),
+                        (" tab_first" if i == 0 else ""), desc[i]))
 
 
 
     sub1desc = ['Direction X', 'Direction Y']
-    sub1menu_content = ""
+    sub1tab_content = ""
     for i in range(0, len(sub1desc)):
-        sub1menu_content = (sub1menu_content +
-                            '<li id="sub1menu_id-%d" class="vuln_submenu%s%s" onclick="sub1menu_set(this);"><span>%s</span></li>' %
+        sub1tab_content = (sub1tab_content +
+                            '<li id="sub1tab_id-%d" class="subtab%s%s" onclick="sub1tab_set(this);"><span>%s</span></li>' %
                             (i+1, ("_selected" if i + 1 == 1 else ""),
-                             (" vuln_submenu_first" if i == 0 else ""), sub1desc[i]))
+                             (" subtab_first" if i == 0 else ""), sub1desc[i]))
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
     return render_to_response("taxtweb/index.html",
                               dict(is_popup=is_popup,
-                                   type_of_assessment=type_of_assessment,
-                                   menu_content=menu_content,
-                                   sub1menu_content=sub1menu_content,
+                                   tab_id=tab_id,
+                                   tab_content=tab_content,
+                                   sub1tab_content=sub1tab_content,
                                    ),
                               context_instance=RequestContext(request))
 

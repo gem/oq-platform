@@ -53,7 +53,7 @@ table.doubletable tr td div table tr td {
     padding: 0px; margin: 0px;
 }
 
-ul.vuln_menu
+ul.tab
 {
     margin:0;
 height: 30px;
@@ -64,7 +64,7 @@ padding-left: 20px;
     border-bottom: 1px solid #1b75a7;
 }
 
-li.vuln_menu {
+li.tab {
     margin: 0px;
     display: inline-block;
 height: 29px;
@@ -72,7 +72,7 @@ height: 29px;
     color: #1B75A7;
 }
 
-li.vuln_menu_selected {
+li.tab_selected {
     margin: 0px;
     display: inline-block;
     height: 29px;
@@ -82,7 +82,7 @@ li.vuln_menu_selected {
     border-bottom: 1px solid #f8f8f8;
 }
 
-ul.vuln_menu li span {
+ul.tab li span {
     white-space:nowrap;
     border: 0px solid green;
     height: 29px;
@@ -92,9 +92,9 @@ ul.vuln_menu li span {
 }
 
 
-/* SUBMENU */
+/* SUBTAB */
 
-ul.vuln_submenu
+ul.subtab
 {
     margin:0;
 height: 30px;
@@ -105,7 +105,7 @@ height: 30px;
     border-bottom: 1px solid #1b75a7;
 }
 
-li.vuln_submenu {
+li.subtab {
     margin: 0px;
     display: inline-block;
 height: 29px;
@@ -113,7 +113,7 @@ height: 29px;
     color: #1B75A7;
 }
 
-li.vuln_submenu_selected {
+li.subtab_selected {
     margin: 0px;
     display: inline-block;
 height: 29px;
@@ -123,7 +123,7 @@ height: 29px;
     border-bottom: 1px solid #f0f0f0;
 }
 
-ul.vuln_submenu li span {
+ul.subtab li span {
     white-space:nowrap;
     border: 0px solid green;
     height: 29px;
@@ -141,7 +141,7 @@ div.main_content div {
     padding-bottom: 8px;
 }
 
-a.vuln_menu:hover {
+a.tab:hover {
     text-decoration:underline;
 }
 
@@ -161,9 +161,8 @@ table.dir_spec td {
 <script src="{{ STATIC_URL }}taxtweb/js/taxtweb.js"></script>
 <script type="text/javascript"><!--
 window.onload = function () {
-    var menu_cur = {{ type_of_assessment }};
-    var sub1menu_cur = 1;
-    menu_set(menu_cur, sub1menu_cur);
+    var tab_cur = {{ tab_id }};
+    tab_set(tab_cur);
     // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
     // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNOX/DY+OF/S+SR+RIV/LWAL+DUC/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
     // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/MR+CBH+RCM+SPBA/LH+DNO/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
@@ -180,14 +179,14 @@ window.onload = function () {
 
 <body>
 <div class="grand_parent">
-    <ul class="vuln_menu">
-        {{ menu_content|safe }}{% if is_popup %}<li style="float: right; background-color: white; color: red; font-weight: bold;" class="vuln_menu" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
+    <ul class="tab">
+        {{ tab_content|safe }}{% if is_popup %}<li style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
     </ul>
     <div id="main_content_parent" style="border-top-width: 0; border-color: #F8F8F8 #1B75A7 #1B75A7; position: relative; width: 800px; height: 600px; /* background-color: #ccccff; blue */">
         <div id="main_content-1" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; margin: 0px;/* background-color: #ffcccc; /*red */">
-            <ul class="vuln_submenu">
-                {{ sub1menu_content|safe }}
-                <li class="vuln_submenu"><span><input type="checkbox" id="DirectionCB">Use same parameters in both directions</span></li>
+            <ul class="subtab">
+                {{ sub1tab_content|safe }}
+                <li class="subtab"><span><input type="checkbox" id="DirectionCB">Use same parameters in both directions</span></li>
             </ul>
 
     <div id="sub1_content-1" style="position: absolute; display: none; width: 798px; background-color: #f0f0f0; border: 1px solid; border-color: #f0f0f0 #f0f0f0 #1b75a7 #f0f0f0;">
