@@ -20,7 +20,7 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
-    var plotElements = ["iri", "svi", "aal"];
+    var plotElements = ["iri", "svi", "ri"];
     var keys = [];
 
     for (var k in iriPcpData) {

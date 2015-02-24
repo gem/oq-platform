@@ -265,7 +265,6 @@
                     return d.source ? d.source.linkColor: d.linkColor;
                 });
 
-
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
 
@@ -317,18 +316,6 @@
                     qt_page.json_updated(pdData);
                 }
             }
-        }
-
-        // Toggle children on click.
-        function click(d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
-            }
-            update(d);
         }
     } //end d3 tree
 
