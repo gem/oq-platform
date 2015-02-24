@@ -57,11 +57,14 @@ IRV - {{block.super}}
 
   <div id="project-def">
     <div id="projectDefDialog" title="Project Definition">
+      <div id="projectDef-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
     </div>
   </div>
-  <div id="iri-chart"></div>
-  <div id="cat-chart"></div>
+  <div id="iri-chart">
+    <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+  </div>
   <!--
+  <div id="cat-chart"></div>
   <div id="primary-tab">
     <div id="primary-limit">
       <p>

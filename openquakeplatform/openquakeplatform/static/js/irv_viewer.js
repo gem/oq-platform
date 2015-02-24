@@ -378,7 +378,6 @@ function processIndicators(layerAttributes, projectDef) {
     //// Scale ////
     ///////////////
 
-    // Scale the iri values
     var sviValueArray = [];
     var scaleSVIvalues = [];
     for (var v in SVI) {
@@ -418,7 +417,6 @@ function processIndicators(layerAttributes, projectDef) {
     //// Scale ////
     ///////////////
 
-    // Scale the iri values
     var riValueArray = [];
     var scaleRIvalues = [];
     for (var vj in RI) {
@@ -481,7 +479,6 @@ function processIndicators(layerAttributes, projectDef) {
     //// Scale ////
     ///////////////
 
-    // Scale the iri values
     var iriValueArray = [];
     var scaleIRIvalues = [];
     for (var vi in IRI) {
@@ -505,6 +502,9 @@ function processIndicators(layerAttributes, projectDef) {
     iriPcpData.push(RI);
     IRI_PCP_Chart(iriPcpData);
 
+    // Hide things untill all the ajax stuff is done
+
+
     ///////////////////////////////////
     //// Compute the IRI Indicator ////
     ///////////////////////////////////
@@ -512,6 +512,8 @@ function processIndicators(layerAttributes, projectDef) {
 } // End processIndicators
 
 var startApp = function() {
+    $('#projectDef-spinner').hide();
+    $('#iri-spinner').hide();
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -577,6 +579,8 @@ var startApp = function() {
     });
 
     $('#svir-project-list').change(function() {
+        $('#projectDef-spinner').show();
+        $('#iri-spinner').show();
         // Get the layer metadata (project def)
         var selectedLayer = document.getElementById('svir-project-list').value;
 
@@ -618,6 +622,9 @@ var startApp = function() {
             success: function(layerAttributes) {
                 projectLayerAttributes = layerAttributes;
                 processIndicators(layerAttributes, sessionProjectDef);
+                $('#projectDef-spinner').hide();
+                $('#iri-spinner').hide();
+                $('#project-definition-svg').show();
             }
         });
     });
