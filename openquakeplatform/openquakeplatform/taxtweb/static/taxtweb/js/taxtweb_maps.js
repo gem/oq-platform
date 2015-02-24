@@ -181,7 +181,7 @@ var date_type = [
                  { id: 'YAPP', desc: 'Approximate date of construction or retrofit' }
                ];
 
-var occupancy = [
+var occu_type = [
                  { id: 'OC99', desc: 'Unknown occupancy type' },
                  { id: 'RES', desc: 'Residential' },
                  { id: 'COM', desc: 'Commercial and public' },
@@ -194,8 +194,8 @@ var occupancy = [
                  { id: 'OCO', desc: 'Other occupancy type' }
                ];
 
-var occupancy_spec_grp = [];
-occupancy_spec_grp[0] = [
+var occu_spec_grp = [];
+occu_spec_grp[0] = [
                     { id: 'RES99', desc: 'Residential, unknown type' },
                     { id: 'RES1', desc: 'Single dwelling' },
                     { id: 'RES2', desc: 'Multi-unit, unknown type' },
@@ -210,7 +210,7 @@ occupancy_spec_grp[0] = [
                     { id: 'RES5', desc: 'Mobile home' },
                     { id: 'RES6', desc: 'Informal housing' }
                   ];
-occupancy_spec_grp[1] = [
+occu_spec_grp[1] = [
                     { id: 'COM99', desc: 'Commercial and public, unknown type' },
                     { id: 'COM1', desc: 'Retail trade' },
                     { id: 'COM2', desc: 'Wholesale trade and storage (warehouse)' },
@@ -224,7 +224,7 @@ occupancy_spec_grp[1] = [
                     { id: 'COM10', desc: 'Airport' },
                     { id: 'COM11', desc: 'Recreation and leisure' }
                   ];
-occupancy_spec_grp[2] = [
+occu_spec_grp[2] = [
                     { id: 'MIX99', desc: 'Mixed, unknown type' },
                     { id: 'MIX1', desc: 'Mostly residential and commercial' },
                     { id: 'MIX2', desc: 'Mostly commercial and residential' },
@@ -233,30 +233,30 @@ occupancy_spec_grp[2] = [
                     { id: 'MIX5', desc: 'Mostly industrial and commercial' },
                     { id: 'MIX6', desc: 'Mostly industrial and residential' }
                   ];
-occupancy_spec_grp[3] = [
+occu_spec_grp[3] = [
                     { id: 'IND99', desc: 'Industrial, unknown type' },
                     { id: 'IND1', desc: 'Heavy industrial' },
                     { id: 'IND2', desc: 'Light industrial' }
                   ];
-occupancy_spec_grp[4] = [
+occu_spec_grp[4] = [
                     { id: 'AGR99', desc: 'Agriculture, unknown type' },
                     { id: 'AGR1', desc: 'Produce storage' },
                     { id: 'AGR2', desc: 'Animal shelter' },
                     { id: 'AGR3', desc: 'Agricultural processing' }
                   ];
-occupancy_spec_grp[5] = [
+occu_spec_grp[5] = [
                     { id: 'ASS99', desc: 'Assembly, unknown type' },
                     { id: 'ASS1', desc: 'Religious gathering' },
                     { id: 'ASS2', desc: 'Arena' },
                     { id: 'ASS3', desc: 'Cinema or concert hall' },
                     { id: 'ASS4', desc: 'Other gatherings' }
                   ];
-occupancy_spec_grp[6] = [
+occu_spec_grp[6] = [
                     { id: 'GOV99', desc: 'Government, unknown type' },
                     { id: 'GOV1', desc: 'Government, general services' },
                     { id: 'GOV2', desc: 'Government, emergency response' }
                   ];
-occupancy_spec_grp[7] = [
+occu_spec_grp[7] = [
                     { id: 'EDU99', desc: 'Education, unknown type' },
                     { id: 'EDU1', desc: 'Pre-school facility' },
                     { id: 'EDU2', desc: 'School' },

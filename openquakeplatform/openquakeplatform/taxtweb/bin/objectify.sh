@@ -216,7 +216,7 @@ echo "               ];"
 
 # date
 echo
-echo "var occupancy = ["
+echo "var occu_type = ["
 comma=""
 for i in $(grep 'OccupancyCB1.push' $fin) ; do
     if [ "$comma" != "" ]; then
@@ -232,7 +232,7 @@ echo "               ];"
 
 # Lateral load-resisting system ductility
 echo
-echo "var occupancy_spec_grp = [];"
+echo "var occu_spec_grp = [];"
 first_grp="true"
 grp=0
 for i in $(egrep 'var OccupancyCB2 = \[\];|OccupancyCB2\.push' $fin ; echo "THE END") ; do
@@ -241,7 +241,7 @@ for i in $(egrep 'var OccupancyCB2 = \[\];|OccupancyCB2\.push' $fin ; echo "THE 
             echo
             echo "                  ];"
         fi
-        echo "occupancy_spec_grp[$grp] = ["
+        echo "occu_spec_grp[$grp] = ["
         first_grp="false"
         comma=""
         grp=$((grp + 1))

@@ -139,16 +139,17 @@ var llrs_duct =
       'LH': llrs_duct_grp[0],
       'LO': llrs_duct_grp[0]
     };
-var occupancy_spec =
+
+var occu_spec =
     { 'OC99': [],
-      'RES': occupancy_spec_grp[0],
-      'COM': occupancy_spec_grp[1],
-      'MIX': occupancy_spec_grp[2],
-      'IND': occupancy_spec_grp[3],
-      'AGR': occupancy_spec_grp[4],
-      'ASS': occupancy_spec_grp[5],
-      'GOV': occupancy_spec_grp[6],
-      'EDU': occupancy_spec_grp[7],
+      'RES': occu_spec_grp[0],
+      'COM': occu_spec_grp[1],
+      'MIX': occu_spec_grp[2],
+      'IND': occu_spec_grp[3],
+      'AGR': occu_spec_grp[4],
+      'ASS': occu_spec_grp[5],
+      'GOV': occu_spec_grp[6],
+      'EDU': occu_spec_grp[7],
       'OCO': []
     };
 
@@ -3443,7 +3444,8 @@ function populate(s) {
     $('#DirectionCB').prop('checked', false);
 
     //
-    //  DIRECTION
+    //  Direction
+    //
     dirx = sar[0];
     diry = sar[3];
     if (dirx == "DX+D99" && diry == "DY+D99") {
@@ -3460,7 +3462,8 @@ function populate(s) {
     }
 
     //
-    //  MATERIAL
+    //  Material
+    //
     var mat_ddown = [ '#MaterialCB11', '#MaterialCB12' ];
     var mat_selec = [ taxt_MaterialCB11Select, taxt_MaterialCB12Select ];
     var mat_tecn_ddown = [ '#MaterialCB21', '#MaterialCB22' ];
@@ -3504,7 +3507,7 @@ function populate(s) {
         for (sub_i = 1 ; sub_i < mat.length ; sub_i++) {
             mat_atom = mat[sub_i];
 
-            // MATERIAL TECHNOLOGY
+            // Material technology
             for (i = 0 ; i < mat_tech[mat_id].length ;  i++) {
                 if (mat_atom == mat_tech[mat_id][i].id) {
                     $(mat_tecn_ddown[direct]).val(i);
@@ -3515,7 +3518,7 @@ function populate(s) {
             if (i < mat_tech[mat_id].length)
                 continue;
 
-            // MATERIAL TECHNOLOGY ADDED
+            // Material technology added
             for (i = 0 ; i < mat_tead[mat_id].length ;  i++) {
                 if (mat_atom == mat_tead[mat_id][i].id) {
                     $(mat_tead_ddown[direct]).val(i);
@@ -3526,7 +3529,7 @@ function populate(s) {
             if (i < mat_tead[mat_id].length)
                 continue;
 
-            // MATERIAL PROPERTIES
+            // Material properties
             for (i = 0 ; i < mat_prop[mat_id].length ;  i++) {
                 if (mat_atom == mat_prop[mat_id][i].id) {
                     $(mat_prop_ddown[direct]).val(i);
@@ -3537,11 +3540,13 @@ function populate(s) {
             if (i < mat_prop[mat_id].length)
                 continue;
 
-            alert("Not identified '" + mat_atom + "' as specification of '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
+            alert("Not identified '" + mat_atom + "' as specification of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
             return (false);
         }
 
-        // LATERAL LOAD RESISTING SYSTEM: TYPE
+        //
+        //  Lateral load resisting system: type
+        //
         for (i = 0 ; i < llrs_type[mat_id].length ;  i++) {
             llrs_id = llrs_type[mat_id][i].id;
 
@@ -3552,14 +3557,14 @@ function populate(s) {
             }
         }
         if (i == llrs_type[mat_id].length) {
-            alert("Not identified '" + llrs[0] + "' as LLRS of '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
+            alert("Not identified '" + llrs[0] + "' as LLRS of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
         }
 
 
         for (sub_i = 1 ; sub_i < llrs.length ; sub_i++) {
             llrs_atom = llrs[sub_i];
 
-            // DUCTILITY
+            // Ductility
             for (i = 0 ; i < llrs_duct[llrs_id].length ;  i++) {
                 if (llrs_atom == llrs_duct[llrs_id][i].id) {
                     $(llrs_duct_ddown[direct]).val(i);
@@ -3570,7 +3575,7 @@ function populate(s) {
             if (i < llrs_duct[llrs_id].length)
                 continue;
 
-            alert("Not identified '" + llrs_atom + "' as specification of '" + llrs[0] + "' LLRS of '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
+            alert("Not identified '" + llrs_atom + "' as specification of '" + llrs[0] + "' LLRS of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
             return (false);
         }
     }
@@ -3587,7 +3592,7 @@ function populate(s) {
 
 
     //
-    //  height
+    //  Height
     //
     var h, h_items, h_label, h_id, h_vals;
 
@@ -3640,12 +3645,11 @@ function populate(s) {
         }
     }
 
-    // Number of storey below ground
     for (sub_i = 1 ; sub_i < h.length ; sub_i++) {
         h_items = h[sub_i].split(':');
         h_label = h_items[0];
 
-        // if storey below
+        // Number of storey below ground
         if (h_label.substring(0,2) == "HB") {
             if (sub_i != 1) {
                 alert("Height specification HBxx not in position 1.");
@@ -3688,7 +3692,7 @@ function populate(s) {
                 taxt_HeightCB1Select(null);
             }
         }
-        // if above grade
+        // Above grade
         else if (h_label.substring(0,2) == "HF") {
             if (sub_i != 2) {
                 alert("Height specification HFxx not in position 2.");
@@ -3731,7 +3735,7 @@ function populate(s) {
                 taxt_HeightCB3Select(null);
             }
         }
-        // if slope
+        // Slope
         else if (h_label.substring(0,2) == "HD") {
             if (sub_i != 3) {
                 alert("Height specification HDxx not in position 3.");
@@ -3770,4 +3774,97 @@ function populate(s) {
             return (false);
         }
     }
+
+    //
+    //  Date
+    //
+    var date, date_items, date_label, date_id, date_vals;
+
+    date = sar[7].split('+');
+    date_items = date[0].split(':');
+    date_label = date_items[0];
+
+    if (date.length != 1) {
+        alert("Date not defined properly.");
+        return (false);
+    }
+
+    for (i = 0 ; i < date_type.length ; i++) {
+        if (date_label == date_type[i].id) {
+            date_id = date_label;
+            $('#DateCB1').val(i);
+            taxt_DateCB1Select(null);
+            break;
+        }
+    }
+    if (i == date_type.length) {
+        alert("Not identified '" + date_label + "' as specification of date.");
+        return (false);
+    }
+    if (date_id != "Y99") {
+        if (date_items.length < 2) {
+            alert("Date: no values defined.");
+            return (false);
+        }
+
+        date_vals = date_items[1].split(',');
+        if (date_id == 'YBET') {
+            if (date_vals.length != 2) {
+                alert("Date: '" + date_id + "' type requires exactly 2 values, " + date_vals.length + " are given.");
+                return (false);
+            }
+            $('#DateE1').val(date_vals[0]);
+            $('#DateE2').val(date_vals[1]);
+            taxt_HeightCB1Select(null);
+        }
+        else if (date_id == 'YEX' || date_id == 'YPRE' || date_id == 'YAPP') {
+            if (date_vals.length != 1) {
+                alert("Date: '" + date_id + "' type requires exactly 1 value, " + date_vals.length + " are given.");
+                return (false);
+            }
+            $('#DateE1').val(date_vals[0]);
+            taxt_HeightCB1Select(null);
+        }
+    }
+
+    //
+    //  Occupancy
+    //
+    var occu, occu_items, occu_label, occu_id, occu_vals, occu_atom;
+    occu = sar[8].split('+');
+    occu_label = occu[0];
+
+    if (occu.length != 2) {
+        alert("Occupancy not defined properly.");
+        return (false);
+    }
+
+    for (i = 0 ; i < occu_type.length ; i++) {
+        if (occu_label == occu_type[i].id) {
+            occu_id = occu_label;
+            $('#OccupancyCB1').val(i);
+            taxt_OccupancyCB1Select(null);
+            break;
+        }
+    }
+    if (i == occu_type.length) {
+        alert("Not identified '" + occu_label + "' as specification of occupancy.");
+        return (false);
+    }
+
+    // Occupancy specification
+    occu_atom = occu[1];
+    for (i = 0 ; i < occu_spec[occu_id].length ;  i++) {
+        if (occu_atom == occu_spec[occu_id][i].id) {
+            $('#OccupancyCB2').val(i);
+            taxt_OccupancyCB2Select(null);
+            break;
+        }
+    }
+    if (i == occu_spec[occu_id].length) {
+        alert("Not identified '" + occu_atom + "' as specification of '" + occu_id + "' occupancy.");
+        return (false);
+    }
+
+
 }
