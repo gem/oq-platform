@@ -172,3 +172,94 @@ var h_slope = [
                     { id: 'HD99', desc: 'Unknown slope' },
                     { id: 'HD', desc: 'Slope of the ground' }
                   ];
+
+var date_type = [
+                 { id: 'Y99', desc: 'Year unknown' },
+                 { id: 'YEX', desc: 'Exact date of construction or retrofit' },
+                 { id: 'YBET', desc: 'Bounds for the date of construction or retrofit' },
+                 { id: 'YPRE', desc: 'Latest possible date of construction or retrofit' },
+                 { id: 'YAPP', desc: 'Approximate date of construction or retrofit' }
+               ];
+
+var occupancy = [
+                 { id: 'OC99', desc: 'Unknown occupancy type' },
+                 { id: 'RES', desc: 'Residential' },
+                 { id: 'COM', desc: 'Commercial and public' },
+                 { id: 'MIX', desc: 'Mixed use' },
+                 { id: 'IND', desc: 'Industrial' },
+                 { id: 'AGR', desc: 'Agriculture' },
+                 { id: 'ASS', desc: 'Assembly' },
+                 { id: 'GOV', desc: 'Government' },
+                 { id: 'EDU', desc: 'Education' },
+                 { id: 'OCO', desc: 'Other occupancy type' }
+               ];
+
+var occupancy_spec_grp = [];
+occupancy_spec_grp[0] = [
+                    { id: 'RES99', desc: 'Residential, unknown type' },
+                    { id: 'RES1', desc: 'Single dwelling' },
+                    { id: 'RES2', desc: 'Multi-unit, unknown type' },
+                    { id: 'RES2A', desc: '2 Units (Duplex)' },
+                    { id: 'RES2B', desc: '3-4 Units' },
+                    { id: 'RES2C', desc: '5-9 Units' },
+                    { id: 'RES2D', desc: '10-19 Units' },
+                    { id: 'RES2E', desc: '20-49 Units' },
+                    { id: 'RES2F', desc: '50+ Units' },
+                    { id: 'RES3', desc: 'Temporary lodging' },
+                    { id: 'RES4', desc: 'Institutional housing' },
+                    { id: 'RES5', desc: 'Mobile home' },
+                    { id: 'RES6', desc: 'Informal housing' }
+                  ];
+occupancy_spec_grp[1] = [
+                    { id: 'COM99', desc: 'Commercial and public, unknown type' },
+                    { id: 'COM1', desc: 'Retail trade' },
+                    { id: 'COM2', desc: 'Wholesale trade and storage (warehouse)' },
+                    { id: 'COM3', desc: 'Offices, professional/technical services' },
+                    { id: 'COM4', desc: 'Hospital/medical clinic' },
+                    { id: 'COM5', desc: 'Entertainment' },
+                    { id: 'COM6', desc: 'Public building' },
+                    { id: 'COM7', desc: 'Covered parking garage' },
+                    { id: 'COM8', desc: 'Bus station' },
+                    { id: 'COM9', desc: 'Railway station' },
+                    { id: 'COM10', desc: 'Airport' },
+                    { id: 'COM11', desc: 'Recreation and leisure' }
+                  ];
+occupancy_spec_grp[2] = [
+                    { id: 'MIX99', desc: 'Mixed, unknown type' },
+                    { id: 'MIX1', desc: 'Mostly residential and commercial' },
+                    { id: 'MIX2', desc: 'Mostly commercial and residential' },
+                    { id: 'MIX3', desc: 'Mostly commercial and industrial' },
+                    { id: 'MIX4', desc: 'Mostly residential and industrial' },
+                    { id: 'MIX5', desc: 'Mostly industrial and commercial' },
+                    { id: 'MIX6', desc: 'Mostly industrial and residential' }
+                  ];
+occupancy_spec_grp[3] = [
+                    { id: 'IND99', desc: 'Industrial, unknown type' },
+                    { id: 'IND1', desc: 'Heavy industrial' },
+                    { id: 'IND2', desc: 'Light industrial' }
+                  ];
+occupancy_spec_grp[4] = [
+                    { id: 'AGR99', desc: 'Agriculture, unknown type' },
+                    { id: 'AGR1', desc: 'Produce storage' },
+                    { id: 'AGR2', desc: 'Animal shelter' },
+                    { id: 'AGR3', desc: 'Agricultural processing' }
+                  ];
+occupancy_spec_grp[5] = [
+                    { id: 'ASS99', desc: 'Assembly, unknown type' },
+                    { id: 'ASS1', desc: 'Religious gathering' },
+                    { id: 'ASS2', desc: 'Arena' },
+                    { id: 'ASS3', desc: 'Cinema or concert hall' },
+                    { id: 'ASS4', desc: 'Other gatherings' }
+                  ];
+occupancy_spec_grp[6] = [
+                    { id: 'GOV99', desc: 'Government, unknown type' },
+                    { id: 'GOV1', desc: 'Government, general services' },
+                    { id: 'GOV2', desc: 'Government, emergency response' }
+                  ];
+occupancy_spec_grp[7] = [
+                    { id: 'EDU99', desc: 'Education, unknown type' },
+                    { id: 'EDU1', desc: 'Pre-school facility' },
+                    { id: 'EDU2', desc: 'School' },
+                    { id: 'EDU3', desc: 'College/university, offices and/or classrooms' },
+                    { id: 'EDU4', desc: 'College/university, research facilities and/or labs' }
+                  ];

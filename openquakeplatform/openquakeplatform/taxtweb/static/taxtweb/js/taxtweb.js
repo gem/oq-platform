@@ -1,105 +1,156 @@
-var mat_tech = { 'MAT99': [],
-                 'C99': mat_tech_grp[0],
+  //0 - Material type
+  //1 - Material technology
+  //2 - Material properties
+  //3 - Type of lateral system
+  //4 - System ductility
+  //5 - Material type
+  //6 - Material technology
+  //7 - Material properties
+  //8 - Type of lateral system
+  //9 - System ductility
+  //10- Date of construction
+  //11- Height above the ground
+  //12- Height below the ground
+  //13- Height of grade
+  //14- Slope of the ground
+  //15- Occupancy type
+  //16- Occupancy description
+  //17- Position
+  //18- Plan
+  //19- Type of irregularity
+  //20- Plan irregularity(primary)
+  //21- Plan irregularity(secondary)
+  //22- Vertical irregularity(primary)
+  //23- Vertical irregularity(secondary)
+  //24- Material of exterior walls
+  //25- Roof shape
+  //26- Roof covering
+  //27- Roof system material
+  //28- Roof system type
+  //29- Roof connections
+  //30- Floor system material
+  //31- Floor system type
+  //32- Floor connections
+  //33 - Foundation
 
-                 'CU':  mat_tech_grp[1],
+var mat_tech =
+    { 'MAT99': [],
+      'C99': mat_tech_grp[0],
 
-                 'CR':  mat_tech_grp[0],
-                 'SRC': mat_tech_grp[0],
+      'CU':  mat_tech_grp[1],
 
-                 'S':   mat_tech_grp[2],
+      'CR':  mat_tech_grp[0],
+      'SRC': mat_tech_grp[0],
 
-                 'ME':  mat_tech_grp[3],
+      'S':   mat_tech_grp[2],
 
-                 'M99': mat_tech_grp[4],
-                 'MUR': mat_tech_grp[4],
-                 'MCF': mat_tech_grp[4],
-                 'MR':  mat_tech_grp[4],
+      'ME':  mat_tech_grp[3],
 
-                 'E99': mat_tech_grp[5],
-                 'EU':  mat_tech_grp[5],
-                 'ER':  mat_tech_grp[5],
+      'M99': mat_tech_grp[4],
+      'MUR': mat_tech_grp[4],
+      'MCF': mat_tech_grp[4],
+      'MR':  mat_tech_grp[4],
 
-                 'W':   mat_tech_grp[6],
+      'E99': mat_tech_grp[5],
+      'EU':  mat_tech_grp[5],
+      'ER':  mat_tech_grp[5],
 
-                 'MATO': []
-               };
+      'W':   mat_tech_grp[6],
 
-var mat_tead = { 'MAT99': [],
-                 'C99':   [],
-                 'CU':    [],
-                 'CR':    [],
-                 'SRC':   [],
-                 'S':     [],
-                 'ME':    [],
-                 'M99':   [],
-                 'MUR':   [],
-                 'MCF':   [],
-                 'MR':    mat_tead_grp[0],
-                 'E99':   [],
-                 'EU':    [],
-                 'ER':    [],
-                 'W':     [],
-                 'MATO':  []
-               };
+      'MATO': []
+    };
 
-var mat_prop = { 'MAT99': [],
-                 'C99':   [],
+var mat_tead =
+    { 'MAT99': [],
+      'C99':   [],
+      'CU':    [],
+      'CR':    [],
+      'SRC':   [],
+      'S':     [],
+      'ME':    [],
+      'M99':   [],
+      'MUR':   [],
+      'MCF':   [],
+      'MR':    mat_tead_grp[0],
+      'E99':   [],
+      'EU':    [],
+      'ER':    [],
+      'W':     [],
+      'MATO':  []
+    };
 
-                 'CU':    [],
+var mat_prop =
+    { 'MAT99': [],
+      'C99':   [],
 
-                 'CR':    [],
-                 'SRC':   [],
+      'CU':    [],
 
-                 'S':   mat_prop_grp[0],
+      'CR':    [],
+      'SRC':   [],
 
-                 'ME':    [],
+      'S':   mat_prop_grp[0],
 
-                 'M99': mat_prop_grp[1],
-                 'MUR': mat_prop_grp[1],
-                 'MCF': mat_prop_grp[1],
-                 'MR':  mat_prop_grp[1],
+      'ME':    [],
 
-                 'E99':  [],
-                 'EU':   [],
-                 'ER':   [],
+      'M99': mat_prop_grp[1],
+      'MUR': mat_prop_grp[1],
+      'MCF': mat_prop_grp[1],
+      'MR':  mat_prop_grp[1],
 
-                 'W':    [],
+      'E99':  [],
+      'EU':   [],
+      'ER':   [],
 
-                 'MATO': []
-               };
+      'W':    [],
 
-var llrs_type = { 'MAT99':llrs_type_grp[2],
-                  'C99':  llrs_type_grp[2],
-                  'CU':   llrs_type_grp[2],
-                  'CR':   llrs_type_grp[2],
-                  'SRC':  llrs_type_grp[2],
-                  'S':    llrs_type_grp[2],
-                  'ME':   llrs_type_grp[2],
-                  'M99':  llrs_type_grp[1],
-                  'MUR':  llrs_type_grp[1],
-                  'MCF':  llrs_type_grp[1],
-                  'MR':   llrs_type_grp[1],
-                  'E99':  llrs_type_grp[0],
-                  'EU':   llrs_type_grp[0],
-                  'ER':   llrs_type_grp[0],
-                  'W':    llrs_type_grp[1],
-                  'MATO': llrs_type_grp[2]
-                };
+      'MATO': []
+    };
 
-var llrs_duct = { 'L99': [],
-                  'LN': [],
-                  'LFM': llrs_duct_grp[0],
-                  'LINF': llrs_duct_grp[0],
-                  'LFBR': llrs_duct_grp[0],
-                  'LPB': llrs_duct_grp[0],
-                  'LWAL': llrs_duct_grp[0],
-                  'LDUAL': llrs_duct_grp[0],
-                  'LFLS': llrs_duct_grp[0],
-                  'LFLSINF': llrs_duct_grp[0],
-                  'LH': llrs_duct_grp[0],
-                  'LO': llrs_duct_grp[0]
-                };
+var llrs_type =
+    { 'MAT99':llrs_type_grp[2],
+      'C99':  llrs_type_grp[2],
+      'CU':   llrs_type_grp[2],
+      'CR':   llrs_type_grp[2],
+      'SRC':  llrs_type_grp[2],
+      'S':    llrs_type_grp[2],
+      'ME':   llrs_type_grp[2],
+      'M99':  llrs_type_grp[1],
+      'MUR':  llrs_type_grp[1],
+      'MCF':  llrs_type_grp[1],
+      'MR':   llrs_type_grp[1],
+      'E99':  llrs_type_grp[0],
+      'EU':   llrs_type_grp[0],
+      'ER':   llrs_type_grp[0],
+      'W':    llrs_type_grp[1],
+      'MATO': llrs_type_grp[2]
+    };
 
+var llrs_duct =
+    { 'L99': [],
+      'LN': [],
+      'LFM': llrs_duct_grp[0],
+      'LINF': llrs_duct_grp[0],
+      'LFBR': llrs_duct_grp[0],
+      'LPB': llrs_duct_grp[0],
+      'LWAL': llrs_duct_grp[0],
+      'LDUAL': llrs_duct_grp[0],
+      'LFLS': llrs_duct_grp[0],
+      'LFLSINF': llrs_duct_grp[0],
+      'LH': llrs_duct_grp[0],
+      'LO': llrs_duct_grp[0]
+    };
+var occupancy_spec =
+    { 'OC99': [],
+      'RES': occupancy_spec_grp[0],
+      'COM': occupancy_spec_grp[1],
+      'MIX': occupancy_spec_grp[2],
+      'IND': occupancy_spec_grp[3],
+      'AGR': occupancy_spec_grp[4],
+      'ASS': occupancy_spec_grp[5],
+      'GOV': occupancy_spec_grp[6],
+      'EDU': occupancy_spec_grp[7],
+      'OCO': []
+    };
 
 
 function populate_form()
@@ -639,7 +690,6 @@ function taxt_ValidateDate() // Ok
 
 function taxt_ValidateOccupancy() // Ok
 {
-    var OccupancyCB2 = [];
 
     $('#OccupancyCB2').empty();
 
@@ -647,86 +697,94 @@ function taxt_ValidateOccupancy() // Ok
         $('#OccupancyCB2').prop("disabled", true);
     }
     else if ($('#OccupancyCB1').val() == 1) {
-        OccupancyCB2.push('Residential, unknown type');
-        OccupancyCB2.push('Single dwelling');
-        OccupancyCB2.push('Multi-unit, unknown type');
-        OccupancyCB2.push('2 Units (Duplex)');
-        OccupancyCB2.push('3-4 Units');
-        OccupancyCB2.push('5-9 Units');
-        OccupancyCB2.push('10-19 Units');
-        OccupancyCB2.push('20-49 Units');
-        OccupancyCB2.push('50+ Units');
-        OccupancyCB2.push('Temporary lodging');
-        OccupancyCB2.push('Institutional housing');
-        OccupancyCB2.push('Mobile home');
-        OccupancyCB2.push('Informal housing');
+        var OccupancyCB2 = [];
+        /* RES99  */ OccupancyCB2.push('Residential, unknown type');
+        /* RES1   */ OccupancyCB2.push('Single dwelling');
+        /* RES2   */ OccupancyCB2.push('Multi-unit, unknown type');
+        /* RES2A  */ OccupancyCB2.push('2 Units (Duplex)');
+        /* RES2B  */ OccupancyCB2.push('3-4 Units');
+        /* RES2C  */ OccupancyCB2.push('5-9 Units');
+        /* RES2D  */ OccupancyCB2.push('10-19 Units');
+        /* RES2E  */ OccupancyCB2.push('20-49 Units');
+        /* RES2F  */ OccupancyCB2.push('50+ Units');
+        /* RES3   */ OccupancyCB2.push('Temporary lodging');
+        /* RES4   */ OccupancyCB2.push('Institutional housing');
+        /* RES5   */ OccupancyCB2.push('Mobile home');
+        /* RES6   */ OccupancyCB2.push('Informal housing');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 2) {
-        OccupancyCB2.push('Commercial and public, unknown type');
-        OccupancyCB2.push('Retail trade');
-        OccupancyCB2.push('Wholesale trade and storage (warehouse)');
-        OccupancyCB2.push('Offices, professional/technical services');
-        OccupancyCB2.push('Hospital/medical clinic');
-        OccupancyCB2.push('Entertainment');
-        OccupancyCB2.push('Public building');
-        OccupancyCB2.push('Covered parking garage');
-        OccupancyCB2.push('Bus station');
-        OccupancyCB2.push('Railway station');
-        OccupancyCB2.push('Airport');
-        OccupancyCB2.push('Recreation and leisure');
+        var OccupancyCB2 = [];
+        /* COM99  */ OccupancyCB2.push('Commercial and public, unknown type');
+        /* COM1   */ OccupancyCB2.push('Retail trade');
+        /* COM2   */ OccupancyCB2.push('Wholesale trade and storage (warehouse)');
+        /* COM3   */ OccupancyCB2.push('Offices, professional/technical services');
+        /* COM4   */ OccupancyCB2.push('Hospital/medical clinic');
+        /* COM5   */ OccupancyCB2.push('Entertainment');
+        /* COM6   */ OccupancyCB2.push('Public building');
+        /* COM7   */ OccupancyCB2.push('Covered parking garage');
+        /* COM8   */ OccupancyCB2.push('Bus station');
+        /* COM9   */ OccupancyCB2.push('Railway station');
+        /* COM10  */ OccupancyCB2.push('Airport');
+        /* COM11  */ OccupancyCB2.push('Recreation and leisure');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 3) {
-        OccupancyCB2.push('Mixed, unknown type');
-        OccupancyCB2.push('Mostly residential and commercial');
-        OccupancyCB2.push('Mostly commercial and residential');
-        OccupancyCB2.push('Mostly commercial and industrial');
-        OccupancyCB2.push('Mostly residential and industrial');
-        OccupancyCB2.push('Mostly industrial and commercial');
-        OccupancyCB2.push('Mostly industrial and residential');
+        var OccupancyCB2 = [];
+        /* MIX99  */ OccupancyCB2.push('Mixed, unknown type');
+        /* MIX1   */ OccupancyCB2.push('Mostly residential and commercial');
+        /* MIX2   */ OccupancyCB2.push('Mostly commercial and residential');
+        /* MIX3   */ OccupancyCB2.push('Mostly commercial and industrial');
+        /* MIX4   */ OccupancyCB2.push('Mostly residential and industrial');
+        /* MIX5   */ OccupancyCB2.push('Mostly industrial and commercial');
+        /* MIX6   */ OccupancyCB2.push('Mostly industrial and residential');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 4) {
-        OccupancyCB2.push('Industrial, unknown type');
-        OccupancyCB2.push('Heavy industrial');
-        OccupancyCB2.push('Light industrial');
+        var OccupancyCB2 = [];
+        /* IND99  */ OccupancyCB2.push('Industrial, unknown type');
+        /* IND1   */ OccupancyCB2.push('Heavy industrial');
+        /* IND2   */ OccupancyCB2.push('Light industrial');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 5) {
-        OccupancyCB2.push('Agriculture, unknown type');
-        OccupancyCB2.push('Produce storage');
-        OccupancyCB2.push('Animal shelter');
-        OccupancyCB2.push('Agricultural processing');
+        var OccupancyCB2 = [];
+        /* AGR99  */ OccupancyCB2.push('Agriculture, unknown type');
+        /* AGR1   */ OccupancyCB2.push('Produce storage');
+        /* AGR2   */ OccupancyCB2.push('Animal shelter');
+        /* AGR3   */ OccupancyCB2.push('Agricultural processing');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 6) {
-        OccupancyCB2.push('Assembly, unknown type');
-        OccupancyCB2.push('Religious gathering');
-        OccupancyCB2.push('Arena');
-        OccupancyCB2.push('Cinema or concert hall');
-        OccupancyCB2.push('Other gatherings');
+        var OccupancyCB2 = [];
+        /* ASS99  */ OccupancyCB2.push('Assembly, unknown type');
+        /* ASS1   */ OccupancyCB2.push('Religious gathering');
+        /* ASS2   */ OccupancyCB2.push('Arena');
+        /* ASS3   */ OccupancyCB2.push('Cinema or concert hall');
+        /* ASS4   */ OccupancyCB2.push('Other gatherings');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 7) {
-        OccupancyCB2.push('Government, unknown type');
-        OccupancyCB2.push('Government, general services');
-        OccupancyCB2.push('Government, emergency response');
+        var OccupancyCB2 = [];
+        /* GOV99  */ OccupancyCB2.push('Government, unknown type');
+        /* GOV1   */ OccupancyCB2.push('Government, general services');
+        /* GOV2   */ OccupancyCB2.push('Government, emergency response');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
     else if ($('#OccupancyCB1').val() == 8) {
-        OccupancyCB2.push('Education, unknown type');
-        OccupancyCB2.push('Pre-school facility');
-        OccupancyCB2.push('School');
-        OccupancyCB2.push('College/university, offices and/or classrooms');
-        OccupancyCB2.push('College/university, research facilities and/or labs');
+        var OccupancyCB2 = [];
+        /* EDU99  */ OccupancyCB2.push('Education, unknown type');
+        /* EDU1   */ OccupancyCB2.push('Pre-school facility');
+        /* EDU2   */ OccupancyCB2.push('School');
+        /* EDU3   */ OccupancyCB2.push('College/university, offices and/or classrooms');
+        /* EDU4   */ OccupancyCB2.push('College/university, research facilities and/or labs');
         select_populate('OccupancyCB2', OccupancyCB2);
         $('#OccupancyCB2').prop("disabled", false);
     }
@@ -2975,40 +3033,6 @@ begin
   +Taxonomy[31]+Taxonomy[32]+'/'+Taxonomy[33];
   resultE.Text:=ResTax;
 
-  //0 - Material type
-  //1 - Material technology
-  //2 - Material properties
-  //3 - Type of lateral system
-  //4 - System ductility
-  //5 - Material type
-  //6 - Material technology
-  //7 - Material properties
-  //8 - Type of lateral system
-  //9 - System ductility
-  //10- Date of construction
-  //11- Height above the ground
-  //12- Height below the ground
-  //13- Height of grade
-  //14- Slope of the ground
-  //15- Occupancy type
-  //16- Occupancy description
-  //17- Position
-  //18- Plan
-  //19- Type of irregularity
-  //20- Plan irregularity(primary)
-  //21- Plan irregularity(secondary)
-  //22- Vertical irregularity(primary)
-  //23- Vertical irregularity(secondary)
-  //24- Material of exterior walls
-  //25- Roof shape
-  //26- Roof covering
-  //27- Roof system material
-  //28- Roof system type
-  //29- Roof connections
-  //30- Floor system material
-  //31- Floor system type
-  //32- Floor connections
-  //33 - Foundation
 
 
 end;
@@ -3116,11 +3140,11 @@ function taxt_Initiate() {
     $('#noStoreysE4').on('change', taxt_HeightCB4Select);
 
     var DateCB1 = [];
-    DateCB1.push('Year unknown');
-    DateCB1.push('Exact date of construction or retrofit');
-    DateCB1.push('Bounds for the date of construction or retrofit');
-    DateCB1.push('Latest possible date of construction or retrofit');
-    DateCB1.push('Approximate date of construction or retrofit');
+    /* Y99  */ DateCB1.push('Year unknown');
+    /* YEX  */ DateCB1.push('Exact date of construction or retrofit');
+    /* YBET */ DateCB1.push('Bounds for the date of construction or retrofit');
+    /* YPRE */ DateCB1.push('Latest possible date of construction or retrofit');
+    /* YAPP */ DateCB1.push('Approximate date of construction or retrofit');
     select_populate('DateCB1', DateCB1);
     $('#DateCB1').val(0);
     $('#DateCB1').on('change', taxt_DateCB1Select);
@@ -3128,16 +3152,16 @@ function taxt_Initiate() {
     $('#DateE2').on('change', taxt_DateE2Change);
 
     var OccupancyCB1 = [];
-    OccupancyCB1.push('Unknown occupancy type');
-    OccupancyCB1.push('Residential');
-    OccupancyCB1.push('Commercial and public');
-    OccupancyCB1.push('Mixed use');
-    OccupancyCB1.push('Industrial');
-    OccupancyCB1.push('Agriculture');
-    OccupancyCB1.push('Assembly');
-    OccupancyCB1.push('Government');
-    OccupancyCB1.push('Education');
-    OccupancyCB1.push('Other occupancy type');
+    /* OC99  */ OccupancyCB1.push('Unknown occupancy type');
+    /* RES   */ OccupancyCB1.push('Residential');
+    /* COM   */ OccupancyCB1.push('Commercial and public');
+    /* MIX   */ OccupancyCB1.push('Mixed use');
+    /* IND   */ OccupancyCB1.push('Industrial');
+    /* AGR   */ OccupancyCB1.push('Agriculture');
+    /* ASS   */ OccupancyCB1.push('Assembly');
+    /* GOV   */ OccupancyCB1.push('Government');
+    /* EDU   */ OccupancyCB1.push('Education');
+    /* OCO   */ OccupancyCB1.push('Other occupancy type');
     select_populate('OccupancyCB1', OccupancyCB1);
     $('#OccupancyCB1').val(0);
     $('#OccupancyCB1').on('change', taxt_OccupancyCB1Select);

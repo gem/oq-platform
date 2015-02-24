@@ -196,3 +196,65 @@ for n in 1 2 3 4; do
         fi
     done
 done
+
+# date
+echo
+echo "var date_type = ["
+comma=""
+for i in $(grep 'DateCB1.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*DateCB1\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+
+# date
+echo
+echo "var occupancy = ["
+comma=""
+for i in $(grep 'OccupancyCB1.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*OccupancyCB1\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# Lateral load-resisting system ductility
+echo
+echo "var occupancy_spec_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var OccupancyCB2 = \[\];|OccupancyCB2\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var OccupancyCB2 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "occupancy_spec_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "OccupancyCB2.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*OccupancyCB2\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
