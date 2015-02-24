@@ -1,37 +1,3 @@
-  //0 - Material type
-  //1 - Material technology
-  //2 - Material properties
-  //3 - Type of lateral system
-  //4 - System ductility
-  //5 - Material type
-  //6 - Material technology
-  //7 - Material properties
-  //8 - Type of lateral system
-  //9 - System ductility
-  //10- Date of construction
-  //11- Height above the ground
-  //12- Height below the ground
-  //13- Height of grade
-  //14- Slope of the ground
-  //15- Occupancy type
-  //16- Occupancy description
-  //17- Position
-  //18- Plan
-  //19- Type of irregularity
-  //20- Plan irregularity(primary)
-  //21- Plan irregularity(secondary)
-  //22- Vertical irregularity(primary)
-  //23- Vertical irregularity(secondary)
-  //24- Material of exterior walls
-  //25- Roof shape
-  //26- Roof covering
-  //27- Roof system material
-  //28- Roof system type
-  //29- Roof connections
-  //30- Floor system material
-  //31- Floor system type
-  //32- Floor connections
-  //33 - Foundation
 
 var mat_tech =
     { 'MAT99': [],
@@ -2335,6 +2301,59 @@ function taxt_BuildTaxonomy()
         direction1 = direction1 + '+PF';
         direction2 = direction2 + '+OF';
     }
+
+    /* 
+       0) direction X
+
+          0 - Material type
+          1 - Material technology
+          2 - Material properties
+
+          3 - Type of lateral system
+          4 - System ductility
+
+          direction Y
+
+          5 - Material type
+          6 - Material technology
+          7 - Material properties
+
+       5) 8 - Type of lateral system
+          9 - System ductility
+
+          11 - Height above the ground
+          12 - Height below the ground
+          13 - Height of grade
+          14 - Slope of the ground
+
+          10 - Date of construction
+
+          15 - Occupancy type
+          16 - Occupancy description
+
+          17 - Position
+          18 - Plan
+
+       10)19 - Type of irregularity
+          20 - Plan irregularity(primary)
+          22 - Vertical irregularity(primary)
+          21 - Plan irregularity(secondary)
+          23 - Vertical irregularity(secondary)
+
+          24- Material of exterior walls
+
+          25 - Roof shape
+          26 - Roof covering
+          27 - Roof system material
+          28 - Roof system type
+          29 - Roof connections
+
+          30 - Floor system material
+          31 - Floor system type
+          32 - Floor connections
+
+          33 - Foundation
+          */
 
     ResTax = direction1 + '/' + Taxonomy[0] + Taxonomy[1] + Taxonomy[2] + '/' + Taxonomy[3] + Taxonomy[4] +
         '/' + direction2 + '/' + Taxonomy[5] + Taxonomy[6] + Taxonomy[7] + '/' + Taxonomy[8] + Taxonomy[9] +
