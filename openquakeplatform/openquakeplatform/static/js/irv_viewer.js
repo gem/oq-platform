@@ -14,84 +14,19 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
-
 var sessionProjectDef = [];
-
-var utfGrid = {};
-var layerControl;
-var selectedPDef;
-var previousCatData = [];
-
-var TILESTREAM_URL = TS_URL + '/v2/';
-var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
-
-// Keep track of the layer names
-var layers;
-
-// Make a list of categorys
-var categoryList = [];
-var layersByCat = {};
-var layerNames = {};
-var layerGrids = [];
-var projectDefinition = {};
-
-// Indicators for the PCP charts
-var primaryIndicator = {};
-var categoryIndicator = {};
-var sessionPrimaryIndicator = {};
-var sessionCategoryIndicator = {};
-var weightedPrimaryIndicator = {};
-var catIndicator = {};
-var weightedCatIndicator = {};
-var scaledCatIndicator = {};
-var aalIndicator = {};
-var scaledAalIndicator = {};
-var weightedAalIndicator = {};
-var sviIndicator = {};
-var scaledSviIndicator = {};
-var weightedSviIndicator = {};
-var iriIndicator = {};
-
-// vars used to set the weights of the project definition json
-var pdData;
-
-// Keep track of project definition elements whos weights have been changes
-var tempWeight = {};
-var tempCatWeight = {};
-var pdTempPrimaryIndicator = [];
-var pdTempPrimaryIndicatorLevels = [];
-var pdTempPILevel = {};
-var pdTempCategoryIndicator = [];
-var parentChildKey = {};
-var sviParentChildKey = {};
-var pdTempCatWeight = {};
-var tempParentChildKey = [];
-var catIndicator = {};
-var tempCatSearchElements = [];
-var tempSviSearchElements = [];
-var tempSviWeight = '';
-var tempAalWeight = '';
-var tempAalValue = '';
-var tempIriWeight = '';
-var municipality = [];
-var outlierBreakPoint = 0.75; // used for the primary indicator outlier
+var region = [];
 var districts = [];
 var projectLayerAttributes;
-
-// Keep track of the utfGrid that has been selected last
-var selectedGrid;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
-
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 function createIndexSimple(la, index) {
-    var ct = 0;
     var indicator = [];
-    var tempString = [];
     // setup the indicator with all the municipalities
     for (var ia = 0; ia < la.length; ia++) {
         var temp = {};
-        temp.municipality = la[ia].properties.COUNTRY_NA;
+        temp.region = la[ia].properties.COUNTRY_NA;
         indicator.push(temp);
         districts.push(la[ia].properties.COUNTRY_NA);
     }
@@ -130,12 +65,12 @@ function createIndex(la, index) {
     // setup the indicator with all the municipalities
     for (var ia = 0; ia < la.length; ia++) {
         var temp = {};
-        temp.municipality = la[ia].properties.COUNTRY_NA;
+        temp.region = la[ia].properties.COUNTRY_NA;
         indicator.push(temp);
     }
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++, ct++) {
-            if (indicator[j].municipality == la[j].properties.COUNTRY_NA) {
+            if (indicator[j].region == la[j].properties.COUNTRY_NA) {
                 var tempName = index[i].name;
                 var tempValue = la[j].properties[tempName];
                 indicator[j][tempName] = tempValue;
@@ -143,18 +78,6 @@ function createIndex(la, index) {
         }
     }
     return indicator;
-}
-
-function generateIndicatorObj(tempVal, indicator) {
-    var tempDist = tempVal[0];
-    var tempField  = tempVal[1];
-    var tempVal = parseFloat(tempVal[2]);
-    // add the info to risk indicator object
-    for (var ie = 0; ie < indicator.length; ie++) {
-        if (indicator[ie].municipality == tempDist) {
-            indicator[ie][tempField] = tempVal;
-        }
-    }
 }
 
 function combindIndicators(nameLookUp, themeObj, JSONthemes) {
@@ -169,7 +92,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     }
     // first create an object with all of the district names
     for (var t = 0; t < themeObj.length; t++) {
-        var temp = themeObj[t]['municipality'];
+        var temp = themeObj[t].region;
         newObj[temp] = 0;
     }
     // get some info aobut the themes
@@ -185,7 +108,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     if (operator == 'Simple sum (ignore weights)') {
         for (var v = 0; v < themeObj.length; v++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v].municipality;
+            var themeObjMunic = themeObj[v].region;
             // sum the themes
             for (var w = 0; w < themekey.length; w++, ct++) {
                 var tempThemeName = themekey[w];
@@ -196,7 +119,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     } else if (operator == 'Weighted sum') {
         for (var v1 = 0; v1 < themeObj.length; v1++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v1].municipality;
+            var themeObjMunic = themeObj[v1].region;
             // sum the themes
             for (var w1 = 0; w1 < themekey.length; w1++, ct++) {
                 var tempThemeName = themekey[w1];
@@ -208,7 +131,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v2].municipality;
+            var themeObjMunic = themeObj[v2].region;
             // sum the themes
             for (var w2 = 0; w2 < themekey.length; w2++, ct++) {
                 var tempThemeName = themekey[w2];
@@ -220,7 +143,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     } else if (operator == 'Simple multiplication (ignore weights)') {
         for (var v3 = 0; v3 < themeObj.length; v3++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v3].municipality;
+            var themeObjMunic = themeObj[v3].region;
             // sum the themes
             for (var w3 = 0; w3 < themekey.length; w3++, ct++) {
                 var tempThemeName = themekey[w3];
@@ -235,7 +158,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     } else if (operator == 'Weighted multiplication') {
         for (var v4 = 0; v4 < themeObj.length; v4++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v4].municipality;
+            var themeObjMunic = themeObj[v4].region;
             // sum the themes
             for (var w4 = 0; w4 < themekey.length; w4++, ct++) {
                 var tempThemeName = themekey[w4];
@@ -252,17 +175,16 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     return newObj;
 }
 
-function processIndicatorsNew(layerAttributes, projectDef) {
+function processIndicators(layerAttributes, projectDef) {
     districts = [];
     sessionProjectDef = projectDef;
 
-    //////////////////////////////////////////////////////
-    //// Create the primary indicator objects  *** NEW ///
-    //////////////////////////////////////////////////////
+    /////////////////////////////////////////////
+    //// Create the primary indicator objects ///
+    /////////////////////////////////////////////
 
     var socialVulnIndex;
     var riskIndex;
-    var iriIndex = projectDef.children;
 
     // Find all the nodes of type social vulnerability and risk index in the project def
     for (var k in projectDef.children) {
@@ -276,7 +198,6 @@ function processIndicatorsNew(layerAttributes, projectDef) {
     // process each Social Vulnerability Index nodes
     // Get all the primary indicators
     var allPrimaryIndicators = [];
-    var allPrimaryIndicatorsObj = {};
     var ct = 0;
 
     for (var i = 0; i < socialVulnIndex.length; i++) {
@@ -308,9 +229,9 @@ function processIndicatorsNew(layerAttributes, projectDef) {
         }
     }
 
-    ////////////////////////////////////////////////
-    //// Compute the Category indicators ** NEW ////
-    ////////////////////////////////////////////////
+    /////////////////////////////////////////
+    //// Compute the Category indicators ////
+    /////////////////////////////////////////
 
     //build the category indicator object
     var catData = [];
@@ -322,7 +243,7 @@ function processIndicatorsNew(layerAttributes, projectDef) {
         var value = parseFloat(temp[2]);
         // add the theme and value to each category data object
         for (var i = 0; i < catData.length; i++) {
-            if (catData[i].municipality == munic) {
+            if (catData[i].region == munic) {
                 catData[i][theme] = value;
             }
         }
@@ -332,7 +253,7 @@ function processIndicatorsNew(layerAttributes, projectDef) {
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
-        temp.municipality = la[s].properties.COUNTRY_NA;
+        temp.region = la[s].properties.COUNTRY_NA;
         catData.push(temp);
     }
 
@@ -347,8 +268,7 @@ function processIndicatorsNew(layerAttributes, projectDef) {
         for (var q = 0; q < tempChildren.length; q++) {
             indicatorChildrenKey.push(tempChildren[q].field);
         }
-        var la = layerAttributes.features;
-        var tempField;
+
         // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++, ct++) {
             var tempSum = 0;
@@ -443,16 +363,16 @@ function processIndicatorsNew(layerAttributes, projectDef) {
     }
 
     var districName = "temp";
-    Category_PCP_Chart(catData, municipality, districName);
+    Category_PCP_Chart(catData, region, districName);
 
-    ////////////////////////////////
-    //// Compute the SVI ** NEW ////
-    ////////////////////////////////
+    /////////////////////////
+    //// Compute the SVI ////
+    /////////////////////////
 
     var SVI = {};
     var sviNameLookUp = 'SVI';
     var sviJSONthemes = socialVulnIndex;
-    var SVI = combindIndicators(sviNameLookUp, catData, sviJSONthemes );
+    SVI = combindIndicators(sviNameLookUp, catData, sviJSONthemes );
 
     ///////////////
     //// Scale ////
@@ -474,25 +394,25 @@ function processIndicatorsNew(layerAttributes, projectDef) {
 
     var tempKeys = Object.keys(SVI);
 
-    for (var i = 0; i < tempKeys.length; i++) {
-        SVI[tempKeys[i]] = scaleSVIvalues[i];
+    for (var ih = 0; ih < tempKeys.length; ih++) {
+        SVI[tempKeys[ih]] = scaleSVIvalues[ih];
     }
 
-    ///////////////////////////////////////
-    //// Compute the risk index ** NEW ////
-    ///////////////////////////////////////
+    ////////////////////////////////
+    //// Compute the risk index ////
+    ////////////////////////////////
 
-    var riskIndicatorObj = createIndexSimple(la, riskIndex);
+    createIndexSimple(la, riskIndex);
     var riskIndicator = createIndex(la, riskIndex);
 
-    ///////////////////////////////////////////
-    //// Compute the Risk Indicator ** NEW ////
-    ///////////////////////////////////////////
+    ////////////////////////////////////
+    //// Compute the Risk Indicator ////
+    ////////////////////////////////////
 
-    var IR = {};
+    var RI = {};
     var nameLookUp = 'RI';
     var riJSONthemes = riskIndex;
-    var RI = combindIndicators(nameLookUp, riskIndicator, riJSONthemes);
+    RI = combindIndicators(nameLookUp, riskIndicator, riJSONthemes);
 
     ///////////////
     //// Scale ////
@@ -501,38 +421,40 @@ function processIndicatorsNew(layerAttributes, projectDef) {
     // Scale the iri values
     var riValueArray = [];
     var scaleRIvalues = [];
-    for (var v in RI) {
-        riValueArray.push(RI[v]);
+    for (var vj in RI) {
+        riValueArray.push(RI[vj]);
     }
     var tempRImin = Math.min.apply(null, riValueArray),
         tempRImax = Math.max.apply(null, riValueArray);
-    for (var j = 0; j < riValueArray.length; j++) {
-        scaleRIvalues.push( (riValueArray[j] - tempRImin) / (tempRImax - tempRImin) );
+    for (var jl = 0; jl < riValueArray.length; jl++) {
+        scaleRIvalues.push( (riValueArray[jl] - tempRImin) / (tempRImax - tempRImin) );
     }
     var tempKeys = Object.keys(RI);
-    for (var i = 0; i < tempKeys.length; i++) {
-        RI[tempKeys[i]] = scaleRIvalues[i];
+    for (var ij = 0; ij < tempKeys.length; ij++) {
+        RI[tempKeys[ij]] = scaleRIvalues[ij];
     }
 
-    //////////////////////////////////////
-    //// Compute the IRI index ** NEW ////
-    //////////////////////////////////////
+    ///////////////////////////////
+    //// Compute the IRI index ////
+    ///////////////////////////////
 
     var IRI = {};
+    var sviWeight;
+    var riWeight;
     var iriOperator = projectDef.operator;
     for (var ik = 0; ik < projectDef.children.length; ik++) {
         if (projectDef.children[ik].name == 'RI') {
-            var riWeight = projectDef.children[ik].weight;
+            riWeight = projectDef.children[ik].weight;
         } else if (projectDef.children[ik].name == 'SVI') {
-            var sviWeight = projectDef.children[ik].weight;
+            sviWeight = projectDef.children[ik].weight;
         }
     }
     if (iriOperator == "Average (ignore weights)") {
         for (var jb in SVI) {
             tempVal = SVI[jb] + RI[jb];
-            IRI[jb] = tempVal;
+            var iriAverage = tempVal / 2;
+            IRI[jb] = iriAverage;
         }
-        var iriAverage = tempVal / 2;
     } else if (iriOperator == "Simple sum (ignore weights)") {
         for (var jb in SVI) {
             tempVal = SVI[jb] + RI[jb];
@@ -562,17 +484,17 @@ function processIndicatorsNew(layerAttributes, projectDef) {
     // Scale the iri values
     var iriValueArray = [];
     var scaleIRIvalues = [];
-    for (var v in IRI) {
-        iriValueArray.push(IRI[v]);
+    for (var vi in IRI) {
+        iriValueArray.push(IRI[vi]);
     }
     var tempIRImin = Math.min.apply(null, iriValueArray),
         tempIRImax = Math.max.apply(null, iriValueArray);
-    for (var j = 0; j < iriValueArray.length; j++) {
-        scaleIRIvalues.push( (iriValueArray[j] - tempIRImin) / (tempIRImax - tempIRImin) );
+    for (var ij = 0; ij < iriValueArray.length; ij++) {
+        scaleIRIvalues.push( (iriValueArray[ij] - tempIRImin) / (tempIRImax - tempIRImin) );
     }
     var tempKeys = Object.keys(IRI);
-    for (var i = 0; i < tempKeys.length; i++) {
-        IRI[tempKeys[i]] = scaleIRIvalues[i];
+    for (var il = 0; il < tempKeys.length; il++) {
+        IRI[tempKeys[il]] = scaleIRIvalues[il];
     }
     IRI.plotElement = "iri"; // Lable within the object
     RI.plotElement = "ri"; // Lable within the object
@@ -583,13 +505,11 @@ function processIndicatorsNew(layerAttributes, projectDef) {
     iriPcpData.push(RI);
     IRI_PCP_Chart(iriPcpData);
 
-    //////////////////////////////////////////
-    //// Compute the IRI Indicator ** NEW ////
-    //////////////////////////////////////////
+    ///////////////////////////////////
+    //// Compute the IRI Indicator ////
+    ///////////////////////////////////
 
-    var IRI = {};
-    var iriNameLookUp = "IRI";
-} // End processIndicatorsNew
+} // End processIndicators
 
 var startApp = function() {
     map = new L.Map('map', {
@@ -599,24 +519,6 @@ var startApp = function() {
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
-
-    layers = {};
-
-    layerControl = L.control.layers(app.baseLayers);
-
-    // Duplicate layer warnning message
-    function showDuplicateMsg() {
-        $('#warning-duplicate').dialog('open');
-    }
-
-    $(document).ready(function() {
-        $('#warning-duplicate').dialog({
-            autoOpen: false,
-            hieght: 300,
-            width: 350,
-            modal: true
-        });
-    });
 
     // Slider
     $(function() {
@@ -633,26 +535,6 @@ var startApp = function() {
         $( '#econ-weight' ).val( $( '#slider-vertical' ).slider( 'value' ) );
     });
 
-    // No Layer to remove warnning message
-    function showRemoveMsg() {
-        $('#warning-no-layer').dialog('open');
-    }
-
-    $('#warning-no-layer').dialog({
-        autoOpen: false,
-        hieght: 300,
-        width: 350,
-        modal: true
-    });
-
-    //  New project selection dialog
-    $('#loadProjectDialog').dialog({
-        autoOpen: false,
-        height: 220,
-        width: 350,
-        modal: true
-    });
-
     $('#map-tools').append('<select id="svir-project-list">'+
             '<option selected disabled>Select Project</option>'+
         '</select>'
@@ -662,30 +544,6 @@ var startApp = function() {
 
     // Set custom map div height
     $('#map').height("300px");
-
-    $('#load-project').button().click(function() {
-        $('#loadProjectDialog').dialog('open');
-    });
-
-    // Remove layer
-    var removeLayer = function () {
-        var e = document.getElementById('layer-list');
-        var layerId = e.options[e.selectedIndex].value;
-
-        // Look up the layer id using the layer name
-        var layerIdArray = layerNames[layerId];
-        var selectedLayer = layerIdArray.toString();
-
-        // Check in the layer is in the map port
-        if (selectedLayer in layers) {
-            layerControl.removeLayer(layers[selectedLayer]);
-            map.removeLayer(layers[selectedLayer]);
-            delete layers[selectedLayer];
-        }
-        else {
-            showRemoveMsg();
-        }
-    };
 
     // Get layers from GeoServer
     $('#svir-project-list').hide();
@@ -711,8 +569,8 @@ var startApp = function() {
                 }
             }
             // Append the layer to the selection dropdown menu
-            for (var i = 0; i < SVIRLayerNames.length; i++) {
-                $('#svir-project-list').append('<option>'+ SVIRLayerNames[i] +'</option>');
+            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+                $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
             }
             $('#svir-project-list').show();
         }
@@ -752,7 +610,6 @@ var startApp = function() {
         });
 
         WMSLayer.addTo(map);
-        layerControl.addOverlay(selectedLayer, selectedLayer);
 
         // Get layer attributes from GeoServer
         $.ajax({
@@ -760,24 +617,9 @@ var startApp = function() {
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&maxFeatures=50&outputFormat=json',
             success: function(layerAttributes) {
                 projectLayerAttributes = layerAttributes;
-                processIndicatorsNew(layerAttributes, sessionProjectDef);
+                processIndicators(layerAttributes, sessionProjectDef);
             }
         });
-    });
-
-    map.addControl(layerControl.setPosition('topleft'));
-
-    // Map options selection dialog
-    $('#thematicMap').dialog({
-        autoOpen: false,
-        height: 730,
-        width: 350,
-        modal: true
-    });
-
-
-    $('#thematic-map').button().click(function() {
-        $('#thematicMap').dialog('open');
     });
 
     $(function() {

@@ -22,19 +22,6 @@ IRV - {{block.super}}
 
 {% block map_tools %}
 {{block.super}}
-<button type="button" id="load-project">Load Project</button>
-<div id="loadProjectDialog" title="Load Project">
-  <form id="tile-form-list">
-    <br>Category:<br>
-    <select id="layer-category">
-    </select>
-    <br>Project:<br>
-    <select id="layer-list">
-    </select><br>
-    <input type="button" id="addLayer" value="Add Layer">
-    <input type="button" id="removeLayer" value="Remove Layer">
-  </form>
-</div>
 
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
@@ -61,8 +48,10 @@ IRV - {{block.super}}
   <ul>
     <li id="1" ><a href="#project-def">Project Def</a></li>
     <li id="2"><a href="#iri-chart">IRI Chart</a></li>
+    <!-- remove this feature temporarily
     <li id="3"><a href="#cat-chart">Category Chart</a></li>
     <li id="4"><a href="#primary-tab">Primary Chart</a></li>
+    -->
 
   </ul>
 
@@ -72,6 +61,7 @@ IRV - {{block.super}}
   </div>
   <div id="iri-chart"></div>
   <div id="cat-chart"></div>
+  <!--
   <div id="primary-tab">
     <div id="primary-limit">
       <p>
@@ -81,6 +71,8 @@ IRV - {{block.super}}
     </div>
     <div id="primary-chart"></div>
   </div>
+
+  -->
 
   </div>
 

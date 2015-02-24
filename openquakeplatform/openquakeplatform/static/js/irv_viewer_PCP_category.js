@@ -74,7 +74,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
 
     $('#cat-chart').empty();
 
-    var svg = d3.select('#cat-chart').append('svg')
+    var svg = d3.select('#cat-chart3').append('svg')
         .attr("viewBox", "-30 20 " +(winW -130)+" " +winH)
         .attr("id", "CI-svg-element")
         .append('g')

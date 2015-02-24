@@ -128,7 +128,7 @@
                     }
                 }
             }
-            processIndicatorsNew(projectLayerAttributes, projectDefUpdated);
+            processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
