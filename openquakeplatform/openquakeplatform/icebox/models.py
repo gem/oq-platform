@@ -79,7 +79,8 @@ class Calculation(models.Model):
                     olayer.create_geonode_layer(
                         olayer.geoserver_publish_view(
                             olayer.create_view())))
-        self.create_geonode_map(layers)
+        if len(layers) > 0:
+            self.create_geonode_map(layers)
         self.status = 'complete'
         self.save()
 
@@ -222,6 +223,10 @@ class OutputLayer(models.Model):
             return model
 
         logger.warning("Layer creation for %s is not supported" % self)
+
+    @property
+    def user(self):
+        return self.calculation.user.id
 
     def __unicode__(self):
         return u"OL %s <%d>" % (self.display_name, self.pk)

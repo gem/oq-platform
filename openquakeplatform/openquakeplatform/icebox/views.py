@@ -147,6 +147,7 @@ class OutputsView(JSONResponseMixin, generic.list.ListView):
         outputs = []
         for obj in context['object_list']:
             output = model_to_dict(obj)
+            output['user'] = obj.user
             if obj.layer:
                 output['layername'] = obj.layer.typename
             outputs.append(output)
