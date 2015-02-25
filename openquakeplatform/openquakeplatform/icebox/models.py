@@ -156,6 +156,9 @@ class Calculation(models.Model):
     @staticmethod
     def remove_map(sender, instance, using, **_kwargs):
         if instance.map_id:
+            for layer in instance.map.layer_set.all():
+                import pdb; pdb.set_trace()
+                layer.delete()
             instance.map.delete()
 
     def __unicode__(self):
@@ -379,14 +382,14 @@ class Output(models.Model):
         raise NotImplementedError
 
     @staticmethod
-    def remove_layer(_sender, instance, _using, **_kwargs):
+    def remove_layer(sender, instance, using, **_kwargs):
         """
         Remove the geonode layer as well
         """
         instance.layer.delete()
 
     @staticmethod
-    def drop_view(_sender, instance, _using, **_kwargs):
+    def drop_view(sender, instance, using, **_kwargs):
         cursor = connection.cursor()
         view_name = "icebox_output_%s_%s" % (
             instance.__class__.__name__, instance.output_layer_id)
@@ -402,8 +405,8 @@ class Output(models.Model):
 
 
 models.signals.post_delete.connect(Calculation.remove_map, sender=Calculation)
-models.signals.post_delete.connect(Output.remove_layer, sender=Output)
-models.signals.post_delete.connect(Output.drop_view, sender=Output)
+#models.signals.post_delete.connect(Output.remove_layer, sender=Calculation)
+#models.signals.post_delete.connect(Output.drop_view, sender=Calculation)
 
 
 class HazardMap(Output):
