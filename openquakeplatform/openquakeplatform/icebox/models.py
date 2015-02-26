@@ -299,7 +299,7 @@ class OutputLayer(models.Model):
             os.path.join(
                 os.path.dirname(
                     os.path.dirname(__file__)),
-            "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
+                "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
 
     def create_featuretype(self, view_name):
         """
