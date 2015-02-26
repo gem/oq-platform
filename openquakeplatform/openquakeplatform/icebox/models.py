@@ -36,7 +36,7 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
 from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
-from geonode.layers.models import set_attributes
+from geonode.layers.models import set_attributes, Layer
 from geonode.layers.utils import layer_set_permissions
 from geonode.utils import default_map_config, ogc_server_settings
 
@@ -154,11 +154,16 @@ class Calculation(models.Model):
         self.save()
 
     @staticmethod
-    def remove_map(sender, instance, using, **_kwargs):
+    def remove_calc(sender, instance, using, **_kwargs):
         if instance.map_id:
             for layer in instance.map.layer_set.all():
-                import pdb; pdb.set_trace()
-                layer.delete()
+                if layer.group == 'icebox':
+                    layer_obj = Layer.objects.get(typename=layer.name)
+                    cursor = connection.cursor()
+                    view_name = layer.name.split(":")[1]
+                    cursor.execute("DROP VIEW IF EXISTS %s" % view_name)
+                    cursor.connection.commit()
+                    layer_obj.delete()
             instance.map.delete()
 
     def __unicode__(self):
@@ -404,9 +409,7 @@ class Output(models.Model):
                 cls.objects.filter(output_layer=output_layer).extent()))
 
 
-models.signals.post_delete.connect(Calculation.remove_map, sender=Calculation)
-#models.signals.post_delete.connect(Output.remove_layer, sender=Calculation)
-#models.signals.post_delete.connect(Output.drop_view, sender=Calculation)
+models.signals.post_delete.connect(Calculation.remove_calc, sender=Calculation)
 
 
 class HazardMap(Output):
