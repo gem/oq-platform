@@ -157,14 +157,15 @@ class Calculation(models.Model):
     def remove_calc(sender, instance, using, **_kwargs):
         if instance.map_id:
             for layer in instance.map.layer_set.all():
-                layer_obj = Layer.objects.get(typename=layer.name)
-                if layer_obj.store == 'icebox':
-                    cursor = connection.cursor()
-                    # layer name format is 'oqplatform:view_name'
-                    view_name = layer.name.split(":")[1]
-                    cursor.execute("DROP VIEW IF EXISTS %s" % view_name)
-                    cursor.connection.commit()
-                    layer_obj.delete()
+                if layer.name.startswith('oqplatform:icebox_output'):
+                    layer_obj = Layer.objects.get(typename=layer.name)
+                    if layer_obj.store == 'icebox':
+                        cursor = connection.cursor()
+                        # layer name format is 'oqplatform:view_name'
+                        view_name = layer.name.split(":")[1]
+                        cursor.execute("DROP VIEW IF EXISTS %s" % view_name)
+                        cursor.connection.commit()
+                        layer_obj.delete()
             instance.map.delete()
 
     def __unicode__(self):
