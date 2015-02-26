@@ -134,7 +134,6 @@ class Calculation(models.Model):
                     format="image/png",
                     visibility=(i == 0),
                     transparent=True,
-                    group="icebox",
                     ows_url=ogc_server_settings.public_url + "wms",
                     layer_params=json.dumps({"infoFormat": info_format}),
                     local=True))
@@ -158,9 +157,10 @@ class Calculation(models.Model):
     def remove_calc(sender, instance, using, **_kwargs):
         if instance.map_id:
             for layer in instance.map.layer_set.all():
-                if layer.group == 'icebox':
-                    layer_obj = Layer.objects.get(typename=layer.name)
+                layer_obj = Layer.objects.get(typename=layer.name)
+                if layer_obj.store == 'icebox':
                     cursor = connection.cursor()
+                    # layer name format is 'oqplatform:view_name'
                     view_name = layer.name.split(":")[1]
                     cursor.execute("DROP VIEW IF EXISTS %s" % view_name)
                     cursor.connection.commit()
