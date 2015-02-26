@@ -387,14 +387,6 @@ class Output(models.Model):
 
         raise NotImplementedError
 
-    def drop_view(sender, instance, using, **_kwargs):
-        cursor = connection.cursor()
-        view_name = "icebox_output_%s_%s" % (
-            instance.__class__.__name__, instance.output_layer_id)
-        view_name = view_name.lower()
-        cursor.execute("DROP VIEW IF EXISTS %s view_name")
-        cursor.connection.commit()
-
     @classmethod
     def bbox_for_output(cls, output_layer):
         return dict(
