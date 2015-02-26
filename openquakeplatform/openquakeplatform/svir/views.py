@@ -32,6 +32,9 @@ from openquakeplatform.svir.models import (Theme,
                                            CustomRegion,
                                            CountryIndicator,)
 
+from geonode.base.models import Link
+
+
 COPYRIGHT_HEADER = u"""\
  Copyright (C) 2014 GEM Foundation
 
@@ -56,6 +59,37 @@ COPYRIGHT_HEADER = u"""\
 
  More information on licensing: http://www.globalquakemodel.org/licensing
 """
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_layer_metadata_url(request):
+    """
+    Given a layer name, return the url to be called to download the layer's
+    TC211 metadata XML
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing
+        the following parameter:
+            * 'layer_name': the layer identifier
+
+    :return:
+        The url needed to download the layer's metadata
+    """
+    layer_name = request.GET.get('layer_name')
+    if not layer_name:
+        return HttpResponseBadRequest(
+            'Please provide the layer_name parameter')
+    try:
+        resource_id = Link.objects.get(name=layer_name).resource_id
+        response_url = Link.objects.get(
+            resource_id=resource_id, name='TC211').url
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Metadata url not found')
+    response = HttpResponse()
+    response.write(response_url)
+    return HttpResponse(response)
 
 
 @condition(etag_func=None)
@@ -240,7 +274,7 @@ def export_countries_info(request):
 
 
 @condition(etag_func=None)
-@allowed_methods(('GET', ))
+@allowed_methods(('GET', 'POST',))
 @sign_in_required
 def export_variables_data(request):
     """
@@ -250,21 +284,25 @@ def export_variables_data(request):
     be exported
 
     :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing the
-        following parameter:
+        A "GET" or "POST" :class:`django.http.HttpRequest` object containing
+        the following parameters:
             * 'sv_variables_ids': a string of comma-separated ids of social
                                   vulnerability variables
             * 'country_iso_codes': a string of comma-separated country iso
-                                   codes
-            * 'export_geometries': a boolean indicating if the geometries of
-                                   countries need to be exported too
+                                   codes (optional - default: all countries)
+            * 'export_geometries': 'True' or 'False', indicating if also the
+                                   geometries of countries have to be exported
+                                   (optional - default: 'False')
     """
-    if not request.GET.get('sv_variables_ids'):
-        msg = ('A list of comma-separated social vulnerability variable names'
+    req_dict = request.GET if request.method == 'GET' else request.POST
+    if not req_dict.get('sv_variables_ids'):
+        msg = ('A list of comma-separated social vulnerability variable codes'
                ' must be specified')
         response = HttpResponse(msg, status="400")
         return response
-    country_iso_codes = request.GET.get('country_iso_codes')
+    sv_variables_ids = req_dict['sv_variables_ids']
+    country_iso_codes = req_dict.get('country_iso_codes')
+    export_geometries = req_dict.get('export_geometries') == 'True'
     country_iso_codes_list = []
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
@@ -275,14 +313,12 @@ def export_variables_data(request):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
     response.write(copyright + "\n")
-    sv_variables_ids = request.GET['sv_variables_ids']
     sv_variables_ids_list = [var_id.strip()
                              for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
     for sv_variable_id in sv_variables_ids_list:
         header_list.append(sv_variable_id)
-    export_geometries = request.GET.get('export_geometries') == 'True'
     if export_geometries:
         header_list.append("GEOMETRY")
     writer.writerow(header_list)

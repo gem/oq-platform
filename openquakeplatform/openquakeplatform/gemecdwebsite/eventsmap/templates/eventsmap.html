@@ -9,7 +9,9 @@
                     {% comment %}{{ panelform.as_p }}{% endcomment %}
                     <!--<input type="submit" value=" &raquo; " class="gobutton" title="Quick link to details of event"/>-->
                 <!--</form>-->
+                <div id="list_trimmer">
                 {% spanlist field_structure=eventslist %}
+                </div>
             </div>
         </div>
 
@@ -18,6 +20,28 @@
 {% block gemecd_map %}
     <script type="text/javascript">
         // GEM ECD specific mapping
+
+        function resize_list()
+        {
+            var trim = $('#list_trimmer');
+            var foot = $('#footer');
+
+            var minh = parseInt(trim.css('min-height'));
+
+            var h_cur = foot.offset().top - trim.offset().top - 4;
+            if (h_cur < minh)
+                h_cur = minh;
+
+            trim.css('height', h_cur+"px");
+        }
+
+        window.onload = function () {
+            resize_list();
+        }
+
+        window.onresize = function () {
+            resize_list();
+        }
 
         shakemap = new L.TileLayer.WMS("{{ geoserver_url }}wms",
             {

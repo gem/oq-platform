@@ -243,13 +243,14 @@
                     <form id="filterform" method="post">{% csrf_token %}
                         {{ filterbarform.as_p }}
                         {% comment %}<p><input id="id_filterbarform-submit" type="submit" value="apply"  title="Apply filters"/></p>{% endcomment %}
-                        <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div>
+                        <!-- <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div> -->
                     </form>
                 </div>
 
+{% block filterbarright %}
                 <div id="filterbarright">
-
                 </div>
+{% endblock filterbarright %}
             </div>
             <!--end filter bar -->
         </div>
