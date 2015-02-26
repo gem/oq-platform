@@ -544,9 +544,6 @@ var startApp = function() {
 
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
 
-    // Set custom map div height
-    $('#map').height("300px");
-
     // Get layers from GeoServer
     $('#svir-project-list').hide();
     var SVIRLayerNames = [];
