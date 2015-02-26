@@ -41,14 +41,6 @@ var startApp = function() {
     map.panTo(new L.LatLng(38.2, -101.6));
     map.scrollWheelZoom.enable();
 
-    $('#map-tools').prepend('<select id="external-layers-menu">'+
-            '<option>Select layers</option>'+
-            '<option value="1">Hazus Level 1 Building Fractions</option>'+
-            '<option value="2">US Counties</option>'+
-            '<option value="3">PAGER Dwelling Fractions Level 0'+
-        '</select>'
-    );
-
     $('#external-layers-menu').css({ 'margin-bottom' : 0 });
 
     function createUtfLayerGroups(selectedLayer, selectedGrid, layerType) {
