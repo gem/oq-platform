@@ -599,6 +599,24 @@ var startApp = function() {
                     sessionProjectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
                     loadPD(sessionProjectDef);
                     sessionProjectDef = jQuery.parseJSON(sessionProjectDef);
+                    // get b-box
+                    var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
+                    console.log('boundingBox:');
+                    console.log(boundingBox);
+                    if (boundingBox != undefined) {
+                        map.fitBounds (
+                            L.latLngBounds (
+                                L.latLng (
+                                    parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                    parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                                ),
+                                L.latLng (
+                                    parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                    parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                                )
+                            )
+                        );
+                    }
                 });
             }
         });
