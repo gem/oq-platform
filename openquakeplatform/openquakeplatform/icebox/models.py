@@ -387,14 +387,6 @@ class Output(models.Model):
 
         raise NotImplementedError
 
-    @staticmethod
-    def remove_layer(sender, instance, using, **_kwargs):
-        """
-        Remove the geonode layer as well
-        """
-        instance.layer.delete()
-
-    @staticmethod
     def drop_view(sender, instance, using, **_kwargs):
         cursor = connection.cursor()
         view_name = "icebox_output_%s_%s" % (
