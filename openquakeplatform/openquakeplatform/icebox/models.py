@@ -134,6 +134,7 @@ class Calculation(models.Model):
                     format="image/png",
                     visibility=(i == 0),
                     transparent=True,
+                    group="icebox",
                     ows_url=ogc_server_settings.public_url + "wms",
                     layer_params=json.dumps({"infoFormat": info_format}),
                     local=True))
