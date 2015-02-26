@@ -272,21 +272,9 @@ class OutputLayer(models.Model):
 
         :returns: the name of the published layer
         """
-        # During development, it might be handy to uncomment this
-        # self.delete_layer(view_name)
         self.update_layer(self.create_featuretype(view_name))
 
         return view_name
-
-    # FIXME: this function is not called. Geoserver layers survive
-    # when a calculation is deleted!
-    def delete_layer(self, view_name):
-        geoserver.geoserver_rest(
-            geoserver.LAYER_URL % view_name, method='DELETE',
-            raise_errors=False)
-        geoserver.geoserver_rest(
-            (geoserver.FEATURETYPE_URL % dict(ws=geoserver.WS_NAME, ds=DS_NAME)) % view_name, method='DELETE',
-            raise_errors=False)
 
     @staticmethod
     def _xml(request_type):
