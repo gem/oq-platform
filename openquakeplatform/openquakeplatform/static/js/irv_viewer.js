@@ -28,7 +28,7 @@ function createIndexSimple(la, index) {
         var temp = {};
         temp.region = la[ia].properties.COUNTRY_NA;
         indicator.push(temp);
-        // TODO remove districts
+        // districts is used inside of the d3 charts
         districts.push(la[ia].properties.COUNTRY_NA);
     }
     // Get the indicators children keys
@@ -97,13 +97,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         subIndex[tempRegion] = 0;
     }
     // get some info aobut the themes
-    // TODO change to themkeys
-    var themekey = [];
+    var themekeys = [];
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
         var themeName = JSONthemes[u].name;
         var themeWeight = JSONthemes[u].weight;
-        themekey.push(themeName);
+        themekeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
     }
     // compute the subIndex values based on operator
@@ -112,8 +111,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v].region;
             // sum the themes
-            for (var w = 0; w < themekey.length; w++, ct++) {
-                var tempThemeName = themekey[w];
+            for (var w = 0; w < themekeys.length; w++, ct++) {
+                var tempThemeName = themekeys[w];
                 tempElementValue = tempElementValue + themeObj[v][tempThemeName];
             }
             subIndex[themeObjMunic] = tempElementValue;
@@ -123,8 +122,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v1].region;
             // sum the themes
-            for (var w1 = 0; w1 < themekey.length; w1++, ct++) {
-                var tempThemeName = themekey[w1];
+            for (var w1 = 0; w1 < themekeys.length; w1++, ct++) {
+                var tempThemeName = themekeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
             }
@@ -135,11 +134,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v2].region;
             // sum the themes
-            for (var w2 = 0; w2 < themekey.length; w2++, ct++) {
-                var tempThemeName = themekey[w2];
+            for (var w2 = 0; w2 < themekeys.length; w2++, ct++) {
+                var tempThemeName = themekeys[w2];
                 tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
             }
-            var themeAverage = tempElementValue / themekey.length;
+            var themeAverage = tempElementValue / themekeys.length;
             subIndex[themeObjMunic] = themeAverage;
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
@@ -147,8 +146,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v3].region;
             // sum the themes
-            for (var w3 = 0; w3 < themekey.length; w3++, ct++) {
-                var tempThemeName = themekey[w3];
+            for (var w3 = 0; w3 < themekeys.length; w3++, ct++) {
+                var tempThemeName = themekeys[w3];
                 if (tempElementValue == 0) {
                     tempElementValue = themeObj[v3][tempThemeName];
                 } else {
@@ -162,8 +161,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v4].region;
             // sum the themes
-            for (var w4 = 0; w4 < themekey.length; w4++, ct++) {
-                var tempThemeName = themekey[w4];
+            for (var w4 = 0; w4 < themekeys.length; w4++, ct++) {
+                var tempThemeName = themekeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 if (tempElementValue == 0) {
                     tempElementValue = (themeObj[v4][tempThemeName] * themeWeightVal);
@@ -179,8 +178,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
 function processIndicators(layerAttributes, projectDef) {
     districts = [];
-    // TODO posibly remove
-    sessionProjectDef = projectDef;
 
     /////////////////////////////////////////////
     //// Create the primary indicator objects ///
@@ -198,12 +195,6 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    console.log('projectDef:');
-    console.log(projectDef);
-
-    console.log('layerAttributes:');
-    console.log(layerAttributes);
-
     // process each Social Vulnerability Index nodes
     // Get all the primary indicators
     var allPrimaryIndicators = [];
@@ -211,8 +202,7 @@ function processIndicators(layerAttributes, projectDef) {
 
     for (var i = 0; i < socialVulnIndex.length; i++) {
         for (var e = 0 ; e < socialVulnIndex[i].children.length; e++, ct++ ) {
-            // TODO check that you can use field here
-            allPrimaryIndicators.push(socialVulnIndex[i].children[e].name);
+            allPrimaryIndicators.push(socialVulnIndex[i].children[e].field);
         }
     }
 
@@ -560,10 +550,17 @@ var startApp = function() {
         '</select>'
     );
 
+    $('#map-tools').append('<select id="region-selection-list">'+
+        '<option selected disabled>Select Region</option>'+
+        '</select>'
+    );
+
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
+    $('#region-selection-list').css({ 'margin-bottom' : 0 });
 
     // Get layers from GeoServer
     $('#svir-project-list').hide();
+    $('#region-selection-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -652,10 +649,24 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(layerAttributes) {
+                // provide a dropdown menu to select the region
+                var layerFields = [];
+                // get all the field name out of the layer attributes object
+                for (var key in layerAttributes.features[0].properties) {
+                    layerFields.push(key);
+                }
+                // append each field to the selection menu
+                for (var i = 0; i < layerFields.length; i++) {
+                    $('#region-selection-list').append('<option>'+ layerFields[i] +'</option>');
+                }
+
+                // TODO change the region-selection-list to dialog popup to force the user to make a selection before they can continue
+
                 processIndicators(layerAttributes, sessionProjectDef);
                 $('#projectDef-spinner').hide();
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
+                $('#region-selection-list').show();
             }
         });
     });
