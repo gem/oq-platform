@@ -15,9 +15,9 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 var sessionProjectDef = [];
+var sessionProjectDefStr;
 var region = [];
 var districts = [];
-var projectLayerAttributes;
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
@@ -28,6 +28,7 @@ function createIndexSimple(la, index) {
         var temp = {};
         temp.region = la[ia].properties.COUNTRY_NA;
         indicator.push(temp);
+        // TODO remove districts
         districts.push(la[ia].properties.COUNTRY_NA);
     }
     // Get the indicators children keys
@@ -80,10 +81,10 @@ function createIndex(la, index) {
     return indicator;
 }
 
-function combindIndicators(nameLookUp, themeObj, JSONthemes) {
+function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     projectDef = sessionProjectDef;
     var ct = 0;
-    var newObj = {};
+    var subIndex = {};
     var operator;
     for (var y = 0; y < projectDef.children.length; y++) {
         if (projectDef.children[y].name == nameLookUp) {
@@ -92,10 +93,11 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
     }
     // first create an object with all of the district names
     for (var t = 0; t < themeObj.length; t++) {
-        var temp = themeObj[t].region;
-        newObj[temp] = 0;
+        var tempRegion = themeObj[t].region;
+        subIndex[tempRegion] = 0;
     }
     // get some info aobut the themes
+    // TODO change to themkeys
     var themekey = [];
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
@@ -104,7 +106,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
         themekey.push(themeName);
         themeWeightObj[themeName] = themeWeight;
     }
-    // compute the newObj values based on operator
+    // compute the subIndex values based on operator
     if (operator == 'Simple sum (ignore weights)') {
         for (var v = 0; v < themeObj.length; v++) {
             var tempElementValue = 0;
@@ -114,7 +116,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
                 var tempThemeName = themekey[w];
                 tempElementValue = tempElementValue + themeObj[v][tempThemeName];
             }
-            newObj[themeObjMunic] = tempElementValue;
+            subIndex[themeObjMunic] = tempElementValue;
         }
     } else if (operator == 'Weighted sum') {
         for (var v1 = 0; v1 < themeObj.length; v1++) {
@@ -126,7 +128,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
             }
-            newObj[themeObjMunic] = tempElementValue;
+            subIndex[themeObjMunic] = tempElementValue;
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
@@ -138,7 +140,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
                 tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
             }
             var themeAverage = tempElementValue / themekey.length;
-            newObj[themeObjMunic] = themeAverage;
+            subIndex[themeObjMunic] = themeAverage;
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
         for (var v3 = 0; v3 < themeObj.length; v3++) {
@@ -153,7 +155,7 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
                     tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
                 }
             }
-            newObj[themeObjMunic] = tempElementValue;
+            subIndex[themeObjMunic] = tempElementValue;
         }
     } else if (operator == 'Weighted multiplication') {
         for (var v4 = 0; v4 < themeObj.length; v4++) {
@@ -169,14 +171,15 @@ function combindIndicators(nameLookUp, themeObj, JSONthemes) {
                     tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
                 }
             }
-            newObj[themeObjMunic] = tempElementValue;
+            subIndex[themeObjMunic] = tempElementValue;
         }
     }
-    return newObj;
+    return subIndex;
 }
 
 function processIndicators(layerAttributes, projectDef) {
     districts = [];
+    // TODO posibly remove
     sessionProjectDef = projectDef;
 
     /////////////////////////////////////////////
@@ -195,6 +198,12 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
+    console.log('projectDef:');
+    console.log(projectDef);
+
+    console.log('layerAttributes:');
+    console.log(layerAttributes);
+
     // process each Social Vulnerability Index nodes
     // Get all the primary indicators
     var allPrimaryIndicators = [];
@@ -202,6 +211,7 @@ function processIndicators(layerAttributes, projectDef) {
 
     for (var i = 0; i < socialVulnIndex.length; i++) {
         for (var e = 0 ; e < socialVulnIndex[i].children.length; e++, ct++ ) {
+            // TODO check that you can use field here
             allPrimaryIndicators.push(socialVulnIndex[i].children[e].name);
         }
     }
@@ -210,19 +220,20 @@ function processIndicators(layerAttributes, projectDef) {
     var primaryIndicatorObj = {};
 
     for (var h = 0; h < layerAttributes.features.length; h++) {
-        var tempObj = layerAttributes.features[h].properties;
+        var tempProps = layerAttributes.features[h].properties;
         for (var d = 0; d < allPrimaryIndicators.length; d++) {
-            for (var l in tempObj) {
-                if (allPrimaryIndicators[d] == l) {
-                    var tempValue = allPrimaryIndicators[d];
-                    var tempValue2 = tempObj[l];
-                    var tempValue3 = tempObj.COUNTRY_NA;
-                    if (primaryIndicatorObj[tempValue] == undefined) {
-                        primaryIndicatorObj[tempValue] = tempValue2;
-                        primaryIndicatorObj.municipio = tempValue3;
+            for (var field in tempProps) {
+                if (allPrimaryIndicators[d] == field) {
+                    var tempFieldName = allPrimaryIndicators[d];
+                    var tempFieldValue = tempProps[field];
+                    // TODO provide the user with a selection pull down to pick the redion var
+                    var tempRegionName = tempProps.COUNTRY_NA;
+                    if (primaryIndicatorObj[tempFieldName] == undefined) {
+                        primaryIndicatorObj[tempFieldName] = tempFieldValue;
+                        primaryIndicatorObj.municipio = tempRegionName;
                     } else {
-                        primaryIndicatorObj[tempValue] = primaryIndicatorObj[tempValue] + "," +tempValue2;
-                        primaryIndicatorObj.municipio = primaryIndicatorObj.municipio + "," +tempValue3;
+                        primaryIndicatorObj[tempFieldName] = primaryIndicatorObj[tempFieldName] + "," +tempFieldValue;
+                        primaryIndicatorObj.municipio = primaryIndicatorObj.municipio + "," +tempRegionName;
                     }
                 }
             }
@@ -372,11 +383,19 @@ function processIndicators(layerAttributes, projectDef) {
     var SVI = {};
     var sviNameLookUp = 'SVI';
     var sviJSONthemes = socialVulnIndex;
-    SVI = combindIndicators(sviNameLookUp, catData, sviJSONthemes );
+    // SVI is an object with region and value
+    SVI = combineIndicators(sviNameLookUp, catData, sviJSONthemes );
+
+    console.log('catData:');
+    console.log(catData);
 
     ///////////////
     //// Scale ////
     ///////////////
+
+    // TODO take care not to devide by 0
+
+    // TODO crate a function for scaling
 
     var sviValueArray = [];
     var scaleSVIvalues = [];
@@ -411,7 +430,7 @@ function processIndicators(layerAttributes, projectDef) {
     var RI = {};
     var nameLookUp = 'RI';
     var riJSONthemes = riskIndex;
-    RI = combindIndicators(nameLookUp, riskIndicator, riJSONthemes);
+    RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
 
     ///////////////
     //// Scale ////
@@ -448,6 +467,7 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
     if (iriOperator == "Average (ignore weights)") {
+        // todo change jb to regionName
         for (var jb in SVI) {
             tempVal = SVI[jb] + RI[jb];
             var iriAverage = tempVal / 2;
@@ -493,16 +513,14 @@ function processIndicators(layerAttributes, projectDef) {
     for (var il = 0; il < tempKeys.length; il++) {
         IRI[tempKeys[il]] = scaleIRIvalues[il];
     }
-    IRI.plotElement = "iri"; // Lable within the object
-    RI.plotElement = "ri"; // Lable within the object
-    SVI.plotElement = "svi"; // Lable within the object
+    //IRI.plotElement = "iri"; // Lable within the object
+    //RI.plotElement = "ri"; // Lable within the object
+    //SVI.plotElement = "svi"; // Lable within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
     iriPcpData.push(RI);
     IRI_PCP_Chart(iriPcpData);
-
-    // Hide things untill all the ajax stuff is done
 
 
     ///////////////////////////////////
@@ -586,20 +604,19 @@ var startApp = function() {
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
                 // ***** TEMP remove this ****
-                //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
+                layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    sessionProjectDef = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
-                    loadPD(sessionProjectDef);
-                    sessionProjectDef = jQuery.parseJSON(sessionProjectDef);
+                    //pass a string representing the project def into the d3 tree chart
+                    sessionProjectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+                    loadPD(sessionProjectDefStr);
+                    sessionProjectDef = jQuery.parseJSON(sessionProjectDefStr);
                     // get b-box
                     var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-                    console.log('boundingBox:');
-                    console.log(boundingBox);
                     if (boundingBox != undefined) {
                         map.fitBounds (
                             L.latLngBounds (
@@ -633,9 +650,8 @@ var startApp = function() {
         // Get layer attributes from GeoServer
         $.ajax({
             type: 'get',
-            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&maxFeatures=50&outputFormat=json',
+            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(layerAttributes) {
-                projectLayerAttributes = layerAttributes;
                 processIndicators(layerAttributes, sessionProjectDef);
                 $('#projectDef-spinner').hide();
                 $('#iri-spinner').hide();
