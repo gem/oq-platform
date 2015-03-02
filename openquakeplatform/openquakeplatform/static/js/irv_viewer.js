@@ -15,6 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 var sessionProjectDef = [];
+var selectedRegion;
 var sessionProjectDefStr;
 var region = [];
 var districts = [];
@@ -26,10 +27,10 @@ function createIndexSimple(la, index) {
     // setup the indicator with all the municipalities
     for (var ia = 0; ia < la.length; ia++) {
         var temp = {};
-        temp.region = la[ia].properties.COUNTRY_NA;
+        temp.region = la[ia].properties[selectedRegion];
         indicator.push(temp);
         // districts is used inside of the d3 charts
-        districts.push(la[ia].properties.COUNTRY_NA);
+        districts.push(la[ia].properties[selectedRegion]);
     }
     // Get the indicators children keys
     var indicatorChildrenKey = [];
@@ -45,7 +46,7 @@ function createIndexSimple(la, index) {
                 if (indicatorChildrenKey[d] == o) {
                     var tempValue = indicatorChildrenKey[d];
                     var tempValue2 = tempObj[o];
-                    var tempValue3 = tempObj.COUNTRY_NA;
+                    var tempValue3 = tempObj[selectedRegion];
                     if (primaryRiskIndicatorObj[tempValue] == undefined) {
                         primaryRiskIndicatorObj[tempValue] = tempValue2;
                         primaryRiskIndicatorObj.district = tempValue3;
@@ -66,12 +67,12 @@ function createIndex(la, index) {
     // setup the indicator with all the municipalities
     for (var ia = 0; ia < la.length; ia++) {
         var temp = {};
-        temp.region = la[ia].properties.COUNTRY_NA;
+        temp.region = la[ia].properties[selectedRegion];
         indicator.push(temp);
     }
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++, ct++) {
-            if (indicator[j].region == la[j].properties.COUNTRY_NA) {
+            if (indicator[j].region == la[j].properties[selectedRegion]) {
                 var tempName = index[i].name;
                 var tempValue = la[j].properties[tempName];
                 indicator[j][tempName] = tempValue;
@@ -216,8 +217,8 @@ function processIndicators(layerAttributes, projectDef) {
                 if (allPrimaryIndicators[d] == field) {
                     var tempFieldName = allPrimaryIndicators[d];
                     var tempFieldValue = tempProps[field];
-                    // TODO provide the user with a selection pull down to pick the redion var
-                    var tempRegionName = tempProps.COUNTRY_NA;
+                    var tempRegionName = tempProps[selectedRegion];
+
                     if (primaryIndicatorObj[tempFieldName] == undefined) {
                         primaryIndicatorObj[tempFieldName] = tempFieldValue;
                         primaryIndicatorObj.municipio = tempRegionName;
@@ -254,7 +255,7 @@ function processIndicators(layerAttributes, projectDef) {
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
-        temp.region = la[s].properties.COUNTRY_NA;
+        temp.region = la[s].properties[selectedRegion];
         catData.push(temp);
     }
 
@@ -284,7 +285,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic = la[o].properties.COUNTRY_NA;
+                var munic = la[o].properties[selectedRegion];
                 var theme = name;
                 // Grab the average
                 var average = tempSum / indicatorChildrenKey.length;
@@ -299,7 +300,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic1 = la[o].properties.COUNTRY_NA;
+                var munic1 = la[o].properties[selectedRegion];
                 var theme1 = name;
                 tempString.push(munic1 + '|'+ theme1 +'|'+ tempSum);
             } else if ( operator == "Weighted sum") {
@@ -313,7 +314,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic2 = la[o].properties.COUNTRY_NA;
+                var munic2 = la[o].properties[selectedRegion];
                 var theme2 = name;
                 tempString.push(munic2 + '|'+ theme2 +'|'+ tempSum);
             } else if ( operator == "Simple multiplication (ignore weights)") {
@@ -330,7 +331,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic3 = la[o].properties.COUNTRY_NA;
+                var munic3 = la[o].properties[selectedRegion];
                 var theme3 = name;
                 tempString.push(munic3 + '|'+ theme3 +'|'+ tempSum);
             } else if ( operator == "Weighted multiplication") {
@@ -348,7 +349,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic4 = la[o].properties.COUNTRY_NA;
+                var munic4 = la[o].properties[selectedRegion];
                 var theme4 = name;
                 tempString.push(munic4 + '|'+ theme4 +'|'+ tempSum);
             }
@@ -375,9 +376,6 @@ function processIndicators(layerAttributes, projectDef) {
     var sviJSONthemes = socialVulnIndex;
     // SVI is an object with region and value
     SVI = combineIndicators(sviNameLookUp, catData, sviJSONthemes );
-
-    console.log('catData:');
-    console.log(catData);
 
     ///////////////
     //// Scale ////
@@ -550,20 +548,14 @@ var startApp = function() {
         '</select>'
     );
 
-    $('#map-tools').append('<select id="region-selection-list">'+
-        '<option selected disabled>Select Region</option>'+
-        '</select>'
-    );
-
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#region-selection-list').css({ 'margin-bottom' : 0 });
-
-    // Get layers from GeoServer
     $('#svir-project-list').hide();
     $('#region-selection-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
+    // Get layers from GeoServer and populate the layer selection menu
     $.ajax({
         url: url,
         contentType: 'application/json',
@@ -596,6 +588,44 @@ var startApp = function() {
         // Get the layer metadata (project def)
         var selectedLayer = document.getElementById('svir-project-list').value;
 
+        // Get layer attributes from GeoServer
+        $.ajax({
+            type: 'get',
+            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
+            success: function(layerAttributes) {
+                // provide a dropdown menu to select the region field
+                var layerFields = [];
+                // get all the field name out of the layer attributes object
+                for (var key in layerAttributes.features[0].properties) {
+                    layerFields.push(key);
+                }
+
+                $('#regionSelectionDialog').append(
+                    '<p>Please select the field that contains the layers region labels</p>'+
+                    '<select id="region-selection-list">'+
+                    '<option selected disabled>Select Region</option>'+
+                    '</select>'
+                );
+
+                // append each field to the selection menu
+                for (var i = 0; i < layerFields.length; i++) {
+                    $('#region-selection-list').append('<option>'+ layerFields[i] +'</option>');
+                }
+
+                $('#regionSelectionDialog').dialog('open');
+
+                $('#region-selection-list').change(function() {
+                    selectedRegion = document.getElementById('region-selection-list').value;
+                    getLayerInfo(selectedLayer, layerAttributes);
+                });
+            }
+        });
+    });
+
+
+    function getLayerInfo(selectedLayer, layerAttributes) {
+
+        $('#regionSelectionDialog').dialog('close');
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
@@ -628,6 +658,11 @@ var startApp = function() {
                             )
                         );
                     }
+                    $('#projectDef-spinner').hide();
+                    $('#iri-spinner').hide();
+                    $('#project-definition-svg').show();
+                    $('#region-selection-list').show();
+                    processIndicators(layerAttributes, sessionProjectDef);
                 });
             }
         });
@@ -643,32 +678,15 @@ var startApp = function() {
         });
 
         WMSLayer.addTo(map);
+    }
 
-        // Get layer attributes from GeoServer
-        $.ajax({
-            type: 'get',
-            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
-            success: function(layerAttributes) {
-                // provide a dropdown menu to select the region
-                var layerFields = [];
-                // get all the field name out of the layer attributes object
-                for (var key in layerAttributes.features[0].properties) {
-                    layerFields.push(key);
-                }
-                // append each field to the selection menu
-                for (var i = 0; i < layerFields.length; i++) {
-                    $('#region-selection-list').append('<option>'+ layerFields[i] +'</option>');
-                }
-
-                // TODO change the region-selection-list to dialog popup to force the user to make a selection before they can continue
-
-                processIndicators(layerAttributes, sessionProjectDef);
-                $('#projectDef-spinner').hide();
-                $('#iri-spinner').hide();
-                $('#project-definition-svg').show();
-                $('#region-selection-list').show();
-            }
-        });
+    // Region selection dialog
+    $('#regionSelectionDialog').dialog({
+        autoOpen: false,
+        height: 150,
+        width: 400,
+        closeOnEscape: true,
+        modal: true
     });
 
     $(function() {
