@@ -263,3 +263,91 @@ occu_spec_grp[7] = [
                     { id: 'EDU3', desc: 'College/university, offices and/or classrooms' },
                     { id: 'EDU4', desc: 'College/university, research facilities and/or labs' }
                   ];
+
+var bupo_type = [
+                 { id: 'BP99', desc: 'Unknown building position' },
+                 { id: 'BPD', desc: 'Detached building' },
+                 { id: 'BP1', desc: 'Adjoining building(s) on one side' },
+                 { id: 'BP2', desc: 'Adjoining building(s) on two sides' },
+                 { id: 'BP3', desc: 'Adjoining building(s) on three sides' }
+               ];
+
+var plsh_type = [
+                 { id: 'PLF99', desc: 'Unknown plan shape' },
+                 { id: 'PLFSQ', desc: 'Square, solid' },
+                 { id: 'PLFSQO', desc: 'Square, with an opening in plan' },
+                 { id: 'PLFR', desc: 'Rectangular, solid' },
+                 { id: 'PLFRO', desc: 'Rectangular, with an opening in plan' },
+                 { id: 'PLFL', desc: 'L-shape' },
+                 { id: 'PLFC', desc: 'Curved, solid (e.g. circular, eliptical, ovoid)' },
+                 { id: 'PLFCO', desc: 'Curved, with an opening in plan' },
+                 { id: 'PLFD', desc: 'Triangular, solid' },
+                 { id: 'PLFDO', desc: 'Triangular, with an opening in plan' },
+                 { id: 'PLFE', desc: 'E-shape' },
+                 { id: 'PLFH', desc: 'H-shape' },
+                 { id: 'PLFS', desc: 'S-shape' },
+                 { id: 'PLFT', desc: 'T-shape' },
+                 { id: 'PLFU', desc: 'U- or C-shape' },
+                 { id: 'PLFX', desc: 'X-shape' },
+                 { id: 'PLFY', desc: 'Y-shape' },
+                 { id: 'PLFP', desc: 'Polygonal, solid' },
+                 { id: 'PLFPO', desc: 'Polygonal, with an opening in plan' },
+                 { id: 'PLFI', desc: 'Irregular plan shape' }
+               ];
+
+var stir_type = [
+                 { id: 'IR99', desc: 'Unknown structural irregularity' },
+                 { id: 'IRRE', desc: 'Regular structure' },
+                 { id: 'IRIR', desc: 'Irregular structure' }
+               ];
+
+var plan_irre = [
+                 { id: 'IRPP:IRN', desc: 'No irregularity' },
+                 { id: 'IRPP:TOR', desc: 'Torsion eccentricity' },
+                 { id: 'IRPP:REC', desc: 'Re-entrant corner' },
+                 { id: 'IRPP:IRHO', desc: 'Other plan irregularity' }
+               ];
+
+var plan_seco = [
+                 { id: 'IRPS:IRN', desc: 'No irregularity' },
+                 { id: 'IRPS:TOR', desc: 'Torsion eccentricity' },
+                 { id: 'IRPS:REC', desc: 'Re-entrant corner' },
+                 { id: 'IRPS:IRHO', desc: 'Other plan irregularity' }
+               ];
+
+var vert_irre = [
+                 { id: 'IRVP:IRN', desc: 'No irregularity' },
+                 { id: 'IRVP:SOS', desc: 'Soft storey' },
+                 { id: 'IRVP:CRW', desc: 'Cripple wall' },
+                 { id: 'IRVP:SHC', desc: 'Short column' },
+                 { id: 'IRVP:POP', desc: 'Pounding potential' },
+                 { id: 'IRVP:SET', desc: 'Setback' },
+                 { id: 'IRVP:CHV', desc: 'Change in vertical structure' },
+                 { id: 'IRVP:IRVO', desc: 'Other vertical irregularity' }
+               ];
+
+var vert_seco = [
+                 { id: 'IRVS:IRN', desc: 'No irregularity' },
+                 { id: 'IRVS:SOS', desc: 'Soft storey' },
+                 { id: 'IRVS:CRW', desc: 'Cripple wall' },
+                 { id: 'IRVS:SHC', desc: 'Short column' },
+                 { id: 'IRVS:POP', desc: 'Pounding potential' },
+                 { id: 'IRVS:SET', desc: 'Setback' },
+                 { id: 'IRVS:CHV', desc: 'Change in vertical structure' },
+                 { id: 'IRVS:IRVO', desc: 'Other vertical irregularity' }
+               ];
+
+var wall_type = [
+                 { id: 'EW99', desc: 'Unknown material of exterior walls' },
+                 { id: 'EWC', desc: 'Concrete exterior walls' },
+                 { id: 'EWG', desc: 'Glass exterior walls' },
+                 { id: 'EWE', desc: 'Earthen exterior walls' },
+                 { id: 'EWMA', desc: 'Masonry exterior walls' },
+                 { id: 'EWME', desc: 'Metal exterior walls' },
+                 { id: 'EWV', desc: 'Vegetative exterior walls' },
+                 { id: 'EWW9', desc: 'Wooden exterior walls' },
+                 { id: 'EWSL', desc: 'Stucco finish on light framing for exterior walls' },
+                 { id: 'EWPL', desc: 'Plastic/vinyl exterior walls, various' },
+                 { id: 'EWCB', desc: 'Cement-based boards for exterior walls' },
+                 { id: 'EWO', desc: 'Material of exterior walls, other' }
+               ];

@@ -777,22 +777,23 @@ function taxt_ValidateRegularity()
         $('#RegularityCB5').prop("disabled", true);
     }
     else if ($('#RegularityCB1').val() == 2) {
-        var RegularityCB2 = [], RegularityCB3 = [];
-        RegularityCB2.push('No irregularity');
-        RegularityCB2.push('Torsion eccentricity');
-        RegularityCB2.push('Re-entrant corner');
-        RegularityCB2.push('Other plan irregularity');
+        var RegularityCB2 = [];
+        /* IRPP:IRN */ RegularityCB2.push('No irregularity');
+        /* IRPP:TOR */ RegularityCB2.push('Torsion eccentricity');
+        /* IRPP:REC */ RegularityCB2.push('Re-entrant corner');
+        /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
         $('#RegularityCB2').prop("disabled", false);
         select_populate('RegularityCB2', RegularityCB2);
 
-        RegularityCB3.push('No irregularity');
-        RegularityCB3.push('Soft storey');
-        RegularityCB3.push('Cripple wall');
-        RegularityCB3.push('Short column');
-        RegularityCB3.push('Pounding potential');
-        RegularityCB3.push('Setback');
-        RegularityCB3.push('Change in vertical structure');
-        RegularityCB3.push('Other vertical irregularity');
+        var RegularityCB3 = [];
+        /* IRVP:IRN  */ RegularityCB3.push('No irregularity');
+        /* IRVP:SOS  */ RegularityCB3.push('Soft storey');
+        /* IRVP:CRW  */ RegularityCB3.push('Cripple wall');
+        /* IRVP:SHC  */ RegularityCB3.push('Short column');
+        /* IRVP:POP  */ RegularityCB3.push('Pounding potential');
+        /* IRVP:SET  */ RegularityCB3.push('Setback');
+        /* IRVP:CHV  */ RegularityCB3.push('Change in vertical structure');
+        /* IRVP:IRVO */ RegularityCB3.push('Other vertical irregularity');
         $('#RegularityCB3').prop("disabled", false);
         select_populate('RegularityCB3', RegularityCB3);
     }
@@ -812,11 +813,10 @@ function taxt_ValidateRegularity2()
     }
     else {
         var RegularityCB4 = [];
-
-        RegularityCB4.push('No irregularity');
-        RegularityCB4.push('Torsion eccentricity');
-        RegularityCB4.push('Re-entrant corner');
-        RegularityCB4.push('Other plan irregularity');
+        /* IRPS:IRN  */ RegularityCB4.push('No irregularity');
+        /* IRPS:TOR  */ RegularityCB4.push('Torsion eccentricity');
+        /* IRPS:REC  */ RegularityCB4.push('Re-entrant corner');
+        /* IRPS:IRHO */ RegularityCB4.push('Other plan irregularity');
         select_populate('RegularityCB4', RegularityCB4);
         $('#RegularityCB4').prop("disabled", false);
     }
@@ -834,14 +834,14 @@ function taxt_ValidateRegularity3()
     else {
         var RegularityCB5 = [];
 
-        RegularityCB5.push('No irregularity');
-        RegularityCB5.push('Soft storey');
-        RegularityCB5.push('Cripple wall');
-        RegularityCB5.push('Short column');
-        RegularityCB5.push('Pounding potential');
-        RegularityCB5.push('Setback');
-        RegularityCB5.push('Change in vertical structure');
-        RegularityCB5.push('Other vertical irregularity');
+        /* IRVS:IRN  */ RegularityCB5.push('No irregularity');
+        /* IRVS:SOS  */ RegularityCB5.push('Soft storey');
+        /* IRVS:CRW  */ RegularityCB5.push('Cripple wall');
+        /* IRVS:SHC  */ RegularityCB5.push('Short column');
+        /* IRVS:POP  */ RegularityCB5.push('Pounding potential');
+        /* IRVS:SET  */ RegularityCB5.push('Setback');
+        /* IRVS:CHV  */ RegularityCB5.push('Change in vertical structure');
+        /* IRVS:IRVO */ RegularityCB5.push('Other vertical irregularity');
         select_populate('RegularityCB5', RegularityCB5);
         $('#RegularityCB5').prop("disabled", false);
     }
@@ -2302,7 +2302,7 @@ function taxt_BuildTaxonomy()
         direction2 = direction2 + '+OF';
     }
 
-    /* 
+    /*
        0) direction X
 
           0 - Material type
@@ -3188,45 +3188,44 @@ function taxt_Initiate() {
     $('#OccupancyCB2').on('change', taxt_OccupancyCB2Select);
 
     var PositionCB = [];
-
-    PositionCB.push('Unknown building position');
-    PositionCB.push('Detached building');
-    PositionCB.push('Adjoining building(s) on one side');
-    PositionCB.push('Adjoining building(s) on two sides');
-    PositionCB.push('Adjoining building(s) on three sides');
+    /* BP99 */ PositionCB.push('Unknown building position');
+    /* BPD  */ PositionCB.push('Detached building');
+    /* BP1  */ PositionCB.push('Adjoining building(s) on one side');
+    /* BP2  */ PositionCB.push('Adjoining building(s) on two sides');
+    /* BP3  */ PositionCB.push('Adjoining building(s) on three sides');
     select_populate('PositionCB', PositionCB);
     $('#PositionCB').val(0);
     $('#PositionCB').on('change', taxt_PositionCBSelect);
 
     var PlanShapeCB = [];
-    PlanShapeCB.push('Unknown plan shape');
-    PlanShapeCB.push('Square, solid');
-    PlanShapeCB.push('Square, with an opening in plan');
-    PlanShapeCB.push('Rectangular, solid');
-    PlanShapeCB.push('Rectangular, with an opening in plan');
-    PlanShapeCB.push('L-shape');
-    PlanShapeCB.push('Curved, solid (e.g. circular, eliptical, ovoid)');
-    PlanShapeCB.push('Curved, with an opening in plan');
-    PlanShapeCB.push('Triangular, solid');
-    PlanShapeCB.push('Triangular, with an opening in plan');
-    PlanShapeCB.push('E-shape');
-    PlanShapeCB.push('H-shape');
-    PlanShapeCB.push('S-shape');
-    PlanShapeCB.push('T-shape');
-    PlanShapeCB.push('U- or C-shape');
-    PlanShapeCB.push('X-shape');
-    PlanShapeCB.push('Y-shape');
-    PlanShapeCB.push('Polygonal, solid');
-    PlanShapeCB.push('Polygonal, with an opening in plan');
-    PlanShapeCB.push('Irregular plan shape');
+    /* PLF99  */ PlanShapeCB.push('Unknown plan shape');
+    /* PLFSQ  */ PlanShapeCB.push('Square, solid');
+    /* PLFSQO */ PlanShapeCB.push('Square, with an opening in plan');
+    /* PLFR   */ PlanShapeCB.push('Rectangular, solid');
+    /* PLFRO  */ PlanShapeCB.push('Rectangular, with an opening in plan');
+    /* PLFL   */ PlanShapeCB.push('L-shape');
+    /* PLFC   */ PlanShapeCB.push('Curved, solid (e.g. circular, eliptical, ovoid)');
+    /* PLFCO  */ PlanShapeCB.push('Curved, with an opening in plan');
+    /* PLFD   */ PlanShapeCB.push('Triangular, solid');
+    /* PLFDO  */ PlanShapeCB.push('Triangular, with an opening in plan');
+    /* PLFE   */ PlanShapeCB.push('E-shape');
+    /* PLFH   */ PlanShapeCB.push('H-shape');
+    /* PLFS   */ PlanShapeCB.push('S-shape');
+    /* PLFT   */ PlanShapeCB.push('T-shape');
+    /* PLFU   */ PlanShapeCB.push('U- or C-shape');
+    /* PLFX   */ PlanShapeCB.push('X-shape');
+    /* PLFY   */ PlanShapeCB.push('Y-shape');
+    /* PLFP   */ PlanShapeCB.push('Polygonal, solid');
+    /* PLFPO  */ PlanShapeCB.push('Polygonal, with an opening in plan');
+    /* PLFI   */ PlanShapeCB.push('Irregular plan shape');
     select_populate('PlanShapeCB', PlanShapeCB);
     $('#PlanShapeCB').val(0);
     $('#PlanShapeCB').on('change', taxt_PlanShapeCBSelect);
 
     var RegularityCB1 = [];
-    RegularityCB1.push('Unknown structural irregularity');
-    RegularityCB1.push('Regular structure');
-    RegularityCB1.push('Irregular structure');
+    /* IR99 */ RegularityCB1.push('Unknown structural irregularity');
+    /* IRRE */ RegularityCB1.push('Regular structure');
+    /* IRIR */ RegularityCB1.push('Irregular structure');
     select_populate('RegularityCB1', RegularityCB1);
     $('#RegularityCB1').val(0);
     $('#RegularityCB1').on('change', taxt_RegularityCB1Select);
@@ -3236,18 +3235,18 @@ function taxt_Initiate() {
     $('#RegularityCB5').on('change', taxt_RegularityCB5Select);
 
     var WallsCB = [];
-    WallsCB.push('Unknown material of exterior walls');
-    WallsCB.push('Concrete exterior walls');
-    WallsCB.push('Glass exterior walls');
-    WallsCB.push('Earthen exterior walls');
-    WallsCB.push('Masonry exterior walls');
-    WallsCB.push('Metal exterior walls');
-    WallsCB.push('Vegetative exterior walls');
-    WallsCB.push('Wooden exterior walls');
-    WallsCB.push('Stucco finish on light framing for exterior walls');
-    WallsCB.push('Plastic/vinyl exterior walls, various');
-    WallsCB.push('Cement-based boards for exterior walls');
-    WallsCB.push('Material of exterior walls, other');
+    /* EW99 */  WallsCB.push('Unknown material of exterior walls');
+    /* EWC  */  WallsCB.push('Concrete exterior walls');
+    /* EWG  */  WallsCB.push('Glass exterior walls');
+    /* EWE  */  WallsCB.push('Earthen exterior walls');
+    /* EWMA */  WallsCB.push('Masonry exterior walls');
+    /* EWME */  WallsCB.push('Metal exterior walls');
+    /* EWV  */  WallsCB.push('Vegetative exterior walls');
+    /* EWW9 */  WallsCB.push('Wooden exterior walls');
+    /* EWSL */  WallsCB.push('Stucco finish on light framing for exterior walls');
+    /* EWPL */  WallsCB.push('Plastic/vinyl exterior walls, various');
+    /* EWCB */  WallsCB.push('Cement-based boards for exterior walls');
+    /* EWO  */  WallsCB.push('Material of exterior walls, other');
     select_populate('WallsCB', WallsCB);
     $('#WallsCB').val(0);
     $('#WallsCB').on('change', taxt_WallsCBSelect);
@@ -3892,6 +3891,186 @@ function populate(s) {
         alert("Not identified '" + occu_atom + "' as specification of '" + occu_id + "' occupancy.");
         return (false);
     }
+
+    //
+    //  Build position
+    //
+    var bupo, bupo_items, bupo_label, bupo_id, bupo_vals, bupo_atom;
+    bupo = sar[9].split('+');
+    bupo_label = bupo[0];
+
+    if (bupo.length != 1) {
+        alert("Building position within a block not defined properly.");
+        return (false);
+    }
+
+    for (i = 0 ; i < bupo_type.length ; i++) {
+        if (bupo_label == bupo_type[i].id) {
+            bupo_id = bupo_label;
+            $('#PositionCB').val(i);
+            taxt_PositionCBSelect(null);
+            break;
+        }
+    }
+    if (i == bupo_type.length) {
+        alert("Not identified '" + bupo_label + "' as specification of building position within a block.");
+        return (false);
+    }
+
+    //
+    //  Plan shape
+    //
+    var plsh, plsh_items, plsh_label, plsh_id, plsh_vals, plsh_atom;
+    plsh = sar[10].split('+');
+    plsh_label = plsh[0];
+
+    if (plsh.length != 1) {
+        alert("Shape of the building plan not defined properly.");
+        return (false);
+    }
+
+    for (i = 0 ; i < plsh_type.length ; i++) {
+        if (plsh_label == plsh_type[i].id) {
+            plsh_id = plsh_label;
+            $('#PlanShapeCB').val(i);
+            taxt_PlanShapeCBSelect(null);
+            break;
+        }
+    }
+    if (i == plsh_type.length) {
+        alert("Not identified '" + plsh_label + "' as specification of shape of the building plan.");
+        return (false);
+    }
+
+    //
+    // Structural irregularity
+    //
+    var stir, stir_items, stir_label, stir_id, stir_vals, stir_atom;
+    var plir_id = "", plse_id = "", veir_id = "", vese_id = "";
+
+    stir = sar[11].split('+');
+    stir_label = stir[0];
+
+    for (i = 0 ; i < stir_type.length ; i++) {
+        if (stir_label == stir_type[i].id) {
+            stir_id = stir_label;
+            $('#RegularityCB1').val(i);
+            taxt_RegularityCB1Select(null);
+            break;
+        }
+    }
+    if (i == stir_type.length) {
+        alert("Not identified '" + stir_label + "' as specification of shape of the building plan.");
+        return (false);
+    }
+
+    if (stir_id != "IRIR" &&
+        stir.length > 1) {
+        alert("Structural irregularity not defined properly.");
+        return (FALSE);
+    }
+
+    for (sub_i = 1 ; sub_i < stir.length ; sub_i++) {
+        stir_atom = stir[sub_i];
+        s_items = stir_atom.split(':');
+        if (s_items.length != 2) {
+            alert("'" + stir[sub_i] + "' not define properly as specification of '" + stir_id + "' type of irregularity.");
+            return (false);
+        }
+        s_label = s_items[0];
+
+        // Plan structural irregularity - primary
+        if (s_label == "IRPP") {
+            for (i = 0 ; i < plan_irre.length ; i++) {
+                if (stir_atom == plan_irre[i].id) {
+                    plir_id = stir_atom;
+                    $('#RegularityCB2').val(i);
+                    taxt_RegularityCB2Select(null);
+                    break;
+                }
+            }
+            if (i < plan_irre.length) {
+                continue;
+            }
+        }
+        else if (s_label == "IRPS") {
+            for (i = 0 ; i < plan_seco.length ; i++) {
+                if (stir_atom == plan_seco[i].id) {
+                    plse_id = stir_atom;
+                    $('#RegularityCB4').val(i);
+                    taxt_RegularityCB4Select(null);
+                    break;
+                }
+            }
+            if (i < plan_seco.length) {
+                continue;
+            }
+        }
+        else if (s_label == "IRVP") {
+            for (i = 0 ; i < vert_irre.length ; i++) {
+                if (stir_atom == vert_irre[i].id) {
+                    veir_id = stir_atom;
+                    $('#RegularityCB3').val(i);
+                    taxt_RegularityCB3Select(null);
+                    break;
+                }
+            }
+            if (i < vert_irre.length) {
+                continue;
+            }
+        }
+        else if (s_label == "IRVS") {
+            for (i = 0 ; i < vert_seco.length ; i++) {
+                if (stir_atom == vert_seco[i].id) {
+                    vese_id = stir_atom;
+                    $('#RegularityCB5').val(i);
+                    taxt_RegularityCB5Select(null);
+                    break;
+                }
+            }
+            if (i < vert_seco.length) {
+                continue;
+            }
+        }
+        alert("Not identified '" + stir_atom + "' as specification of structural irregularity.");
+        return (false);
+    }
+
+    if (plir_id == "IRPP:IRN" && plse_id != "IRPS:IRN") {
+        alert("'" + plir_id + "' and '" + plse_id + "' are not a valid specification of structural irregularity.");
+        return (false);
+    }
+    if (veir_id == "IRVP:IRN" && vese_id != "IRVS:IRN") {
+        alert("'" + veir_id + "' and '" + vese_id + "' are not a valid specification of structural irregularity.");
+        return (false);
+    }
+
+
+    //
+    //  Exterior wall
+    //
+    var wall, wall_items, wall_label, wall_id, wall_vals, wall_atom;
+    wall = sar[12].split('+');
+    wall_label = wall[0];
+    if (wall.length != 1) {
+        alert("Exterior walls not defined properly.");
+        return (false);
+    }
+
+    for (i = 0 ; i < wall_type.length ; i++) {
+        if (wall_label == wall_type[i].id) {
+            wall_id = wall_label;
+            $('#WallsCB').val(i);
+            taxt_WallsCBSelect(null);
+            break;
+        }
+    }
+    if (i == wall_type.length) {
+        alert("Not identified '" + wall_label + "' as specification of exterior walls.");
+        return (false);
+    }
+
+
 
 
 }

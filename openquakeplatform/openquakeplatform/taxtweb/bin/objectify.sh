@@ -214,7 +214,7 @@ echo
 echo "               ];"
 
 
-# date
+# occupancy
 echo
 echo "var occu_type = ["
 comma=""
@@ -258,3 +258,133 @@ for i in $(egrep 'var OccupancyCB2 = \[\];|OccupancyCB2\.push' $fin ; echo "THE 
         echo "                  ];"
     fi
 done
+
+# Position
+echo
+echo "var bupo_type = ["
+comma=""
+for i in $(grep 'PositionCB.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*PositionCB\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# PlanShape
+echo
+echo "var plsh_type = ["
+comma=""
+for i in $(grep 'PlanShapeCB.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*PlanShapeCB\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# structural irregularity
+echo
+echo "var stir_type = ["
+comma=""
+for i in $(grep 'RegularityCB1.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RegularityCB1\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# plan structural irregularity
+echo
+echo "var plan_irre = ["
+comma=""
+for i in $(grep 'RegularityCB2.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RegularityCB2\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# plan structural irregularity (secondary)
+echo
+echo "var plan_seco = ["
+comma=""
+for i in $(grep 'RegularityCB4.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RegularityCB4\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# plan vertical irregularity
+echo
+echo "var vert_irre = ["
+comma=""
+for i in $(grep 'RegularityCB3.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RegularityCB3\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# plan vertical irregularity (secondary)
+echo
+echo "var vert_seco = ["
+comma=""
+for i in $(grep 'RegularityCB5.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RegularityCB5\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# walls
+echo
+echo "var wall_type = ["
+comma=""
+for i in $(grep 'WallsCB.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*WallsCB\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+
