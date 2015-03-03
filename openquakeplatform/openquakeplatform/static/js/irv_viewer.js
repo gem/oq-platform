@@ -17,6 +17,7 @@
 var sessionProjectDef = [];
 var selectedRegion;
 var sessionProjectDefStr;
+var projectLayerAttributes;
 var region = [];
 var districts = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
@@ -381,28 +382,7 @@ function processIndicators(layerAttributes, projectDef) {
     //// Scale ////
     ///////////////
 
-    // TODO take care not to devide by 0
-
-    // TODO crate a function for scaling
-
-    var sviValueArray = [];
-    var scaleSVIvalues = [];
-    for (var v in SVI) {
-        sviValueArray.push(SVI[v]);
-    }
-
-    var tempSVImin = Math.min.apply(null, sviValueArray),
-        tempSVImax = Math.max.apply(null, sviValueArray);
-
-    for (var j = 0; j < sviValueArray.length; j++) {
-        scaleSVIvalues.push( (sviValueArray[j] - tempSVImin) / (tempSVImax - tempSVImin) );
-    }
-
-    var tempKeys = Object.keys(SVI);
-
-    for (var ih = 0; ih < tempKeys.length; ih++) {
-        SVI[tempKeys[ih]] = scaleSVIvalues[ih];
-    }
+    scale(SVI);
 
     ////////////////////////////////
     //// Compute the risk index ////
@@ -424,20 +404,7 @@ function processIndicators(layerAttributes, projectDef) {
     //// Scale ////
     ///////////////
 
-    var riValueArray = [];
-    var scaleRIvalues = [];
-    for (var vj in RI) {
-        riValueArray.push(RI[vj]);
-    }
-    var tempRImin = Math.min.apply(null, riValueArray),
-        tempRImax = Math.max.apply(null, riValueArray);
-    for (var jl = 0; jl < riValueArray.length; jl++) {
-        scaleRIvalues.push( (riValueArray[jl] - tempRImin) / (tempRImax - tempRImin) );
-    }
-    var tempKeys = Object.keys(RI);
-    for (var ij = 0; ij < tempKeys.length; ij++) {
-        RI[tempKeys[ij]] = scaleRIvalues[ij];
-    }
+    scale(RI);
 
     ///////////////////////////////
     //// Compute the IRI index ////
@@ -455,31 +422,30 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
     if (iriOperator == "Average (ignore weights)") {
-        // todo change jb to regionName
-        for (var jb in SVI) {
-            tempVal = SVI[jb] + RI[jb];
+        for (var regionName in SVI) {
+            tempVal = SVI[regionName] + RI[regionName];
             var iriAverage = tempVal / 2;
-            IRI[jb] = iriAverage;
+            IRI[regionName] = iriAverage;
         }
     } else if (iriOperator == "Simple sum (ignore weights)") {
-        for (var jb in SVI) {
-            tempVal = SVI[jb] + RI[jb];
-            IRI[jb] = tempVal;
+        for (var regionName in SVI) {
+            tempVal = SVI[regionName] + RI[regionName];
+            IRI[regionName] = tempVal;
         }
     } else if (iriOperator == "Weighted sum") {
-        for (var jb in SVI) {
-            tempVal = (SVI[jb] * sviWeight) + (RI[jb] * riWeight);
-            IRI[jb] = tempVal;
+        for (var regionName in SVI) {
+            tempVal = (SVI[regionName] * sviWeight) + (RI[regionName] * riWeight);
+            IRI[regionName] = tempVal;
         }
     } else if (iriOperator == "Simple multiplication (ignore weights)") {
-        for (var jb in SVI) {
-            tempVal = SVI[jb] * RI[jb];
-            IRI[jb] = tempVal;
+        for (var regionName in SVI) {
+            tempVal = SVI[regionName] * RI[regionName];
+            IRI[regionName] = tempVal;
         }
     } else if (iriOperator == "Weighted multiplication") {
-        for (var jb in SVI) {
-            tempVal = (SVI[jb] * sviWeight) * (RI[jb] * riWeight);
-            IRI[jb] = tempVal;
+        for (var regionName in SVI) {
+            tempVal = (SVI[regionName] * sviWeight) * (RI[regionName] * riWeight);
+            IRI[regionName] = tempVal;
         }
     }
 
@@ -487,23 +453,11 @@ function processIndicators(layerAttributes, projectDef) {
     //// Scale ////
     ///////////////
 
-    var iriValueArray = [];
-    var scaleIRIvalues = [];
-    for (var vi in IRI) {
-        iriValueArray.push(IRI[vi]);
-    }
-    var tempIRImin = Math.min.apply(null, iriValueArray),
-        tempIRImax = Math.max.apply(null, iriValueArray);
-    for (var ij = 0; ij < iriValueArray.length; ij++) {
-        scaleIRIvalues.push( (iriValueArray[ij] - tempIRImin) / (tempIRImax - tempIRImin) );
-    }
-    var tempKeys = Object.keys(IRI);
-    for (var il = 0; il < tempKeys.length; il++) {
-        IRI[tempKeys[il]] = scaleIRIvalues[il];
-    }
-    //IRI.plotElement = "iri"; // Lable within the object
-    //RI.plotElement = "ri"; // Lable within the object
-    //SVI.plotElement = "svi"; // Lable within the object
+    scale(IRI);
+
+    IRI.plotElement = "iri"; // Lable within the object
+    RI.plotElement = "ri"; // Lable within the object
+    SVI.plotElement = "svi"; // Lable within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
@@ -516,6 +470,25 @@ function processIndicators(layerAttributes, projectDef) {
     ///////////////////////////////////
 
 } // End processIndicators
+
+function scale(IndicatorObj) {
+    var ValueArray = [];
+    var scaledValues = [];
+    for (var v in IndicatorObj) {
+        ValueArray.push(IndicatorObj[v]);
+    }
+    var tempMin = Math.min.apply(null, ValueArray),
+        tempMax = Math.max.apply(null, ValueArray);
+    for (var j = 0; j < ValueArray.length; j++) {
+        // TODO make sure not to devide by zero
+        scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
+    }
+    var tempKeys = Object.keys(IndicatorObj);
+    for (var ih = 0; ih < tempKeys.length; ih++) {
+        IndicatorObj[tempKeys[ih]] = scaledValues[ih];
+    }
+    return IndicatorObj
+}
 
 var startApp = function() {
     $('#projectDef-spinner').hide();
@@ -593,6 +566,9 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(layerAttributes) {
+                // Make a global variable used by the d3-tree chart
+                // when a weight is modified
+                projectLayerAttributes = layerAttributes;
                 // provide a dropdown menu to select the region field
                 var layerFields = [];
                 // get all the field name out of the layer attributes object
