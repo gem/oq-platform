@@ -544,7 +544,7 @@ var startApp = function() {
             var stringToLookFor = 'SVIR_QGIS_Plugin';
             for (var i = 0; i < featureType.length; i++) {
                 if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Name);
+                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
                 }
             }
             // Append the layer to the selection dropdown menu
