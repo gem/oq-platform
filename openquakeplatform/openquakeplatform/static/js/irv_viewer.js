@@ -579,6 +579,56 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(layerAttributes) {
+                console.log('layerAttributes:');
+                console.log(layerAttributes);
+                // Make some polygons from the WFS
+                /*
+                L.geoJson(layerAttributes.features, {
+                    style: function(feature) {
+                        switch (feature.properties.COUNTRY_NA) {
+                            case 'Alenquer': return {color: "#ff0000"};
+                            case 'Amadora':   return {color: "#0000ff"};
+                            case 'Arruda dos Vinhos':   return {color: "#ff0000"};
+                        }
+                    }
+                }).addTo(map);
+*/
+
+                var colorFunction1 = new L.HSLLuminosityFunction(new L.Point(1,0.75), new L.Point(55,0.2), {outputHue: 240, outputSaturation: '50%'});
+                var opacityFunction = new L.PiecewiseFunction([new L.LinearFunction(new L.Point(0, 0), new L.Point(1, 0.7)), new L.LinearFunction(new L.Point(1, 0.7), new L.Point(55, 0.7))]);
+
+                // For the full options, see the documentation
+                var options = {
+                    recordsField: 'features',
+                    locationMode: L.LocationModes.GEOJSON,
+                    geoJSONField: 'geometry',
+                    layerOptions: {
+                        fillOpacity: 1,
+                        opacity: 1,
+                        weight: 1,
+                        stroke: true,
+                        color: '#0000FF'
+                    },
+                    displayOptions: {
+                        // The display will be colored by your 'density' property in your GeoJSON. This accesses the feature object directory, so the 'properties' prefix is required if you're going to access a GeoJSON property on your data.
+                        'properties.AGEDEP': {
+                            // A legend will automatically be generated for you. You can add this as a control. This displayName property will be the title for this layer's legend.
+                            displayName: 'COUNTRY_NA',
+                            fillColor: colorFunction1,
+                            fillOpacity: opacityFunction
+                        }
+                    }
+                };
+
+                var foobar = new L.ChoroplethDataLayer(layerAttributes, options);
+                map.addLayer(foobar);
+                console.log('foobar:');
+                console.log(foobar);
+                console.log('map:');
+                console.log(map);
+
+
+
                 // Make a global variable used by the d3-tree chart
                 // when a weight is modified
                 projectLayerAttributes = layerAttributes;
@@ -626,7 +676,7 @@ var startApp = function() {
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
                 // ***** TEMP remove this ****
-                //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
+                layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
@@ -670,6 +720,7 @@ var startApp = function() {
         });
         // Get WMS layer
         //http://192.168.56.10:8080/geoserver/oqplatform/wms?service=WMS&version=1.1.0&request=GetMap&layers=oqplatform:ben2&styles=&bbox=-109.450553894043,-55.9840278625488,-28.8472194671629,13.3945837020875&width=512&height=440&srs=EPSG:4326&format=image%2Fpng
+        /*
         var WMSLayer = L.tileLayer.wms("/geoserver/oqplatform/wms", {
             layers: selectedLayer,
             format: 'image/png',
@@ -680,6 +731,7 @@ var startApp = function() {
         });
 
         WMSLayer.addTo(map);
+        */
     }
 
     // Region selection dialog
