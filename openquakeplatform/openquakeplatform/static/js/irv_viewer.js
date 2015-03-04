@@ -544,6 +544,8 @@ var startApp = function() {
             var stringToLookFor = 'SVIR_QGIS_Plugin';
             for (var i = 0; i < featureType.length; i++) {
                 if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                    var tempTitle = featureType[i].Title;
+                    var tempName = featureType[i].Name;
                     SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
                 }
             }
@@ -552,14 +554,25 @@ var startApp = function() {
                 $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
             }
             $('#svir-project-list').show();
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get a list of layers from GeoServer</p>'
+                );
+            $('#ajaxErrorDialog').dialog('open');
         }
     });
 
+    // Get the layer metadata (project def)
     $('#svir-project-list').change(function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
-        // Get the layer metadata (project def)
+        // Get the selected layer
         var selectedLayer = document.getElementById('svir-project-list').value;
+        // clean the selected layer to get just the layer name
+        selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
+        selectedLayer = selectedLayer.replace(/[)]/g, '');
 
         // Get layer attributes from GeoServer
         $.ajax({
@@ -594,13 +607,19 @@ var startApp = function() {
                     selectedRegion = document.getElementById('region-selection-list').value;
                     getLayerInfo(selectedLayer, layerAttributes);
                 });
+            },
+            error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get information about the selected layer</p>'
+                );
+            $('#ajaxErrorDialog').dialog('open');
             }
         });
     });
 
 
     function getLayerInfo(selectedLayer, layerAttributes) {
-
         $('#regionSelectionDialog').dialog('close');
         $.ajax({
             type: 'get',
@@ -640,6 +659,13 @@ var startApp = function() {
                     $('#region-selection-list').show();
                     processIndicators(layerAttributes, sessionProjectDef);
                 });
+            },
+            error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get the supplemental information about the selected layer</p>'
+                );
+            $('#ajaxErrorDialog').dialog('open');
             }
         });
         // Get WMS layer
@@ -658,6 +684,15 @@ var startApp = function() {
 
     // Region selection dialog
     $('#regionSelectionDialog').dialog({
+        autoOpen: false,
+        height: 150,
+        width: 400,
+        closeOnEscape: true,
+        modal: true
+    });
+
+    // AJAX error dialog
+    $('#ajaxErrorDialog').dialog({
         autoOpen: false,
         height: 150,
         width: 400,
