@@ -89,7 +89,7 @@ def index(request, **kwargs):
     except ValueError as e:
         tab_id = 1
 
-    desc = [ 'Structural System', 'Building Information', 'Exterior Attributes', 'Roof/Floor/foundation' ]
+    desc = [ 'Structural System', 'Building Information', 'Exterior Attributes', 'Roof/Floor/Foundation' ]
     tab_content = ""
     for i in range(0, len(desc)):
         tab_content = (tab_content +
