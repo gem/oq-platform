@@ -163,17 +163,17 @@ table.dir_spec td {
 window.onload = function () {
     var tab_cur = {{ tab_id }};
     tab_set(tab_cur);
-    // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
-    // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNOX/DY+OF/S+SR+RIV/LWAL+DUC/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
-    // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/MR+CBH+RCM+SPBA/LH+DNO/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
-    // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99";
-    // var demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH9+RMT11+RFA+RFAO+RTDN/F99+FWC99/FOSDN";
+    /*
     var    demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH2+RMT1+RE+RE1+RWCP/FW+FW3+FWCN/FOSDN";
+    */
+    var taxonomy_in = '{{ taxonomy }}';
 
     var ret_s = { s: "" };
 
-    if (populate(demo, ret_s) == false) {
-        alert("Load of taxonomy failed\n" + ret_s.s);
+    if (taxonomy_in != '') {
+        if (populate(taxonomy_in, ret_s) == false) {
+            alert("Load of taxonomy failed\n" + ret_s.s);
+        }
     }
 
 }
@@ -431,11 +431,11 @@ window.onload = function () {
         <div style="position: absolute; bottom: 0px; margin: 8px;" >
             <p>Taxonomy string for this building typology: </p>
             <p><input id="resultE" type="text" size="80" maxlength="120"></input></p>
-            <p><input id="OmitCB" type="checkbox" onclick="taxt_OmitCBClick(this);">Omit code if corresponding parameter is unknown</p>
+            <p><input id="OmitCB" type="checkbox" onclick="taxt_OmitCBClick(this);">Omit code if corresponding parameter is unknown&nbsp;&nbsp;&nbsp;&nbsp;<a id="permalink" target="_blank" href="">Permalink</a></p>
         </div>
     </div>
 </div>
 
 <hr>
-<div><p>This tool is part of <a href="{{ SITEURL }}">The OpenQuake Platform</a></p></div>
+<div><p>This tool is part of the <a href="{{ SITEURL }}">OpenQuake Platform</a></p></div>
 </body> </html>

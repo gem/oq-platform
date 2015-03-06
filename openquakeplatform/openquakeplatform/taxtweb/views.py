@@ -81,13 +81,19 @@ for (i = 0 ; i < sar.length ; i++) {
     return True
 
 def index(request, **kwargs):
-
     try:
         tab_id = int(request.GET.get("tab_id", 1))
         if tab_id < 1 or tab_id > 4:
             tab_id = 1
     except ValueError as e:
         tab_id = 1
+
+    try:
+        subtab_id = int(request.GET.get("subtab_id", 1))
+        if subtab_id < 1 or subtab_id > 2:
+            subtab_id = 1
+    except ValueError as e:
+        subtab_id = 1
 
     desc = [ 'Structural System', 'Building Information', 'Exterior Attributes', 'Roof/Floor/Foundation' ]
     tab_content = ""
@@ -97,20 +103,19 @@ def index(request, **kwargs):
                         (i+1, ("_selected" if i + 1 == tab_id else ""),
                         (" tab_first" if i == 0 else ""), desc[i]))
 
-
-
     sub1desc = ['Direction X', 'Direction Y']
     sub1tab_content = ""
     for i in range(0, len(sub1desc)):
         sub1tab_content = (sub1tab_content +
                             '<li id="sub1tab_id-%d" class="subtab%s%s" onclick="sub1tab_set(this);"><span>%s</span></li>' %
-                            (i+1, ("_selected" if i + 1 == 1 else ""),
+                            (i+1, ("_selected" if i + 1 == subtab_id else ""),
                              (" subtab_first" if i == 0 else ""), sub1desc[i]))
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
     return render_to_response("taxtweb/index.html",
-                              dict(is_popup=is_popup,
+                              dict(taxonomy=kwargs['taxonomy'],
+                                   is_popup=is_popup,
                                    tab_id=tab_id,
                                    tab_content=tab_content,
                                    sub1tab_content=sub1tab_content,
