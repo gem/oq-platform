@@ -3493,7 +3493,7 @@ var material = [
                  { id: 'MATO', desc: 'Other material' }
                ];
 
-function populate(s) {
+function populate(s, ret_s) {
     var i;
     var sar, subar, dirx, diry, el;
     var mat;
@@ -3515,7 +3515,7 @@ function populate(s) {
         taxt_Direction1RB2Click(null);
     }
     else {
-        alert("Not valid 'Direction specifications' found.");
+        ret_s.s = "Not valid 'Direction specifications' found.";
         return false;
     }
 
@@ -3541,11 +3541,11 @@ function populate(s) {
         mat  = sar[1+(direct * 3)].split('+');
         llrs = sar[2+(direct * 3)].split('+');
         if (mat.length < 1) {
-            alert("Not defined material for 'Direction " + (direct == 0 ? "X" : "Y") + "'");
+            ret_s.s = "Not defined material for 'Direction " + (direct == 0 ? "X" : "Y") + "'";
             return (false);
         }
         if (llrs.length < 1) {
-            alert("Not defined LLRS for 'Direction " + (direct == 0 ? "X" : "Y") + "'");
+            ret_s.s = "Not defined LLRS for 'Direction " + (direct == 0 ? "X" : "Y") + "'";
             return (false);
         }
 
@@ -3558,7 +3558,7 @@ function populate(s) {
             }
         }
         if (i ==  material.length) {
-            alert("Not identified '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'");
+            ret_s.s = "Not identified '" + mat[0] + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'";
             return (false);
         }
 
@@ -3598,7 +3598,7 @@ function populate(s) {
             if (i < mat_prop[mat_id].length)
                 continue;
 
-            alert("Not identified '" + mat_atom + "' as specification of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
+            ret_s.s = "Not identified '" + mat_atom + "' as specification of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.";
             return (false);
         }
 
@@ -3615,7 +3615,8 @@ function populate(s) {
             }
         }
         if (i == llrs_type[mat_id].length) {
-            alert("Not identified '" + llrs[0] + "' as LLRS of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
+            ret_s.s = "Not identified '" + llrs[0] + "' as LLRS of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.";
+            return (false);
         }
 
 
@@ -3633,7 +3634,7 @@ function populate(s) {
             if (i < llrs_duct[llrs_id].length)
                 continue;
 
-            alert("Not identified '" + llrs_atom + "' as specification of '" + llrs[0] + "' LLRS of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.");
+            ret_s.s = "Not identified '" + llrs_atom + "' as specification of '" + llrs[0] + "' LLRS of '" + mat_id + "' material for 'Direction " + (direct == 0 ? "X" : "Y") + "'.";
             return (false);
         }
     }
@@ -3659,7 +3660,7 @@ function populate(s) {
     h_label = h_items[0];
 
     if (h.length != 4) {
-        alert("Height not defined properly.");
+        ret_s.s = "Height not defined properly.";
         return (false);
     }
 
@@ -3672,21 +3673,21 @@ function populate(s) {
         }
     }
     if (i == h_aboveground.length) {
-        alert("Not identified '" + h_label + "' as specification of height.");
+        ret_s.s = "Not identified '" + h_label + "' as specification of height.";
         return (false);
     }
     /* if some height is defined we must retrieve value/intervals and get the other
        3 height attributes */
     if (h_id != "H99") {
         if (h_items.length < 2) {
-            alert("Height: no values defined.");
+            ret_s.s = "Height: no values defined.";
             return (false);
         }
 
         h_vals = h_items[1].split(',');
         if (h_id == 'HBET') {
             if (h_vals.length != 2) {
-                alert("Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.");
+                ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
                 return (false);
             }
             $('#noStoreysE11').val(h_vals[0]);
@@ -3695,7 +3696,7 @@ function populate(s) {
         }
         else if (h_id == 'HEX' || h_id == 'HAPP') {
             if (h_vals.length != 1) {
-                alert("Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.");
+                ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
                 return (false);
             }
             $('#noStoreysE11').val(h_vals[0]);
@@ -3709,9 +3710,6 @@ function populate(s) {
 
         // Number of storey below ground
         if (h_label.substring(0,2) == "HB") {
-            if (sub_i != 1) {
-                alert("Height specification HBxx not in position 1.");
-            }
             for (e = 0 ; e < h_belowground.length ; e++) {
                 if (h_label == h_belowground[e].id) {
                     h_id = h_label;
@@ -3721,20 +3719,20 @@ function populate(s) {
                 }
             }
             if (e == h_belowground.length) {
-                alert("Not identified '" + h_label + "' as specification of number of storey below ground.");
+                ret_s.s = "Not identified '" + h_label + "' as specification of number of storey below ground.";
                 return (false);
             }
 
             h_vals = h_items[1].split(',');
             if (h_id == 'HB99') {
                 if (h_vals.length != 0) {
-                    alert("Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
                     return (false);
                 }
             }
             else if (h_id == 'HBBET') {
                 if (h_vals.length != 2) {
-                    alert("Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
                     return (false);
                 }
                 $('#noStoreysE21').val(h_vals[0]);
@@ -3743,7 +3741,7 @@ function populate(s) {
             }
             else if (h_id == 'HBEX' || h_id == 'HBAPP') {
                 if (h_vals.length != 1) {
-                    alert("Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
                     return (false);
                 }
                 $('#noStoreysE21').val(h_vals[0]);
@@ -3752,9 +3750,6 @@ function populate(s) {
         }
         // Above grade
         else if (h_label.substring(0,2) == "HF") {
-            if (sub_i != 2) {
-                alert("Height specification HFxx not in position 2.");
-            }
             for (e = 0 ; e < h_abovegrade.length ; e++) {
                 if (h_label == h_abovegrade[e].id) {
                     h_id = h_label;
@@ -3764,20 +3759,20 @@ function populate(s) {
                 }
             }
             if (e == h_abovegrade.length) {
-                alert("Height: not identified '" + h_label + "' as specification of height of ground floor level above grade.");
+                ret_s.s = "Height: not identified '" + h_label + "' as specification of height of ground floor level above grade.";
                 return (false);
             }
 
             h_vals = h_items[1].split(',');
             if (h_id == 'HF99') {
                 if (h_vals.length != 0) {
-                    alert("Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
                     return (false);
                 }
             }
             else if (h_id == 'HFBET') {
                 if (h_vals.length != 2) {
-                    alert("Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
                     return (false);
                 }
                 $('#noStoreysE31').val(h_vals[0]);
@@ -3786,7 +3781,7 @@ function populate(s) {
             }
             else if (h_id == 'HFEX' || h_id == 'HFAPP') {
                 if (h_vals.length != 1) {
-                    alert("Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
                     return (false);
                 }
                 $('#noStoreysE31').val(h_vals[0]);
@@ -3795,9 +3790,6 @@ function populate(s) {
         }
         // Slope
         else if (h_label.substring(0,2) == "HD") {
-            if (sub_i != 3) {
-                alert("Height specification HDxx not in position 3.");
-            }
             for (e = 0 ; e < h_slope.length ; e++) {
                 if (h_label == h_slope[e].id) {
                     h_id = h_label;
@@ -3807,20 +3799,20 @@ function populate(s) {
                 }
             }
             if (e == h_slope.length) {
-                alert("Height: not identified '" + h_label + "' as specification of slope of the ground.");
+                ret_s.s = "Height: not identified '" + h_label + "' as specification of slope of the ground.";
                 return (false);
             }
 
             h_vals = h_items[1].split(',');
             if (h_id == 'HD99') {
                 if (h_vals.length != 0) {
-                    alert("Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
                     return (false);
                 }
             }
             if (h_id == 'HD') {
                 if (h_vals.length != 1) {
-                    alert("Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.");
+                    ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
                     return (false);
                 }
                 $('#noStoreysE4').val(h_vals[0]);
@@ -3828,7 +3820,7 @@ function populate(s) {
             }
         }
         else {
-            alert("Height: not identified '" + h_label + "' as specification of height.");
+            ret_s.s = "Height: not identified '" + h_label + "' as specification of height.";
             return (false);
         }
     }
@@ -3843,7 +3835,7 @@ function populate(s) {
     date_label = date_items[0];
 
     if (date.length != 1) {
-        alert("Date not defined properly.");
+        ret_s.s = "Date not defined properly.";
         return (false);
     }
 
@@ -3856,19 +3848,19 @@ function populate(s) {
         }
     }
     if (i == date_type.length) {
-        alert("Not identified '" + date_label + "' as specification of date.");
+        ret_s.s = "Not identified '" + date_label + "' as specification of date.";
         return (false);
     }
     if (date_id != "Y99") {
         if (date_items.length < 2) {
-            alert("Date: no values defined.");
+            ret_s.s = "Date: no values defined.";
             return (false);
         }
 
         date_vals = date_items[1].split(',');
         if (date_id == 'YBET') {
             if (date_vals.length != 2) {
-                alert("Date: '" + date_id + "' type requires exactly 2 values, " + date_vals.length + " are given.");
+                ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + date_vals.length + " are given.";
                 return (false);
             }
             $('#DateE1').val(date_vals[0]);
@@ -3877,7 +3869,7 @@ function populate(s) {
         }
         else if (date_id == 'YEX' || date_id == 'YPRE' || date_id == 'YAPP') {
             if (date_vals.length != 1) {
-                alert("Date: '" + date_id + "' type requires exactly 1 value, " + date_vals.length + " are given.");
+                ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + date_vals.length + " are given.";
                 return (false);
             }
             $('#DateE1').val(date_vals[0]);
@@ -3893,7 +3885,7 @@ function populate(s) {
     occu_label = occu[0];
 
     if (occu.length != 2) {
-        alert("Occupancy not defined properly.");
+        ret_s.s = "Occupancy not defined properly.";
         return (false);
     }
 
@@ -3906,7 +3898,7 @@ function populate(s) {
         }
     }
     if (i == occu_type.length) {
-        alert("Not identified '" + occu_label + "' as specification of occupancy.");
+        ret_s.s = "Not identified '" + occu_label + "' as specification of occupancy.";
         return (false);
     }
 
@@ -3920,7 +3912,7 @@ function populate(s) {
         }
     }
     if (i == occu_spec[occu_id].length) {
-        alert("Not identified '" + occu_atom + "' as specification of '" + occu_id + "' occupancy.");
+        ret_s.s = "Not identified '" + occu_atom + "' as specification of '" + occu_id + "' occupancy.";
         return (false);
     }
 
@@ -3932,7 +3924,7 @@ function populate(s) {
     bupo_label = bupo[0];
 
     if (bupo.length != 1) {
-        alert("Building position within a block not defined properly.");
+        ret_s.s = "Building position within a block not defined properly.";
         return (false);
     }
 
@@ -3945,7 +3937,7 @@ function populate(s) {
         }
     }
     if (i == bupo_type.length) {
-        alert("Not identified '" + bupo_label + "' as specification of building position within a block.");
+        ret_s.s = "Not identified '" + bupo_label + "' as specification of building position within a block.";
         return (false);
     }
 
@@ -3957,7 +3949,7 @@ function populate(s) {
     plsh_label = plsh[0];
 
     if (plsh.length != 1) {
-        alert("Shape of the building plan not defined properly.");
+        ret_s.s = "Shape of the building plan not defined properly.";
         return (false);
     }
 
@@ -3970,7 +3962,7 @@ function populate(s) {
         }
     }
     if (i == plsh_type.length) {
-        alert("Not identified '" + plsh_label + "' as specification of shape of the building plan.");
+        ret_s.s = "Not identified '" + plsh_label + "' as specification of shape of the building plan.";
         return (false);
     }
 
@@ -3992,21 +3984,21 @@ function populate(s) {
         }
     }
     if (i == stir_type.length) {
-        alert("Not identified '" + stir_label + "' as specification of shape of the building plan.");
+        ret_s.s = "Not identified '" + stir_label + "' as specification of shape of the building plan.";
         return (false);
     }
 
     if (stir_id != "IRIR" &&
         stir.length > 1) {
-        alert("Structural irregularity not defined properly.");
-        return (FALSE);
+        ret_s.s = "Structural irregularity not defined properly.";
+        return (false);
     }
 
     for (sub_i = 1 ; sub_i < stir.length ; sub_i++) {
         stir_atom = stir[sub_i];
         s_items = stir_atom.split(':');
         if (s_items.length != 2) {
-            alert("'" + stir[sub_i] + "' not define properly as specification of '" + stir_id + "' type of irregularity.");
+            ret_s.s = "'" + stir[sub_i] + "' not define properly as specification of '" + stir_id + "' type of irregularity.";
             return (false);
         }
         s_label = s_items[0];
@@ -4064,16 +4056,16 @@ function populate(s) {
                 continue;
             }
         }
-        alert("Not identified '" + stir_atom + "' as specification of structural irregularity.");
+        ret_s.s = "Not identified '" + stir_atom + "' as specification of structural irregularity.";
         return (false);
     }
 
     if (plir_id == "IRPP:IRN" && plse_id != "IRPS:IRN") {
-        alert("'" + plir_id + "' and '" + plse_id + "' are not a valid specification of structural irregularity.");
+        ret_s.s = "'" + plir_id + "' and '" + plse_id + "' are not a valid specification of structural irregularity.";
         return (false);
     }
     if (veir_id == "IRVP:IRN" && vese_id != "IRVS:IRN") {
-        alert("'" + veir_id + "' and '" + vese_id + "' are not a valid specification of structural irregularity.");
+        ret_s.s = "'" + veir_id + "' and '" + vese_id + "' are not a valid specification of structural irregularity.";
         return (false);
     }
 
@@ -4085,7 +4077,7 @@ function populate(s) {
     wall = sar[12].split('+');
     wall_label = wall[0];
     if (wall.length != 1) {
-        alert("Exterior walls not defined properly.");
+        ret_s.s = "Exterior walls not defined properly.";
         return (false);
     }
 
@@ -4098,7 +4090,7 @@ function populate(s) {
         }
     }
     if (i == wall_type.length) {
-        alert("Not identified '" + wall_label + "' as specification of exterior walls.");
+        ret_s.s = "Not identified '" + wall_label + "' as specification of exterior walls.";
         return (false);
     }
 
@@ -4121,7 +4113,7 @@ function populate(s) {
         }
     }
     if (i == roof_shap.length) {
-        alert("Not identified '" + rosh_label + "' as specification of roof shape.");
+        ret_s.s = "Not identified '" + rosh_label + "' as specification of roof shape.";
         return (false);
     }
 
@@ -4176,7 +4168,7 @@ function populate(s) {
             if (i < roof_sys[roof_system_val].length)
                 continue;
         }
-        alert("Not identified '" + rosh_atom + "' as specification of roof.");
+        ret_s.s = "Not identified '" + rosh_atom + "' as specification of roof.";
         return (false);
     }
 
@@ -4198,7 +4190,7 @@ function populate(s) {
         }
     }
     if (i == floo_syma.length) {
-        alert("Not identified '" + flma_label + "' as specification of floor system material.");
+        ret_s.s = "Not identified '" + flma_label + "' as specification of floor system material.";
         return (false);
     }
 
@@ -4228,7 +4220,7 @@ function populate(s) {
         if (i < floo_syty.length)
             continue;
 
-        alert("Not identified '" + flma_atom + "' as specification of floor.");
+        ret_s.s = "Not identified '" + flma_atom + "' as specification of floor.";
         return (false);
     }
 
@@ -4239,7 +4231,7 @@ function populate(s) {
     foun = sar[15].split('+');
     foun_label = foun[0];
     if (foun.length != 1) {
-        alert("Foundations not defined properly.");
+        ret_s.s = "Foundations not defined properly.";
         return (false);
     }
 
@@ -4252,7 +4244,7 @@ function populate(s) {
         }
     }
     if (i == foun_type.length) {
-        alert("Not identified '" + foun_label + "' as specification of foundation.");
+        ret_s.s = "Not identified '" + foun_label + "' as specification of foundation.";
         return (false);
     }
     return (true);
