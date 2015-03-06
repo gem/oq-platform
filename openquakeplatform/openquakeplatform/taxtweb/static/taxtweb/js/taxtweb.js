@@ -2108,7 +2108,7 @@ function taxt_BuildTaxonomy()
     if ($('#RoofCB2').val() == 9)
         Taxonomy[26] = '+RMT8';
     if ($('#RoofCB2').val() == 10)
-        Taxonomy[26] = '+RM9T';
+        Taxonomy[26] = '+RMT9';
     if ($('#RoofCB2').val() == 11)
         Taxonomy[26] = '+RMT10';
     if ($('#RoofCB2').val() == 12)
@@ -2917,7 +2917,7 @@ begin
   if RoofCB2.ItemIndex=7 then Taxonomy[26]:='+RMT6';
   if RoofCB2.ItemIndex=8 then Taxonomy[26]:='+RMT7';
   if RoofCB2.ItemIndex=9 then Taxonomy[26]:='+RMT8';
-  if RoofCB2.ItemIndex=10 then Taxonomy[26]:='+RM9T';
+  if RoofCB2.ItemIndex=10 then Taxonomy[26]:='+RMT9';
   if RoofCB2.ItemIndex=11 then Taxonomy[26]:='+RMT10';
   if RoofCB2.ItemIndex=12 then Taxonomy[26]:='+RMT11';
   if RoofCB2.ItemIndex=13 then Taxonomy[26]:='+RMTO';
