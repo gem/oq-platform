@@ -388,3 +388,190 @@ echo
 echo "               ];"
 
 
+#
+#  Roof
+#
+
+# shape
+echo
+echo "var roof_shap = ["
+comma=""
+for i in $(grep 'RoofCB1.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RoofCB1\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# covering
+echo
+echo "var roof_cove = ["
+comma=""
+for i in $(grep 'RoofCB2.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RoofCB2\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# material
+echo
+echo "var roof_mate = ["
+comma=""
+for i in $(grep 'RoofCB3.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RoofCB3\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+# Roof system
+echo
+echo "var roof_sys_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var RoofCB4 = \[\];|RoofCB4\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var RoofCB4 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "roof_sys_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "RoofCB4.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*RoofCB4\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+
+
+# connection
+echo
+echo "var roof_conn = ["
+comma=""
+for i in $(grep 'RoofCB5.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*RoofCB5\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+
+
+
+#
+#  Floor
+#
+
+# floor system material
+echo
+echo "var floo_syma = ["
+comma=""
+for i in $(grep 'FloorCB1.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*FloorCB1\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+
+# floor connection
+echo
+echo "var floo_conn_grp = [];"
+first_grp="true"
+grp=0
+for i in $(egrep 'var FloorCB2 = \[\];|FloorCB2\.push' $fin ; echo "THE END") ; do
+    if echo "$i" | grep -q "var FloorCB2 = \[\];"; then
+        if [ "$first_grp" != "true" ]; then
+            echo
+            echo "                  ];"
+        fi
+        echo "floo_conn_grp[$grp] = ["
+        first_grp="false"
+        comma=""
+        grp=$((grp + 1))
+    elif echo "$i" | grep -q "FloorCB2.push"; then
+        if [ "$comma" != "" ]; then
+            echo "$comma"
+        fi
+        id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+        desc="$(echo "$i" | sed "s@.*FloorCB2\.push('@@g;s@');\$@@g")"
+        echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
+        comma=","
+    else
+        echo
+        echo "                  ];"
+    fi
+done
+
+# floor system type
+echo
+echo "var floo_syty = ["
+comma=""
+for i in $(grep 'FloorCB3.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*FloorCB3\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+#
+#  foundations
+#
+echo
+echo "var foun_type = ["
+comma=""
+for i in $(grep 'FoundationsCB.push' $fin) ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma"
+    fi
+    id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
+    desc="$(echo "$i" | sed "s@.*FoundationsCB\.push('@@g;s@');\$@@g")"
+    echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    comma=","
+done
+echo
+echo "               ];"
+
+
