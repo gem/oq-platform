@@ -120,6 +120,30 @@ var occu_spec =
     };
 
 
+var roof_sys =
+    { 'R99': [],
+      'RM':  roof_sys_grp[0],
+      'RE':  roof_sys_grp[1],
+      'RC':  roof_sys_grp[2],
+      'RME': roof_sys_grp[3],
+      'RWO': roof_sys_grp[4],
+      'RFA': roof_sys_grp[5],
+      'RO':  []
+    };
+
+var floo_conn =
+    { 'F99': [],
+      'FN':  [],
+      'FM':  floo_conn_grp[0],
+      'FE':  floo_conn_grp[1],
+      'FC':  floo_conn_grp[2],
+      'FME': floo_conn_grp[3],
+      'FW':  floo_conn_grp[4],
+      'FO':  []
+    };
+
+
+
 function populate_form()
 {
     try {
@@ -168,10 +192,10 @@ function taxt_ValidateSystem2() // Ok
     }
     else {
         var SystemCB22 = [];
-        SystemCB22.push('Ductility unknown');
-        SystemCB22.push('Ductile');
-        SystemCB22.push('Non-ductile');
-        SystemCB22.push('Base isolation and/or energy dissipation devices');
+        /* same */ SystemCB22.push('Ductility unknown');
+        /* same */ SystemCB22.push('Ductile');
+        /* same */ SystemCB22.push('Non-ductile');
+        /* same */ SystemCB22.push('Base isolation and/or energy dissipation devices');
         select_populate('SystemCB22', SystemCB22);
         $('SystemCB22').prop("disabled", false);
     }
@@ -378,88 +402,88 @@ function taxt_ValidateMaterial2() // Ok
     }
     else if ($('#MaterialCB12').val() == 2) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Unknown concrete technology');
-        MaterialCB22.push('Cast-in-place concrete');
-        MaterialCB22.push('Precast concrete');
+        /* same */ MaterialCB22.push('Unknown concrete technology');
+        /* same */ MaterialCB22.push('Cast-in-place concrete');
+        /* same */ MaterialCB22.push('Precast concrete');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
     }
     else if ($('#MaterialCB12').val() == 1 ||  $('#MaterialCB12').val() == 3 || $('#MaterialCB12').val() == 4) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Unknown concrete technology');
-        MaterialCB22.push('Cast-in-place concrete');
-        MaterialCB22.push('Precast concrete');
-        MaterialCB22.push('Cast-in-place prestressed concrete');
-        MaterialCB22.push('Precast prestressed concrete');
+        /* same */ MaterialCB22.push('Unknown concrete technology');
+        /* same */ MaterialCB22.push('Cast-in-place concrete');
+        /* same */ MaterialCB22.push('Precast concrete');
+        /* same */ MaterialCB22.push('Cast-in-place prestressed concrete');
+        /* same */ MaterialCB22.push('Precast prestressed concrete');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
     }
     else if ($('#MaterialCB12').val() == 5) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Steel, unknown ');
-        MaterialCB22.push('Cold-formed steel members');
-        MaterialCB22.push('Hot-rolled steel members');
-        MaterialCB22.push('Steel, other ');
+        /* same */ MaterialCB22.push('Steel, unknown ');
+        /* same */ MaterialCB22.push('Cold-formed steel members');
+        /* same */ MaterialCB22.push('Hot-rolled steel members');
+        /* same */ MaterialCB22.push('Steel, other ');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
     }
     else if ($('#MaterialCB12').val() == 6) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Metal, unknown ');
-        MaterialCB22.push('Iron');
-        MaterialCB22.push('Metal, other ');
+        /* same */ MaterialCB22.push('Metal, unknown ');
+        /* same */ MaterialCB22.push('Iron');
+        /* same */ MaterialCB22.push('Metal, other ');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
     }
     else if ($('#MaterialCB12').val() > 6 &&
              $('#MaterialCB12').val() < 11) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Masonry unit, unknown');
-        MaterialCB22.push('Adobe blocks');
-        MaterialCB22.push('Stone, unknown technology');
-        MaterialCB22.push('Rubble (field stone) or semi-dressed stone');
-        MaterialCB22.push('Dressed stone');
-        MaterialCB22.push('Fired clay unit, unknown type');
-        MaterialCB22.push('Fired clay solid bricks');
-        MaterialCB22.push('Fired clay hollow bricks');
-        MaterialCB22.push('Fired clay hollow blocks or tiles');
-        MaterialCB22.push('Concrete blocks, unknown type');
-        MaterialCB22.push('Concrete blocks, solid');
-        MaterialCB22.push('Concrete blocks, hollow');
-        MaterialCB22.push('Masonry unit, other');
+        /* same */ MaterialCB22.push('Masonry unit, unknown');
+        /* same */ MaterialCB22.push('Adobe blocks');
+        /* same */ MaterialCB22.push('Stone, unknown technology');
+        /* same */ MaterialCB22.push('Rubble (field stone) or semi-dressed stone');
+        /* same */ MaterialCB22.push('Dressed stone');
+        /* same */ MaterialCB22.push('Fired clay unit, unknown type');
+        /* same */ MaterialCB22.push('Fired clay solid bricks');
+        /* same */ MaterialCB22.push('Fired clay hollow bricks');
+        /* same */ MaterialCB22.push('Fired clay hollow blocks or tiles');
+        /* same */ MaterialCB22.push('Concrete blocks, unknown type');
+        /* same */ MaterialCB22.push('Concrete blocks, solid');
+        /* same */ MaterialCB22.push('Concrete blocks, hollow');
+        /* same */ MaterialCB22.push('Masonry unit, other');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
 
         if ($('#MaterialCB12').val() == 10) {
             var MaterialCB42 = [];
-            MaterialCB42.push('Unknown reinforcement');
-            MaterialCB42.push('Steel-reinforced');
-            MaterialCB42.push('Wood-reinforced');
-            MaterialCB42.push('Bamboo-, cane- or rope-reinforced');
-            MaterialCB42.push('Fibre reinforcing mesh');
-            MaterialCB42.push('Reinforced concrete bands');
+            /* same */ MaterialCB42.push('Unknown reinforcement');
+            /* same */ MaterialCB42.push('Steel-reinforced');
+            /* same */ MaterialCB42.push('Wood-reinforced');
+            /* same */ MaterialCB42.push('Bamboo-, cane- or rope-reinforced');
+            /* same */ MaterialCB42.push('Fibre reinforcing mesh');
+            /* same */ MaterialCB42.push('Reinforced concrete bands');
             select_populate('MaterialCB42', MaterialCB42);
             $('#MaterialCB42').prop("disabled", false);
         }
     }
     else if ($('#MaterialCB12').val() > 10 && $('#MaterialCB12').val() < 14) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Unknown earth technology');
-        MaterialCB22.push('Rammed earth');
-        MaterialCB22.push('Cob or wet construction');
-        MaterialCB22.push('Earth technology, other');
+        /* same */ MaterialCB22.push('Unknown earth technology');
+        /* same */ MaterialCB22.push('Rammed earth');
+        /* same */ MaterialCB22.push('Cob or wet construction');
+        /* same */ MaterialCB22.push('Earth technology, other');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
     }
     else if ($('#MaterialCB12').val() == 14) {
         var MaterialCB22 = [];
-        MaterialCB22.push('Wood, unknown');
-        MaterialCB22.push('Heavy wood');
-        MaterialCB22.push('Light wood members');
-        MaterialCB22.push('Solid wood');
-        MaterialCB22.push('Wattle and daub');
-        MaterialCB22.push('Bamboo');
-        MaterialCB22.push('Wood, other');
+        /* same */ MaterialCB22.push('Wood, unknown');
+        /* same */ MaterialCB22.push('Heavy wood');
+        /* same */ MaterialCB22.push('Light wood members');
+        /* same */ MaterialCB22.push('Solid wood');
+        /* same */ MaterialCB22.push('Wattle and daub');
+        /* same */ MaterialCB22.push('Bamboo');
+        /* same */ MaterialCB22.push('Wood, other');
         select_populate('MaterialCB22', MaterialCB22);
         $('#MaterialCB22').prop("disabled", false);
     }
@@ -471,30 +495,30 @@ function taxt_ValidateMaterial2() // Ok
 
     if ($('#MaterialCB12').val() == 5) {
         var MaterialCB32 = [];
-        MaterialCB32.push('Unknown connection');
-        MaterialCB32.push('Welded connections');
-        MaterialCB32.push('Riveted connections');
-        MaterialCB32.push('Bolted connections');
+        /* same */ MaterialCB32.push('Unknown connection');
+        /* same */ MaterialCB32.push('Welded connections');
+        /* same */ MaterialCB32.push('Riveted connections');
+        /* same */ MaterialCB32.push('Bolted connections');
         select_populate('MaterialCB32', MaterialCB32);
         $('#MaterialCB32').prop("disabled", false);
     }
     else if ($('#MaterialCB12').val() > 6 &&
              $('#MaterialCB12').val() < 11) {
         var MaterialCB32 = [];
-        MaterialCB32.push('Mortar type, unknown');
-        MaterialCB32.push('No mortar');
-        MaterialCB32.push('Mud mortar');
-        MaterialCB32.push('Lime mortar');
-        MaterialCB32.push('Cement mortar');
-        MaterialCB32.push('Cement:lime mortar');
-        MaterialCB32.push('Stone, unknown type');
-        MaterialCB32.push('Limestone');
-        MaterialCB32.push('Sandstone');
-        MaterialCB32.push('Tuff');
-        MaterialCB32.push('Slate');
-        MaterialCB32.push('Granite');
-        MaterialCB32.push('Basalt');
-        MaterialCB32.push('Stone, other type');
+        /* same */ MaterialCB32.push('Mortar type, unknown');
+        /* same */ MaterialCB32.push('No mortar');
+        /* same */ MaterialCB32.push('Mud mortar');
+        /* same */ MaterialCB32.push('Lime mortar');
+        /* same */ MaterialCB32.push('Cement mortar');
+        /* same */ MaterialCB32.push('Cement:lime mortar');
+        /* same */ MaterialCB32.push('Stone, unknown type');
+        /* same */ MaterialCB32.push('Limestone');
+        /* same */ MaterialCB32.push('Sandstone');
+        /* same */ MaterialCB32.push('Tuff');
+        /* same */ MaterialCB32.push('Slate');
+        /* same */ MaterialCB32.push('Granite');
+        /* same */ MaterialCB32.push('Basalt');
+        /* same */ MaterialCB32.push('Stone, other type');
         select_populate('MaterialCB32', MaterialCB32);
         $('#MaterialCB32').prop("disabled", false);
     }
@@ -508,39 +532,39 @@ function taxt_ValidateMaterial2() // Ok
 
     if ($('#MaterialCB12').val() > 10 && $('#MaterialCB12').val() < 14) {
         var SystemCB12 = [];
-        SystemCB12.push('Unknown lateral load-resisting system');
-        SystemCB12.push('No lateral load-resisting system');
-        SystemCB12.push('Wall');
-        SystemCB12.push('Hybrid lateral load-resisting system');
-        SystemCB12.push('Other lateral load-resisting system');
+        /* same */ SystemCB12.push('Unknown lateral load-resisting system');
+        /* same */ SystemCB12.push('No lateral load-resisting system');
+        /* same */ SystemCB12.push('Wall');
+        /* same */ SystemCB12.push('Hybrid lateral load-resisting system');
+        /* same */ SystemCB12.push('Other lateral load-resisting system');
         select_populate('SystemCB12', SystemCB12);
     }
     else if (($('#MaterialCB12').val() > 6 && $('#MaterialCB12').val() < 11) ||
              $('#MaterialCB12').val() == 14) {
         var SystemCB12 = [];
-        SystemCB12.push('Unknown lateral load-resisting system');
-        SystemCB12.push('No lateral load-resisting system');
-        SystemCB12.push('Moment frame');
-        SystemCB12.push('Post and beam');
-        SystemCB12.push('Wall');
-        SystemCB12.push('Hybrid lateral load-resisting system');
-        SystemCB12.push('Other lateral load-resisting system');
+        /* same */ SystemCB12.push('Unknown lateral load-resisting system');
+        /* same */ SystemCB12.push('No lateral load-resisting system');
+        /* same */ SystemCB12.push('Moment frame');
+        /* same */ SystemCB12.push('Post and beam');
+        /* same */ SystemCB12.push('Wall');
+        /* same */ SystemCB12.push('Hybrid lateral load-resisting system');
+        /* same */ SystemCB12.push('Other lateral load-resisting system');
         select_populate('SystemCB12', SystemCB12);
     }
     else {
         var SystemCB12 = [];
-        SystemCB12.push('Unknown lateral load-resisting system');
-        SystemCB12.push('No lateral load-resisting system');
-        SystemCB12.push('Moment frame');
-        SystemCB12.push('Infilled frame');
-        SystemCB12.push('Braced frame');
-        SystemCB12.push('Post and beam');
-        SystemCB12.push('Wall');
-        SystemCB12.push('Dual frame-wall system');
-        SystemCB12.push('Flat slab/plate or waffle slab');
-        SystemCB12.push('Infilled flat slab/plate or infilled waffle slab');
-        SystemCB12.push('Hybrid lateral load-resisting system');
-        SystemCB12.push('Other lateral load-resisting system');
+        /* same */ SystemCB12.push('Unknown lateral load-resisting system');
+        /* same */ SystemCB12.push('No lateral load-resisting system');
+        /* same */ SystemCB12.push('Moment frame');
+        /* same */ SystemCB12.push('Infilled frame');
+        /* same */ SystemCB12.push('Braced frame');
+        /* same */ SystemCB12.push('Post and beam');
+        /* same */ SystemCB12.push('Wall');
+        /* same */ SystemCB12.push('Dual frame-wall system');
+        /* same */ SystemCB12.push('Flat slab/plate or waffle slab');
+        /* same */ SystemCB12.push('Infilled flat slab/plate or infilled waffle slab');
+        /* same */ SystemCB12.push('Hybrid lateral load-resisting system');
+        /* same */ SystemCB12.push('Other lateral load-resisting system');
         select_populate('SystemCB12', SystemCB12);
     }
 
@@ -850,56 +874,61 @@ function taxt_ValidateRegularity3()
 
 function taxt_ValidateRoof()
 {
-    var RoofCB4 = [];
 
     $('#RoofCB4').empty();
-
-    if ($('#RoofCB3').val() == 0 || $('#RoofCB3').val() == 7)
+    if ($('#RoofCB3').val() == 0 || $('#RoofCB3').val() == 7) {
         $('#RoofCB4').prop("disabled", true);
+    }
     else if ($('#RoofCB3').val() == 1) {
-        RoofCB4.push('Masonry roof, unknown');
-        RoofCB4.push('Vaulted masonry roof');
-        RoofCB4.push('Shallow-arched masonry roof');
-        RoofCB4.push('Composite masonry and concrete roof system');
+        var RoofCB4 = [];
+        /* RM99 */ RoofCB4.push('Masonry roof, unknown');
+        /* RM1  */ RoofCB4.push('Vaulted masonry roof');
+        /* RM2  */ RoofCB4.push('Shallow-arched masonry roof');
+        /* RM3  */ RoofCB4.push('Composite masonry and concrete roof system');
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
     else if ($('#RoofCB3').val() == 2) {
-        RoofCB4.push('Earthen roof, unknown');
-        RoofCB4.push('Vaulted earthen roofs');
+        var RoofCB4 = [];
+        /* RE99 */ RoofCB4.push('Earthen roof, unknown');
+        /* RE1  */ RoofCB4.push('Vaulted earthen roofs');
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
     else if ($('#RoofCB3').val() == 3) {
-        RoofCB4.push('Concrete roof, unknown');
-        RoofCB4.push('Cast-in-place beamless RC roof');
-        RoofCB4.push('Cast-in-place beam-supported RC roof');
-        RoofCB4.push('Precast concrete roof with RC topping');
-        RoofCB4.push('Precast concrete roof without RC topping');
+        var RoofCB4 = [];
+        /* RC99 */ RoofCB4.push('Concrete roof, unknown');
+        /* RC1  */ RoofCB4.push('Cast-in-place beamless RC roof');
+        /* RC2  */ RoofCB4.push('Cast-in-place beam-supported RC roof');
+        /* RC3  */ RoofCB4.push('Precast concrete roof with RC topping');
+        /* RC4  */ RoofCB4.push('Precast concrete roof without RC topping');
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
     else if ($('#RoofCB3').val() == 4) {
-        RoofCB4.push('Metal roof, unknown');
-        RoofCB4.push('Metal beams or trusses supporting light roofing');
-        RoofCB4.push('Metal roof beams supporting precast concrete slabs');
-        RoofCB4.push('Composite steel roof deck and concrete slab');
+        var RoofCB4 = [];
+        /* RME99 */ RoofCB4.push('Metal roof, unknown');
+        /* RME1  */ RoofCB4.push('Metal beams or trusses supporting light roofing');
+        /* RME2  */ RoofCB4.push('Metal roof beams supporting precast concrete slabs');
+        /* RME3  */ RoofCB4.push('Composite steel roof deck and concrete slab');
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
     else if ($('#RoofCB3').val() == 5) {
-        RoofCB4.push('Wooden roof, unknown');
-        RoofCB4.push('Wooden structure with light roof covering');
-        RoofCB4.push('Wooden beams or trusses with heavy roof covering');
-        RoofCB4.push('Wood-based sheets on rafters or purlins');
-        RoofCB4.push('Plywood panels or other light-weigth panels for roof');
-        RoofCB4.push('Bamboo, straw or thatch roof');
+        var RoofCB4 = [];
+        /* RWO99 */ RoofCB4.push('Wooden roof, unknown');
+        /* RWO1  */ RoofCB4.push('Wooden structure with light roof covering');
+        /* RWO2  */ RoofCB4.push('Wooden beams or trusses with heavy roof covering');
+        /* RWO3  */ RoofCB4.push('Wood-based sheets on rafters or purlins');
+        /* RWO4  */ RoofCB4.push('Plywood panels or other light-weigth panels for roof');
+        /* RWO5  */ RoofCB4.push('Bamboo, straw or thatch roof');
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
     else if ($('#RoofCB3').val() == 6) {
-        RoofCB4.push('inflatable or tensile membrane roof');
-        RoofCB4.push('Fabric roof, other');
+        var RoofCB4 = [];
+        /* RFA1 */ RoofCB4.push('Inflatable or tensile membrane roof');
+        /* RFAO */ RoofCB4.push('Fabric roof, other');
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
@@ -908,48 +937,51 @@ function taxt_ValidateRoof()
 
 function taxt_ValidateFloor()
 {
-    var FloorCB2 = [];
-
     $('#FloorCB2').empty();
 
     if ($('#FloorCB1').val() == 0 || $('#FloorCB1').val() == 1 || $('#FloorCB1').val() == 7)
         $('#FloorCB2').prop("disabled", true);
     else if ($('#FloorCB1').val() == 2) {
-        FloorCB2.push('Masonry floor, unknown');
-        FloorCB2.push('Vaulted masonry floor');
-        FloorCB2.push('Shallow-arched masonry floor');
-        FloorCB2.push('Composite cast-in place RC and masonry floor');
+        var FloorCB2 = [];
+        /* FM99 */ FloorCB2.push('Masonry floor, unknown');
+        /* FM1  */ FloorCB2.push('Vaulted masonry floor');
+        /* FM2  */ FloorCB2.push('Shallow-arched masonry floor');
+        /* FM3  */ FloorCB2.push('Composite cast-in place RC and masonry floor');
         select_populate('FloorCB2', FloorCB2);
         $('#FloorCB2').prop("disabled", false);
     }
     else if ($('#FloorCB1').val() == 3) {
-        FloorCB2.push('Earthen floor, unknown');
+        var FloorCB2 = [];
+        /* FE99 */ FloorCB2.push('Earthen floor, unknown');
         select_populate('FloorCB2', FloorCB2);
         $('#FloorCB2').prop("disabled", false);
     }
     else if ($('#FloorCB1').val() == 4)  {
-        FloorCB2.push('Concrete floor, unknown');
-        FloorCB2.push('Cast-in-place beamless RC floor');
-        FloorCB2.push('Cast-in-place beam-supported RC floor');
-        FloorCB2.push('Precast concrete floor with RC topping');
-        FloorCB2.push('Precast concrete floor without RC topping');
+        var FloorCB2 = [];
+        /* FC99 */ FloorCB2.push('Concrete floor, unknown');
+        /* FC1  */ FloorCB2.push('Cast-in-place beamless RC floor');
+        /* FC2  */ FloorCB2.push('Cast-in-place beam-supported RC floor');
+        /* FC3  */ FloorCB2.push('Precast concrete floor with RC topping');
+        /* FC4  */ FloorCB2.push('Precast concrete floor without RC topping');
         select_populate('FloorCB2', FloorCB2);
         $('#FloorCB2').prop("disabled", false);
     }
     else if ($('#FloorCB1').val() == 5) {
-        FloorCB2.push('Metal floor, unknown');
-        FloorCB2.push('Metal beams, trusses or joists supporting light flooring');
-        FloorCB2.push('Metal floor beams supporting precast concrete slabs');
-        FloorCB2.push('Composite steel deck and concrete slab');
+        var FloorCB2 = [];
+        /* FME99 */ FloorCB2.push('Metal floor, unknown');
+        /* FME1  */ FloorCB2.push('Metal beams, trusses or joists supporting light flooring');
+        /* FME2  */ FloorCB2.push('Metal floor beams supporting precast concrete slabs');
+        /* FME3  */ FloorCB2.push('Composite steel deck and concrete slab');
         select_populate('FloorCB2', FloorCB2);
         $('#FloorCB2').prop("disabled", false);
     }
     else if ($('#FloorCB1').val() == 6) {
-        FloorCB2.push('Wooden floor, unknown');
-        FloorCB2.push('Wood beams/trusses & joists supporting light flooring');
-        FloorCB2.push('Wood beams/trusses & joists supporting heavy flooring');
-        FloorCB2.push('Wood-based sheets on joists or beams');
-        FloorCB2.push('Plywood panels or other light-weigth panels for floor');
+        var FloorCB2 = [];
+        /* FW99 */ FloorCB2.push('Wooden floor, unknown');
+        /* FW1  */ FloorCB2.push('Wood beams/trusses & joists supporting light flooring');
+        /* FW2  */ FloorCB2.push('Wood beams/trusses & joists supporting heavy flooring');
+        /* FW3  */ FloorCB2.push('Wood-based sheets on joists or beams');
+        /* FW4  */ FloorCB2.push('Plywood panels or other light-weigth panels for floor');
         select_populate('FloorCB2', FloorCB2);
         $('#FloorCB2').prop("disabled", false);
     }
@@ -3094,22 +3126,22 @@ function taxt_Initiate() {
     $('#SystemCB11').on('change', taxt_SystemCB11Select);
     $('#SystemCB21').on('change', taxt_SystemCB21Select);
 
-    MaterialCB12.push('Unknown Material');
-    MaterialCB12.push('Concrete, unknown reinforcement');
-    MaterialCB12.push('Concrete, unreinforced');
-    MaterialCB12.push('Concrete, reinforced');
-    MaterialCB12.push('Concrete, composite with steel section');
-    MaterialCB12.push('Steel');
-    MaterialCB12.push('Metal (except steel)');
-    MaterialCB12.push('Masonry, unknown reinforcement');
-    MaterialCB12.push('Masonry, unreinforced');
-    MaterialCB12.push('Masonry, confined');
-    MaterialCB12.push('Masonry, reinforced');
-    MaterialCB12.push('Earth, unknown reinforcement');
-    MaterialCB12.push('Earth, unreinforced');
-    MaterialCB12.push('Earth, reinforced');
-    MaterialCB12.push('Wood');
-    MaterialCB12.push('Other material');
+    /* same */ MaterialCB12.push('Unknown Material');
+    /* same */ MaterialCB12.push('Concrete, unknown reinforcement');
+    /* same */ MaterialCB12.push('Concrete, unreinforced');
+    /* same */ MaterialCB12.push('Concrete, reinforced');
+    /* same */ MaterialCB12.push('Concrete, composite with steel section');
+    /* same */ MaterialCB12.push('Steel');
+    /* same */ MaterialCB12.push('Metal (except steel)');
+    /* same */ MaterialCB12.push('Masonry, unknown reinforcement');
+    /* same */ MaterialCB12.push('Masonry, unreinforced');
+    /* same */ MaterialCB12.push('Masonry, confined');
+    /* same */ MaterialCB12.push('Masonry, reinforced');
+    /* same */ MaterialCB12.push('Earth, unknown reinforcement');
+    /* same */ MaterialCB12.push('Earth, unreinforced');
+    /* same */ MaterialCB12.push('Earth, reinforced');
+    /* same */ MaterialCB12.push('Wood');
+    /* same */ MaterialCB12.push('Other material');
     select_populate('MaterialCB12', MaterialCB12);
     $('#MaterialCB12').on('change', taxt_MaterialCB12Select);
     $('#MaterialCB22').on('change', taxt_MaterialCB22Select);
@@ -3252,94 +3284,94 @@ function taxt_Initiate() {
     $('#WallsCB').on('change', taxt_WallsCBSelect);
 
     var RoofCB1 = [];
-    RoofCB1.push('Unknown roof shape');
-    RoofCB1.push('Flat');
-    RoofCB1.push('Pitched with gable ends');
-    RoofCB1.push('Pitched and hipped');
-    RoofCB1.push('Pitched with dormers');
-    RoofCB1.push('Monopitch');
-    RoofCB1.push('Sawtooth');
-    RoofCB1.push('Curved');
-    RoofCB1.push('Complex regular');
-    RoofCB1.push('Complex irregular');
-    RoofCB1.push('Roof shape, other');
+    /* RSH99  */ RoofCB1.push('Unknown roof shape');
+    /* RSH1   */ RoofCB1.push('Flat');
+    /* RSH2   */ RoofCB1.push('Pitched with gable ends');
+    /* RSH3   */ RoofCB1.push('Pitched and hipped');
+    /* RSH4   */ RoofCB1.push('Pitched with dormers');
+    /* RSH5   */ RoofCB1.push('Monopitch');
+    /* RSH6   */ RoofCB1.push('Sawtooth');
+    /* RSH7   */ RoofCB1.push('Curved');
+    /* RSH8   */ RoofCB1.push('Complex regular');
+    /* RSH9   */ RoofCB1.push('Complex irregular');
+    /* RSHO   */ RoofCB1.push('Roof shape, other');
     select_populate('RoofCB1', RoofCB1);
     $('#RoofCB1').val(0);
     $('#RoofCB1').on('change', taxt_RoofCB1Select);
 
     var RoofCB2 = [];
-    RoofCB2.push('Unknown roof covering');
-    RoofCB2.push('Concrete roof, no covering');
-    RoofCB2.push('Clay or concrete tile roof covering');
-    RoofCB2.push('Fibre cement or metal tile covering');
-    RoofCB2.push('Membrane roof covering');
-    RoofCB2.push('Slate roof covering');
-    RoofCB2.push('Stone slab roof covering');
-    RoofCB2.push('Metal or asbestos sheet covering');
-    RoofCB2.push('Wooden or asphalt shingle covering');
-    RoofCB2.push('Vegetative roof covering');
-    RoofCB2.push('Earthen roof covering');
-    RoofCB2.push('Solar panelled roofs');
-    RoofCB2.push('Tensile membrane or fabric roof');
-    RoofCB2.push('Roof covering, other');
+    /* RMT99 */ RoofCB2.push('Unknown roof covering');
+    /* RMN   */ RoofCB2.push('Concrete roof, no covering');
+    /* RMT1  */ RoofCB2.push('Clay or concrete tile roof covering');
+    /* RMT2  */ RoofCB2.push('Fibre cement or metal tile covering');
+    /* RMT3  */ RoofCB2.push('Membrane roof covering');
+    /* RMT4  */ RoofCB2.push('Slate roof covering');
+    /* RMT5  */ RoofCB2.push('Stone slab roof covering');
+    /* RMT6  */ RoofCB2.push('Metal or asbestos sheet covering');
+    /* RMT7  */ RoofCB2.push('Wooden or asphalt shingle covering');
+    /* RMT8  */ RoofCB2.push('Vegetative roof covering');
+    /* RMT9  */ RoofCB2.push('Earthen roof covering');
+    /* RMT10 */ RoofCB2.push('Solar panelled roofs');
+    /* RMT11 */ RoofCB2.push('Tensile membrane or fabric roof');
+    /* RMTO  */ RoofCB2.push('Roof covering, other');
     select_populate('RoofCB2', RoofCB2);
     $('#RoofCB2').val(0);
     $('#RoofCB2').on('change', taxt_RoofCB2Select);
 
     var RoofCB3 = [];
-    RoofCB3.push('Roof material, unknown');
-    RoofCB3.push('Masonry roof');
-    RoofCB3.push('Earthen roof');
-    RoofCB3.push('Concrete roof');
-    RoofCB3.push('Metal roof');
-    RoofCB3.push('Wooden roof');
-    RoofCB3.push('Fabric roof');
-    RoofCB3.push('Roof material,other');
+    /* R99 */ RoofCB3.push('Roof material, unknown');
+    /* RM  */ RoofCB3.push('Masonry roof');
+    /* RE  */ RoofCB3.push('Earthen roof');
+    /* RC  */ RoofCB3.push('Concrete roof');
+    /* RME */ RoofCB3.push('Metal roof');
+    /* RWO */ RoofCB3.push('Wooden roof');
+    /* RFA */ RoofCB3.push('Fabric roof');
+    /* RO  */RoofCB3.push('Roof material,other');
     select_populate('RoofCB3', RoofCB3);
     $('#RoofCB3').val(0);
     $('#RoofCB3').on('change', taxt_RoofCB3Select);
     $('#RoofCB4').on('change', taxt_RoofCB4Select);
 
     var RoofCB5 = [];
-    RoofCB5.push('Roof-wall diaphragm connection unknown');
-    RoofCB5.push('Roof-wall diaphragm connection not provided');
-    RoofCB5.push('Roof-wall diaphragm connection present');
-    RoofCB5.push('Roof tie-down unknown');
-    RoofCB5.push('Roof tie-down not provided');
-    RoofCB5.push('Roof tie-down present');
+    /* RWC99 */ RoofCB5.push('Roof-wall diaphragm connection unknown');
+    /* RWCN  */ RoofCB5.push('Roof-wall diaphragm connection not provided');
+    /* RWCP  */ RoofCB5.push('Roof-wall diaphragm connection present');
+    /* RTD99 */ RoofCB5.push('Roof tie-down unknown');
+    /* RTDN  */ RoofCB5.push('Roof tie-down not provided');
+    /* RTDP  */ RoofCB5.push('Roof tie-down present');
     select_populate('RoofCB5', RoofCB5);
     $('#RoofCB5').val(0);
     $('#RoofCB5').on('change', taxt_RoofCB5Select);
 
     var FoundationsCB = [];
-    FoundationsCB.push('Unknown foundation system');
-    FoundationsCB.push('Shallow foundation, with lateral capacity');
-    FoundationsCB.push('Shallow foundation, with no lateral capacity');
-    FoundationsCB.push('Deep foundation, with lateral capacity');
-    FoundationsCB.push('Deep foundation, with no lateral capacity');
-    FoundationsCB.push('Foundation, other');
+    /* FOS99  */ FoundationsCB.push('Unknown foundation system');
+    /* FOSSL  */ FoundationsCB.push('Shallow foundation, with lateral capacity');
+    /* FOSN   */ FoundationsCB.push('Shallow foundation, with no lateral capacity');
+    /* FOSDL  */ FoundationsCB.push('Deep foundation, with lateral capacity');
+    /* FOSDN  */ FoundationsCB.push('Deep foundation, with no lateral capacity');
+    /* FOSO   */ FoundationsCB.push('Foundation, other');
     select_populate('FoundationsCB', FoundationsCB);
     $('#FoundationsCB').val(0);
     $('#FoundationsCB').on('change', taxt_FoundationsCBSelect);
 
     var FloorCB1 = [];
-    FloorCB1.push('Floor material, unknown');
-    FloorCB1.push('No elevated or suspended floor material (single-storey)');
-    FloorCB1.push('Masonry floor');
-    FloorCB1.push('Earthen floor');
-    FloorCB1.push('Concrete floor');
-    FloorCB1.push('Metal floor');
-    FloorCB1.push('Wooden floor');
-    FloorCB1.push('Floor material, other');
+    /* F99 */ FloorCB1.push('Floor material, unknown');
+    /* FN  */ FloorCB1.push('No elevated or suspended floor material (single-storey)');
+    /* FM  */ FloorCB1.push('Masonry floor');
+    /* FE  */ FloorCB1.push('Earthen floor');
+    /* FC  */ FloorCB1.push('Concrete floor');
+    /* FME */ FloorCB1.push('Metal floor');
+    /* FW  */ FloorCB1.push('Wooden floor');
+    /* FO  */ FloorCB1.push('Floor material, other');
     select_populate('FloorCB1', FloorCB1);
     $('#FloorCB1').val(0);
     $('#FloorCB1').on('change', taxt_FloorCB1Select);
     $('#FloorCB2').on('change', taxt_FloorCB2Select);
 
     var FloorCB3 = [];
-    FloorCB3.push('Floor-wall diaphragm connection, unknown');
-    FloorCB3.push('Floor-wall diaphragm connection not provided');
-    FloorCB3.push('Floor-wall diaphragm connection present');
+    /* FWC99 */ FloorCB3.push('Floor-wall diaphragm connection, unknown');
+    /* FWCN  */ FloorCB3.push('Floor-wall diaphragm connection not provided');
+    /* FWCP  */ FloorCB3.push('Floor-wall diaphragm connection present');
     select_populate('FloorCB3', FloorCB3);
     $('#FloorCB3').val(0);
     $('#FloorCB3').on('change', taxt_FloorCB3Select);
@@ -4070,7 +4102,158 @@ function populate(s) {
         return (false);
     }
 
+    //
+    //  Roof
+    //
+    // roof shape
+    var rosh, rosh_items, rosh_label, rosh_id, rosh_vals, rosh_atom;
+    var roof_system_set = false, roof_system_val;
 
+    rosh = sar[13].split('+');
+    rosh_label = rosh[0];
 
+    for (i = 0 ; i < roof_shap.length ; i++) {
+        if (rosh_label == roof_shap[i].id) {
+            rosh_id = rosh_label;
+            $('#RoofCB1').val(i);
+            taxt_RoofCB1Select(null);
+            break;
+        }
+    }
+    if (i == roof_shap.length) {
+        alert("Not identified '" + rosh_label + "' as specification of roof shape.");
+        return (false);
+    }
 
+    for (sub_i = 1 ; sub_i < rosh.length ; sub_i++) {
+        rosh_atom = rosh[sub_i];
+
+        // roof covering
+        for (i = 0 ; i < roof_cove.length ; i++) {
+            if (rosh_atom == roof_cove[i].id) {
+                $('#RoofCB2').val(i);
+                taxt_RoofCB2Select(null);
+                break;
+            }
+        }
+        if (i < roof_cove.length)
+            continue;
+
+        // roof system material
+        for (i = 0 ; i < roof_mate.length ; i++) {
+            if (rosh_atom == roof_mate[i].id) {
+                roof_system_set = true;
+                roof_system_val = rosh_atom;
+
+                $('#RoofCB3').val(i);
+                taxt_RoofCB3Select(null);
+                break;
+            }
+        }
+        if (i < roof_mate.length)
+            continue;
+
+        // roof connections
+        for (i = 0 ; i < roof_conn.length ; i++) {
+            if (rosh_atom == roof_conn[i].id) {
+                $('#RoofCB5').val(i);
+                taxt_RoofCB5Select(null);
+                break;
+            }
+        }
+        if (i < roof_conn.length)
+            continue;
+
+        if (roof_system_set) {
+            // roof connections
+            for (i = 0 ; i < roof_sys[roof_system_val].length ; i++) {
+                if (rosh_atom == roof_sys[roof_system_val][i].id) {
+                    $('#RoofCB4').val(i);
+                    taxt_RoofCB4Select(null);
+                    break;
+                }
+            }
+            if (i < roof_sys[roof_system_val].length)
+                continue;
+        }
+        alert("Not identified '" + rosh_atom + "' as specification of roof.");
+        return (false);
+    }
+
+    //
+    //  Floor
+    //
+    var flma, flma_items, flma_label, flma_id, flma_vals, flma_atom;
+
+    flma = sar[14].split('+');
+    flma_label = flma[0];
+
+    // floor system material
+    for (i = 0 ; i < floo_syma.length ; i++) {
+        if (flma_label == floo_syma[i].id) {
+            flma_id = flma_label;
+            $('#FloorCB1').val(i);
+            taxt_FloorCB1Select(null);
+            break;
+        }
+    }
+    if (i == floo_syma.length) {
+        alert("Not identified '" + flma_label + "' as specification of floor system material.");
+        return (false);
+    }
+
+    for (sub_i = 1 ; sub_i < flma.length ; sub_i++) {
+        flma_atom = flma[sub_i];
+
+        // floor connections
+        for (i = 0 ; i < floo_conn[flma_id].length ; i++) {
+
+            if (flma_atom == floo_conn[flma_id][i].id) {
+                $('#FloorCB2').val(i);
+                taxt_FloorCB2Select(null);
+                break;
+            }
+        }
+        if (i < floo_conn[flma_id].length)
+            continue;
+
+        // floor system type
+        for (i = 0 ; i < floo_syty.length ; i++) {
+            if (flma_atom == floo_syty[i].id) {
+                $('#FloorCB3').val(i);
+                taxt_FloorCB3Select(null);
+                break;
+            }
+        }
+        if (i < floo_syty.length)
+            continue;
+
+        alert("Not identified '" + flma_atom + "' as specification of floor.");
+        return (false);
+    }
+
+    //
+    //  Foundation
+    //
+    var foun, foun_items, foun_label, foun_id, foun_vals, foun_atom;
+    foun = sar[15].split('+');
+    foun_label = foun[0];
+    if (foun.length != 1) {
+        alert("Foundations not defined properly.");
+        return (false);
+    }
+
+    for (i = 0 ; i < foun_type.length ; i++) {
+        if (foun_label == foun_type[i].id) {
+            foun_id = foun_label;
+            $('#FoundationsCB').val(i);
+            taxt_FoundationsCBSelect(null);
+            break;
+        }
+    }
+    if (i == foun_type.length) {
+        alert("Not identified '" + foun_label + "' as specification of foundation.");
+        return (false);
+    }
+    return (true);
 }

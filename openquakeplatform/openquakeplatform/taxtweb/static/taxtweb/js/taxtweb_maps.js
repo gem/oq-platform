@@ -351,3 +351,148 @@ var wall_type = [
                  { id: 'EWCB', desc: 'Cement-based boards for exterior walls' },
                  { id: 'EWO', desc: 'Material of exterior walls, other' }
                ];
+
+var roof_shap = [
+                 { id: 'RSH99', desc: 'Unknown roof shape' },
+                 { id: 'RSH1', desc: 'Flat' },
+                 { id: 'RSH2', desc: 'Pitched with gable ends' },
+                 { id: 'RSH3', desc: 'Pitched and hipped' },
+                 { id: 'RSH4', desc: 'Pitched with dormers' },
+                 { id: 'RSH5', desc: 'Monopitch' },
+                 { id: 'RSH6', desc: 'Sawtooth' },
+                 { id: 'RSH7', desc: 'Curved' },
+                 { id: 'RSH8', desc: 'Complex regular' },
+                 { id: 'RSH9', desc: 'Complex irregular' },
+                 { id: 'RSHO', desc: 'Roof shape, other' }
+               ];
+
+var roof_cove = [
+                 { id: 'RMT99', desc: 'Unknown roof covering' },
+                 { id: 'RMN', desc: 'Concrete roof, no covering' },
+                 { id: 'RMT1', desc: 'Clay or concrete tile roof covering' },
+                 { id: 'RMT2', desc: 'Fibre cement or metal tile covering' },
+                 { id: 'RMT3', desc: 'Membrane roof covering' },
+                 { id: 'RMT4', desc: 'Slate roof covering' },
+                 { id: 'RMT5', desc: 'Stone slab roof covering' },
+                 { id: 'RMT6', desc: 'Metal or asbestos sheet covering' },
+                 { id: 'RMT7', desc: 'Wooden or asphalt shingle covering' },
+                 { id: 'RMT8', desc: 'Vegetative roof covering' },
+                 { id: 'RMT9', desc: 'Earthen roof covering' },
+                 { id: 'RMT10', desc: 'Solar panelled roofs' },
+                 { id: 'RMT11', desc: 'Tensile membrane or fabric roof' },
+                 { id: 'RMTO', desc: 'Roof covering, other' }
+               ];
+
+var roof_mate = [
+                 { id: 'R99', desc: 'Roof material, unknown' },
+                 { id: 'RM', desc: 'Masonry roof' },
+                 { id: 'RE', desc: 'Earthen roof' },
+                 { id: 'RC', desc: 'Concrete roof' },
+                 { id: 'RME', desc: 'Metal roof' },
+                 { id: 'RWO', desc: 'Wooden roof' },
+                 { id: 'RFA', desc: 'Fabric roof' },
+                 { id: 'RO', desc: 'Roof material,other' }
+               ];
+
+var roof_sys_grp = [];
+roof_sys_grp[0] = [
+                    { id: 'RM99', desc: 'Masonry roof, unknown' },
+                    { id: 'RM1', desc: 'Vaulted masonry roof' },
+                    { id: 'RM2', desc: 'Shallow-arched masonry roof' },
+                    { id: 'RM3', desc: 'Composite masonry and concrete roof system' }
+                  ];
+roof_sys_grp[1] = [
+                    { id: 'RE99', desc: 'Earthen roof, unknown' },
+                    { id: 'RE1', desc: 'Vaulted earthen roofs' }
+                  ];
+roof_sys_grp[2] = [
+                    { id: 'RC99', desc: 'Concrete roof, unknown' },
+                    { id: 'RC1', desc: 'Cast-in-place beamless RC roof' },
+                    { id: 'RC2', desc: 'Cast-in-place beam-supported RC roof' },
+                    { id: 'RC3', desc: 'Precast concrete roof with RC topping' },
+                    { id: 'RC4', desc: 'Precast concrete roof without RC topping' }
+                  ];
+roof_sys_grp[3] = [
+                    { id: 'RME99', desc: 'Metal roof, unknown' },
+                    { id: 'RME1', desc: 'Metal beams or trusses supporting light roofing' },
+                    { id: 'RME2', desc: 'Metal roof beams supporting precast concrete slabs' },
+                    { id: 'RME3', desc: 'Composite steel roof deck and concrete slab' }
+                  ];
+roof_sys_grp[4] = [
+                    { id: 'RWO99', desc: 'Wooden roof, unknown' },
+                    { id: 'RWO1', desc: 'Wooden structure with light roof covering' },
+                    { id: 'RWO2', desc: 'Wooden beams or trusses with heavy roof covering' },
+                    { id: 'RWO3', desc: 'Wood-based sheets on rafters or purlins' },
+                    { id: 'RWO4', desc: 'Plywood panels or other light-weigth panels for roof' },
+                    { id: 'RWO5', desc: 'Bamboo, straw or thatch roof' }
+                  ];
+roof_sys_grp[5] = [
+                    { id: 'RFA1', desc: 'Inflatable or tensile membrane roof' },
+                    { id: 'RFAO', desc: 'Fabric roof, other' }
+                  ];
+
+var roof_conn = [
+                 { id: 'RWC99', desc: 'Roof-wall diaphragm connection unknown' },
+                 { id: 'RWCN', desc: 'Roof-wall diaphragm connection not provided' },
+                 { id: 'RWCP', desc: 'Roof-wall diaphragm connection present' },
+                 { id: 'RTD99', desc: 'Roof tie-down unknown' },
+                 { id: 'RTDN', desc: 'Roof tie-down not provided' },
+                 { id: 'RTDP', desc: 'Roof tie-down present' }
+               ];
+
+var floo_syma = [
+                 { id: 'F99', desc: 'Floor material, unknown' },
+                 { id: 'FN', desc: 'No elevated or suspended floor material (single-storey)' },
+                 { id: 'FM', desc: 'Masonry floor' },
+                 { id: 'FE', desc: 'Earthen floor' },
+                 { id: 'FC', desc: 'Concrete floor' },
+                 { id: 'FME', desc: 'Metal floor' },
+                 { id: 'FW', desc: 'Wooden floor' },
+                 { id: 'FO', desc: 'Floor material, other' }
+               ];
+
+var floo_conn_grp = [];
+floo_conn_grp[0] = [
+                    { id: 'FM99', desc: 'Masonry floor, unknown' },
+                    { id: 'FM1', desc: 'Vaulted masonry floor' },
+                    { id: 'FM2', desc: 'Shallow-arched masonry floor' },
+                    { id: 'FM3', desc: 'Composite cast-in place RC and masonry floor' }
+                  ];
+floo_conn_grp[1] = [
+                    { id: 'FE99', desc: 'Earthen floor, unknown' }
+                  ];
+floo_conn_grp[2] = [
+                    { id: 'FC99', desc: 'Concrete floor, unknown' },
+                    { id: 'FC1', desc: 'Cast-in-place beamless RC floor' },
+                    { id: 'FC2', desc: 'Cast-in-place beam-supported RC floor' },
+                    { id: 'FC3', desc: 'Precast concrete floor with RC topping' },
+                    { id: 'FC4', desc: 'Precast concrete floor without RC topping' }
+                  ];
+floo_conn_grp[3] = [
+                    { id: 'FME99', desc: 'Metal floor, unknown' },
+                    { id: 'FME1', desc: 'Metal beams, trusses or joists supporting light flooring' },
+                    { id: 'FME2', desc: 'Metal floor beams supporting precast concrete slabs' },
+                    { id: 'FME3', desc: 'Composite steel deck and concrete slab' }
+                  ];
+floo_conn_grp[4] = [
+                    { id: 'FW99', desc: 'Wooden floor, unknown' },
+                    { id: 'FW1', desc: 'Wood beams/trusses & joists supporting light flooring' },
+                    { id: 'FW2', desc: 'Wood beams/trusses & joists supporting heavy flooring' },
+                    { id: 'FW3', desc: 'Wood-based sheets on joists or beams' },
+                    { id: 'FW4', desc: 'Plywood panels or other light-weigth panels for floor' }
+                  ];
+
+var floo_syty = [
+                 { id: 'FWC99', desc: 'Floor-wall diaphragm connection, unknown' },
+                 { id: 'FWCN', desc: 'Floor-wall diaphragm connection not provided' },
+                 { id: 'FWCP', desc: 'Floor-wall diaphragm connection present' }
+               ];
+
+var foun_type = [
+                 { id: 'FOS99', desc: 'Unknown foundation system' },
+                 { id: 'FOSSL', desc: 'Shallow foundation, with lateral capacity' },
+                 { id: 'FOSN', desc: 'Shallow foundation, with no lateral capacity' },
+                 { id: 'FOSDL', desc: 'Deep foundation, with lateral capacity' },
+                 { id: 'FOSDN', desc: 'Deep foundation, with no lateral capacity' },
+                 { id: 'FOSO', desc: 'Foundation, other' }
+               ];
