@@ -160,6 +160,7 @@ table.dir_spec td {
 <script src="{{ STATIC_URL }}taxtweb/js/taxtweb_maps.js"></script>
 <script src="{{ STATIC_URL }}taxtweb/js/taxtweb.js"></script>
 <script type="text/javascript"><!--
+var taxt_prefix = '{{ taxt_prefix }}';
 window.onload = function () {
     var tab_cur = {{ tab_id }};
     tab_set(tab_cur);

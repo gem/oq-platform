@@ -95,6 +95,16 @@ def index(request, **kwargs):
     except ValueError as e:
         subtab_id = 1
 
+    if 'HTTP_HOST' in request.META:
+        proto = (request.META['HTTP_X_FORWARDED_PROTO'] if
+                 'HTTP_X_FORWARDED_PROTO' in request.META else 'http')
+        if request.META['HTTP_HOST'].startswith('taxtweb'):
+            taxt_prefix = proto + '://' + request.META['HTTP_HOST']
+        else:
+            taxt_prefix = proto + '://' + request.META['HTTP_HOST'] + '/taxtweb'
+    else:
+        taxt_prefix = "http://taxtweb.openquake.org"
+
     desc = [ 'Structural System', 'Building Information', 'Exterior Attributes', 'Roof/Floor/Foundation' ]
     tab_content = ""
     for i in range(0, len(desc)):
@@ -119,6 +129,7 @@ def index(request, **kwargs):
                                    tab_id=tab_id,
                                    tab_content=tab_content,
                                    sub1tab_content=sub1tab_content,
+                                   taxt_prefix=taxt_prefix,
                                    ),
                               context_instance=RequestContext(request))
 
