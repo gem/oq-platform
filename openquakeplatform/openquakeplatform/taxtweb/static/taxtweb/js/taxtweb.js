@@ -3660,7 +3660,9 @@ function populate(s, ret_s) {
     h_items = h[0].split(':');
     h_label = h_items[0];
 
-    if (h.length != 4) {
+    if (h_label == 'H99' && h.length != 1
+        ||
+        h_label != 'H99' && h.length != 4) {
         ret_s.s = "Height not defined properly.";
         return (false);
     }
@@ -3703,126 +3705,131 @@ function populate(s, ret_s) {
             $('#noStoreysE11').val(h_vals[0]);
             taxt_HeightCB1Select(null);
         }
-    }
 
-    for (sub_i = 1 ; sub_i < h.length ; sub_i++) {
-        h_items = h[sub_i].split(':');
-        h_label = h_items[0];
+        for (sub_i = 1 ; sub_i < h.length ; sub_i++) {
+            h_items = h[sub_i].split(':');
+            h_label = h_items[0];
 
-        // Number of storey below ground
-        if (h_label.substring(0,2) == "HB") {
-            for (e = 0 ; e < h_belowground.length ; e++) {
-                if (h_label == h_belowground[e].id) {
-                    h_id = h_label;
-                    $('#HeightCB2').val(e);
-                    taxt_HeightCB2Select(null);
-                    break;
+            // Number of storey below ground
+            if (h_label.substring(0,2) == "HB") {
+                for (e = 0 ; e < h_belowground.length ; e++) {
+                    if (h_label == h_belowground[e].id) {
+                        h_id = h_label;
+                        $('#HeightCB2').val(e);
+                        taxt_HeightCB2Select(null);
+                        break;
+                    }
+                }
+                if (e == h_belowground.length) {
+                    ret_s.s = "Not identified '" + h_label + "' as specification of number of storey below ground.";
+                    return (false);
+                }
+                if (h_id == 'HB99') {
+                    if (h_items.length != 1) {
+                        ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
+                        return (false);
+                    }
+                }
+                else {
+                    h_vals = h_items[1].split(',');
+                    if (h_id == 'HBBET') {
+                        if (h_vals.length != 2) {
+                            ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
+                            return (false);
+                        }
+                        $('#noStoreysE21').val(h_vals[0]);
+                        $('#noStoreysE22').val(h_vals[1]);
+                        taxt_HeightCB1Select(null);
+                    }
+                    else if (h_id == 'HBEX' || h_id == 'HBAPP') {
+                        if (h_vals.length != 1) {
+                            ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
+                            return (false);
+                        }
+                        $('#noStoreysE21').val(h_vals[0]);
+                        taxt_HeightCB1Select(null);
+                    }
                 }
             }
-            if (e == h_belowground.length) {
-                ret_s.s = "Not identified '" + h_label + "' as specification of number of storey below ground.";
+            // Above grade
+            else if (h_label.substring(0,2) == "HF") {
+                for (e = 0 ; e < h_abovegrade.length ; e++) {
+                    if (h_label == h_abovegrade[e].id) {
+                        h_id = h_label;
+                        $('#HeightCB3').val(e);
+                        taxt_HeightCB2Select(null);
+                        break;
+                    }
+                }
+                if (e == h_abovegrade.length) {
+                    ret_s.s = "Height: not identified '" + h_label + "' as specification of height of ground floor level above grade.";
+                    return (false);
+                }
+
+                if (h_id == 'HF99') {
+                    if (h_items.length != 1) {
+                        ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
+                        return (false);
+                    }
+                }
+                else {
+                    h_vals = h_items[1].split(',');
+                    if (h_id == 'HFBET') {
+                        if (h_vals.length != 2) {
+                            ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
+                            return (false);
+                        }
+                        $('#noStoreysE31').val(h_vals[0]);
+                        $('#noStoreysE32').val(h_vals[1]);
+                        taxt_HeightCB3Select(null);
+                    }
+                    else if (h_id == 'HFEX' || h_id == 'HFAPP') {
+                        if (h_vals.length != 1) {
+                            ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
+                            return (false);
+                        }
+                        $('#noStoreysE31').val(h_vals[0]);
+                        taxt_HeightCB3Select(null);
+                    }
+                }
+            }
+            // Slope
+            else if (h_label.substring(0,2) == "HD") {
+                for (e = 0 ; e < h_slope.length ; e++) {
+                    if (h_label == h_slope[e].id) {
+                        h_id = h_label;
+                        $('#HeightCB4').val(e);
+                        taxt_HeightCB4Select(null);
+                        break;
+                    }
+                }
+                if (e == h_slope.length) {
+                    ret_s.s = "Height: not identified '" + h_label + "' as specification of slope of the ground.";
+                    return (false);
+                }
+
+                if (h_id == 'HD99') {
+                    if (h_items.length != 1) {
+                        ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
+                        return (false);
+                    }
+                }
+                else {
+                    h_vals = h_items[1].split(',');
+                    if (h_id == 'HD') {
+                        if (h_vals.length != 1) {
+                            ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
+                            return (false);
+                        }
+                        $('#noStoreysE4').val(h_vals[0]);
+                        taxt_HeightCB4Select(null);
+                    }
+                }
+            }
+            else {
+                ret_s.s = "Height: not identified '" + h_label + "' as specification of height.";
                 return (false);
             }
-
-            h_vals = h_items[1].split(',');
-            if (h_id == 'HB99') {
-                if (h_vals.length != 0) {
-                    ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
-                    return (false);
-                }
-            }
-            else if (h_id == 'HBBET') {
-                if (h_vals.length != 2) {
-                    ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
-                    return (false);
-                }
-                $('#noStoreysE21').val(h_vals[0]);
-                $('#noStoreysE22').val(h_vals[1]);
-                taxt_HeightCB1Select(null);
-            }
-            else if (h_id == 'HBEX' || h_id == 'HBAPP') {
-                if (h_vals.length != 1) {
-                    ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
-                    return (false);
-                }
-                $('#noStoreysE21').val(h_vals[0]);
-                taxt_HeightCB1Select(null);
-            }
-        }
-        // Above grade
-        else if (h_label.substring(0,2) == "HF") {
-            for (e = 0 ; e < h_abovegrade.length ; e++) {
-                if (h_label == h_abovegrade[e].id) {
-                    h_id = h_label;
-                    $('#HeightCB3').val(e);
-                    taxt_HeightCB2Select(null);
-                    break;
-                }
-            }
-            if (e == h_abovegrade.length) {
-                ret_s.s = "Height: not identified '" + h_label + "' as specification of height of ground floor level above grade.";
-                return (false);
-            }
-
-            h_vals = h_items[1].split(',');
-            if (h_id == 'HF99') {
-                if (h_vals.length != 0) {
-                    ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
-                    return (false);
-                }
-            }
-            else if (h_id == 'HFBET') {
-                if (h_vals.length != 2) {
-                    ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
-                    return (false);
-                }
-                $('#noStoreysE31').val(h_vals[0]);
-                $('#noStoreysE32').val(h_vals[1]);
-                taxt_HeightCB3Select(null);
-            }
-            else if (h_id == 'HFEX' || h_id == 'HFAPP') {
-                if (h_vals.length != 1) {
-                    ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
-                    return (false);
-                }
-                $('#noStoreysE31').val(h_vals[0]);
-                taxt_HeightCB3Select(null);
-            }
-        }
-        // Slope
-        else if (h_label.substring(0,2) == "HD") {
-            for (e = 0 ; e < h_slope.length ; e++) {
-                if (h_label == h_slope[e].id) {
-                    h_id = h_label;
-                    $('#HeightCB4').val(e);
-                    taxt_HeightCB4Select(null);
-                    break;
-                }
-            }
-            if (e == h_slope.length) {
-                ret_s.s = "Height: not identified '" + h_label + "' as specification of slope of the ground.";
-                return (false);
-            }
-
-            h_vals = h_items[1].split(',');
-            if (h_id == 'HD99') {
-                if (h_vals.length != 0) {
-                    ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
-                    return (false);
-                }
-            }
-            if (h_id == 'HD') {
-                if (h_vals.length != 1) {
-                    ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
-                    return (false);
-                }
-                $('#noStoreysE4').val(h_vals[0]);
-                taxt_HeightCB4Select(null);
-            }
-        }
-        else {
-            ret_s.s = "Height: not identified '" + h_label + "' as specification of height.";
-            return (false);
         }
     }
 
@@ -3885,7 +3892,9 @@ function populate(s, ret_s) {
     occu = sar[8].split('+');
     occu_label = occu[0];
 
-    if (occu.length != 2) {
+    if (occu_label == 'OC99' && occu.length != 1
+        ||
+        occu_label != 'OC99' && occu.length != 2) {
         ret_s.s = "Occupancy not defined properly.";
         return (false);
     }
@@ -3903,20 +3912,21 @@ function populate(s, ret_s) {
         return (false);
     }
 
-    // Occupancy specification
-    occu_atom = occu[1];
-    for (i = 0 ; i < occu_spec[occu_id].length ;  i++) {
-        if (occu_atom == occu_spec[occu_id][i].id) {
-            $('#OccupancyCB2').val(i);
-            taxt_OccupancyCB2Select(null);
-            break;
+    if (occu_label != 'OC99') {
+        // Occupancy specification
+        occu_atom = occu[1];
+        for (i = 0 ; i < occu_spec[occu_id].length ;  i++) {
+            if (occu_atom == occu_spec[occu_id][i].id) {
+                $('#OccupancyCB2').val(i);
+                taxt_OccupancyCB2Select(null);
+                break;
+            }
+        }
+        if (i == occu_spec[occu_id].length) {
+            ret_s.s = "Not identified '" + occu_atom + "' as specification of '" + occu_id + "' occupancy.";
+            return (false);
         }
     }
-    if (i == occu_spec[occu_id].length) {
-        ret_s.s = "Not identified '" + occu_atom + "' as specification of '" + occu_id + "' occupancy.";
-        return (false);
-    }
-
     //
     //  Build position
     //
