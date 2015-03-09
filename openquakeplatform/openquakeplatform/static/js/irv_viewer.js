@@ -456,28 +456,29 @@ function processIndicators(layerAttributes, projectDef) {
 
     scale(IRI);
 
-    // pass the new values back into the layer attributes object for use in thematic map
+    ////////////////////////////////////
+    //// Prep data for thematic map ////
+    ////////////////////////////////////
+
     for (var ix = 0; ix < la.length; ix++) {
         for (var key in IRI) {
             if (key == la[ix].properties[selectedRegion]) {
-                //la[ix]['newProperties'] = {};
-                la[ix].properties['newIRI'] = (IRI[key] * 100);
+                la[ix].properties['newIRI'] = (IRI[key] * 100).toFixed(5);
             }
         }
         for (var key in SVI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].properties['newSVI'] = (SVI[key] * 100);
+                la[ix].properties['newSVI'] = (SVI[key] * 100).toFixed(5);
             }
         }
         for (var key in RI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].properties['newIR'] = (RI[key] * 100);
+                la[ix].properties['newIR'] = (RI[key] * 100).toFixed(5);
             }
         }
     }
 
-    console.log('la:');
-    console.log(la);
+    thematicMap(layerAttributes);
 
     IRI.plotElement = "iri"; // Lable within the object
     RI.plotElement = "ri"; // Lable within the object
@@ -487,8 +488,6 @@ function processIndicators(layerAttributes, projectDef) {
     iriPcpData.push(SVI);
     iriPcpData.push(RI);
     IRI_PCP_Chart(iriPcpData);
-
-    thematicMap(layerAttributes);
 
 
     ///////////////////////////////////
@@ -517,6 +516,9 @@ function scale(IndicatorObj) {
 }
 
 function thematicMap(layerAttributes) {
+    // Initialise the legend
+    var legendControl = new L.Control.Legend();
+    legendControl.addTo(map);
 
     // find the indicator that has been selected
     var selectedIndex = document.getElementById('thematic-map-selection').value;
@@ -524,7 +526,13 @@ function thematicMap(layerAttributes) {
 
     try {
         map.removeLayer(thematicLayer);
-        legendControl.removeFrom(map);
+        //legendControl.removeFrom(map);
+    } catch (e) {
+        // continue
+    }
+    try {
+        $('.leaflet-control-legend').empty();
+        //legendControl.removeFrom(map);
     } catch (e) {
         // continue
     }
@@ -574,17 +582,7 @@ function thematicMap(layerAttributes) {
     var thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
     map.addLayer(thematicLayer);
 
-/*
-    $('#project-def').append(
-        thematicLayer.getLegend({
-            numSegments: 30,
-            width: 280,
-            //className: 'well'
-        })
-    );
-*/
-
-    var legendControl = new L.Control.Legend();
+    legendControl = new L.Control.Legend();
     legendControl.addTo(map);
 }
 
@@ -690,8 +688,6 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(data) {
-                console.log('layerAttributes:');
-                console.log(data);
 
                 // Make a global variable used by the d3-tree chart
                 // when a weight is modified
