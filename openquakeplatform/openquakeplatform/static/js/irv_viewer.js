@@ -537,10 +537,10 @@ function thematicMap(layerAttributes) {
         // continue
     }
     // Make some polygons from the WFS using leaflet-dvf
-    var colorFunctionGreenRed = new L.HSLHueFunction(new L.Point(1,120), new L.Point(55,0));
+    var colorFunctionGreenRed = new L.HSLHueFunction(new L.Point(1,60), new L.Point(100,0));
     var colorFunction1 = new L.HSLLuminosityFunction(
         new L.Point(1,0.75),
-        new L.Point(55,0.2),
+        new L.Point(100,0.2),
         {
             outputHue: 240,
             outputSaturation: '100%'
@@ -554,7 +554,7 @@ function thematicMap(layerAttributes) {
             ),
             new L.LinearFunction(
                 new L.Point(1, 0.7),
-                new L.Point(55, 0.7)
+                new L.Point(100, 0.7)
             )
         ]
     );
