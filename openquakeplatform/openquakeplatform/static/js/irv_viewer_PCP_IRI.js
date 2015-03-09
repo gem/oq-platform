@@ -24,9 +24,6 @@ function IRI_PCP_Chart(iriPcpData) {
     var plotElements = ["iri", "svi", "ri"];
     var keys = [];
 
-    console.log('iriPcpData:');
-    console.log(iriPcpData);
-
     for (var k in iriPcpData) {
         keys.push(k);
     }

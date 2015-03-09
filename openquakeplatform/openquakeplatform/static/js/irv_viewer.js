@@ -460,22 +460,36 @@ function processIndicators(layerAttributes, projectDef) {
     //// Prep data for thematic map ////
     ////////////////////////////////////
 
+    console.log('la:');
+    console.log(la);
+    console.log('catData:');
+    console.log(catData);
+
     for (var ix = 0; ix < la.length; ix++) {
         for (var key in IRI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].properties['newIRI'] = (IRI[key] * 100).toFixed(5);
+                la[ix].newProperties = {};
+                la[ix].newProperties['newIRI'] = (IRI[key] * 100).toFixed(5);
             }
         }
         for (var key in SVI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].properties['newSVI'] = (SVI[key] * 100).toFixed(5);
+                la[ix].newProperties['newSVI'] = (SVI[key] * 100).toFixed(5);
             }
         }
         for (var key in RI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].properties['newIR'] = (RI[key] * 100).toFixed(5);
+                la[ix].newProperties['newIR'] = (RI[key] * 100).toFixed(5);
             }
         }
+
+        for (themeKey in catData[ix]) {
+            if (catData[ix] != 'region') {
+                var tempThemeName = catData[ix][themeKey];
+                la[ix].newProperties[themeKey] = tempThemeName;
+            }
+        }
+        // TODO extend for risk and primary indicators
     }
 
     thematicMap(layerAttributes);
@@ -522,20 +536,19 @@ function thematicMap(layerAttributes) {
 
     // find the indicator that has been selected
     var selectedIndex = document.getElementById('thematic-map-selection').value;
-    var displayElement = 'properties.new'+selectedIndex;
+    var displayElement = 'newProperties.new'+selectedIndex;
 
     try {
         map.removeLayer(thematicLayer);
-        //legendControl.removeFrom(map);
     } catch (e) {
         // continue
     }
     try {
         $('.leaflet-control-legend').empty();
-        //legendControl.removeFrom(map);
     } catch (e) {
         // continue
     }
+
     // Make some polygons from the WFS using leaflet-dvf
     var colorFunctionGreenRed = new L.HSLHueFunction(new L.Point(1,60), new L.Point(100,0));
     var colorFunction1 = new L.HSLLuminosityFunction(
@@ -546,6 +559,7 @@ function thematicMap(layerAttributes) {
             outputSaturation: '100%'
         }
     );
+
     var opacityFunction = new L.PiecewiseFunction(
         [
             new L.LinearFunction(
@@ -558,6 +572,7 @@ function thematicMap(layerAttributes) {
             )
         ]
     );
+
     // Set the thematic ayer options
     var options = {
         recordsField: 'features',
@@ -617,6 +632,8 @@ var startApp = function() {
             '<option>IRI</option>'+
             '<option>SVI</option>'+
             '<option>IR</option>'+
+
+            // extend for risk and PI's
         '</select>'
     );
 
