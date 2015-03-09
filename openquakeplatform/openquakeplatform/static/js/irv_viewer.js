@@ -14,6 +14,7 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
 var sessionProjectDefStr;
@@ -455,6 +456,29 @@ function processIndicators(layerAttributes, projectDef) {
 
     scale(IRI);
 
+    // pass the new values back into the layer attributes object for use in thematic map
+    for (var ix = 0; ix < la.length; ix++) {
+        for (var key in IRI) {
+            if (key == la[ix].properties[selectedRegion]) {
+                //la[ix]['newProperties'] = {};
+                la[ix].properties['newIRI'] = (IRI[key] * 100);
+            }
+        }
+        for (var key in SVI) {
+            if (key == la[ix].properties[selectedRegion]) {
+                la[ix].properties['newSVI'] = (SVI[key] * 100);
+            }
+        }
+        for (var key in RI) {
+            if (key == la[ix].properties[selectedRegion]) {
+                la[ix].properties['newIR'] = (RI[key] * 100);
+            }
+        }
+    }
+
+    console.log('la:');
+    console.log(la);
+
     IRI.plotElement = "iri"; // Lable within the object
     RI.plotElement = "ri"; // Lable within the object
     SVI.plotElement = "svi"; // Lable within the object
@@ -463,6 +487,8 @@ function processIndicators(layerAttributes, projectDef) {
     iriPcpData.push(SVI);
     iriPcpData.push(RI);
     IRI_PCP_Chart(iriPcpData);
+
+    thematicMap(layerAttributes);
 
 
     ///////////////////////////////////
@@ -488,6 +514,79 @@ function scale(IndicatorObj) {
         IndicatorObj[tempKeys[ih]] = scaledValues[ih];
     }
     return IndicatorObj
+}
+
+function thematicMap(layerAttributes) {
+
+    // find the indicator that has been selected
+    var selectedIndex = document.getElementById('thematic-map-selection').value;
+    var displayElement = 'properties.new'+selectedIndex;
+    console.log('displayElement:');
+    console.log(displayElement);
+
+    try {
+        map.removeLayer(thematicLayer);
+        console.log('remove the old layer:');
+    } catch (e) {
+        // continue
+    }
+    // Make some polygons from the WFS using leaflet-dvf
+    var colorFunctionGreenRed = new L.HSLHueFunction(new L.Point(1,120), new L.Point(55,0));
+    var colorFunction1 = new L.HSLLuminosityFunction(
+        new L.Point(1,0.75),
+        new L.Point(55,0.2),
+        {
+            outputHue: 240,
+            outputSaturation: '100%'
+        }
+    );
+    var opacityFunction = new L.PiecewiseFunction(
+        [
+            new L.LinearFunction(
+                new L.Point(0, 0),
+                new L.Point(1, 0.7)
+            ),
+            new L.LinearFunction(
+                new L.Point(1, 0.7),
+                new L.Point(55, 0.7)
+            )
+        ]
+    );
+    // For the full options, see the documentation
+    var options = {
+        recordsField: 'features',
+        locationMode: L.LocationModes.GEOJSON,
+        geoJSONField: 'geometry',
+        layerOptions: {
+            fillOpacity: 1,
+            opacity: 1,
+            weight: 1,
+            stroke: true,
+            color: '#0000FF'
+        },
+        displayOptions: {},
+        /*
+        displayOptions: {
+            //displayElement: {
+            'properties.newIRI': {
+                displayName: 'COUNTRY_NA',
+                fillColor: colorFunctionGreenRed,
+                fillOpacity: opacityFunction
+            }
+        }
+        */
+    };
+
+    options.displayOptions[displayElement] = {
+        displayName: 'COUNTRY_NA',
+        fillColor: colorFunctionGreenRed,
+        fillOpacity: opacityFunction
+    };
+
+    console.log('options:');
+    console.log(options);
+    var thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
+    map.addLayer(thematicLayer);
 }
 
 var startApp = function() {
@@ -516,11 +615,20 @@ var startApp = function() {
         $( '#econ-weight' ).val( $( '#slider-vertical' ).slider( 'value' ) );
     });
 
+    $('#map-tools').append(
+        '<select id="thematic-map-selection">'+
+            '<option>IRI</option>'+
+            '<option>SVI</option>'+
+            '<option>IR</option>'+
+        '</select>'
+    );
+
     $('#map-tools').append('<select id="svir-project-list">'+
             '<option selected disabled>Select Project</option>'+
         '</select>'
     );
 
+    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
@@ -564,6 +672,10 @@ var startApp = function() {
         }
     });
 
+    $('#thematic-map-selection').change(function() {
+        thematicMap(layerAttributes);
+    });
+
     // Get the layer metadata (project def)
     $('#svir-project-list').change(function() {
         $('#projectDef-spinner').show();
@@ -578,60 +690,15 @@ var startApp = function() {
         $.ajax({
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
-            success: function(layerAttributes) {
-                console.log('layerAttributes:');
-                console.log(layerAttributes);
-                // Make some polygons from the WFS
-                /*
-                L.geoJson(layerAttributes.features, {
-                    style: function(feature) {
-                        switch (feature.properties.COUNTRY_NA) {
-                            case 'Alenquer': return {color: "#ff0000"};
-                            case 'Amadora':   return {color: "#0000ff"};
-                            case 'Arruda dos Vinhos':   return {color: "#ff0000"};
-                        }
-                    }
-                }).addTo(map);
-*/
-
-                var colorFunction1 = new L.HSLLuminosityFunction(new L.Point(1,0.75), new L.Point(55,0.2), {outputHue: 240, outputSaturation: '50%'});
-                var opacityFunction = new L.PiecewiseFunction([new L.LinearFunction(new L.Point(0, 0), new L.Point(1, 0.7)), new L.LinearFunction(new L.Point(1, 0.7), new L.Point(55, 0.7))]);
-
-                // For the full options, see the documentation
-                var options = {
-                    recordsField: 'features',
-                    locationMode: L.LocationModes.GEOJSON,
-                    geoJSONField: 'geometry',
-                    layerOptions: {
-                        fillOpacity: 1,
-                        opacity: 1,
-                        weight: 1,
-                        stroke: true,
-                        color: '#0000FF'
-                    },
-                    displayOptions: {
-                        // The display will be colored by your 'density' property in your GeoJSON. This accesses the feature object directory, so the 'properties' prefix is required if you're going to access a GeoJSON property on your data.
-                        'properties.AGEDEP': {
-                            // A legend will automatically be generated for you. You can add this as a control. This displayName property will be the title for this layer's legend.
-                            displayName: 'COUNTRY_NA',
-                            fillColor: colorFunction1,
-                            fillOpacity: opacityFunction
-                        }
-                    }
-                };
-
-                var foobar = new L.ChoroplethDataLayer(layerAttributes, options);
-                map.addLayer(foobar);
-                console.log('foobar:');
-                console.log(foobar);
-                console.log('map:');
-                console.log(map);
-
-
+            success: function(data) {
+                console.log('data:');
+                console.log(data);
 
                 // Make a global variable used by the d3-tree chart
                 // when a weight is modified
+                layerAttributes = data;
                 projectLayerAttributes = layerAttributes;
+
                 // provide a dropdown menu to select the region field
                 var layerFields = [];
                 // get all the field name out of the layer attributes object
