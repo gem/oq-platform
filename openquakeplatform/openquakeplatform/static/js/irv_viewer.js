@@ -521,12 +521,10 @@ function thematicMap(layerAttributes) {
     // find the indicator that has been selected
     var selectedIndex = document.getElementById('thematic-map-selection').value;
     var displayElement = 'properties.new'+selectedIndex;
-    console.log('displayElement:');
-    console.log(displayElement);
 
     try {
         map.removeLayer(thematicLayer);
-        console.log('remove the old layer:');
+        legendControl.removeFrom(map);
     } catch (e) {
         // continue
     }
@@ -552,7 +550,7 @@ function thematicMap(layerAttributes) {
             )
         ]
     );
-    // For the full options, see the documentation
+    // Set the thematic ayer options
     var options = {
         recordsField: 'features',
         locationMode: L.LocationModes.GEOJSON,
@@ -565,28 +563,29 @@ function thematicMap(layerAttributes) {
             color: '#0000FF'
         },
         displayOptions: {},
-        /*
-        displayOptions: {
-            //displayElement: {
-            'properties.newIRI': {
-                displayName: 'COUNTRY_NA',
-                fillColor: colorFunctionGreenRed,
-                fillOpacity: opacityFunction
-            }
-        }
-        */
     };
 
     options.displayOptions[displayElement] = {
-        displayName: 'COUNTRY_NA',
+        displayName: selectedIndex,
         fillColor: colorFunctionGreenRed,
         fillOpacity: opacityFunction
     };
 
-    console.log('options:');
-    console.log(options);
     var thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
     map.addLayer(thematicLayer);
+
+/*
+    $('#project-def').append(
+        thematicLayer.getLegend({
+            numSegments: 30,
+            width: 280,
+            //className: 'well'
+        })
+    );
+*/
+
+    var legendControl = new L.Control.Legend();
+    legendControl.addTo(map);
 }
 
 var startApp = function() {
@@ -691,7 +690,7 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(data) {
-                console.log('data:');
+                console.log('layerAttributes:');
                 console.log(data);
 
                 // Make a global variable used by the d3-tree chart
