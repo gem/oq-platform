@@ -23,6 +23,10 @@ var region = [];
 var districts = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
+var indicatorChildrenKey = [];
+var allSVIThemes = [];
+var allPrimaryIndicators = [];
+var allRiskIndicators = [];
 
 function createIndexSimple(la, index) {
     var indicator = [];
@@ -32,13 +36,14 @@ function createIndexSimple(la, index) {
         temp.region = la[ia].properties[selectedRegion];
         indicator.push(temp);
         // districts is used inside of the d3 charts
+        // TODO change this to region
         districts.push(la[ia].properties[selectedRegion]);
     }
     // Get the indicators children keys
-    var indicatorChildrenKey = [];
     for (var q = 0; q < index.length; q++) {
         indicatorChildrenKey.push(index[q].name);
     }
+
     // Match each primary indicator with it's respective data value
     var primaryRiskIndicatorObj = {};
     for (var ic = 0; ic < la.length; ic++) {
@@ -200,7 +205,6 @@ function processIndicators(layerAttributes, projectDef) {
 
     // process each Social Vulnerability Index nodes
     // Get all the primary indicators
-    var allPrimaryIndicators = [];
     var ct = 0;
 
     for (var i = 0; i < socialVulnIndex.length; i++) {
@@ -266,6 +270,7 @@ function processIndicators(layerAttributes, projectDef) {
         var operator = socialVulnIndex[m].operator;
         var weight = socialVulnIndex[m].weight;
         var name = socialVulnIndex[m].name;
+        allSVIThemes.push(name);
         var tempChildren = socialVulnIndex[m].children;
         var indicatorChildrenKey = [];
         // Get the indicators children keys
@@ -392,6 +397,13 @@ function processIndicators(layerAttributes, projectDef) {
     createIndexSimple(la, riskIndex);
     var riskIndicator = createIndex(la, riskIndex);
 
+    // capture all risk indicators for selection menu
+    for (var key in riskIndicator[0]) {
+        if (key != 'region') {
+            allRiskIndicators.push(key);
+        }
+    }
+
     ////////////////////////////////////
     //// Compute the Risk Indicator ////
     ////////////////////////////////////
@@ -422,6 +434,7 @@ function processIndicators(layerAttributes, projectDef) {
             sviWeight = projectDef.children[ik].weight;
         }
     }
+
     if (iriOperator == "Average (ignore weights)") {
         for (var regionName in SVI) {
             tempVal = SVI[regionName] + RI[regionName];
@@ -462,8 +475,9 @@ function processIndicators(layerAttributes, projectDef) {
 
     console.log('la:');
     console.log(la);
-    console.log('catData:');
-    console.log(catData);
+
+    console.log('projectDef:');
+    console.log(projectDef);
 
     for (var ix = 0; ix < la.length; ix++) {
         for (var key in IRI) {
@@ -490,6 +504,37 @@ function processIndicators(layerAttributes, projectDef) {
             }
         }
         // TODO extend for risk and primary indicators
+    }
+
+    // Add main indicators to selection menu
+    $('#map-tools').append(
+        '<select id="thematic-map-selection">'+
+            '<optgroup label="Indicators">'+
+            '<option>IRI</option>'+
+            '<option>SVI</option>'+
+            '<option>IR</option>'+
+
+            // TODO extend for risk and PI
+        '</select>'
+    );
+    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
+
+    // Add SVI themes to selection menu
+    $('#thematic-map-selection').append('<optgroup label="SVI Indicators">');
+    for (var id = 0; id < allSVIThemes.length; id++) {
+        $('#thematic-map-selection').append('<option>'+allSVIThemes[id]+'</option>');
+    }
+
+    // Add IR themes to selection menu
+    $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
+    for (var ie = 0; ie < allRiskIndicators.length; ie++) {
+        $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
+    }
+
+    // Add all primary indicators to selection menu
+    $('#thematic-map-selection').append('<optgroup label="Primary Indicators">');
+    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
+        $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
     }
 
     thematicMap(layerAttributes);
@@ -627,22 +672,11 @@ var startApp = function() {
         $( '#econ-weight' ).val( $( '#slider-vertical' ).slider( 'value' ) );
     });
 
-    $('#map-tools').append(
-        '<select id="thematic-map-selection">'+
-            '<option>IRI</option>'+
-            '<option>SVI</option>'+
-            '<option>IR</option>'+
-
-            // extend for risk and PI's
-        '</select>'
-    );
-
     $('#map-tools').append('<select id="svir-project-list">'+
             '<option selected disabled>Select Project</option>'+
         '</select>'
     );
 
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
