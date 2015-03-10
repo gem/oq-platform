@@ -213,30 +213,6 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    // Match each primary indicator with it's respective data value
-    var primaryIndicatorObj = {};
-
-    for (var h = 0; h < layerAttributes.features.length; h++) {
-        var tempProps = layerAttributes.features[h].properties;
-        for (var d = 0; d < allPrimaryIndicators.length; d++) {
-            for (var field in tempProps) {
-                if (allPrimaryIndicators[d] == field) {
-                    var tempFieldName = allPrimaryIndicators[d];
-                    var tempFieldValue = tempProps[field];
-                    var tempRegionName = tempProps[selectedRegion];
-
-                    if (primaryIndicatorObj[tempFieldName] == undefined) {
-                        primaryIndicatorObj[tempFieldName] = tempFieldValue;
-                        primaryIndicatorObj.municipio = tempRegionName;
-                    } else {
-                        primaryIndicatorObj[tempFieldName] = primaryIndicatorObj[tempFieldName] + "," +tempFieldValue;
-                        primaryIndicatorObj.municipio = primaryIndicatorObj.municipio + "," +tempRegionName;
-                    }
-                }
-            }
-        }
-    }
-
     /////////////////////////////////////////
     //// Compute the Category indicators ////
     /////////////////////////////////////////
@@ -473,37 +449,71 @@ function processIndicators(layerAttributes, projectDef) {
     //// Prep data for thematic map ////
     ////////////////////////////////////
 
-    console.log('la:');
-    console.log(la);
 
     console.log('projectDef:');
     console.log(projectDef);
 
+
+    // Pass indicators into a 'newProperties' element
     for (var ix = 0; ix < la.length; ix++) {
         for (var key in IRI) {
             if (key == la[ix].properties[selectedRegion]) {
                 la[ix].newProperties = {};
-                la[ix].newProperties['newIRI'] = (IRI[key] * 100).toFixed(5);
+                la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
             }
         }
-        for (var key in SVI) {
+        for (key in SVI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['newSVI'] = (SVI[key] * 100).toFixed(5);
+                la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
             }
         }
-        for (var key in RI) {
+        for (key in RI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['newIR'] = (RI[key] * 100).toFixed(5);
+                la[ix].newProperties['IR'] = (RI[key]).toFixed(5);
             }
         }
 
-        for (themeKey in catData[ix]) {
+        for (var themeKey in catData[ix]) {
             if (catData[ix] != 'region') {
                 var tempThemeName = catData[ix][themeKey];
                 la[ix].newProperties[themeKey] = tempThemeName;
             }
         }
-        // TODO extend for risk and primary indicators
+
+        for (var riskThemeKey in riskIndicator[ix]) {
+            if (riskIndicator[ix] != 'region') {
+                var tempThemeName = riskIndicator[ix][riskThemeKey];
+                la[ix].newProperties[riskThemeKey] = tempThemeName;
+            }
+        }
+
+        for (var riskThemeKey in riskIndicator[ix]) {
+            if (riskIndicator[ix] != 'region') {
+                var tempThemeName = riskIndicator[ix][riskThemeKey];
+                la[ix].newProperties[riskThemeKey] = tempThemeName;
+            }
+        }
+    }
+
+    // Pass primary indicators into a 'newProperties' element
+    for (var ia = 0; ia < socialVulnIndex.length; ia++) {
+        var indicatorChildrenKey = [];
+        var tempChildren = socialVulnIndex[ia].children;
+        // Get the indicators children keys
+        for (var q = 0; q < tempChildren.length; q++) {
+            indicatorChildrenKey.push(tempChildren[q].field);
+        }
+
+        for (var ib = 0; ib < la.length; ib++, ct++) {
+            for (var p in la[ib].properties) {
+                for (var id = 0; id < indicatorChildrenKey.length; id++, ct++) {
+                    if (p == indicatorChildrenKey[id]) {
+                        var tempName = p;
+                        la[ib].newProperties[tempName] = la[ib].properties[p];
+                    }
+                }
+            }
+        }
     }
 
     // Add main indicators to selection menu
@@ -536,6 +546,10 @@ function processIndicators(layerAttributes, projectDef) {
     for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
         $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
     }
+
+    $('#thematic-map-selection').change(function() {
+        thematicMap(layerAttributes);
+    });
 
     thematicMap(layerAttributes);
 
@@ -581,7 +595,21 @@ function thematicMap(layerAttributes) {
 
     // find the indicator that has been selected
     var selectedIndex = document.getElementById('thematic-map-selection').value;
-    var displayElement = 'newProperties.new'+selectedIndex;
+    var displayElement = 'newProperties.'+selectedIndex;
+    var la = layerAttributes.features;
+
+    // find the min and max values for the selected indicator
+    var minMaxArray = [];
+    for (var i = 0; i < la.length; i++) {
+        for (var k in la[i].newProperties) {
+            if (k == selectedIndex) {
+                minMaxArray.push(la[i].newProperties[k]);
+            }
+        }
+    }
+
+    var min = Math.min.apply(null, minMaxArray);
+    var max = Math.max.apply(null, minMaxArray);
 
     try {
         map.removeLayer(thematicLayer);
@@ -594,29 +622,10 @@ function thematicMap(layerAttributes) {
         // continue
     }
 
-    // Make some polygons from the WFS using leaflet-dvf
-    var colorFunctionGreenRed = new L.HSLHueFunction(new L.Point(1,60), new L.Point(100,0));
-    var colorFunction1 = new L.HSLLuminosityFunction(
-        new L.Point(1,0.75),
-        new L.Point(100,0.2),
-        {
-            outputHue: 240,
-            outputSaturation: '100%'
-        }
-    );
-
-    var opacityFunction = new L.PiecewiseFunction(
-        [
-            new L.LinearFunction(
-                new L.Point(0, 0),
-                new L.Point(1, 0.7)
-            ),
-            new L.LinearFunction(
-                new L.Point(1, 0.7),
-                new L.Point(100, 0.7)
-            )
-        ]
-    );
+    // vary the color from yellow (60) to red(0) from 0 to 1
+    var yellowToRed = new L.HSLHueFunction(new L.Point(min, 60), new L.Point(max, 0), {
+        //outputHue: 60
+    });
 
     // Set the thematic ayer options
     var options = {
@@ -635,8 +644,7 @@ function thematicMap(layerAttributes) {
 
     options.displayOptions[displayElement] = {
         displayName: selectedIndex,
-        fillColor: colorFunctionGreenRed,
-        fillOpacity: opacityFunction
+        fillColor: yellowToRed
     };
 
     var thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
@@ -718,10 +726,6 @@ var startApp = function() {
                 );
             $('#ajaxErrorDialog').dialog('open');
         }
-    });
-
-    $('#thematic-map-selection').change(function() {
-        thematicMap(layerAttributes);
     });
 
     // Get the layer metadata (project def)
