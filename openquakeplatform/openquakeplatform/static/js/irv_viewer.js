@@ -453,6 +453,9 @@ function processIndicators(layerAttributes, projectDef) {
     console.log('projectDef:');
     console.log(projectDef);
 
+    console.log('la:');
+    console.log(la);
+
 
     // Pass indicators into a 'newProperties' element
     for (var ix = 0; ix < la.length; ix++) {
@@ -473,24 +476,26 @@ function processIndicators(layerAttributes, projectDef) {
             }
         }
 
+        for (var riskThemeKey in riskIndicator[ix]) {
+            if (riskIndicator[ix] != 'region') {
+                var tempThemeName = riskIndicator[ix][riskThemeKey];
+                la[ix].newProperties[riskThemeKey] = tempThemeName;
+            }
+        }
+
+        for (var riskThemeKey in riskIndicator[ix]) {
+            if (riskIndicator[ix] != 'region') {
+                var tempThemeName = riskIndicator[ix][riskThemeKey];
+                la[ix].newProperties[riskThemeKey] = tempThemeName;
+            }
+        }
+
         for (var themeKey in catData[ix]) {
-            if (catData[ix] != 'region') {
+            if (themeKey != 'region') {
                 var tempThemeName = catData[ix][themeKey];
                 la[ix].newProperties[themeKey] = tempThemeName;
-            }
-        }
-
-        for (var riskThemeKey in riskIndicator[ix]) {
-            if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][riskThemeKey];
-                la[ix].newProperties[riskThemeKey] = tempThemeName;
-            }
-        }
-
-        for (var riskThemeKey in riskIndicator[ix]) {
-            if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][riskThemeKey];
-                la[ix].newProperties[riskThemeKey] = tempThemeName;
+            } else if (themeKey == 'region') {
+                la[ix].newProperties[region] = catData[ix][themeKey];
             }
         }
     }
@@ -608,8 +613,8 @@ function thematicMap(layerAttributes) {
         }
     }
 
-    var min = Math.min.apply(null, minMaxArray);
-    var max = Math.max.apply(null, minMaxArray);
+    var min = Math.min.apply(null, minMaxArray).toFixed(2);
+    var max = Math.max.apply(null, minMaxArray).toFixed(2);
 
     try {
         map.removeLayer(thematicLayer);
@@ -640,6 +645,7 @@ function thematicMap(layerAttributes) {
             color: '#0000FF'
         },
         displayOptions: {},
+        title: "foobar"
     };
 
     options.displayOptions[displayElement] = {

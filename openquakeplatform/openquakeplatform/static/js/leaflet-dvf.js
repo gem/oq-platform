@@ -676,6 +676,7 @@ L.Util.setFieldValue = function (record, fieldName, value) {
 L.Util.getFieldValue = function (record, fieldName) {
 
 	var value = null;
+	var region = null;
 
 	if (fieldName) {
 		var parts = fieldName.split('.');
@@ -718,7 +719,11 @@ L.Util.getFieldValue = function (record, fieldName) {
 				}
 			}
 			else if (valueField && valueField.hasOwnProperty(part)) {
+				// GEM modify - Add add the region name
 				valueField = valueField[part];
+				if (region == null) {
+					region = valueField['region'];
+				}
 			}
 			else {
 				valueField = null;
@@ -732,7 +737,14 @@ L.Util.getFieldValue = function (record, fieldName) {
 		value = record;
 	}
 
-	return value;
+	// GEM modify - If a region name is added return an array with the value and the region
+	if (region == undefined || region == null) {
+		return value;
+	} else {
+		value = [value, region];
+		return value;
+	}
+
 };
 
 L.Util.getNumericRange = function (records, fieldName) {
@@ -843,6 +855,8 @@ L.LegendIcon = L.DivIcon.extend({
 			field = fields[key];
 			L.DomUtil.create('div', 'key', legendValues).innerHTML = field.name || key;
 			L.DomUtil.create('div', 'value', legendValues).innerHTML = field.value;
+			// GEM modify - include the region
+			L.DomUtil.create('div', 'region', legendValues).innerHTML = field.region;
 		}
 
 		L.StyleConverter.applySVGStyle(legendBox, layerOptions);
@@ -5316,26 +5330,29 @@ L.DataLayer = L.LayerGroup.extend({
 
 		if (displayOptions) {
 			for (var property in displayOptions) {
-
 				var propertyOptions = displayOptions[property];
 				var fieldValue = L.Util.getFieldValue(record, property);
 				var valueFunction;
-				var displayText = propertyOptions.displayText ? propertyOptions.displayText(fieldValue) : fieldValue;
+				// GEM modify - Access the first element inside of fieldValue
+				var displayText = propertyOptions.displayText ? propertyOptions.displayText(fieldValue[0]) : fieldValue[0];
+				//var region = fieldValue[1];
 
 				legendDetails[property] = {
 					name: propertyOptions.displayName,
-					value: displayText
+					value: displayText,
+					// GEM modify - Include the region
+					region: fieldValue[1]
 				};
 
 				if (propertyOptions.styles) {
-					layerOptions = L.Util.extend(layerOptions, propertyOptions.styles[fieldValue]);
-					propertyOptions.styles[fieldValue] = layerOptions;
+					layerOptions = L.Util.extend(layerOptions, propertyOptions.styles[fieldValue[0]]);
+					propertyOptions.styles[fieldValue[0]] = layerOptions;
 				}
 				else {
 					for (var layerProperty in propertyOptions) {
 						valueFunction = propertyOptions[layerProperty];
 
-						layerOptions[layerProperty] = valueFunction.evaluate ? valueFunction.evaluate(fieldValue) : (valueFunction.call ? valueFunction.call(this, fieldValue) : valueFunction);
+						layerOptions[layerProperty] = valueFunction.evaluate ? valueFunction.evaluate(fieldValue[0]) : (valueFunction.call ? valueFunction.call(this, fieldValue[0]) : valueFunction);
 					}
 				}
 			}
