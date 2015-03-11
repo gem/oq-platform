@@ -22,7 +22,9 @@
 
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
-function Category_PCP_Chart(catData, municipality, districName) {
+function Category_PCP_Chart(catData) {
+    console.log('catData:');
+    console.log(catData);
 
     var data = catData;
     var winH = ($(window).height() / 1.5);
@@ -51,7 +53,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
     var x2 = d3.scale.linear()
         .range([0, width], 1);
 
-     var y = d3.scale.linear()
+    var y = d3.scale.linear()
         .range([height, 0]);
 
     var line = d3.svg.line(),
@@ -74,7 +76,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
 
     $('#cat-chart').empty();
 
-    var svg = d3.select('#cat-chart3').append('svg')
+    var svg = d3.select('#cat-chart').append('svg')
         .attr("viewBox", "-30 20 " +(winW -130)+" " +winH)
         .attr("id", "CI-svg-element")
         .append('g')
@@ -82,7 +84,7 @@ function Category_PCP_Chart(catData, municipality, districName) {
 
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
-        return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
+        return d != 'region' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
             .domain([0, maxVal])
             .range([height, 0]));
     }));
@@ -95,12 +97,12 @@ function Category_PCP_Chart(catData, municipality, districName) {
         .data(catData)
         .enter().append('path')
         .attr('d', path)
-        .attr('id', function(d) { return d.municipality; })
+        .attr('id', function(d) { return d.region; })
             .on('mouseover', function() {
                 d3.select(this)
                 .style('stroke-width', 6)
                 .style('stroke', 'steelblue');
-                textTop.text('District: ' + districName + ', Municipality: ' + this.id);
+                textTop.text('Region: ' + this.id);
             }).on('mouseout', function() {
                 d3.select(this)
                 .style('stroke-width', 3)

@@ -719,7 +719,7 @@ L.Util.getFieldValue = function (record, fieldName) {
 				}
 			}
 			else if (valueField && valueField.hasOwnProperty(part)) {
-				// GEM modify - Add add the region name
+				// GEM modify - Add the region name
 				valueField = valueField[part];
 				if (region == null) {
 					region = valueField['region'];
@@ -5327,32 +5327,43 @@ L.DataLayer = L.LayerGroup.extend({
 		var layerOptions = L.Util.extend({},this.options.layerOptions);
 		var displayOptions = this.options.displayOptions;
 		var legendDetails = {};
+		var zone = null;
 
 		if (displayOptions) {
 			for (var property in displayOptions) {
 				var propertyOptions = displayOptions[property];
-				var fieldValue = L.Util.getFieldValue(record, property);
+				// GEM modify
+				var foobar = L.Util.getFieldValue(record, property);
+				if (foobar instanceof Array) {
+					fieldValue = foobar[0];
+					zone = foobar[1];
+				} else {
+					fieldValue = foobar;
+				}
 				var valueFunction;
 				// GEM modify - Access the first element inside of fieldValue
-				var displayText = propertyOptions.displayText ? propertyOptions.displayText(fieldValue[0]) : fieldValue[0];
+				var displayText = propertyOptions.displayText ? propertyOptions.displayText(fieldValue) : fieldValue;
 				//var region = fieldValue[1];
 
 				legendDetails[property] = {
 					name: propertyOptions.displayName,
 					value: displayText,
-					// GEM modify - Include the region
-					region: fieldValue[1]
 				};
 
+				// GEM modify - Include the region
+				if (zone != null) {
+					legendDetails[property].region = zone;
+				}
+
 				if (propertyOptions.styles) {
-					layerOptions = L.Util.extend(layerOptions, propertyOptions.styles[fieldValue[0]]);
-					propertyOptions.styles[fieldValue[0]] = layerOptions;
+					layerOptions = L.Util.extend(layerOptions, propertyOptions.styles[fieldValue]);
+					propertyOptions.styles[fieldValue] = layerOptions;
 				}
 				else {
 					for (var layerProperty in propertyOptions) {
 						valueFunction = propertyOptions[layerProperty];
 
-						layerOptions[layerProperty] = valueFunction.evaluate ? valueFunction.evaluate(fieldValue[0]) : (valueFunction.call ? valueFunction.call(this, fieldValue[0]) : valueFunction);
+						layerOptions[layerProperty] = valueFunction.evaluate ? valueFunction.evaluate(fieldValue) : (valueFunction.call ? valueFunction.call(this, fieldValue) : valueFunction);
 					}
 				}
 			}

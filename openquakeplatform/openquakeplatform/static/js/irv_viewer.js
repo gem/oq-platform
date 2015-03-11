@@ -347,8 +347,7 @@ function processIndicators(layerAttributes, projectDef) {
         generateObject(temp);
     }
 
-    var districName = "temp";
-    Category_PCP_Chart(catData, region, districName);
+    Category_PCP_Chart(catData);
 
     /////////////////////////
     //// Compute the SVI ////
@@ -475,13 +474,6 @@ function processIndicators(layerAttributes, projectDef) {
             }
         }
 
-        for (var key in riskIndicator[ix]) {
-            if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][key];
-                la[ix].newProperties[key] = tempThemeName;
-            }
-        }
-
         for (var key in catData[ix]) {
             if (key != 'region') {
                 var tempThemeName = catData[ix][key];
@@ -514,17 +506,13 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Add main indicators to selection menu
-    $('#map-tools').append(
-        '<select id="thematic-map-selection">'+
-            '<optgroup label="Indicators">'+
-            '<option>IRI</option>'+
-            '<option>SVI</option>'+
-            '<option>IR</option>'+
-
-            // TODO extend for risk and PI
-        '</select>'
+    $('#thematic-map-selection').empty();
+    $('#thematic-map-selection').append(
+        '<optgroup label="Indicators">'+
+        '<option>IRI</option>'+
+        '<option>SVI</option>'+
+        '<option>IR</option>'
     );
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
 
     // Add SVI themes to selection menu
     $('#thematic-map-selection').append('<optgroup label="SVI Indicators">');
@@ -586,6 +574,9 @@ function scale(IndicatorObj) {
 }
 
 function thematicMap(layerAttributes) {
+
+    console.log('layerAttributes:');
+    console.log(layerAttributes);
     // Initialise the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
@@ -619,7 +610,7 @@ function thematicMap(layerAttributes) {
         // continue
     }
 
-    // vary the color from yellow (60) to red(0) from 0 to 1
+    // vary the color from yellow (60) to red(0) from min to max values
     var yellowToRed = new L.HSLHueFunction(new L.Point(min, 60), new L.Point(max, 0), {
         //outputHue: 60
     });
@@ -678,11 +669,19 @@ var startApp = function() {
         $( '#econ-weight' ).val( $( '#slider-vertical' ).slider( 'value' ) );
     });
 
-    $('#map-tools').append('<select id="svir-project-list">'+
+    $('#map-tools').append(
+        '<select id="svir-project-list">'+
             '<option selected disabled>Select Project</option>'+
         '</select>'
     );
 
+    $('#map-tools').append(
+        '<select id="thematic-map-selection">'+
+            '<option>Select Indicator</option>'+
+        '</select>'
+    );
+
+    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
@@ -791,7 +790,7 @@ var startApp = function() {
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
                 // ***** TEMP remove this ****
-                //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
+                layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
