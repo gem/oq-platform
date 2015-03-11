@@ -853,10 +853,10 @@ L.LegendIcon = L.DivIcon.extend({
 
 		for (var key in fields) {
 			field = fields[key];
-			L.DomUtil.create('div', 'key', legendValues).innerHTML = field.name || key;
-			L.DomUtil.create('div', 'value', legendValues).innerHTML = field.value;
-			// GEM modify - include the region
+			// GEM modify - include the region instead of the name
 			L.DomUtil.create('div', 'region', legendValues).innerHTML = field.region;
+			//L.DomUtil.create('div', 'key', legendValues).innerHTML = field.name || key;
+			L.DomUtil.create('div', 'value', legendValues).innerHTML = field.value;
 		}
 
 		L.StyleConverter.applySVGStyle(legendBox, layerOptions);

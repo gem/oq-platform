@@ -449,14 +449,6 @@ function processIndicators(layerAttributes, projectDef) {
     //// Prep data for thematic map ////
     ////////////////////////////////////
 
-
-    console.log('projectDef:');
-    console.log(projectDef);
-
-    console.log('la:');
-    console.log(la);
-
-
     // Pass indicators into a 'newProperties' element
     for (var ix = 0; ix < la.length; ix++) {
         for (var key in IRI) {
@@ -465,37 +457,37 @@ function processIndicators(layerAttributes, projectDef) {
                 la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
             }
         }
-        for (key in SVI) {
+        for (var key in SVI) {
             if (key == la[ix].properties[selectedRegion]) {
                 la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
             }
         }
-        for (key in RI) {
+        for (var key in RI) {
             if (key == la[ix].properties[selectedRegion]) {
                 la[ix].newProperties['IR'] = (RI[key]).toFixed(5);
             }
         }
 
-        for (var riskThemeKey in riskIndicator[ix]) {
+        for (var key in riskIndicator[ix]) {
             if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][riskThemeKey];
-                la[ix].newProperties[riskThemeKey] = tempThemeName;
+                var tempThemeName = riskIndicator[ix][key];
+                la[ix].newProperties[key] = tempThemeName;
             }
         }
 
-        for (var riskThemeKey in riskIndicator[ix]) {
+        for (var key in riskIndicator[ix]) {
             if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][riskThemeKey];
-                la[ix].newProperties[riskThemeKey] = tempThemeName;
+                var tempThemeName = riskIndicator[ix][key];
+                la[ix].newProperties[key] = tempThemeName;
             }
         }
 
-        for (var themeKey in catData[ix]) {
-            if (themeKey != 'region') {
-                var tempThemeName = catData[ix][themeKey];
-                la[ix].newProperties[themeKey] = tempThemeName;
-            } else if (themeKey == 'region') {
-                la[ix].newProperties[region] = catData[ix][themeKey];
+        for (var key in catData[ix]) {
+            if (key != 'region') {
+                var tempThemeName = catData[ix][key];
+                la[ix].newProperties[key] = tempThemeName;
+            } else if (key == 'region') {
+                la[ix].newProperties[region] = catData[ix][key];
             }
         }
     }
@@ -590,7 +582,7 @@ function scale(IndicatorObj) {
     for (var ih = 0; ih < tempKeys.length; ih++) {
         IndicatorObj[tempKeys[ih]] = scaledValues[ih];
     }
-    return IndicatorObj
+    return IndicatorObj;
 }
 
 function thematicMap(layerAttributes) {
