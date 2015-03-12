@@ -190,10 +190,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
 function processIndicators(layerAttributes, projectDef) {
 
-    console.log('layerAttributes:');
-    console.log(layerAttributes);
-    console.log('projectDef:');
-    console.log(projectDef);
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -226,31 +222,31 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     /////////////////////////////////////////
-    //// Compute the Category indicators ////
+    //// Compute the theme indicators ////
     /////////////////////////////////////////
 
-    //build the category indicator object
-    var catData = [];
-    tempString = [];
+    //build the theme indicator object
+    var themeData = [];
+    indicatorString = [];
 
-    function generateObject(temp) {
-        var munic = temp[0];
-        var theme = temp[1];
-        var value = parseFloat(temp[2]);
-        // add the theme and value to each category data object
-        for (var i = 0; i < catData.length; i++) {
-            if (catData[i].region == munic) {
-                catData[i][theme] = value;
+    function generateObject(indicatorArray) {
+        var munic = indicatorArray[0];
+        var theme = indicatorArray[1];
+        var value = parseFloat(indicatorArray[2]);
+        // add the theme and value to each theme data object
+        for (var i = 0; i < themeData.length; i++) {
+            if (themeData[i].region == munic) {
+                themeData[i][theme] = value;
             }
         }
     }
 
-    // setup catData with all the regions
+    // setup themeData with all the regions
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
         temp.region = la[s].properties[selectedRegion];
-        catData.push(temp);
+        themeData.push(temp);
     }
 
     // Find the theme information
@@ -284,7 +280,7 @@ function processIndicators(layerAttributes, projectDef) {
                 var theme = name;
                 // Grab the average
                 var average = tempSum / tempIndicatorChildrenKeys.length;
-                tempString.push(munic + '|'+ theme +'|'+ average);
+                indicatorString.push(munic + '|'+ theme +'|'+ average);
             } else if ( operator == "Simple sum (ignore weights)") {
                 for (var p1 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -297,7 +293,7 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 var munic1 = la[o].properties[selectedRegion];
                 var theme1 = name;
-                tempString.push(munic1 + '|'+ theme1 +'|'+ tempSum);
+                indicatorString.push(munic1 + '|'+ theme1 +'|'+ tempSum);
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -311,7 +307,7 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 var munic2 = la[o].properties[selectedRegion];
                 var theme2 = name;
-                tempString.push(munic2 + '|'+ theme2 +'|'+ tempSum);
+                indicatorString.push(munic2 + '|'+ theme2 +'|'+ tempSum);
             } else if ( operator == "Simple multiplication (ignore weights)") {
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -328,7 +324,7 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 var munic3 = la[o].properties[selectedRegion];
                 var theme3 = name;
-                tempString.push(munic3 + '|'+ theme3 +'|'+ tempSum);
+                indicatorString.push(munic3 + '|'+ theme3 +'|'+ tempSum);
             } else if ( operator == "Weighted multiplication") {
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -346,20 +342,20 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 var munic4 = la[o].properties[selectedRegion];
                 var theme4 = name;
-                tempString.push(munic4 + '|'+ theme4 +'|'+ tempSum);
+                indicatorString.push(munic4 + '|'+ theme4 +'|'+ tempSum);
             }
         }
     }
 
-    for (var p5 = 0; p5 < tempString.length; p5++) {
+    for (var p5 = 0; p5 < indicatorString.length; p5++) {
         // capture an array for each record
-        var temp;
-        temp = tempString[p5];
-        temp = temp.split("|");
-        generateObject(temp);
+        var indicatorArray;
+        indicatorArray = indicatorString[p5];
+        indicatorArray = indicatorArray.split("|");
+        generateObject(indicatorArray);
     }
 
-    Category_PCP_Chart(catData);
+    Theme_PCP_Chart(themeData);
 
     /////////////////////////
     //// Compute the SVI ////
@@ -369,7 +365,7 @@ function processIndicators(layerAttributes, projectDef) {
     var sviNameLookUp = 'SVI';
     var sviJSONthemes = svThemes;
     // SVI is an object with region and value
-    SVI = combineIndicators(sviNameLookUp, catData, sviJSONthemes );
+    SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
 
     ///////////////
     //// Scale ////
@@ -486,12 +482,12 @@ function processIndicators(layerAttributes, projectDef) {
             }
         }
 
-        for (var key in catData[ix]) {
+        for (var key in themeData[ix]) {
             if (key != 'region') {
-                var tempThemeName = catData[ix][key];
+                var tempThemeName = themeData[ix][key];
                 la[ix].newProperties[key] = tempThemeName;
             } else if (key == 'region') {
-                la[ix].newProperties.region = catData[ix][key];
+                la[ix].newProperties.region = themeData[ix][key];
             }
         }
     }
@@ -863,7 +859,7 @@ var startApp = function() {
     });
 
     $(function() {
-        $( '#categoryTabs' ).tabs({
+        $( '#themeTabs' ).tabs({
             collapsible: false,
             selected: -1,
             active: false,
