@@ -22,9 +22,9 @@
 
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
-function Category_PCP_Chart(catData) {
+function Theme_PCP_Chart(themeData) {
 
-    var data = catData;
+    var data = themeData;
     var winH = ($(window).height() / 1.5);
     var winW = ($(window).width());
     var margin = {top: 100, right: 20, bottom: 10, left: 20},
@@ -32,9 +32,9 @@ function Category_PCP_Chart(catData) {
         height = winH - margin.top - margin.bottom;
     var tmpArray = [];
     var array = [];
-    for (var i = 0; i < catData.length; i++) {
-        for (var k in catData[i]){
-            array.push(catData[i][k]);
+    for (var i = 0; i < themeData.length; i++) {
+        for (var k in themeData[i]){
+            array.push(themeData[i][k]);
         }
     }
 
@@ -81,7 +81,7 @@ function Category_PCP_Chart(catData) {
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     // Extract the list of dimensions and create a scale for each.
-    x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
+    x.domain(dimensions = d3.keys(themeData[0]).filter(function(d) {
         return d != 'region' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
             .domain([0, maxVal])
             .range([height, 0]));
@@ -92,7 +92,7 @@ function Category_PCP_Chart(catData) {
     foreground = svg.append('g')
         .attr('class', 'foreground')
         .selectAll('path')
-        .data(catData)
+        .data(themeData)
         .enter().append('path')
         .attr('d', path)
         .attr('id', function(d) { return d.region; })
