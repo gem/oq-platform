@@ -124,7 +124,7 @@ def apps(db_name, db_user, db_pass, mediaroot):
         except KeyError:
             pass
         else:
-            add_fn()
+            add_fn(db_name, db_user, db_pass)
 
     local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
@@ -303,44 +303,44 @@ def _maybe_install_postgis(db_name):
         return False
 
 
-def _add_isc_viewer():
+def _add_isc_viewer(db_name, db_user, db_pass):
     local('python manage.py import_isccsv ./openquakeplatform/isc_viewer/dev_data/isc_data.csv'
           ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
 
 
-def _add_icebox():
+def _add_icebox(db_name, db_user, db_pass):
     pass
 
 
-def _add_faulted_earth():
+def _add_faulted_earth(db_name, db_user, db_pass):
     pass
 
 
-def _add_ghec_viewer():
+def _add_ghec_viewer(db_name, db_user, db_pass):
     local('python manage.py import_gheccsv ./openquakeplatform/ghec_viewer/dev_data/ghec_data.csv')
 
 
-def _add_gaf_viewer():
+def _add_gaf_viewer(db_name, db_user, db_pass):
     local('python manage.py import_gaf_fs_csv '
           './openquakeplatform/gaf_viewer/dev_data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '
           './openquakeplatform/gaf_viewer/dev_data/gaf_data_ft.csv')
 
 
-def _add_econd():
-    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U oqplatform oqplatform')
+def _add_econd(db_name, db_user, db_pass):
+    local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U ' + db_user + ' ' +  db_name)
     local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png uploaded')
 
 
-def _add_weblib():
+def _add_weblib(db_name, db_user, db_pass):
     pass
 
 
-def _add_gemecdwebsite():
+def _add_gemecdwebsite(db_name, db_user, db_pass):
     pass
 
 
-def _add_vulnerability():
+def _add_vulnerability(db_name, db_user, db_pass):
     local('python manage.py loaddata '
           './openquakeplatform/vulnerability/post_fixtures/initial_data.json' )
     local('python manage.py import_vuln_geo_applicability_csv '

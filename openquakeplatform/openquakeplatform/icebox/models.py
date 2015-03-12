@@ -36,7 +36,7 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
 from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
-from geonode.layers.models import set_attributes
+from geonode.layers.models import set_attributes, Layer
 from geonode.layers.utils import layer_set_permissions
 from geonode.utils import default_map_config, ogc_server_settings
 
@@ -154,8 +154,18 @@ class Calculation(models.Model):
         self.save()
 
     @staticmethod
-    def remove_map(sender, instance, using, **_kwargs):
+    def remove_calc(sender, instance, using, **_kwargs):
         if instance.map_id:
+            for layer in instance.map.layer_set.all():
+                if layer.name.startswith('oqplatform:icebox_output'):
+                    layer_obj = Layer.objects.get(typename=layer.name)
+                    if layer_obj.store == 'icebox':
+                        cursor = connection.cursor()
+                        # layer name format is 'oqplatform:view_name'
+                        view_name = layer.name.split(":")[1]
+                        cursor.execute("DROP VIEW IF EXISTS %s" % view_name)
+                        cursor.connection.commit()
+                        layer_obj.delete()
             instance.map.delete()
 
     def __unicode__(self):
@@ -262,21 +272,9 @@ class OutputLayer(models.Model):
 
         :returns: the name of the published layer
         """
-        # During development, it might be handy to uncomment this
-        # self.delete_layer(view_name)
         self.update_layer(self.create_featuretype(view_name))
 
         return view_name
-
-    # FIXME: this function is not called. Geoserver layers survive
-    # when a calculation is deleted!
-    def delete_layer(self, view_name):
-        geoserver.geoserver_rest(
-            geoserver.LAYER_URL % view_name, method='DELETE',
-            raise_errors=False)
-        geoserver.geoserver_rest(
-            (geoserver.FEATURETYPE_URL % dict(ws=geoserver.WS_NAME, ds=DS_NAME)) % view_name, method='DELETE',
-            raise_errors=False)
 
     @staticmethod
     def _xml(request_type):
@@ -290,7 +288,7 @@ class OutputLayer(models.Model):
             os.path.join(
                 os.path.dirname(
                     os.path.dirname(__file__)),
-            "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
+                "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
 
     def create_featuretype(self, view_name):
         """
@@ -378,22 +376,6 @@ class Output(models.Model):
 
         raise NotImplementedError
 
-    @staticmethod
-    def remove_layer(_sender, instance, _using, **_kwargs):
-        """
-        Remove the geonode layer as well
-        """
-        instance.layer.delete()
-
-    @staticmethod
-    def drop_view(_sender, instance, _using, **_kwargs):
-        cursor = connection.cursor()
-        view_name = "icebox_output_%s_%s" % (
-            instance.__class__.__name__, instance.output_layer_id)
-        view_name = view_name.lower()
-        cursor.execute("DROP VIEW IF EXISTS %s view_name")
-        cursor.connection.commit()
-
     @classmethod
     def bbox_for_output(cls, output_layer):
         return dict(
@@ -401,9 +383,7 @@ class Output(models.Model):
                 cls.objects.filter(output_layer=output_layer).extent()))
 
 
-models.signals.post_delete.connect(Calculation.remove_map, sender=Calculation)
-models.signals.post_delete.connect(Output.remove_layer, sender=Output)
-models.signals.post_delete.connect(Output.drop_view, sender=Output)
+models.signals.post_delete.connect(Calculation.remove_calc, sender=Calculation)
 
 
 class HazardMap(Output):
