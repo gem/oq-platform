@@ -172,8 +172,7 @@ def sync_all(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
-    sh("IFS='\
-' ; find -type f -name '*.json' | grep 'fixtures/' | for i in $(cat) ; do cp $i ${i}.orig ; done")
+    sh("IFS='\n' ; find -type f -name '*.json' | grep 'fixtures/' | for i in $(cat) ; do cp $i ${i}.orig ; done")
     sh("sed -i 's@localhost:8000@localhost:" + GEM_GEONODE_PORT + \
              "@g;s@localhost:8080@localhost:" + GEM_GEOSERVER_PORT + \
              "@g;s@127.0.0.1:8000@localhost:" + GEM_GEONODE_PORT + \
@@ -334,6 +333,7 @@ def start_geoserver(options):
 
     download_dir = path('downloaded').abspath()
     jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
+    geoserver_port = GEM_GEOSERVER_PORT
     data_dir = path('geoserver/data').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
@@ -346,6 +346,7 @@ def start_geoserver(options):
            # workaround for JAI sealed jar issue and jetty classloader
            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
            ' -jar %(jetty_runner)s'
+           ' -Djetty.port=%(geoserver_port)s'
            ' --log %(log_file)s'
            ' --path /geoserver %(web_app)s'
            ' > /dev/null &' % locals())
