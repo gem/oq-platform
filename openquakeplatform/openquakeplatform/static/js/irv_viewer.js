@@ -24,7 +24,9 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-function createIndexSimple(la, index) {
+function createIndexSimple(la, riskIndex) {
+    // la is an array containing the layer attribute features
+    // riskIndex is an array containing the risk indices
     var indicator = [];
     // setup the indicator with all the municipalities
     for (var ia = 0; ia < la.length; ia++) {
@@ -36,8 +38,8 @@ function createIndexSimple(la, index) {
         regions.push(la[ia].properties[selectedRegion]);
     }
     // Get the indicators children keys
-    for (var q = 0; q < index.length; q++) {
-        indicatorChildrenKey.push(index[q].name);
+    for (var q = 0; q < riskIndex.length; q++) {
+        indicatorChildrenKey.push(riskIndex[q].name);
     }
 
     // Match each primary indicator with it's respective data value
