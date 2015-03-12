@@ -326,7 +326,7 @@ def start_geoserver(options):
     from geonode.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
-    url = "http://localhost:8080/geoserver/"
+    url = "http://localhost:" + GEM_GEOSERVER_PORT + "/geoserver/"
     if GEOSERVER_BASE_URL != url:
         print 'your GEOSERVER_BASE_URL does not match %s' % url
         sys.exit(1)
