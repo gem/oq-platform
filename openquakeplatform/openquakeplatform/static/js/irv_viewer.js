@@ -182,13 +182,13 @@ function processIndicators(layerAttributes, projectDef) {
     //// Create the primary indicator objects ///
     /////////////////////////////////////////////
 
-    var socialVulnIndex;
+    var svThemes;
     var riskIndex;
 
     // Find all the nodes of type social vulnerability and risk index in the project def
     for (var k in projectDef.children) {
         if (projectDef.children[k].type == "Social Vulnerability Index") {
-            socialVulnIndex = projectDef.children[k].children;
+            svThemes = projectDef.children[k].children;
         } else if (projectDef.children[k].type == "Risk Index") {
             riskIndex = projectDef.children[k].children;
         }
@@ -198,9 +198,9 @@ function processIndicators(layerAttributes, projectDef) {
     // Get all the primary indicators
     var ct = 0;
 
-    for (var i = 0; i < socialVulnIndex.length; i++) {
-        for (var e = 0 ; e < socialVulnIndex[i].children.length; e++, ct++ ) {
-            allPrimaryIndicators.push(socialVulnIndex[i].children[e].field);
+    for (var i = 0; i < svThemes.length; i++) {
+        for (var e = 0 ; e < svThemes[i].children.length; e++, ct++ ) {
+            allPrimaryIndicators.push(svThemes[i].children[e].field);
         }
     }
 
@@ -233,12 +233,12 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Find the theme information
-    for (var m = 0; m < socialVulnIndex.length; m++) {
-        var operator = socialVulnIndex[m].operator;
-        var weight = socialVulnIndex[m].weight;
-        var name = socialVulnIndex[m].field;
+    for (var m = 0; m < svThemes.length; m++) {
+        var operator = svThemes[m].operator;
+        var weight = svThemes[m].weight;
+        var name = svThemes[m].field;
         allSVIThemes.push(name);
-        var tempChildren = socialVulnIndex[m].children;
+        var tempChildren = svThemes[m].children;
         var tempIndicatorChildrenKeys = [];
         // Get the indicators children keys
         for (var q = 0; q < tempChildren.length; q++) {
@@ -346,7 +346,7 @@ function processIndicators(layerAttributes, projectDef) {
 
     var SVI = {};
     var sviNameLookUp = 'SVI';
-    var sviJSONthemes = socialVulnIndex;
+    var sviJSONthemes = svThemes;
     // SVI is an object with region and value
     SVI = combineIndicators(sviNameLookUp, catData, sviJSONthemes );
 
@@ -476,9 +476,9 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Pass primary indicators into a 'newProperties' element
-    for (var ia = 0; ia < socialVulnIndex.length; ia++) {
+    for (var ia = 0; ia < svThemes.length; ia++) {
         var indicatorChildrenKey = [];
-        var tempChildren = socialVulnIndex[ia].children;
+        var tempChildren = svThemes[ia].children;
         // Get the indicators children keys
         for (var q = 0; q < tempChildren.length; q++) {
             indicatorChildrenKey.push(tempChildren[q].field);
