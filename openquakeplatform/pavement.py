@@ -346,7 +346,7 @@ def start_geoserver(options):
            # workaround for JAI sealed jar issue and jetty classloader
            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
            ' -jar %(jetty_runner)s'
-           ' -Djetty.port=%(geoserver_port)s'
+           ' --port %(geoserver_port)s'
            ' --log %(log_file)s'
            ' --path /geoserver %(web_app)s'
            ' > /dev/null &' % locals())
