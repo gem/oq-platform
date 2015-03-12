@@ -115,7 +115,7 @@ def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWOR
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
 
-    _write_local_settings(host, db_name, db_user, db_pass, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
+    _write_local_settings(host, db_name, db_user, db_pass, geonode_port, geoserver_port, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
