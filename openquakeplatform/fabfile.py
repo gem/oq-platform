@@ -207,6 +207,7 @@ def _write_local_settings(host, db_name, db_user, db_pass,
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
         fh.write(local_settings % dict(host=host,
+                                       db_name=db_name,
                                        db_user=db_user,
                                        db_pass=db_pass,
                                        geonode_port=geonode_port,
