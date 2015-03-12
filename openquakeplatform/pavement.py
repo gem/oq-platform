@@ -39,6 +39,8 @@ except ImportError:
 assert sys.version_info >= (2, 7), \
     SystemError("GeoNode Build requires python 2.7 or better")
 
+GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
+GEM_GEOSERVER_PORT = os.getenv('GEM_GEOSERVER_PORT', '8080')
 
 def grab(src, dest, name):
     download = True
@@ -107,8 +109,6 @@ def _install_data_dir():
     geoserver_dir = path('geoserver')
     download_dir = path('downloaded')
     data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
-
-    GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
 
     if os.path.exists(data_dir_zip):
         print 'extracting datadir'
