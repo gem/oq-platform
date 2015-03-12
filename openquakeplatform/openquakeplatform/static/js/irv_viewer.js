@@ -24,9 +24,9 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-function createIndex(la, riskIndex) {
+function createIndexSimple(la, riskIndicators) {
     // la is an array containing the layer attribute features
-    // riskIndex is an array containing the risk indices
+    // riskIndicators is an array containing the risk indices
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -38,11 +38,11 @@ function createIndex(la, riskIndex) {
         regions.push(la[ia].properties[selectedRegion]);
     }
     // Get the indicators children keys
-    for (var q = 0; q < riskIndex.length; q++) {
-        indicatorChildrenKey.push(riskIndex[q].field);
+    for (var q = 0; q < riskIndicators.length; q++) {
+        indicatorChildrenKey.push(riskIndicators[q].field);
     }
 
-    // Match each primary indicator with it's respective data value
+ // Match each primary indicator with it's respective data value
     var primaryRiskIndicatorObj = {};
     // Iterate of the layer attribute features and capture the properties object
     for (var ic = 0; ic < la.length; ic++) {
@@ -54,7 +54,7 @@ function createIndex(la, riskIndex) {
                 // check for a match between the indicator child key and the properties key
                 if (indicatorChildrenKey[d] == o) {
                     // if a match is made, capture some information about the feature
-                    // and populate the primary risk indicator objects
+                    // and populate the primary risk indicator object
                     var tempValue = indicatorChildrenKey[d];
                     var tempValue2 = tempPropertiesObj[o];
                     var tempValue3 = tempPropertiesObj[selectedRegion];
@@ -70,6 +70,27 @@ function createIndex(la, riskIndex) {
         }
     }
     return primaryRiskIndicatorObj;
+}
+
+function createIndex(la, index) {
+    var ct = 0;
+    var indicator = [];
+    // setup the indicator with all the regions
+    for (var ia = 0; ia < la.length; ia++) {
+        var temp = {};
+        temp.region = la[ia].properties[selectedRegion];
+        indicator.push(temp);
+    }
+    for (var i = 0; i < index.length; i++) {
+        for (var j = 0; j < la.length; j++, ct++) {
+            if (indicator[j].region == la[j].properties[selectedRegion]) {
+                var tempName = index[i].name;
+                var tempValue = la[j].properties[tempName];
+                indicator[j][tempName] = tempValue;
+            }
+        }
+    }
+    return indicator;
 }
 
 function combineIndicators(nameLookUp, themeObj, JSONthemes) {
@@ -88,12 +109,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         subIndex[tempRegion] = 0;
     }
     // get some info aobut the themes
-    var themeKeys = [];
+    var themekeys = [];
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
         var themeName = JSONthemes[u].name;
         var themeWeight = JSONthemes[u].weight;
-        themeKeys.push(themeName);
+        themekeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
     }
     // compute the subIndex values based on operator
@@ -102,8 +123,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v].region;
             // sum the themes
-            for (var w = 0; w < themeKeys.length; w++, ct++) {
-                var tempThemeName = themeKeys[w];
+            for (var w = 0; w < themekeys.length; w++, ct++) {
+                var tempThemeName = themekeys[w];
                 tempElementValue = tempElementValue + themeObj[v][tempThemeName];
             }
             subIndex[themeObjMunic] = tempElementValue;
@@ -113,8 +134,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v1].region;
             // sum the themes
-            for (var w1 = 0; w1 < themeKeys.length; w1++, ct++) {
-                var tempThemeName = themeKeys[w1];
+            for (var w1 = 0; w1 < themekeys.length; w1++, ct++) {
+                var tempThemeName = themekeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
             }
@@ -125,11 +146,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v2].region;
             // sum the themes
-            for (var w2 = 0; w2 < themeKeys.length; w2++, ct++) {
-                var tempThemeName = themeKeys[w2];
+            for (var w2 = 0; w2 < themekeys.length; w2++, ct++) {
+                var tempThemeName = themekeys[w2];
                 tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
             }
-            var themeAverage = tempElementValue / themeKeys.length;
+            var themeAverage = tempElementValue / themekeys.length;
             subIndex[themeObjMunic] = themeAverage;
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
@@ -137,8 +158,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v3].region;
             // sum the themes
-            for (var w3 = 0; w3 < themeKeys.length; w3++, ct++) {
-                var tempThemeName = themeKeys[w3];
+            for (var w3 = 0; w3 < themekeys.length; w3++, ct++) {
+                var tempThemeName = themekeys[w3];
                 if (tempElementValue == 0) {
                     tempElementValue = themeObj[v3][tempThemeName];
                 } else {
@@ -152,8 +173,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v4].region;
             // sum the themes
-            for (var w4 = 0; w4 < themeKeys.length; w4++, ct++) {
-                var tempThemeName = themeKeys[w4];
+            for (var w4 = 0; w4 < themekeys.length; w4++, ct++) {
+                var tempThemeName = themekeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 if (tempElementValue == 0) {
                     tempElementValue = (themeObj[v4][tempThemeName] * themeWeightVal);
@@ -183,14 +204,14 @@ function processIndicators(layerAttributes, projectDef) {
     /////////////////////////////////////////////
 
     var svThemes;
-    var riskIndex;
+    var riskIndicators;
 
     // Find all the nodes of type social vulnerability and risk index in the project def
     for (var k in projectDef.children) {
         if (projectDef.children[k].type == "Social Vulnerability Index") {
             svThemes = projectDef.children[k].children;
         } else if (projectDef.children[k].type == "Risk Index") {
-            riskIndex = projectDef.children[k].children;
+            riskIndicators = projectDef.children[k].children;
         }
     }
 
@@ -236,7 +257,7 @@ function processIndicators(layerAttributes, projectDef) {
     for (var m = 0; m < svThemes.length; m++) {
         var operator = svThemes[m].operator;
         var weight = svThemes[m].weight;
-        var name = svThemes[m].field;
+        var name = svThemes[m].name;
         allSVIThemes.push(name);
         var tempChildren = svThemes[m].children;
         var tempIndicatorChildrenKeys = [];
@@ -360,8 +381,8 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the risk index ////
     ////////////////////////////////
 
-    createIndex(la, riskIndex);
-    var riskIndicator = createIndex(la, riskIndex);
+    createIndexSimple(la, riskIndicators);
+    var riskIndicator = createIndex(la, riskIndicators);
 
     // capture all risk indicators for selection menu
     for (var key in riskIndicator[0]) {
@@ -376,7 +397,7 @@ function processIndicators(layerAttributes, projectDef) {
 
     var RI = {};
     var nameLookUp = 'RI';
-    var riJSONthemes = riskIndex;
+    var riJSONthemes = riskIndicators;
     RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
 
     ///////////////
