@@ -172,6 +172,13 @@ def sync_all(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
+    sh("IFS='
+' ; find -type f -name '*.json' | grep 'fixtures/' | for i in $(cat) ; do cp $i ${i}.orig ; done")
+    sh("sed -i 's@localhost:8000@localhost:" + GEM_GEONODE_PORT + \
+             "@g;s@localhost:8080@localhost:" + GEM_GEOSERVER_PORT + \
+             "@g;s@127.0.0.1:8000@localhost:" + GEM_GEONODE_PORT + \
+             "@g;s@127.0.0.1:8080@localhost:" + GEM_GEOSERVER_PORT + \
+             "@g' $(find -type f -name '*.json' | grep 'fixtures/')")
     sh("python manage.py syncdb --all --noinput")
     sh("python manage.py loaddata sample_admin.json")
 
