@@ -247,10 +247,10 @@ function processIndicators(layerAttributes, projectDef) {
         var name = socialVulnIndex[m].name;
         allSVIThemes.push(name);
         var tempChildren = socialVulnIndex[m].children;
-        var indicatorChildrenKey = [];
+        var tempIndicatorChildrenKeys = [];
         // Get the indicators children keys
         for (var q = 0; q < tempChildren.length; q++) {
-            indicatorChildrenKey.push(tempChildren[q].field);
+            tempIndicatorChildrenKeys.push(tempChildren[q].field);
         }
 
         // iterate over the layerAttributes to access the data
@@ -260,8 +260,8 @@ function processIndicators(layerAttributes, projectDef) {
             if (operator == "Average (ignore weights)") {
                 for (var p in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r = 0; r < indicatorChildrenKey.length; r++, ct++) {
-                        if (p == indicatorChildrenKey[r]) {
+                    for (var r = 0; r < tempIndicatorChildrenKeys.length; r++, ct++) {
+                        if (p == tempIndicatorChildrenKeys[r]) {
                             // Sum the theme indicators
                             tempSum = tempSum + la[o].properties[p];
                         }
@@ -270,13 +270,13 @@ function processIndicators(layerAttributes, projectDef) {
                 var munic = la[o].properties[selectedRegion];
                 var theme = name;
                 // Grab the average
-                var average = tempSum / indicatorChildrenKey.length;
+                var average = tempSum / tempIndicatorChildrenKeys.length;
                 tempString.push(munic + '|'+ theme +'|'+ average);
             } else if ( operator == "Simple sum (ignore weights)") {
                 for (var p1 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r1 = 0; r1 < indicatorChildrenKey.length; r1++, ct++) {
-                        if (p1 == indicatorChildrenKey[r1]) {
+                    for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++, ct++) {
+                        if (p1 == tempIndicatorChildrenKeys[r1]) {
                             // Sum the theme indicators
                             tempSum = tempSum + la[o].properties[p1];
                         }
@@ -288,8 +288,8 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r2 = 0; r2 < indicatorChildrenKey.length; r2++, ct++) {
-                        if (p2 == indicatorChildrenKey[r2]) {
+                    for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++, ct++) {
+                        if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
                             tempSum = tempSum + (la[o].properties[p2] * weight);
@@ -302,8 +302,8 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Simple multiplication (ignore weights)") {
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r3 = 0; r3 < indicatorChildrenKey.length; r3++, ct++) {
-                        if (p3 == indicatorChildrenKey[r3]) {
+                    for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++, ct++) {
+                        if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
                             if (tempSum == 0) {
                                 tempSum = la[o].properties[p3];
@@ -319,8 +319,8 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Weighted multiplication") {
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r4 = 0; r4 < indicatorChildrenKey.length; r4++, ct++) {
-                        if (p4 == indicatorChildrenKey[r4]) {
+                    for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++, ct++) {
+                        if (p4 == tempIndicatorChildrenKeys[r4]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
                             if (tempSum == 0) {
