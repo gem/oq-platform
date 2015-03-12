@@ -725,6 +725,7 @@ var startApp = function() {
     $('#svir-project-list').change(function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
+        $('#regionSelectionDialog').empty();
         // Get the selected layer
         var selectedLayer = document.getElementById('svir-project-list').value;
         // clean the selected layer to get just the layer name
