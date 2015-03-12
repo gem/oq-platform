@@ -106,9 +106,9 @@ def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWOR
             oq_secret_key=None, oq_bing_key='',
             mediaroot=None, staticroot='/home'):
 
-    if  geonode_port:
+    if not geonode_port:
         geonode_port = GEM_GEONODE_PORT
-    if Not geoserver_port:
+    if not geoserver_port:
         geoserver_port = GEM_GEOSERVER_PORT
     os.environ['GEM_GEONODE_PORT'] = geonode_port
     os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
