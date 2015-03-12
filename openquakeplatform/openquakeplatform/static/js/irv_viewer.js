@@ -24,7 +24,7 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-function createIndexSimple(la, riskIndex) {
+function createIndex(la, riskIndex) {
     // la is an array containing the layer attribute features
     // riskIndex is an array containing the risk indices
     var indicator = [];
@@ -44,14 +44,20 @@ function createIndexSimple(la, riskIndex) {
 
     // Match each primary indicator with it's respective data value
     var primaryRiskIndicatorObj = {};
+    // Iterate of the layer attribute features and capture the properties object
     for (var ic = 0; ic < la.length; ic++) {
-        var tempObj = la[ic].properties;
+        var tempPropertiesObj = la[ic].properties;
+        // for each layer attribute, iterate over each indicator child key
         for (var d = 0; d < indicatorChildrenKey.length; d++) {
-            for(var o in tempObj) {
+            // interate over each of the properties objects
+            for (var o in tempPropertiesObj) {
+                // check for a match between the indicator child key and the properties key
                 if (indicatorChildrenKey[d] == o) {
+                    // if a match is made, capture some information about the feature
+                    // and populate the primary risk indicator object
                     var tempValue = indicatorChildrenKey[d];
-                    var tempValue2 = tempObj[o];
-                    var tempValue3 = tempObj[selectedRegion];
+                    var tempValue2 = tempPropertiesObj[o];
+                    var tempValue3 = tempPropertiesObj[selectedRegion];
                     if (primaryRiskIndicatorObj[tempValue] == undefined) {
                         primaryRiskIndicatorObj[tempValue] = tempValue2;
                         primaryRiskIndicatorObj.district = tempValue3;
@@ -354,7 +360,7 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the risk index ////
     ////////////////////////////////
 
-    createIndexSimple(la, riskIndex);
+    createIndex(la, riskIndex);
     var riskIndicator = createIndex(la, riskIndex);
 
     // capture all risk indicators for selection menu
