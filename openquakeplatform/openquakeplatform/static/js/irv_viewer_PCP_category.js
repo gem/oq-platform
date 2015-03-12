@@ -23,8 +23,6 @@
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
 function Category_PCP_Chart(catData) {
-    console.log('catData:');
-    console.log(catData);
 
     var data = catData;
     var winH = ($(window).height() / 1.5);

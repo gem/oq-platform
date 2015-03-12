@@ -24,9 +24,6 @@ var districts = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
-var allSVIThemes = [];
-var allPrimaryIndicators = [];
-var allRiskIndicators = [];
 
 function createIndexSimple(la, index) {
     var indicator = [];
@@ -186,6 +183,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
 function processIndicators(layerAttributes, projectDef) {
     districts = [];
+    var allSVIThemes = [];
+    var allPrimaryIndicators = [];
+    var allRiskIndicators = [];
 
     /////////////////////////////////////////////
     //// Create the primary indicator objects ///
