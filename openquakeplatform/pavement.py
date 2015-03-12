@@ -108,6 +108,8 @@ def _install_data_dir():
     download_dir = path('downloaded')
     data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
 
+    GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
+
     if os.path.exists(data_dir_zip):
         print 'extracting datadir'
         with zipfile.ZipFile(data_dir_zip, "r") as z:
@@ -119,7 +121,7 @@ def _install_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + "http://localhost:" + GEM_GEONODE_PORT + "/" + xml[m.end(1):]
         with open(config, 'w') as f:
             f.write(xml)
     else:
