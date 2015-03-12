@@ -829,20 +829,6 @@ var startApp = function() {
             $('#ajaxErrorDialog').dialog('open');
             }
         });
-        // Get WMS layer
-        //http://192.168.56.10:8080/geoserver/oqplatform/wms?service=WMS&version=1.1.0&request=GetMap&layers=oqplatform:ben2&styles=&bbox=-109.450553894043,-55.9840278625488,-28.8472194671629,13.3945837020875&width=512&height=440&srs=EPSG:4326&format=image%2Fpng
-        /*
-        var WMSLayer = L.tileLayer.wms("/geoserver/oqplatform/wms", {
-            layers: selectedLayer,
-            format: 'image/png',
-            transparent: true,
-            version: '1.1.0',
-            attribution: "",
-            crs: L.CRS.EPSG4326
-        });
-
-        WMSLayer.addTo(map);
-        */
     }
 
     // Region selection dialog
