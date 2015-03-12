@@ -28,7 +28,7 @@ function createIndexSimple(la, riskIndex) {
     // la is an array containing the layer attribute features
     // riskIndex is an array containing the risk indices
     var indicator = [];
-    // setup the indicator with all the municipalities
+    // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
         var temp = {};
         temp.region = la[ia].properties[selectedRegion];
@@ -39,7 +39,7 @@ function createIndexSimple(la, riskIndex) {
     }
     // Get the indicators children keys
     for (var q = 0; q < riskIndex.length; q++) {
-        indicatorChildrenKey.push(riskIndex[q].name);
+        indicatorChildrenKey.push(riskIndex[q].field);
     }
 
     // Match each primary indicator with it's respective data value
@@ -64,27 +64,6 @@ function createIndexSimple(la, riskIndex) {
         }
     }
     return primaryRiskIndicatorObj;
-}
-
-function createIndex(la, index) {
-    var ct = 0;
-    var indicator = [];
-    // setup the indicator with all the municipalities
-    for (var ia = 0; ia < la.length; ia++) {
-        var temp = {};
-        temp.region = la[ia].properties[selectedRegion];
-        indicator.push(temp);
-    }
-    for (var i = 0; i < index.length; i++) {
-        for (var j = 0; j < la.length; j++, ct++) {
-            if (indicator[j].region == la[j].properties[selectedRegion]) {
-                var tempName = index[i].name;
-                var tempValue = la[j].properties[tempName];
-                indicator[j][tempName] = tempValue;
-            }
-        }
-    }
-    return indicator;
 }
 
 function combineIndicators(nameLookUp, themeObj, JSONthemes) {
@@ -183,6 +162,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
+
+    console.log('layerAttributes:');
+    console.log(layerAttributes);
+    console.log('projectDef:');
+    console.log(projectDef);
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -234,7 +218,7 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    // setup catData with all the municipalities
+    // setup catData with all the regions
     var la = layerAttributes.features;
     for (var s = 0; s < la.length; s++) {
         var temp = {};
@@ -246,7 +230,7 @@ function processIndicators(layerAttributes, projectDef) {
     for (var m = 0; m < socialVulnIndex.length; m++) {
         var operator = socialVulnIndex[m].operator;
         var weight = socialVulnIndex[m].weight;
-        var name = socialVulnIndex[m].name;
+        var name = socialVulnIndex[m].field;
         allSVIThemes.push(name);
         var tempChildren = socialVulnIndex[m].children;
         var tempIndicatorChildrenKeys = [];
