@@ -329,11 +329,6 @@ function processIndicators(layerAttributes, projectDef) {
     var sviJSONthemes = svThemes;
     // SVI is an object with region and value
     SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
-
-    ///////////////
-    //// Scale ////
-    ///////////////
-
     scale(SVI);
 
     ////////////////////////////////
@@ -358,11 +353,6 @@ function processIndicators(layerAttributes, projectDef) {
     var nameLookUp = 'RI';
     var riJSONthemes = riskIndicators;
     RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
-
-    ///////////////
-    //// Scale ////
-    ///////////////
-
     scale(RI);
 
     ///////////////////////////////
@@ -408,10 +398,6 @@ function processIndicators(layerAttributes, projectDef) {
             IRI[regionName] = tempVal;
         }
     }
-
-    ///////////////
-    //// Scale ////
-    ///////////////
 
     scale(IRI);
 
