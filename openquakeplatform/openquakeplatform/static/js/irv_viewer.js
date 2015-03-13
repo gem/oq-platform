@@ -80,12 +80,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         subIndex[tempRegion] = 0;
     }
     // get some info aobut the themes
-    var themekeys = [];
+    var themeKeys = [];
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
         var themeName = JSONthemes[u].name;
         var themeWeight = JSONthemes[u].weight;
-        themekeys.push(themeName);
+        themeKeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
     }
     // compute the subIndex values based on operator
@@ -94,8 +94,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v].region;
             // sum the themes
-            for (var w = 0; w < themekeys.length; w++, ct++) {
-                var tempThemeName = themekeys[w];
+            for (var w = 0; w < themeKeys.length; w++, ct++) {
+                var tempThemeName = themeKeys[w];
                 tempElementValue = tempElementValue + themeObj[v][tempThemeName];
             }
             subIndex[themeObjMunic] = tempElementValue;
@@ -105,8 +105,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v1].region;
             // sum the themes
-            for (var w1 = 0; w1 < themekeys.length; w1++, ct++) {
-                var tempThemeName = themekeys[w1];
+            for (var w1 = 0; w1 < themeKeys.length; w1++, ct++) {
+                var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
             }
@@ -117,11 +117,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v2].region;
             // sum the themes
-            for (var w2 = 0; w2 < themekeys.length; w2++, ct++) {
-                var tempThemeName = themekeys[w2];
+            for (var w2 = 0; w2 < themeKeys.length; w2++, ct++) {
+                var tempThemeName = themeKeys[w2];
                 tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
             }
-            var themeAverage = tempElementValue / themekeys.length;
+            var themeAverage = tempElementValue / themeKeys.length;
             subIndex[themeObjMunic] = themeAverage;
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
@@ -129,8 +129,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v3].region;
             // sum the themes
-            for (var w3 = 0; w3 < themekeys.length; w3++, ct++) {
-                var tempThemeName = themekeys[w3];
+            for (var w3 = 0; w3 < themeKeys.length; w3++, ct++) {
+                var tempThemeName = themeKeys[w3];
                 if (tempElementValue == 0) {
                     tempElementValue = themeObj[v3][tempThemeName];
                 } else {
@@ -144,8 +144,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v4].region;
             // sum the themes
-            for (var w4 = 0; w4 < themekeys.length; w4++, ct++) {
-                var tempThemeName = themekeys[w4];
+            for (var w4 = 0; w4 < themeKeys.length; w4++, ct++) {
+                var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 if (tempElementValue == 0) {
                     tempElementValue = (themeObj[v4][tempThemeName] * themeWeightVal);
