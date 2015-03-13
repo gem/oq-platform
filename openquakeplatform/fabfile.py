@@ -40,12 +40,13 @@ PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
 #: External parametric values
 GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
 GEM_GEOSERVER_PORT = os.getenv('GEM_GEOSERVER_PORT', '8080')
+GEM_DB_NAME = os.getenv('GEM_DB_NAME', 'oqplatform')
 
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
-def bootstrap(db_name='oqplatform', db_user='oqplatform',
+def bootstrap(db_name=None, db_user='oqplatform',
               db_pass=DB_PASSWORD, host='oq-platform',
               geonode_port=None,
               geoserver_port=None,
@@ -60,16 +61,20 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
         Should match the one in settings.py.
     """
 
-    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT
+    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT, GEM_DB_NAME
 
     if not geonode_port:
         geonode_port = GEM_GEONODE_PORT
     if not geoserver_port:
         geoserver_port = GEM_GEOSERVER_PORT
+    if not db_name:
+        db_name = GEM_DB_NAME
     os.environ['GEM_GEONODE_PORT'] = geonode_port
     os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
+    os.environ['GEM_DB_NAME'] = db_name
     GEM_GEONODE_PORT = geonode_port
     GEM_GEOSERVER_PORT = geoserver_port
+    GEM_DB_NAME = db_name
 
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
@@ -165,7 +170,14 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     local('cp openquakeplatform/common/thumbs/*.png ' + mediaroot + '/thumbs/')
 
 
-def clean(db_name='oqplatform', db_user='oqplatform'):
+def clean(db_name=None, db_user='oqplatform'):
+    global GEM_DB_NAME
+
+    if not db_name:
+        db_name = GEM_DB_NAME
+    os.environ['GEM_DB_NAME'] = db_name
+    GEM_DB_NAME = db_name
+
     with settings(warn_only=True):
         _pgsudo('dropdb %s' % db_name)
         _pgsudo('dropuser %s' % db_user)
