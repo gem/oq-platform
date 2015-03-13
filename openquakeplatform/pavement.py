@@ -323,7 +323,7 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    from openquakeplatform.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
     url = "http://localhost:" + GEM_GEOSERVER_PORT + "/geoserver/"
