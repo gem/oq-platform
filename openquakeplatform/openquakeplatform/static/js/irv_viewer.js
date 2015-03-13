@@ -574,7 +574,7 @@ function thematicMap(layerAttributes) {
         //outputHue: 60
     });
 
-    // Set the thematic ayer options
+    // Set the thematic layer options
     var options = {
         recordsField: 'features',
         locationMode: L.LocationModes.GEOJSON,
@@ -664,8 +664,6 @@ var startApp = function() {
             var stringToLookFor = 'SVIR_QGIS_Plugin';
             for (var i = 0; i < featureType.length; i++) {
                 if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    var tempTitle = featureType[i].Title;
-                    var tempName = featureType[i].Name;
                     SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
                 }
             }
