@@ -328,7 +328,7 @@ def start_geoserver(options):
 
     url = "http://localhost:" + GEM_GEOSERVER_PORT + "/geoserver/"
     if GEOSERVER_BASE_URL != url:
-        print 'your GEOSERVER_BASE_URL does not match %s' % url
+        print 'your GEOSERVER_BASE_URL (%s) does not match %s' % (GEOSERVER_BASE_URL, url)
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()

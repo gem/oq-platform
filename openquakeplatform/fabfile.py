@@ -60,12 +60,16 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
         Should match the one in settings.py.
     """
 
+    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT
+
     if not geonode_port:
         geonode_port = GEM_GEONODE_PORT
     if not geoserver_port:
         geoserver_port = GEM_GEOSERVER_PORT
     os.environ['GEM_GEONODE_PORT'] = geonode_port
     os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
+    GEM_GEONODE_PORT = geonode_port
+    GEM_GEOSERVER_PORT = geoserver_port
 
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
@@ -177,7 +181,18 @@ def init_start():
     local('paver init_start -b 0.0.0.0:' + GEM_GEONODE_PORT)
 
 
-def start():
+def start(geonode_port=None, geoserver_port=None):
+    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT
+
+    if not geonode_port:
+        geonode_port = GEM_GEONODE_PORT
+    if not geoserver_port:
+        geoserver_port = GEM_GEOSERVER_PORT
+    os.environ['GEM_GEONODE_PORT'] = geonode_port
+    os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
+    GEM_GEONODE_PORT = geonode_port
+    GEM_GEOSERVER_PORT = geoserver_port
+
     local('paver start -b 0.0.0.0:' + GEM_GEONODE_PORT)
 
 
