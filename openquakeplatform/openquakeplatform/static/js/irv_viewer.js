@@ -17,6 +17,9 @@
 var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
+
+// sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
+// While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
 var sessionProjectDefStr;
 var projectLayerAttributes;
 var regions = [];
@@ -41,7 +44,37 @@ function createIndexSimple(la, riskIndicators) {
     for (var q = 0; q < riskIndicators.length; q++) {
         indicatorChildrenKey.push(riskIndicators[q].field);
     }
+
+ // Match each primary indicator with it's respective data value
+    var primaryRiskIndicatorObj = {};
+    // Iterate of the layer attribute features and capture the properties object
+    for (var ic = 0; ic < la.length; ic++) {
+        var tempPropertiesObj = la[ic].properties;
+        // for each layer attribute, iterate over each indicator child key
+        for (var d = 0; d < indicatorChildrenKey.length; d++) {
+            // interate over each of the properties objects
+            for (var o in tempPropertiesObj) {
+                // check for a match between the indicator child key and the properties key
+                if (indicatorChildrenKey[d] == o) {
+                    // if a match is made, capture some information about the feature
+                    // and populate the primary risk indicator object
+                    var tempValue = indicatorChildrenKey[d];
+                    var tempValue2 = tempPropertiesObj[o];
+                    var tempValue3 = tempPropertiesObj[selectedRegion];
+                    if (primaryRiskIndicatorObj[tempValue] == undefined) {
+                        primaryRiskIndicatorObj[tempValue] = tempValue2;
+                        primaryRiskIndicatorObj.district = tempValue3;
+                    } else {
+                        primaryRiskIndicatorObj[tempValue] = primaryRiskIndicatorObj[tempValue] + "," +tempValue2;
+                        primaryRiskIndicatorObj.district = primaryRiskIndicatorObj.district + "," +tempValue3;
+                    }
+                }
+            }
+        }
+    }
+    return primaryRiskIndicatorObj;
 }
+
 
 function createIndex(la, index) {
     var ct = 0;
@@ -236,6 +269,8 @@ function processIndicators(layerAttributes, projectDef) {
         // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++, ct++) {
             var tempSum = 0;
+            var munic = la[o].properties[selectedRegion];
+            var theme = name;
             // check the operator type and compute accordingly
             if (operator == "Average (ignore weights)") {
                 for (var p in la[o].properties) {
@@ -247,8 +282,6 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic = la[o].properties[selectedRegion];
-                var theme = name;
                 // Grab the average
                 var average = tempSum / tempIndicatorChildrenKeys.length;
                 indicatorString.push(munic + '|'+ theme +'|'+ average);

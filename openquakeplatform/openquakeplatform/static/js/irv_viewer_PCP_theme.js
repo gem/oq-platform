@@ -30,21 +30,21 @@ function Theme_PCP_Chart(themeData) {
     var margin = {top: 100, right: 20, bottom: 10, left: 20},
         width = (winW - 200) - margin.left - margin.right,
         height = winH - margin.top - margin.bottom;
-    var tmpArray = [];
-    var array = [];
+    var eachValueInThemeData = [];
+    var eachElementInThemeData = [];
     for (var i = 0; i < themeData.length; i++) {
         for (var k in themeData[i]){
-            array.push(themeData[i][k]);
+            eachElementInThemeData.push(themeData[i][k]);
         }
     }
 
-    for (var i = 0; i < array.length; i++) {
-        if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
-            tmpArray.push(array[i]);
+    for (var i = 0; i < eachElementInThemeData.length; i++) {
+        if (!isNaN(parseFloat(eachElementInThemeData[i])) && isFinite(eachElementInThemeData[i])) {
+            eachValueInThemeData.push(eachElementInThemeData[i]);
         }
     }
 
-    var maxVal = Math.max.apply( Math, tmpArray );
+    var maxVal = Math.max.apply( Math, eachValueInThemeData );
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 

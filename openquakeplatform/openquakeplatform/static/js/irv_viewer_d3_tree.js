@@ -101,7 +101,6 @@
                     var element = $('#'+pdTempSpinnerIds[i]).attr('element');
                     tempNewWeight.push(element);
                     tempNewWeight.push(parseFloat(value));
-                    // update the JSON with new weights
                     traverse(sessionProjectDef, tempNewWeight);
                 }
 
@@ -110,6 +109,7 @@
             });
         }
 
+        // update the JSON with new weights
         function traverse(projectDef, tempNewWeight) {
             var projectDefUpdated = projectDef;
             var ct = 0;
