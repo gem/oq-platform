@@ -520,9 +520,16 @@ function scale(IndicatorObj) {
     var tempMin = Math.min.apply(null, ValueArray),
         tempMax = Math.max.apply(null, ValueArray);
     for (var j = 0; j < ValueArray.length; j++) {
-        // TODO make sure not to devide by zero
-        scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
+        // make sure not to devide by zero
+        if ((ValueArray[j] - tempMin) == 0) {
+            scaledValues.push(tempMax - tempMin);
+        } else if ((tempMax - tempMin) == 0) {
+            scaledValues.push(tempMax - tempMin);
+        } else {
+            scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
+        }
     }
+
     var tempKeys = Object.keys(IndicatorObj);
     for (var ih = 0; ih < tempKeys.length; ih++) {
         IndicatorObj[tempKeys[ih]] = scaledValues[ih];
