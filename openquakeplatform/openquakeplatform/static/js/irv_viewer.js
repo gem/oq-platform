@@ -615,8 +615,7 @@ function thematicMap(layerAttributes) {
             stroke: true,
             color: '#0000FF'
         },
-        displayOptions: {},
-        title: "foobar"
+        displayOptions: {}
     };
 
     options.displayOptions[displayElement] = {
