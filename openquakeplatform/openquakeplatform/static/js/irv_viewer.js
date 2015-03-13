@@ -77,7 +77,6 @@ function createIndexSimple(la, riskIndicators) {
 
 
 function createIndex(la, index) {
-    var ct = 0;
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -86,7 +85,7 @@ function createIndex(la, index) {
         indicator.push(temp);
     }
     for (var i = 0; i < index.length; i++) {
-        for (var j = 0; j < la.length; j++, ct++) {
+        for (var j = 0; j < la.length; j++) {
             if (indicator[j].region == la[j].properties[selectedRegion]) {
                 var tempName = index[i].name;
                 var tempValue = la[j].properties[tempName];
@@ -99,7 +98,6 @@ function createIndex(la, index) {
 
 function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     projectDef = sessionProjectDef;
-    var ct = 0;
     var subIndex = {};
     var operator;
     for (var y = 0; y < projectDef.children.length; y++) {
@@ -126,8 +124,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         for (var v = 0; v < themeObj.length; v++) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v].region;
-            // sum the themes
-            for (var w = 0; w < themeKeys.length; w++, ct++) {
+            // compute the themes
+            for (var w = 0; w < themeKeys.length; w++) {
                 var tempThemeName = themeKeys[w];
                 tempElementValue = tempElementValue + themeObj[v][tempThemeName];
             }
@@ -137,8 +135,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         for (var v1 = 0; v1 < themeObj.length; v1++) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v1].region;
-            // sum the themes
-            for (var w1 = 0; w1 < themeKeys.length; w1++, ct++) {
+            // compute the themes
+            for (var w1 = 0; w1 < themeKeys.length; w1++) {
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
@@ -149,8 +147,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v2].region;
-            // sum the themes
-            for (var w2 = 0; w2 < themeKeys.length; w2++, ct++) {
+            // compute the themes
+            for (var w2 = 0; w2 < themeKeys.length; w2++) {
                 var tempThemeName = themeKeys[w2];
                 tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
             }
@@ -161,8 +159,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         for (var v3 = 0; v3 < themeObj.length; v3++) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v3].region;
-            // sum the themes
-            for (var w3 = 0; w3 < themeKeys.length; w3++, ct++) {
+            // compute the themes
+            for (var w3 = 0; w3 < themeKeys.length; w3++) {
                 var tempThemeName = themeKeys[w3];
                 if (tempElementValue == 0) {
                     tempElementValue = themeObj[v3][tempThemeName];
@@ -176,8 +174,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         for (var v4 = 0; v4 < themeObj.length; v4++) {
             var tempElementValue = 0;
             var themeObjMunic = themeObj[v4].region;
-            // sum the themes
-            for (var w4 = 0; w4 < themeKeys.length; w4++, ct++) {
+            // compute the themes
+            for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 if (tempElementValue == 0) {
@@ -217,10 +215,8 @@ function processIndicators(layerAttributes, projectDef) {
 
     // process each Social Vulnerability Index nodes
     // Get all the primary indicators
-    var ct = 0;
-
     for (var i = 0; i < svThemes.length; i++) {
-        for (var e = 0 ; e < svThemes[i].children.length; e++, ct++ ) {
+        for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
             allPrimaryIndicators.push(svThemes[i].children[e].field);
         }
     }
@@ -267,7 +263,7 @@ function processIndicators(layerAttributes, projectDef) {
         }
 
         // iterate over the layerAttributes to access the data
-        for (var o = 0; o < la.length; o++, ct++) {
+        for (var o = 0; o < la.length; o++) {
             var tempSum = 0;
             var munic = la[o].properties[selectedRegion];
             var theme = name;
@@ -275,7 +271,7 @@ function processIndicators(layerAttributes, projectDef) {
             if (operator == "Average (ignore weights)") {
                 for (var p in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r = 0; r < tempIndicatorChildrenKeys.length; r++, ct++) {
+                    for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
                             // Sum the theme indicators
                             tempSum = tempSum + la[o].properties[p];
@@ -288,7 +284,7 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Simple sum (ignore weights)") {
                 for (var p1 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++, ct++) {
+                    for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
                         if (p1 == tempIndicatorChildrenKeys[r1]) {
                             // Sum the theme indicators
                             tempSum = tempSum + la[o].properties[p1];
@@ -299,7 +295,7 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++, ct++) {
+                    for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++) {
                         if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
@@ -311,7 +307,7 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Simple multiplication (ignore weights)") {
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++, ct++) {
+                    for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
                             if (tempSum == 0) {
@@ -326,7 +322,7 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Weighted multiplication") {
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++, ct++) {
+                    for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
@@ -483,9 +479,9 @@ function processIndicators(layerAttributes, projectDef) {
             indicatorChildrenKey.push(tempChildren[q].field);
         }
 
-        for (var ib = 0; ib < la.length; ib++, ct++) {
+        for (var ib = 0; ib < la.length; ib++) {
             for (var p in la[ib].properties) {
-                for (var id = 0; id < indicatorChildrenKey.length; id++, ct++) {
+                for (var id = 0; id < indicatorChildrenKey.length; id++) {
                     if (p == indicatorChildrenKey[id]) {
                         var tempName = p;
                         la[ib].newProperties[tempName] = la[ib].properties[p];
