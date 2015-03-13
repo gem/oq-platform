@@ -262,9 +262,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic1 = la[o].properties[selectedRegion];
-                var theme1 = name;
-                indicatorString.push(munic1 + '|'+ theme1 +'|'+ tempSum);
+                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -276,9 +274,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic2 = la[o].properties[selectedRegion];
-                var theme2 = name;
-                indicatorString.push(munic2 + '|'+ theme2 +'|'+ tempSum);
+                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
             } else if ( operator == "Simple multiplication (ignore weights)") {
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -293,9 +289,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic3 = la[o].properties[selectedRegion];
-                var theme3 = name;
-                indicatorString.push(munic3 + '|'+ theme3 +'|'+ tempSum);
+                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
             } else if ( operator == "Weighted multiplication") {
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -311,9 +305,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                var munic4 = la[o].properties[selectedRegion];
-                var theme4 = name;
-                indicatorString.push(munic4 + '|'+ theme4 +'|'+ tempSum);
+                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
             }
         }
     }
