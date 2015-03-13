@@ -521,10 +521,8 @@ function scale(IndicatorObj) {
         tempMax = Math.max.apply(null, ValueArray);
     for (var j = 0; j < ValueArray.length; j++) {
         // make sure not to devide by zero
-        if ((ValueArray[j] - tempMin) == 0) {
-            scaledValues.push(tempMax - tempMin);
-        } else if ((tempMax - tempMin) == 0) {
-            scaledValues.push(tempMax - tempMin);
+        if (tempMax  == tempMin) {
+            ValueArray[j] = 1;
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
