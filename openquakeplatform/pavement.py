@@ -39,6 +39,8 @@ except ImportError:
 assert sys.version_info >= (2, 7), \
     SystemError("GeoNode Build requires python 2.7 or better")
 
+GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
+GEM_GEOSERVER_PORT = os.getenv('GEM_GEOSERVER_PORT', '8080')
 
 def grab(src, dest, name):
     download = True
@@ -119,7 +121,7 @@ def _install_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + "http://localhost:" + GEM_GEONODE_PORT + "/" + xml[m.end(1):]
         with open(config, 'w') as f:
             f.write(xml)
     else:
@@ -170,6 +172,12 @@ def sync_all(options):
     """
     Run the syncdb and migrate management commands to create and migrate a DB
     """
+    sh("IFS='\n' ; find -type f -name '*.json' | grep 'fixtures/' | for i in $(cat) ; do cp $i ${i}.orig ; done")
+    sh("sed -i 's@localhost:8000@localhost:" + GEM_GEONODE_PORT + \
+             "@g;s@localhost:8080@localhost:" + GEM_GEOSERVER_PORT + \
+             "@g;s@127.0.0.1:8000@localhost:" + GEM_GEONODE_PORT + \
+             "@g;s@127.0.0.1:8080@localhost:" + GEM_GEOSERVER_PORT + \
+             "@g' $(find -type f -name '*.json' | grep 'fixtures/')")
     sh("python manage.py syncdb --all --noinput")
     sh("python manage.py loaddata sample_admin.json")
 
@@ -315,16 +323,17 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    from openquakeplatform.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
-    url = "http://localhost:8080/geoserver/"
+    url = "http://localhost:" + GEM_GEOSERVER_PORT + "/geoserver/"
     if GEOSERVER_BASE_URL != url:
-        print 'your GEOSERVER_BASE_URL does not match %s' % url
+        print 'your GEOSERVER_BASE_URL (%s) does not match %s' % (GEOSERVER_BASE_URL, url)
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
     jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
+    geoserver_port = GEM_GEOSERVER_PORT
     data_dir = path('geoserver/data').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
@@ -337,6 +346,7 @@ def start_geoserver(options):
            # workaround for JAI sealed jar issue and jetty classloader
            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
            ' -jar %(jetty_runner)s'
+           ' --port %(geoserver_port)s'
            ' --log %(log_file)s'
            ' --path /geoserver %(web_app)s'
            ' > /dev/null &' % locals())

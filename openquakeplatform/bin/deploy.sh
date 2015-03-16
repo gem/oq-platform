@@ -348,6 +348,8 @@ with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
                                    db_name='${gem_db_name}',
                                    db_user='${gem_db_user}',
                                    db_pass='${gem_db_pass}',
+                                   geonode_port=80,
+                                   geoserver_port=8080,
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
@@ -656,7 +658,7 @@ oq_platform_install () {
     if [ ! -d "$MIGRATIONS_HISTORY" ]; then
         mkdir -p "$MIGRATIONS_HISTORY"
     fi
-    cp oq-platform/openquakeplatform/migrations/*.{py,sh,sql} "${MIGRATIONS_HISTORY}/"
+    find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
 
 }
 

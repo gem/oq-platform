@@ -10,7 +10,7 @@ try:
     from django.conf import settings
     GEOSERVER_BASE_URL = "%srest/" % settings.OGC_SERVER['default']['LOCATION']
 except:
-    GEOSERVER_BASE_URL = 'http://127.0.0.1:8080/geoserver/rest/'
+    GEOSERVER_BASE_URL = 'http://127.0.0.1:' + os.getenv('GEM_GEOSERVER_PORT', '8080') +  '/geoserver/rest/'
 
 #: GeoServer workspace name
 WS_NAME = 'oqplatform'
