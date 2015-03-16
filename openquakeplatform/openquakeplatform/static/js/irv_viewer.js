@@ -130,17 +130,13 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Weighted multiplication') {
         for (var v4 = 0; v4 < themeObj.length; v4++) {
-            var tempElementValue = 0;
+            var tempElementValue = 1;
             var themeObjRegion = themeObj[v4].region;
             // compute the themes
             for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                if (tempElementValue == 0) {
-                    tempElementValue = (themeObj[v4][tempThemeName] * themeWeightVal);
-                } else {
-                    tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
-                }
+                tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
