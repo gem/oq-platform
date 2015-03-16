@@ -656,7 +656,7 @@ oq_platform_install () {
     if [ ! -d "$MIGRATIONS_HISTORY" ]; then
         mkdir -p "$MIGRATIONS_HISTORY"
     fi
-    cp oq-platform/openquakeplatform/migrations/*.{py,sh,sql} "${MIGRATIONS_HISTORY}/"
+    find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
 
 }
 
