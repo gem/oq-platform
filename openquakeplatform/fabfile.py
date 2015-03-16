@@ -41,12 +41,13 @@ PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
 GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
 GEM_GEOSERVER_PORT = os.getenv('GEM_GEOSERVER_PORT', '8080')
 GEM_DB_NAME = os.getenv('GEM_DB_NAME', 'oqplatform')
+GEM_DB_USER = os.getenv('GEM_DB_USER', 'oqplatform')
 
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
-def bootstrap(db_name=None, db_user='oqplatform',
+def bootstrap(db_name=None, db_user=None,
               db_pass=DB_PASSWORD, host='oq-platform',
               geonode_port=None,
               geoserver_port=None,
@@ -61,7 +62,7 @@ def bootstrap(db_name=None, db_user='oqplatform',
         Should match the one in settings.py.
     """
 
-    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT, GEM_DB_NAME
+    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT, GEM_DB_NAME, GEM_DB_USER
 
     if not geonode_port:
         geonode_port = GEM_GEONODE_PORT
@@ -69,12 +70,16 @@ def bootstrap(db_name=None, db_user='oqplatform',
         geoserver_port = GEM_GEOSERVER_PORT
     if not db_name:
         db_name = GEM_DB_NAME
+    if not db_user:
+        db_user = GEM_DB_USER
     os.environ['GEM_GEONODE_PORT'] = geonode_port
     os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
     os.environ['GEM_DB_NAME'] = db_name
+    os.environ['GEM_DB_USER'] = db_user
     GEM_GEONODE_PORT = geonode_port
     GEM_GEOSERVER_PORT = geoserver_port
     GEM_DB_NAME = db_name
+    GEM_DB_USER = db_user
 
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
@@ -172,13 +177,17 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     local('cp openquakeplatform/common/thumbs/*.png ' + mediaroot + '/thumbs/')
 
 
-def clean(db_name=None, db_user='oqplatform'):
-    global GEM_DB_NAME
+def clean(db_name=None, db_user=None):
+    global GEM_DB_NAME, GEM_DB_USER
 
     if not db_name:
         db_name = GEM_DB_NAME
+    if not db_user:
+        db_user = GEM_DB_USER
     os.environ['GEM_DB_NAME'] = db_name
+    os.environ['GEM_DB_USER'] = db_user
     GEM_DB_NAME = db_name
+    GEM_DB_USER = db_user
 
     with settings(warn_only=True):
         _pgsudo('dropdb %s' % db_name)
