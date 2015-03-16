@@ -215,7 +215,6 @@ function processIndicators(layerAttributes, projectDef) {
         // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++) {
             var tempSum = 0;
-            var tempProd;
             var region = la[o].properties[selectedRegion];
             var theme = name;
             // check the operator type and compute accordingly
@@ -225,7 +224,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
                             // Sum the theme indicators
-                            tempProd = tempSum + la[o].properties[p];
+                            tempSum = tempSum + la[o].properties[p];
                         }
                     }
                 }
@@ -238,7 +237,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
                         if (p1 == tempIndicatorChildrenKeys[r1]) {
                             // Sum the theme indicators
-                            tempProd = tempSum + la[o].properties[p1];
+                            tempSum = tempSum + la[o].properties[p1];
                         }
                     }
                 }
@@ -250,7 +249,7 @@ function processIndicators(layerAttributes, projectDef) {
                         if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
-                            tempProd = tempSum + (la[o].properties[p2] * weight);
+                            tempSum = tempSum + (la[o].properties[p2] * weight);
                         }
                     }
                 }
@@ -262,7 +261,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
-                            tempProd = tempSum * la[o].properties[p3];
+                            tempSum = tempSum * la[o].properties[p3];
                         }
                     }
                 }
@@ -275,11 +274,11 @@ function processIndicators(layerAttributes, projectDef) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
-                            tempProd = tempSum * (la[o].properties[p4] * weight);
+                                tempSum = tempSum * (la[o].properties[p4] * weight);
                         }
                     }
                 }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempProd});
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             }
         }
     }
@@ -720,7 +719,7 @@ var startApp = function() {
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
                 // ***** TEMP remove this ****
-                //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
+                layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
