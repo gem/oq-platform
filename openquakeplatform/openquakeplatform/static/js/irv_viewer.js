@@ -82,42 +82,42 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     if (operator == 'Simple sum (ignore weights)') {
         for (var v = 0; v < themeObj.length; v++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v].region;
+            var themeObjRegion = themeObj[v].region;
             // compute the themes
             for (var w = 0; w < themeKeys.length; w++) {
                 var tempThemeName = themeKeys[w];
                 tempElementValue = tempElementValue + themeObj[v][tempThemeName];
             }
-            subIndex[themeObjMunic] = tempElementValue;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Weighted sum') {
         for (var v1 = 0; v1 < themeObj.length; v1++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v1].region;
+            var themeObjRegion = themeObj[v1].region;
             // compute the themes
             for (var w1 = 0; w1 < themeKeys.length; w1++) {
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
             }
-            subIndex[themeObjMunic] = tempElementValue;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v2].region;
+            var themeObjRegion = themeObj[v2].region;
             // compute the themes
             for (var w2 = 0; w2 < themeKeys.length; w2++) {
                 var tempThemeName = themeKeys[w2];
                 tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
             }
             var themeAverage = tempElementValue / themeKeys.length;
-            subIndex[themeObjMunic] = themeAverage;
+            subIndex[themeObjRegion] = themeAverage;
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
         for (var v3 = 0; v3 < themeObj.length; v3++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v3].region;
+            var themeObjRegion = themeObj[v3].region;
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
                 var tempThemeName = themeKeys[w3];
@@ -127,12 +127,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                     tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
                 }
             }
-            subIndex[themeObjMunic] = tempElementValue;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Weighted multiplication') {
         for (var v4 = 0; v4 < themeObj.length; v4++) {
             var tempElementValue = 0;
-            var themeObjMunic = themeObj[v4].region;
+            var themeObjRegion = themeObj[v4].region;
             // compute the themes
             for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 var tempThemeName = themeKeys[w4];
@@ -143,7 +143,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                     tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
                 }
             }
-            subIndex[themeObjMunic] = tempElementValue;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     }
     return subIndex;
@@ -189,12 +189,12 @@ function processIndicators(layerAttributes, projectDef) {
     indicatorString = [];
 
     function generateObject(indicatorArray) {
-        var munic = indicatorArray[0];
+        var region = indicatorArray[0];
         var theme = indicatorArray[1];
         var value = parseFloat(indicatorArray[2]);
         // add the theme and value to each theme data object
         for (var i = 0; i < themeData.length; i++) {
-            if (themeData[i].region == munic) {
+            if (themeData[i].region == region) {
                 themeData[i][theme] = value;
             }
         }
@@ -224,7 +224,7 @@ function processIndicators(layerAttributes, projectDef) {
         // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++) {
             var tempSum = 0;
-            var munic = la[o].properties[selectedRegion];
+            var region = la[o].properties[selectedRegion];
             var theme = name;
             // check the operator type and compute accordingly
             if (operator == "Average (ignore weights)") {
@@ -239,7 +239,7 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 // Grab the average
                 var average = tempSum / tempIndicatorChildrenKeys.length;
-                indicatorString.push(munic + '|'+ theme +'|'+ average);
+                indicatorString.push(region + '|'+ theme +'|'+ average);
             } else if ( operator == "Simple sum (ignore weights)") {
                 for (var p1 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -250,7 +250,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
+                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -262,7 +262,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
+                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
             } else if ( operator == "Simple multiplication (ignore weights)") {
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -277,7 +277,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
+                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
             } else if ( operator == "Weighted multiplication") {
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -293,7 +293,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(munic + '|'+ theme +'|'+ tempSum);
+                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
             }
         }
     }
@@ -508,6 +508,7 @@ function scale(IndicatorObj) {
         tempMax = Math.max.apply(null, ValueArray);
     for (var j = 0; j < ValueArray.length; j++) {
         // make sure not to devide by zero
+        // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
         if (tempMax  == tempMin) {
             ValueArray[j] = 1;
         } else {
@@ -673,6 +674,7 @@ var startApp = function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
         $('#regionSelectionDialog').empty();
+        // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
         var selectedLayer = document.getElementById('svir-project-list').value;
         // clean the selected layer to get just the layer name
