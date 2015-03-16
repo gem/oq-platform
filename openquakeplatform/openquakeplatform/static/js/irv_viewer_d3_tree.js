@@ -181,8 +181,7 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             data = JSON.parse(selectedPDef);
-            console.log('data:');
-            console.log(data);
+
             root = data;
             root.x0 = height / 2;
             root.y0 = 0;
@@ -254,6 +253,18 @@
                         var operator = d.operator? d.operator : DEFAULT_OPERATOR;
                         d.operator = operator;
                         return operator;
+                    }
+                })
+                .style("fill", function(d) {
+                    if (d.operator != undefined) {
+                        // Check for operators that ignore weights and style accordingly
+                        var color;
+                        if (d.operator.indexOf('ignore') != -1) {
+                            color = '#660000';
+                        } else {
+                            color = 'black';
+                        }
+                        return color;
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
