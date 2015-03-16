@@ -215,6 +215,7 @@ function processIndicators(layerAttributes, projectDef) {
         // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++) {
             var tempSum = 0;
+            var temoProd;
             var region = la[o].properties[selectedRegion];
             var theme = name;
             // check the operator type and compute accordingly
@@ -224,7 +225,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
                             // Sum the theme indicators
-                            tempSum = tempSum + la[o].properties[p];
+                            temoProd = tempSum + la[o].properties[p];
                         }
                     }
                 }
@@ -237,7 +238,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
                         if (p1 == tempIndicatorChildrenKeys[r1]) {
                             // Sum the theme indicators
-                            tempSum = tempSum + la[o].properties[p1];
+                            temoProd = tempSum + la[o].properties[p1];
                         }
                     }
                 }
@@ -249,7 +250,7 @@ function processIndicators(layerAttributes, projectDef) {
                         if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
-                            tempSum = tempSum + (la[o].properties[p2] * weight);
+                            temoProd = tempSum + (la[o].properties[p2] * weight);
                         }
                     }
                 }
@@ -261,7 +262,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
-                            tempSum = tempSum * la[o].properties[p3];
+                            temoProd = tempSum * la[o].properties[p3];
                         }
                     }
                 }
@@ -274,11 +275,11 @@ function processIndicators(layerAttributes, projectDef) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
-                            tempSum = tempSum * (la[o].properties[p4] * weight);
+                            temoProd = tempSum * (la[o].properties[p4] * weight);
                         }
                     }
                 }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':temoProd});
             }
         }
     }
