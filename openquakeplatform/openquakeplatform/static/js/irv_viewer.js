@@ -115,16 +115,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
         for (var v3 = 0; v3 < themeObj.length; v3++) {
-            var tempElementValue = 0;
+            var tempElementValue = 1;
             var themeObjRegion = themeObj[v3].region;
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
                 var tempThemeName = themeKeys[w3];
-                if (tempElementValue == 0) {
-                    tempElementValue = themeObj[v3][tempThemeName];
-                } else {
-                    tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
-                }
+                tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -259,32 +255,26 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             } else if ( operator == "Simple multiplication (ignore weights)") {
+                tempSum = 1;
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
-                            if (tempSum == 0) {
-                                tempSum = la[o].properties[p3];
-                            } else {
-                                tempSum = tempSum * la[o].properties[p3];
-                            }
+                            tempSum = tempSum * la[o].properties[p3];
                         }
                     }
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             } else if ( operator == "Weighted multiplication") {
+                tempSum = 1;
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
                     for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
-                            if (tempSum == 0) {
-                                tempSum = (la[o].properties[p4] * weight);
-                            } else {
-                                tempSum = tempSum * (la[o].properties[p4] * weight);
-                            }
+                            tempSum = tempSum * (la[o].properties[p4] * weight);
                         }
                     }
                 }
