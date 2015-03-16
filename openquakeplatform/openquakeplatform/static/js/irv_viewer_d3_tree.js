@@ -49,7 +49,7 @@
         function createSpinner(id, weight, name) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" name="spinner" value="'+weight+'"></p>');
+            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'"></p>');
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
                     min: 0,
@@ -94,9 +94,41 @@
                     updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
                 }
 
+                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                    // get the elements that have been modified
+                    var tempNewWeight = [];
+                    var value = $('#'+pdTempSpinnerIds[i]).val();
+                    var element = $('#'+pdTempSpinnerIds[i]).attr('element');
+                    tempNewWeight.push(element);
+                    tempNewWeight.push(parseFloat(value));
+                    traverse(sessionProjectDef, tempNewWeight);
+                }
+
                 nodeEnter.remove("text");
                 updateD3Tree(pdData);
             });
+        }
+
+        // update the JSON with new weights
+        function traverse(projectDef, tempNewWeight) {
+            var projectDefUpdated = projectDef;
+            var ct = 0;
+            if (projectDef.name == tempNewWeight[0]) {
+                projectDefUpdated.weight = tempNewWeight[1];
+            } else {
+                for (var i = 0; i < projectDef.children.length; i++) {
+                    if (projectDef.children[i].name == tempNewWeight[0]) {
+                        projectDefUpdated.children[i].weight = tempNewWeight[1];
+                    } else {
+                        for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
+                            if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                                projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                            }
+                        }
+                    }
+                }
+            }
+            processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -115,6 +147,7 @@
         }
 
         function updateTreeBranch(pdData, id, pdWeight) {
+
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
@@ -126,6 +159,8 @@
             });
         }
 
+        // empty any previously drawen chart
+        $('#project-def').empty();
         var svg = d3.select("#project-def").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
@@ -138,16 +173,10 @@
             root.x0 = height / 2;
             root.y0 = 0;
 
-            function collapse(d) {
-                if (d.children) {
-                    d._children = d.children;
-                    d._children.forEach(collapse);
-                    d.children = null;
-                }
-            }
-
             //root.children.forEach(collapse);
             updateD3Tree(root);
+
+        $('#project-definition-svg').hide();
 
         d3.select(self.frameElement).style("height", "800px");
 
@@ -238,7 +267,6 @@
                     return d.source ? d.source.linkColor: d.linkColor;
                 });
 
-
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
 
@@ -290,18 +318,6 @@
                     qt_page.json_updated(pdData);
                 }
             }
-        }
-
-        // Toggle children on click.
-        function click(d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
-            }
-            update(d);
         }
     } //end d3 tree
 

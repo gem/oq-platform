@@ -28,6 +28,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}css/demo_page.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/d3.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/ng-table.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet-dvf.css">
 {% endblock extra_head %}
 
 {% block body_outer %}
@@ -62,6 +63,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}lib/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
     <script src="{{ STATIC_URL }}js/hrdeMainApp.js"></script>
     <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
+    <script src="{{ STATIC_URL }}js/xml2json.js"></script>
+    <script src="{{ STATIC_URL }}js/leaflet-dvf.js"></script>
 
     <!-- This style overrides the default z-index imposed by jquery to fix
          overlap between widgets and header in the leaflet apps.

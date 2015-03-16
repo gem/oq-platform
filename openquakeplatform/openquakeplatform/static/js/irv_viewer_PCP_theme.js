@@ -22,24 +22,36 @@
 
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
-function Category_PCP_Chart(catData, municipality, districName, concat) {
+function Theme_PCP_Chart(themeData) {
 
-    catData.pop();
-    concat.pop();
-
-    var data = catData;
+    var data = themeData;
     var winH = ($(window).height() / 1.5);
     var winW = ($(window).width());
     var margin = {top: 100, right: 20, bottom: 10, left: 20},
         width = (winW - 200) - margin.left - margin.right,
         height = winH - margin.top - margin.bottom;
+    var eachValueInThemeData = [];
+    var eachElementInThemeData = [];
+    for (var i = 0; i < themeData.length; i++) {
+        for (var k in themeData[i]){
+            eachElementInThemeData.push(themeData[i][k]);
+        }
+    }
+
+    for (var i = 0; i < eachElementInThemeData.length; i++) {
+        if (!isNaN(parseFloat(eachElementInThemeData[i])) && isFinite(eachElementInThemeData[i])) {
+            eachValueInThemeData.push(eachElementInThemeData[i]);
+        }
+    }
+
+    var maxVal = Math.max.apply( Math, eachValueInThemeData );
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
     var x2 = d3.scale.linear()
         .range([0, width], 1);
 
-     var y = d3.scale.linear()
+    var y = d3.scale.linear()
         .range([height, 0]);
 
     var line = d3.svg.line(),
@@ -69,9 +81,9 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     // Extract the list of dimensions and create a scale for each.
-    x.domain(dimensions = d3.keys(catData[0]).filter(function(d) {
-        return d != 'municipality' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
-            .domain([0, 1])
+    x.domain(dimensions = d3.keys(themeData[0]).filter(function(d) {
+        return d != 'region' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
+            .domain([0, maxVal])
             .range([height, 0]));
     }));
     var z = d3.scale.category20c();
@@ -80,15 +92,15 @@ function Category_PCP_Chart(catData, municipality, districName, concat) {
     foreground = svg.append('g')
         .attr('class', 'foreground')
         .selectAll('path')
-        .data(catData)
+        .data(themeData)
         .enter().append('path')
         .attr('d', path)
-        .attr('id', function(d) { return d.municipality; })
+        .attr('id', function(d) { return d.region; })
             .on('mouseover', function() {
                 d3.select(this)
                 .style('stroke-width', 6)
                 .style('stroke', 'steelblue');
-                textTop.text('District: ' + districName + ', Municipality: ' + this.id);
+                textTop.text('Region: ' + this.id);
             }).on('mouseout', function() {
                 d3.select(this)
                 .style('stroke-width', 3)
