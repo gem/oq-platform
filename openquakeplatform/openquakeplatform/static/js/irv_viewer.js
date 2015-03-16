@@ -36,8 +36,7 @@ function createIndex(la, index) {
         indicator.push({'region': region});
         regions.push(region);
     }
-    console.log('regions:');
-    console.log(regions);
+
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++) {
             if (indicator[j].region == la[j].properties[selectedRegion]) {
