@@ -27,25 +27,6 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-function createIndexSimple(la, riskIndicators) {
-    // la is an array containing the layer attribute features
-    // riskIndicators is an array containing the risk indices
-    var indicator = [];
-    // setup the indicator with all the regions
-    for (var ia = 0; ia < la.length; ia++) {
-        var temp = {};
-        temp.region = la[ia].properties[selectedRegion];
-        indicator.push(temp);
-        // regions is used inside of the d3 charts
-        // TODO change this to region
-        regions.push(la[ia].properties[selectedRegion]);
-    }
-    // Get the indicators children keys
-    for (var q = 0; q < riskIndicators.length; q++) {
-        indicatorChildrenKey.push(riskIndicators[q].field);
-    }
-}
-
 
 function createIndex(la, index) {
     var indicator = [];
@@ -54,6 +35,8 @@ function createIndex(la, index) {
         var temp = {};
         temp.region = la[ia].properties[selectedRegion];
         indicator.push(temp);
+        // regions is used inside of the d3 charts
+        regions.push(la[ia].properties[selectedRegion]);
     }
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++) {
@@ -64,6 +47,11 @@ function createIndex(la, index) {
             }
         }
     }
+    // Get the indicators children keys
+    for (var q = 0; q < index.length; q++) {
+        indicatorChildrenKey.push(index[q].field);
+    }
+
     return indicator;
 }
 
@@ -335,7 +323,6 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the risk index ////
     ////////////////////////////////
 
-    createIndexSimple(la, riskIndicators);
     var riskIndicator = createIndex(la, riskIndicators);
 
     // capture all risk indicators for selection menu
