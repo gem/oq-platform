@@ -685,7 +685,7 @@ var startApp = function() {
                 $('#regionSelectionDialog').append(
                     '<p>Please select the field that contains the layer&#39s region labels</p>'+
                     '<select id="region-selection-list">'+
-                    '<option selected disabled>Select Region</option>'+
+                    '<option selected disabled>Select Field</option>'+
                     '</select>'
                 );
 

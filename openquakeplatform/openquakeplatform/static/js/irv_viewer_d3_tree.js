@@ -159,6 +159,8 @@
             });
         }
 
+        // empty any previously drawen chart
+        $('#project-def').empty();
         var svg = d3.select("#project-def").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
