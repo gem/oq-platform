@@ -188,7 +188,7 @@ function processIndicators(layerAttributes, projectDef) {
     var themeData = [];
     indicatorString = [];
 
-    function generateObject(indicatorArray) {
+    function generateThemeObject(indicatorArray) {
         var region = indicatorArray[0];
         var theme = indicatorArray[1];
         var value = parseFloat(indicatorArray[2]);
@@ -303,7 +303,7 @@ function processIndicators(layerAttributes, projectDef) {
         var indicatorArray;
         indicatorArray = indicatorString[p5];
         indicatorArray = indicatorArray.split("|");
-        generateObject(indicatorArray);
+        generateThemeObject(indicatorArray);
     }
 
     Theme_PCP_Chart(themeData);
