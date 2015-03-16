@@ -32,12 +32,12 @@ function createIndex(la, index) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
-        var temp = {};
-        temp.region = la[ia].properties[selectedRegion];
-        indicator.push(temp);
-        // regions is used inside of the d3 charts
-        regions.push(la[ia].properties[selectedRegion]);
+        var region = la[ia].properties[selectedRegion];
+        indicator.push({'region': region});
+        regions.push(region);
     }
+    console.log('regions:');
+    console.log(regions);
     for (var i = 0; i < index.length; i++) {
         for (var j = 0; j < la.length; j++) {
             if (indicator[j].region == la[j].properties[selectedRegion]) {
@@ -186,12 +186,12 @@ function processIndicators(layerAttributes, projectDef) {
 
     //build the theme indicator object
     var themeData = [];
-    indicatorString = [];
+    indicatorInfo = [];
 
-    function generateThemeObject(indicatorArray) {
-        var region = indicatorArray[0];
-        var theme = indicatorArray[1];
-        var value = parseFloat(indicatorArray[2]);
+    function generateThemeObject(indicatorObj) {
+        var region = indicatorObj.region;
+        var theme = indicatorObj.theme;
+        var value = indicatorObj.value;
         // add the theme and value to each theme data object
         for (var i = 0; i < themeData.length; i++) {
             if (themeData[i].region == region) {
@@ -239,7 +239,7 @@ function processIndicators(layerAttributes, projectDef) {
                 }
                 // Grab the average
                 var average = tempSum / tempIndicatorChildrenKeys.length;
-                indicatorString.push(region + '|'+ theme +'|'+ average);
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':average});
             } else if ( operator == "Simple sum (ignore weights)") {
                 for (var p1 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -250,7 +250,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -262,7 +262,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             } else if ( operator == "Simple multiplication (ignore weights)") {
                 for (var p3 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -277,7 +277,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             } else if ( operator == "Weighted multiplication") {
                 for (var p4 in la[o].properties) {
                     // iterate over the indicator child keys
@@ -293,17 +293,15 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                indicatorString.push(region + '|'+ theme +'|'+ tempSum);
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempSum});
             }
         }
     }
 
-    for (var p5 = 0; p5 < indicatorString.length; p5++) {
-        // capture an array for each record
-        var indicatorArray;
-        indicatorArray = indicatorString[p5];
-        indicatorArray = indicatorArray.split("|");
-        generateThemeObject(indicatorArray);
+    for (var p5 = 0; p5 < indicatorInfo.length; p5++) {
+        // process the object for each record
+        var indicatorObj = indicatorInfo[p5];
+        generateThemeObject(indicatorObj);
     }
 
     Theme_PCP_Chart(themeData);
