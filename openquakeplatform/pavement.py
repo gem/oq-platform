@@ -567,7 +567,7 @@ def kill(arg1, arg2):
     running = True
 
     while running and time.time() - t0 < time_out:
-        p = Popen('ps aux | grep %s' % arg1, shell=True,
+        p = Popen('ps ux | grep %s' % arg1, shell=True,
                   stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
 
         lines = p.stdout.readlines()
