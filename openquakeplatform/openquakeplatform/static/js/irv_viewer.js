@@ -17,6 +17,7 @@
 var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
+var selectedIndicator;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -459,6 +460,13 @@ function processIndicators(layerAttributes, projectDef) {
         $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
     }
 
+    // set the map selection menu to IRI or previously selected indicator value
+    if (selectedIndicator == undefined) {
+        $('#thematic-map-selection').val('IRI');
+    } else {
+        $('#thematic-map-selection').val(selectedIndicator);
+    }
+
     $('#thematic-map-selection').change(function() {
         thematicMap(layerAttributes);
     });
@@ -512,15 +520,16 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 
     // find the indicator that has been selected
-    var selectedIndex = document.getElementById('thematic-map-selection').value;
-    var displayElement = 'newProperties.'+selectedIndex;
+    selectedIndicator = $('#thematic-map-selection').val();
+
+    var displayElement = 'newProperties.'+selectedIndicator;
     var la = layerAttributes.features;
 
     // find the min and max values for the selected indicator
     var minMaxArray = [];
     for (var i = 0; i < la.length; i++) {
         for (var k in la[i].newProperties) {
-            if (k == selectedIndex) {
+            if (k == selectedIndicator) {
                 minMaxArray.push(la[i].newProperties[k]);
             }
         }
@@ -561,7 +570,7 @@ function thematicMap(layerAttributes) {
     };
 
     options.displayOptions[displayElement] = {
-        displayName: selectedIndex,
+        displayName: selectedIndicator,
         fillColor: yellowToRed
     };
 
@@ -719,7 +728,7 @@ var startApp = function() {
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
                 // ***** TEMP remove this ****
-                //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
+                layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
