@@ -15,8 +15,11 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+    var CIRCLE_SCALE = 30;
+
     $(document).ready(function() {
         //  Project definition weight dialog
+        // TODO adjust the dialog height based on the number of indicators passed
         $("#projectDefWeightDialog").dialog({
             autoOpen: false,
             height: 500,
@@ -32,7 +35,7 @@
 
     function loadPD(selectedPDef, qt_page) {
         var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
-        var margin = {top: 20, right: 120, bottom: 20, left: 30},
+        var margin = {top: 0, right: 80, bottom: 20, left: 80},
             width = 960 - margin.right - margin.left,
             height = 800 - margin.top - margin.bottom;
 
@@ -46,10 +49,21 @@
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        function createSpinner(id, weight, name) {
+        function createSpinner(id, weight, name, operator) {
+
+            if (operator === undefined) {
+                operator = 'n/a';
+            }
+
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'"></p>');
+            $('#projectDefWeightDialog').append(
+                '<p>'+
+                    '<label for="spinner'+id+'">'+name+': </label>'+
+                    '<input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'">'+
+                '</p>'
+            );
+
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
                     min: 0,
@@ -138,7 +152,7 @@
 
             })) {
                 pdTempIds.push(pdData.id);
-                createSpinner(pdData.id, pdData.weight, pdData.name);
+                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator);
             }
 
             (pdData.children || []).forEach(function(currentItem) {
@@ -169,6 +183,7 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             data = JSON.parse(selectedPDef);
+
             root = data;
             root.x0 = height / 2;
             root.y0 = 0;
@@ -196,34 +211,66 @@
             nodeEnter = node.enter().append("g")
                 .attr("class", "node")
                 .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; });
-                //.on("click", click);
 
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
                 .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
+            // tree indicator label
             nodeEnter.append("text")
                 .attr("class", (function(d) { return "level-" + d.level; }))
-                //.attr("id", (function(d) { return d.name; }))
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
-                .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-                .attr("dy", ".35em")
-                .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-                .text(function(d) { return d.name + " " + d.weight; })
+                .attr("x", function(d) { return -(d.weight * CIRCLE_SCALE + 5); })
+                .attr("dy", function(d) {
+                    // NOTE are x and y swapped?
+                    // set te text above or below the node depending on the
+                    // parent position
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                        return "2em";
+                    }
+                    return "-1em";
+                })
+                .attr("text-anchor", function(d) { return "end"; })
+                .text(function(d) {
+                    return d.name;
+                })
                 .style("fill-opacity", 1e-6)
                 .on("click", function(d) {
                     pdName = d.name;
                     pdData = data;
                     pdWeight = d.weight;
                     pdLevel = d.level;
-                    pdParent = d.parent.name;
                     pdTempSpinnerIds = [];
                     pdTempIds = [];
                     $('#projectDefWeightDialog').empty();
                     findTreeBranchInfo(pdData, [pdName], [pdLevel]);
                     updateButton();
                 });
+
+            // tree operator label
+            nodeEnter.append("text")
+                .text(function(d) {
+                    if (d.children){
+                        var operator = d.operator? d.operator : DEFAULT_OPERATOR;
+                        d.operator = operator;
+                        return operator;
+                    }
+                })
+                .style("fill", function(d) {
+                    if (d.operator != undefined) {
+                        // Check for operators that ignore weights and style accordingly
+                        var color;
+                        if (d.operator.indexOf('ignore') != -1) {
+                            color = '#660000';
+                        } else {
+                            color = 'black';
+                        }
+                        return color;
+                    }
+                })
+                .attr("id", function(d) {return "operator-label-" + d.level;})
+                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; });
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
