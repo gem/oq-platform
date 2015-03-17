@@ -2395,7 +2395,7 @@ function taxt_BuildTaxonomy()
         '/' + Taxonomy[24] + '/' + Taxonomy[25] + Taxonomy[26] + Taxonomy[27] + Taxonomy[28] + Taxonomy[29] +
         '/' + Taxonomy[30] + Taxonomy[31] + Taxonomy[32] + '/' + Taxonomy[33];
     $('#resultE').val(ResTax);
-    $('#permalink').attr("href", taxt_prefix + "/" +  encodeURIComponent(ResTax).replace('%2F', '/'));
+    $('#permalink').attr("href", taxt_prefix + "/" +  ResTax);
 }
 
 
