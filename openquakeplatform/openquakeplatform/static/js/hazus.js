@@ -71,7 +71,7 @@ var startApp = function() {
 
     // switch additional data layers
     $('#external-layers-menu').change(function() {
-        var externalLayerSelection = document.getElementById('external-layers-menu').value;
+        var externalLayerSelection = $('#external-layers-menu').val();
 
         if (externalLayerSelection == 1) {
             var selectedLayer = "ged-hazus-level1";
@@ -89,8 +89,6 @@ var startApp = function() {
 
             // prevent duplicate hazard maps to be loaded
             for (var k in layerControl._layers) {
-                console.log('layerControl:');
-                console.log(layerControl);
                 var nameTemp = layerControl._layers[k].name;
                 if (nameTemp == selectedLayer) {
                     delete layerControl._layers[k];
