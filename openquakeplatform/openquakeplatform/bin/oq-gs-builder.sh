@@ -19,8 +19,14 @@ GEM_PASS=geoserver
 GEM_HOST=127.0.0.1
 # GEM_PROTO=http
 GEM_PROTO=http
-# GEM_PORT=":8080"
-GEM_PORT=":8080"
+
+if [ ! "$GEM_GEONODE_PORT" ]; then
+    GEM_GEONODE_PORT=8000
+fi
+if [ ! "$GEM_GEOSERVER_PORT" ]; then
+    GEM_GEOSERVER_PORT=8080
+fi
+GEM_PORT=":$GEM_GEOSERVER_PORT"
 
 GEM_EXIT_ON_ERROR=false
 #
@@ -998,6 +1004,7 @@ geoserver_population () {
     done
 
     sed -i "s@#DB_NAME#@$db_name@g;s@#DB_USER#@$db_user@g;s@#DB_PASS#@$db_pass@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
+    sed -i "s@localhost:8000@localhost:$GEM_GEONODE_PORT@g;s@127\.0\.0\.1:8080@127.0.0.1:$GEM_GEOSERVER_PORT@g" $(find "${dstdir}/build-gs-tree" -name '*.xml')
 
     rm -rf output
     ${bindir}/oq-gs-builder.sh drop
