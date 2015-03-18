@@ -2040,7 +2040,7 @@ function taxt_BuildTaxonomy()
             if ($('#RegularityCB3').val() == 7)
                 Taxonomy[21] = '+IRVP:IRVO';
 
-            if ($('#RegularityCB4').val() > 0) {
+            if ($('#RegularityCB2').val() > 0) {
                 if ($('#RegularityCB4').val() == 0)
                     Taxonomy[22] = '+IRPS:IRN';
                 if ($('#RegularityCB4').val() == 1)
@@ -2050,7 +2050,7 @@ function taxt_BuildTaxonomy()
                 if ($('#RegularityCB4').val() == 3)
                     Taxonomy[22] = '+IRPS:IRHO';
             }
-            if ($('#RegularityCB5').val() > 0) {
+            if ($('#RegularityCB3').val() > 0) {
                 if ($('#RegularityCB5').val() == 0)
                     Taxonomy[23] = '+IRVS:IRN';
                 if ($('#RegularityCB5').val() == 1)
@@ -4073,11 +4073,11 @@ function populate(s, ret_s) {
         return (false);
     }
 
-    if (plir_id == "IRPP:IRN" && plse_id != "IRPS:IRN") {
+    if (plir_id == "IRPP:IRN" && plse_id != "") {
         ret_s.s = "'" + plir_id + "' and '" + plse_id + "' are not a valid specification of structural irregularity.";
         return (false);
     }
-    if (veir_id == "IRVP:IRN" && vese_id != "IRVS:IRN") {
+    if (veir_id == "IRVP:IRN" && vese_id != "") {
         ret_s.s = "'" + veir_id + "' and '" + vese_id + "' are not a valid specification of structural irregularity.";
         return (false);
     }
