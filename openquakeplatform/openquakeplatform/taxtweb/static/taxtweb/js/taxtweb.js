@@ -3099,10 +3099,7 @@ function taxt_Initiate() {
     $('#DirectionCB').prop('checked', true);
 
     // FIXME: t0 only, load a preview saved taxonomy must be done
-    var MaterialCB11 = [], MaterialCB12 = [];
-
-
-
+    var MaterialCB11 = [];
     /* MAT99 */ MaterialCB11.push('Unknown Material');
     /* C99   */ MaterialCB11.push('Concrete, unknown reinforcement');
     /* CU    */ MaterialCB11.push('Concrete, unreinforced');
@@ -3127,6 +3124,7 @@ function taxt_Initiate() {
     $('#SystemCB11').on('change', taxt_SystemCB11Select);
     $('#SystemCB21').on('change', taxt_SystemCB21Select);
 
+    var MaterialCB12 = [];
     /* same */ MaterialCB12.push('Unknown Material');
     /* same */ MaterialCB12.push('Concrete, unknown reinforcement');
     /* same */ MaterialCB12.push('Concrete, unreinforced');
