@@ -16,6 +16,8 @@
 */
 
     var CIRCLE_SCALE = 30;
+    var MAX_STROKE_SIZE = 4;
+    var MIN_CIRCLE_SIZE = 0.001;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -67,8 +69,8 @@
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
                     min: 0,
-                    max: 100,
-                    step: 0.01,
+                    max: -100,
+                    step: 0.000001,
                     numberFormat: "n",
                 });
             });
@@ -90,11 +92,11 @@
                 pdTempWeights = pdTempWeights.map(Number);
                 var totalWeights = 0;
                 $.each(pdTempWeights,function() {
-                    totalWeights += this;
+                    totalWeights += Math.abs(this);
                 });
 
                 for (var i = 0; i < pdTempWeights.length; i++) {
-                    var tempMath = Math.floor((pdTempWeights[i] * 100) / totalWeights);
+                    var tempMath = (pdTempWeights[i] * 100) / totalWeights;
                     pdTempWeightsComputed.push(tempMath / 100);
                 }
 
@@ -221,7 +223,7 @@
                 .attr("class", (function(d) { return "level-" + d.level; }))
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
-                .attr("x", function(d) { return -(d.weight * CIRCLE_SCALE + 5); })
+                .attr("x", function(d) { return -(Math.abs(d.weight) * CIRCLE_SCALE + 5); })
                 .attr("dy", function(d) {
                     // NOTE are x and y swapped?
                     // set te text above or below the node depending on the
@@ -233,7 +235,11 @@
                 })
                 .attr("text-anchor", function(d) { return "end"; })
                 .text(function(d) {
-                    return d.name;
+                    if (d.weight < 0) {
+                        return "- " + d.name;
+                    } else {
+                        return d.name;
+                    }
                 })
                 .style("fill-opacity", 1e-6)
                 .on("click", function(d) {
@@ -254,6 +260,10 @@
                     if (d.children){
                         var operator = d.operator? d.operator : DEFAULT_OPERATOR;
                         d.operator = operator;
+                        if (operator.indexOf('ignore weights') != -1) {
+                            parts = operator.split('(');
+                            operator = parts[0];
+                        }
                         return operator;
                     }
                 })
@@ -270,7 +280,53 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; });
+                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; });
+
+            // Render 'ignore weights' into a new line when present
+            nodeEnter.append("text")
+                .text(function(d) {
+                    if (d.children){
+                        var operator = d.operator? d.operator : DEFAULT_OPERATOR;
+                        d.operator = operator;
+                         if (d.operator.indexOf('ignore weights') != -1) {
+                            parts = d.operator.split('(');
+                            ignoreWeightsStr = '(' + parts[1];
+                        }
+                        return ignoreWeightsStr;
+                    }
+                })
+                .style("fill", function(d) {
+                    if (d.operator != undefined) {
+                        // Check for operators that ignore weights and style accordingly
+                        var color;
+                        if (d.operator.indexOf('ignore') != -1) {
+                            color = '#660000';
+                        } else {
+                            color = 'black';
+                        }
+                        return color;
+                    }
+                })
+                .attr("id", function(d) {return "operator-label-" + d.level;})
+                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
+                .attr("transform", "translate(0, 12)");
+
+            // Render weight values in tree
+            nodeEnter.append("text")
+                .attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
+                .attr("x", function(d) { return "-1em"; })
+                .attr("dy", function(d) {
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                        return -(Math.abs(d.weight) * CIRCLE_SCALE + 5);
+                    } else {
+                        return Math.abs(d.weight) * CIRCLE_SCALE + 12;
+                    }})
+                .text(function(d) {
+                    if (d.parent === undefined) {
+                        return "";
+                    }
+                    return (d.weight * 100).toFixed(1) + '%';
+                });
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
@@ -279,40 +335,32 @@
 
             nodeUpdate.select("circle")
                 .attr("r", function (d) {
-                    if (d.weight <= 0.10) {
-                        return 2;
-                    }
-                    else if (d.weight > 0.10 && d.weight <= 0.20 ) {
-                        return 4;
-                    }
-                    else if (d.weight > 0.20 && d.weight <= 0.30 ) {
-                        return 6;
-                    }
-                    else if (d.weight > 0.30 && d.weight <= 0.40 ) {
-                        return 8;
-                    }
-                    else if (d.weight > 0.40 && d.weight <= 0.50 ) {
-                        return 10;
-                    }
-                    else if (d.weight > 0.50 && d.weight <= 0.60 ) {
-                        return 12;
-                    }
-                    else if (d.weight > 0.60 && d.weight <= 0.70 ) {
-                        return 14;
-                    }
-                    else if (d.weight > 0.70 && d.weight <= 0.80 ) {
-                        return 16;
-                    }
-                    else if (d.weight > 0.80 && d.weight <= 0.90 ) {
-                        return 18;
-                    }
-                    else if (d.weight > 0.90 && d.weight <= 100 ) {
-                        return 20;
+                    // d.weight is expected to be between 0 and 1
+                    // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
+                    return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                })
+                .style("stroke", function(d) {
+                    if (d.weight < 0) {
+                        return "PowderBlue";
+                    } else {
+                        return "RoyalBlue";
                     }
                 })
+                .style("stroke-width", function(d) {
+                    return d.weight ? Math.min(Math.abs(d.weight) * CIRCLE_SCALE / 2, MAX_STROKE_SIZE): 4;
+                })
                 .style("fill", function(d) {
-                    return d.source ? d.source.linkColor: d.linkColor;
+                    // return d.source ? d.source.linkColor: d.linkColor;
+                    if (d.parent !== undefined && d.parent.operator.indexOf("ignore weights") > -1) {
+                        return "Gold";
+                    }
+                    if (d.weight < 0) {
+                        return "RoyalBlue";
+                    } else {
+                        return "PowderBlue";
+                    }
                 });
+
 
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
