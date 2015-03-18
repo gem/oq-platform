@@ -286,8 +286,7 @@
             nodeEnter.append("text")
                 .text(function(d) {
                     if (d.children){
-                        var operator = d.operator? d.operator : DEFAULT_OPERATOR;
-                        d.operator = operator;
+                        var ignoreWeightsStr = '';
                          if (d.operator.indexOf('ignore weights') != -1) {
                             parts = d.operator.split('(');
                             ignoreWeightsStr = '(' + parts[1];
