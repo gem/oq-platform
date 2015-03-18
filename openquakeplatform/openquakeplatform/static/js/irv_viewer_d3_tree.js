@@ -68,8 +68,8 @@
 
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
-                    min: 0,
-                    max: -100,
+                    min: -100,
+                    max: 100,
                     step: 0.000001,
                     numberFormat: "n",
                 });
