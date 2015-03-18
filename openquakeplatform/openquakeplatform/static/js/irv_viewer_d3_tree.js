@@ -197,6 +197,18 @@
 
         d3.select(self.frameElement).style("height", "800px");
 
+        function onTreeElementClick(d) {
+            pdName = d.name;
+            pdData = data;
+            pdWeight = d.weight;
+            pdLevel = d.level;
+            pdTempSpinnerIds = [];
+            pdTempIds = [];
+            $('#projectDefWeightDialog').empty();
+            findTreeBranchInfo(pdData, [pdName], [pdLevel]);
+            updateButton();
+        }
+
         function updateD3Tree(source) {
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
@@ -243,15 +255,7 @@
                 })
                 .style("fill-opacity", 1e-6)
                 .on("click", function(d) {
-                    pdName = d.name;
-                    pdData = data;
-                    pdWeight = d.weight;
-                    pdLevel = d.level;
-                    pdTempSpinnerIds = [];
-                    pdTempIds = [];
-                    $('#projectDefWeightDialog').empty();
-                    findTreeBranchInfo(pdData, [pdName], [pdLevel]);
-                    updateButton();
+                    onTreeElementClick(d);
                 });
 
             // tree operator label
@@ -280,7 +284,10 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; });
+                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
+                .on("click", function(d) {
+                    onTreeElementClick(d);
+                });
 
             // Render 'ignore weights' into a new line when present
             nodeEnter.append("text")
@@ -308,7 +315,10 @@
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
                 .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
-                .attr("transform", "translate(0, 12)");
+                .attr("transform", "translate(0, 12)")
+                .on("click", function(d) {
+                    onTreeElementClick(d);
+                });
 
             // Render weight values in tree
             nodeEnter.append("text")
@@ -325,6 +335,9 @@
                         return "";
                     }
                     return (d.weight * 100).toFixed(1) + '%';
+                })
+                .on("click", function(d) {
+                    onTreeElementClick(d);
                 });
 
             // Transition nodes to their new position.
