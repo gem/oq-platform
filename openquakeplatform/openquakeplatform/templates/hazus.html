@@ -20,6 +20,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 HAZUS - {{block.super}}
 {% endblock %}
 
+
+{% block map_tools %}
+{{block.super}}
+    <select id="external-layers-menu">
+  		<option>Select layers</option>
+  		<option value="1">Hazus Level 1 Building Fractions</option>
+  		<option value="2">US Counties</option>
+  		<option value="3">PAGER Dwelling Fractions Level 0</option>
+	</select>
+{% endblock %}
+
 {% block body_outer %}
 {{block.super}}
     <div id="dialog" title="Hazus Building Fractions">
@@ -29,7 +40,6 @@ HAZUS - {{block.super}}
 
 {% block extra_script %}
     {{block.super}}
-    <!-- Category tags-->
 
     <script src="{{ STATIC_URL }}js/hazus.js"></script>
 {% endblock extra_script %}
