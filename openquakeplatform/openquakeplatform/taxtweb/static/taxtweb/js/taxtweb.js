@@ -1376,17 +1376,17 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB11').val() == 10) {
             Taxonomy[0] = 'MR';
             if ( ($('#MaterialCB41').val() == 0) && !$('#OmitCB').prop('checked') )
-                Taxonomy[1] = Taxonomy[1]+'+MR99';
+                Taxonomy[34] = '+MR99';
             if ($('#MaterialCB41').val() == 1)
-                Taxonomy[1] = Taxonomy[1]+'+RS';
+                Taxonomy[34] = '+RS';
             if ($('#MaterialCB41').val() == 2)
-                Taxonomy[1] = Taxonomy[1]+'+RW';
+                Taxonomy[34] = '+RW';
             if ($('#MaterialCB41').val() == 3)
-                Taxonomy[1] = Taxonomy[1]+'+RB';
+                Taxonomy[34] = '+RB';
             if ($('#MaterialCB41').val() == 4)
-                Taxonomy[1] = Taxonomy[1]+'+RCM';
+                Taxonomy[34] = '+RCM';
             if ($('#MaterialCB41').val() == 5)
-                Taxonomy[1] = Taxonomy[1]+'+RCB';
+                Taxonomy[34] = '+RCB';
         }
 
         if (($('#MaterialCB31').val() == 0) && !$('#OmitCB').prop('checked') )
@@ -1623,17 +1623,17 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB12').val() == 10) {
             Taxonomy[5] = 'MR';
             if ( ($('#MaterialCB42').val() == 0) && !$('#OmitCB').prop('checked') )
-                Taxonomy[6] = Taxonomy[6] + '+MR99';
+                Taxonomy[35] = '+MR99';
             if ($('#MaterialCB42').val() == 1)
-                Taxonomy[6] = Taxonomy[6] + '+RS';
+                Taxonomy[35] = '+RS';
             if ($('#MaterialCB42').val() == 2)
-                Taxonomy[6] = Taxonomy[6] + '+RW';
+                Taxonomy[35] = '+RW';
             if ($('#MaterialCB42').val() == 3)
-                Taxonomy[6] = Taxonomy[6] + '+RB';
+                Taxonomy[35] = '+RB';
             if ($('#MaterialCB42').val() == 4)
-                Taxonomy[6] = Taxonomy[6] + '+RCM';
+                Taxonomy[35] = '+RCM';
             if ($('#MaterialCB42').val() == 5)
-                Taxonomy[6] = Taxonomy[6] + '+RCB';
+                Taxonomy[35] = '+RCB';
         }
 
         if (($('#MaterialCB32').val() == 0) && !$('#OmitCB').prop('checked') )
@@ -2339,6 +2339,7 @@ function taxt_BuildTaxonomy()
 
           0 - Material type
           1 - Material technology
+          34- Material tech adds
           2 - Material properties
 
           3 - Type of lateral system
@@ -2348,6 +2349,7 @@ function taxt_BuildTaxonomy()
 
           5 - Material type
           6 - Material technology
+          35- Material tech adds
           7 - Material properties
 
        5) 8 - Type of lateral system
@@ -2387,8 +2389,10 @@ function taxt_BuildTaxonomy()
           33 - Foundation
           */
 
-    ResTax = direction1 + '/' + Taxonomy[0] + Taxonomy[1] + Taxonomy[2] + '/' + Taxonomy[3] + Taxonomy[4] +
-        '/' + direction2 + '/' + Taxonomy[5] + Taxonomy[6] + Taxonomy[7] + '/' + Taxonomy[8] + Taxonomy[9] +
+    ResTax = direction1 + '/' + Taxonomy[0] + Taxonomy[1] + Taxonomy[34] + Taxonomy[2] +
+        '/' +Taxonomy[3] + Taxonomy[4] +
+        '/' + direction2 + '/' + Taxonomy[5] + Taxonomy[6] + Taxonomy[35] + Taxonomy[7] +
+        '/' + Taxonomy[8] + Taxonomy[9] +
         '/' + Taxonomy[11] + Taxonomy[12] + Taxonomy[13] + Taxonomy[14] + '/' + Taxonomy[10] +
         '/' + Taxonomy[15] + Taxonomy[16] + '/' + Taxonomy[17] + '/' + Taxonomy[18] +
         '/' + Taxonomy[19] + Taxonomy[20] + Taxonomy[22] + Taxonomy[21] + Taxonomy[23] +
