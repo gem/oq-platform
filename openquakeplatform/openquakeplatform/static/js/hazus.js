@@ -23,6 +23,17 @@ var TILESTREAM_URL = TS_URL + '/v2/';
 
 var startApp = function() {
 
+    // Show hide layer controller
+    function checkLayerController() {
+        if ($.isEmptyObject(layerControl._layers) ) {
+            setTimeout(function() {
+                $('.leaflet-control-layers-toggle').css({'display': 'none'});
+            }, 100);
+        } else {
+            $('.leaflet-control-layers-toggle').css({'display': 'block'});
+        }
+    }
+
     $(function() {
         $( "#dialog" ).dialog({height: 520, width: 430, position: {at: "right bottom"}});
         $('#dialog').dialog('close');
@@ -36,6 +47,7 @@ var startApp = function() {
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     layerControl = L.control.layers(app.baseLayers);
+    checkLayerController();
 
     map.addControl(layerControl.setPosition("topleft"));
     map.panTo(new L.LatLng(38.2, -101.6));
@@ -64,6 +76,7 @@ var startApp = function() {
 
         layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
+        checkLayerController();
         utfGridClickEvent(layerType);
 
         return utfGrid;
@@ -82,6 +95,7 @@ var startApp = function() {
             var building_fractions = L.tileLayer(TS_URL + '/v2/ged_hazus_US_building_fractions_black/{z}/{x}/{y}.png');
             layerControl.addOverlay(building_fractions, "US Counties");
             map.addLayer(building_fractions);
+            checkLayerController();
         } else if (externalLayerSelection == 3) {
             var selectedLayer = "dwelling_fractions_non_res";
             var selectedGrid = "n/a";
