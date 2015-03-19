@@ -253,10 +253,7 @@
                         return d.name;
                     }
                 })
-                .style("fill-opacity", 1e-6)
-                .on("click", function(d) {
-                    onTreeElementClick(d);
-                });
+                .style("fill-opacity", 1e-6);
 
             // tree operator label
             nodeEnter.append("text")
@@ -279,10 +276,8 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
-                .on("click", function(d) {
-                    onTreeElementClick(d);
-                });
+                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; });
+
 
             // Render 'ignore weights' into a new line when present
             nodeEnter.append("text")
@@ -305,14 +300,13 @@
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
                 .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
-                .attr("transform", "translate(0, 12)")
-                .on("click", function(d) {
-                    onTreeElementClick(d);
-                });
+                .attr("transform", "translate(0, 12)");
 
             // Render weight values in tree
             nodeEnter.append("text")
                 .attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
+                .attr("class", "pointer")
+                .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x){
