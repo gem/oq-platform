@@ -274,12 +274,7 @@
                 .style("fill", function(d) {
                     if (d.operator != undefined) {
                         // Check for operators that ignore weights and style accordingly
-                        var color;
-                        if (d.operator.indexOf('ignore') != -1) {
-                            color = '#660000';
-                        } else {
-                            color = 'black';
-                        }
+                        var color = 'black';
                         return color;
                     }
                 })
