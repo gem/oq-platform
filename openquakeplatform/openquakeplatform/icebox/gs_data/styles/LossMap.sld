@@ -24,7 +24,7 @@
                 </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
+                    <ogc:PropertyName>loss</ogc:PropertyName>
                   </ogc:PropertyIsNull>
                   <ogc:PropertyIsEqualTo>
                     <ogc:Literal>NEVER</ogc:Literal>
@@ -34,7 +34,7 @@
               </ogc:And>
             </ogc:Not>
             <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>0.0</ogc:Literal>
               </ogc:LowerBoundary>
@@ -78,7 +78,7 @@
                 </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
+                    <ogc:PropertyName>loss</ogc:PropertyName>
                   </ogc:PropertyIsNull>
                   <ogc:PropertyIsEqualTo>
                     <ogc:Literal>NEVER</ogc:Literal>
@@ -88,7 +88,7 @@
               </ogc:And>
             </ogc:Not>
             <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>100.0</ogc:Literal>
               </ogc:LowerBoundary>
@@ -132,7 +132,7 @@
                 </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
+                    <ogc:PropertyName>loss</ogc:PropertyName>
                   </ogc:PropertyIsNull>
                   <ogc:PropertyIsEqualTo>
                     <ogc:Literal>NEVER</ogc:Literal>
@@ -142,7 +142,7 @@
               </ogc:And>
             </ogc:Not>
             <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>1000.0</ogc:Literal>
               </ogc:LowerBoundary>
@@ -186,7 +186,7 @@
                 </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
+                    <ogc:PropertyName>loss</ogc:PropertyName>
                   </ogc:PropertyIsNull>
                   <ogc:PropertyIsEqualTo>
                     <ogc:Literal>NEVER</ogc:Literal>
@@ -196,7 +196,7 @@
               </ogc:And>
             </ogc:Not>
             <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>10000.0</ogc:Literal>
               </ogc:LowerBoundary>
@@ -240,7 +240,7 @@
                 </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
+                    <ogc:PropertyName>loss</ogc:PropertyName>
                   </ogc:PropertyIsNull>
                   <ogc:PropertyIsEqualTo>
                     <ogc:Literal>NEVER</ogc:Literal>
@@ -250,7 +250,7 @@
               </ogc:And>
             </ogc:Not>
             <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>100000.0</ogc:Literal>
               </ogc:LowerBoundary>
@@ -294,7 +294,7 @@
                 </ogc:PropertyIsEqualTo>
                 <ogc:Or>
                   <ogc:PropertyIsNull>
-                    <ogc:PropertyName>iml</ogc:PropertyName>
+                    <ogc:PropertyName>loss</ogc:PropertyName>
                   </ogc:PropertyIsNull>
                   <ogc:PropertyIsEqualTo>
                     <ogc:Literal>NEVER</ogc:Literal>
@@ -304,7 +304,7 @@
               </ogc:And>
             </ogc:Not>
             <ogc:PropertyIsBetween>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
               <ogc:LowerBoundary>
                 <ogc:Literal>1000000.0</ogc:Literal>
               </ogc:LowerBoundary>
@@ -341,7 +341,7 @@
           </ogc:PropertyIsEqualTo>
           <ogc:Or>
             <ogc:PropertyIsNull>
-              <ogc:PropertyName>iml</ogc:PropertyName>
+              <ogc:PropertyName>loss</ogc:PropertyName>
             </ogc:PropertyIsNull>
             <ogc:PropertyIsEqualTo>
               <ogc:Literal>NEVER</ogc:Literal>
