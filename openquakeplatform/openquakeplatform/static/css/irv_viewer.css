@@ -121,3 +121,7 @@ svg {
   font-weight: bold;
   fill: blue;
 }
+
+#map {
+  height: 300px !important;
+}

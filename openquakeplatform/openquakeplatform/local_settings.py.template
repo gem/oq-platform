@@ -5,7 +5,7 @@ import openquakeplatform
 from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
 
 SITENAME = 'OpenQuake Platform'
-SITEURL = 'http://%(host)s/'
+SITEURL = 'http://%(siteurl)s/'
 
 OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
@@ -14,6 +14,7 @@ ROOT_URLCONF = 'openquakeplatform.urls'
 
 # GEM Experimental apps enabled
 GEM_EXPERIMENTAL = %(is_gem_experimental)s
+USE_I18N = False
 
 SERIALIZATION_MODULES = {
     'json': 'wadofstuff.django.serializers.json'
@@ -140,7 +141,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
          # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080/geoserver/',
+        'LOCATION': 'http://localhost:%(geoserver_port)s/geoserver/',
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
@@ -361,7 +362,8 @@ AUTH_EXEMPT_URLS = ('/$',
                     '/vulnerability/intensity_measure_csc?.*',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
-                    '/vulnerability/resp_var_units_csc?.*')
+                    '/vulnerability/resp_var_units_csc?.*',
+                    '/taxtweb/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.

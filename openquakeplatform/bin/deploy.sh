@@ -39,6 +39,8 @@ export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
 openquakeplatform/openquakeplatform/static/wax"
 
+export MIGRATIONS_HISTORY="/var/lib/openquake/platform/migrations/history"
+
 if [ -f /etc/openquake/platform/local_settings.py ]; then
     GEM_IS_INSTALL=n
 else
@@ -342,9 +344,12 @@ import string, random
 local_settings = open('${oqpdir}/$GEM_LOCAL_SETTINGS_TMPL', 'r').read()
 with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
     fh.write(local_settings % dict(host='${gem_host_name}',
+                                   siteurl='${gem_host_name}',
                                    db_name='${gem_db_name}',
                                    db_user='${gem_db_user}',
                                    db_pass='${gem_db_pass}',
+                                   geonode_port=80,
+                                   geoserver_port=8080,
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
@@ -649,6 +654,12 @@ oq_platform_install () {
             "${app}_postlayers" "$oqpdir" "$gem_db_name"
         fi
     done
+
+    if [ ! -d "$MIGRATIONS_HISTORY" ]; then
+        mkdir -p "$MIGRATIONS_HISTORY"
+    fi
+    find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
+
 }
 
 

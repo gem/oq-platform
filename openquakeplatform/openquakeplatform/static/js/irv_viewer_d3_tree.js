@@ -15,8 +15,11 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+    var CIRCLE_SCALE = 30;
+
     $(document).ready(function() {
         //  Project definition weight dialog
+        // TODO adjust the dialog height based on the number of indicators passed
         $("#projectDefWeightDialog").dialog({
             autoOpen: false,
             height: 500,
@@ -32,7 +35,7 @@
 
     function loadPD(selectedPDef, qt_page) {
         var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
-        var margin = {top: 20, right: 120, bottom: 20, left: 30},
+        var margin = {top: 0, right: 80, bottom: 20, left: 80},
             width = 960 - margin.right - margin.left,
             height = 800 - margin.top - margin.bottom;
 
@@ -46,10 +49,21 @@
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        function createSpinner(id, weight, name) {
+        function createSpinner(id, weight, name, operator) {
+
+            if (operator === undefined) {
+                operator = 'n/a';
+            }
+
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append('<p><label for="spinner'+id+'">'+name+': </label><input id="spinner-'+id+'" name="spinner" value="'+weight+'"></p>');
+            $('#projectDefWeightDialog').append(
+                '<p>'+
+                    '<label for="spinner'+id+'">'+name+': </label>'+
+                    '<input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'">'+
+                '</p>'
+            );
+
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
                     min: 0,
@@ -94,9 +108,41 @@
                     updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
                 }
 
+                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                    // get the elements that have been modified
+                    var tempNewWeight = [];
+                    var value = $('#'+pdTempSpinnerIds[i]).val();
+                    var element = $('#'+pdTempSpinnerIds[i]).attr('element');
+                    tempNewWeight.push(element);
+                    tempNewWeight.push(parseFloat(value));
+                    traverse(sessionProjectDef, tempNewWeight);
+                }
+
                 nodeEnter.remove("text");
                 updateD3Tree(pdData);
             });
+        }
+
+        // update the JSON with new weights
+        function traverse(projectDef, tempNewWeight) {
+            var projectDefUpdated = projectDef;
+            var ct = 0;
+            if (projectDef.name == tempNewWeight[0]) {
+                projectDefUpdated.weight = tempNewWeight[1];
+            } else {
+                for (var i = 0; i < projectDef.children.length; i++) {
+                    if (projectDef.children[i].name == tempNewWeight[0]) {
+                        projectDefUpdated.children[i].weight = tempNewWeight[1];
+                    } else {
+                        for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
+                            if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                                projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                            }
+                        }
+                    }
+                }
+            }
+            processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -106,7 +152,7 @@
 
             })) {
                 pdTempIds.push(pdData.id);
-                createSpinner(pdData.id, pdData.weight, pdData.name);
+                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator);
             }
 
             (pdData.children || []).forEach(function(currentItem) {
@@ -115,6 +161,7 @@
         }
 
         function updateTreeBranch(pdData, id, pdWeight) {
+
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
@@ -126,6 +173,8 @@
             });
         }
 
+        // empty any previously drawen chart
+        $('#project-def').empty();
         var svg = d3.select("#project-def").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
@@ -134,20 +183,15 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             data = JSON.parse(selectedPDef);
+
             root = data;
             root.x0 = height / 2;
             root.y0 = 0;
 
-            function collapse(d) {
-                if (d.children) {
-                    d._children = d.children;
-                    d._children.forEach(collapse);
-                    d.children = null;
-                }
-            }
-
             //root.children.forEach(collapse);
             updateD3Tree(root);
+
+        $('#project-definition-svg').hide();
 
         d3.select(self.frameElement).style("height", "800px");
 
@@ -167,34 +211,66 @@
             nodeEnter = node.enter().append("g")
                 .attr("class", "node")
                 .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; });
-                //.on("click", click);
 
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
                 .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
+            // tree indicator label
             nodeEnter.append("text")
                 .attr("class", (function(d) { return "level-" + d.level; }))
-                //.attr("id", (function(d) { return d.name; }))
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
-                .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-                .attr("dy", ".35em")
-                .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-                .text(function(d) { return d.name + " " + d.weight; })
+                .attr("x", function(d) { return -(d.weight * CIRCLE_SCALE + 5); })
+                .attr("dy", function(d) {
+                    // NOTE are x and y swapped?
+                    // set te text above or below the node depending on the
+                    // parent position
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                        return "2em";
+                    }
+                    return "-1em";
+                })
+                .attr("text-anchor", function(d) { return "end"; })
+                .text(function(d) {
+                    return d.name;
+                })
                 .style("fill-opacity", 1e-6)
                 .on("click", function(d) {
                     pdName = d.name;
                     pdData = data;
                     pdWeight = d.weight;
                     pdLevel = d.level;
-                    pdParent = d.parent.name;
                     pdTempSpinnerIds = [];
                     pdTempIds = [];
                     $('#projectDefWeightDialog').empty();
                     findTreeBranchInfo(pdData, [pdName], [pdLevel]);
                     updateButton();
                 });
+
+            // tree operator label
+            nodeEnter.append("text")
+                .text(function(d) {
+                    if (d.children){
+                        var operator = d.operator? d.operator : DEFAULT_OPERATOR;
+                        d.operator = operator;
+                        return operator;
+                    }
+                })
+                .style("fill", function(d) {
+                    if (d.operator != undefined) {
+                        // Check for operators that ignore weights and style accordingly
+                        var color;
+                        if (d.operator.indexOf('ignore') != -1) {
+                            color = '#660000';
+                        } else {
+                            color = 'black';
+                        }
+                        return color;
+                    }
+                })
+                .attr("id", function(d) {return "operator-label-" + d.level;})
+                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; });
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
@@ -237,7 +313,6 @@
                 .style("fill", function(d) {
                     return d.source ? d.source.linkColor: d.linkColor;
                 });
-
 
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
@@ -290,18 +365,6 @@
                     qt_page.json_updated(pdData);
                 }
             }
-        }
-
-        // Toggle children on click.
-        function click(d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
-            }
-            update(d);
         }
     } //end d3 tree
 

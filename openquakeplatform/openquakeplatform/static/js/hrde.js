@@ -85,6 +85,18 @@ var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
+
+    // Show hide layer controller
+    function checkLayerController() {
+        if ($.isEmptyObject(AppVars.layerControl._layers) ) {
+            setTimeout(function() {
+                $('.leaflet-control-layers-toggle').css({'display': 'none'});
+            }, 100);
+        } else {
+            $('.leaflet-control-layers-toggle').css({'display': 'block'});
+        }
+    }
+
     $(function() {
         $('#chartDialog').dialog({
             autoOpen: false,
@@ -179,6 +191,7 @@ var startApp = function() {
     layers = {};
 
     AppVars.layerControl = L.control.layers(app.baseLayers);
+    checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
 
@@ -189,6 +202,7 @@ var startApp = function() {
         if (externalLayerSelection == 1) {
             var strain = new L.TileLayer(TILESTREAM_URL+'geodetic-strain-v2-1/{z}/{x}/{y}.png');
             map.addLayer(strain);
+            checkLayerController();
             AppVars.layerControl.addOverlay(strain, "Strain");
         } else if (externalLayerSelection == 3) {
             var iec = L.tileLayer.wms("/geoserver/wms", {
@@ -198,6 +212,7 @@ var startApp = function() {
                 version: '1.1.0'
             });
             map.addLayer(iec);
+            checkLayerController();
             AppVars.layerControl.addOverlay(iec, "Instrumental Earthquake Catalogue");
         } else if (externalLayerSelection == 4) {
             var hec = L.tileLayer.wms("/geoserver/wms", {
@@ -207,6 +222,7 @@ var startApp = function() {
                 version: '1.1.0'
             });
             map.addLayer(hec);
+            checkLayerController();
             AppVars.layerControl.addOverlay(hec, "Historic Earthquake Catalogue");
         }
     });
@@ -1086,6 +1102,7 @@ var startApp = function() {
 
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
+        checkLayerController();
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
@@ -1184,6 +1201,7 @@ var startApp = function() {
 
         AppVars.layerControl.addOverlay(utfGrid, selectedLayer);
         map.addLayer(utfGrid);
+        checkLayerController();
         lossCurveUtfGridClickEvent(utfGridLoss);
     }
 
@@ -1265,6 +1283,7 @@ var startApp = function() {
 
         AppVars.layerControl.addOverlay(utfGridMixed, selectedLayer);
         map.addLayer(utfGridMixed);
+        checkLayerController();
         hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
     }
 

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import utils
+import version
 
-__version__ = '1.0.0'
-__version__ += utils.git_suffix(__file__)
+__version__ = '1.0.1'
+__version__ += version.git_suffix(__file__)
