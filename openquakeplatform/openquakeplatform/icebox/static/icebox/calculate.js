@@ -148,6 +148,11 @@
      });
    var outputs = new Outputs();
 
+   var refresh_calcs;
+
+   function setTimer() {
+       refresh_calcs = setInterval(function() { calculations.fetch({reset: true}) }, 5000);
+   }
 
    /* classic event management */   
 
@@ -155,7 +160,7 @@
      function() {
        var calculation_table = new CalculationTable({ calculations: calculations });
        calculations.fetch({reset: true});
-       setInterval(function() { calculations.fetch({reset: true}) }, 5000);
+       setTimer();
 
        var output_table = new OutputTable({ outputs: outputs });
        outputs.fetch({reset: true});
@@ -190,6 +195,14 @@
                               dialog.hidePleaseWait();
                               alert(xhr.responseText);
 		                        }});
+                      });
+      $(document).on('click', 'button[id=open_trace]',
+                function(e) {
+                        clearInterval(refresh_calcs);
+                      });
+      $(document).on('click', 'button[id=close_trace]',
+                function(e) {
+                        setTimer();
                       });
      });
  })($, Backbone, _);
