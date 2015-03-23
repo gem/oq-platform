@@ -1295,6 +1295,9 @@ var startApp = function() {
             for (var j = 0; j < vectorLength; j++) {
                 vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
             }
+            // push the tb value into the vectorOfPeriods array in order to get a beter curve
+            vectorofPeriods.push(e.data.Tb);
+            vectorofPeriods.sort();
             console.log('vectorofPeriods:');
             console.log(vectorofPeriods);
 
@@ -1321,8 +1324,6 @@ var startApp = function() {
             }
             console.log('acceleration:');
             console.log(acceleration);
-
-
         });
     };
 
@@ -1470,6 +1471,7 @@ var startApp = function() {
 
                 console.log('data:');
                 console.log(data);
+
 
                 // Find min and max y axis values
                 maxYAxis = Math.max.apply(Math, probArray);
