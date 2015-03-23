@@ -1009,8 +1009,6 @@ var startApp = function() {
         } else if (curveType == 'spectrum') {
 
             var scope = angular.element($("#spectrum-list")).scope();
-            console.log('scope:');
-            console.log(scope);
             var spectrumLayerId = scope.selected_spectrum.name;
 
             // Look up the layer id using the layer name
@@ -1285,6 +1283,21 @@ var startApp = function() {
         utfGrid.on('click', function (e) {
             console.log('e:');
             console.log(e);
+
+            // create a vector of period values from 0 to 4 in steps of 0.05
+            var vectorofPeriods = [0];
+            var vectorLength = 80;
+            var baseValue = 0;
+
+            for (var i = 0; i < vectorLength; i++) {
+                vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
+            }
+            console.log('vectorofPeriods:');
+            console.log(vectorofPeriods);
+
+
+            // Create the line path
+
         });
     };
 
