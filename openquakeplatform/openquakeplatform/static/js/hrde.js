@@ -1285,18 +1285,43 @@ var startApp = function() {
             console.log(e);
 
             // create a vector of period values from 0 to 4 in steps of 0.05
+            // x is the x axis aka period
+            // y is the acceleration
+
             var vectorofPeriods = [0];
             var vectorLength = 80;
             var baseValue = 0;
 
-            for (var i = 0; i < vectorLength; i++) {
+            for (var j = 0; j < vectorLength; j++) {
                 vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
             }
             console.log('vectorofPeriods:');
             console.log(vectorofPeriods);
 
+            // create curve path
+            var acceleration = [];
+            for (var i = 0; i < vectorofPeriods.length; i++) {
+                if (vectorofPeriods[i] < e.data.Tb) {
+                    acceleration.push(
+                        e.data.ag * (1 + (vectorofPeriods[i] / e.data.Tb) * (e.data.f0 - 1))
+                    );
+                } else if (vectorofPeriods[i] >= e.data.Tb && vectorofPeriods[i] < e.data.Tc) {
+                    acceleration.push(
+                        e.data.ag * e.data.f0
+                    );
+                } else if (vectorofPeriods[i] >= e.data.Tc && vectorofPeriods[i] < e.data.Td) {
+                    acceleration.push(
+                        e.data.ag * e.data.f0 * (e.data.Tc / vectorofPeriods[i])
+                    );
+                } else if (vectorofPeriods[i] > e.data.Td) {
+                    acceleration.push(
+                        e.data.ag * e.data.f0 * ((e.data.Tc * e.data.Td) / Math.pow(vectorofPeriods[i], 2))
+                    );
+                }
+            }
+            console.log('acceleration:');
+            console.log(acceleration);
 
-            // Create the line path
 
         });
     };
