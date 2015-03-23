@@ -201,7 +201,7 @@
                         clearInterval(refresh_calcs);
                       });
       $(document).on('hidden.bs.modal', 'div[id^=traceback]',
-                function (e) {
+                function(e) {
                         setTimer();
 
                       });
