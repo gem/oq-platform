@@ -200,10 +200,9 @@
                 function(e) {
                         clearInterval(refresh_calcs);
                       });
-      $(document).on('hidden.bs.modal', 'div[id^=traceback]',
+      $(document).on('hidden.bs.modal', 'div[id^=traceback-]',
                 function(e) {
                         setTimer();
-
                       });
      });
  })($, Backbone, _);
