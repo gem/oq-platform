@@ -667,6 +667,8 @@ var startApp = function() {
         $('#chartDialog').empty();
 
         var scope = angular.element($("#spectrum-list")).scope();
+        console.log('scope:');
+        console.log(scope);
         var option = scope.selected_spectrum.name;
         var curveType = 'spectrum';
 
@@ -977,6 +979,7 @@ var startApp = function() {
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
+            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
 
         } else if (curveType == 'uhs') {
 
@@ -1001,6 +1004,7 @@ var startApp = function() {
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
+            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
 
         } else if (curveType == 'spectrum') {
 
@@ -1018,7 +1022,6 @@ var startApp = function() {
                 AppVars.selectedHazardLayerName = json.name;
                 AppVars.selectedLayerValue = json.mapped_value;
                 AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerIml = json.periods;
                 AppVars.layerPoe = json.poe;
                 AppVars.layerImt = json.imt;
                 var bounds = json.bounds;
@@ -1027,6 +1030,7 @@ var startApp = function() {
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
+            hazardSpectrumUtfGridClickEvent(curveType, utfGrid, selectedLayer);
 
         } else if (curveType == 'input') {
 
@@ -1047,6 +1051,7 @@ var startApp = function() {
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
+            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
 
         } else if (curveType == undefined || curveType == 'map') {
 
@@ -1080,9 +1085,8 @@ var startApp = function() {
 
             utfGrid = createUtfLayerGroups(selectedLayer, curveType);
             utfGrid.utfGridType = "map";
+            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
         }
-
-        hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
     }
 
     function createUtfLayerGroups(selectedLayer, curveType) {
@@ -1248,24 +1252,6 @@ var startApp = function() {
                 var bounds = json.bounds;
                 map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
             });
-        } else if (curveType == 'spectrum') {
-            var scope = angular.element($("#spectrum-list")).scope();
-            var spectrumLayerId = scope.selected_spectrum.name;
-
-            // Look up the layer id using the layer name
-            var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
-            var selectedLayer = spectrumLayerIdArray.toString();
-
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.mappedValue = json.mapped_value;
-                AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerIml = json.periods;
-                AppVars.layerPoe = json.poe;
-                AppVars.layerImt = json.imt;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
         }
 
         var tileLayer = L.tileLayer(TILESTREAM_URL +
@@ -1294,6 +1280,13 @@ var startApp = function() {
             active: false
         });
     });
+
+    var hazardSpectrumUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
+        utfGrid.on('click', function (e) {
+            console.log('e:');
+            console.log(e);
+        });
+    };
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
@@ -1348,7 +1341,7 @@ var startApp = function() {
                         }
                     }
 
-                    if (curveType == 'uhs' || curveType == 'spectrum') {
+                    if (curveType == 'uhs') {
                         prob = e.data.imls;
                     }
                     console.log('e.data:');
@@ -1374,8 +1367,6 @@ var startApp = function() {
                         }
                     } else if (curveType == 'uhs') {
                         imt = 'Period (s)';
-                    } else if (curveType == 'spectrum') {
-                        imt = 'Period (s)';
                     }
 
                     lat = e.data.lat;
@@ -1396,9 +1387,9 @@ var startApp = function() {
                 }
 
 
-                //////////////////////////////////////////////////////////////////////
-                //// Single hazard UHS, spectrum, curveChart and hazard map plots ////
-                //////////////////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////
+                //// Single hazard UHS, curveChart and hazard map plots ////
+                ////////////////////////////////////////////////////////////
 
                 if (utfGrid.utfGridType == "map") {
                     $('#chartDialog').append("<strong>"+AppVars.selectedHazardMapName+":<br>"+AppVars.selectedMappedValue+"</strong><br>"+spotValue+" [g]");
@@ -1411,8 +1402,6 @@ var startApp = function() {
                     yAxisLable = 'Spectral Acceleration, Sa [g]';
                 } else if (curveType == "hc") {
                     yAxisLable = 'Probability of exceedance in '+AppVars.layerInvestigationTime+' years';
-                } else if (curveType == "spectrum") {
-                    yAxisLable = 'Pseudo Acceleration, Sa [g]';
                 }
 
                 if(!(AppVars.layerIml instanceof Array)) {
@@ -1433,9 +1422,13 @@ var startApp = function() {
 
                 console.log('AppVars.layerIml:');
                 console.log(AppVars.layerIml);
+                console.log('AppVars.layerIml.length:');
+                console.log(AppVars.layerIml.length);
 
                 console.log('probArray:');
                 console.log(probArray);
+                console.log('probArray.length:');
+                console.log(probArray.length);
 
                 console.log('data:');
                 console.log(data);
@@ -1453,7 +1446,7 @@ var startApp = function() {
                 width = 580 - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
 
-                if (curveType == 'uhs' || curveType == 'spectrum') {
+                if (curveType == 'uhs') {
                     var x = d3.scale.linear().range([0, width]);
                     var y = d3.scale.linear().range([height, 0]);
                 } else {
@@ -1490,7 +1483,7 @@ var startApp = function() {
 
                 data.forEach(dataCallback);
                 x.domain(d3.extent(data, function(d) { return d.x; }));
-                if (curveType == 'uhs' || curveType == 'spectrum') {
+                if (curveType == 'uhs') {
                     y.domain([minYAxis, maxYAxis]);
                 } else {
                     y.domain([d3.extent(data, function(d) { return d.y; })[0], 3]);
@@ -1567,38 +1560,6 @@ var startApp = function() {
 
                 var legend = d3.select('#chartDialog').append('svg')
                     .attr('height', 25);
-
-                // points along the line
-                if (curveType != 'spectrum') {
-                    svg.selectAll('circle.line')
-                        .data(data)
-                        .enter().append('circle')
-                        .attr('class', 'line')
-                        .attr('cx', function(d) { return x(d.x); })
-                        .attr('cy', function(d) { return y(d.y); })
-                        .attr('r', 4.5)
-                        .style('fill', 'gray')
-                        .on('mouseover', function() {
-                            d3.select(this)
-                                .attr('r', 6.6)
-                                .text(circleX + ', ' + circleY)
-                                .style('fill', 'red');
-                            var circleX = d3.select(this.__data__.x);
-                            circleX = circleX.toString();
-                            circleX = circleX.split(','[0]);
-
-                            var circleY = d3.select(this.__data__.y);
-                            circleY = circleY.toString();
-                            circleY = circleY.split(','[0]);
-
-                            textBottom.text('Point value (x/y): ' + circleX + ', ' + circleY);
-
-                        }).on('mouseout', function() {
-                            d3.select(this)
-                                .attr('r', 4.5)
-                                .style('fill', 'gray');
-                        });
-                    }
 
                 textTopTitle = svg.append("text")
                     .attr("x", 0)
