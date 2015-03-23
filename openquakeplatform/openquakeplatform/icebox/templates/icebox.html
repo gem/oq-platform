@@ -7,7 +7,7 @@ Calculate - {{block.super}}
 {% block extra_head %}
 {{block.super}}
 
-    <link href="{{ STATIC_URL }}/bootstrap-extend/css/jasny-bootstrap.min.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}bootstrap-extend/css/jasny-bootstrap.min.css" rel="stylesheet"/>
 
 {% endblock %}
 
@@ -127,14 +127,6 @@ Calculate - {{block.super}}
       <% }); %>
     </tbody>
   </table>
-</script>
-
-<script>
-  function popup_error_traceback(traceback) {
-    var w = window.open('', 'Traceback', 'width=1000, height=600, resizable, scrollbars');
-    w.document.write('<pre>' + traceback + '</pre>')
-    w.document.close();
-  }
 </script>
 
 <script type="text/template" id="output-table-template">
