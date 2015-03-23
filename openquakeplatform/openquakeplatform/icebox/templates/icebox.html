@@ -101,8 +101,8 @@ Calculate - {{block.super}}
 
           <% if(calc.get('id')) { %>
             <% if(calc.get('status') == 'failed') { %>
-              <button id="open_trace" class="btn btn-sm" type="button" data-toggle="modal" data-target="#traceback<%= calc.get('id') %>">Traceback</button>
-              <div class="modal fade" id="traceback<%= calc.get('id') %>">
+              <button id="open_trace" class="btn btn-sm" type="button" data-toggle="modal" data-target="#traceback-<%= calc.get('id') %>">Traceback</button>
+              <div class="modal fade" id="traceback-<%= calc.get('id') %>">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
