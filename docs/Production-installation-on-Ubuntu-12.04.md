@@ -64,5 +64,5 @@ THEME_ACCOUNT_CONTACT_EMAIL = 'info@mydomain.tld'
 
 ### Speedups
 To improve the performances see:
-* [GeoServer speedups](https://github.com/gem/oq-platform/wiki/GeoServer-speedups)
-* [HTTPS using NGiNX and uWSGI](https://github.com/gem/oq-platform/wiki/Using-nginx-and-uWSGI-in-HTTPS)
+* [GeoServer speedups](GeoServer-speedups.md)
+* [HTTPS using NGiNX and uWSGI](Using-nginx-and-uWSGI-in-HTTPS.md)
