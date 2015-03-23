@@ -7,7 +7,7 @@ Calculate - {{block.super}}
 {% block extra_head %}
 {{block.super}}
 
-    <link href="{{ STATIC_URL }}/bootstrap-extend/css/jasny-bootstrap.min.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}bootstrap-extend/css/jasny-bootstrap.min.css" rel="stylesheet"/>
 
 {% endblock %}
 
@@ -101,8 +101,23 @@ Calculate - {{block.super}}
 
           <% if(calc.get('id')) { %>
             <% if(calc.get('status') == 'failed') { %>
-              <% traceback = calc.get('einfo') %>
-              <button class="btn btn-sm" onclick="popup_error_traceback(traceback)">Traceback</button>
+              <button id="open_trace" class="btn btn-sm" type="button" data-toggle="modal" data-target="#traceback-<%= calc.get('id') %>">Traceback</button>
+              <div class="modal fade" id="traceback-<%= calc.get('id') %>" style="display: none;">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title">Traceback from calculation #<%= calc.get('id') %></h4>
+                    </div>
+                    <div class="modal-body">
+                      <pre><%= calc.get('einfo') %></pre>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             <% } %>
             <a href="#" data-calc-id="<%= calc.get('id') %>" class="btn btn-sm btn-danger">Remove</a>
          <% } %>
@@ -112,14 +127,6 @@ Calculate - {{block.super}}
       <% }); %>
     </tbody>
   </table>
-</script>
-
-<script>
-  function popup_error_traceback(traceback) {
-    var w = window.open('', 'Traceback', 'width=1000, height=600, resizable, scrollbars');
-    w.document.write('<pre>' + traceback + '</pre>')
-    w.document.close();
-  }
 </script>
 
 <script type="text/template" id="output-table-template">
