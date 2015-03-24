@@ -1286,8 +1286,7 @@ var startApp = function() {
             var lat = e.data.lat;
             var lng = e.data.lon;
             var yAxisLable = 'Spectral Acceleration, Sa [g]';
-            // TODO chnge this to spectrum
-            var curveType = 'uhs';
+            var curveType = 'spectrum';
 
             try {
                 $('#chartDialog').empty();
@@ -1309,7 +1308,7 @@ var startApp = function() {
             for (var j = 0; j < vectorLength; j++) {
                 vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
             }
-            // push the tb value into the vectorOfPeriods array in order to get a beter curve
+            // push the tb and tc value into the vectorOfPeriods array for a cleaner curve
             vectorofPeriods.push(e.data.Tb);
             vectorofPeriods.push(e.data.Tc);
             vectorofPeriods.sort();
@@ -1498,18 +1497,19 @@ var startApp = function() {
         minYAxis = Math.min.apply(Math, probArray);
         percent = 0.1 * maxYAxis;
         maxYAxis = percent + maxYAxis;
-        console.log('maxYAxis:');
-        console.log(maxYAxis);
+
         var margin = {top: 60, right: 20, bottom: 80, left: 70},
         width = 580 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
-        if (curveType == 'uhs') {
+
+        if (curveType == 'uhs' || curveType == 'spectrum') {
             var x = d3.scale.linear().range([0, width]);
             var y = d3.scale.linear().range([height, 0]);
         } else {
             var x = d3.scale.log().range([0, width]);
             var y = d3.scale.log().range([height, 0]);
         }
+
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient('bottom');
@@ -1529,17 +1529,21 @@ var startApp = function() {
             .attr('height', height + margin.top + margin.bottom)
             .append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
         var dataCallback = function(d) {
             d.x = +d[0];
             d.y = +d[1];
         };
+
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
-        if (curveType == 'uhs') {
+
+        if (curveType == 'uhs' || curveType == 'spectrum') {
             y.domain([minYAxis, maxYAxis]);
         } else {
             y.domain([d3.extent(data, function(d) { return d.y; })[0], 3]);
         }
+
         // grid line functions
         function make_x_axis() {
             return d3.svg.axis()
@@ -1547,12 +1551,14 @@ var startApp = function() {
                 .orient('bottom')
                 .ticks(5);
         }
+
         function make_y_axis() {
             return d3.svg.axis()
                 .scale(y)
                 .orient('left')
                 .ticks(5);
         }
+
         // grid lines
         svg.append('g')
             .attr('class', 'grid')
@@ -1628,13 +1634,17 @@ var startApp = function() {
             .attr('y', 335)
             .attr('dy', '.35em')
             .text('');
+
         $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
         $('#downloadCurve').on('hover', function(){
             $(this).css('cursor', 'pointer');
         });
+
         var h = $('#chartDialog').height();
         h = h + 20;
+
         $('#chartDialog').css({'height': h+'px'});
+
         // Prep data for download to CSV
         $('#downloadCurve').click(function(event) {
             var csvData = [];
