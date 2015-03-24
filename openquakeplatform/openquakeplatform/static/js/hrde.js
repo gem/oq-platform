@@ -1283,13 +1283,27 @@ var startApp = function() {
         utfGrid.on('click', function (e) {
             console.log('e:');
             console.log(e);
+            var lat = e.data.lat;
+            var lng = e.data.lon;
+            var yAxisLable = 'Spectral Acceleration, Sa [g]';
+            // TODO chnge this to spectrum
+            var curveType = 'uhs';
+
+            try {
+                $('#chartDialog').empty();
+                if ($("#chartDialog").dialog("isOpen") == false) {
+                    $('#chartDialog').dialog('open');
+                }
+            } catch (e) {
+                // continue
+            }
 
             // create a vector of period values from 0 to 4 in steps of 0.05
             // x is the x axis aka period
             // y is the acceleration
 
             var vectorofPeriods = [0];
-            var vectorLength = 80;
+            var vectorLength = 100;
             var baseValue = 0;
 
             for (var j = 0; j < vectorLength; j++) {
@@ -1297,9 +1311,8 @@ var startApp = function() {
             }
             // push the tb value into the vectorOfPeriods array in order to get a beter curve
             vectorofPeriods.push(e.data.Tb);
+            vectorofPeriods.push(e.data.Tc);
             vectorofPeriods.sort();
-            console.log('vectorofPeriods:');
-            console.log(vectorofPeriods);
 
             // create curve path
             var acceleration = [];
@@ -1322,8 +1335,15 @@ var startApp = function() {
                     );
                 }
             }
-            console.log('acceleration:');
-            console.log(acceleration);
+
+            // create the data array
+            var data = [];
+            for (var ia = 0; ia < acceleration.length; ia++) {
+                data.push([vectorofPeriods[ia], acceleration[ia]]);
+            }
+
+            AppVars.layerIml = vectorofPeriods;
+            drawSingleChart(data, acceleration, vectorofPeriods, curveType, yAxisLable, lat, lng);
         });
     };
 
@@ -1459,15 +1479,7 @@ var startApp = function() {
                     }
                 }
 
-                console.log('AppVars.layerIml:');
-                console.log(AppVars.layerIml);
-                console.log('AppVars.layerIml.length:');
-                console.log(AppVars.layerIml.length);
 
-                console.log('probArray:');
-                console.log(probArray);
-                console.log('probArray.length:');
-                console.log(probArray.length);
 
                 console.log('data:');
                 console.log(data);
@@ -1511,6 +1523,7 @@ var startApp = function() {
             .y(function(d) {
                 return y(d.y);
             });
+
         var svg = d3.select('#chartDialog').append('svg')
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
