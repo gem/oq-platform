@@ -419,16 +419,8 @@ def _add_vulnerability(db_name, db_user, db_pass):
 
 def _set_auth():
     local('python manage.py loaddata '
-          './openquakeplatform/common/fixtures/*.json' )
+          './openquakeplatform/common/fixtures/*.json')
 
 
 def _set_sites():
-    import os
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'openquakeplatform.settings'
-
-    from django.contrib.sites.models import Site
-    mysite = Site.objects.all()[0]
-    from openquakeplatform import settings
-    mysite.domain = 'oq-platform'
-    mysite.name = settings.SITENAME
-    mysite.save()
+    local('python manage.py fixsitename')
