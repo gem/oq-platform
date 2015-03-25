@@ -1098,65 +1098,53 @@ var startApp = function() {
     // Add mixed curve layers form tilestream list
     function mixedCurve(curveType) {
         var selectedLayer;
+        var utfGrid = {};
+        console.log('curveType:');
+        console.log(curveType);
 
         if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
             // this is only needed in the case when the user adds the same curve twice
-            var scope = angular.element($("#curve-list")).scope();
-            var curveLayerId = scope.selected_curve.name;
+            var curveLayerId = angular.element($("#curve-list")).scope().selected_curve.name;
 
             // Look up the layer id using the layer name
             var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
 
             selectedLayer = curveLayerIdArray.toString();
 
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.mappedValue = json.mapped_value;
-                AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerIml = json.iml;
-                AppVars.layerImt = json.imt;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
+            getLayerMetadata(selectedLayer);
+            utfGrid = createUtfLayerGroups(selectedLayer);
+            utfGrid.utfGridType = "curve";
+            console.log('utfGrid:');
+            console.log(utfGrid);
+            console.log('hi Im a mixed hazard curve:');
+            hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
 
         } else if (curveType == 'uhs') {
-            var scope = angular.element($("#uhs-list")).scope();
-            var uhsLayerId = scope.selected_uhs.name;
+            var uhsLayerId = angular.element($("#uhs-list")).scope().selected_uhs.name;
 
             // Look up the layer id using the layer name
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
 
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.mappedValue = json.mapped_value;
-                AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerIml = json.periods;
-                AppVars.layerPoe = json.poe;
-                AppVars.layerImt = json.imt;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
+            getLayerMetadata(selectedLayer);
+            utfGrid = createUtfLayerGroups(selectedLayer);
+            utfGrid.utfGridType = "curve";
+            hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
+
+        } else if (curveType == 'spectrum') {
+            var spectrumLayerId = angular.element($("#spectrum-list")).scope().selected_spectrum.name;
+
+            // Look up the layer id using the layer name
+            var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
+            var selectedLayer = spectrumLayerIdArray.toString();
+
+            getLayerMetadata(selectedLayer);
+            utfGrid = createUtfLayerGroups(selectedLayer);
+            utfGrid.utfGridType = "curve";
+            hazardSpectrumUtfGridClickEventMixed(curveType, utfGrid, selectedLayer);
         }
 
-        var tileLayer = L.tileLayer(TILESTREAM_URL +
-            selectedLayer +
-            '/{z}/{x}/{y}.png',{wax: TILESTREAM_URL +
-            selectedLayer +
-            '.json'});
-
-
-        var utfGrid = new L.UtfGrid(TILESTREAM_URL +
-            selectedLayer +
-            '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-
-        var utfGridMixed = L.layerGroup([utfGrid, tileLayer]);
-
-        AppVars.layerControl.addOverlay(utfGridMixed, selectedLayer);
-        map.addLayer(utfGridMixed);
-        checkLayerController();
-        hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
     }
 
     $(function() {
@@ -1174,7 +1162,6 @@ var startApp = function() {
             var lat = e.data.lat;
             var lng = e.data.lon;
             var yAxisLable = 'Spectral Acceleration, Sa [g]';
-            var curveType = 'spectrum';
 
             try {
                 $('#chartDialog').empty();
@@ -1231,6 +1218,82 @@ var startApp = function() {
 
             AppVars.layerIml = vectorofPeriods;
             drawSingleChart(data, acceleration, vectorofPeriods, curveType, yAxisLable, lat, lng);
+        });
+    };
+
+    var hazardSpectrumUtfGridClickEventMixed = function(curveType, utfGrid, selectedLayer) {
+        utfGrid.on('click', function (e) {
+            console.log('e:');
+            console.log(e);
+            var lat = e.data.lat;
+            var lng = e.data.lon;
+            var yAxisLable = 'Spectral Acceleration, Sa [g]';
+
+            try {
+                $('#chartDialog').empty();
+                if ($("#chartDialog").dialog("isOpen") == false) {
+                    $('#chartDialog').dialog('open');
+                }
+            } catch (e) {
+                // continue
+            }
+
+            // Format the spectrum parameters
+            for(var k in e.data) {
+                // Get all the keys that of 'type'
+                // TODO change 'type' to something more meaningful like 'spectrum element'
+                if (k.indexOf('type')) {
+
+                }
+            }
+
+
+            // create a vector of period values from 0 to 4 in steps of 0.05
+            // x is the x axis aka period
+            // y is the acceleration
+
+            var vectorofPeriods = [0];
+            var vectorLength = 100;
+            var baseValue = 0;
+
+            for (var j = 0; j < vectorLength; j++) {
+                vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
+            }
+            // push the tb and tc value into the vectorOfPeriods array for a cleaner curve
+            vectorofPeriods.push(e.data.Tb);
+            vectorofPeriods.push(e.data.Tc);
+            vectorofPeriods.sort();
+
+            // create curve path
+            var acceleration = [];
+            for (var i = 0; i < vectorofPeriods.length; i++) {
+                if (vectorofPeriods[i] < e.data.Tb) {
+                    acceleration.push(
+                        e.data.ag * (1 + (vectorofPeriods[i] / e.data.Tb) * (e.data.f0 - 1))
+                    );
+                } else if (vectorofPeriods[i] >= e.data.Tb && vectorofPeriods[i] < e.data.Tc) {
+                    acceleration.push(
+                        e.data.ag * e.data.f0
+                    );
+                } else if (vectorofPeriods[i] >= e.data.Tc && vectorofPeriods[i] < e.data.Td) {
+                    acceleration.push(
+                        e.data.ag * e.data.f0 * (e.data.Tc / vectorofPeriods[i])
+                    );
+                } else if (vectorofPeriods[i] > e.data.Td) {
+                    acceleration.push(
+                        e.data.ag * e.data.f0 * ((e.data.Tc * e.data.Td) / Math.pow(vectorofPeriods[i], 2))
+                    );
+                }
+            }
+
+            // create the data array
+            var data = [];
+            for (var ia = 0; ia < acceleration.length; ia++) {
+                data.push([vectorofPeriods[ia], acceleration[ia]]);
+            }
+
+            AppVars.layerIml = vectorofPeriods;
+            buildMixedD3Chart(chartData, selectedCurves, curveType);
         });
     };
 
@@ -1365,8 +1428,6 @@ var startApp = function() {
                          data.push([parseFloat(AppVars.layerIml[i]), parseFloat(probArray[i])]);
                     }
                 }
-
-
 
                 console.log('data:');
                 console.log(data);
@@ -1566,6 +1627,9 @@ var startApp = function() {
 
     function hazardCurveUtfGridClickEventMixed(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
+
+            console.log('e:');
+            console.log(e);
             // Get the selected curves
             var selectedCurves = [];
             var sc;
