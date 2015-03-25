@@ -532,58 +532,6 @@ var startApp = function() {
         var curvesListCap = [];
 
         if (investType.indexOf('mixed') == 1 ) {
-            // Use investType to find the key in curvesByInvestMixed
-            var layerKey = investType.shift();
-            // Use that key to look up available curves in curvesAvailable
-            var curvesList = AppVars.curvesAvailable[layerKey].split(' ');
-
-            // Remove items that are not curves
-            var index = curvesList.indexOf('iml');
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-            index = curvesList.indexOf('lat');
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-            index = curvesList.indexOf('lon');
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-            index = curvesList.indexOf('imt');
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-            index = curvesList.indexOf('invest_time');
-            if (index > -1) {
-                curvesList.splice(index, 1);
-            }
-
-            // remove _ and capotolise the values in the curvesList
-            for (var i = 0; i < curvesList.length; i++) {
-                var b = curvesList[i].replace(/_/g, ' ');
-                b = capitalize(b);
-                //  curvesListCap.push(b);
-            }
-
-            // Provide the user with the curves that are available in the dialog
-            if (curveType == 'hc') {
-                $('#hc-mixed-selection').empty();
-                $('#uhs-mixed-selection').empty();
-                $('#spectrum-mixed-selection').empty();
-                $('#hc-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
-                for (var j = 0; j < curvesList.length; j++) {
-                    var checkbox = '<input type="checkbox" id="'+curvesList[j]+'" class="curve-list" value=" ' +
-                        curvesList[j] +
-                        '">' +
-                        curvesList[j] +
-                        '<br>';
-
-                    $('#hc-mixed-selection').append(checkbox);
-                }
-            }
-
-            $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
         } else if (investType.indexOf('single') == 0 ) {
@@ -605,7 +553,6 @@ var startApp = function() {
     }); // end add input curve
 
 
-
     $('#addTileUhs').click(function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
@@ -613,48 +560,8 @@ var startApp = function() {
         var scope = angular.element($("#uhs-list")).scope();
         var gridName = scope.selected_uhs.name;
         var curveType = 'uhs';
-        var investType = checkChartType(AppVars.uhsByInvestMixed, AppVars.uhsByInvestSingle, gridName, curveType);
-
 
         if (investType.indexOf('mixed') == 1 ) {
-            // Use investType to find the key in uhsByInvestMixed
-            var layerKey = investType.shift();
-            // Use that key to look up available uhs in uhsAvailable
-            var uhsList = AppVars.uhsAvailable[layerKey].split(' ');
-            var uhsListCap = [];
-
-            // Remove items that are not curves
-            var removeItems = ['lat', 'lon', 'invest_time', 'periods', 'poe'];
-            for (var i = 0; i < removeItems.length; i++) {
-                if (uhsList.indexOf(removeItems[i]) > -1) {
-                    uhsList.splice(uhsList.indexOf(removeItems[i]), 1);
-                }
-            }
-
-            // remove _ and capotolise the values in the uhsList
-            for (var i = 0; i < uhsList.length; i++) {
-                var b = uhsList[i].replace(/_/g, ' ');
-                b = capitalize(b);
-                //uhsListCap.push(b);
-            }
-
-            // Provide the user with the uhs that are available in the dialog
-            if (curveType == 'uhs') {
-                $('#uhs-mixed-selection').empty();
-                $('#hc-mixed-selection').empty();
-                $('#uhs-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
-                for (var j = 0; j < uhsList.length; j++) {
-                    var checkbox = '<input type="checkbox" id="'+uhsList[j]+'" class="curve-list" value=" ' +
-                        uhsList[j] +
-                        '">' +
-                        uhsList[j] +
-                        '<br>';
-
-                    $('#uhs-mixed-selection').append(checkbox);
-                }
-            }
-
-            $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
         } else if ($.inArray('single', investType) > -1) {
@@ -672,49 +579,9 @@ var startApp = function() {
         $('#chartDialog').empty();
 
         var scope = angular.element($("#spectrum-list")).scope();
-        var gridName = scope.selected_spectrum.name;
         var curveType = 'spectrum';
-        var investType = checkChartType(AppVars.spectrumByInvestMixed, AppVars.spectrumByInvestSingle, gridName, curveType);
 
         if (investType.indexOf('mixed') == 1 ) {
-            // Use investType to find the key in spectrumByInvestMixed
-            var layerKey = investType.shift();
-            // Use that key to look up available spectrum in spectrumAvailable
-            var uhsList = AppVars.spectrumAvailable[layerKey].split(' ');
-            var uhsListCap = [];
-
-            // Remove items that are not curves
-            var removeItems = ['lat', 'lon', 'invest_time', 'periods', 'poe'];
-            for (var i = 0; i < removeItems.length; i++) {
-                if (uhsList.indexOf(removeItems[i]) > -1) {
-                    uhsList.splice(uhsList.indexOf(removeItems[i]), 1);
-                }
-            }
-
-            // remove _ and capotolise the values in the uhsList
-            for (var i = 0; i < uhsList.length; i++) {
-                var b = uhsList[i].replace(/_/g, ' ');
-                b = capitalize(b);
-                //uhsListCap.push(b);
-            }
-
-            // Provide the user with the uhs that are available in the dialog
-            if (curveType == 'uhs') {
-                $('#uhs-mixed-selection').empty();
-                $('#hc-mixed-selection').empty();
-                $('#uhs-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
-                for (var j = 0; j < uhsList.length; j++) {
-                    var checkbox = '<input type="checkbox" id="'+uhsList[j]+'" class="curve-list" value=" ' +
-                        uhsList[j] +
-                        '">' +
-                        uhsList[j] +
-                        '<br>';
-
-                    $('#uhs-mixed-selection').append(checkbox);
-                }
-            }
-
-            $('.curve-list').prop('checked', true);
             mixedCurve(curveType);
 
         } else if ($.inArray('single', investType) > -1) {
@@ -725,8 +592,6 @@ var startApp = function() {
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
 
-        singleCurve(curveType);
-
     }); // end add spectrum curve
 
     $('#addTileLoss').click(function() {
@@ -735,27 +600,6 @@ var startApp = function() {
 
         lossCurve();
     }); // end add loss curve
-
-    // Check to see if the utfGrid has an investigation time 'mixed' or 'single'
-    function checkChartType(gridInvestMixed, gridInvestSingle, gridName, curveType) {
-        for (var key in gridInvestMixed) {
-            if (!gridInvestMixed.hasOwnProperty(key))
-                continue;
-            if (gridInvestMixed[key] == gridName) {
-                var mixed = 'mixed';
-                return [key, mixed];
-            }
-        }
-        for (key in gridInvestSingle) {
-            if (!gridInvestSingle.hasOwnProperty(key))
-                continue;
-            if (gridInvestSingle[key] == gridName) {
-                var single = 'single';
-                return [single];
-            }
-        }
-    }
-
 
     $('#hazard-curve-category').change(function() {
         var e = document.getElementById('hazard-curve-category');
