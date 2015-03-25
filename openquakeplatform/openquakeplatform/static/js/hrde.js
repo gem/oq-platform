@@ -47,7 +47,7 @@ AppProtoType.prototype = {
     curvesAvailable: {},
     uhsAvailable: {},
     lossAvailable: {},
-    CurvesByInvestSingle: {},
+    curvesByInvestSingle: {},
     uhsByInvestSingle: {},
     lossByInvestSingle: {},
     lossLayerId: {},
@@ -413,7 +413,7 @@ var startApp = function() {
                     AppVars.curveLayersByCat[cat].push(curveLayerTitle);
 
                     if (chartType == 'single') {
-                        AppVars.CurvesByInvestSingle[j] = name;
+                        AppVars.curvesByInvestSingle[j] = name;
                     }
                     else if (chartType == 'mixed') {
                         AppVars.curvesByInvestMixed[j] = name;
@@ -441,7 +441,6 @@ var startApp = function() {
                     var spectrumLayerTitle = json[j].mapped_value;
                     AppVars.spectrumLayerNames[name].push(spectrumLayerId);
                     AppVars.spectrumLayersByCat[cat].push(spectrumLayerTitle);
-                    AppVars.spectrumByInvestSingle[j] = name;
 
                     if (chartType == 'mixed') {
                         AppVars.spectrumByInvestMixed[j] = name;
@@ -525,18 +524,28 @@ var startApp = function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        var scope = angular.element($("#curve-list")).scope();
-        var gridName = scope.selected_curve.name;
+        var selectedCurve = angular.element($("#curve-list")).scope().selected_curve.name;
         var curveType = 'hc';
-        var investType = checkChartType(AppVars.curvesByInvestMixed, AppVars.CurvesByInvestSingle, gridName, curveType);
-        var curvesListCap = [];
 
-        if (investType.indexOf('mixed') == 1 ) {
-            mixedCurve(curveType);
+        // identify if the layer is of cureve type mixed or single
+        var chartType;
+        for (var k in AppVars.curvesByInvestMixed) {
+            if (AppVars.curvesByInvestMixed[k] === selectedCurve) {
+                console.log('mixed curve type:');
+                mixedCurve(curveType);
+                chartType = 'mixed';
+            }
+        }
 
-        } else if (investType.indexOf('single') == 0 ) {
-            singleCurve(curveType);
-        } else {
+        for (var l in AppVars.curvesByInvestSingle) {
+            if (AppVars.curvesByInvestSingle[l] === selectedCurve) {
+                console.log('single curve type:');
+                singleCurve(curveType);
+                chartType = 'single';
+            }
+        }
+
+        if (chartType === undefined) {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
@@ -557,20 +566,32 @@ var startApp = function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        var scope = angular.element($("#uhs-list")).scope();
-        var gridName = scope.selected_uhs.name;
+        var selectedUhs = angular.element($("#uhs-list")).scope().selected_uhs.name;
         var curveType = 'uhs';
 
-        if (investType.indexOf('mixed') == 1 ) {
-            mixedCurve(curveType);
+        // identify if the layer is of cureve type mixed or single
+        var chartType;
+        for (var k in AppVars.uhsByInvestMixed) {
+            if (AppVars.uhsByInvestMixed[k] === selectedUhs) {
+                console.log('mixed curve type:');
+                mixedCurve(curveType);
+                chartType = 'mixed';
+            }
+        }
 
-        } else if ($.inArray('single', investType) > -1) {
-            singleCurve(curveType);
+        for (var l in AppVars.uhsByInvestSingle) {
+            if (AppVars.uhsByInvestSingle[l] === selectedUhs) {
+                console.log('single curve type:');
+                singleCurve(curveType);
+                chartType = 'single';
+            }
+        }
 
-        } else {
+        if (chartType === undefined) {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
+
     }); // end add uhs curve
 
 
@@ -578,16 +599,28 @@ var startApp = function() {
         $('#chartDialog').dialog('option', 'title', 'Plot');
         $('#chartDialog').empty();
 
-        var scope = angular.element($("#spectrum-list")).scope();
+        var selectedSpectrum = angular.element($("#spectrum-list")).scope().selected_spectrum.name;
         var curveType = 'spectrum';
 
-        if (investType.indexOf('mixed') == 1 ) {
-            mixedCurve(curveType);
+        // identify if the layer is of cureve type mixed or single
+        var chartType;
+        for (var k in AppVars.spectrumByInvestMixed) {
+            if (AppVars.spectrumByInvestMixed[k] === selectedSpectrum) {
+                console.log('mixed curve type:');
+                mixedCurve(curveType);
+                chartType = 'mixed';
+            }
+        }
 
-        } else if ($.inArray('single', investType) > -1) {
-            singleCurve(curveType);
+        for (var l in AppVars.spectrumByInvestSingle) {
+            if (AppVars.spectrumByInvestSingle[l] === selectedSpectrum) {
+                console.log('single curve type:');
+                singleCurve(curveType);
+                chartType = 'single';
+            }
+        }
 
-        } else {
+        if (chartType === undefined) {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
