@@ -874,18 +874,7 @@ var startApp = function() {
             var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
             var selectedLayer = curveLayerIdArray.toString();
 
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.selectedHazardLayerName = json.name;
-                AppVars.selectedLayerValue = json.mapped_value;
-                AppVars.mappedValue = json.mapped_value;
-                AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerIml = json.iml;
-                AppVars.layerImt = json.imt;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-
-            });
+            getLayerMetadata(selectedLayer);
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
@@ -900,17 +889,7 @@ var startApp = function() {
             var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
             var selectedLayer = uhsLayerIdArray.toString();
 
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.selectedHazardLayerName = json.name;
-                AppVars.selectedLayerValue = json.mapped_value;
-                AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerIml = json.periods;
-                AppVars.layerPoe = json.poe;
-                AppVars.layerImt = json.imt;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
+            getLayerMetadata(selectedLayer);
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
@@ -925,16 +904,7 @@ var startApp = function() {
             var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
             var selectedLayer = spectrumLayerIdArray.toString();
 
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.selectedHazardLayerName = json.name;
-                AppVars.selectedLayerValue = json.mapped_value;
-                AppVars.layerInvestigationTime = json.investigationTime;
-                AppVars.layerPoe = json.poe;
-                AppVars.layerImt = json.imt;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
+            getLayerMetadata(selectedLayer);
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
@@ -949,13 +919,7 @@ var startApp = function() {
             var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
             var selectedLayer = inputLayerIdArray.toString();
 
-            // get more information about the selected layer for use in chart
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.selectedHazardLayerName = json.name;
-                AppVars.selectedLayerValue = json.mapped_value;
-                var bounds = json.bounds;
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
+            getLayerMetadata(selectedLayer);
 
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
@@ -995,6 +959,20 @@ var startApp = function() {
             utfGrid.utfGridType = "map";
             hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
         }
+    }
+
+    function getLayerMetadata(selectedLayer) {
+        // get more information about the selected layer for use in chart
+        $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+            AppVars.selectedHazardLayerName = json.name;
+            AppVars.selectedLayerValue = json.mapped_value;
+            AppVars.layerInvestigationTime = json.investigationTime;
+            AppVars.layerIml = json.periods;
+            AppVars.layerPoe = json.poe;
+            AppVars.layerImt = json.imt;
+            var bounds = json.bounds;
+            map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+        });
     }
 
     function createUtfLayerGroups(selectedLayer, curveType) {
