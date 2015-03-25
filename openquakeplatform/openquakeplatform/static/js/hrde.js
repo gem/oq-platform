@@ -64,6 +64,7 @@ AppProtoType.prototype = {
     spectrumAvailable: {},
     spectrumByInvestSingle: {},
     spectrumLayerGrids: [],
+    spectrumByInvestMixed: {},
     mappedValue: null,
     selectedHazardMapName: null,
     selectedMappedValue: null,
@@ -436,15 +437,19 @@ var startApp = function() {
                 }
 
                 if (type == 'curve-spectrum') {
-                    console.log('json[j].id:');
-                    console.log(json[j].id);
                     var spectrumLayerId = json[j].id;
                     var spectrumLayerTitle = json[j].mapped_value;
                     AppVars.spectrumLayerNames[name].push(spectrumLayerId);
                     AppVars.spectrumLayersByCat[cat].push(spectrumLayerTitle);
                     AppVars.spectrumByInvestSingle[j] = name;
-                    console.log('AppVars.spectrumByInvestSingle[j]:');
-                    console.log(AppVars.spectrumByInvestSingle[j]);
+
+                    if (chartType == 'mixed') {
+                        AppVars.spectrumByInvestMixed[j] = name;
+                        AppVars.spectrumAvailable[j] = template;
+                    }
+                    else if (chartType == 'single') {
+                        AppVars.spectrumByInvestSingle[j] = name;
+                    }
                 }
 
                 if (type == 'curve-loss') {
@@ -521,10 +526,10 @@ var startApp = function() {
         $('#chartDialog').empty();
 
         var scope = angular.element($("#curve-list")).scope();
-        var option = scope.selected_curve.name;
-        var investType = checkCurveType(AppVars.curvesByInvestMixed, AppVars.CurvesByInvestSingle, option);
-        var curvesListCap = [];
+        var gridName = scope.selected_curve.name;
         var curveType = 'hc';
+        var investType = checkChartType(AppVars.curvesByInvestMixed, AppVars.CurvesByInvestSingle, gridName, curveType);
+        var curvesListCap = [];
 
         if (investType.indexOf('mixed') == 1 ) {
             // Use investType to find the key in curvesByInvestMixed
@@ -606,10 +611,10 @@ var startApp = function() {
         $('#chartDialog').empty();
 
         var scope = angular.element($("#uhs-list")).scope();
-        var option = scope.selected_uhs.name;
-
-        var investType = checkUhsType(AppVars.uhsByInvestMixed, AppVars.uhsByInvestSingle, option);
+        var gridName = scope.selected_uhs.name;
         var curveType = 'uhs';
+        var investType = checkChartType(AppVars.uhsByInvestMixed, AppVars.uhsByInvestSingle, gridName, curveType);
+
 
         if (investType.indexOf('mixed') == 1 ) {
             // Use investType to find the key in uhsByInvestMixed
@@ -667,10 +672,58 @@ var startApp = function() {
         $('#chartDialog').empty();
 
         var scope = angular.element($("#spectrum-list")).scope();
-        console.log('scope:');
-        console.log(scope);
-        var option = scope.selected_spectrum.name;
+        var gridName = scope.selected_spectrum.name;
         var curveType = 'spectrum';
+        var investType = checkChartType(AppVars.spectrumByInvestMixed, AppVars.spectrumByInvestSingle, gridName, curveType);
+
+        if (investType.indexOf('mixed') == 1 ) {
+            // Use investType to find the key in spectrumByInvestMixed
+            var layerKey = investType.shift();
+            // Use that key to look up available spectrum in spectrumAvailable
+            var uhsList = AppVars.spectrumAvailable[layerKey].split(' ');
+            var uhsListCap = [];
+
+            // Remove items that are not curves
+            var removeItems = ['lat', 'lon', 'invest_time', 'periods', 'poe'];
+            for (var i = 0; i < removeItems.length; i++) {
+                if (uhsList.indexOf(removeItems[i]) > -1) {
+                    uhsList.splice(uhsList.indexOf(removeItems[i]), 1);
+                }
+            }
+
+            // remove _ and capotolise the values in the uhsList
+            for (var i = 0; i < uhsList.length; i++) {
+                var b = uhsList[i].replace(/_/g, ' ');
+                b = capitalize(b);
+                //uhsListCap.push(b);
+            }
+
+            // Provide the user with the uhs that are available in the dialog
+            if (curveType == 'uhs') {
+                $('#uhs-mixed-selection').empty();
+                $('#hc-mixed-selection').empty();
+                $('#uhs-mixed-selection').append('<p><b>Select curves to be ploted in the chart:</b></p>');
+                for (var j = 0; j < uhsList.length; j++) {
+                    var checkbox = '<input type="checkbox" id="'+uhsList[j]+'" class="curve-list" value=" ' +
+                        uhsList[j] +
+                        '">' +
+                        uhsList[j] +
+                        '<br>';
+
+                    $('#uhs-mixed-selection').append(checkbox);
+                }
+            }
+
+            $('.curve-list').prop('checked', true);
+            mixedCurve(curveType);
+
+        } else if ($.inArray('single', investType) > -1) {
+            singleCurve(curveType);
+
+        } else {
+            alert('Whoops, there is an issue with the curve you are trying to load,' +
+                ' One thing I can think of is some metadata that is required by this app is missing');
+        }
 
         singleCurve(curveType);
 
@@ -683,40 +736,20 @@ var startApp = function() {
         lossCurve();
     }); // end add loss curve
 
-    // Check to see if the curve has an investigation time 'mixed'
-    function checkCurveType(curvesByInvestMixed, CurvesByInvestSingle, option) {
-        for (var key in AppVars.curvesByInvestMixed) {
-            if (!AppVars.curvesByInvestMixed.hasOwnProperty(key))
+    // Check to see if the utfGrid has an investigation time 'mixed' or 'single'
+    function checkChartType(gridInvestMixed, gridInvestSingle, gridName, curveType) {
+        for (var key in gridInvestMixed) {
+            if (!gridInvestMixed.hasOwnProperty(key))
                 continue;
-            if (AppVars.curvesByInvestMixed[key] == option) {
+            if (gridInvestMixed[key] == gridName) {
                 var mixed = 'mixed';
                 return [key, mixed];
             }
         }
-        for (key in AppVars.CurvesByInvestSingle) {
-            if (!AppVars.CurvesByInvestSingle.hasOwnProperty(key))
+        for (key in gridInvestSingle) {
+            if (!gridInvestSingle.hasOwnProperty(key))
                 continue;
-            if (AppVars.CurvesByInvestSingle[key] == option) {
-                var single = 'single';
-                return [single];
-            }
-        }
-    }
-
-    // Check to see if the uhs has an investigation time 'mixed'
-    function checkUhsType(uhsByInvestMixed, uhsByInvestSingle, option) {
-        for (var key in AppVars.uhsByInvestMixed) {
-            if (!AppVars.uhsByInvestMixed.hasOwnProperty(key))
-                continue;
-            if (AppVars.uhsByInvestMixed[key] == option) {
-                var mixed = 'mixed';
-                return [key, mixed];
-            }
-        }
-        for (key in AppVars.uhsByInvestSingle) {
-            if (!AppVars.uhsByInvestSingle.hasOwnProperty(key))
-                continue;
-            if (AppVars.uhsByInvestSingle[key] == option) {
+            if (gridInvestSingle[key] == gridName) {
                 var single = 'single';
                 return [single];
             }
