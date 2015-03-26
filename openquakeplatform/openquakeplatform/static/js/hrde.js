@@ -1172,7 +1172,7 @@ var startApp = function() {
                 // continue
             }
 
-            // create a vector of period values from 0 to 4 in steps of 0.05
+            // create a vector of period values from 0 to 5 in steps of 0.05
             // x is the x axis aka period
             // y is the acceleration
 
@@ -1238,62 +1238,84 @@ var startApp = function() {
                 // continue
             }
 
-            // Format the spectrum parameters
-            for(var k in e.data) {
+            // The utfGrid contains a comma separated string of 5 parameters used
+            // to calculate each curve. Here we create an array from each string.
+
+            var spc = []; // Spectrum Parameters Collection
+
+            // spectrumCurves contains an array for each curve, each
+            // containing an array collection of x y values
+            var spectrumCurves = [];
+
+            for (var k in e.data) {
                 // Get all the keys that of 'type'
                 // TODO change 'type' to something more meaningful like 'spectrum element'
-                if (k.indexOf('type')) {
-
+                if (k.indexOf('type') >= 0) {
+                    var tempParameters = e.data[k];
+                    spc.push( tempParameters.split(',') );
+                    spectrumCurves.push([]);
                 }
             }
+            console.log('spc:');
+            console.log(spc);
+
+            // spc contains N arrays. Each array contains
+            // 5 parameters that can be used to compute spectrum curves.
+            // ag = 0, f0 = 1, tb = 2, tc = 3, td = 4
 
 
-            // create a vector of period values from 0 to 4 in steps of 0.05
+            // For each spectrum parameter set, create a vector of period values
+            // from 0 to 5 in steps of 0.05
             // x is the x axis aka period
             // y is the acceleration
 
-            var vectorofPeriods = [0];
-            var vectorLength = 100;
-            var baseValue = 0;
+            for (var h = 0; h < spc.length; h++) {
 
-            for (var j = 0; j < vectorLength; j++) {
-                vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
-            }
-            // push the tb and tc value into the vectorOfPeriods array for a cleaner curve
-            vectorofPeriods.push(e.data.Tb);
-            vectorofPeriods.push(e.data.Tc);
-            vectorofPeriods.sort();
+                var vectorofPeriods = [0];
+                var vectorLength = 100;
+                var baseValue = 0;
 
-            // create curve path
-            var acceleration = [];
-            for (var i = 0; i < vectorofPeriods.length; i++) {
-                if (vectorofPeriods[i] < e.data.Tb) {
-                    acceleration.push(
-                        e.data.ag * (1 + (vectorofPeriods[i] / e.data.Tb) * (e.data.f0 - 1))
-                    );
-                } else if (vectorofPeriods[i] >= e.data.Tb && vectorofPeriods[i] < e.data.Tc) {
-                    acceleration.push(
-                        e.data.ag * e.data.f0
-                    );
-                } else if (vectorofPeriods[i] >= e.data.Tc && vectorofPeriods[i] < e.data.Td) {
-                    acceleration.push(
-                        e.data.ag * e.data.f0 * (e.data.Tc / vectorofPeriods[i])
-                    );
-                } else if (vectorofPeriods[i] > e.data.Td) {
-                    acceleration.push(
-                        e.data.ag * e.data.f0 * ((e.data.Tc * e.data.Td) / Math.pow(vectorofPeriods[i], 2))
-                    );
+                for (var j = 0; j < vectorLength; j++) {
+                    vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
+                }
+                // push the tb and tc value into the vectorOfPeriods array for a cleaner curve
+                vectorofPeriods.push(spc[h][2]);
+                vectorofPeriods.push(spc[h][3]);
+                vectorofPeriods.sort();
+
+                // create curve path
+                var acceleration = [];
+                for (var i = 0; i < vectorofPeriods.length; i++) {
+                    if (vectorofPeriods[i] < spc[h][2]) {
+                        acceleration.push(
+                            spc[h][0] * (1 + (vectorofPeriods[i] / spc[h][2]) * (spc[h][1] - 1))
+                        );
+                    } else if (vectorofPeriods[i] >= spc[h][2] && vectorofPeriods[i] < spc[h][3]) {
+                        acceleration.push(
+                            spc[h][0] * spc[h][1]
+                        );
+                    } else if (vectorofPeriods[i] >= spc[h][3] && vectorofPeriods[i] < spc[h][4]) {
+                        acceleration.push(
+                            spc[h][0] * spc[h][1] * (spc[h][3] / vectorofPeriods[i])
+                        );
+                    } else if (vectorofPeriods[i] > spc[h][4]) {
+                        acceleration.push(
+                            spc[h][0] * spc[h][1] * ((spc[h][3] *spc[h][4]) / Math.pow(vectorofPeriods[i], 2))
+                        );
+                    }
+                }
+
+                // create the data array
+                //var chartData = [];
+                for (var ia = 0; ia < acceleration.length; ia++) {
+                    spectrumCurves[h].push([vectorofPeriods[ia], acceleration[ia]]);
                 }
             }
-
-            // create the data array
-            var data = [];
-            for (var ia = 0; ia < acceleration.length; ia++) {
-                data.push([vectorofPeriods[ia], acceleration[ia]]);
-            }
+            console.log('spectrumCurves:');
+            console.log(spectrumCurves);
 
             AppVars.layerIml = vectorofPeriods;
-            buildMixedD3Chart(chartData, selectedCurves, curveType);
+            buildMixedSpectrumChart(spectrumCurves, selectedCurves, curveType);
         });
     };
 
@@ -2126,9 +2148,9 @@ var startApp = function() {
     } //End chart
 
 
-    /////////////////////////////////////////////
-    ///////// Mixed Hazard/spectra Chart ////////
-    /////////////////////////////////////////////
+    /////////////////////////////////////
+    ///////// Mixed Hazard Chart ////////
+    /////////////////////////////////////
 
     function buildMixedD3Chart(chartData, selectedCurves, curveType) {
 
