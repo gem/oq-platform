@@ -1228,6 +1228,12 @@ var startApp = function() {
             var lat = e.data.lat;
             var lng = e.data.lon;
             var yAxisLable = 'Spectral Acceleration, Sa [g]';
+            var spc = {}; // Spectrum Parameters Collection
+
+
+            // spectrumCurves contains an array for each curve, each
+            // containing an array collection of x y values
+            var spectrumCurves = {};
 
             try {
                 $('#chartDialog').empty();
@@ -1241,23 +1247,20 @@ var startApp = function() {
             // The utfGrid contains a comma separated string of 5 parameters used
             // to calculate each curve. Here we create an array from each string.
 
-            var spc = []; // Spectrum Parameters Collection
-
-            // spectrumCurves contains an array for each curve, each
-            // containing an array collection of x y values
-            var spectrumCurves = [];
 
             for (var k in e.data) {
                 // Get all the keys that of 'type'
                 // TODO change 'type' to something more meaningful like 'spectrum element'
                 if (k.indexOf('type') >= 0) {
+                    var curveName = k;
                     var tempParameters = e.data[k];
-                    spc.push( tempParameters.split(',') );
-                    spectrumCurves.push([]);
+                    spectrumCurves[curveName] = [];
+                    spc[curveName] = tempParameters.split(',');
                 }
             }
             console.log('spc:');
             console.log(spc);
+
 
             // spc contains N arrays. Each array contains
             // 5 parameters that can be used to compute spectrum curves.
@@ -1269,7 +1272,10 @@ var startApp = function() {
             // x is the x axis aka period
             // y is the acceleration
 
-            for (var h = 0; h < spc.length; h++) {
+            for (var h in spc) {
+
+                console.log('spc[h][2]:');
+                console.log(spc[h][2]);
 
                 var vectorofPeriods = [0];
                 var vectorLength = 100;
@@ -1279,14 +1285,18 @@ var startApp = function() {
                     vectorofPeriods.push(Math.round((baseValue += 0.05) * 100) / 100);
                 }
                 // push the tb and tc value into the vectorOfPeriods array for a cleaner curve
-                vectorofPeriods.push(spc[h][2]);
-                vectorofPeriods.push(spc[h][3]);
+                vectorofPeriods.push(parseFloat(spc[h][2]));
+                vectorofPeriods.push(parseFloat(spc[h][3]));
                 vectorofPeriods.sort();
+                console.log('vectorofPeriods:');
+                console.log(vectorofPeriods);
 
                 // create curve path
                 var acceleration = [];
                 for (var i = 0; i < vectorofPeriods.length; i++) {
                     if (vectorofPeriods[i] < spc[h][2]) {
+                        console.log('i:');
+                        console.log(i);
                         acceleration.push(
                             spc[h][0] * (1 + (vectorofPeriods[i] / spc[h][2]) * (spc[h][1] - 1))
                         );
@@ -1310,12 +1320,14 @@ var startApp = function() {
                 for (var ia = 0; ia < acceleration.length; ia++) {
                     spectrumCurves[h].push([vectorofPeriods[ia], acceleration[ia]]);
                 }
+
+
             }
             console.log('spectrumCurves:');
             console.log(spectrumCurves);
 
             AppVars.layerIml = vectorofPeriods;
-            buildMixedSpectrumChart(spectrumCurves, selectedCurves, curveType);
+            //buildMixedSpectrumChart(spectrumCurves, lat, lon);
         });
     };
 
