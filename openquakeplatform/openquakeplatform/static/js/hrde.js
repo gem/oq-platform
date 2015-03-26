@@ -1274,9 +1274,6 @@ var startApp = function() {
 
             for (var h in spc) {
 
-                console.log('spc[h][2]:');
-                console.log(spc[h][2]);
-
                 var vectorofPeriods = [0];
                 var vectorLength = 100;
                 var baseValue = 0;
@@ -1288,15 +1285,11 @@ var startApp = function() {
                 vectorofPeriods.push(parseFloat(spc[h][2]));
                 vectorofPeriods.push(parseFloat(spc[h][3]));
                 vectorofPeriods.sort();
-                console.log('vectorofPeriods:');
-                console.log(vectorofPeriods);
 
                 // create curve path
                 var acceleration = [];
                 for (var i = 0; i < vectorofPeriods.length; i++) {
                     if (vectorofPeriods[i] < spc[h][2]) {
-                        console.log('i:');
-                        console.log(i);
                         acceleration.push(
                             spc[h][0] * (1 + (vectorofPeriods[i] / spc[h][2]) * (spc[h][1] - 1))
                         );
@@ -1327,7 +1320,7 @@ var startApp = function() {
             console.log(spectrumCurves);
 
             AppVars.layerIml = vectorofPeriods;
-            //buildMixedSpectrumChart(spectrumCurves, lat, lon);
+            buildMixedSpectrumChart(spectrumCurves, lat, lng);
         });
     };
 
