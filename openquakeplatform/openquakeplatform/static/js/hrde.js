@@ -340,8 +340,6 @@ var startApp = function() {
                 if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-spectrum' ||  type == 'input-mfds' || type == 'map') {
                     if (cat != undefined && cat != 'None') {
                         AppVars.curveCategoryList.push(cat);
-                        //console.log('AppVars.curveCategoryList:');
-                        //console.log(AppVars.curveCategoryList);
                     }
                 }
                 if (type == 'curve-uhs') {
@@ -531,7 +529,6 @@ var startApp = function() {
         var chartType;
         for (var k in AppVars.curvesByInvestMixed) {
             if (AppVars.curvesByInvestMixed[k] === selectedCurve) {
-                console.log('mixed curve type:');
                 mixedCurve(curveType);
                 chartType = 'mixed';
             }
@@ -539,7 +536,6 @@ var startApp = function() {
 
         for (var l in AppVars.curvesByInvestSingle) {
             if (AppVars.curvesByInvestSingle[l] === selectedCurve) {
-                console.log('single curve type:');
                 addSingleCurveToMap(curveType);
                 chartType = 'single';
             }
@@ -573,7 +569,6 @@ var startApp = function() {
         var chartType;
         for (var k in AppVars.uhsByInvestMixed) {
             if (AppVars.uhsByInvestMixed[k] === selectedUhs) {
-                console.log('mixed curve type:');
                 mixedCurve(curveType);
                 chartType = 'mixed';
             }
@@ -581,7 +576,6 @@ var startApp = function() {
 
         for (var l in AppVars.uhsByInvestSingle) {
             if (AppVars.uhsByInvestSingle[l] === selectedUhs) {
-                console.log('single curve type:');
                 addSingleCurveToMap(curveType);
                 chartType = 'single';
             }
@@ -606,7 +600,6 @@ var startApp = function() {
         var chartType;
         for (var k in AppVars.spectrumByInvestMixed) {
             if (AppVars.spectrumByInvestMixed[k] === selectedSpectrum) {
-                console.log('mixed curve type:');
                 mixedCurve(curveType);
                 chartType = 'mixed';
             }
@@ -614,7 +607,6 @@ var startApp = function() {
 
         for (var l in AppVars.spectrumByInvestSingle) {
             if (AppVars.spectrumByInvestSingle[l] === selectedSpectrum) {
-                console.log('single curve type:');
                 addSingleCurveToMap(curveType);
                 chartType = 'single';
             }
@@ -1099,8 +1091,6 @@ var startApp = function() {
     function mixedCurve(curveType) {
         var selectedLayer;
         var utfGrid = {};
-        console.log('curveType:');
-        console.log(curveType);
 
         if (curveType == 'hc') {
             // Remove any existing UtfGrid layers in order to avoid conflict
@@ -1115,9 +1105,6 @@ var startApp = function() {
             getLayerMetadata(selectedLayer);
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
-            console.log('utfGrid:');
-            console.log(utfGrid);
-            console.log('hi Im a mixed hazard curve:');
             hazardCurveUtfGridClickEventMixed(utfGrid, curveType);
 
         } else if (curveType == 'uhs') {
@@ -1157,8 +1144,6 @@ var startApp = function() {
 
     var hazardSpectrumUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
-            console.log('e:');
-            console.log(e);
             var lat = e.data.lat;
             var lng = e.data.lon;
             var yAxisLable = 'Spectral Acceleration, Sa [g]';
@@ -1223,8 +1208,6 @@ var startApp = function() {
 
     var hazardSpectrumUtfGridClickEventMixed = function(curveType, utfGrid, selectedLayer) {
         utfGrid.on('click', function (e) {
-            console.log('e:');
-            console.log(e);
             var lat = e.data.lat;
             var lng = e.data.lon;
             var yAxisLable = 'Spectral Acceleration, Sa [g]';
@@ -1258,9 +1241,6 @@ var startApp = function() {
                     spc[curveName] = tempParameters.split(',');
                 }
             }
-            console.log('spc:');
-            console.log(spc);
-
 
             // spc contains N arrays. Each array contains
             // 5 parameters that can be used to compute spectrum curves.
@@ -1316,8 +1296,6 @@ var startApp = function() {
 
 
             }
-            console.log('spectrumCurves:');
-            console.log(spectrumCurves);
 
             AppVars.layerIml = vectorofPeriods;
             buildMixedSpectrumChart(spectrumCurves, lat, lng);
@@ -1380,8 +1358,6 @@ var startApp = function() {
                     if (curveType == 'uhs') {
                         prob = e.data.imls;
                     }
-                    console.log('e.data:');
-                    console.log(e.data);
 
                     probArray = prob.split(',');
                     iml = e.data.iml;
@@ -1451,9 +1427,6 @@ var startApp = function() {
                     }
                 }
 
-                console.log('data:');
-                console.log(data);
-
                 drawSingleChart(data, probArray, AppVars.layerIml, curveType, yAxisLable, lat, lng);
 
                 }
@@ -1463,9 +1436,6 @@ var startApp = function() {
 
     function hazardCurveUtfGridClickEventMixed(utfGrid, curveType) {
         utfGrid.on('click', function (e) {
-
-            console.log('e:');
-            console.log(e);
             // Get the selected curves
             var selectedCurves = [];
             var sc;

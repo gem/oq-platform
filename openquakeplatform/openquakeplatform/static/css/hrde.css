@@ -138,3 +138,9 @@ a {
   stroke-width: 2px;
 }
 
+.spectrum-line {
+  fill: none;
+  stroke-width: 4px;
+  opacity: 0.4;
+}
+

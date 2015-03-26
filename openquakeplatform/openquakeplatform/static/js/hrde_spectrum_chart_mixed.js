@@ -5,6 +5,9 @@
 
 function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
 
+    console.log('spectrumCurves:');
+    console.log(spectrumCurves);
+
     // Find min and max y axis values
     var maxYAxis = 0;
     var minYAxis = 0;
@@ -49,47 +52,37 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
         d.y = +d[1];
     };
 
+    var count = 0;
+    colors = [
+        "darkred",
+        "blue",
+        "green",
+        "orange",
+        "red",
+        "sandybrown",
+        "yellowgreen",
+        "darksalmon",
+        "lightseagreen",
+        "skyblue"
+    ];
+
     for (var key in spectrumCurves) {
+
+        ++count;
+        console.log('count:');
+        console.log(count);
         var data = spectrumCurves[key];
 
         data.forEach(dataCallback);
         x.domain(d3.extent(data, function(d) { return d.x; }));
-
         y.domain([minYAxis, maxYAxis]);
 
-        // grid line functions
-        function make_x_axis() {
-            return d3.svg.axis()
-                .scale(x)
-                .orient('bottom')
-                .ticks(5);
-        }
-
-        function make_y_axis() {
-            return d3.svg.axis()
-                .scale(y)
-                .orient('left')
-                .ticks(5);
-        }
-
-        // grid lines
-        svg.append('g')
-            .attr('class', 'grid')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(make_x_axis()
-                .tickSize(-height, 0, 0)
-                .tickFormat('')
-            );
-        svg.append('g')
-            .attr('class', 'grid')
-            .call(make_y_axis()
-                .tickSize(-width, 0, 0)
-                .tickFormat('')
-            );
         svg.append('path')
             .data([data])
-            .attr('class', 'line')
+            .attr('class', 'spectrum-line')
+            .style("stroke", colors[count])
             .attr('d', line);
+    }
         svg.append('g')
             .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + height + ')')
@@ -187,5 +180,4 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
                 .replace(/''/g, '","');
             downloadJSON2CSV(csvData);
         });
-    }
 }

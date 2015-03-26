@@ -161,7 +161,6 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
             .tickFormat('')
         );
 
-    //for (k in selectedCurves) {
     for (var k = 0; k < selectedCurves.length; k++) {
         var curve_name = selectedCurves[k];
         var data = curve_coup[curve_name];
@@ -202,7 +201,7 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
             .attr("cx", 350)
             .attr("cy", 20*(k))
             .attr("r", 3)
-            .style("fill", color)
+            .style("fill", color);
 
         $("."+selectedCurves[k]).css({'stroke':colors[k]});
     }
