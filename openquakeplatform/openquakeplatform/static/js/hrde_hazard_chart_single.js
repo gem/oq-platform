@@ -158,6 +158,16 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
 
     $('#chartDialog').css({'height': h+'px'});
 
+    var prob, iml;
+
+    if (curveType === 'spectrum') {
+        prob = 'period';
+        iml = 'acceleration';
+    } else {
+        prob = 'prob';
+        iml = 'iml';
+    }
+
     // Prep data for download to CSV
     $('#downloadCurve').click(function(event) {
         var csvData = [];
