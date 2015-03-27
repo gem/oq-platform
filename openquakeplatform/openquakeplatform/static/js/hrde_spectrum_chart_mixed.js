@@ -5,9 +5,6 @@
 
 function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
     var legend;
-    console.log('spectrumCurves:');
-    console.log(spectrumCurves);
-
     // Find min and max y axis values
     var maxYAxis = 0;
     var minYAxis = 0;
