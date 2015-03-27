@@ -203,14 +203,12 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
             csvData = csvData.concat(comma);
             csvData = csvData.concat(lat);
             csvData = csvData.concat(lineBreak);
+        }
             csvData = csvData
-                .replace(/lineBreak/, '\r\n')
+                .replace(/lineBreak/g, '\r\n')
                 .replace(/\[/g, '')
                 .replace(/\]/g, '')
-                .replace(/''/g, '","')
-                .replace('lineBreak', '');
-        }
-
+                .replace(/''/g, '","');
 
         downloadJSON2CSV(csvData);
     });
