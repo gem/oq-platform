@@ -4,7 +4,7 @@
 ////////////////////////////////////////////
 
 function LossD3Chart(chartData, assetArray, lat, lon) {
-    var lat, lon, xAxisLable, yAxisLable, curve_vals, curve_coup, curve_name, legend, colors;
+    var lat, lon, xAxisLable, yAxisLable, curve_vals, curve_coup, curve_name, colors;
     var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
 
     /* associative array of arrays of values */

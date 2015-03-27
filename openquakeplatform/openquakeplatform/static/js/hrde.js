@@ -1281,7 +1281,7 @@ var startApp = function() {
                         acceleration.push(
                             spc[h][0] * spc[h][1] * (spc[h][3] / vectorofPeriods[i])
                         );
-                    } else if (vectorofPeriods[i] > spc[h][4]) {
+                    } else if (vectorofPeriods[i] >= spc[h][4]) {
                         acceleration.push(
                             spc[h][0] * spc[h][1] * ((spc[h][3] *spc[h][4]) / Math.pow(vectorofPeriods[i], 2))
                         );
@@ -1293,8 +1293,6 @@ var startApp = function() {
                 for (var ia = 0; ia < acceleration.length; ia++) {
                     spectrumCurves[h].push([vectorofPeriods[ia], acceleration[ia]]);
                 }
-
-
             }
 
             AppVars.layerIml = vectorofPeriods;
