@@ -54,16 +54,16 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
 
     var count = 0;
     colors = [
-        "darkred",
-        "blue",
-        "green",
-        "orange",
-        "yellowgreen",
-        "sandybrown",
-        "darksalmon",
-        "lightseagreen",
-        "skyblue",
-        "red"
+        "#984ea3",
+        "#1f78b4",
+        "#666666",
+        "#33a02c",
+        "#fb9a99",
+        "#e31a1c",
+        "#fdbf6f",
+        "#ff7f00",
+        "#f781bf",
+        "#a6cee3"
     ];
 
     legend = d3.select("#chartDialog").append("svg");
@@ -111,6 +111,14 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
         .attr("transform", function(d) {
             return "rotate(-35)";
             });
+    svg.append('g')
+        .attr('class', 'x axis')
+        .append('text')
+        .attr('x', width / 2)
+        .attr('y',  (height + margin.bottom)- 7)
+        .attr('text-anchor', 'middle')
+        .style('font-size','14px')
+        .text(AppVars.layerImt);
     svg.append('g')
         .attr('class', 'y axis')
         .call(yAxis)
@@ -163,30 +171,50 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
     // Prep data for download to CSV
     $('#downloadCurve').click(function(event) {
         var csvData = [];
-        csvData = csvData.concat('prob');
-        csvData = csvData.concat('iml');
-        csvData = csvData.concat('investigationTime');
+        csvData = csvData.concat('curveName');
+        csvData = csvData.concat('vectorofPeriods');
+        csvData = csvData.concat('acceleration');
         csvData = csvData.concat('lon');
         csvData = csvData.concat('lat');
         csvData = JSON.stringify(csvData);
         var lineBreak = 'lineBreak';
         csvData = csvData.concat(lineBreak);
         var quotationMark = '"';
-        csvData = csvData.concat('"');
-        csvData = csvData.concat(probArray);
-        csvData = csvData.concat('","');
-        csvData = csvData.concat(layerIml);
-        csvData = csvData.concat('",');
-        csvData = csvData.concat(AppVars.layerInvestigationTime);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lng);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lat);
-        csvData = csvData
-            .replace(/lineBreak/, '\r\n')
-            .replace(/\[/g, '')
-            .replace(/\]/g, '')
-            .replace(/''/g, '","');
+        var comma = ',';
+
+        for (var l in spectrumCurves) {
+            var curveName = l;
+            var vectorofPeriod = [];
+            var acceleration = [];
+            ct = 0;
+            for (var i = 0; i < spectrumCurves[l].length; i++) {
+                    vectorofPeriod.push(spectrumCurves[l][i][0]);
+                    acceleration.push(spectrumCurves[l][i][1]);
+            }
+
+            csvData = csvData.concat(curveName);
+            csvData = csvData.concat(comma);
+            csvData = csvData.concat(quotationMark);
+            csvData = csvData.concat(vectorofPeriod);
+            csvData = csvData.concat(quotationMark);
+            csvData = csvData.concat(comma);
+            csvData = csvData.concat(quotationMark);
+            csvData = csvData.concat(acceleration);
+            csvData = csvData.concat(quotationMark);
+            csvData = csvData.concat(comma);
+            csvData = csvData.concat(lng);
+            csvData = csvData.concat(comma);
+            csvData = csvData.concat(lat);
+            csvData = csvData.concat(lineBreak);
+            csvData = csvData
+                .replace(/lineBreak/, '\r\n')
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/''/g, '","')
+                .replace('lineBreak', '');
+        }
+
+
         downloadJSON2CSV(csvData);
     });
 }
