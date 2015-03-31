@@ -185,7 +185,7 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.layers(app.baseLayers);
+    AppVars.layerControl = L.control.orderlayers(app.baseLayers);
     checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
@@ -1027,7 +1027,7 @@ var startApp = function() {
         AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        var utfGridGroup = L.layerGroup([
+        var utfGridGroup = L.featureGroup([
             AppVars.utfGrid,
             tileLayer
         ]);
@@ -1126,7 +1126,7 @@ var startApp = function() {
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-        var utfGrid = L.layerGroup([
+        var utfGrid = L.featureGroup([
             utfGridLoss,
             tileLayer
         ]);
@@ -1194,7 +1194,7 @@ var startApp = function() {
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-        var utfGridMixed = L.layerGroup([utfGrid, tileLayer]);
+        var utfGridMixed = L.featureGroup([utfGrid, tileLayer]);
 
         AppVars.layerControl.addOverlay(utfGridMixed, selectedLayer);
         map.addLayer(utfGridMixed);
