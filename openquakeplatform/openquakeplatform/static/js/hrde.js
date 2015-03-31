@@ -64,6 +64,7 @@ AppProtoType.prototype = {
     selectedMappedValue: null,
     selectedHazardLayerName: null,
     selectedLayerValue: null,
+    allLayers: null,
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -221,6 +222,177 @@ var startApp = function() {
             AppVars.layerControl.addOverlay(hec, "Historic Earthquake Catalogue");
         }
     });
+
+    // layer control right click
+    //map.on('contextmenu',function(){
+        //rightClickPopup.openOn(map);
+    //});
+
+
+    // Each time the an element is added to the leaflet-control-layers-overlaysor, each element is
+    // recreated. Becasue of this, each time a new layer is added to the layer control we are regenerating
+    // the needed id's and values
+    function foobar() {
+        var count = 0;
+        for (var i = 0; i < AppVars.inputLayerGrids.length; i++) {
+            try {
+                var layerSpanContainer = $('span:contains('+AppVars.inputLayerGrids[i]+')');
+                layerSpanContainer[0].parentElement.control.id = 'foobar'+count++;
+                layerSpanContainer[0].parentElement.control.value = AppVars.inputLayerGrids[i];
+            } catch (e) {
+                // continue
+            }
+            $('#foobar0').bind('click', function(event){
+                if(event.altKey) {
+
+                    console.log('AppVars.layerControl.:');
+                    console.log(AppVars.layerControl._layers);
+                    // find out if layer is check on un check and set back
+
+                    // to get the layer, match this.value to AppVars.layerControl._layers -> name, then access the match AppVars.layerControl._layers and access layers -> _layers ->  o.Class.extend.e, save as a var and bring to front
+                    for (var k in AppVars.layerControl._layers) {
+                        var missingMapObj;
+                        // get the missing _map object
+                        for (var layerMapKey in AppVars.layerControl._layers[k].layer._layers) {
+                            if (AppVars.layerControl._layers[k].layer._layers[layerMapKey]._map !== null) {
+                                //console.log('AppVars.layerControl._layers[k].layer._layers._map:');
+                                //console.log(AppVars.layerControl._layers[k].layer._layers._map);
+                                missingMapObj = AppVars.layerControl._layers[k].layer._layers[layerMapKey]._map;
+                                console.log('missingMapObj:');
+                                console.log(missingMapObj);
+                            }
+                        }
+
+                        if (AppVars.layerControl._layers[k].name === this.value) {
+                            console.log('match!!:');
+                            var layerGroup = AppVars.layerControl._layers[k].layer; // This is the layergroup: tileLayer & UtfGrid
+                            // add back in the misisng _map object
+                            layerGroup._map = missingMapObj;
+                            for (var key in layerGroup._layers) {
+                                if (layerGroup._layers[key]._map === null) {
+                                    layerGroup._layers[key]._map = missingMapObj;
+                                }
+                            }
+
+                            console.log('layerGroup:');
+                            console.log(layerGroup);
+                            layerGroup.bringToBack();
+                        }
+                    }
+                }
+            });
+            $('#foobar1').bind('click', function(event){
+                if(event.altKey) {
+
+                    console.log('AppVars.layerControl.:');
+                    console.log(AppVars.layerControl._layers);
+                    // find out if layer is check on un check and set back
+
+                    // to get the layer, match this.value to AppVars.layerControl._layers -> name, then access the match AppVars.layerControl._layers and access layers -> _layers ->  o.Class.extend.e, save as a var and bring to front
+                    for (var k in AppVars.layerControl._layers) {
+                        var missingMapObj;
+                        // get the missing _map object
+                        for (var layerMapKey in AppVars.layerControl._layers[k].layer._layers) {
+                            if (AppVars.layerControl._layers[k].layer._layers[layerMapKey]._map !== null) {
+                                //console.log('AppVars.layerControl._layers[k].layer._layers._map:');
+                                //console.log(AppVars.layerControl._layers[k].layer._layers._map);
+                                missingMapObj = AppVars.layerControl._layers[k].layer._layers[layerMapKey]._map;
+                                console.log('missingMapObj:');
+                                console.log(missingMapObj);
+                            }
+                        }
+
+                        if (AppVars.layerControl._layers[k].name === this.value) {
+                            console.log('match!!:');
+                            var layerGroup = AppVars.layerControl._layers[k].layer; // This is the layergroup: tileLayer & UtfGrid
+                            // add back in the misisng _map object
+                            layerGroup._map = missingMapObj;
+                            for (var key in layerGroup._layers) {
+                                if (layerGroup._layers[key]._map === null) {
+                                    layerGroup._layers[key]._map = missingMapObj;
+                                }
+                            }
+
+                            console.log('layerGroup:');
+                            console.log(layerGroup);
+                            layerGroup.bringToBack();
+                        }
+                    }
+                }
+            });
+            $('#foobar2').bind('click', function(event){
+                if(event.altKey) {
+
+                    console.log('AppVars.layerControl.:');
+                    console.log(AppVars.layerControl._layers);
+                    // find out if layer is check on un check and set back
+
+                    // to get the layer, match this.value to AppVars.layerControl._layers -> name, then access the match AppVars.layerControl._layers and access layers -> _layers ->  o.Class.extend.e, save as a var and bring to front
+                    for (var k in AppVars.layerControl._layers) {
+                        var missingMapObj;
+                        // get the missing _map object
+                        for (var layerMapKey in AppVars.layerControl._layers[k].layer._layers) {
+                            if (AppVars.layerControl._layers[k].layer._layers[layerMapKey]._map !== null) {
+                                //console.log('AppVars.layerControl._layers[k].layer._layers._map:');
+                                //console.log(AppVars.layerControl._layers[k].layer._layers._map);
+                                missingMapObj = AppVars.layerControl._layers[k].layer._layers[layerMapKey]._map;
+                                console.log('missingMapObj:');
+                                console.log(missingMapObj);
+                            }
+                        }
+
+                        if (AppVars.layerControl._layers[k].name === this.value) {
+                            console.log('match!!:');
+                            var layerGroup = AppVars.layerControl._layers[k].layer; // This is the layergroup: tileLayer & UtfGrid
+                            // add back in the misisng _map object
+                            layerGroup._map = missingMapObj;
+                            for (var key in layerGroup._layers) {
+                                if (layerGroup._layers[key]._map === null) {
+                                    layerGroup._layers[key]._map = missingMapObj;
+                                }
+                            }
+
+                            console.log('layerGroup:');
+                            console.log(layerGroup);
+                            layerGroup.bringToBack();
+                        }
+                    }
+                }
+            });
+
+        }
+
+
+/*
+        $('#foobar').click(function(event) {
+            console.log('event.which:');
+            console.log(event.which);
+            switch (event.which) {
+                case 1:
+                    alert('Left mouse button pressed');
+                    break;
+                case 2:
+                    alert('Middle mouse button pressed');
+                    break;
+                case 3:
+                    alert('Right mouse button pressed');
+                    break;
+                default:
+                    alert('You have a strange mouse');
+            }
+        });
+*/
+
+    }
+/*
+    $(document).on("click", ".leaflet-control-layers-selector", function (ev) {
+        console.log('this.value:');
+        console.log(this.value);
+    });
+
+*/
+
+
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
@@ -1024,20 +1196,33 @@ var startApp = function() {
             selectedLayer +
             '.json'});
 
+        console.log('tileLayer:');
+        console.log(tileLayer);
+
         AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        var utfGridGroup = L.layerGroup([
+        var utfGridGroup = L.featureGroup([
             AppVars.utfGrid,
             tileLayer
         ]);
+        console.log('utfGridGroup:');
+        console.log(utfGridGroup);
 
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
+        AppVars.allLayers = tileLayer;
         checkLayerController();
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
+
+
+        // Add element id to each layer control span element
+        // so that we can layer identify each layer via the layer control
+
+
+        foobar();
 
         return AppVars.utfGrid;
     }
@@ -1126,7 +1311,7 @@ var startApp = function() {
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-        var utfGrid = L.layerGroup([
+        var utfGrid = L.featureGroup([
             utfGridLoss,
             tileLayer
         ]);
@@ -1194,7 +1379,7 @@ var startApp = function() {
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-        var utfGridMixed = L.layerGroup([utfGrid, tileLayer]);
+        var utfGridMixed = L.featureGroup([utfGrid, tileLayer]);
 
         AppVars.layerControl.addOverlay(utfGridMixed, selectedLayer);
         map.addLayer(utfGridMixed);

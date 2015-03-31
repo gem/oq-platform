@@ -2537,6 +2537,8 @@ L.TileLayer = L.Class.extend({
 	},
 
 	bringToFront: function () {
+		console.log('this:');
+		console.log(this);
 		var pane = this._map._panes.tilePane;
 
 		if (this._container) {
