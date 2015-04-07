@@ -98,7 +98,6 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
                     .style("fill", "gray");
                 var circleX = d3.select(this.__data__[0]);
                 circleX = circleX.toString();
-                circleX = circleX.split(","[0]);
 
                 var circleY = d3.select(this.__data__[1]);
                 circleY = circleY.toString();
