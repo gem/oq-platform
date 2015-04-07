@@ -153,7 +153,7 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
         .attr('dy', '.35em')
         .text('');
 
-    $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+    $('#chartDialog').append('<div id="downloadCurve"><p style="color: blue;">Download Curve</p></div>');
     var finalDialogHeight = $('#chartDialog').height();
     $('#chartDialog').css("height", (finalDialogHeight + 40));
     $('#downloadCurve').on('hover', function(){

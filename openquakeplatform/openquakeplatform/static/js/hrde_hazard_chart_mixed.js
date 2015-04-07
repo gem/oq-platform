@@ -180,7 +180,6 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
 
                 var circleY = d3.select(this.__data__[1]);
                 circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
 
                 textBottom.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
 
@@ -390,7 +389,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
         .style("font-size","11px")
         .text('');
 
-    $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+    $('#chartDialog').append('<div id="downloadCurve"><p style="color: blue;">Download Curve</p></div>');
     $('#downloadCurve').on("hover", function(){
         $(this).css("cursor", "pointer");
     });
@@ -409,8 +408,7 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
         csvData.push("lon");
         csvData.push("lat");
         csvData = JSON.stringify(csvData);
-        var lineBreak = "lineBreak";
-        csvData = csvData.concat(lineBreak);
+        csvData += lineBreak;
         var quotationMark = '"';
 
         for (var k in selectedCurves) {
@@ -421,14 +419,8 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
             csvData = csvData.concat(quotationMark);
         }
 
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(invest_time);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(poe);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lon);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lat);
+        csvData += ',' + invest_time + ',' + poe + ',' + lon + ',' + lat;
+
         csvData = csvData
             .replace(/lineBreak/, '\r\n')
             .replace(/\[/g, '')

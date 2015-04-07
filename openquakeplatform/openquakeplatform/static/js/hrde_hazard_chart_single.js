@@ -148,7 +148,7 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
         .attr('dy', '.35em')
         .text('');
 
-    $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+    $('#chartDialog').append('<div id="downloadCurve"><p style="color: blue;">Download Curve</p></div>');
     $('#downloadCurve').on('hover', function(){
         $(this).css('cursor', 'pointer');
     });

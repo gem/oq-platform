@@ -102,7 +102,6 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
 
                 var circleY = d3.select(this.__data__[1]);
                 circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
 
                 textTop.text(curve_name+" point value (x/y): " + Math.pow(10, circleX) + ", " + circleY);
 
@@ -184,7 +183,7 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
             "skyblue"
         ];
 
-        var gray = "A0A0A0";
+        var gray = "#A0A0A0";
         $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
 
         var color = colors[k % colors.length];
@@ -252,7 +251,7 @@ function LossD3Chart(chartData, assetArray, lat, lon) {
         .attr("font-size","11px")
         .text('');
 
-    $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
+    $('#chartDialog').append('<div id="downloadCurve"><p style="color: blue;">Download Curve</p></div>');
 
     $('#downloadCurve').on("hover", function(){
         $(this).css("cursor", "pointer");
