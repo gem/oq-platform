@@ -166,7 +166,7 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
     $('#chartDialog').css({'height': h+'px'});
 
     // Prep data for download to CSV
-    $('#downloadCurve').click(function(event) {
+    $('#downloadCurve').click(function() {
         var csvData = [];
         csvData = csvData.concat('curveName');
         csvData = csvData.concat('vectorofPeriods');

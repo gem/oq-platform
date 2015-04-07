@@ -169,7 +169,7 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
     }
 
     // Prep data for download to CSV
-    $('#downloadCurve').click(function(event) {
+    $('#downloadCurve').click(function() {
         var csvData = [];
         csvData = csvData.concat('prob');
         csvData = csvData.concat('iml');
@@ -178,18 +178,8 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
         csvData = csvData.concat('lat');
         csvData = JSON.stringify(csvData);
         var lineBreak = 'lineBreak';
-        csvData = csvData.concat(lineBreak);
-        var quotationMark = '"';
-        csvData = csvData.concat('"');
-        csvData = csvData.concat(probArray);
-        csvData = csvData.concat('","');
-        csvData = csvData.concat(layerIml);
-        csvData = csvData.concat('",');
-        csvData = csvData.concat(AppVars.layerInvestigationTime);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lng);
-        csvData = csvData.concat(',');
-        csvData = csvData.concat(lat);
+        csvData += lineBreak;
+        csvData += '"' + probArray + '","' + layerIml + '",' + AppVars.layerInvestigationTime + ',' + lng + ',' + lat;
         csvData = csvData
             .replace(/lineBreak/, '\r\n')
             .replace(/\[/g, '')
