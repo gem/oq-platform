@@ -127,8 +127,10 @@
 
         // update the JSON with new weights
         function traverse(projectDef, tempNewWeight) {
+
             var projectDefUpdated = projectDef;
             var ct = 0;
+            // Check each level of the project definition and update the weight if a match is found
             if (projectDef.name == tempNewWeight[0]) {
                 projectDefUpdated.weight = tempNewWeight[1];
             } else {
@@ -139,6 +141,16 @@
                         for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
                             if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
                                 projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                            } else {
+                                try {
+                                    for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
+                                        if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
+                                            projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
+                                        }
+                                    }
+                                } catch (e) {
+                                    // continue
+                                }
                             }
                         }
                     }
