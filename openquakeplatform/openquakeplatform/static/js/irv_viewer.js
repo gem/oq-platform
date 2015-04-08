@@ -290,6 +290,7 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
+    Primary_PCP_Chart(projectDef);
     Theme_PCP_Chart(themeData);
 
     /////////////////////////
@@ -584,6 +585,7 @@ function thematicMap(layerAttributes) {
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
+    $('#primary-spinner').hide();
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -665,6 +667,7 @@ var startApp = function() {
     $('#svir-project-list').change(function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
+        $('#primary-spinner').show();
         $('#regionSelectionDialog').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
@@ -727,6 +730,8 @@ var startApp = function() {
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
+                console.log('layerMetadataURL:');
+                console.log(layerMetadataURL);
                 // ***** TEMP remove this ****
                 //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
@@ -760,6 +765,7 @@ var startApp = function() {
                     }
                     $('#projectDef-spinner').hide();
                     $('#iri-spinner').hide();
+                    $('#primary-spinner').hide();
                     $('#project-definition-svg').show();
                     $('#region-selection-list').show();
                     processIndicators(layerAttributes, sessionProjectDef);
