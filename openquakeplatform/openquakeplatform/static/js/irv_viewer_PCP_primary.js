@@ -20,245 +20,30 @@
 ////// Category Parallel Coordinates Chart //////
 /////////////////////////////////////////////////
 
-function Primary_PCP_Chart(primaryData, municipality, districName, outlierBreakPoint) {
-    var everyThing = [];
-    var outlierPath;
-    var allPaths = {};
-    var sum = {};
-    var sumMean = {};
-    var outlier = [];
-    var meanLine = [0,0];
-    var array = [];
-    var i,j,temparray;
-    var tmpArray = [];
-    for (var i = 0; i < primaryData.length; i++) {
-        for (var k in primaryData[i]){
-            array.push(primaryData[i][k]);
-        }
-    }
+function Primary_PCP_Chart(projectDef) {
+    // Find the theme data and create selection dropdown menu
+    console.log('projectDef:');
+    console.log(projectDef);
 
-    for (var i = 0; i < array.length; i++) {
-        if (!isNaN(parseFloat(array[i])) && isFinite(array[i])) {
-            tmpArray.push(array[i]);
-        }
-    }
-
-    var maxVal = Math.max.apply( Math, tmpArray );
-    var winH = ($(window).height() / 1.5);
-    var winW = $(window).width();
-    var margin = {top: 100, right: 100, bottom: 10, left: 50},
-        width = (winW - 100) - margin.left - margin.right,
-        height = winH - margin.top - margin.bottom;
-
-    var x = d3.scale.ordinal().rangePoints([0, width], 1),
-        y = {};
-
-    var line = d3.svg.line(),
-        axis = d3.svg.axis().orient("left"),
-        background,
-        meanPath,
-        outlierArray;
-
-    var x_scale = d3.scale.linear().domain([0, width]).range([0, width]);
-    var y_scale = d3.scale.linear().range([0, height]).domain([1, 0]);
-
-    function yAxis() {
-        return d3.svg.axis()
-            .scale(y_scale)
-            .orient("left")
-            .ticks(10);
-    }
-
-    var xAxis = d3.svg.axis()
-        .scale(x);
-
-    $("#primary-chart").empty();
-
-    var svg = d3.select("#primary-chart").append("svg")
-        .attr("viewBox", "-30 20 " +(winW -130)+" " +winH)
-        .attr("id", "PI-svg-element")
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // Extract the list of dimensions and create a scale for each.
-    x.domain(dimensions = d3.keys(primaryData[0]).filter(function(d) {
-        return d != "municipality" && d != "scalePIvalues" && d != "getPIvalues" && (y[d] = d3.scale.linear()
-            .domain([0, maxVal])
-            .range([height, 0]));
-    }));
-
-    var g = svg.selectAll(".dimension")
-        .data(dimensions)
-        .enter().append("g");
-        //.attr("class", "dimension")
-        //.attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-
-    svg.append("g")
-        .data(dimensions)
-        .enter().append("g")
-        .attr("class", "dimension")
-        .attr("x2", 600)
-        .attr("transform", function(d) { return "translate(" + x(d) + ")"; });
-
-    // Add a grid
-    svg.append("g")
-        .attr("class", "grid")
-        .call(yAxis()
-            .tickSize(-width, 0, 0)
-            .tickFormat("")
-        );
-
-    // Add an axis and title.
-    g.append("g")
-        .attr("class", "axis")
-        .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
-        //.append("text")
-        .style("text-anchor", "middle")
-        .style("opacity", 0.5)
-        .attr("y", -9);
-
-    svg.append("g")
-        .attr("class", "x-axis")
-        .call(xAxis)
-        .selectAll("text")
-        .style("text-anchor", "start")
-        .attr('y', -10)
-        .attr('x', 10)
-        .style('font-size','12px')
-        .attr("transform", function(d) {
-            return "rotate(-45)";
-                })
-        .append('text');
-
-    var textTopLabels = svg.append("text")
-        .attr("x", 70)
-        .attr("y", -35)
-        .attr("dy", ".35em")
-        .style("font-size","14px")
-        .style("font-style", "bold")
-        .text("");
-
-    var textTopDist = svg.append("text")
-        .attr("x", 70)
-        .attr("y", 40)
-        .attr("class", "textTop")
-        .attr("dy", ".35em")
-        .style("font-size","30px")
-        .style("font-style", "bold")
-        .text("");
-
-    var textTopMunc = svg.append("text")
-        .attr("x", 70)
-        .attr("y", 70)
-        .attr("class", "textTop")
-        .attr("dy", ".35em")
-        .style("font-size","30px")
-        .style("font-style", "bold")
-        .text("");
-
-    //build skeleton array
-    for (var t in primaryData[0]) {
-        sum[t] = 0;
-    }
-
-    // Returns the path for a given data point.
-    function path(d) {
-        return line(dimensions.map(function(p) {  everyThing.push([x(p), y[p](d[p])]); return [x(p), y[p](d[p])]; }));
-    }
-
-    //sum all the paths
-    for (var g = 0; g < primaryData.length; g++) {
-        for (var n in primaryData[g]) {
-            sum[n] += primaryData[g][n];
-        }
-    }
-
-    // get the mean
-    for (var f in sum) {
-        var thisSum = sum[f];
-        sumMean[f] = (thisSum / primaryData.length);
-    }
-
-    // find outlier
-    for (var s = 0; s < primaryData.length; s++) {
-        for (var r in primaryData[s]) {
-            var outlierLimit = sumMean[r] + outlierBreakPoint;
-            if (primaryData[s][r] > outlierLimit) {
-                outlier.push(primaryData[s]);
-            }
-        }
-
-        for (var r in primaryData[s]) {
-            var outlierLimit = sumMean[r] - outlierBreakPoint;
-            if (primaryData[s][r] < outlierLimit) {
-                outlier.push(primaryData[s]);
+    var themesWithChildren = [];
+    for (var i = 0; i < projectDef.children.length; i++) {
+        for (var j = 0; j < projectDef.children[i].children.length; j++) {
+            console.log('projectDef.children[i].children[j]:');
+            console.log(projectDef.children[i].children[j]);
+            if (projectDef.children[i].children[j].children) {
+                themesWithChildren.push(projectDef.children[i].children[j].name);
             }
         }
     }
-
-    var sumMeanArray = [];
-    sumMeanArray.push(sumMean);
-
-    // Add blue meanPath lines for focus
-    background = svg.append("g")
-        .attr("class", "PI-background")
-        .selectAll("path")
-        .data(primaryData)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("id", function(d) { return d.municipality; })
-        .on("mouseover", function() {
-            d3.select(this)
-                .style('stroke-width', 4)
-                .style("opacity", 1);
-                textTopDist.html("District: " + districName);
-                textTopMunc.html("Municipality: " + this.id);
-        }).on("mouseout", function() {
-            d3.select(this)
-                .style('stroke-width', 2)
-                .style("opacity", 0.3);
-                textTopDist.text("");
-                textTopMunc.text("");
-    });
-
-    meanPath = svg.append("g")
-        .attr("class", "PI-meanPath")
-        .selectAll("path")
-        .data(sumMeanArray)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("id", function(d) { return d.municipality; });
-
-    outlierPath = svg.append("g")
-        .attr("class", "PI-outlierPath")
-        .selectAll("path")
-        .data(outlier)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("id", function(d) { return d.municipality; })
-        .on("mouseover", function() {
-            d3.select(this)
-                .style('stroke-width', 4)
-                .style("opacity", 1);
-                textTopDist.html("District: " + districName);
-                textTopMunc.html("Municipality: " + this.id);
-        }).on("mouseout", function() {
-            d3.select(this)
-                .style('stroke-width', 3)
-                .style("opacity", 0.2);
-                textTopDist.text("");
-                textTopMunc.text("");
-    });
-
-    // Handles a brush event, toggling the display of meanPath lines.
-    function brush() {
-        var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
-            extents = actives.map(function(p) { return y[p].brush.extent(); });
-        meanPath.style("display", function(d) {
-            return actives.every(function(p, i) {
-                return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-            }) ? null : "none";
-        });
+    console.log('themesWithChildren:');
+    console.log(themesWithChildren);
+    for (var l = 0; l < themesWithChildren.length; l++) {
+        console.log('themesWithChildren[l]:');
+        console.log(themesWithChildren[l]);
+        var theme = themesWithChildren[l];
+        $('#primary_indicator').append('<option value="'+ theme +'">' + theme + '</option>');
     }
+
+
 }
 
