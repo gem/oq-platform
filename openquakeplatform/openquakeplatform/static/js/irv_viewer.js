@@ -290,7 +290,7 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
-    Primary_PCP_Chart(projectDef);
+    Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
 
     /////////////////////////
@@ -586,6 +586,7 @@ var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
     $('#primary-spinner').hide();
+    $('#primary_indicator').hide();
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,

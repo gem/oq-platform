@@ -20,6 +20,8 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
+    console.log('iriPcpData:');
+    console.log(iriPcpData);
     // TODO use the plotelements from the object instead of this array
     var plotElements = ["iri", "svi", "ri"];
     var keys = [];
@@ -215,6 +217,6 @@ function IRI_PCP_Chart(iriPcpData) {
     }
 
     // Scroll down as a new chart is created
-        $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
+    $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
 
 } // End PCP Chart

@@ -20,30 +20,68 @@
 ////// Category Parallel Coordinates Chart //////
 /////////////////////////////////////////////////
 
-function Primary_PCP_Chart(projectDef) {
+function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     // Find the theme data and create selection dropdown menu
     console.log('projectDef:');
     console.log(projectDef);
+    console.log('layerAttributes:');
+    console.log(layerAttributes);
 
     var themesWithChildren = [];
     for (var i = 0; i < projectDef.children.length; i++) {
         for (var j = 0; j < projectDef.children[i].children.length; j++) {
-            console.log('projectDef.children[i].children[j]:');
-            console.log(projectDef.children[i].children[j]);
             if (projectDef.children[i].children[j].children) {
                 themesWithChildren.push(projectDef.children[i].children[j].name);
             }
         }
     }
-    console.log('themesWithChildren:');
-    console.log(themesWithChildren);
+
     for (var l = 0; l < themesWithChildren.length; l++) {
-        console.log('themesWithChildren[l]:');
-        console.log(themesWithChildren[l]);
         var theme = themesWithChildren[l];
         $('#primary_indicator').append('<option value="'+ theme +'">' + theme + '</option>');
     }
+    $('#primary_indicator').show();
 
+    $('#primary_indicator').change(function() {
+        var selectedTheme = $('#primary_indicator').val();
+        // Find the children of selected theme
+        var selectedThemeChildren;
+        for (var i = 0; i < projectDef.children.length; i++) {
+            for (var j = 0; j < projectDef.children[i].children.length; j++) {
+                if (projectDef.children[i].children[j].name === selectedTheme) {
+                    selectedThemeChildren = projectDef.children[i].children[j].children;
+                }
+            }
+        }
+        console.log('selectedThemeChildren:');
+        console.log(selectedThemeChildren);
 
+        // Get the data for each selected theme child
+        var data = [];
+        // first setup an object with all regions and the plot element
+        var la = layerAttributes.features;
+        for (var ia = 0; ia < selectedThemeChildren.length; ia++) {
+            var temp = {};
+            temp.plotElement = selectedThemeChildren[ia].field;
+            for (var s = 0; s < la.length; s++) {
+                var bar = la[s].properties[selectedRegion];
+                temp[bar] = 0;
+            }
+            data.push(temp);
+        }
+
+        for (var n = 0; n < data.length; n++) {
+            for (var m = 0; m < layerAttributes.features.length; m++) {
+                var field = data[n].plotElement;
+                var value = layerAttributes.features[m].properties[field];
+                var region = layerAttributes.features[m].properties[selectedRegion];
+                data[n][region] = value;
+            }
+        }
+
+        console.log('data:');
+        console.log(data);
+
+    });
 }
 
