@@ -23,8 +23,6 @@
 //*******TODO refrech the data used in the chart when the Project Definition has been changed******
 
 function Theme_PCP_Chart(themeData) {
-
-    var data = themeData;
     var winH = ($(window).height() / 1.5);
     var winW = ($(window).width());
     var margin = {top: 100, right: 20, bottom: 10, left: 20},
@@ -32,15 +30,19 @@ function Theme_PCP_Chart(themeData) {
         height = winH - margin.top - margin.bottom;
     var eachValueInThemeData = [];
     var eachElementInThemeData = [];
+    var sum = {};
+    var sumMean = {};
+    var sumMeanArray = [];
+
     for (var i = 0; i < themeData.length; i++) {
         for (var k in themeData[i]){
             eachElementInThemeData.push(themeData[i][k]);
         }
     }
 
-    for (var i = 0; i < eachElementInThemeData.length; i++) {
-        if (!isNaN(parseFloat(eachElementInThemeData[i])) && isFinite(eachElementInThemeData[i])) {
-            eachValueInThemeData.push(eachElementInThemeData[i]);
+    for (var j = 0; j < eachElementInThemeData.length; j++) {
+        if (!isNaN(parseFloat(eachElementInThemeData[j])) && isFinite(eachElementInThemeData[j])) {
+            eachValueInThemeData.push(eachElementInThemeData[j]);
         }
     }
 
@@ -48,29 +50,12 @@ function Theme_PCP_Chart(themeData) {
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
-    var x2 = d3.scale.linear()
-        .range([0, width], 1);
-
     var y = d3.scale.linear()
         .range([height, 0]);
 
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
         foreground;
-
-    var stack = d3.layout.stack()
-        .offset("zero")
-        .values(function(d) { return d.values; })
-        .x(function(d) { return d.economy; })
-        .y(function(d) { return d.education; });
-
-    var nest = d3.nest()
-        .key(function(d) { return d.key; });
-
-    var area = d3.svg.area()
-        .x(function(d) {  return x2(d.economy); })
-        .y0(function(d) {  return y(d.y0); })
-        .y1(function(d) {  return y(d.y); });
 
     $('#cat-chart').empty();
 
@@ -86,7 +71,6 @@ function Theme_PCP_Chart(themeData) {
             .domain([0, maxVal])
             .range([height, 0]));
     }));
-    var z = d3.scale.category20c();
 
     // Add blue foreground lines for focus.
     foreground = svg.append('g')
@@ -107,7 +91,6 @@ function Theme_PCP_Chart(themeData) {
                 .style('stroke', 'steelblue');
                 textTop.text('');
             });
-    var layers = stack(nest.entries(data));
 
     // Add a group element for each dimension.
     var g = svg.selectAll('.dimension')
@@ -146,6 +129,44 @@ function Theme_PCP_Chart(themeData) {
     function path(d) {
         return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
+
+    //////////////////////
+    //// Meadian line ////
+    //////////////////////
+
+    // Build skeleton array
+    for (var t in themeData[0]) {
+        sum[t] = 0;
+    }
+
+    // Sum all the paths
+    for (var h = 0; h < themeData.length; h++) {
+        for (var n in themeData[h]) {
+            sum[n] += themeData[h][n];
+        }
+    }
+
+    // Get the mean
+    for (var f in sum) {
+        var thisSum = sum[f];
+        sumMean[f] = (thisSum / themeData.length);
+    }
+
+    sumMeanArray.push(sumMean);
+
+    // Plot the meadian line
+    meanPath = svg.append("g")
+        .attr("class", "PI-meanPath")
+        .selectAll("path")
+        .data(sumMeanArray)
+        .enter().append("path")
+        .attr("d", path)
+        .attr('id', function(d) { return d.region; })
+            .on('mouseover', function() {
+                textTop.text('Meadian');
+            }).on('mouseout', function() {
+                textTop.text('');
+            });
 
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
