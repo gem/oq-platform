@@ -108,7 +108,7 @@ def bootstrap(db_name=None, db_user=None,
     # TODO: Some apps require that oqplatform db user has SUPERUSER.
     # We need to deal with this in production. For a dev install,
     # leave the user with superuser privs.
-    #if user_created:
+    # if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
 
@@ -411,7 +411,7 @@ def _add_gemecdwebsite(db_name, db_user, db_pass):
 
 def _add_vulnerability(db_name, db_user, db_pass):
     local('python manage.py loaddata '
-          './openquakeplatform/vulnerability/post_fixtures/initial_data.json' )
+          './openquakeplatform/vulnerability/post_fixtures/initial_data.json')
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
@@ -419,16 +419,8 @@ def _add_vulnerability(db_name, db_user, db_pass):
 
 def _set_auth():
     local('python manage.py loaddata '
-          './openquakeplatform/common/fixtures/*.json' )
+          './openquakeplatform/common/fixtures/*.json')
 
 
 def _set_sites():
-    import os
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'openquakeplatform.settings'
-
-    from django.contrib.sites.models import Site
-    mysite = Site.objects.all()[0]
-    from openquakeplatform import settings
-    mysite.domain = 'oq-platform'
-    mysite.name = settings.SITENAME
-    mysite.save()
+    local('python manage.py fixsitename')
