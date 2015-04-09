@@ -20,8 +20,7 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
-    console.log('iriPcpData:');
-    console.log(iriPcpData);
+
     // TODO use the plotelements from the object instead of this array
     var plotElements = ["iri", "svi", "ri"];
     var keys = [];
@@ -44,7 +43,7 @@ function IRI_PCP_Chart(iriPcpData) {
         foreground;
 
     var x_scale = d3.scale.linear().domain([0, w]).range([0, w]);
-    var y_scale = d3.scale.linear().domain([h, 0]).range([0, h]);
+    var y_scale = d3.scale.linear().domain([1, 0]).range([0, h]);
 
     function yAxis() {
         return d3.svg.axis()
