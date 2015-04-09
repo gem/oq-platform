@@ -16,6 +16,7 @@
 */
 
     var CIRCLE_SCALE = 30;
+    var saveBtnCount = 0;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -74,10 +75,26 @@
             });
         }
 
+        function saveProjData() {
+            // Open a  dialog an ask the user for a PD name
+            // Does the PD need a license?
+            // Hit the API endpoint and grab the very very latest version of the PD object
+            // Add the current PD version as a new object, and pass it back to the API to be
+            // saved into the supplemental information
+        }
+
         var nodeEnter;
-        function updateButton(){
-            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value">Update</button>');
+        function updateButton() {
+            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
+                saveBtnCount += 1;
+                // Append save project definition button the first time weights are modified
+                if (saveBtnCount === 1) {
+                    $('#saveBtnPlaceHolder').append('<button id="saveBtn" class="btn btn-blue">Save Project Definition</button>');
+                    saveProjData();
+                }
+
+                //$('#project-def').append('<button id="saveBtn">save</button>');
                 pdTempWeights = [];
                 pdTempWeightsComputed = [];
 
@@ -174,8 +191,8 @@
         }
 
         // empty any previously drawen chart
-        $('#project-def').empty();
-        var svg = d3.select("#project-def").append("svg")
+        $('#projectDef-tree').empty();
+        var svg = d3.select("#projectDef-tree").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .attr("id", "project-definition-svg")
