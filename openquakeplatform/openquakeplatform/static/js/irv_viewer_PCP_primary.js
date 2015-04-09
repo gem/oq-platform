@@ -22,11 +22,6 @@
 
 function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     // Find the theme data and create selection dropdown menu
-    console.log('projectDef:');
-    console.log(projectDef);
-    console.log('layerAttributes:');
-    console.log(layerAttributes);
-
     var themesWithChildren = [];
     for (var i = 0; i < projectDef.children.length; i++) {
         for (var j = 0; j < projectDef.children[i].children.length; j++) {
@@ -53,8 +48,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
                 }
             }
         }
-        console.log('selectedThemeChildren:');
-        console.log(selectedThemeChildren);
 
         // Get the data for each selected theme child
         var data = [];
@@ -71,17 +64,191 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         }
 
         for (var n = 0; n < data.length; n++) {
-            for (var m = 0; m < layerAttributes.features.length; m++) {
+            for (var o = 0; o < layerAttributes.features.length; o++) {
                 var field = data[n].plotElement;
-                var value = layerAttributes.features[m].properties[field];
-                var region = layerAttributes.features[m].properties[selectedRegion];
+                var value = layerAttributes.features[o].properties[field];
+                var region = layerAttributes.features[o].properties[selectedRegion];
                 data[n][region] = value;
             }
         }
 
-        console.log('data:');
-        console.log(data);
+        $('#primary-tab').append('<div id="primary-chart"></div>');
 
+        ////////////////
+        /// d3 chert ///
+        ////////////////
+
+        // Create an array with each plot element name
+        var plotAttribute= [];
+        for (var ib = 0; ib < selectedThemeChildren.length; ib++) {
+            plotAttribute.push(selectedThemeChildren[ib].field);
+        }
+
+        var keys = [];
+
+        for (var k in data) {
+            keys.push(k);
+        }
+
+        var winH = ($(window).height() / 1.7);
+        var winW = ($(window).width());
+        var m = [10, 10, 10, 120],
+            w = (winW - 100) - m[1] - m[3],
+            h = winH - m[0] - m[2];
+
+        var x = d3.scale.ordinal().domain(regions).rangePoints([0, w]),
+            y = {};
+
+        var line = d3.svg.line(),
+            axis = d3.svg.axis().orient("left"),
+            foreground;
+
+        var y_scale = d3.scale.linear().domain([1, 0]).range([0, h]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x);
+
+        $("#primary-chart").empty();
+
+        var svg = d3.select("#primary-chart").append("svg")
+            .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
+            .attr("id", "IRI-svg-element")
+            .append("svg:g")
+            .attr("transform", "translate(" + m[3] + ",5)");
+
+        // Create a scale and brush for each trait.
+        regions.forEach(function(d) {
+            // Coerce values to numbers.
+            data.forEach(function(p) { p[d] = +p[d]; });
+            y[d] = d3.scale.linear()
+                .domain([0,1])
+                .range([h, 0]);
+
+            y[d].brush = d3.svg.brush()
+                .y(y[d])
+                .on("brush", brush);
+        });
+
+        // grid line functions
+        function x_grid() {
+            return d3.svg.axis()
+                .scale(x)
+                .orient('bottom');
+        }
+
+        function y_grid() {
+            return d3.svg.axis()
+                .scale(y_scale)
+                .orient('left');
+        }
+
+        // Add a grid
+        svg.append("g")
+            .attr("class", "grid")
+            .call(x_grid()
+                .tickSize(h, 0, 0)
+                .tickFormat("")
+            );
+
+        svg.append("g")
+            .attr("class", "grid")
+            .call(y_grid()
+                .tickSize(-w, 0, 0)
+                .tickFormat("")
+            );
+
+        // Add a legend.
+        var legend = svg.selectAll("g.legend")
+            .data(plotAttribute)
+            .enter().append("svg:g")
+            .style("font-size","14px")
+            .style("font-style", "bold")
+            .attr("class", "legend");
+
+        legend.append("svg:line")
+            .attr("class", String)
+            .attr("x2", -18)
+            .attr("y2", 0)
+            .attr("transform", function(d, i) { return "translate(-140," + (i * 20 + 75) + ")"; });
+
+        legend.append("svg:text")
+            .attr("x", -125)
+            .attr("y", -510)
+            .attr("dy", ".31em")
+            .text(function(d) { return d; })
+            .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
+
+        // Add foreground lines.
+        foreground = svg.append("svg:g")
+            .attr("class", "foreground")
+            .selectAll("path")
+            .data(data)
+            .enter().append("svg:path")
+            .attr("d", path)
+            .attr("class", function(d) { return d.plotElement; });
+
+        var g = svg.selectAll(".dimension")
+            .data(dimensions)
+            .enter().append("g");
+
+        // Add an axis and title.
+        g.append("svg:g")
+            .attr("class", "axis")
+            .each(function(d) { d3.select(this).call(axis.scale(y_scale)); })
+            .append("svg:text")
+            .style("text-anchor", "middle")
+            .style("opacity", 0.5)
+            .attr("y", -9);
+
+        svg.append("g")
+            .attr("class", "x-axis")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "start")
+            .attr('y', -15)
+            .attr('x', 10)
+            .style('font-size','16px')
+            .attr("class", "text90")
+            .attr("transform", function(d) {
+                return "rotate(90)";
+                    })
+            .append('text');
+
+        // Update the css for each plotAttribute
+        $("."+plotAttribute[0]).css('stroke', 'red');
+        $("."+plotAttribute[1]).css('stroke', 'blue');
+        $("."+plotAttribute[2]).css('stroke', 'green');
+        $("."+plotAttribute[3]).css('stroke', 'orange');
+        $("."+plotAttribute[4]).css('stroke', 'purple');
+        $("."+plotAttribute[5]).css('stroke', 'black');
+        $("."+plotAttribute[6]).css('stroke', 'gray');
+        $("."+plotAttribute[7]).css('stroke', 'pink');
+        $("."+plotAttribute[8]).css('stroke', 'teal');
+        $("."+plotAttribute[9]).css('stroke', 'DarkBlue');
+        $("."+plotAttribute[10]).css('stroke', 'DarkCyan');
+        $("."+plotAttribute[11]).css('stroke', 'Crimson');
+        $("."+plotAttribute[12]).css('stroke', 'Coral');
+        $("."+plotAttribute[13]).css('stroke', 'DarkGoldenRod');
+        $("."+plotAttribute[14]).css('stroke', 'MediumPurple');
+        $("."+plotAttribute[15]).css('stroke', 'MediumSlateBlue');
+        $("."+plotAttribute[16]).css('stroke', 'MediumSeaGreen');
+        $("."+plotAttribute[17]).css('stroke', 'MidnightBlue');
+        $("."+plotAttribute[18]).css('stroke', 'Maroon');
+
+        // Returns the path for a given data point.
+        function path(d) {
+            return line(regions.map(function(p) { return [x(p), y[p](d[p])]; }));
+        }
+        // Handles a brush event, toggling the display of foreground lines.
+        function brush() {
+            var actives = regions.filter(function(p) { return !y[p].brush.empty(); }),
+                extents = actives.map(function(p) { return y[p].brush.extent(); });
+            foreground.classed("fade", function(d) {
+                return !actives.every(function(p, i) {
+                    return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+                });
+            });
+        }
     });
 }
 
