@@ -42,6 +42,12 @@ function UhsDropdown($scope) {
     ];
 }
 
+function SpectrumDropdown($scope) {
+    $scope.spectrums=[
+        {}
+    ];
+}
+
 function RiskLossCurvesDropdown($scope) {
     $scope.losses=[
         {}
