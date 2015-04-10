@@ -15,7 +15,7 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
     width = 580 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
-    if (curveType == 'uhs' || curveType == 'spectrum') {
+    if (curveType === 'uhs' || curveType === 'spectrum') {
         var x = d3.scale.linear().range([0, width]);
         var y = d3.scale.linear().range([height, 0]);
     } else {
@@ -51,7 +51,7 @@ function drawSingleChart(data, probArray, layerIml, curveType, yAxisLable, lat, 
     data.forEach(dataCallback);
     x.domain(d3.extent(data, function(d) { return d.x; }));
 
-    if (curveType == 'uhs' || curveType == 'spectrum') {
+    if (curveType === 'uhs' || curveType === 'spectrum') {
         y.domain([minYAxis, maxYAxis]);
     } else {
         y.domain([d3.extent(data, function(d) { return d.y; })[0], 3]);
