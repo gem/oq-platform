@@ -51,7 +51,7 @@
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        function createSpinner(id, weight, name, operator) {
+        function createSpinner(id, weight, name, operator, isInverted) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
             var content = '<p><label for="spinner'+id+'">'+name+':';
@@ -61,9 +61,9 @@
             }
 
             content += '</label>'+
-                '<input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'">'+
-                '<input type="checkbox" id="inverter-spinner-'+id+'">'+
-                '<label style="font-size: 0.8em; "for="inverter-spinner-'+id+'"'+
+                '<input id="spinner-' + id + '" element="' + name + '" name="spinner" value="' + weight + '">'+
+                '<input type="checkbox" id="inverter-spinner-' + id + '">'+
+                '<label style="font-size: 0.8em; "for="inverter-spinner-' + id + '"'+
                 'title="Select to invert the contribution of the variable to the calculation">Invert</label></p>';
 
             $('#projectDefWeightDialog').append(content);
@@ -71,7 +71,7 @@
             $(function() {
                 var inverter = $("#inverter-spinner-" + id);
                 inverter.button();
-                inverter.prop("checked", (weight < 0));
+                inverter.prop("checked", isInverted);
                 inverter.button("refresh");
             });
 
@@ -92,8 +92,9 @@
             $('#update-spinner-value').click(function() {
                 pdTempWeights = [];
                 pdTempWeightsComputed = [];
+                pdTempInverters = [];
 
-                // Get the values of the spinners
+                // Get the values of the spinners and inverters
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
                     var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
                     var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
@@ -115,14 +116,14 @@
                     pdTempWeightsComputed.push(tempMath / 100);
                 }
 
-                // Uopdate the results back into the spinners and to the d3.js chart
+                // Update the results back into the spinners and to the d3.js chart
                 for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
                     $('#'+pdTempSpinnerIds[ib]).spinner("value", Math.abs(pdTempWeightsComputed[ib]));
                 }
 
                 // Upadte the json with new values
                 for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
-                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic]);
+                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
                 }
 
                 for (var id = 0; id < pdTempSpinnerIds.length; id++) {
