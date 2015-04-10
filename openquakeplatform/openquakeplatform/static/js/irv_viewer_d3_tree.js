@@ -52,26 +52,36 @@
             .projection(function(d) { return [d.y, d.x]; });
 
         function createSpinner(id, weight, name, operator) {
-
-            if (operator === undefined) {
-                operator = 'n/a';
-            }
-
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append(
-                '<p>'+
-                    '<label for="spinner'+id+'">'+name+': </label>'+
-                    '<input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'">'+
-                '</p>'
-            );
+            var content = '<p><label for="spinner'+id+'">'+name+':';
+
+            if (typeof operator !== 'undefined') {
+                content += ' ('+ operator +') ';
+            }
+
+            content += '</label>'+
+                '<input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'">'+
+                '<input type="checkbox" id="inverter-spinner-'+id+'">'+
+                '<label style="font-size: 0.8em; "for="inverter-spinner-'+id+'"'+
+                'title="Select to invert the contribution of the variable to the calculation">Invert</label></p>';
+
+            $('#projectDefWeightDialog').append(content);
+
+            $(function() {
+                var inverter = $("#inverter-spinner-" + id);
+                inverter.button();
+                inverter.prop("checked", (weight < 0));
+                inverter.button("refresh");
+            });
 
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
-                    min: -100,
+                    min: 0,
                     max: 100,
-                    step: 0.000001,
+                    step: 0.001,
                     numberFormat: "n",
+                    incremental: true
                 });
             });
         }
@@ -85,7 +95,12 @@
 
                 // Get the values of the spinners
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).val());
+                    var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
+                    var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
+                    if (isInverted) {
+                        spinnerValue = -spinnerValue;
+                    }
+                    pdTempWeights.push(spinnerValue);
                 }
 
                 // Adjust the values into percentages
@@ -95,26 +110,26 @@
                     totalWeights += Math.abs(this);
                 });
 
-                for (var i = 0; i < pdTempWeights.length; i++) {
-                    var tempMath = (pdTempWeights[i] * 100) / totalWeights;
+                for (var ia = 0; ia < pdTempWeights.length; ia++) {
+                    var tempMath = (pdTempWeights[ia] * 100) / totalWeights;
                     pdTempWeightsComputed.push(tempMath / 100);
                 }
 
                 // Uopdate the results back into the spinners and to the d3.js chart
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    $('#'+pdTempSpinnerIds[i]).spinner("value", pdTempWeightsComputed[i]);
+                for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
+                    $('#'+pdTempSpinnerIds[ib]).spinner("value", Math.abs(pdTempWeightsComputed[ib]));
                 }
 
                 // Upadte the json with new values
-                for (var i = 0; i < pdTempWeightsComputed.length; i++) {
-                    updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
+                for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
+                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic]);
                 }
 
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                for (var id = 0; id < pdTempSpinnerIds.length; id++) {
                     // get the elements that have been modified
                     var tempNewWeight = [];
-                    var value = $('#'+pdTempSpinnerIds[i]).val();
-                    var element = $('#'+pdTempSpinnerIds[i]).attr('element');
+                    var value = $('#'+pdTempSpinnerIds[id]).val();
+                    var element = $('#'+pdTempSpinnerIds[id]).attr('element');
                     tempNewWeight.push(element);
                     tempNewWeight.push(parseFloat(value));
                     traverse(sessionProjectDef, tempNewWeight);
@@ -157,6 +172,18 @@
                 }
             }
             processIndicators(projectLayerAttributes, projectDefUpdated);
+        }
+
+        function getRadius(d) {
+            if (typeof d.parent != 'undefined') {
+                if (typeof d.parent.operator != 'undefined') {
+                    if (d.parent.operator.indexOf('ignore weights') != -1) {
+                        radius = Math.max(1 / d.parent.children.length * CIRCLE_SCALE, MIN_CIRCLE_SIZE);
+                        return radius;
+                    }
+                }
+            }
+            return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -247,12 +274,12 @@
                 .attr("class", (function(d) { return "level-" + d.level; }))
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
-                .attr("x", function(d) { return -(Math.abs(d.weight) * CIRCLE_SCALE + 5); })
+                .attr("x", function(d) { return -(getRadius(d) + 5); })
                 .attr("dy", function(d) {
                     // NOTE are x and y swapped?
                     // set te text above or below the node depending on the
                     // parent position
-                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                    if (typeof d.parent != 'undefined' && d.x > d.parent.x){
                         return "2em";
                     }
                     return "-1em";
