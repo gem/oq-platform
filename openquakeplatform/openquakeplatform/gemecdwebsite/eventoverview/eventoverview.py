@@ -337,7 +337,7 @@ class EventOverview (Pagebase):
 
                 # we have a geobase, so
                 # Prepare GeoServer request for polygon-based locations
-                # to investigate reasons of: http://localhost:8080/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json&viewparams=parenttype:study;parentid:4;jointable:None;joincolumn:None;boundarygeom:None;override:0;
+                # to investigate reasons of: http://localhost:<geoserver-port>/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json&viewparams=parenttype:study;parentid:4;jointable:None;joincolumn:None;boundarygeom:None;override:0;
                 urlStrPolygons = geoserver_url + 'oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:gemecdlocationquerygeobase&maxFeatures=5000&outputFormat=json'
                 urlStrPolygons += '&viewparams=parenttype:study;parentid:' + unicode(study.id) + ';jointable:' + geobase.tablename + ';joincolumn:' + geobase.idcolumnname + ';boundarygeom:' + geobase.geomcolumnname + ';override:0;'
                 urlStrPolygonsList.append(urlStrPolygons)

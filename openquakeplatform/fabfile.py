@@ -37,12 +37,20 @@ DB_PASSWORD = 'openquake'
 
 PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
 
+#: External parametric values
+GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')
+GEM_GEOSERVER_PORT = os.getenv('GEM_GEOSERVER_PORT', '8080')
+GEM_DB_NAME = os.getenv('GEM_DB_NAME', 'oqplatform')
+GEM_DB_USER = os.getenv('GEM_DB_USER', 'oqplatform')
+
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
-def bootstrap(db_name='oqplatform', db_user='oqplatform',
+def bootstrap(db_name=None, db_user=None,
               db_pass=DB_PASSWORD, host='oq-platform',
+              geonode_port=None,
+              geoserver_port=None,
               hazard_calc_addr='http://oq-platform:8800',
               risk_calc_addr='http://oq-platform:8800',
               oq_engserv_key='oq-platform',
@@ -53,6 +61,26 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     :param str db_pass:
         Should match the one in settings.py.
     """
+
+    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT, GEM_DB_NAME, GEM_DB_USER
+
+    if not geonode_port:
+        geonode_port = GEM_GEONODE_PORT
+    if not geoserver_port:
+        geoserver_port = GEM_GEOSERVER_PORT
+    if not db_name:
+        db_name = GEM_DB_NAME
+    if not db_user:
+        db_user = GEM_DB_USER
+    os.environ['GEM_GEONODE_PORT'] = geonode_port
+    os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
+    os.environ['GEM_DB_NAME'] = db_name
+    os.environ['GEM_DB_USER'] = db_user
+    GEM_GEONODE_PORT = geonode_port
+    GEM_GEOSERVER_PORT = geoserver_port
+    GEM_DB_NAME = db_name
+    GEM_DB_USER = db_user
+
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
 
@@ -62,14 +90,15 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     oq_secret_key = ''.join(random.choice(string.ascii_letters + string.digits
                     + '%$&()=+-|#@?') for _ in range(50))
 
-    baseenv(db_name=db_name, db_user=db_user, db_pass=db_pass,
-            host=host, hazard_calc_addr=hazard_calc_addr,
+    baseenv(host, db_name=db_name, db_user=db_user, db_pass=db_pass,
+            geonode_port=geonode_port, geoserver_port=geoserver_port,
+            hazard_calc_addr=hazard_calc_addr,
             risk_calc_addr=risk_calc_addr, oq_engserv_key=oq_engserv_key,
-            oq_secret_key=oq_secret_key, mediaroot=mediaroot,
-            staticroot=staticroot)
+            oq_secret_key=oq_secret_key, oq_bing_key=oq_bing_key,
+            mediaroot=mediaroot, staticroot=staticroot)
 
     # fix it in a proper way
-    apps(db_name, db_user, db_pass, mediaroot)
+    apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot)
 
     # Install the libs needs to `test` and `test_with_xunit`:
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
@@ -79,18 +108,28 @@ def bootstrap(db_name='oqplatform', db_user='oqplatform',
     # TODO: Some apps require that oqplatform db user has SUPERUSER.
     # We need to deal with this in production. For a dev install,
     # leave the user with superuser privs.
-    #if user_created:
+    # if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
 
 
-def baseenv(host, hazard_calc_addr, risk_calc_addr, oq_engserv_key,
-            oq_secret_key, oq_bing_key='', db_name='oqplatform',
-            db_user='oqplatform', db_pass=DB_PASSWORD,
+def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
+            geonode_port=None, geoserver_port=None,
+            hazard_calc_addr='http://oq-platform:8800',
+            risk_calc_addr='http://oq-platform:8800',
+            oq_engserv_key='oq-platform',
+            oq_secret_key=None, oq_bing_key='',
             mediaroot=None, staticroot='/home'):
+
+    if not geonode_port:
+        geonode_port = GEM_GEONODE_PORT
+    if not geoserver_port:
+        geoserver_port = GEM_GEOSERVER_PORT
+    os.environ['GEM_GEONODE_PORT'] = geonode_port
+    os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
     if mediaroot is None:
         mediaroot = os.path.join(os.getcwd(), "uploaded")
 
-    _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
+    _write_local_settings(host, db_name, db_user, db_pass, geonode_port, geoserver_port, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot)
     # Create the user if it doesn't already exist
     # User will have superuser privileges for running
     # syncdb (part of `paver setup` below), etc.
@@ -113,7 +152,7 @@ APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
              'icebox']
 
 
-def apps(db_name, db_user, db_pass, mediaroot):
+def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     globs = globals()
     apps_list = ""
     # Add the apps
@@ -126,6 +165,8 @@ def apps(db_name, db_user, db_pass, mediaroot):
         else:
             add_fn(db_name, db_user, db_pass)
 
+    # reset .json files to original version
+    local("for i in $(find -name '*.json.orig'); do mv \"$i\" \"$(echo $i | sed 's/\.orig//g')\" ; done")
     local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
@@ -136,7 +177,18 @@ def apps(db_name, db_user, db_pass, mediaroot):
     local('cp openquakeplatform/common/thumbs/*.png ' + mediaroot + '/thumbs/')
 
 
-def clean(db_name='oqplatform', db_user='oqplatform'):
+def clean(db_name=None, db_user=None):
+    global GEM_DB_NAME, GEM_DB_USER
+
+    if not db_name:
+        db_name = GEM_DB_NAME
+    if not db_user:
+        db_user = GEM_DB_USER
+    os.environ['GEM_DB_NAME'] = db_name
+    os.environ['GEM_DB_USER'] = db_user
+    GEM_DB_NAME = db_name
+    GEM_DB_USER = db_user
+
     with settings(warn_only=True):
         _pgsudo('dropdb %s' % db_name)
         _pgsudo('dropuser %s' % db_user)
@@ -149,11 +201,22 @@ def setup():
 
 
 def init_start():
-    local('paver init_start -b 0.0.0.0:8000')
+    local('paver init_start -b 0.0.0.0:' + GEM_GEONODE_PORT)
 
 
-def start():
-    local('paver start -b 0.0.0.0:8000')
+def start(geonode_port=None, geoserver_port=None):
+    global GEM_GEONODE_PORT, GEM_GEOSERVER_PORT
+
+    if not geonode_port:
+        geonode_port = GEM_GEONODE_PORT
+    if not geoserver_port:
+        geoserver_port = GEM_GEOSERVER_PORT
+    os.environ['GEM_GEONODE_PORT'] = geonode_port
+    os.environ['GEM_GEOSERVER_PORT'] = geoserver_port
+    GEM_GEONODE_PORT = geonode_port
+    GEM_GEOSERVER_PORT = geoserver_port
+
+    local('paver start -b 0.0.0.0:' + GEM_GEONODE_PORT)
 
 
 def stop():
@@ -174,14 +237,20 @@ def test_with_xunit():
           '--xunit-file=../nosetests.xml')
 
 
-def _write_local_settings(db_name, db_user, db_pass, host, hazard_calc_addr, risk_calc_addr, oq_engserv_key, oq_secret_key, oq_bing_key, mediaroot, staticroot):
+def _write_local_settings(host, db_name, db_user, db_pass,
+                          geonode_port, geoserver_port,
+                          hazard_calc_addr, risk_calc_addr,
+                          oq_engserv_key, oq_secret_key,
+                          oq_bing_key, mediaroot, staticroot):
     local_settings = open(GEM_LOCAL_SETTINGS_TMPL, 'r').read()
     with open('openquakeplatform/local_settings.py', 'w') as fh:
-        fh.write(local_settings % dict(db_name=db_name,
+        fh.write(local_settings % dict(host=host,
+                                       db_name=db_name,
                                        db_user=db_user,
                                        db_pass=db_pass,
-                                       host=host,
-                                       siteurl="%s:8000" % host,
+                                       geonode_port=geonode_port,
+                                       geoserver_port=geoserver_port,
+                                       siteurl="%s:%s" % (host, geonode_port),
                                        hazard_calc_addr=hazard_calc_addr,
                                        risk_calc_addr=risk_calc_addr,
                                        oq_engserv_key=oq_engserv_key,
@@ -342,7 +411,7 @@ def _add_gemecdwebsite(db_name, db_user, db_pass):
 
 def _add_vulnerability(db_name, db_user, db_pass):
     local('python manage.py loaddata '
-          './openquakeplatform/vulnerability/post_fixtures/initial_data.json' )
+          './openquakeplatform/vulnerability/post_fixtures/initial_data.json')
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
@@ -350,16 +419,8 @@ def _add_vulnerability(db_name, db_user, db_pass):
 
 def _set_auth():
     local('python manage.py loaddata '
-          './openquakeplatform/common/fixtures/*.json' )
+          './openquakeplatform/common/fixtures/*.json')
 
 
 def _set_sites():
-    import os
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'openquakeplatform.settings'
-
-    from django.contrib.sites.models import Site
-    mysite = Site.objects.all()[0]
-    from openquakeplatform import settings
-    mysite.domain = 'oq-platform'
-    mysite.name = settings.SITENAME
-    mysite.save()
+    local('python manage.py fixsitename')
