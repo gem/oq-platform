@@ -20,7 +20,13 @@
 
 {% block body_outer %}
   <div class="span5">
-    <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
+    <h2 class="page-title">
+      {% if layer.owner.username == 'GEM' %}
+        {{ layer.title|default:layer.typename }}
+      {% else %}
+        {{ layer.title|default:layer.typename }} (User Contributed) ({{layer.owner.username}})
+      {% endif %}
+    </h2>
   </div>
   <div class="span7 action-group">
     <div class="btn-group pull-right">
@@ -142,16 +148,16 @@
         {% overall_rating layer "layer" as layer_rating %}
         {% num_ratings layer as num_votes %}
         <div class="overall_rating" style="float:left" data-rating="{{ layer_rating }}"></div> ({{num_votes}})
-        
+
         <!-- TODO: Add display of who gave what rating based -->
       </article>
     </div>
   </div>
   <aside class="span4">
-    
+
 <div class="well">
 	<!-- Need to make this based on a listener -->
-	
+
 	<h2>{%trans "Legend" %}</h2>
 	<p>{{ style.sld_title }}</p>
 	<p><img src="{{ GEOSERVER_BASE_URL }}/wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=
@@ -163,7 +169,7 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="unstyled space">
-          {% for maplayer in layer.maps %} 
+          {% for maplayer in layer.maps %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
@@ -175,7 +181,7 @@
         <h2>{% trans "Documents related to this layer" %}</h2>
         <p>{% trans "List of documents related to this layer:" %}</p>
         <ul class="unstyled space">
-          {% for document in documents %} 
+          {% for document in documents %}
             <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
           {% endfor %}
         </ul>
@@ -233,7 +239,7 @@
       {% endwith %}
     </div>
   </aside>
-  {% if GEONODE_SECURITY_ENABLED %}   
+  {% if GEONODE_SECURITY_ENABLED %}
   {% include "_permissions_form.html" %}
   {% endif %}
 {% endblock %}
@@ -283,12 +289,12 @@
               data: $("#form_post_comment").serialize(),
               success: function() {
                 $('#form_post_comment_div').modal('hide');
-                $('#comments_section').load(window.location.pathname + ' #comments_section', 
+                $('#comments_section').load(window.location.pathname + ' #comments_section',
                 		function(){$(this).children().unwrap()})
               }
             });
             return false;
-          });        
+          });
     </script>
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
