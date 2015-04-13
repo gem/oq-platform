@@ -99,7 +99,7 @@
                 $('#saveStateDialog').dialog('open');
                 $('#licenseName').empty();
                 $('#licenseURL').empty();
-                $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license. </p>');
+                $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
                 $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
 
                 $('#checkboxPD').change(function() {
