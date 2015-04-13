@@ -18,7 +18,13 @@
 {% block body_outer %}
   {% overall_rating map "map" as map_rating %}
   <div class="span6">
-    <h2 class="page-title">{{ map.title }} - test</h2>
+    <h2 class="page-title">
+      {% if map.owner.username == 'GEM' %}
+        {{ map.title }}
+      {% else %}
+        {{ map.title }} (User Contributed)
+      {% endif %}
+    </h2>
   </div>
   <div class="span6 action-group pull-right">
     <div class="btn-group pull-right">

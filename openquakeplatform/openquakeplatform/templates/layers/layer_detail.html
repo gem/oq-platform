@@ -24,7 +24,7 @@
       {% if layer.owner.username == 'GEM' %}
         {{ layer.title|default:layer.typename }}
       {% else %}
-        {{ layer.title|default:layer.typename }} (User Contributed) ({{layer.owner.username}})
+        {{ layer.title|default:layer.typename }} (User Contributed)
       {% endif %}
     </h2>
   </div>
