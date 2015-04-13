@@ -87,25 +87,20 @@
             });
         }
 
+        $('#submitPD').attr('disabled',true);
+
         function saveProjData() {
             $('#saveBtn').click(function() {
                 var pdLicense = sessionProjectDef.license;
-                console.log('pdLicense:');
-                console.log(pdLicense);
                 var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
-                console.log('pdLicenseName:');
-                console.log(pdLicenseName);
-
                 var pdLicenseURL = sessionProjectDef.license.split('(')[1];
                 pdLicenseURL = pdLicenseURL.replace(')', '');
-                console.log('pdLicenseURL:');
-                console.log(pdLicenseURL);
 
                 $('#saveStateDialog').dialog('open');
                 $('#licenseName').empty();
+                $('#licenseURL').empty();
                 $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license. </p>');
                 $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
-                $('#submitPD').attr('disabled','true');
 
                 $('#checkboxPD').change(function() {
                     var inputVal = $('#giveNamePD').val();
@@ -116,9 +111,9 @@
                     }
                 });
 
+                console.log('projectDef:');
+                console.log(projectDef);
 
-                // Open a  dialog an ask the user for a PD name
-                // Does the PD need a license?
                 // Hit the API endpoint and grab the very very latest version of the PD object
                 // Add the current PD version as a new object, and pass it back to the API to be
                 // saved into the supplemental information
