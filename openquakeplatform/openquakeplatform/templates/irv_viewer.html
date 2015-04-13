@@ -38,6 +38,15 @@ IRV - {{block.super}}
 {{block.super}}
 <div id="regionSelectionDialog" title="Required" style="overflow: hidden;"></div>
 <div id="ajaxErrorDialog" title="Error" style="overflow: hidden;"></div>
+<div id="saveStateDialog" title="Save Project Definition" style="overflow: hidden;">
+  <p>Please provide a name for the project definition:</p></br>
+  <p><input id="giveNamePD" type="text" name="pd-name"></p><br><br>
+  <div id="licenseName"></div>
+  <div id="licenseURL"></div>
+  <br><br>
+  <input id="checkboxPD" type="checkbox" name="license">I confirm that I have read and agree to the license conditions<br><br>
+  <button id="submitPD" type="button" class="btn btn-primary">Save</button>
+</div>
 
 <!-- Theme tags-->
 <div id="themeTabs">

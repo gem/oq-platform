@@ -28,6 +28,15 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
+$(function() {
+    $('#saveStateDialog').dialog({
+        autoOpen: false,
+        height: 520,
+        width: 620,
+        closeOnEscape: true,
+        position: {at: 'right bottom'}
+    });
+});
 
 function createIndex(la, index) {
     var indicator = [];
@@ -743,6 +752,7 @@ var startApp = function() {
                     sessionProjectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
                     loadPD(sessionProjectDefStr);
                     sessionProjectDef = jQuery.parseJSON(sessionProjectDefStr);
+
                     // get b-box
                     var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
                     if (boundingBox != undefined) {
