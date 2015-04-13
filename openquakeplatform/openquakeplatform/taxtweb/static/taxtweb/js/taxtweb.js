@@ -156,10 +156,24 @@ function populate_form()
 
 function select_populate(name, items)
 {
+    var disabled, dis_str;
+
+    if (arguments.length > 2) {
+        disabled = arguments[2];
+    }
+    else {
+        disabled = [];
+    }
+
     for (var i = 0 ; i < items.length ; i++) {
         item = items[i];
-
-        $('#' + name).append('<option value="' + i + '">' + item + '</option>');
+        if (disabled.indexOf(item) > -1) {
+            dis_str = " disabled";
+        }
+        else {
+            dis_str = "";
+        }
+        $('#' + name).append('<option value="' + i + '"' + dis_str + '>' + item + '</option>');
     }
 }
 
@@ -793,6 +807,9 @@ function taxt_ValidateRegularity()
     $('#RegularityCB4').empty();
     $('#RegularityCB5').empty();
 
+    var disabled_cb2 = [], default_cb2 = 0;
+    var disabled_cb3 = [], default_cb3 = 0;
+
     if ($('#RegularityCB1').val() == 0 ||
         $('#RegularityCB1').val() == 1) {
         $('#RegularityCB2').prop("disabled", true);
@@ -801,14 +818,10 @@ function taxt_ValidateRegularity()
         $('#RegularityCB5').prop("disabled", true);
     }
     else if ($('#RegularityCB1').val() == 2) {
-        var RegularityCB2 = [];
-        /* IRPP:IRN */ RegularityCB2.push('No irregularity');
-        /* IRPP:TOR */ RegularityCB2.push('Torsion eccentricity');
-        /* IRPP:REC */ RegularityCB2.push('Re-entrant corner');
-        /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
-        $('#RegularityCB2').prop("disabled", false);
-        select_populate('RegularityCB2', RegularityCB2);
-
+        if ($('#RegularityCB2').val() == 0) {
+            disabled_cb3.push('No irregularity');
+            default_cb3 = 1;
+        }
         var RegularityCB3 = [];
         /* IRVP:IRN  */ RegularityCB3.push('No irregularity');
         /* IRVP:SOS  */ RegularityCB3.push('Soft storey');
@@ -819,13 +832,45 @@ function taxt_ValidateRegularity()
         /* IRVP:CHV  */ RegularityCB3.push('Change in vertical structure');
         /* IRVP:IRVO */ RegularityCB3.push('Other vertical irregularity');
         $('#RegularityCB3').prop("disabled", false);
-        select_populate('RegularityCB3', RegularityCB3);
+        select_populate('RegularityCB3', RegularityCB3, disabled_cb3);
+
+        if ($('#RegularityCB3').val() == 0) {
+            disabled_cb2.push('No irregularity');
+            default_cb2 = 1;
+        }
+        var RegularityCB2 = [];
+        /* IRPP:IRN */ RegularityCB2.push('No irregularity');
+        /* IRPP:TOR */ RegularityCB2.push('Torsion eccentricity');
+        /* IRPP:REC */ RegularityCB2.push('Re-entrant corner');
+        /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
+        $('#RegularityCB2').prop("disabled", false);
+        select_populate('RegularityCB2', RegularityCB2, disabled_cb2);
     }
 
-    $('#RegularityCB2').val(0);
-    $('#RegularityCB3').val(0);
+    $('#RegularityCB2').val(default_cb2);
+    $('#RegularityCB3').val(default_cb3);
     $('#RegularityCB4').val(0);
     $('#RegularityCB5').val(0);
+}
+
+function taxt_ValidateRegularityCross23(who)
+{
+    if (who == "2") {
+        if ($('#RegularityCB2').val() != 0) {
+            $('#RegularityCB3 option:eq(0)').prop("disabled", false);
+        }
+        else {
+            $('#RegularityCB3 option:eq(0)').prop("disabled", true);
+        }
+    }
+    if (who == "3") {
+        if ($('#RegularityCB3').val() != 0) {
+            $('#RegularityCB2 option:eq(0)').prop("disabled", false);
+        }
+        else {
+            $('#RegularityCB2 option:eq(0)').prop("disabled", true);
+        }
+    }
 }
 
 function taxt_ValidateRegularity2()
@@ -845,6 +890,7 @@ function taxt_ValidateRegularity2()
         $('#RegularityCB4').prop("disabled", false);
     }
     $('#RegularityCB4').val(0);
+    taxt_ValidateRegularityCross23("2");
 }
 
 
@@ -870,6 +916,7 @@ function taxt_ValidateRegularity3()
         $('#RegularityCB5').prop("disabled", false);
     }
     $('#RegularityCB5').val(0);
+    taxt_ValidateRegularityCross23("3");
 }
 
 function taxt_ValidateRoof()
