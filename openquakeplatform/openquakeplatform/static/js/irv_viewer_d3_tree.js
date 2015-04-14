@@ -115,8 +115,11 @@
                 });
 
                 for (var ia = 0; ia < pdTempWeights.length; ia++) {
-                    var tempMath = (pdTempWeights[ia] * 100) / totalWeights;
-                    pdTempWeightsComputed.push(tempMath / 100);
+                    if (totalWeights === 0) {
+                        pdTempWeightsComputed.push(0);
+                    } else {
+                        pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                    }
                 }
 
                 // Update the results back into the spinners and to the d3.js chart
