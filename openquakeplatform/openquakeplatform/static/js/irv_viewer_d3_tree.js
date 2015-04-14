@@ -98,9 +98,12 @@
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
                     var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
                     var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
-                    if (isInverted) {
-                        spinnerValue = -spinnerValue;
-                    }
+
+                    //if (isInverted) {
+                       // spinnerValue = -spinnerValue;
+                   // }
+
+                    pdTempInverters.push(isInverted);
                     pdTempWeights.push(spinnerValue);
                 }
 
@@ -202,16 +205,17 @@
             });
         }
 
-        function updateTreeBranch(pdData, id, pdWeight) {
+        function updateTreeBranch(pdData, id, pdWeight, pdIsInverted) {
 
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
                 pdData.weight = pdWeight;
+                pdData.isInverted = pdIsInverted;
             }
 
             (pdData.children || []).forEach(function(currentItem) {
-                updateTreeBranch(currentItem, id, pdWeight);
+                updateTreeBranch(currentItem, id, pdWeight, pdIsInverted);
             });
         }
 
@@ -287,7 +291,7 @@
                 })
                 .attr("text-anchor", function(d) { return "end"; })
                 .text(function(d) {
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "- " + d.name;
                     } else {
                         return d.name;
@@ -376,7 +380,7 @@
                     return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
                 .style("stroke", function(d) {
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "PowderBlue";
                     } else {
                         return "RoyalBlue";
@@ -390,7 +394,7 @@
                     if (d.parent !== undefined && d.parent.operator.indexOf("ignore weights") > -1) {
                         return "Gold";
                     }
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "RoyalBlue";
                     } else {
                         return "PowderBlue";
