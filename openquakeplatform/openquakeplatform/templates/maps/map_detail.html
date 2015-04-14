@@ -20,7 +20,7 @@
   <div class="span6">
     <h2 class="page-title">
       {{ map.title }}
-      {% if map.owner.username == 'GEM' %}
+      {% if map.owner.username != 'GEM' %}
         (User Contributed)
       {% endif %}
     </h2>
