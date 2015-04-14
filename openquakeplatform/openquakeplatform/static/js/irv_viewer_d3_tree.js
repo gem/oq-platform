@@ -398,8 +398,8 @@
                         return "RoyalBlue";
                     } else {
                         return "PowderBlue";
-                    }                });
-
+                    }
+                });
 
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
