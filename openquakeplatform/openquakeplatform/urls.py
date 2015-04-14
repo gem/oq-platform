@@ -110,6 +110,7 @@ urlpatterns = patterns('',
     url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
     url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
+    url(r'^guidelines/$', TemplateView.as_view(template_name='guidelines.html'), name='guidelines'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
