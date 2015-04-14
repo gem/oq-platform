@@ -25,10 +25,9 @@ and overrides the original GeoNode template.
 {% block body_outer %}
   <div class="span5">
     <h2 class="page-title">
+      {{ document.title }}
       {% if document.owner.username == 'GEM' %}
-        {{ document.title }}
-      {% else %}
-        {{ document.title }} (User Contributed)
+        (User Contributed)
       {% endif %}
     </h2>
   </div>

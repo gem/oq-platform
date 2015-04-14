@@ -21,10 +21,9 @@
 {% block body_outer %}
   <div class="span5">
     <h2 class="page-title">
+      {{ layer.title|default:layer.typename }}
       {% if layer.owner.username == 'GEM' %}
-        {{ layer.title|default:layer.typename }}
-      {% else %}
-        {{ layer.title|default:layer.typename }} (User Contributed)
+        (User Contributed)
       {% endif %}
     </h2>
   </div>
