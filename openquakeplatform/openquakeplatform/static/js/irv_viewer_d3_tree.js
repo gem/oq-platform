@@ -323,7 +323,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; });
+                .attr("x", function(d) { return getRadius(d) + 15; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -346,7 +346,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; })
+                .attr("x", function(d) { return getRadius(d) + 15; })
                 .attr("transform", "translate(0, 12)");
 
             // Render weight values in tree
@@ -357,9 +357,9 @@
                 .attr("x", function(d) { return "-1em"; })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x){
-                        return -(d.weight * CIRCLE_SCALE + 5);
+                        return -(getRadius(d) + 5);
                     } else {
-                        return d.weight * CIRCLE_SCALE + 12;
+                        return getRadius(d) + 12;
                     }})
                 .text(function(d) {
                     if (d.parent === undefined) {
@@ -380,7 +380,7 @@
                 .attr("r", function (d) {
                     // d.weight is expected to be between 0 and 1
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
-                    return d.weight ? Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                    return d.weight ? Math.max(getRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
                 .style("stroke", function(d) {
                     if (d.isInverted) {
@@ -390,19 +390,15 @@
                     }
                 })
                 .style("stroke-width", function(d) {
-                    return d.weight ? Math.min(d.weight * CIRCLE_SCALE / 2, MAX_STROKE_SIZE): 4;
+                    return d.weight ? Math.min(getRadius(d) / 2, MAX_STROKE_SIZE): 4;
                 })
                 .style("fill", function(d) {
                     // return d.source ? d.source.linkColor: d.linkColor;
-                    if (d.parent !== undefined && d.parent.operator.indexOf("ignore weights") > -1) {
-                        return "Gold";
-                    }
                     if (d.isInverted) {
                         return "RoyalBlue";
                     } else {
                         return "PowderBlue";
-                    }
-                });
+                    }                });
 
 
             nodeUpdate.select("text")
