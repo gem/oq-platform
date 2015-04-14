@@ -111,7 +111,7 @@
                 pdTempWeights = pdTempWeights.map(Number);
                 var totalWeights = 0;
                 $.each(pdTempWeights,function() {
-                    totalWeights += Math.abs(this);
+                    totalWeights += parseFloat(this);
                 });
 
                 for (var ia = 0; ia < pdTempWeights.length; ia++) {
@@ -121,7 +121,7 @@
 
                 // Update the results back into the spinners and to the d3.js chart
                 for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
-                    $('#'+pdTempSpinnerIds[ib]).spinner("value", Math.abs(pdTempWeightsComputed[ib]));
+                    $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
                 }
 
                 // Upadte the json with new values
@@ -187,7 +187,7 @@
                     }
                 }
             }
-            return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+            return d.weight ? Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -320,7 +320,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; });
+                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -343,7 +343,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
+                .attr("x", function(d) { return d.weight * CIRCLE_SCALE + 15; })
                 .attr("transform", "translate(0, 12)");
 
             // Render weight values in tree
@@ -354,9 +354,9 @@
                 .attr("x", function(d) { return "-1em"; })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x){
-                        return -(Math.abs(d.weight) * CIRCLE_SCALE + 5);
+                        return -(d.weight * CIRCLE_SCALE + 5);
                     } else {
-                        return Math.abs(d.weight) * CIRCLE_SCALE + 12;
+                        return d.weight * CIRCLE_SCALE + 12;
                     }})
                 .text(function(d) {
                     if (d.parent === undefined) {
@@ -377,7 +377,7 @@
                 .attr("r", function (d) {
                     // d.weight is expected to be between 0 and 1
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
-                    return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                    return d.weight ? Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
                 .style("stroke", function(d) {
                     if (d.isInverted) {
@@ -387,7 +387,7 @@
                     }
                 })
                 .style("stroke-width", function(d) {
-                    return d.weight ? Math.min(Math.abs(d.weight) * CIRCLE_SCALE / 2, MAX_STROKE_SIZE): 4;
+                    return d.weight ? Math.min(d.weight * CIRCLE_SCALE / 2, MAX_STROKE_SIZE): 4;
                 })
                 .style("fill", function(d) {
                     // return d.source ? d.source.linkColor: d.linkColor;
