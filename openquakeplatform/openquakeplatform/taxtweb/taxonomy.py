@@ -2,21 +2,34 @@ from openquakeplatform.taxtweb.taxonomy_map import taxonomy_map
 
 # DX+D99/MAT99/L99/DY+D99/MAT99/L99/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99
 
+
 def taxonomy_short2full(t_short):
     max_pos = 0
 
     tfull_arr = ['DX+D99', 'MAT99', 'L99', 'DY+D99', 'MAT99', 'L99', 'H99', 'Y99', 'OC99', 'BP99',
                  'PLF99', 'IR99', 'EW99', 'RSH99+RMT99+R99+RWC99', 'F99+FWC99', 'FOS99']
 
+    tfull_arr_orig = tfull_arr[:];
+
     # split the incoming taxonomy
     t_arr = t_short.split('/')
     for t_el in t_arr:
+        # revert from hided DX and DY to explicit unknown values
+        if t_el == 'DX':
+            t_el = 'DX+D99'
+
+        if t_el == 'DY':
+            t_el = 'DY+D99'
+
         # find the prefix (all what is before '+' or ':' or ',' character
         prefix = t_el.replace('+', ',').replace(':', ',').split(',')[0];
         if prefix == '':
+            if (t_arr[0].startswith('DX') and t_arr[3].startswith('DY') and
+                max_pos >= 4 and max_pos <= 5):
+                tfull_arr[max_pos] = tfull_arr_orig[max_pos]
             max_pos += 1
             continue
-        
+
         # if prefix is identified
         if prefix in taxonomy_map:
             cur_pos = taxonomy_map[prefix]
@@ -24,7 +37,6 @@ def taxonomy_short2full(t_short):
                 cur_pos = 4
             elif cur_pos == 2 and max_pos >= 2:
                 cur_pos = 5            
-            print 't_el: %s  prefix: %d' % (t_el, cur_pos)
             
             if cur_pos == 0:
                 # manage special case for coupled DX,DY cell
