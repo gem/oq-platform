@@ -115,11 +115,11 @@ def add_project_definition(request):
             * 'project_definition': the project definition to be added to the
                                     layer's supplemental information
     """
-    layer_name = request.GET.get('layer_name')
+    layer_name = request.POST.get('layer_name')
     if not layer_name:
         return HttpResponseBadRequest(
             'Please provide the layer_name parameter')
-    project_definition_str = request.GET.get('project_definition')
+    project_definition_str = request.POST.get('project_definition')
     if not project_definition_str:
         return HttpResponseBadRequest(
             'Please provide the project_definition parameter')
