@@ -18,6 +18,7 @@ var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
+var selectedLayer;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -677,10 +678,12 @@ var startApp = function() {
         $('#regionSelectionDialog').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
-        var selectedLayer = document.getElementById('svir-project-list').value;
+        selectedLayer = document.getElementById('svir-project-list').value;
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
+
+
 
         // Get layer attributes from GeoServer
         $.ajax({
@@ -716,7 +719,7 @@ var startApp = function() {
 
                 $('#region-selection-list').change(function() {
                     selectedRegion = document.getElementById('region-selection-list').value;
-                    getLayerInfo(selectedLayer, layerAttributes);
+                    getLayerInfo(layerAttributes);
                 });
             },
             error: function() {
@@ -730,14 +733,12 @@ var startApp = function() {
     });
 
 
-    function getLayerInfo(selectedLayer, layerAttributes) {
+    function getLayerInfo(layerAttributes) {
         $('#regionSelectionDialog').dialog('close');
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
-                console.log('layerMetadataURL:');
-                console.log(layerMetadataURL);
                 // ***** TEMP remove this ****
                 //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
@@ -779,8 +780,8 @@ var startApp = function() {
             error: function() {
             $('#ajaxErrorDialog').empty();
             $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get the supplemental information about the selected layer</p>'
-                );
+                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+            );
             $('#ajaxErrorDialog').dialog('open');
             }
         });

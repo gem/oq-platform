@@ -114,9 +114,34 @@
                 console.log('projectDef:');
                 console.log(projectDef);
 
-                // Hit the API endpoint and grab the very very latest version of the PD object
+                var projectDefStg = JSON.stringify(projectDef);
+
+                $('#submitPD').click(function() {
+                    // Hit the API endpoint and grab the very very latest version of the PD object
+
+                    $.post( "../svir/add_project_definition", {
+                        layer_name: selectedLayer,
+                        project_definition: projectDefStg
+                        },
+                        function(){
+                            // success
+                        }).done(function() {
+                            $('#ajaxErrorDialog').empty();
+                            $('#ajaxErrorDialog').append(
+                                '<p>The Project definition has been added to the layer metedata</p>'
+                            );
+                            $('#saveStateDialog').dialog('close');
+                            $('#ajaxErrorDialog').dialog('open');
+                        }).fail(function() {
+                            $('#ajaxErrorDialog').empty();
+                            $('#ajaxErrorDialog').append(
+                                '<p>This application was not able to write the project definition to the database</p>'
+                            );
+                            $('#ajaxErrorDialog').dialog('open');
+                        });
                 // Add the current PD version as a new object, and pass it back to the API to be
                 // saved into the supplemental information
+                });
             });
         }
 
