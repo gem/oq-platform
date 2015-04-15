@@ -18,10 +18,12 @@
 # <https://www.gnu.org/licenses/agpl.html>.
 
 import csv
+import json
 from django.http import (HttpResponse,
                          HttpResponseBadRequest,
-                         HttpResponseNotFound,)
-from django.core.exceptions import ObjectDoesNotExist
+                         HttpResponseNotFound,
+                         )
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.views.decorators.http import condition
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
@@ -32,7 +34,9 @@ from openquakeplatform.svir.models import (Theme,
                                            CustomRegion,
                                            CountryIndicator,)
 
-from geonode.base.models import Link
+from geonode.base.models import Link, ResourceBase
+# from geonode.layers.models import Layer
+from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 
 
 COPYRIGHT_HEADER = u"""\
@@ -90,6 +94,71 @@ def get_layer_metadata_url(request):
     response = HttpResponse()
     response.write(response_url)
     return HttpResponse(response)
+
+
+@condition(etag_func=None)
+@allowed_methods(('POST', ))
+@sign_in_required
+def add_project_definition(request):
+    """
+    Given a layer identifier and a project definition, if the logged user
+    is enabled to modify the layer, the project definition will be added to
+    the layer's supplemental information. In order to ensure backward
+    compatibility, the supplemental information can contain a single json
+    object. In that case, it will be converted into an array, and both the
+    existing project definition and the new one will be sequentially appended.
+
+    :param request:
+        A "POST" :class:`django.http.HttpRequest` object containing
+        the following parameter:
+            * 'layer_name': the layer identifier
+            * 'project_definition': the project definition to be added to the
+                                    layer's supplemental information
+    """
+    layer_name = request.POST.get('layer_name')
+    if not layer_name:
+        return HttpResponseBadRequest(
+            'Please provide the layer_name parameter')
+    project_definition_str = request.POST.get('project_definition')
+    if not project_definition_str:
+        return HttpResponseBadRequest(
+            'Please provide the project_definition parameter')
+    try:
+        project_definition = json.loads(project_definition_str)
+    except Exception as e:
+        return HttpResponseBadRequest(
+            'Invalid project_definition: %s' % str(e))
+    try:
+        layer = _resolve_layer(
+            request, layer_name, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    except PermissionDenied:
+        return HttpResponse(
+            'You are not allowed to modify this layer',
+            mimetype='text/plain',
+            status=401)
+    resourcebase_id = layer.resourcebase_ptr_id
+    try:
+        resourcebase = ResourceBase.objects.get(id=resourcebase_id)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Resourcebase not found')
+    supplemental_information = resourcebase.supplemental_information
+    try:
+        project_definitions = json.loads(supplemental_information)
+    except Exception as e:
+        return HttpResponseBadRequest(
+            "The layer's metadata do not contain valid"
+            "project definitions: %s", str(e))
+    # if there's only one project definition (it is a simple dict),
+    # create a list and append to it the existing
+    # project definition.
+    # Once the list is there, we can append to it the new project_definition.
+    if isinstance(project_definitions, dict):
+        project_definitions = [project_definitions]
+    project_definitions.append(project_definition)
+    resourcebase.supplemental_information = json.dumps(
+        project_definitions, indent=4, separators=(',', ': '))
+    resourcebase.save()
+    return HttpResponse("The new project definition has been added")
 
 
 @condition(etag_func=None)
