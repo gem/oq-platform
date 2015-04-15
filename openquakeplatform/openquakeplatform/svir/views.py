@@ -156,7 +156,7 @@ def add_project_definition(request):
         project_definitions = [project_definitions]
     project_definitions.append(project_definition)
     resourcebase.supplemental_information = json.dumps(
-        project_definitions, indent=2, separators=(',', ': '))
+        project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
     resourcebase.save()
     return HttpResponse("The new project definition has been added")
 
