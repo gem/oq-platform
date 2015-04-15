@@ -1,4 +1,4 @@
-from taxonomy_map import taxonomy_map
+from openquakeplatform.taxtweb.taxonomy_map import taxonomy_map
 
 # DX+D99/MAT99/L99/DY+D99/MAT99/L99/H99/Y99/OC99/BP99/PLF99/IR99/EW99/RSH99+RMT99+R99+RWC99/F99+FWC99/FOS99
 
