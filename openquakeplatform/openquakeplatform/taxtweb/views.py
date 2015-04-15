@@ -28,57 +28,8 @@ from django.views.generic.detail import BaseDetailView
 from django.utils.cache import add_never_cache_headers
 from django.utils.text import slugify
 from django.contrib.messages.api import get_messages
+from taxonomy import taxonomy_short2full
 
-def populate(s):
-    """
-function populate(s) {
-    var sar, subar, dirx, diry, el, i;
-
-    sar = s.split('/');
-
-    //
-    //  DIRECTION
-    dirx = acheck(sar, 'DX');
-
-    if (dirx == null || dirx == "DX" || dirx == "DX+D99") {
-        $("#Direction1RB1").prop("checked", true);
-        taxt_Direction1RB1Click(null);
-    }
-    else if (dirx == "DX+PF") {
-        $("#Direction1RB2").prop("checked", true);
-        taxt_Direction1RB2Click(null);
-    }
-    else {
-        alert("Not valid 'Direction X' found.");
-        return false;
-    }
-
-    diry = acheck(sar, 'DY');
-
-    // find sub-section for DirX material
-    if (dirx == null && diry == null) {
-        subar = sar;
-    }
-    else if (dirx == null && diry != null) {
-        alert("Invalid format: DY specified without DX.");
-        return false;
-    }
-    else {
-        dirx_idx =
-
-for (i = 0 ; i < sar.length ; i++) {
-        }
-
-    }
-    //
-    //  MATERIAL (Dir X)
-
-
-
-}
-    """
-
-    return True
 
 def index(request, **kwargs):
     try:
@@ -123,8 +74,10 @@ def index(request, **kwargs):
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
+    taxonomy = taxonomy_short2full(kwargs['taxonomy'])
+
     return render_to_response("taxtweb/index.html",
-                              dict(taxonomy=kwargs['taxonomy'],
+                              dict(taxonomy=taxonomy,
                                    is_popup=is_popup,
                                    tab_id=tab_id,
                                    tab_content=tab_content,

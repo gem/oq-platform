@@ -80,14 +80,18 @@ var llrs_type =
       'SRC':  llrs_type_grp[2],
       'S':    llrs_type_grp[2],
       'ME':   llrs_type_grp[2],
+
       'M99':  llrs_type_grp[1],
       'MUR':  llrs_type_grp[1],
       'MCF':  llrs_type_grp[1],
       'MR':   llrs_type_grp[1],
+
       'E99':  llrs_type_grp[0],
       'EU':   llrs_type_grp[0],
       'ER':   llrs_type_grp[0],
+
       'W':    llrs_type_grp[1],
+
       'MATO': llrs_type_grp[2]
     };
 
