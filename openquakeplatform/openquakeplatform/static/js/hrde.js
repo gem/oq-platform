@@ -64,6 +64,7 @@ AppProtoType.prototype = {
     selectedMappedValue: null,
     selectedHazardLayerName: null,
     selectedLayerValue: null,
+    allLayers: [],
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -80,6 +81,44 @@ var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
+
+    function checkForIdMatch(topLayerId) {
+        console.log('AppVars.allLayers:');
+        console.log(AppVars.allLayers);
+        console.log('AppVars.utfGrid:');
+        console.log(AppVars.utfGrid);
+        for (var i = 0; i < AppVars.allLayers.length; i++) {
+            if (AppVars.allLayers[i]._leaflet_id === (topLayerId -1)) {
+                console.log('AppVars.allLayers[i]:');
+                console.log(AppVars.allLayers[i]);
+                AppVars.utfGrid = AppVars.allLayers[i];
+            }
+        }
+        foobar();
+    }
+
+    function foobar() {
+
+        // Get the div id of the layer when layer order is changed
+        $('.leaflet-down').click(function() {
+            // If there is a change in the layer order, find the 'top'
+            // layer and assigne it's utfGrid
+            console.log('$(.leaflet-control-layers-overlays)');
+            console.log($('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id);
+
+
+            var topLayerId = $('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id;
+            topLayerId = topLayerId.split('.')[1];
+            checkForIdMatch(topLayerId);
+        });
+
+        $('.leaflet-up').click(function() {
+
+            var layerId = $(this).parent()[0].children[0].firstChild.id;
+            layerId = layerId.split('.')[1];
+            checkForIdMatch(layerId);
+        });
+    }
 
     // Show hide layer controller
     function checkLayerController() {
@@ -185,7 +224,7 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.orderlayers(app.baseLayers);
+    AppVars.layerControl = L.control.orderlayers(app.baseLayers, null, {collapsed:false});
     checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
@@ -1035,6 +1074,8 @@ var startApp = function() {
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
         checkLayerController();
+        AppVars.allLayers.push(AppVars.utfGrid);
+        foobar();
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
@@ -1042,8 +1083,9 @@ var startApp = function() {
         return AppVars.utfGrid;
     }
 
+
     // add input curve layers from tilestream
-    function inputCurve(curveType) {
+    function inputCurve() {
         var scope = angular.element($("#input-list")).scope();
         var inputLayerId = scope.selected_input.name;
 
@@ -1069,6 +1111,8 @@ var startApp = function() {
         var utfGrid = createUtfLayerGroups(selectedLayer);
 
         AppVars.utfGrid.on('click', function (e) {
+            console.log(' input curve e:');
+            console.log(e);
             if (e.data) {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
@@ -1211,7 +1255,9 @@ var startApp = function() {
     });
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
-        utfGrid.on('click', function (e) {
+        AppVars.utfGrid.on('click', function (e) {
+            console.log('hi??? hazardCurveUtfGridClickEvent:');
+            console.log(e);
             // format the selected map and layer names
             try {
                 AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
