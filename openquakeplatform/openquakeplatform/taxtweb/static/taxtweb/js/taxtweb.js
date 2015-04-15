@@ -1325,7 +1325,7 @@ function taxt_OmitCBClick(obj) // Ok
 
 
 
-function taxt_BuildTaxonomy()
+function BuildTaxonomyString(out_type)
 {
     var Taxonomy = [], ResTax, direction1, direction2;
 
@@ -1333,7 +1333,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[i] = "";
     /* Structural System: Direction X */
 
-    if ( $('#MaterialCB11').val() == 0 && !$('#OmitCB').prop('checked') )
+    if ( $('#MaterialCB11').val() == 0 && (out_type != 1) )
         Taxonomy[0] = 'MAT99';
     if ($('#MaterialCB11').val() == 1)
         Taxonomy[0] = 'C99';
@@ -1345,7 +1345,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[0] = 'SRC';
 
     if ( ($('#MaterialCB11').val() > 0) && ($('#MaterialCB11').val() < 5) ) {
-        if ( ($('#MaterialCB21').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB21').val() == 0) && (out_type != 1) )
             Taxonomy[1] = '+CT99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+CIP';
@@ -1358,7 +1358,7 @@ function taxt_BuildTaxonomy()
     }
     if ($('#MaterialCB11').val() == 5) {
         Taxonomy[0] = 'S';
-        if ( $('#MaterialCB21').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB21').val() == 0 && (out_type != 1) )
             Taxonomy[1] = '+S99';
         if ( $('#MaterialCB21').val() == 1 )
             Taxonomy[1] = '+SL';
@@ -1370,7 +1370,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB11').val() == 6) {
         Taxonomy[0] = 'ME';
-        if ( $('#MaterialCB21').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB21').val() == 0 && (out_type != 1) )
             Taxonomy[1] = '+ME99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+MEIR';
@@ -1379,7 +1379,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#MaterialCB11').val() == 5) {
-        if ( $('#MaterialCB31').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB31').val() == 0 && (out_type != 1) )
             Taxonomy[2] = '+SC99';
         if ($('#MaterialCB31').val() == 1)
             Taxonomy[2] = '+WEL';
@@ -1397,7 +1397,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB11').val() == 9)
             Taxonomy[0] = 'MCF';
 
-        if ( $('#MaterialCB21').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB21').val() == 0 && (out_type != 1) )
             Taxonomy[1] = '+MUN99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+ADO';
@@ -1426,7 +1426,7 @@ function taxt_BuildTaxonomy()
 
         if ($('#MaterialCB11').val() == 10) {
             Taxonomy[0] = 'MR';
-            if ( ($('#MaterialCB41').val() == 0) && !$('#OmitCB').prop('checked') )
+            if ( ($('#MaterialCB41').val() == 0) && (out_type != 1) )
                 Taxonomy[34] = '+MR99';
             if ($('#MaterialCB41').val() == 1)
                 Taxonomy[34] = '+RS';
@@ -1440,7 +1440,7 @@ function taxt_BuildTaxonomy()
                 Taxonomy[34] = '+RCB';
         }
 
-        if (($('#MaterialCB31').val() == 0) && !$('#OmitCB').prop('checked') )
+        if (($('#MaterialCB31').val() == 0) && (out_type != 1) )
             Taxonomy[2] = '+MO99';
         if ($('#MaterialCB31').val() == 1)
             Taxonomy[2] = '+MON';
@@ -1478,7 +1478,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB11').val() == 13)
             Taxonomy[0] = 'ER';
 
-        if ( ($('#MaterialCB21').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB21').val() == 0) && (out_type != 1) )
             Taxonomy[1] = '+ET99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+ETR';
@@ -1490,7 +1490,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB11').val() == 14) {
         Taxonomy[0] = 'W';
-        if (($('#MaterialCB21').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#MaterialCB21').val() == 0) && (out_type != 1))
             Taxonomy[1] = '+W99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+WHE';
@@ -1509,7 +1509,7 @@ function taxt_BuildTaxonomy()
     if ($('#MaterialCB11').val() == 15)
         Taxonomy[0] = 'MATO';
 
-    if (($('#SystemCB11').val() == 0) && !$('#OmitCB').prop('checked'))
+    if (($('#SystemCB11').val() == 0) && (out_type != 1))
         Taxonomy[3] = 'L99';
 
     if ( ($('#MaterialCB11').val()>10) && ($('#MaterialCB11').val()<14) ) {
@@ -1562,7 +1562,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#SystemCB11').val() > 0) {
-        if (($('#SystemCB21').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#SystemCB21').val() == 0) && (out_type != 1))
             Taxonomy[4] = '+DU99';
         if ($('#SystemCB21').val() == 1)
             Taxonomy[4] = '+DUC';
@@ -1580,7 +1580,7 @@ function taxt_BuildTaxonomy()
 
 
 
-    if ( $('#MaterialCB12').val() == 0 && !$('#OmitCB').prop('checked') )
+    if ( $('#MaterialCB12').val() == 0 && (out_type != 1) )
         Taxonomy[5] = 'MAT99';
     if ($('#MaterialCB12').val() == 1)
         Taxonomy[5] = 'C99';
@@ -1592,7 +1592,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[5] = 'SRC';
 
     if ( ($('#MaterialCB12').val() > 0) && ($('#MaterialCB12').val() < 5) ) {
-        if ( ($('#MaterialCB22').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB22').val() == 0) && (out_type != 1) )
             Taxonomy[6] = '+CT99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+CIP';
@@ -1605,7 +1605,7 @@ function taxt_BuildTaxonomy()
     }
     if ($('#MaterialCB12').val() == 5) {
         Taxonomy[5] = 'S';
-        if ( $('#MaterialCB22').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB22').val() == 0 && (out_type != 1) )
             Taxonomy[6] = '+S99';
         if ( $('#MaterialCB22').val() == 1 )
             Taxonomy[6] = '+SL';
@@ -1617,7 +1617,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB12').val() == 6) {
         Taxonomy[5] = 'ME';
-        if ( $('#MaterialCB22').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB22').val() == 0 && (out_type != 1) )
             Taxonomy[6] = '+ME99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+MEIR';
@@ -1626,7 +1626,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#MaterialCB12').val() == 5) {
-        if ( $('#MaterialCB32').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB32').val() == 0 && (out_type != 1) )
             Taxonomy[7] = '+SC99';
         if ($('#MaterialCB32').val() == 1)
             Taxonomy[7] = '+WEL';
@@ -1644,7 +1644,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB12').val() == 9)
             Taxonomy[5] = 'MCF';
 
-        if ( $('#MaterialCB22').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB22').val() == 0 && (out_type != 1) )
             Taxonomy[6] = '+MUN99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+ADO';
@@ -1673,7 +1673,7 @@ function taxt_BuildTaxonomy()
 
         if ($('#MaterialCB12').val() == 10) {
             Taxonomy[5] = 'MR';
-            if ( ($('#MaterialCB42').val() == 0) && !$('#OmitCB').prop('checked') )
+            if ( ($('#MaterialCB42').val() == 0) && (out_type != 1) )
                 Taxonomy[35] = '+MR99';
             if ($('#MaterialCB42').val() == 1)
                 Taxonomy[35] = '+RS';
@@ -1687,7 +1687,7 @@ function taxt_BuildTaxonomy()
                 Taxonomy[35] = '+RCB';
         }
 
-        if (($('#MaterialCB32').val() == 0) && !$('#OmitCB').prop('checked') )
+        if (($('#MaterialCB32').val() == 0) && (out_type != 1) )
             Taxonomy[7] = '+MO99';
         if ($('#MaterialCB32').val() == 1)
             Taxonomy[7] = '+MON';
@@ -1725,7 +1725,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB12').val() == 13)
             Taxonomy[5] = 'ER';
 
-        if ( ($('#MaterialCB22').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB22').val() == 0) && (out_type != 1) )
             Taxonomy[6] = '+ET99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+ETR';
@@ -1737,7 +1737,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB12').val() == 14) {
         Taxonomy[5] = 'W';
-        if (($('#MaterialCB22').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#MaterialCB22').val() == 0) && (out_type != 1))
             Taxonomy[6] = '+W99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+WHE';
@@ -1756,7 +1756,7 @@ function taxt_BuildTaxonomy()
     if ($('#MaterialCB12').val() == 15)
         Taxonomy[5] = 'MATO';
 
-    if (($('#SystemCB12').val() == 0) && !$('#OmitCB').prop('checked'))
+    if (($('#SystemCB12').val() == 0) && (out_type != 1))
         Taxonomy[8] = 'L99';
 
     if ( ($('#MaterialCB12').val()>10) && ($('#MaterialCB12').val()<14) ) {
@@ -1809,7 +1809,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#SystemCB12').val() > 0) {
-        if (($('#SystemCB22').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#SystemCB22').val() == 0) && (out_type != 1))
             Taxonomy[9] = '+DU99';
         if ($('#SystemCB22').val() == 1)
             Taxonomy[9] = '+DUC';
@@ -1819,7 +1819,7 @@ function taxt_BuildTaxonomy()
             Taxonomy[9] = '+DBD';
     }
 
-    if ($('#DateCB1').val() == 0  && !$('#OmitCB').prop('checked'))
+    if ($('#DateCB1').val() == 0  && (out_type != 1))
         Taxonomy[10] = 'Y99';
     if ($('#DateCB1').val() == 1)
         Taxonomy[10] = 'YEX:' + $('#DateE1').val();
@@ -1831,7 +1831,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[10] = 'YAPP:' + $('#DateE1').val();
 
     if ($('#HeightCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type != 1))
             Taxonomy[11] ='H99';
     }
     else {
@@ -1842,7 +1842,7 @@ function taxt_BuildTaxonomy()
         if ($('#HeightCB1').val() == 3)
             Taxonomy[11] = 'HAPP:' + $('#noStoreysE11').val();
 
-        if ($('#HeightCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#HeightCB2').val() == 0 && (out_type != 1))
             Taxonomy[12] = '+HB99';
         if ($('#HeightCB2').val() == 1)
             Taxonomy[12] = '+HBBET:' + $('#noStoreysE21').val() + ',' + $('#noStoreysE22').val();
@@ -1851,7 +1851,7 @@ function taxt_BuildTaxonomy()
         if ($('#HeightCB2').val() == 3)
             Taxonomy[12] = '+HBAPP:' + $('#noStoreysE21').val();
 
-        if ($('#HeightCB3').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#HeightCB3').val() == 0 && (out_type != 1))
             Taxonomy[13] = '+HF99';
         if ($('#HeightCB3').val() == 1)
             Taxonomy[13] = '+HFBET:' + $('#noStoreysE31').val() + ',' + $('#noStoreysE32').val();
@@ -1860,19 +1860,19 @@ function taxt_BuildTaxonomy()
         if ($('#HeightCB3').val() == 3)
             Taxonomy[13] = '+HFAPP:' + $('#noStoreysE31').val();
 
-        if ($('#HeightCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#HeightCB4').val() == 0 && (out_type != 1))
             Taxonomy[14] = '+HD99';
         if ($('#HeightCB4').val() == 1)
             Taxonomy[14] = '+HD:' + $('#noStoreysE4').val();
     }
 
     if ($('#OccupancyCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type != 1))
             Taxonomy[15] = 'OC99';
     }
     else if ($('#OccupancyCB1').val() == 1) {
         Taxonomy[15] = 'RES';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+RES99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+RES1';
@@ -1901,7 +1901,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 2) {
         Taxonomy[15] = 'COM';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+COM99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+COM1';
@@ -1928,7 +1928,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 3) {
         Taxonomy[15] = 'MIX';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+MIX99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+MIX1';
@@ -1945,7 +1945,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 4) {
         Taxonomy[15] = 'IND';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+IND99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+IND1';
@@ -1954,7 +1954,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 5) {
         Taxonomy[15] = 'AGR';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+AGR99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+AGR1';
@@ -1965,7 +1965,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 6) {
         Taxonomy[15] = 'ASS';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+ASS99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+ASS1';
@@ -1978,7 +1978,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 7) {
         Taxonomy[15] = 'GOV';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+GOV99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+GOV1';
@@ -1987,7 +1987,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 8) {
         Taxonomy[15] = 'EDU';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type != 1))
             Taxonomy[16] = '+EDU99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+EDU1';
@@ -2002,7 +2002,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[15] = 'OCO';
     }
 
-    if ($('#PositionCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#PositionCB').val() == 0 && (out_type != 1))
         Taxonomy[17] = 'BP99';
     else if ($('#PositionCB').val() == 1)
         Taxonomy[17] = 'BPD';
@@ -2015,7 +2015,7 @@ function taxt_BuildTaxonomy()
     else if ($('#PositionCB').val() == 5)
         Taxonomy[17] = 'BPI';
 
-    if ($('#PlanShapeCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#PlanShapeCB').val() == 0 && (out_type != 1))
         Taxonomy[18] = 'PLF99';
     else if ($('#PlanShapeCB').val() == 1)
         Taxonomy[18] = 'PLFSQ';
@@ -2057,7 +2057,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[18] = 'PLFI';
 
     if ($('#RegularityCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type != 1))
             Taxonomy[19] = 'IR99';
     }
     else {
@@ -2065,7 +2065,7 @@ function taxt_BuildTaxonomy()
             Taxonomy[19] = 'IRRE';
         if ($('#RegularityCB1').val() == 2) {
             Taxonomy[19] = 'IRIR';
-            if ($('#RegularityCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RegularityCB2').val() == 0 && (out_type != 1))
                 Taxonomy[20] = '+IRPP:IRN';
             if ($('#RegularityCB2').val() == 1)
                 Taxonomy[20] = '+IRPP:TOR';
@@ -2074,7 +2074,7 @@ function taxt_BuildTaxonomy()
             if ($('#RegularityCB2').val() == 3)
                 Taxonomy[20] = '+IRPP:IRHO';
 
-            if ($('#RegularityCB3').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RegularityCB3').val() == 0 && (out_type != 1))
                 Taxonomy[21] = '+IRVP:IRN';
             if ($('#RegularityCB3').val() == 1)
                 Taxonomy[21] = '+IRVP:SOS';
@@ -2122,7 +2122,7 @@ function taxt_BuildTaxonomy()
         }
     }
 
-    if ($('#WallsCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#WallsCB').val() == 0 && (out_type != 1))
         Taxonomy[24] = 'EW99';
     if ($('#WallsCB').val() == 1)
         Taxonomy[24] = 'EWC';
@@ -2147,7 +2147,7 @@ function taxt_BuildTaxonomy()
     if ($('#WallsCB').val() == 11)
         Taxonomy[24] = 'EWO';
 
-    if ($('#RoofCB1').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#RoofCB1').val() == 0 && (out_type != 1))
         Taxonomy[25] = 'RSH99';
     if ($('#RoofCB1').val() == 1)
         Taxonomy[25] = 'RSH1';
@@ -2170,7 +2170,7 @@ function taxt_BuildTaxonomy()
     if ($('#RoofCB1').val() == 10)
         Taxonomy[25] = 'RSHO';
 
-    if ($('#RoofCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#RoofCB2').val() == 0 && (out_type != 1))
         Taxonomy[26] = '+RMT99';
     if ($('#RoofCB2').val() == 1)
         Taxonomy[26] = '+RMN';
@@ -2200,13 +2200,13 @@ function taxt_BuildTaxonomy()
         Taxonomy[26] = '+RMTO';
 
     if ($('#RoofCB3').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type != 1))
             Taxonomy[27] = '+R99';
     }
     else {
         if ($('#RoofCB3').val() == 1) {
             Taxonomy[27] = '+RM';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type != 1))
                 Taxonomy[28] = '+RM99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RM1';
@@ -2217,14 +2217,14 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#RoofCB3').val() == 2) {
             Taxonomy[27] = '+RE';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type != 1))
                 Taxonomy[28] = '+RE99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RE1';
         }
         else if ($('#RoofCB3').val() == 3) {
             Taxonomy[27] = '+RC';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type != 1))
                 Taxonomy[28] = '+RC99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RC1';
@@ -2237,7 +2237,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#RoofCB3').val() == 4) {
             Taxonomy[27] = '+RME';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type != 1))
                 Taxonomy[28] = '+RME99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RME1';
@@ -2248,7 +2248,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#RoofCB3').val() == 5) {
             Taxonomy[27] = '+RWO';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type != 1))
                 Taxonomy[28] = '+RWO99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RWO1';
@@ -2273,7 +2273,7 @@ function taxt_BuildTaxonomy()
         }
     }
 
-    if ($('#RoofCB5').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#RoofCB5').val() == 0 && (out_type != 1))
         Taxonomy[29] = '+RWC99';
     if ($('#RoofCB5').val() == 1)
         Taxonomy[29] = '+RWCN';
@@ -2287,7 +2287,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[29] = '+RTDP';
 
     if ($('#FloorCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type != 1))
             Taxonomy[30] = 'F99';
     }
     else if ($('#FloorCB1').val() == 1) {
@@ -2296,7 +2296,7 @@ function taxt_BuildTaxonomy()
     else {
         if ($('#FloorCB1').val() == 2) {
             Taxonomy[30] = 'FM';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type != 1))
                 Taxonomy[31] = '+FM99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FM1';
@@ -2307,12 +2307,12 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#FloorCB1').val() == 3) {
             Taxonomy[30] = 'FE';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type != 1))
                 Taxonomy[31] = '+FE99';
         }
         else if ($('#FloorCB1').val() == 4) {
             Taxonomy[30] = 'FC';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type != 1))
                 Taxonomy[31] = '+FC99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FC1';
@@ -2325,7 +2325,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#FloorCB1').val() == 5) {
             Taxonomy[30] = 'FME';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type != 1))
                 Taxonomy[31] = '+FME99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FME1';
@@ -2336,7 +2336,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#FloorCB1').val() == 6) {
             Taxonomy[30] = 'FW';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type != 1))
                 Taxonomy[31] = '+FW99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FW1';
@@ -2351,14 +2351,14 @@ function taxt_BuildTaxonomy()
             Taxonomy[30] = 'FO';
         }
     }
-    if ($('#FloorCB3').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#FloorCB3').val() == 0 && (out_type != 1))
         Taxonomy[32] = '+FWC99';
     if ($('#FloorCB3').val() == 1)
         Taxonomy[32] = '+FWCN';
     if ($('#FloorCB3').val() == 2)
         Taxonomy[32] = '+FWCP';
 
-    if ($('#FoundationsCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#FoundationsCB').val() == 0 && (out_type != 1))
         Taxonomy[33] = 'FOS99';
     if ($('#FoundationsCB').val() == 1)
         Taxonomy[33] = 'FOSSL';
@@ -2376,7 +2376,7 @@ function taxt_BuildTaxonomy()
     direction1 = 'DX';
     direction2 = 'DY';
 
-    if ($('#Direction1RB1').prop('checked')  && !$('#OmitCB').prop('checked')) {
+    if ($('#Direction1RB1').prop('checked')  && (out_type != 1)) {
         direction1 = direction1 + '+D99';
         direction2 = direction2 + '+D99';
         }
@@ -2449,11 +2449,24 @@ function taxt_BuildTaxonomy()
         '/' + Taxonomy[19] + Taxonomy[20] + Taxonomy[22] + Taxonomy[21] + Taxonomy[23] +
         '/' + Taxonomy[24] + '/' + Taxonomy[25] + Taxonomy[26] + Taxonomy[27] + Taxonomy[28] + Taxonomy[29] +
         '/' + Taxonomy[30] + Taxonomy[31] + Taxonomy[32] + '/' + Taxonomy[33];
-    $('#resultE').val(ResTax);
-    $('#permalink').attr("href", taxt_prefix + "/" +  ResTax);
+    return (ResTax);
 }
 
+function taxt_BuildTaxonomy()
+{
+    var ResTax, ResTaxFull = BuildTaxonomyString(0);
+    var out_type = $('#OutTypeCB').val();
 
+    if (out_type != 0) {
+        ResTax = BuildTaxonomyString(out_type);
+    }
+    else {
+        ResTax = ResTaxFull;
+    }
+
+    $('#resultE').val(ResTax);
+    $('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
+}
 
 
 /*
@@ -3147,9 +3160,18 @@ end;
 end.
 */
 
-
+function taxt_OutTypeCBSelect(obj)
+{
+    taxt_BuildTaxonomy();
+}
 
 function taxt_Initiate() {
+    var OutTypeCB = [];
+    OutTypeCB.push('Full');
+    OutTypeCB.push('Omit Unknown');
+    OutTypeCB.push('Short');
+    select_populate('OutTypeCB', OutTypeCB);
+    $('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
 
     $('#DirectionCB').prop('checked', true);
 
