@@ -186,7 +186,7 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.layers(app.baseLayers);
+    AppVars.layerControl = L.control.orderlayers(app.baseLayers);
     checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
