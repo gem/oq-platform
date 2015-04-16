@@ -149,6 +149,11 @@ function ends_with(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function is_or_are_given(n)
+{
+    return n + (n <= 1 ? " is" : " are") + " given.";
+}
+
 function populate_form()
 {
     try {
@@ -3784,14 +3789,14 @@ function populate(s, ret_s) {
         if (h_iddd < 3) {
             if (ends_with(h_label, '99')) {
                 if (h_items.length != 1) {
-                    ret_s.s = "Height: '" + h_label + "' type requires no values, " + h_vals.length + " are given.";
+                    ret_s.s = "Height: '" + h_label + "' type requires no values, " + is_or_are_given(h_vals.length);
                     return (false);
                 }
             }
             else if (ends_with(h_label, 'BET')) {
                 h_vals = h_items[1].split(',');
                 if (h_vals.length != 2) {
-                    ret_s.s = "Height: '" + h_label + "' type requires exactly 2 values, " + h_vals.length + " are given.";
+                    ret_s.s = "Height: '" + h_label + "' type requires exactly 2 values, " + is_or_are_given(h_vals.length);
                     return (false);
                 }
 
@@ -3801,7 +3806,7 @@ function populate(s, ret_s) {
             }
             else if (ends_with(h_label, 'HEX') || ends_with(h_label, 'APP')) {
                 if (h_vals.length != 1) {
-                    ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + h_vals.length + " are given.";
+                    ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
                     return (false);
                 }
                 $('#noStoreysE' + h_cbid[h_iddd] + '1').val(h_vals[0]);
@@ -3828,7 +3833,7 @@ function populate(s, ret_s) {
 
             if (ends_with(h_label, '99')) {
                 if (h_items.length != 1) {
-                    ret_s.s = "Height: '" + h_iddd + "' type requires no values, " + h_vals.length + " are given.";
+                    ret_s.s = "Height: '" + h_iddd + "' type requires no values, " + is_or_are_given(h_vals.length);
                     return (false);
                 }
             }
@@ -3836,7 +3841,7 @@ function populate(s, ret_s) {
                 h_vals = h_items[1].split(',');
                 if (h_label == 'HD') {
                     if (h_vals.length != 1) {
-                        ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + h_vals.length + " are given.";
+                        ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
                         return (false);
                     }
                     $('#noStoreysE4').val(h_vals[0]);
@@ -3893,7 +3898,7 @@ function populate(s, ret_s) {
         date_vals = date_items[1].split(',');
         if (date_id == 'YBET') {
             if (date_vals.length != 2) {
-                ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + date_vals.length + " are given.";
+                ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + is_or_are_given(date_vals.length);
                 return (false);
             }
             $('#DateE1').val(date_vals[0]);
@@ -3902,7 +3907,7 @@ function populate(s, ret_s) {
         }
         else if (date_id == 'YEX' || date_id == 'YPRE' || date_id == 'YAPP') {
             if (date_vals.length != 1) {
-                ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + date_vals.length + " are given.";
+                ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + is_or_are_given(date_vals.length);
                 return (false);
             }
             $('#DateE1').val(date_vals[0]);
