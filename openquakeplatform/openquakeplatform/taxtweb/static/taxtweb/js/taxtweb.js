@@ -3804,7 +3804,8 @@ function populate(s, ret_s) {
                 $('#noStoreysE' + h_cbid[h_iddd] + '2').val(h_vals[1]);
                 h_cbfun[h_iddd](null);
             }
-            else if (ends_with(h_label, 'HEX') || ends_with(h_label, 'APP')) {
+            else if (ends_with(h_label, 'EX') || ends_with(h_label, 'APP')) {
+                h_vals = h_items[1].split(',');
                 if (h_vals.length != 1) {
                     ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
                     return (false);
@@ -3833,6 +3834,7 @@ function populate(s, ret_s) {
 
             if (ends_with(h_label, '99')) {
                 if (h_items.length != 1) {
+                    h_vals = h_items[1].split(',');
                     ret_s.s = "Height: '" + h_iddd + "' type requires no values, " + is_or_are_given(h_vals.length);
                     return (false);
                 }
