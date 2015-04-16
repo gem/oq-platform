@@ -591,6 +591,38 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
+function watchForPdSelection(boundingBox, tempProjectDef) {
+    $('#pdSelection').change(function() {
+        var pdSelection = $('#pdSelection').val();
+        for (var i = 0; i < tempProjectDef.length; i++) {
+            if (tempProjectDef[i].title === pdSelection) {
+                sessionProjectDef = tempProjectDef[i];
+                loadPD(sessionProjectDef);
+                // get b-box
+                if (boundingBox != undefined) {
+                    map.fitBounds (
+                        L.latLngBounds (
+                            L.latLng (
+                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                            ),
+                            L.latLng (
+                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                            )
+                        )
+                    );
+                }
+                $('#projectDef-spinner').hide();
+                $('#iri-spinner').hide();
+                $('#project-definition-svg').show();
+                $('#region-selection-list').show();
+                processIndicators(layerAttributes, sessionProjectDef);
+            }
+        }
+    });
+}
+
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -732,7 +764,6 @@ var startApp = function() {
         });
     });
 
-
     function getLayerInfo(layerAttributes) {
         $('#regionSelectionDialog').dialog('close');
         $.ajax({
@@ -745,36 +776,57 @@ var startApp = function() {
                 layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=96fcdbc2-dd00-11e4-993f-0800278c33b4";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
-                    //convert XML to JSON
+                    // Convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    //pass a string representing the project def into the d3 tree chart
-                    sessionProjectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
-                    loadPD(sessionProjectDefStr);
-                    sessionProjectDef = jQuery.parseJSON(sessionProjectDefStr);
+                    // Pass a string representing the project def into the d3 tree chart
+                    projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
 
-                    // get b-box
+                    var tempProjectDef = jQuery.parseJSON(projectDefStr);
+
+                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
                     var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-                    if (boundingBox != undefined) {
-                        map.fitBounds (
-                            L.latLngBounds (
-                                L.latLng (
-                                    parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                    parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                                ),
-                                L.latLng (
-                                    parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                    parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+
+                    if (tempProjectDef.constructor === Array) {
+                        $('#project-def').prepend('<select id="pdSelection"><option value"" disabled selected>Select a Project Definition</option></select>');
+                        var pdTitles = [];
+                        // break the array into objects, present the user with a choice of PDs
+                        for (var i = 0; i < tempProjectDef.length; i++) {
+                            // Get the PD title
+                            pdTitles.push(tempProjectDef[i].title);
+                        }
+                        // Provide the user with a selection dropdown of the available PDs
+                        for (var ia = 0; ia < pdTitles.length; ia++) {
+                            $('#pdSelection').append(
+                                '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                            );
+                            watchForPdSelection(boundingBox, tempProjectDef);
+                        }
+                    } else {
+                        // get b-box
+                        sessionProjectDef = tempProjectDef;
+                        loadPD(sessionProjectDef);
+                        if (boundingBox != undefined) {
+                            map.fitBounds (
+                                L.latLngBounds (
+                                    L.latLng (
+                                        parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                        parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                                    ),
+                                    L.latLng (
+                                        parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                        parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                                    )
                                 )
-                            )
-                        );
+                            );
+                        }
+                        $('#projectDef-spinner').hide();
+                        $('#iri-spinner').hide();
+                        $('#project-definition-svg').show();
+                        $('#region-selection-list').show();
+                        processIndicators(layerAttributes, sessionProjectDef);
                     }
-                    $('#projectDef-spinner').hide();
-                    $('#iri-spinner').hide();
-                    $('#project-definition-svg').show();
-                    $('#region-selection-list').show();
-                    processIndicators(layerAttributes, sessionProjectDef);
                 });
             },
             error: function() {

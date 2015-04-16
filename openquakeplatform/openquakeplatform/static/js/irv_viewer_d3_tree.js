@@ -111,9 +111,6 @@
                     }
                 });
 
-                console.log('projectDef:');
-                console.log(projectDef);
-
                 var projectDefStg = JSON.stringify(projectDef);
 
                 $('#submitPD').click(function() {
@@ -139,6 +136,7 @@
                             );
                             $('#ajaxErrorDialog').dialog('open');
                         });
+
                 // Add the current PD version as a new object, and pass it back to the API to be
                 // saved into the supplemental information
                 });
@@ -291,7 +289,8 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            data = JSON.parse(selectedPDef);
+            //data = JSON.parse(selectedPDef);
+            data = selectedPDef;
 
             root = data;
             root.x0 = height / 2;
@@ -411,7 +410,8 @@
 
             // Render weight values in tree
             nodeEnter.append("text")
-                .attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
+                //TODO uncoment this ...
+                //.attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
