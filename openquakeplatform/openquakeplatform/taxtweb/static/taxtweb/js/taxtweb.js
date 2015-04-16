@@ -1,4 +1,3 @@
-
 var mat_tech =
     { 'MAT99': [],
       'C99': mat_tech_grp[0],
@@ -1043,11 +1042,17 @@ function taxt_SetDirection2() // Ok
 {
     if ($('#DirectionCB').prop('checked')) {
         $('#MaterialCB12').val($('#MaterialCB11').val());
+        taxt_MaterialCB12Select();
         $('#MaterialCB22').val($('#MaterialCB21').val());
+        taxt_MaterialCB22Select();
         $('#MaterialCB32').val($('#MaterialCB31').val());
+        taxt_MaterialCB32Select();
         $('#MaterialCB42').val($('#MaterialCB41').val());
+        taxt_MaterialCB42Select();
         $('#SystemCB12').val($('#SystemCB11').val());
+        taxt_SystemCB12Select();
         $('#SystemCB22').val($('#SystemCB21').val());
+        taxt_SystemCB22Select();
     }
 }
 
