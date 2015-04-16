@@ -139,7 +139,7 @@
                     var element = $('#'+pdTempSpinnerIds[id]).attr('element');
                     tempNewWeight.push(element);
                     tempNewWeight.push(parseFloat(value));
-                    traverse(sessionProjectDef, tempNewWeight);
+                    traverse(pdData, tempNewWeight);
                 }
 
                 nodeEnter.remove("text");
@@ -178,6 +178,11 @@
                     }
                 }
             }
+            /////////////////////////////
+            /// Recreate all the data ///
+            /////////////////////////////
+            console.log('projectDefUpdated:');
+            console.log(projectDefUpdated);
             processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 

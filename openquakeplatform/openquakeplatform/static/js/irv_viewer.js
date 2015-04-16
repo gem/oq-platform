@@ -202,6 +202,8 @@ function processIndicators(layerAttributes, projectDef) {
 
     // Find the theme information
     for (var m = 0; m < svThemes.length; m++) {
+        console.log('svThemes[m]:');
+        console.log(svThemes[m]);
         var operator = svThemes[m].operator;
         var weight = svThemes[m].weight;
         var name = svThemes[m].name;
@@ -333,39 +335,52 @@ function processIndicators(layerAttributes, projectDef) {
     var IRI = {};
     var sviWeight;
     var riWeight;
+    var riInversionFactor;
+    var sviInversionFactor;
     var iriOperator = projectDef.operator;
     for (var ik = 0; ik < projectDef.children.length; ik++) {
         if (projectDef.children[ik].name == 'RI') {
             riWeight = projectDef.children[ik].weight;
+            if (projectDef.children[ik].isInverted === true) {
+                riInversionFactor = -1;
+            } else {
+                riInversionFactor = 1;
+            }
         } else if (projectDef.children[ik].name == 'SVI') {
             sviWeight = projectDef.children[ik].weight;
+            if (projectDef.children[ik].isInverted === true) {
+                sviInversionFactor = -1;
+            } else {
+                sviInversionFactor = 1;
+            }
         }
     }
 
     if (iriOperator == "Average (ignore weights)") {
         for (var regionName in SVI) {
-            tempVal = SVI[regionName] + RI[regionName];
+            //var inversionFactor = projectDef.children.isInverted;
+            tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
             var iriAverage = tempVal / 2;
             IRI[regionName] = iriAverage;
         }
     } else if (iriOperator == "Simple sum (ignore weights)") {
         for (var regionName in SVI) {
-            tempVal = SVI[regionName] + RI[regionName];
+            tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
             IRI[regionName] = tempVal;
         }
     } else if (iriOperator == "Weighted sum") {
         for (var regionName in SVI) {
-            tempVal = (SVI[regionName] * sviWeight) + (RI[regionName] * riWeight);
+            tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) + ((RI[regionName] * riWeight) * riInversionFactor);
             IRI[regionName] = tempVal;
         }
     } else if (iriOperator == "Simple multiplication (ignore weights)") {
         for (var regionName in SVI) {
-            tempVal = SVI[regionName] * RI[regionName];
+            tempVal = (SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor);
             IRI[regionName] = tempVal;
         }
     } else if (iriOperator == "Weighted multiplication") {
         for (var regionName in SVI) {
-            tempVal = (SVI[regionName] * sviWeight) * (RI[regionName] * riWeight);
+            tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) * ((RI[regionName] * riWeight) * riInversionFactor);
             IRI[regionName] = tempVal;
         }
     }
@@ -727,11 +742,11 @@ var startApp = function() {
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
+
                 // ***** TEMP remove this ****
-                //layerMetadataURL = '/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4';
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4dc11a14-b04f-11e4-8f64-0800278c33b4";
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=96fcdbc2-dd00-11e4-993f-0800278c33b4";
-                
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=96fcdbc2-dd00-11e4-993f-0800278c33b4";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
+
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
