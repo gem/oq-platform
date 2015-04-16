@@ -3197,6 +3197,7 @@ function taxt_Initiate() {
     $('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
 
     $('#DirectionCB').prop('checked', true);
+    $('#DirectionCB').on('change', taxt_SetDirection2);
 
     // FIXME: t0 only, load a preview saved taxonomy must be done
     var MaterialCB11 = [];
