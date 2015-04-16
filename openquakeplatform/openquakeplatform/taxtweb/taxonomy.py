@@ -24,7 +24,7 @@ def taxonomy_short2full(t_short):
         # find the prefix (all what is before '+' or ':' or ',' character
         prefix = t_el.replace('+', ',').replace(':', ',').split(',')[0];
         if prefix == '':
-            if (t_arr[0].startswith('DX') and t_arr[3].startswith('DY') and
+            if (t_arr[0].startswith('DX') and (not t_arr[3].startswith('DY')) and
                 max_pos >= 4 and max_pos <= 5):
                 tfull_arr[max_pos] = tfull_arr_orig[max_pos]
             max_pos += 1
@@ -50,6 +50,8 @@ def taxonomy_short2full(t_short):
                     return None
             elif cur_pos == 3:
                 # manage special case for coupled DX,DY cell
+                tfull_arr[4] = tfull_arr_orig[4]
+                tfull_arr[5] = tfull_arr_orig[5]
                 if t_el == 'DY+D99':
                     tfull_arr[0] = 'DX+D99'
                     tfull_arr[3] = t_el
