@@ -888,7 +888,7 @@ function taxt_ValidateRegularity2()
 {
     $('#RegularityCB4').empty();
 
-    if ($('#RegularityCB2').val() == 0) {
+    if ($('#RegularityCB1').val() < 2 || $('#RegularityCB2').val() == 0 || $('#RegularityCB2').val() == null) {
         $('#RegularityCB4').prop("disabled", true);
     }
     else {
@@ -909,7 +909,7 @@ function taxt_ValidateRegularity3()
 {
     $('#RegularityCB5').empty();
 
-    if ($('#RegularityCB3').val() == 0) {
+    if ($('#RegularityCB1').val() < 2 || $('#RegularityCB3').val() == 0 || $('#RegularityCB3').val() == null) {
         $('#RegularityCB5').prop("disabled", true);
     }
     else {
@@ -4015,6 +4015,7 @@ function populate(s, ret_s) {
     //
     var stir, stir_items, stir_label, stir_id, stir_vals, stir_atom;
     var plir_id = "", plse_id = "", veir_id = "", vese_id = "";
+    var ir_values = [ 0, 0, 0, 0, 0 ];
 
     stir = sar[11].split('+');
     stir_label = stir[0];
@@ -4022,8 +4023,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < stir_type.length ; i++) {
         if (stir_label == stir_type[i].id) {
             stir_id = stir_label;
-            $('#RegularityCB1').val(i);
-            taxt_RegularityCB1Select(null);
+            ir_values[0] = i;
             break;
         }
     }
@@ -4052,8 +4052,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < plan_irre.length ; i++) {
                 if (stir_atom == plan_irre[i].id) {
                     plir_id = stir_atom;
-                    $('#RegularityCB2').val(i);
-                    taxt_RegularityCB2Select(null);
+                    ir_values[1] = i;
                     break;
                 }
             }
@@ -4065,8 +4064,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < plan_seco.length ; i++) {
                 if (stir_atom == plan_seco[i].id) {
                     plse_id = stir_atom;
-                    $('#RegularityCB4').val(i);
-                    taxt_RegularityCB4Select(null);
+                    ir_values[3] = i;
                     break;
                 }
             }
@@ -4078,8 +4076,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < vert_irre.length ; i++) {
                 if (stir_atom == vert_irre[i].id) {
                     veir_id = stir_atom;
-                    $('#RegularityCB3').val(i);
-                    taxt_RegularityCB3Select(null);
+                    ir_values[2] = i;
                     break;
                 }
             }
@@ -4091,8 +4088,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < vert_seco.length ; i++) {
                 if (stir_atom == vert_seco[i].id) {
                     vese_id = stir_atom;
-                    $('#RegularityCB5').val(i);
-                    taxt_RegularityCB5Select(null);
+                    ir_values[4] = i;
                     break;
                 }
             }
@@ -4113,6 +4109,18 @@ function populate(s, ret_s) {
         return (false);
     }
 
+    // all data are retrieved before the population phase to avoid unrequired reset of values permformed
+    // by hierarchical ancestors
+    $('#RegularityCB1').val(ir_values[0]);
+    taxt_RegularityCB1Select(null);
+    $('#RegularityCB2').val(ir_values[1]);
+    taxt_RegularityCB2Select(null);
+    $('#RegularityCB3').val(ir_values[2]);
+    taxt_RegularityCB3Select(null);
+    $('#RegularityCB4').val(ir_values[3]);
+    taxt_RegularityCB4Select(null);
+    $('#RegularityCB5').val(ir_values[4]);
+    taxt_RegularityCB5Select(null);
 
     //
     //  Exterior wall
