@@ -145,6 +145,8 @@ var floo_conn =
       'FO':  []
     };
 
+var taxonomy_form = "";
+
 function ends_with(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -157,11 +159,11 @@ function is_or_are_given(n)
 function populate_form()
 {
     try {
-          var el = window.opener.document.getElementById("id_taxonomy_text");
-          el.value = $('#resultE').val();
-          }
-          catch(e) {
-          }
+        var el = window.opener.document.getElementById("id_taxonomy_text");
+        el.value = taxonomy_form;
+    }
+    catch(e) {
+    }
 }
 
 function select_populate(name, items)
@@ -2494,6 +2496,7 @@ function taxt_BuildTaxonomy()
     else {
         ResTax = ResTaxFull;
     }
+    taxonomy_form = ResTaxFull;
 
     $('#resultE').val(ResTax);
     $('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
