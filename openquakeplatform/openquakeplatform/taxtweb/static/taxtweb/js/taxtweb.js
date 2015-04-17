@@ -856,9 +856,10 @@ function taxt_ValidateRegularity()
         $('#RegularityCB2').prop("disabled", false);
         select_populate('RegularityCB2', RegularityCB2, disabled_cb2);
     }
-
     $('#RegularityCB2').val(default_cb2);
     $('#RegularityCB3').val(default_cb3);
+    taxt_RegularityCB2Select(null);
+    taxt_RegularityCB3Select(null);
     $('#RegularityCB4').val(0);
     $('#RegularityCB5').val(0);
 }
