@@ -52,6 +52,8 @@
             .projection(function(d) { return [d.y, d.x]; });
 
         function createSpinner(id, weight, name, operator, isInverted) {
+            console.log('isInverted:');
+            console.log(isInverted);
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
             var content = '<p><label for="spinner'+id+'">'+name+':';
@@ -60,10 +62,13 @@
                 content += ' ('+ operator +') ';
             }
 
-            content += '</label>'+
-                '<input id="spinner-' + id + '" element="' + name + '" name="spinner" value="' + weight + '">'+
-                '<input type="checkbox" id="inverter-spinner-' + id + '">'+
-                '<label style="font-size: 0.8em; "for="inverter-spinner-' + id + '"'+
+            content += '</label><input id="spinner-' + id + '" element="' + name + '" name="spinner" value="' + weight + '">';
+            if (isInverted) {
+                content += '<input type="checkbox" id="inverter-spinner-' + id + '" checked>';
+            } else {
+                content += '<input type="checkbox" id="inverter-spinner-' + id + '">';
+            }
+            content += '<label style="font-size: 0.8em; "for="inverter-spinner-' + id + '"'+
                 'title="Select to invert the contribution of the variable to the calculation">Invert</label></p>';
 
             $('#projectDefWeightDialog').append(content);
@@ -205,7 +210,7 @@
 
             })) {
                 pdTempIds.push(pdData.id);
-                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator);
+                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator, pdData.isInverted);
             }
 
             (pdData.children || []).forEach(function(currentItem) {
