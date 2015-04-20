@@ -59,11 +59,15 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     projectDef = sessionProjectDef;
     var subIndex = {};
     var operator;
+    var inversionFactor;
+
+    // Get the theme operator
     for (var y = 0; y < projectDef.children.length; y++) {
         if (projectDef.children[y].name == nameLookUp) {
             operator = projectDef.children[y].operator;
         }
     }
+
     // first create an object with all of the district names
     for (var t = 0; t < themeObj.length; t++) {
         var tempRegion = themeObj[t].region;
@@ -77,7 +81,14 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         var themeWeight = JSONthemes[u].weight;
         themeKeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
+        // identify if the node has been inverted
+        if (JSONthemes[u].isInverted === true) {
+            inversionFactor = -1;
+        } else {
+            inversionFactor = 1;
+        }
     }
+
     // compute the subIndex values based on operator
     if (operator == 'Simple sum (ignore weights)') {
         for (var v = 0; v < themeObj.length; v++) {
@@ -86,7 +97,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             // compute the themes
             for (var w = 0; w < themeKeys.length; w++) {
                 var tempThemeName = themeKeys[w];
-                tempElementValue = tempElementValue + themeObj[v][tempThemeName];
+                tempElementValue = (tempElementValue + themeObj[v][tempThemeName]) * inversionFactor;
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -98,7 +109,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             for (var w1 = 0; w1 < themeKeys.length; w1++) {
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
+                tempElementValue = (tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal)) * inversionFactor;
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -109,7 +120,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             // compute the themes
             for (var w2 = 0; w2 < themeKeys.length; w2++) {
                 var tempThemeName = themeKeys[w2];
-                tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
+                tempElementValue = (tempElementValue + themeObj[v2][tempThemeName]) * inversionFactor;
             }
             var themeAverage = tempElementValue / themeKeys.length;
             subIndex[themeObjRegion] = themeAverage;
@@ -121,7 +132,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
                 var tempThemeName = themeKeys[w3];
-                tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
+                tempElementValue = (tempElementValue * themeObj[v3][tempThemeName]) * inversionFactor;
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -133,7 +144,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
+                tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal)) * inversionFactor;
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -172,9 +183,9 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    /////////////////////////////////////////
+    //////////////////////////////////////
     //// Compute the theme indicators ////
-    /////////////////////////////////////////
+    //////////////////////////////////////
 
     //build the theme indicator object
     var themeData = [];
@@ -202,8 +213,6 @@ function processIndicators(layerAttributes, projectDef) {
 
     // Find the theme information
     for (var m = 0; m < svThemes.length; m++) {
-        console.log('svThemes[m]:');
-        console.log(svThemes[m]);
         var operator = svThemes[m].operator;
         var weight = svThemes[m].weight;
         var name = svThemes[m].name;
@@ -226,8 +235,14 @@ function processIndicators(layerAttributes, projectDef) {
                     // iterate over the indicator child keys
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
+                            var inversionFactor;
+                            if (tempChildren[r2].isInverted === true) {
+                                inversionFactor = -1;
+                            } else {
+                                inversionFactor = 1;
+                            }
                             // Sum the theme indicators
-                            tempValue = tempValue + la[o].properties[p];
+                            tempValue = (tempValue + la[o].properties[p]) * inversionFactor;
                         }
                     }
                 }
@@ -239,8 +254,14 @@ function processIndicators(layerAttributes, projectDef) {
                     // iterate over the indicator child keys
                     for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
                         if (p1 == tempIndicatorChildrenKeys[r1]) {
+                            var inversionFactor;
+                            if (tempChildren[r2].isInverted === true) {
+                                inversionFactor = -1;
+                            } else {
+                                inversionFactor = 1;
+                            }
                             // Sum the theme indicators
-                            tempValue = tempValue + la[o].properties[p1];
+                            tempValue = (tempValue + la[o].properties[p1]) * inversionFactor;
                         }
                     }
                 }
@@ -252,7 +273,13 @@ function processIndicators(layerAttributes, projectDef) {
                         if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
-                            tempValue = tempValue + (la[o].properties[p2] * weight);
+                            var inversionFactor;
+                            if (tempChildren[r2].isInverted === true) {
+                                inversionFactor = -1;
+                            } else {
+                                inversionFactor = 1;
+                            }
+                            tempValue = (tempValue + (la[o].properties[p2] * weight) * inversionFactor);
                         }
                     }
                 }
@@ -264,7 +291,13 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
-                            tempValue = tempValue * la[o].properties[p3];
+                            var inversionFactor;
+                            if (tempChildren[r2].isInverted === true) {
+                                inversionFactor = -1;
+                            } else {
+                                inversionFactor = 1;
+                            }
+                            tempValue = (tempValue * la[o].properties[p3]) * inversionFactor;
                         }
                     }
                 }
@@ -277,7 +310,13 @@ function processIndicators(layerAttributes, projectDef) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
-                                tempValue = tempValue * (la[o].properties[p4] * weight);
+                            var inversionFactor;
+                            if (tempChildren[r2].isInverted === true) {
+                                inversionFactor = -1;
+                            } else {
+                                inversionFactor = 1;
+                            }
+                            tempValue = (tempValue * (la[o].properties[p4] * weight)) * inversionFactor;
                         }
                     }
                 }
