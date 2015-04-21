@@ -53,6 +53,8 @@
             .projection(function(d) { return [d.y, d.x]; });
 
         function createSpinner(id, weight, name, operator, isInverted) {
+            console.log('isInverted:');
+            console.log(isInverted);
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
             var content = '<p><label for="spinner'+id+'">'+name+':';
@@ -61,10 +63,13 @@
                 content += ' ('+ operator +') ';
             }
 
-            content += '</label>'+
-                '<input id="spinner-' + id + '" element="' + name + '" name="spinner" value="' + weight + '">'+
-                '<input type="checkbox" id="inverter-spinner-' + id + '">'+
-                '<label style="font-size: 0.8em; "for="inverter-spinner-' + id + '"'+
+            content += '</label><input id="spinner-' + id + '" element="' + name + '" name="spinner" value="' + weight + '">';
+            if (isInverted) {
+                content += '<input type="checkbox" id="inverter-spinner-' + id + '" checked>';
+            } else {
+                content += '<input type="checkbox" id="inverter-spinner-' + id + '">';
+            }
+            content += '<label style="font-size: 0.8em; "for="inverter-spinner-' + id + '"'+
                 'title="Select to invert the contribution of the variable to the calculation">Invert</label></p>';
 
             $('#projectDefWeightDialog').append(content);
@@ -99,6 +104,7 @@
                 $('#saveStateDialog').dialog('open');
                 $('#licenseName').empty();
                 $('#licenseURL').empty();
+                $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
                 $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
                 $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
 
@@ -111,11 +117,20 @@
                     }
                 });
 
-                var projectDefStg = JSON.stringify(projectDef);
-
                 $('#submitPD').click(function() {
-                    // Hit the API endpoint and grab the very very latest version of the PD object
+                    // Include the user provided title
+                    var giveName = $('#giveNamePD').val();
+                    projectDef.title = giveName;
 
+                    var projectDefStg = JSON.stringify(root, function(key, value) {
+                        // Avoid circularity in JSON by removing the parent key
+                        if (key == "parent") {
+                            return 'undefined';
+                          }
+                        return value;
+                    });
+
+                    // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,
                         project_definition: projectDefStg
@@ -123,9 +138,10 @@
                         function(){
                             // success
                         }).done(function() {
+                            $('#ajaxErrorDialog').dialog('option', 'title', 'success');
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
-                                '<p>The Project definition has been added to the layer metedata</p>'
+                                '<p>The Project Definition has been added to the layer metedata</p>'
                             );
                             $('#saveStateDialog').dialog('close');
                             $('#ajaxErrorDialog').dialog('open');
@@ -163,9 +179,12 @@
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
                     var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
                     var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
-                    if (isInverted) {
-                        spinnerValue = -spinnerValue;
-                    }
+
+                    //if (isInverted) {
+                       // spinnerValue = -spinnerValue;
+                   // }
+
+                    pdTempInverters.push(isInverted);
                     pdTempWeights.push(spinnerValue);
                 }
 
@@ -173,17 +192,20 @@
                 pdTempWeights = pdTempWeights.map(Number);
                 var totalWeights = 0;
                 $.each(pdTempWeights,function() {
-                    totalWeights += Math.abs(this);
+                    totalWeights += parseFloat(this);
                 });
 
                 for (var ia = 0; ia < pdTempWeights.length; ia++) {
-                    var tempMath = (pdTempWeights[ia] * 100) / totalWeights;
-                    pdTempWeightsComputed.push(tempMath / 100);
+                    if (totalWeights === 0) {
+                        pdTempWeightsComputed.push(0);
+                    } else {
+                        pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                    }
                 }
 
                 // Update the results back into the spinners and to the d3.js chart
                 for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
-                    $('#'+pdTempSpinnerIds[ib]).spinner("value", Math.abs(pdTempWeightsComputed[ib]));
+                    $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
                 }
 
                 // Upadte the json with new values
@@ -198,7 +220,7 @@
                     var element = $('#'+pdTempSpinnerIds[id]).attr('element');
                     tempNewWeight.push(element);
                     tempNewWeight.push(parseFloat(value));
-                    traverse(sessionProjectDef, tempNewWeight);
+                    traverse(pdData, tempNewWeight);
                 }
 
                 nodeEnter.remove("text");
@@ -237,6 +259,11 @@
                     }
                 }
             }
+            /////////////////////////////
+            /// Recreate all the data ///
+            /////////////////////////////
+            console.log('projectDefUpdated:');
+            console.log(projectDefUpdated);
             processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
@@ -249,7 +276,7 @@
                     }
                 }
             }
-            return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+            return d.weight ? Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -259,7 +286,7 @@
 
             })) {
                 pdTempIds.push(pdData.id);
-                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator);
+                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator, pdData.isInverted);
             }
 
             (pdData.children || []).forEach(function(currentItem) {
@@ -267,16 +294,17 @@
             });
         }
 
-        function updateTreeBranch(pdData, id, pdWeight) {
+        function updateTreeBranch(pdData, id, pdWeight, pdIsInverted) {
 
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
                 pdData.weight = pdWeight;
+                pdData.isInverted = pdIsInverted;
             }
 
             (pdData.children || []).forEach(function(currentItem) {
-                updateTreeBranch(currentItem, id, pdWeight);
+                updateTreeBranch(currentItem, id, pdWeight, pdIsInverted);
             });
         }
 
@@ -353,7 +381,7 @@
                 })
                 .attr("text-anchor", function(d) { return "end"; })
                 .text(function(d) {
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "- " + d.name;
                     } else {
                         return d.name;
@@ -382,7 +410,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; });
+                .attr("x", function(d) { return getRadius(d) + 15; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -405,7 +433,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
+                .attr("x", function(d) { return getRadius(d) + 15; })
                 .attr("transform", "translate(0, 12)");
 
             // Render weight values in tree
@@ -417,9 +445,9 @@
                 .attr("x", function(d) { return "-1em"; })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x){
-                        return -(Math.abs(d.weight) * CIRCLE_SCALE + 5);
+                        return -(getRadius(d) + 5);
                     } else {
-                        return Math.abs(d.weight) * CIRCLE_SCALE + 12;
+                        return getRadius(d) + 12;
                     }})
                 .text(function(d) {
                     if (d.parent === undefined) {
@@ -440,30 +468,26 @@
                 .attr("r", function (d) {
                     // d.weight is expected to be between 0 and 1
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
-                    return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                    return d.weight ? Math.max(getRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
                 .style("stroke", function(d) {
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "PowderBlue";
                     } else {
                         return "RoyalBlue";
                     }
                 })
                 .style("stroke-width", function(d) {
-                    return d.weight ? Math.min(Math.abs(d.weight) * CIRCLE_SCALE / 2, MAX_STROKE_SIZE): 4;
+                    return d.weight ? Math.min(getRadius(d) / 2, MAX_STROKE_SIZE): 4;
                 })
                 .style("fill", function(d) {
                     // return d.source ? d.source.linkColor: d.linkColor;
-                    if (d.parent !== undefined && d.parent.operator.indexOf("ignore weights") > -1) {
-                        return "Gold";
-                    }
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "RoyalBlue";
                     } else {
                         return "PowderBlue";
                     }
                 });
-
 
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);
