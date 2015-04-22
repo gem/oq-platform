@@ -34,8 +34,7 @@ from openquakeplatform.svir.models import (Theme,
                                            CustomRegion,
                                            CountryIndicator,)
 
-from geonode.base.models import Link, ResourceBase
-# from geonode.layers.models import Layer
+from geonode.base.models import Link
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 
 
@@ -136,17 +135,12 @@ def add_project_definition(request):
             'You are not allowed to modify this layer',
             mimetype='text/plain',
             status=401)
-    resourcebase_id = layer.resourcebase_ptr_id
-    try:
-        resourcebase = ResourceBase.objects.get(id=resourcebase_id)
-    except ObjectDoesNotExist:
-        return HttpResponseNotFound('Resourcebase not found')
-    supplemental_information = resourcebase.supplemental_information
+    supplemental_information = layer.supplemental_information
     try:
         project_definitions = json.loads(supplemental_information)
     except Exception as e:
         return HttpResponseBadRequest(
-            "The layer's metadata do not contain valid"
+            "The layer's supplemental information do not contain valid"
             "project definitions: %s", str(e))
     # if there's only one project definition (it is a simple dict),
     # create a list and append to it the existing
@@ -155,9 +149,9 @@ def add_project_definition(request):
     if isinstance(project_definitions, dict):
         project_definitions = [project_definitions]
     project_definitions.append(project_definition)
-    resourcebase.supplemental_information = json.dumps(
+    layer.supplemental_information = json.dumps(
         project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
-    resourcebase.save()
+    layer.save()
     return HttpResponse("The new project definition has been added")
 
 
