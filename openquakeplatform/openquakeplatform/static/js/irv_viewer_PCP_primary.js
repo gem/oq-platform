@@ -41,6 +41,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     $('#primary_indicator').show();
 
     $('#primary_indicator').change(function() {
+        $('#primary-spinner').hide();
         var selectedTheme = $('#primary_indicator').val();
         // Find the children of selected theme
         var selectedThemeChildren;

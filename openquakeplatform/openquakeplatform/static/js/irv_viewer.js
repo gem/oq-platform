@@ -343,7 +343,6 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
-    $('#primary_indicator').empty();
     Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
 
