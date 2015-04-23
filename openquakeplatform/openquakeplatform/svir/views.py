@@ -17,6 +17,7 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+from cStringIO import StringIO
 import csv
 import json
 from django.http import (HttpResponse,
@@ -39,7 +40,7 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 
 
 COPYRIGHT_HEADER = u"""\
- Copyright (C) 2014 GEM Foundation
+ Copyright (C) 2014-2015 GEM Foundation
 
  Contributions by: see http://www.globalquakemodel.org/contributors
 
@@ -245,7 +246,7 @@ def export_variables_info(request):
     theme_str = request.GET.get('theme')
     subtheme_str = request.GET.get('subtheme')
     copyright = copyright_csv(COPYRIGHT_HEADER)
-    response.write(copyright + "\n")
+    response.write(copyright)
     writer = csv.writer(response)
 
     keywords = []
@@ -324,7 +325,7 @@ def export_countries_info(request):
         'attachment; filename="countries_info_export.csv"'
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
-    response.write(copyright + "\n")
+    response.write(copyright)
     writer.writerow(['ISO', 'NAME'])
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
@@ -370,26 +371,39 @@ def export_variables_data(request):
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
                                   for iso in country_iso_codes.split(',')]
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = \
-        'attachment; filename="sv_data_by_variables_ids_export.csv"'
+    response_data = _stream_variables_data_as_csv(
+        sv_variables_ids, export_geometries, country_iso_codes_list)
+    filename = 'sv_data_by_variables_ids_export.csv'
+    content_disp = 'attachment; filename="%s"' % filename
+    mimetype = 'text/csv'
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    # response['content-length'] = len(response.content)
+    return response
+
+
+def _stream_variables_data_as_csv(
+        sv_variables_ids, export_geometries, country_iso_codes_list):
     copyright = copyright_csv(COPYRIGHT_HEADER)
-    writer = csv.writer(response)
-    response.write(copyright + "\n")
+    yield copyright
     sv_variables_ids_list = [var_id.strip()
                              for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
-    for sv_variable_id in sv_variables_ids_list:
-        header_list.append(sv_variable_id)
+    indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    for indicator in indicators:
+        header_list.append(indicator.code)
     if export_geometries:
         header_list.append("GEOMETRY")
-    writer.writerow(header_list)
-    indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    csvfile1 = StringIO()
+    csvwriter1 = csv.writer(csvfile1, delimiter=',', quotechar='"')
+    csvwriter1.writerow(header_list)
+    yield csvfile1.getvalue()
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
-        if country_iso_codes and country.iso not in country_iso_codes_list:
+        if (country_iso_codes_list
+                and country.iso not in country_iso_codes_list):
             continue
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
@@ -405,9 +419,10 @@ def export_variables_data(request):
         row.extend(ind_vals)
         if export_geometries:
             row.append(country.the_geom)
-        writer.writerow(row)
-    response['content-length'] = len(response.content)
-    return response
+        csvfile2 = StringIO()
+        csvwriter2 = csv.writer(csvfile2, delimiter=',', quotechar='"')
+        csvwriter2.writerow(row)
+        yield csvfile2.getvalue()
 
 
 def copyright_csv(cr_text):
@@ -415,4 +430,4 @@ def copyright_csv(cr_text):
     # prepend the # comment character to each line
     lines = ['#%s' % line for line in lines]
     # rejoin into a single multiline string:
-    return '\n'.join(lines)
+    return '\n'.join(lines) + "\n"
