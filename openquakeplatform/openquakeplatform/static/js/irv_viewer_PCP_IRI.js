@@ -20,6 +20,7 @@
 ////////////////////////////////////////////
 
 function IRI_PCP_Chart(iriPcpData) {
+
     // TODO use the plotelements from the object instead of this array
     var plotElements = ["iri", "svi", "ri"];
     var keys = [];
@@ -42,7 +43,7 @@ function IRI_PCP_Chart(iriPcpData) {
         foreground;
 
     var x_scale = d3.scale.linear().domain([0, w]).range([0, w]);
-    var y_scale = d3.scale.linear().domain([h, 0]).range([0, h]);
+    var y_scale = d3.scale.linear().domain([1, 0]).range([0, h]);
 
     function yAxis() {
         return d3.svg.axis()
@@ -215,6 +216,6 @@ function IRI_PCP_Chart(iriPcpData) {
     }
 
     // Scroll down as a new chart is created
-        $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
+    $('#pcp-charts').scrollTop($('#chart-tabs').prop("scrollHeight"));
 
 } // End PCP Chart

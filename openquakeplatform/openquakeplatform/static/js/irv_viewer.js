@@ -341,6 +341,7 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
+    Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
 
     /////////////////////////
@@ -680,6 +681,8 @@ function watchForPdSelection(boundingBox, tempProjectDef) {
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
+    $('#primary-spinner').hide();
+    $('#primary_indicator').hide();
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -761,6 +764,7 @@ var startApp = function() {
     $('#svir-project-list').change(function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
+        $('#primary-spinner').show();
         $('#regionSelectionDialog').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
