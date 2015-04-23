@@ -19,6 +19,8 @@ var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
+var boundingBox;
+var tempProjectDef;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -341,6 +343,7 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
+    console.log('hi there foobar:');
     Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
 
@@ -646,36 +649,35 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
-function watchForPdSelection(boundingBox, tempProjectDef) {
-    $('#pdSelection').change(function() {
-        var pdSelection = $('#pdSelection').val();
-        for (var i = 0; i < tempProjectDef.length; i++) {
-            if (tempProjectDef[i].title === pdSelection) {
-                sessionProjectDef = tempProjectDef[i];
-                loadPD(sessionProjectDef);
-                // get b-box
-                if (boundingBox != undefined) {
-                    map.fitBounds (
-                        L.latLngBounds (
-                            L.latLng (
-                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                            ),
-                            L.latLng (
-                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                            )
+function watchForPdSelection() {
+    var pdSelection = $('#pdSelection').val();
+    for (var i = 0; i < tempProjectDef.length; i++) {
+        if (tempProjectDef[i].title === pdSelection) {
+            sessionProjectDef = tempProjectDef[i];
+            loadPD(sessionProjectDef);
+            // get b-box
+            if (boundingBox != undefined) {
+                map.fitBounds (
+                    L.latLngBounds (
+                        L.latLng (
+                            parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                            parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                        ),
+                        L.latLng (
+                            parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                            parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
                         )
-                    );
-                }
-                $('#projectDef-spinner').hide();
-                $('#iri-spinner').hide();
-                $('#project-definition-svg').show();
-                $('#region-selection-list').show();
-                processIndicators(layerAttributes, sessionProjectDef);
+                    )
+                );
             }
+            $('#projectDef-spinner').hide();
+            $('#iri-spinner').hide();
+            $('#project-definition-svg').show();
+            $('#region-selection-list').show();
         }
-    });
+    }
+    console.log('hi there watchForPdSelection:');
+    processIndicators(layerAttributes, sessionProjectDef);
 }
 
 var startApp = function() {
@@ -842,13 +844,13 @@ var startApp = function() {
                     // Pass a string representing the project def into the d3 tree chart
                     projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
 
-                    var tempProjectDef = jQuery.parseJSON(projectDefStr);
+                    tempProjectDef = jQuery.parseJSON(projectDefStr);
 
                     // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                    var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
+                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
 
                     if (tempProjectDef.constructor === Array) {
-                        $('#project-def').prepend('<select id="pdSelection"><option value"" disabled selected>Select a Project Definition</option></select>');
+                        $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
                         var pdTitles = [];
                         // break the array into objects, present the user with a choice of PDs
                         for (var i = 0; i < tempProjectDef.length; i++) {
@@ -860,7 +862,6 @@ var startApp = function() {
                             $('#pdSelection').append(
                                 '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
                             );
-                            watchForPdSelection(boundingBox, tempProjectDef);
                         }
                     } else {
                         // get b-box
