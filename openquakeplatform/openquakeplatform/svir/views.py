@@ -391,14 +391,15 @@ def _stream_variables_data_as_csv(
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
     indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    # NOTE: unavailable indicators will be ignored
     for indicator in indicators:
         header_list.append(indicator.code)
     if export_geometries:
         header_list.append("GEOMETRY")
-    csvfile1 = StringIO()
-    csvwriter1 = csv.writer(csvfile1, delimiter=',', quotechar='"')
-    csvwriter1.writerow(header_list)
-    yield csvfile1.getvalue()
+    csvfile = StringIO()
+    csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
+    csvwriter.writerow(header_list)
+    yield csvfile.getvalue()
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
@@ -419,10 +420,11 @@ def _stream_variables_data_as_csv(
         row.extend(ind_vals)
         if export_geometries:
             row.append(country.the_geom)
-        csvfile2 = StringIO()
-        csvwriter2 = csv.writer(csvfile2, delimiter=',', quotechar='"')
-        csvwriter2.writerow(row)
-        yield csvfile2.getvalue()
+        # redefine csvfile and csvwriter to avoid yielding again previous stuff
+        csvfile = StringIO()
+        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
+        csvwriter.writerow(row)
+        yield csvfile.getvalue()
 
 
 def copyright_csv(cr_text):
