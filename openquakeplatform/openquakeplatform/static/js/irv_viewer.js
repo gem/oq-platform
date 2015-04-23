@@ -343,7 +343,7 @@ function processIndicators(layerAttributes, projectDef) {
         generateThemeObject(indicatorObj);
     }
 
-    console.log('hi there foobar:');
+    $('#primary_indicator').empty();
     Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
     Theme_PCP_Chart(themeData);
 
@@ -676,7 +676,6 @@ function watchForPdSelection() {
             $('#region-selection-list').show();
         }
     }
-    console.log('hi there watchForPdSelection:');
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
