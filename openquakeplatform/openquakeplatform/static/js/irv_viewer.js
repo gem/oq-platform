@@ -55,8 +55,8 @@ function createIndex(la, index) {
     return indicator;
 }
 
-function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
-
+function combineIndicators(nameLookUp, themeObj, JSONthemes) {
+    projectDef = sessionProjectDef;
     var subIndex = {};
     var operator;
     var inversionFactor;
@@ -65,12 +65,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
     for (var y = 0; y < projectDef.children.length; y++) {
         if (projectDef.children[y].name == nameLookUp) {
             operator = projectDef.children[y].operator;
-            // Check the inversion state
-            if (projectDef.children[y].isInverted === true) {
-                inversionFactor = -1;
-            } else {
-                inversionFactor = 1;
-            }
         }
     }
 
@@ -87,6 +81,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
         var themeWeight = JSONthemes[u].weight;
         themeKeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
+        // identify if the node has been inverted
+        if (JSONthemes[u].isInverted === true) {
+            inversionFactor = -1;
+        } else {
+            inversionFactor = 1;
+        }
     }
 
     // compute the subIndex values based on operator
@@ -97,9 +97,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
             // compute the themes
             for (var w = 0; w < themeKeys.length; w++) {
                 var tempThemeName = themeKeys[w];
-                tempElementValue = tempElementValue + themeObj[v][tempThemeName];
+                tempElementValue = (tempElementValue + themeObj[v][tempThemeName]) * inversionFactor;
             }
-            subIndex[themeObjRegion] = tempElementValue * inversionFactor;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Weighted sum') {
         for (var v1 = 0; v1 < themeObj.length; v1++) {
@@ -109,10 +109,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
             for (var w1 = 0; w1 < themeKeys.length; w1++) {
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
+                tempElementValue = (tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal)) * inversionFactor;
             }
-
-            subIndex[themeObjRegion] = tempElementValue * inversionFactor;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
@@ -121,10 +120,10 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
             // compute the themes
             for (var w2 = 0; w2 < themeKeys.length; w2++) {
                 var tempThemeName = themeKeys[w2];
-                tempElementValue = tempElementValue + themeObj[v2][tempThemeName];
+                tempElementValue = (tempElementValue + themeObj[v2][tempThemeName]) * inversionFactor;
             }
             var themeAverage = tempElementValue / themeKeys.length;
-            subIndex[themeObjRegion] = themeAverage  * inversionFactor;
+            subIndex[themeObjRegion] = themeAverage;
         }
     } else if (operator == 'Simple multiplication (ignore weights)') {
         for (var v3 = 0; v3 < themeObj.length; v3++) {
@@ -133,9 +132,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
                 var tempThemeName = themeKeys[w3];
-                tempElementValue = tempElementValue * themeObj[v3][tempThemeName];
+                tempElementValue = (tempElementValue * themeObj[v3][tempThemeName]) * inversionFactor;
             }
-            subIndex[themeObjRegion] = tempElementValue * inversionFactor;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Weighted multiplication') {
         for (var v4 = 0; v4 < themeObj.length; v4++) {
@@ -145,9 +144,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
             for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal);
+                tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal)) * inversionFactor;
             }
-            subIndex[themeObjRegion] = tempElementValue * inversionFactor;
+            subIndex[themeObjRegion] = tempElementValue;
         }
     }
     return subIndex;
@@ -155,7 +154,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, projectDef) {
 
 function processIndicators(layerAttributes, projectDef) {
 
-    //sessionProjectDef = projectDef;
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -343,7 +341,7 @@ function processIndicators(layerAttributes, projectDef) {
     var sviNameLookUp = 'SVI';
     var sviJSONthemes = svThemes;
     // SVI is an object with region and value
-    SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes, projectDef);
+    SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
     scale(SVI);
 
     ////////////////////////////////
@@ -366,7 +364,7 @@ function processIndicators(layerAttributes, projectDef) {
     var RI = {};
     var nameLookUp = 'RI';
     var riJSONthemes = riskIndicators;
-    RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes, projectDef);
+    RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
     scale(RI);
 
     ///////////////////////////////
@@ -783,8 +781,6 @@ var startApp = function() {
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
-                console.log('layerMetadataURL:');
-                console.log(layerMetadataURL);
 
                 // ***** TEMP remove this ****
                 // file 4

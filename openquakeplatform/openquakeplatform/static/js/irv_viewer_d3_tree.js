@@ -52,6 +52,8 @@
             .projection(function(d) { return [d.y, d.x]; });
 
         function createSpinner(id, weight, name, operator, isInverted) {
+            console.log('isInverted:');
+            console.log(isInverted);
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
             var content = '<p><label for="spinner'+id+'">'+name+':';
@@ -184,7 +186,8 @@
             /////////////////////////////
             /// Recreate all the data ///
             /////////////////////////////
-
+            console.log('projectDefUpdated:');
+            console.log(projectDefUpdated);
             processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
@@ -201,7 +204,6 @@
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
-
             // Find out how many elements are in tree branch
             if (pdLevel.some(function(currentValue) {
                 return (pdData.level == currentValue);
