@@ -787,12 +787,8 @@ var startApp = function() {
                 console.log(layerMetadataURL);
 
                 // ***** TEMP remove this ****
-                // file 4
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
-                // file 5
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
-                // file 6
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=96fcdbc2-dd00-11e4-993f-0800278c33b4";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
