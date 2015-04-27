@@ -97,7 +97,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             // compute the themes
             for (var w = 0; w < themeKeys.length; w++) {
                 var tempThemeName = themeKeys[w];
-                tempElementValue = (tempElementValue + themeObj[v][tempThemeName]) * inversionFactor;
+                tempElementValue = tempElementValue + (themeObj[v][tempThemeName] * inversionFactor);
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -120,7 +120,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             // compute the themes
             for (var w2 = 0; w2 < themeKeys.length; w2++) {
                 var tempThemeName = themeKeys[w2];
-                tempElementValue = (tempElementValue + themeObj[v2][tempThemeName]) * inversionFactor;
+                tempElementValue = tempElementValue + (themeObj[v2][tempThemeName] * inversionFactor);
             }
             var themeAverage = tempElementValue / themeKeys.length;
             subIndex[themeObjRegion] = themeAverage;
@@ -132,7 +132,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
                 var tempThemeName = themeKeys[w3];
-                tempElementValue = (tempElementValue * themeObj[v3][tempThemeName]) * inversionFactor;
+                tempElementValue = tempElementValue * (themeObj[v3][tempThemeName] * inversionFactor);
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -144,7 +144,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal)) * inversionFactor;
+                tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal * inversionFactor);
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -278,7 +278,7 @@ function processIndicators(layerAttributes, projectDef) {
             } else if ( operator == "Weighted sum") {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
-                    for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++, ct++) {
+                    for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++) {
                         if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
@@ -794,7 +794,7 @@ var startApp = function() {
 
                 // ***** TEMP remove this ****
                 // file 4
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
                 // file 5
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // file 6
