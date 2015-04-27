@@ -30,8 +30,11 @@ function Theme_PCP_Chart(themeData) {
         height = winH - margin.top - margin.bottom;
     var eachValueInThemeData = [];
     var eachElementInThemeData = [];
+    // The combined values for each element in the themeData
     var sum = {};
+    // An object that contains the mean for each region the the themeData
     var sumMean = {};
+    // An array that holds the mean value for each region
     var sumMeanArray = [];
 
     for (var i = 0; i < themeData.length; i++) {
@@ -132,18 +135,18 @@ function Theme_PCP_Chart(themeData) {
     }
 
     //////////////////////
-    //// Meadian line ////
+    //// Median line ////
     //////////////////////
 
     // Build skeleton array
-    for (var t in themeData[0]) {
-        sum[t] = 0;
+    for (var regionKey in themeData[0]) {
+        sum[regionKey] = 0;
     }
 
     // Sum all the paths
-    for (var h = 0; h < themeData.length; h++) {
-        for (var n in themeData[h]) {
-            sum[n] += themeData[h][n];
+    for (var value = 0; value < themeData.length; value++) {
+        for (var regionKey in themeData[value]) {
+            sum[regionKey] += themeData[value][regionKey];
         }
     }
 
@@ -155,7 +158,7 @@ function Theme_PCP_Chart(themeData) {
 
     sumMeanArray.push(sumMean);
 
-    // Plot the meadian line
+    // Plot the median line
     meanPath = svg.append("g")
         .attr("class", "PI-meanPath")
         .selectAll("path")
@@ -164,7 +167,7 @@ function Theme_PCP_Chart(themeData) {
         .attr("d", path)
         .attr('id', function(d) { return d.region; })
             .on('mouseover', function() {
-                textTop.text('Meadian');
+                textTop.text('Median');
             }).on('mouseout', function() {
                 textTop.text('');
             });
