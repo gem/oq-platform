@@ -234,20 +234,16 @@ function processIndicators(layerAttributes, projectDef) {
             // count the inversion
             var primaryInversionFactor;
             if (tempChildren[q].isInverted === true) {
-                negativeCount += -1;
+                negativeCount += 1;
             }
         }
-        console.log('negativeCount:');
-        console.log(negativeCount);
-        // REMOVE this
-        //operator = "Simple multiplication (ignore weights)";
 
         // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++) {
             var tempValue = 0;
             var region = la[o].properties[selectedRegion];
             var theme = name;
-            var ct = 0;
+
             // check the operator type and compute accordingly
             if (operator == "Average (ignore weights)") {
                 for (var p in la[o].properties) {
@@ -289,8 +285,6 @@ function processIndicators(layerAttributes, projectDef) {
                 for (var p2 in la[o].properties) {
                     // iterate over the indicator child keys
                     for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++, ct++) {
-                        console.log('ct:');
-                        console.log(ct);
                         if (p2 == tempIndicatorChildrenKeys[r2]) {
                             // Sum the theme indicators
                             var weight = tempChildren[r2].weight;
@@ -312,13 +306,15 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
                             // Sum the theme indicators
-                            tempValue = tempValue * la[o].properties[p3];
+                            var primaryInversionFactor;
+                            if (tempChildren[r3].isInverted === true) {
+                                primaryInversionFactor = -1;
+                            } else {
+                                primaryInversionFactor = 1;
+                            }
+                            tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
                         }
                     }
-                }
-                // Set the inversion type
-                if (negativeCount & 1) {
-                    tempValue = tempValue * -1;
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * inversionFactor});
             } else if ( operator == "Weighted multiplication") {
@@ -335,21 +331,14 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                             // Sum the theme indicators
                             var weight = tempChildren[r4].weight;
-                            tempValue = (tempValue * (la[o].properties[p4] * weight) * primaryInversionFactor);
+                            tempValue = tempValue * (la[o].properties[p4] * primaryInversionFactor * weight);
                         }
                     }
-                }
-                // Set the inversion type
-                if (negativeCount & 1) {
-                    tempValue = tempValue * -1;
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * inversionFactor});
             }
         }
     }
-
-    console.log('indicatorInfo:');
-    console.log(indicatorInfo);
 
     for (var p5 = 0; p5 < indicatorInfo.length; p5++) {
         // process the object for each record
@@ -811,7 +800,7 @@ var startApp = function() {
 
                 // ***** TEMP remove this ****
                 // file 4
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
                 // file 5
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // file 6
