@@ -226,16 +226,10 @@ function processIndicators(layerAttributes, projectDef) {
         allSVIThemes.push(name);
         var tempChildren = svThemes[m].children;
         var tempIndicatorChildrenKeys = [];
-        var negativeCount = 0;
 
         for (var q = 0; q < tempChildren.length; q++) {
             // Get the indicators children keys
             tempIndicatorChildrenKeys.push(tempChildren[q].field);
-            // count the inversion
-            var primaryInversionFactor;
-            if (tempChildren[q].isInverted === true) {
-                negativeCount += 1;
-            }
         }
 
         // iterate over the layerAttributes to access the data
