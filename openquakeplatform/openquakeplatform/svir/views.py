@@ -181,7 +181,7 @@ def list_subthemes_by_theme(request):
     theme_str = request.GET.get('theme')
     if not theme_str:
         return HttpResponseBadRequest(
-            'Please provide a theme to get the corresponding subthemes.')
+            'Please provide the theme parameter')
     try:
         theme_obj = Theme.objects.get(name=theme_str)
     except ObjectDoesNotExist:
@@ -360,13 +360,15 @@ def export_variables_data(request):
     """
     req_dict = request.GET if request.method == 'GET' else request.POST
     if not req_dict.get('sv_variables_ids'):
-        msg = ('A list of comma-separated social vulnerability variable codes'
-               ' must be specified')
+        msg = ('Please specify the sv_variables_ids parameter: a list of'
+               ' comma-separated codes of social vulnerability variables.'
+               ' Optional parameters: country_iso_codes (default: get data'
+               ' for all countries); export_geometries (default: False)')
         response = HttpResponse(msg, status="400")
         return response
     sv_variables_ids = req_dict['sv_variables_ids']
     country_iso_codes = req_dict.get('country_iso_codes')
-    export_geometries = req_dict.get('export_geometries') == 'True'
+    export_geometries = (req_dict.get('export_geometries') == 'True')
     country_iso_codes_list = []
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
