@@ -838,7 +838,14 @@ var startApp = function() {
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
 
+                console.log('layerMetadataURL:');
+                console.log(layerMetadataURL);
+
                 // ***** TEMP remove this ****
+
+                // file 2
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=d5e173c8-b77d-11e4-a48e-0800278c33b4";
+    
                 // file 4
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
                 // file 5
@@ -847,16 +854,63 @@ var startApp = function() {
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
+                    // Convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
+                    // Pass a string representing the project def into the d3 tree chart
+                    projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+
+                    tempProjectDef = jQuery.parseJSON(projectDefStr);
+
+                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
+                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
+
+                    if (tempProjectDef.constructor === Array) {
+                        $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+                        var pdTitles = [];
+                        // break the array into objects, present the user with a choice of PDs
+                        for (var i = 0; i < tempProjectDef.length; i++) {
+                            // Get the PD title
+                            pdTitles.push(tempProjectDef[i].title);
+                        }
+                        // Provide the user with a selection dropdown of the available PDs
+                        for (var ia = 0; ia < pdTitles.length; ia++) {
+                            $('#pdSelection').append(
+                                '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                            );
+                        }
+                    } else {
+                        // get b-box
+                        sessionProjectDef = tempProjectDef;
+                        loadPD(sessionProjectDef);
+                        if (boundingBox != undefined) {
+                            map.fitBounds (
+                                L.latLngBounds (
+                                    L.latLng (
+                                        parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                        parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                                    ),
+                                    L.latLng (
+                                        parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                        parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                                    )
                                 )
+                            );
+                        }
+                        $('#projectDef-spinner').hide();
+                        $('#iri-spinner').hide();
+                        $('#project-definition-svg').show();
+                        $('#region-selection-list').show();
+                        processIndicators(layerAttributes, sessionProjectDef);
                     }
                 });
             },
             error: function() {
             $('#ajaxErrorDialog').empty();
             $('#ajaxErrorDialog').append(
+                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+            );
             $('#ajaxErrorDialog').dialog('open');
             }
         });
