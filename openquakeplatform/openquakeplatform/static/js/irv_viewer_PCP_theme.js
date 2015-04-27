@@ -47,6 +47,7 @@ function Theme_PCP_Chart(themeData) {
     }
 
     var maxVal = Math.max.apply( Math, eachValueInThemeData );
+    var minVal = Math.min.apply( Math, eachValueInThemeData );
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
 
@@ -68,7 +69,7 @@ function Theme_PCP_Chart(themeData) {
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(themeData[0]).filter(function(d) {
         return d != 'region' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
-            .domain([0, maxVal])
+            .domain([minVal, maxVal])
             .range([height, 0]));
     }));
 

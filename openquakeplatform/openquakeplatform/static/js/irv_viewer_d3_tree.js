@@ -51,27 +51,40 @@
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        function createSpinner(id, weight, name, operator) {
-
-            if (operator === undefined) {
-                operator = 'n/a';
-            }
-
+        function createSpinner(id, weight, name, operator, isInverted) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
-            $('#projectDefWeightDialog').append(
-                '<p>'+
-                    '<label for="spinner'+id+'">'+name+': </label>'+
-                    '<input id="spinner-'+id+'" element="'+name+'" name="spinner" value="'+weight+'">'+
-                '</p>'
-            );
+            var content = '<p><label for="spinner'+id+'">'+name+':';
+
+            if (typeof operator !== 'undefined') {
+                content += ' ('+ operator +') ';
+            }
+
+            content += '</label><input id="spinner-' + id + '" element="' + name + '" name="spinner" value="' + weight + '">';
+            if (isInverted) {
+                content += '<input type="checkbox" id="inverter-spinner-' + id + '" checked>';
+            } else {
+                content += '<input type="checkbox" id="inverter-spinner-' + id + '">';
+            }
+            content += '<label style="font-size: 0.8em; "for="inverter-spinner-' + id + '"'+
+                'title="Select to invert the contribution of the variable to the calculation">Invert</label></p>';
+
+            $('#projectDefWeightDialog').append(content);
+
+            $(function() {
+                var inverter = $("#inverter-spinner-" + id);
+                inverter.button();
+                inverter.prop("checked", isInverted);
+                inverter.button("refresh");
+            });
 
             $(function() {
                 $("#spinner-"+id).width(100).spinner({
-                    min: -100,
+                    min: 0,
                     max: 100,
-                    step: 0.000001,
+                    step: 0.001,
                     numberFormat: "n",
+                    incremental: true
                 });
             });
         }
@@ -82,42 +95,50 @@
             $('#update-spinner-value').click(function() {
                 pdTempWeights = [];
                 pdTempWeightsComputed = [];
+                pdTempInverters = [];
 
-                // Get the values of the spinners
+                // Get the values of the spinners and inverters
                 for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    pdTempWeights.push($('#'+pdTempSpinnerIds[i]).val());
+                    var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
+                    var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
+
+                    pdTempInverters.push(isInverted);
+                    pdTempWeights.push(spinnerValue);
                 }
 
                 // Adjust the values into percentages
                 pdTempWeights = pdTempWeights.map(Number);
                 var totalWeights = 0;
                 $.each(pdTempWeights,function() {
-                    totalWeights += Math.abs(this);
+                    totalWeights += parseFloat(this);
                 });
 
-                for (var i = 0; i < pdTempWeights.length; i++) {
-                    var tempMath = (pdTempWeights[i] * 100) / totalWeights;
-                    pdTempWeightsComputed.push(tempMath / 100);
+                for (var ia = 0; ia < pdTempWeights.length; ia++) {
+                    if (totalWeights === 0) {
+                        pdTempWeightsComputed.push(0);
+                    } else {
+                        pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                    }
                 }
 
-                // Uopdate the results back into the spinners and to the d3.js chart
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    $('#'+pdTempSpinnerIds[i]).spinner("value", pdTempWeightsComputed[i]);
+                // Update the results back into the spinners and to the d3.js chart
+                for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
+                    $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
                 }
 
                 // Upadte the json with new values
-                for (var i = 0; i < pdTempWeightsComputed.length; i++) {
-                    updateTreeBranch(pdData, [pdTempIds[i]], pdTempWeightsComputed[i]);
+                for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
+                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
                 }
 
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                for (var id = 0; id < pdTempSpinnerIds.length; id++) {
                     // get the elements that have been modified
                     var tempNewWeight = [];
-                    var value = $('#'+pdTempSpinnerIds[i]).val();
-                    var element = $('#'+pdTempSpinnerIds[i]).attr('element');
+                    var value = $('#'+pdTempSpinnerIds[id]).val();
+                    var element = $('#'+pdTempSpinnerIds[id]).attr('element');
                     tempNewWeight.push(element);
                     tempNewWeight.push(parseFloat(value));
-                    traverse(sessionProjectDef, tempNewWeight);
+                    traverse(pdData, tempNewWeight);
                 }
 
                 nodeEnter.remove("text");
@@ -156,7 +177,23 @@
                     }
                 }
             }
+            /////////////////////////////
+            /// Recreate all the data ///
+            /////////////////////////////
+
             processIndicators(projectLayerAttributes, projectDefUpdated);
+        }
+
+        function getRadius(d) {
+            if (typeof d.parent != 'undefined') {
+                if (typeof d.parent.operator != 'undefined') {
+                    if (d.parent.operator.indexOf('ignore weights') != -1) {
+                        radius = Math.max(1 / d.parent.children.length * CIRCLE_SCALE, MIN_CIRCLE_SIZE);
+                        return radius;
+                    }
+                }
+            }
+            return d.weight ? Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -166,7 +203,7 @@
 
             })) {
                 pdTempIds.push(pdData.id);
-                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator);
+                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator, pdData.isInverted);
             }
 
             (pdData.children || []).forEach(function(currentItem) {
@@ -174,16 +211,17 @@
             });
         }
 
-        function updateTreeBranch(pdData, id, pdWeight) {
+        function updateTreeBranch(pdData, id, pdWeight, pdIsInverted) {
 
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
             })) {
                 pdData.weight = pdWeight;
+                pdData.isInverted = pdIsInverted;
             }
 
             (pdData.children || []).forEach(function(currentItem) {
-                updateTreeBranch(currentItem, id, pdWeight);
+                updateTreeBranch(currentItem, id, pdWeight, pdIsInverted);
             });
         }
 
@@ -247,19 +285,19 @@
                 .attr("class", (function(d) { return "level-" + d.level; }))
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
-                .attr("x", function(d) { return -(Math.abs(d.weight) * CIRCLE_SCALE + 5); })
+                .attr("x", function(d) { return -(getRadius(d) + 5); })
                 .attr("dy", function(d) {
                     // NOTE are x and y swapped?
                     // set te text above or below the node depending on the
                     // parent position
-                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                    if (typeof d.parent != 'undefined' && d.x > d.parent.x){
                         return "2em";
                     }
                     return "-1em";
                 })
                 .attr("text-anchor", function(d) { return "end"; })
                 .text(function(d) {
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "- " + d.name;
                     } else {
                         return d.name;
@@ -288,7 +326,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; });
+                .attr("x", function(d) { return getRadius(d) + 15; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -311,7 +349,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return Math.abs(d.weight) * CIRCLE_SCALE + 15; })
+                .attr("x", function(d) { return getRadius(d) + 15; })
                 .attr("transform", "translate(0, 12)");
 
             // Render weight values in tree
@@ -322,9 +360,9 @@
                 .attr("x", function(d) { return "-1em"; })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x){
-                        return -(Math.abs(d.weight) * CIRCLE_SCALE + 5);
+                        return -(getRadius(d) + 5);
                     } else {
-                        return Math.abs(d.weight) * CIRCLE_SCALE + 12;
+                        return getRadius(d) + 12;
                     }})
                 .text(function(d) {
                     if (d.parent === undefined) {
@@ -345,30 +383,26 @@
                 .attr("r", function (d) {
                     // d.weight is expected to be between 0 and 1
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
-                    return d.weight ? Math.max(Math.abs(d.weight) * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                    return d.weight ? Math.max(getRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
                 .style("stroke", function(d) {
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "PowderBlue";
                     } else {
                         return "RoyalBlue";
                     }
                 })
                 .style("stroke-width", function(d) {
-                    return d.weight ? Math.min(Math.abs(d.weight) * CIRCLE_SCALE / 2, MAX_STROKE_SIZE): 4;
+                    return d.weight ? Math.min(getRadius(d) / 2, MAX_STROKE_SIZE): 4;
                 })
                 .style("fill", function(d) {
                     // return d.source ? d.source.linkColor: d.linkColor;
-                    if (d.parent !== undefined && d.parent.operator.indexOf("ignore weights") > -1) {
-                        return "Gold";
-                    }
-                    if (d.weight < 0) {
+                    if (d.isInverted) {
                         return "RoyalBlue";
                     } else {
                         return "PowderBlue";
                     }
                 });
-
 
             nodeUpdate.select("text")
                 .style("fill-opacity", 1);

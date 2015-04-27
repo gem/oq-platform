@@ -24,7 +24,12 @@ and overrides the original GeoNode template.
 
 {% block body_outer %}
   <div class="span5">
-    <h2 class="page-title">{{ document.title }}</h2>
+    <h2 class="page-title">
+      {{ document.title }}
+      {% if document.owner.username != 'GEM' %}
+        (User Contributed)
+      {% endif %}
+    </h2>
   </div>
   <div class="span7 action-group">
     <!-- <div class="pull-right">
