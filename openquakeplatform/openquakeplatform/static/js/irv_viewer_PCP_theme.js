@@ -34,7 +34,7 @@ function Theme_PCP_Chart(themeData) {
     var sum = {};
     // An object that contains the mean for each region the the themeData
     var sumMean = {};
-    // An array that holds the mean value for each region
+    // An array that holds the mean value for each regionKey
     var sumMeanArray = [];
 
     for (var i = 0; i < themeData.length; i++) {
@@ -139,14 +139,16 @@ function Theme_PCP_Chart(themeData) {
     //////////////////////
 
     // Build skeleton array
-    for (var regionKey in themeData[0]) {
-        sum[regionKey] = 0;
+    for (var region in themeData[0]) {
+        sum[region] = 0;
     }
 
     // Sum all the paths
-    for (var value = 0; value < themeData.length; value++) {
-        for (var regionKey in themeData[value]) {
-            sum[regionKey] += themeData[value][regionKey];
+    console.log('themeData:');
+    console.log(themeData);
+    for (var h = 0; h < themeData.length; h++) {
+        for (var themeValue in themeData[h]) {
+            sum[themeValue] += themeData[h][themeValue];
         }
     }
 
