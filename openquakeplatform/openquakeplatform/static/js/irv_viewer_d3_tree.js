@@ -102,10 +102,6 @@
                     var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
                     var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
 
-                    //if (isInverted) {
-                       // spinnerValue = -spinnerValue;
-                   // }
-
                     pdTempInverters.push(isInverted);
                     pdTempWeights.push(spinnerValue);
                 }
