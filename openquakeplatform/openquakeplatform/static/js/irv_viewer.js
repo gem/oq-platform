@@ -692,6 +692,8 @@ var startApp = function() {
     $('#iri-spinner').hide();
     $('#primary-spinner').hide();
     $('#primary_indicator').hide();
+    $('#saveBtn').prop('disabled', true);
+    $('#saveBtn').addClass('btn-disabled');
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
