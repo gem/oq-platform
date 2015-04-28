@@ -144,11 +144,12 @@ function Theme_PCP_Chart(themeData) {
      }
 
      // Sum all the paths
-     console.log('themeData:');
-     console.log(themeData);
-     for (var h = 0; h < themeData.length; h++) {
-         for (var n in themeData[h]) {
-             sum[n] += themeData[h][n];
+     // Access the objects contained in the theme data array
+     for (var obj = 0; obj < themeData.length; obj++) {
+        // iterate over the each
+         for (var key in themeData[obj]) {
+            // This will sum all the values inside each theme object
+             sum[key] += themeData[obj][key];
          }
      }
 
