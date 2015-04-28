@@ -161,7 +161,7 @@ function Theme_PCP_Chart(themeData) {
 
      sumMeanArray.push(sumMean);
 
-     // Plot the meadian line
+     // Plot the median line
      meanPath = svg.append("g")
          .attr("class", "PI-meanPath")
          .selectAll("path")
