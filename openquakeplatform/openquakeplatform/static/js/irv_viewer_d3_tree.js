@@ -16,7 +16,6 @@
 */
 
     var CIRCLE_SCALE = 30;
-    var saveBtnCount = 0;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
 
@@ -150,6 +149,7 @@
                             $('#pdSelection').append(
                                 '<option value="'+ giveName +'">'+ giveName +'</option>'
                             );
+                            $('#saveBtn').prop('disabled', true);
                         }).fail(function() {
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
@@ -168,12 +168,9 @@
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
-                saveBtnCount += 1;
-                // Append save project definition button the first time weights are modified
-                if (saveBtnCount === 1) {
-                    $('#saveBtnPlaceHolder').append('<button id="saveBtn" class="btn btn-blue">Save Project Definition</button>');
-                    saveProjData();
-                }
+
+                $('#saveBtn').prop('disabled', false);
+                saveProjData();
 
                 //$('#project-def').append('<button id="saveBtn">save</button>');
                 pdTempWeights = [];
