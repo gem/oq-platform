@@ -31,6 +31,9 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         }
     }
 
+    $('#primary_indicator').empty();
+    $('#primary_indicator').append('<option value="">Select a Theme</option>');
+
     for (var l = 0; l < themesWithChildren.length; l++) {
         var theme = themesWithChildren[l];
         $('#primary_indicator').append('<option value="'+ theme +'">' + theme + '</option>');
