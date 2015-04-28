@@ -135,7 +135,7 @@ function Theme_PCP_Chart(themeData) {
     }
 
     //////////////////////
-    //// Meadian line ////
+    //// Median line ////
     //////////////////////
 
      // Build skeleton array
@@ -145,11 +145,11 @@ function Theme_PCP_Chart(themeData) {
 
      // Sum all the paths
      // Access the objects contained in the theme data array
-     for (var obj = 0; obj < themeData.length; obj++) {
+     for (var region_idx = 0; region_idx < themeData.length; region_idx++) {
         // iterate over the each
-         for (var key in themeData[obj]) {
+         for (var themeName in themeData[region_idx]) {
             // This will sum all the values inside each theme object
-             sum[key] += themeData[obj][key];
+             sum[themeName] += themeData[region_idx][themeName];
          }
      }
 
@@ -170,7 +170,7 @@ function Theme_PCP_Chart(themeData) {
          .attr("d", path)
          .attr('id', function(d) { return d.region; })
              .on('mouseover', function() {
-                 textTop.text('Meadian');
+                 textTop.text('Median');
              }).on('mouseout', function() {
                  textTop.text('');
              });
