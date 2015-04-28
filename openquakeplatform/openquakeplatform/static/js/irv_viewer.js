@@ -839,7 +839,6 @@ var startApp = function() {
             success: function(layerMetadataURL) {
 
                 // ***** TEMP remove this ****
-
                 // file 4
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
                 // file 5

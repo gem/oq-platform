@@ -32,7 +32,8 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     }
 
     $('#primary_indicator').empty();
-    $('#primary_indicator').append('<option value="">Select an Indicator</option>');
+    $('#primary_indicator').append('<option value="">Select a Theme</option>');
+
 
     for (var l = 0; l < themesWithChildren.length; l++) {
         var theme = themesWithChildren[l];
@@ -122,8 +123,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         // Create a scale and brush for each trait.
         regions.forEach(function(d) {
-            // Coerce values to numbers.
-            data.forEach(function(p) { p[d] = +p[d]; });
             y[d] = d3.scale.linear()
                 .domain([0,1])
                 .range([h, 0]);
