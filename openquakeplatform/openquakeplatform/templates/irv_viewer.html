@@ -39,13 +39,14 @@ IRV - {{block.super}}
 <div id="regionSelectionDialog" title="Required" style="overflow: hidden;"></div>
 <div id="ajaxErrorDialog" title="Error" style="overflow: hidden;"></div>
 <div id="saveStateDialog" title="Save Project Definition" style="overflow: hidden;">
-  <p>Please provide a field that will be appended to the existing project definition title:</p></br>
+  <p>Please provide a title for the new project definition:</p></br>
   <div id="inputName"></div>
   <div id="licenseName"></div>
   <div id="licenseURL"></div>
   <br><br>
   <input id="checkboxPD" type="checkbox" name="license">I confirm that I have read and agree to the license conditions.<br><br>
   <button id="submitPD" type="button" class="btn btn-primary">Save</button>
+  <div id="saveState-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
 </div>
 
 <!-- Theme tags-->

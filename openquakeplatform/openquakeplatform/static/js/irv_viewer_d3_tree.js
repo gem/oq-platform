@@ -99,9 +99,11 @@
                 var pdLicenseURL = sessionProjectDef.license.split('(')[1];
                 pdLicenseURL = pdLicenseURL.replace(')', '');
 
+                $('#saveState-spinner').hide();
                 $('#saveStateDialog').dialog('open');
                 $('#licenseName').empty();
                 $('#licenseURL').empty();
+                $('#inputName').empty();
                 $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
                 $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
                 $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
@@ -116,6 +118,7 @@
                 });
 
                 $('#submitPD').click(function() {
+                    $('#saveState-spinner').show();
                     // Include the user provided title
                     var giveName = $('#giveNamePD').val();
                     projectDef.title = giveName;
@@ -143,6 +146,7 @@
                             );
                             $('#saveStateDialog').dialog('close');
                             $('#ajaxErrorDialog').dialog('open');
+                            $('#saveState-spinner').hide();
                         }).fail(function() {
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
