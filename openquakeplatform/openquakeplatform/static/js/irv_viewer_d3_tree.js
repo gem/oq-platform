@@ -147,6 +147,9 @@
                             $('#saveStateDialog').dialog('close');
                             $('#ajaxErrorDialog').dialog('open');
                             $('#saveState-spinner').hide();
+                            $('#pdSelection').append(
+                                '<option value="'+ giveName +'">'+ giveName +'</option>'
+                            );
                         }).fail(function() {
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
