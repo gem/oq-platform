@@ -734,6 +734,7 @@ var startApp = function() {
     $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
     $('#region-selection-list').hide();
+    $('#thematic-map-selection').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -773,6 +774,7 @@ var startApp = function() {
 
     // Get the layer metadata (project def)
     $('#svir-project-list').change(function() {
+        $('#thematic-map-selection').show();
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
         $('#primary-spinner').show();
