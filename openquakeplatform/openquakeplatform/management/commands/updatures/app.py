@@ -199,43 +199,46 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     # search a previous defined item with the same pk
     for item_same_pk in updates_gr[model]:
         if item_same_pk['pk'] == new_pk:
-            update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, maxpks[model]['maxpk'])
             old_pk = item['pk']
+            item['pk'] = maxpks[model]['maxpk'] + 1
+            update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, maxpks[model]['maxpk'])
+            item['pk'] = old_pk
             break
     else:
         item_same_pk = None
 
     # update all references
-    for ref_model, ref_md in models_descr.iteritems():
-        # found each model has a refs value associated with the current item model
-        for ref_reffield, ref in ref_md.refs.iteritems():
-            if isinstance(ref.model, types.FunctionType):
-                continue
-
-            if ref.model != model:
-                continue
-
-            pdebug(3, "MDREF: %s" % ref_model)
-
-            for itemod in updates_gr[ref_model]:
-                # if field not set or empty list continue
-                ref_value = get_value(itemod, ref_reffield)
-                if not ref_value:
+    if md.natural is None:
+        for ref_model, ref_md in models_descr.iteritems():
+            # found each model has a refs value associated with the current item model
+            for ref_reffield, ref in ref_md.refs.iteritems():
+                if isinstance(ref.model, types.FunctionType):
                     continue
 
-                pdebug(3, "ITEMOD: %s" % itemod)
-                if ref.is_many:
-                    if type(ref_value[0]) is list:
-                        pdebug(3, "itemod list of lists case not managed")
-                        sys.exit(10)
-                    for i, pk in enumerate(ref_value):
-                        if pk == item['pk']:
-                            ref_value[i] = new_pk
-                            break
-                else:
-                    if ref_value == item['pk']:
-                        pdebug(3, "UPDATE KEY: %s" % itemod)
-                        set_value(itemod, ref_reffield, new_pk)
+                if ref.model != model:
+                    continue
+
+                pdebug(3, "MDREF: %s" % ref_model)
+
+                for itemod in updates_gr[ref_model]:
+                    # if field not set or empty list continue
+                    ref_value = get_value(itemod, ref_reffield)
+                    if not ref_value:
+                        continue
+
+                    pdebug(3, "ITEMOD: %s" % itemod)
+                    if ref.is_many:
+                        if type(ref_value[0]) is list:
+                            pdebug(3, "itemod list of lists case not managed")
+                            sys.exit(10)
+                        for i, pk in enumerate(ref_value):
+                            if pk == item['pk']:
+                                ref_value[i] = new_pk
+                                break
+                    else:
+                        if ref_value == item['pk']:
+                            pdebug(3, "UPDATE KEY: %s" % itemod)
+                            set_value(itemod, ref_reffield, new_pk)
 
     # remove the item from the key based list of items
     updatesk_gr[model].pop(key_get(md, item))
@@ -248,12 +251,14 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
 
     ret = True
     for backinhe in item.get('__backinhe__', []):
-        ret = ret and update_pk(updates_gr, updatesk_gr, backinhe.model_descr.name, backinhe.item, maxpks, new_pk)
+        if ret:
+            update_pk(updates_gr, updatesk_gr, backinhe.model_descr.name, backinhe.item, maxpks, new_pk)
 
     # if another item had the same pk value of new_pk before swap it
     # with the old pk value of the updated item
     if item_same_pk is not None:
-        ret = ret and update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, old_pk)
+        if ret:
+            ret = update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, old_pk)
 
     return ret
 
@@ -882,18 +887,30 @@ if __name__ == "__main__":
             continue
         for kr,r in v.refs.iteritems():
             if r.is_many:
-                print "model: %s, field %s is_many" % (k, kr)
-    sys.exit(0)
+                pdebug(2, "model: %s, field %s is_many" % (k, kr) )
     argv = []
     debug = 0
     check_consistency = False
-    for arg in sys.argv[1:]:
+    kwarg = {}
+    skipnext = False
+    for id in range(1,len(sys.argv)):
+        arg = sys.argv[id]
+        if skipnext:
+            skipnext = False
+            continue
+
         if arg in [ '-v', '--verbose' ]:
             debug += 1
         elif arg in [ '-s', '--sort' ]:
             sort_output = True
+        elif arg in [ '-f', '--fakeold' ]:
+            kwarg['fakeold'] = sys.argv[id + 1]
+            skipnext = True
         else:
             argv.append(arg)
 
+    kwarg['debug'] = debug
+    kwarg['sort_output'] = True
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
-    sys.exit(updatures_func(argv, debug=debug, sort_output=sort_output))
+    sys.exit(updatures_app(argv, **kwarg))
