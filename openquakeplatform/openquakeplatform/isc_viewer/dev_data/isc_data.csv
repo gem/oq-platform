@@ -23,7 +23,7 @@
 # prevented the authors from performing a reliable determination of either
 # the epicentre or the magnitude parameters or both.
 
-          date          ,    lat   ,    lon   , smajaz, sminax, strike, q ,  depth ,   unc , q ,  mw  ,  unc , q , s ,   mo  , fac, mo_auth  ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt  ,    eventid
+          date          ,    lat   ,    lon   , smajax, sminax, strike, q ,  depth ,   unc , q ,  mw  ,  unc , q , s ,   mo  , fac, mo_auth  ,  mpp  ,  mpr  ,  mrr  ,  mrt  ,  mtp  ,  mtt  ,    eventid
  1924-07-29 06:59:00.00 ,  -19.000 ,  135.000 ,       ,       ,       , C ,    0.0 ,   6.0 , C , 5.58 , 0.66 , C , p ,       ,    ,          ,       ,       ,       ,       ,       ,       ,   13333313
  1929-03-19 02:28:00.00 ,   70.000 ,  -72.000 ,       ,       ,       , C ,    0.0 ,   2.8 , C , 1.69 , 0.68 , C , p ,       ,    ,          ,       ,       ,       ,       ,       ,       ,   13333318
  1942-02-09 07:11:00.00 ,   31.000 ,  -26.000 ,       ,       ,       , C ,    0.0 ,   1.8 , C , 2.69 , 0.68 , C , p ,       ,    ,          ,       ,       ,       ,       ,       ,       ,   13333319

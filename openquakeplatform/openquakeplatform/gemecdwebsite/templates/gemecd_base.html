@@ -38,21 +38,6 @@
     <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
 {% endblock head %}
-<!--Google Analytics--><!--
-<script type="text/javascript">
-
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-20718690-2']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
-</script>-->
-
 {% block body_outer %}
 
     {% if form.errors %}
@@ -258,13 +243,14 @@
                     <form id="filterform" method="post">{% csrf_token %}
                         {{ filterbarform.as_p }}
                         {% comment %}<p><input id="id_filterbarform-submit" type="submit" value="apply"  title="Apply filters"/></p>{% endcomment %}
-                        <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div>
+                        <!-- <div class="filterlabel"><a title="Click for advanced filtering options" id="advanced" href="javascript:alert('display options panel');">advanced</a></div> -->
                     </form>
                 </div>
 
+{% block filterbarright %}
                 <div id="filterbarright">
-
                 </div>
+{% endblock filterbarright %}
             </div>
             <!--end filter bar -->
         </div>

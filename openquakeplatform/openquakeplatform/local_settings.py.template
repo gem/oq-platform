@@ -5,7 +5,7 @@ import openquakeplatform
 from geonode.settings import TEMPLATE_CONTEXT_PROCESSORS
 
 SITENAME = 'OpenQuake Platform'
-SITEURL = 'http://%(host)s/'
+SITEURL = 'http://%(siteurl)s/'
 
 OQPLATFORM_ROOT = os.path.dirname(openquakeplatform.__file__)
 GEONODE_ROOT = os.path.abspath(os.path.dirname(geonode.__file__))
@@ -14,6 +14,7 @@ ROOT_URLCONF = 'openquakeplatform.urls'
 
 # GEM Experimental apps enabled
 GEM_EXPERIMENTAL = %(is_gem_experimental)s
+USE_I18N = False
 
 SERIALIZATION_MODULES = {
     'json': 'wadofstuff.django.serializers.json'
@@ -124,9 +125,12 @@ THIRD_PARTY_URLS = {
 
 TILESTREAM_URL = '//tilestream.openquake.org'
 
-HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform/help'
+HELP_URL = 'http://www.globalquakemodel.org/openquake/support/documentation/platform'
 
-GEOSERVER_URL = '/geoserver/'
+# The GEOSERVER_URL must be an absolute URL to let GXP working correctly.
+# To produce fixture for maps to be installed during setup it must be set
+# to the '/geoserver/' relative path
+GEOSERVER_URL = SITEURL + 'geoserver/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'openquakeplatform.utils.oq_context_processor',
@@ -137,7 +141,7 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
          # Do not change the internal channel
-        'LOCATION': 'http://localhost:8080' + GEOSERVER_URL,
+        'LOCATION': 'http://localhost:%(geoserver_port)s/geoserver/',
         'PUBLIC_LOCATION': GEOSERVER_URL,
         'USER': 'admin',
         'PASSWORD': 'geoserver',
@@ -269,6 +273,8 @@ INSTALLED_APPS = (
     'geonode.social',
 
     # Our apps
+    'openquakeplatform.common',
+    'openquakeplatform.world',
     'openquakeplatform.isc_viewer',
     'openquakeplatform.ghec_viewer',
     'openquakeplatform.gaf_viewer',
@@ -283,6 +289,9 @@ INSTALLED_APPS = (
     'openquakeplatform.weblib',
     'openquakeplatform.econd',
     'openquakeplatform.gemecdwebsite',
+
+    'openquakeplatform.taxtweb',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -303,11 +312,13 @@ MAP_BASELAYERS = [{
         "ptype": "gxp_wmscsource",
         "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
         "restUrl": "/gs/rest"
-     }
+     },
+    "name":"geoserver"
   },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
+    "name":"nobackground",
     "visibility": False,
     "fixed": True,
     "group":"background"
@@ -336,37 +347,23 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source": {"ptype": "gxp_tilestreamsource" },
+    "name":"tilestream"
   }, {
     "source": {"ptype": "gxp_mapboxsource"},
-  }, {
-    "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": False,
-    "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin": [-20037508.34, -20037508.34]
-      },
-      {"buffer": 0}
-    ]
-
+    "name":"mapbox"
 }]
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
-AUTH_EXEMPT_URLS = ('/account/signup/',
+AUTH_EXEMPT_URLS = ('/$',
+                    '/account/signup/',
                     '/icebox/calculation/(\d+)',
                     '/geoserver/',
                     '/vulnerability/intensity_measure_csc?.*',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
-                    '/vulnerability/resp_var_units_csc?.*')
+                    '/vulnerability/resp_var_units_csc?.*',
+                    '/taxtweb/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.
@@ -387,4 +384,14 @@ AUTH_EXEMPT_URLS = ('/account/signup/',
 # this value must be the same of oq-engine-server key settings
 OQ_ENGINE_SERVER_DATABASE = "%(oq_engserv_key)s"
 
+# Max input upload size for Icebox
+ICEBOX_MAX_SIZE_MB = 10
+# Send an email with an Icebox job report
+# WARNING: untested feature
+ICEBOX_SEND_EMAIL = False
+
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
+
+# Enable Google Analytics tracking code
+# You must provide a valid UA code
+# GOOGLE_UA = 'UA-********-*'

@@ -25,7 +25,7 @@ class Command(BaseCommand):
     def handle(self, filename_cat, filename_app, *args, **options):
         # 'unc' and 'unc' are renamed to 'depth_unc' and 'mw_unc'
         # 'q', 'q' and 'q'are renamed to 'epic_q', 'depth_q' and 'mw_q'
-        wk_list = ['date', 'lat', 'lon', 'smajaz', 'sminax', 'strike', 'epic_q', 'depth', 'depth_unc', 'depth_q', 'mw', 'mw_unc', 'mw_q', 's', 'mo', 'fac', 'mo_auth', 'mpp', 'mpr', 'mrr', 'mrt', 'mtp', 'mtt', 'eventid' ]
+        wk_list = ['date', 'lat', 'lon', 'smajax', 'sminax', 'strike', 'epic_q', 'depth', 'depth_unc', 'depth_q', 'mw', 'mw_unc', 'mw_q', 's', 'mo', 'fac', 'mo_auth', 'mpp', 'mpr', 'mrr', 'mrt', 'mtp', 'mtt', 'eventid' ]
 
         data_cat=csv.reader(open(filename_cat))
         data_app=csv.reader(open(filename_app))
@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
                 m = Measure(src_id=data_id, date=item['date'], lat=item['lat'], lon=item['lon'],
                             the_geom="POINT(%s %s)" % (item['lon'], item['lat']),
-                            smajaz=item['smajaz'], sminax=item['sminax'], strike=item['strike'],  epic_q=item['epic_q'],
+                            smajax=item['smajax'], sminax=item['sminax'], strike=item['strike'],  epic_q=item['epic_q'],
                             depth=item['depth'], depth_unc=item['depth_unc'],  depth_q=item['depth_q'],
                             mw=item['mw'], mw_unc=item['mw_unc'], mw_q=item['mw_q'], s=item['s'],
                             mo=item['mo'], fac=item['fac'], mo_auth=item['mo_auth'],

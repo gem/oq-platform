@@ -17,6 +17,7 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+from django.contrib.auth.decorators import login_required
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 from django.views.generic import TemplateView
@@ -24,14 +25,17 @@ from openquakeplatform.icebox import views
 
 
 urlpatterns = patterns(
-    'geonode.icebox.views',
-    url(r'^$', TemplateView.as_view(template_name="icebox.html"),
-        name="icebox"),
-    url(r'^calculations$', views.CalculationsView.as_view(),
+    'openquakeplatform.icebox.views',
+    url(r'^$', login_required(TemplateView.as_view(
+        template_name="icebox.html")), name="icebox"),
+    url(r'^calculations$', login_required(views.CalculationsView.as_view()),
         name="calculations"),
-    url(r'^outputs$', views.OutputsView.as_view(), name="outputs"),
+    url(r'^outputs$', login_required(views.OutputsView.as_view()),
+        name="outputs"),
+    url(r'^download/input/(?P<calculation_type>\S+)/(?P<pk>\d+)$',
+        login_required(views.input_download), name="input_download"),
     url(r'^calculation/(?P<pk>\d+)$', views.CalculationView.as_view(),
         name="calculation"),
-    url(r'^remove_calculation/(?P<pk>\d+)$', views.remove_calculation,
-        name="remove_calculation")
+    url(r'^remove_calculation/(?P<pk>\d+)$',
+        login_required(views.remove_calculation), name="remove_calculation")
 )

@@ -1,4 +1,19 @@
 #!/bin/bash
+# Copyright (c) 2013-2015, GEM Foundation.
+#
+# OpenQuake is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenQuake is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with OpenQuake.  If not, see <http://www.gnu.org/licenses/>.
+
 if [ $GEM_SET_DEBUG ]; then
     set -x
 fi
@@ -24,6 +39,8 @@ export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
 openquakeplatform/openquakeplatform/static/wax"
 
+export MIGRATIONS_HISTORY="/var/lib/openquake/platform/migrations/history"
+
 if [ -f /etc/openquake/platform/local_settings.py ]; then
     GEM_IS_INSTALL=n
 else
@@ -38,7 +55,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('common' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability')
+GEM_APP_LIST=('common' 'world' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability' 'svir')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -145,6 +162,32 @@ parsargs () {
 
 #
 #
+world_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/world.json.bz2" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/world/dev_data"
+    fi
+    openquakeplatform loaddata "${bdir}/world.json.bz2"
+}
+
+#
+#
+svir_dataloader () {
+    local oqpdir="$1" db_name="$2" bdir
+
+    if [ -f "private_data/svir.json.bz2" ]; then
+        bdir="private_data"
+    else
+        bdir="${oqpdir}/svir/dev_data"
+    fi
+    openquakeplatform loaddata "${bdir}/svir.json.bz2"
+}
+
+#
+#
 gaf_viewer_dataloader () {
     local oqpdir="$1" db_name="$2" bdir
 
@@ -190,6 +233,7 @@ common_postlayers () {
 
     bdir="${oqpdir}/common"
     wdir="${GEM_WEBDIR}/uploaded/thumbs"
+    openquakeplatform categories_cleanup
     openquakeplatform loaddata "${bdir}/post_fixtures/*.json"
     mkdir -p  "$wdir"
     cp ${bdir}/thumbs/*.png $wdir/
@@ -300,9 +344,12 @@ import string, random
 local_settings = open('${oqpdir}/$GEM_LOCAL_SETTINGS_TMPL', 'r').read()
 with open('$GEM_LOCAL_SETTINGS', 'w') as fh:
     fh.write(local_settings % dict(host='${gem_host_name}',
+                                   siteurl='${gem_host_name}',
                                    db_name='${gem_db_name}',
                                    db_user='${gem_db_user}',
                                    db_pass='${gem_db_pass}',
+                                   geonode_port=80,
+                                   geoserver_port=8080,
                                    hazard_calc_addr='${gem_hazard_calc_addr}',
                                    risk_calc_addr='${gem_risk_calc_addr}',
                                    oq_engserv_key='${gem_oq_engserv_key}',
@@ -408,7 +455,7 @@ deps_install () {
     pipsrc="/usr/local/openquake/platform"
     mkdir -p "$pipsrc"
     old_IFS="$IFS"
-    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1); do
+    for pkg in $(sed -n '/.*dependency_links = /,/.*\].*/p' setup.py  | sed "s/^[^']\+'//g;s/'.*//g" | head -n -1 | grep -v '^http://github.com/gem/geonode/tarball'); do
         pip install "$pkg"
     done
     IFS="$old_IFS"
@@ -464,8 +511,8 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:openquake-automatic-team/latest-master
     add-apt-repository -y ppa:geonode/release
+    add-apt-repository -y ppa:openquake/ppa
     apt-get update
     apt-get install -y geonode python-geonode-user-accounts
 
@@ -572,7 +619,7 @@ oq_platform_install () {
 
     #
     # Update Django 'sites' with real hostname
-    DJANGO_SETTINGS_MODULE='openquakeplatform.settings' python -c "from django.contrib.sites.models import Site; from openquakeplatform import settings; mysite = Site.objects.all()[0]; mysite.domain = settings.SITEURL; mysite.name = settings.SITENAME; mysite.save()"
+    openquakeplatform fixsitename
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # Load our users. Default password must be changed
@@ -607,6 +654,12 @@ oq_platform_install () {
             "${app}_postlayers" "$oqpdir" "$gem_db_name"
         fi
     done
+
+    if [ ! -d "$MIGRATIONS_HISTORY" ]; then
+        mkdir -p "$MIGRATIONS_HISTORY"
+    fi
+    find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
+
 }
 
 

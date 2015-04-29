@@ -1,8 +1,7 @@
 {% extends "site_base.html" %}
 {% load i18n %}
 {% load url from future %}
-{% load maps_tags %}
-{% load layers_tags %}
+{% load oqp_tags %}
 
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock title %}
@@ -30,41 +29,30 @@
         {% block oq_body_content %}
           <div class="oq-intro">
             <!-- Main page content goes here -->
-            Welcome to the OpenQuake Platform. This web-based risk assessment platform offers an interactive environment for modeling, viewing, exploring, and managing earthquake risk. User can access, manipulate, share and add data, models and tools for integrated assessment of earthquake risk.
-
+            Welcome to the OpenQuake Platform, by the <a href="http://www.globalquakemodel.org/" target="_blank">GEM Foundation</a>. This web-based platform offers an interactive environment in which users can access, manipulate, share and add data, and explore models and tools for integrated assessment of earthquake risk.
             <br/><br/>
 
-            This platform has been created by the <a href="http://www.globalquakemodel.org/">GEM Foundation</a>.<br><br>
-
+      {% if user.is_authenticated %}
       {% block mainbody %}
       <div class="row">
         <div class="span8">
             <section class="widget list latest-maps paginate-contents">
               <h2>{% trans "Latest Maps" %}</h2>
-              {% featured_maps as featured_maps %}
-              {% for map in featured_maps %}
+              {% latest_maps as latest_maps %}
+              {% for map in latest_maps %}
                 {% include "maps/_map_list_item.html" %}
               {% endfor %}
             </section>
         </div>
       </div>
       {% endblock %}
+      {% endif %}
 
       </div>
         {% endblock oq_body_content %}
       </div>
       <div id="oq-body-sidebar">
-        {% block oq_body_sidebar %}
-          <div class="oq-btns">
-            <img src="static/img/OQ-logo-blue.png"><br/><br/>
-            <a class="btn btn-large" href="{% url "layer_browse" %}">
-              {% trans "Explore Layers" %}
-            </a>
-            <a class="btn btn-large" href="{% url "maps_browse" %}">
-              {% trans "Explore Maps" %}
-            </a>
-          </div>
-        {% endblock oq_body_sidebar %}
+        {% include 'includes/sidebar.html' %}
       </div>
     </div>
   </div>

@@ -92,16 +92,17 @@ urlpatterns = patterns('',
         template_name="hrde.html"), name='hrde'),
 
 
+    (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
-    #url(r'^vulnerability/index', openquakeplatform.vulnerability.views.index,
-        #name='index'),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
+    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
+    url(r'^account/terms/$', TemplateView.as_view(template_name='account/terms.html'), name='terms'),
     url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
     url(r'^tools/$', TemplateView.as_view(template_name='tools.html'), name='tools'),
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),

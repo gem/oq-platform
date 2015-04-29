@@ -1,10 +1,15 @@
 {% extends "gemecd_base.html" %}
 {% load generictablerenderer %}
 
+{% block filterbarright %}
+                <div id="filterbarright">
+                    {{ page_backlink|safe }}
+                </div>
+{% endblock filterbarright %}
+
 {% block leftpanel %}
         <div id="ecd-leftpanel">
             <div id="panelcontainer">
-                <div id="backlink">{{ page_backlink|safe }}</div>
                 <h1>{{ paneltitle }}</h1>
                 {% if iconicimage != "" %}
                 <img class="eventicon" src="{{ STATIC_URL }}gemecdeventicons/{{ iconicimage }}" title="{{ paneltitle }}"/>
@@ -17,10 +22,12 @@
                     </form>
 
                     <h4>Overview</h4>
-                    {% formviewastable field_structure=eventfields %}
+                    {% formviewastablecompr field_structure=eventfields %}
 
                     <h4>{{ locationslabel }}</h4>
+                    <div id="list_trimmer">
                     {% spanlist field_structure=locationslist %}
+                    </div>
             </div>
         </div>
 
@@ -29,6 +36,28 @@
 {% block gemecd_map %}
     <script type="text/javascript">
         // GEM ECD specific mapping
+
+        function resize_list()
+        {
+            var trim = $('#list_trimmer');
+            var foot = $('#footer');
+
+            var minh = parseInt(trim.css('min-height'));
+
+            var h_cur = foot.offset().top - trim.offset().top - 4;
+            if (h_cur < minh)
+                h_cur = minh;
+
+            trim.css('height', h_cur+"px");
+        }
+
+        window.onload = function () {
+            resize_list();
+        }
+
+        window.onresize = function () {
+            resize_list();
+        }
 
         shakemap = new L.TileLayer.WMS("{{ geoserver_url }}wms",
             {
@@ -136,7 +165,18 @@
 
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
-                                                            e.target._layers[json.markerid].bindPopup(html).openPopup();
+                                                            // this switch covers stable and master leaflet branch cases
+                                                            if (typeof(e.target._layers) != 'undefined') {
+                                                                e.target._layers[json.markerid].bindPopup(html).openPopup();
+                                                            }
+                                                            else if (typeof(e.target._map._layers) != 'undefined') {
+                                                                e.target._map._layers[json.markerid].bindPopup(html).openPopup();
+                                                            }
+                                                            else {
+                                                                alert('leaflet internals changed, please fix them');
+                                                            }
+
+
                                                             //jQuery("#id_locationid").val(json.locationid);
                                                             //jQuery("#currentlocationname").text(json.locationname);
                                                         }
@@ -223,7 +263,16 @@
                                                             html = '<div id="locationpopupcontainer">\n' + html + '</div>\n'
 
                                                             //e.target._layers[json.markerid].bindPopup(html);
-                                                            var bounds = e.target._layers[json.markerid].getBounds();
+                                                            // this switch covers stable and master leaflet branch cases
+                                                            if (typeof(e.target._layers) != 'undefined') {
+                                                                var bounds = e.target._layers[json.markerid].getBounds();
+                                                            }
+                                                            else if (typeof(e.target._map._layers) != 'undefined') {
+                                                                var bounds = e.target._map._layers[json.markerid].getBounds();
+                                                            }
+                                                            else {
+                                                                alert('leaflet internals changed, please fix them');
+                                                            }
                                                             pop = new L.Popup();
                                                             pop.setLatLng(bounds.getCenter());
                                                             pop.setContent(html);

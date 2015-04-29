@@ -22,29 +22,32 @@
 # We should move them to a separate file
 
 
-import json
-import uuid
 import collections
 import os
 import logging
+import json
+import uuid
 
-from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.auth import models as auth_models
 from django.db import connection
 
 from geonode.geoserver.helpers import gs_slurp
 from geonode.maps import models as maps
+from geonode.maps.views import map_set_permissions
 from geonode.maps.signals import map_changed_signal
-from geonode.layers.models import set_attributes
-from geonode.utils import http_client, ogc_server_settings
+from geonode.layers.models import set_attributes, Layer
+from geonode.layers.utils import layer_set_permissions
+from geonode.utils import default_map_config, ogc_server_settings
 
-from openquakeplatform.icebox import fields
 from openquakeplatform import geoserver_api as geoserver
+from openquakeplatform.icebox import fields
+from openquakeplatform.icebox.utils import set_bbox
 
 logger = logging.getLogger(__name__)
 
-DS_NAME='icebox'
+DS_NAME = 'icebox'
+
 
 class Calculation(models.Model):
     calculation_type = models.TextField(choices=(('hazard', 'hazard'),
@@ -76,7 +79,8 @@ class Calculation(models.Model):
                     olayer.create_geonode_layer(
                         olayer.geoserver_publish_view(
                             olayer.create_view())))
-        self.create_geonode_map(layers)
+        if len(layers) > 0:
+            self.create_geonode_map(layers)
         self.status = 'complete'
         self.save()
 
@@ -87,6 +91,22 @@ class Calculation(models.Model):
         :param list layers:
            the :class:`geonode.maps.Layer` instances representing the results
         """
+
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+
+        LAYER_PERM_SPEC = {
+            'authenticated': '_none',
+            'users': [[self.user, 'layer_readwrite'],
+                      [self.user, 'layer_admin']],
+            'anonymous': '_none'
+            }
+        MAP_PERM_SPEC = {
+            'authenticated': '_none',
+            'users': [[self.user, 'map_readwrite'],
+                      [self.user, 'map_admin']],
+            'anonymous': '_none'
+            }
+
         map = maps.Map.objects.create(
             owner=self.user,
             title=self.description,
@@ -96,27 +116,6 @@ class Calculation(models.Model):
             projection="EPSG:900913",
             uuid=str(uuid.uuid1()))
 
-        baselayers = [l for l in settings.MAP_BASELAYERS
-                      if l.get("group") == "background"]
-
-        for i, baselayer in enumerate(baselayers):
-            name = baselayer.get(
-                "name", baselayer.get("args", [baselayer.get("type")])[0])
-            map.layer_set.add(
-                maps.MapLayer.objects.create(
-                    map=map,
-                    stack_order=i,
-                    name=name,
-                    group=baselayer["group"],
-                    visibility=name == "osm",
-                    layer_params=json.dumps(
-                        dict(title=name, selected=name == "osm",
-                             type=baselayer.get("type"))),
-                    source_params=json.dumps(
-                        dict(id=str(i),
-                             args=baselayer.get("args", []),
-                             ptype=baselayer["source"]["ptype"]))))
-
         for i, layer in enumerate(layers):
             if layer.outputlayer.output_type in [HazardCurve,
                                                  LossCurve,
@@ -125,23 +124,29 @@ class Calculation(models.Model):
             else:
                 info_format = "application/vnd.ogc.gml"
 
+            layer_set_permissions(layer, LAYER_PERM_SPEC)
+
             map.layer_set.add(
                 maps.MapLayer.objects.create(
                     map=map,
-                    stack_order=i + len(baselayers),
+                    stack_order=i,
                     name=layer.typename,
                     format="image/png",
-            # The following commented line makes GeoExplorer break
-            # group=layer.outputlayer.output_type.__name__,
-
-            # show only the first output layer
                     visibility=(i == 0),
                     transparent=True,
                     ows_url=ogc_server_settings.public_url + "wms",
                     layer_params=json.dumps({"infoFormat": info_format}),
                     local=True))
-        map.set_bounds_from_layers(map.local_layers)
-        map.set_default_permissions()
+
+        set_bbox(map)
+
+        base_layers = []
+        for layer in DEFAULT_BASE_LAYERS:
+            if layer.group == "background":
+                base_layers.append(layer)
+        map.update_from_viewer(map.viewer_json(*(base_layers)))
+
+        map_set_permissions(map, MAP_PERM_SPEC)
         map.save()
         map_changed_signal.send_robust(sender=map, what_changed='layers')
 
@@ -149,8 +154,18 @@ class Calculation(models.Model):
         self.save()
 
     @staticmethod
-    def remove_map(sender, instance, using, **_kwargs):
+    def remove_calc(sender, instance, using, **_kwargs):
         if instance.map_id:
+            for layer in instance.map.layer_set.all():
+                if layer.name.startswith('oqplatform:icebox_output'):
+                    layer_obj = Layer.objects.get(typename=layer.name)
+                    if layer_obj.store == 'icebox':
+                        cursor = connection.cursor()
+                        # layer name format is 'oqplatform:view_name'
+                        view_name = layer.name.split(":")[1]
+                        cursor.execute("DROP VIEW IF EXISTS %s" % view_name)
+                        cursor.connection.commit()
+                        layer_obj.delete()
             instance.map.delete()
 
     def __unicode__(self):
@@ -219,6 +234,10 @@ class OutputLayer(models.Model):
 
         logger.warning("Layer creation for %s is not supported" % self)
 
+    @property
+    def user(self):
+        return self.calculation.user.id
+
     def __unicode__(self):
         return u"OL %s <%d>" % (self.display_name, self.pk)
 
@@ -253,21 +272,9 @@ class OutputLayer(models.Model):
 
         :returns: the name of the published layer
         """
-        # During development, it might be handy to uncomment this
-        # self.delete_layer(view_name)
         self.update_layer(self.create_featuretype(view_name))
 
         return view_name
-
-    # FIXME: this function is not called. Geoserver layers survive
-    # when a calculation is deleted!
-    def delete_layer(self, view_name):
-        geoserver.geoserver_rest(
-            geoserver.LAYER_URL % view_name, method='DELETE',
-            raise_errors=False)
-        geoserver.geoserver_rest(
-            (geoserver.FEATURETYPE_URL % dict(ws=geoserver.WS_NAME, ds=DS_NAME)) % view_name, method='DELETE',
-            raise_errors=False)
 
     @staticmethod
     def _xml(request_type):
@@ -281,7 +288,7 @@ class OutputLayer(models.Model):
             os.path.join(
                 os.path.dirname(
                     os.path.dirname(__file__)),
-            "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
+                "build-gs-tree/tmpl/icebox/%s.xml.tmpl" % request_type))
 
     def create_featuretype(self, view_name):
         """
@@ -369,22 +376,6 @@ class Output(models.Model):
 
         raise NotImplementedError
 
-    @staticmethod
-    def remove_layer(_sender, instance, _using, **_kwargs):
-        """
-        Remove the geonode layer as well
-        """
-        instance.layer.delete()
-
-    @staticmethod
-    def drop_view(_sender, instance, _using, **_kwargs):
-        cursor = connection.cursor()
-        view_name = "icebox_output_%s_%s" % (
-            instance.__class__.__name__, instance.output_layer_id)
-        view_name = view_name.lower()
-        cursor.execute("DROP VIEW IF EXISTS %s view_name")
-        cursor.connection.commit()
-
     @classmethod
     def bbox_for_output(cls, output_layer):
         return dict(
@@ -392,9 +383,7 @@ class Output(models.Model):
                 cls.objects.filter(output_layer=output_layer).extent()))
 
 
-models.signals.post_delete.connect(Calculation.remove_map, sender=Calculation)
-models.signals.post_delete.connect(Output.remove_layer, sender=Output)
-models.signals.post_delete.connect(Output.drop_view, sender=Output)
+models.signals.post_delete.connect(Calculation.remove_calc, sender=Calculation)
 
 
 class HazardMap(Output):
@@ -446,24 +435,6 @@ class GMF(Output):
                               "com.vividsolutions.jts.geom.Geometry"),
                 cls.Attribute("iml", "java.lang.Double"),
                 cls.Attribute("rupture_tag", "java.lang.String")]
-
-
-class SES(Output):
-    hypocenter = models.PointField(srid=4326, dim=2)
-    rupture_tag = models.TextField()
-    magnitude = models.FloatField()
-
-    @classmethod
-    def sql_attributes(cls):
-        return ["hypocenter", "magnitude", "rupture_tag"]
-
-    @classmethod
-    def attributes(cls):
-        return [
-            cls.Attribute("hypocenter",
-                          "com.vividsolutions.jts.geom.Geometry"),
-            cls.Attribute("magnitude", "java.lang.Double"),
-            cls.Attribute("rupture_tag", "java.lang.String")]
 
 
 class AggregateLossCurve(Output):

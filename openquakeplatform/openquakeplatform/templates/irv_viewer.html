@@ -22,30 +22,10 @@ IRV - {{block.super}}
 
 {% block map_tools %}
 {{block.super}}
-<button type="button" id="load-project">Load Project</button>
-<div id="loadProjectDialog" title="Load Project">
-  <form id="tile-form-list">
-    <br>Category:<br>
-    <select id="layer-category">
-    </select>
-    <br>Project:<br>
-    <select id="layer-list">
-    </select><br>
-    <input type="button" id="addLayer" value="Add Layer">
-    <input type="button" id="removeLayer" value="Remove Layer">
-  </form>
-</div>
 
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
 
-<div id="warning-duplicate" title="Woops!" class="ui-helper-hidden">
-    <p>This layer has already been added to the map</p>
-</div>
-
-<div id="warning-no-layer" title="Woops!" class="ui-helper-hidden">
-    <p>This layer in not loaded in the map</p>
-</div>
 {% endblock %}
 
 {% block body_outer %}
@@ -56,31 +36,37 @@ IRV - {{block.super}}
 
 {% block middle %}
 {{block.super}}
-<!-- Category tags-->
-<div id="categoryTabs">
+<div id="regionSelectionDialog" title="Required" style="overflow: hidden;"></div>
+<div id="ajaxErrorDialog" title="Error" style="overflow: hidden;"></div>
+
+<!-- Theme tags-->
+<div id="themeTabs">
   <ul>
-    <li id="1" ><a href="#project-def">Project Def</a></li>
+    <li id="1" ><a href="#project-def">Project Definition</a></li>
     <li id="2"><a href="#iri-chart">IRI Chart</a></li>
-    <li id="3"><a href="#cat-chart">Category Chart</a></li>
-    <li id="4"><a href="#primary-tab">Primary Chart</a></li>
+    <li id="3"><a href="#cat-chart">SVI Theme Chart</a></li>
+    <li id="4"><a href="#primary-tab">Primary Indicator Chart</a></li>
 
   </ul>
 
   <div id="project-def">
     <div id="projectDefDialog" title="Project Definition">
+      <div id="projectDef-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
     </div>
   </div>
-  <div id="iri-chart"></div>
+  <div id="iri-chart">
+    <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+  </div>
   <div id="cat-chart"></div>
   <div id="primary-tab">
-    <div id="primary-limit">
+    <div id="primary-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+    <div>
       <p>
-        <label for="outlier-limit"> Outlier Break Point </label>
-        <input id="outlier-limit" name="outlier-limit" value="0.7">
+        <select id="primary_indicator" name="primary_indicator">
       </p>
     </div>
-    <div id="primary-chart"></div>
   </div>
+
 
   </div>
 
@@ -91,7 +77,7 @@ IRV - {{block.super}}
     <script src="{{ STATIC_URL }}js/irv_viewer.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_d3_tree.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
-    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_category.js"></script>
+    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_theme.js"></script>
     <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
     <script>
         help=document.getElementById("help_url");

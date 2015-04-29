@@ -1,7 +1,9 @@
-from django.views.generic import TemplateView
+import os
+import subprocess
+import openquakeplatform
+
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
 
 SIGN_IN_REQUIRED = ('You must be signed into the OpenQuake Platform to use '
                     'this feature.')
@@ -13,11 +15,12 @@ class allowed_methods(object):
 
     def __call__(self, func):
         def wrapped(request):
-            if not request.method in self.methods:
+            if request.method not in self.methods:
                 return HttpResponse(status=405)
             else:
                 return func(request)
         return wrapped
+
 
 def oq_context_processor(request):
     """
@@ -27,13 +30,17 @@ def oq_context_processor(request):
 
     context = {}
 
+    context['SITEURL'] = settings.SITEURL
+    context['OQP_VERSION'] = openquakeplatform.__version__
     context['third_party_urls'] = settings.THIRD_PARTY_URLS
     context['bing_key'] = settings.BING_KEY
     context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
     context['TILESTREAM_URL'] = settings.TILESTREAM_URL
     context['HELP_URL'] = settings.HELP_URL
+    context['GOOGLE_UA'] = getattr(settings, 'GOOGLE_UA', False)
 
     return context
+
 
 def sign_in_required(func):
     """

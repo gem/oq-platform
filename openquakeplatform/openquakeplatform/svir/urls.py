@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright (c) 2010-2013, GEM Foundation.
+# Copyright (c) 2014, GEM Foundation.
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,30 @@
 #    <https://www.gnu.org/licenses/agpl.html>.
 
 
-from django.conf.urls.defaults import patterns
-from django.conf.urls.defaults import url
-from openquakeplatform.svir.views import export_sv_category_names
-from openquakeplatform.svir.views import export_sv_data_by_variables_ids
+from django.conf.urls import patterns, include, url
+from openquakeplatform.svir.views import (list_themes,
+                                          list_subthemes_by_theme,
+                                          export_variables_info,
+                                          export_variables_data,
+                                          export_countries_info,
+                                          get_layer_metadata_url,
+                                          add_project_definition,
+                                          )
+
+from django.contrib import admin
+admin.autodiscover()
 
 
 urlpatterns = patterns(
-    'geonode.svir.views',
-    url(r'^export_sv_category_names', export_sv_category_names),
-    url(r'^export_sv_data_by_variables_ids', export_sv_data_by_variables_ids),
+    'openquakeplatform.svir.views',
+    url(r'^list_themes', list_themes),
+    url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
+    url(r'^export_variables_info', export_variables_info),
+    # export_variables_data_by_ids has been renamed; the following line
+    # is to avoid breaking clients using the old API
+    url(r'^export_variables_data_by_ids', export_variables_data),
+    url(r'^export_variables_data', export_variables_data),
+    url(r'^export_countries_info', export_countries_info),
+    url(r'^get_layer_metadata_url', get_layer_metadata_url),
+    url(r'^add_project_definition', add_project_definition),
 )
