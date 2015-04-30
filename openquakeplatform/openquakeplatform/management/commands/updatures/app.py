@@ -902,7 +902,7 @@ if __name__ == "__main__":
         if arg in [ '-v', '--verbose' ]:
             debug += 1
         elif arg in [ '-s', '--sort' ]:
-            sort_output = True
+            kwarg['sort_output'] = True
         elif arg in [ '-f', '--fakeold' ]:
             kwarg['fakeold'] = sys.argv[id + 1]
             skipnext = True
@@ -910,7 +910,6 @@ if __name__ == "__main__":
             argv.append(arg)
 
     kwarg['debug'] = debug
-    kwarg['sort_output'] = True
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
     sys.exit(updatures_app(argv, **kwarg))
