@@ -1,6 +1,9 @@
 {% load i18n %}
 <div class="modal-body" id="permissions-body" >
   <div class="control-group" id="permission-view-download" >
+    <label> By making this item available to other OpenQuake Platform users you acknowledge that you have read and agree the terms of use.</label>
+    <a class="btn btn-xs btn-blue" target="_blank" href="{% url 'terms' %}">Terms of Use</a>
+    </br></br>
     <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
     <div class="controls">
       <label class="radio inline">
