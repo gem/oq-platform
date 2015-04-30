@@ -24,7 +24,7 @@ import pdb
 def pdebug(level, s):
     if updatures.debug_level < level:
         return
-    print s
+    print >>sys.stderr, s
 
 
 def rebuild_order():
@@ -532,7 +532,7 @@ def print_refs(spc, item_in):
         return
 
     for mod,item in item_in['__backrefs__']:
-        print "%s%s (%s)" % (" "*spc, mod, item['pk'])
+        print >>sys.stderr, "%s%s (%s)" % (" "*spc, mod, item['pk'])
         print_refs(spc + 4, item)
 
 
@@ -599,7 +599,7 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
                 # print "FOUND THE SAME CURVE [%s]" % key
                 issubset = groupstruct_issubset(otem, item)
                 if not issubset:
-                    print "WARNING: in model '%s' the istance '%s' isn't totally replaced by new version, remove it manually from the database and retry" % (gmodel, key)
+                    print >>sys.stderr, "WARNING: in model '%s' the istance '%s' isn't totally replaced by new version, remove it manually from the database and retry" % (gmodel, key)
                     result = False
     return result
 
@@ -677,9 +677,9 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
     if updatures.debug_level > 0:
         for ghead in updates_gheads:
-            print "MODEL: %s" % ghead
+            print >>sys.stderr, "MODEL: %s" % ghead
             for i in updates_gr[ghead]:
-                print "GENERAL INFO: %s (%s)" % (i['fields']['name'], i['pk'])
+                print >>sys.stderr, "GENERAL INFO: %s (%s)" % (i['fields']['name'], i['pk'])
                 print_refs(4, i)
 
     if check_consistency:
@@ -836,7 +836,7 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
             if v['fields_n'] > 0:
                 pdebug(1, "k: %s v: %s" % (v, k))
             if cm_new[k] != cm_fin[k]:
-                print "WARNING: consistency Report: k: %s new: %s fin: [%s]" % (
+                print >>sys.stderr, "WARNING: consistency Report: k: %s new: %s fin: [%s]" % (
                     k, v, cm_fin[k])
                 # sys.exit(2)
 
