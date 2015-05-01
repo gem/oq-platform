@@ -1,7 +1,19 @@
 {% load i18n %}
 <div class="modal-body" id="permissions-body" >
   <div class="control-group" id="permission-view-download" >
-    <label> By making this item available to other OpenQuake Platform users you acknowledge that you have read and agree the terms of use.</label>
+
+
+    {% if request.user.get_profile.organization_name = 'undefined' or request.user.get_profile.country = None %}
+
+    <div class="alert alert-danger" role="alert">
+      Hi {{ request.user.username }}, your profile is incomplete, before sharing your work with the GEM community please update.
+      </br></br>
+      <a class="btn btn-xs btn-blue" target="_blank" href="/people/edit/{{ request.user.username }} ">Update Profile</a>
+    </div>
+
+{% endif %}
+
+    <label>By making this item available to other OpenQuake Platform users you acknowledge that you have read and agree the terms of use.</label>
     <a class="btn btn-xs btn-blue" target="_blank" href="{% url 'terms' %}">Terms of Use</a>
     </br></br>
     <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
