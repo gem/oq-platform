@@ -864,6 +864,7 @@ var startApp = function() {
                     boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
 
                     if (tempProjectDef.constructor === Array) {
+                        $('#pdSelection').remove();
                         $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
                         var pdTitles = [];
                         // break the array into objects, present the user with a choice of PDs
