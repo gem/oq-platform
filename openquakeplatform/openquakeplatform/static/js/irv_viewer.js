@@ -659,6 +659,7 @@ function thematicMap(layerAttributes) {
 
 function watchForPdSelection() {
     var pdSelection = $('#pdSelection').val();
+    $('#saveBtn').prop('disabled', true);
     for (var i = 0; i < tempProjectDef.length; i++) {
         if (tempProjectDef[i].title === pdSelection) {
             sessionProjectDef = tempProjectDef[i];
@@ -855,14 +856,12 @@ var startApp = function() {
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    // Pass a string representing the project def into the d3 tree chart
                     projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
 
                     tempProjectDef = jQuery.parseJSON(projectDefStr);
-
-                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
                     boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
 
+                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
                     if (tempProjectDef.constructor === Array) {
                         $('#pdSelection').remove();
                         $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
@@ -879,7 +878,6 @@ var startApp = function() {
                             );
                         }
                     } else {
-                        // get b-box
                         sessionProjectDef = tempProjectDef;
                         loadPD(sessionProjectDef);
                         if (boundingBox != undefined) {
