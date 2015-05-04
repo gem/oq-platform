@@ -691,7 +691,6 @@ function watchForPdSelection() {
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
-    $('#primary-spinner').hide();
     $('#primary_indicator').hide();
     $('#saveBtn').prop('disabled', true);
     $('#saveBtn').addClass('btn-disabled');
@@ -775,10 +774,12 @@ var startApp = function() {
 
     // Get the layer metadata (project def)
     $('#svir-project-list').change(function() {
+        $("#themeTabs").tabs("option", "active", 0);
         $('#thematic-map-selection').show();
+        $('#projectDef-spinner').text('Loading ...');
+        $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
-        $('#primary-spinner').show();
         $('#regionSelectionDialog').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
@@ -824,6 +825,8 @@ var startApp = function() {
                 $('#region-selection-list').change(function() {
                     selectedRegion = document.getElementById('region-selection-list').value;
                     getLayerInfo(layerAttributes);
+                    $('#projectDef-spinner').text('Select a project definition ...');
+                    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
                 });
             },
             error: function() {

@@ -34,7 +34,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     $('#primary_indicator').empty();
     $('#primary_indicator').append('<option value="">Select a Theme</option>');
 
-
     for (var l = 0; l < themesWithChildren.length; l++) {
         var theme = themesWithChildren[l];
         $('#primary_indicator').append('<option value="'+ theme +'">' + theme + '</option>');
@@ -42,7 +41,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     $('#primary_indicator').show();
 
     $('#primary_indicator').change(function() {
-        $('#primary-spinner').hide();
         var selectedTheme = $('#primary_indicator').val();
         // Find the children of selected theme
         var selectedThemeChildren;
@@ -78,6 +76,12 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         }
 
         $('#primary-tab').append('<div id="primary-chart"></div>');
+
+        var dimensions = [];
+
+        for (var i = 0; i < data.length; i++) {
+            dimensions.push(data[i].plotElement);
+        }
 
         ////////////////
         /// d3 chert ///
