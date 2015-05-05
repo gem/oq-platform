@@ -2468,8 +2468,26 @@ function BuildTaxonomyString(out_type)
     if (out_type == 2) {
         var is_first = true, ResAtoms = ResTax.split('/');
         if (ResAtoms[1] == ResAtoms[4] && ResAtoms[2] == ResAtoms[5]) {
+            // same params case
             ResAtoms[3] = ResAtoms[4] = ResAtoms[5] = "";
+            if ($('#Direction1RB1').prop('checked')) {
+                ResAtoms[0] = "";
+            }
+            else {
+                ResAtoms[0] = "PF";
+            }
         }
+        else {
+            if ($('#Direction1RB1').prop('checked')) {
+                ResAtoms[0] = "DX";
+                ResAtoms[3] = "DY";
+            }
+            else {
+                ResAtoms[0] = "DX+PF";
+                ResAtoms[3] = "DY+PO";
+            }
+        }
+
         ResTax = "";
         for (id in ResAtoms) {
             if (ResAtoms[id] == "") {

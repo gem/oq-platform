@@ -17,6 +17,8 @@ def taxonomy_short2full(t_short):
         # revert from hided DX and DY to explicit unknown values
         if t_el == 'DX':
             t_el = 'DX+D99'
+        elif t_el == 'PF':
+            t_el = 'DX+PF'
 
         if t_el == 'DY':
             t_el = 'DY+D99'
