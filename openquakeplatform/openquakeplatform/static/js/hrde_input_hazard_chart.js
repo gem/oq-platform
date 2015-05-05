@@ -18,342 +18,114 @@ function hazardInputD3Chart(mfdsJsonObj) {
     xAxisLable = 'Magnitude';
 
     // find the min and max value when there are multipe MFDs
-    var keys = Object.keys(mfdsJsonObj).length
+    var keys = Object.keys(mfdsJsonObj).length;
     var max = [];
+    var chartData = [];
     for (var k in mfdsJsonObj) {
         for (var i = 0; i < mfdsJsonObj[k].mags.length; i++) {
             max.push(mfdsJsonObj[k].mags[i]);
+            var tempObj = {
+                mags: mfdsJsonObj[k].mags[i],
+                occur_rates: mfdsJsonObj[k].occur_rates[i]
+            };
+            chartData.push(tempObj);
         }
     }
 
-    function findMaxMagValue( max ){
-        return Math.max.apply( Math, max );
-    };
+    var margin = {top: 60, right: 20, bottom: 50, left: 60},
+        width = 480 - margin.left - margin.right,
+        height = 440 - margin.top - margin.bottom;
 
-    function findMinMagValue( max ){
-        return Math.min.apply( Math, max );
-    };
+    var x0 = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
 
-    var multipleMfdsMinValue = findMinMagValue(max);
-    var multipleMfdsMaxValue = findMaxMagValue(max);
+    var x1 = d3.scale.ordinal();
 
-    // prep data for multiple curve plots
-    var multiplePlotData = [];
-    var allyAxisVariable = [];
+    var y = d3.scale.linear()
+        .range([height, 0]);
 
-    for (var m in mfdsJsonObj) {
-        var bar = [];
-        for (var i = 0; i < mfdsJsonObj[m].mags.length; i++) {
-            allyAxisVariable.push(mfdsJsonObj[m].mags[i]);
-            bar.push([mfdsJsonObj[m].mags[i], mfdsJsonObj[m].occur_rates[i]]);
-            multiplePlotData[m] = bar;
-        }
-    }
+    var color = d3.scale.ordinal()
+        .range(["#98abc5", "#8a89a6"]);
 
-    for (var k in mfdsJsonObj) {
-        curve_name = k;
-        curve_vals[curve_name] = mfdsJsonObj[k].occur_rates;
-        selectedCurves.push(k);
-        yAxisVariable = mfdsJsonObj[k].mags;
-    }
-
-    for (var k in selectedCurves) {
-        var curve_name = selectedCurves[k];
-        var min_cur = 1000.0, max_cur = -1;
-
-        for (var i = 0 ; i < curve_vals[curve_name].length ; i++) {
-            if (curve_vals[curve_name][i] == 0)
-                continue;
-
-            if (min_cur > curve_vals[curve_name][i])
-                min_cur = curve_vals[curve_name][i];
-            if (max_cur < curve_vals[curve_name][i])
-                max_cur = curve_vals[curve_name][i];
-        }
-        if (max_value < max_cur) {
-            max_value = max_cur;
-            max_value_k = curve_name;
-        }
-        if (min_value > min_cur) {
-            min_value = min_cur;
-            min_value_k = curve_name;
-        }
-    }
-
-    // grid line functions
-    function x_grid() {
-        return d3.svg.axis()
-            .scale(x_scale)
-            .orient('bottom')
-            .ticks(5);
-    }
-
-    function y_grid() {
-        return d3.svg.axis()
-            .scale(y_scale)
-            .orient('left')
-            .ticks(5);
-    }
-
-    function makeCircles(circleData, k, color, curveTitle) {
-        // Points along the line
-        svg.selectAll("circle.line")
-            .data(circleData)
-            .enter().append("circle")
-            .attr("class", "line"+k)
-            .attr("cx", function(d) { return x_scale(d[0]); })
-            .attr("cy", function(d) { return y_scale(d[1]); })
-            .attr("r", 2.5)
-            .style("fill", color)
-            .on("mouseover", function() {
-                var circleX = d3.select(this.__data__[0]);
-                circleX = circleX.toString();
-
-                var circleY = d3.select(this.__data__[1]);
-                circleY = circleY.toString();
-                circleY = circleY.split(","[0]);
-
-                textTop.text(curveTitle+" point value (x/y): " + circleX + ", " + circleY);
-
-            });
-    }
-
-    var margin = {top: 55, right: 80, bottom: 45, left: 60};
-    var width = 580 - margin.left - margin.right;
-    var height = 380 - margin.top - margin.bottom;
-    if (keys == 1) {
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
-    } else {
-        var x_scale = d3.scale.log().range([0, width]).domain([multipleMfdsMinValue, multipleMfdsMaxValue]);
-    }
-
-    var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
-
-    var xAxis = [], xAxis_n = 1;
-    var xAxis_vals = [];
-
-    xAxis_n = parseInt(Math.ceil(allyAxisVariable.length / 5));
-
-    if (xAxis_n > 4)
-        xAxis_n = 4;
-
-    for (var i = 0 ; i < xAxis_n ; i++) {
-        xAxis_vals[i] = [];
-        for (var e = i ; e < allyAxisVariable.length ; e += xAxis_n) {
-            xAxis_vals[i].push(allyAxisVariable[e]);
-        }
-
-        xAxis[i] = d3.svg.axis()
-            .scale(x_scale)
-            .ticks(4)
-            .innerTickSize(i == 0 ? 8 : 4)
-            .outerTickSize(0)
-            .tickValues(xAxis_vals[i])
-            .orient("bottom");
-
-        if (i == 0) {
-            xAxis[i].tickFormat(function (d) { return d; })
-        }
-        else {
-            xAxis[i].tickFormat(function (d) { return ''; })
-        }
-    }
+    var xAxis = d3.svg.axis()
+        .scale(x0)
+        .orient("bottom");
 
     var yAxis = d3.svg.axis()
-        .scale(y_scale)
-        .orient("left");
-
-    var line = d3.svg.line()
-        .x(function(d,i) {
-            return x_scale(d[0]);
-        })
-        .y(function(d) {
-            return y_scale(d[1]);
-        })
+        .scale(y)
+        .orient("left")
+        .tickFormat(d3.format(".2r"));
 
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+      .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // grid lines
+    var data = chartData;
+
+    var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "occur_rates"; });
+
+    data.forEach(function(d) {
+      d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });
+    });
+
+    x0.domain(data.map(function(d) { return d.occur_rates; }));
+    x1.domain(ageNames).rangeRoundBands([0, x0.rangeBand()]);
+    y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
+
     svg.append("g")
-        .attr("class", "grid")
+        .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .attr('opacity', 0.6)
-        .call(x_grid()
-            .tickSize(-height, 0, 0)
-            .tickFormat('')
-        );
+        .call(xAxis)
+        .append("text")
+        .attr("y", 30)
+        .attr("x", 225)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .style("font-weight", "bold")
+        .text("Damage State");
 
-    svg.append("g")
-        .attr("class", "grid")
-        .attr('opacity', 0.6)
-        .call(y_grid()
-            .tickSize(-width, 0, 0)
-            .tickFormat('')
-        );
-
-    svg.append("text")
-        .attr("x", 460)
-        .attr("y", -25)
-        .attr("dy", ".35em")
-        .text("MFDS *");
-
-    for (k in selectedCurves) {
-        var curve_name = selectedCurves[k];
-        var data = multiplePlotData[curve_name];
-
-        // Update the css for each line
-        colors = [
-            "#4020F7",
-            "#1869DB",
-            "#158406",
-            "#08A100",
-            "#99C400",
-            "#E76F00",
-            "#FF3F00",
-            "#FFFA00",
-            "#4CFF06",
-            "#29FF89",
-            "#51DFFF",
-            "#7782FF",
-            "#DA97FF",
-            "#FFBDE5",
-            "#377CFC"
-        ];
-
-        var gray = "darkGray";
-        $(".line"+k).css({'fill':'none','opacity':'0.5', 'stroke':gray});
-
-        var color = colors[k % colors.length];
-
-        var str = selectedCurves[k];
-        str = str.replace(/_/g, " ");
-        var curveTitle = capitalize(str)
-
-        makeCircles(data, k, color, curveTitle);
-
-        svg.append("text")
-            .attr("x", 465)
-            .attr("y", 0+(k*20))
-            .attr("dy", ".35em")
-            .text(curveTitle);
-
-        svg.append("svg:circle")
-            //.attr("cx", 50)
-            .attr("cy", 0+(k*20))
-            .attr("cx", 460)
-            .attr("r", 3)
-            .style("fill", color)
-
-        $("."+selectedCurves[k]).css({'stroke':colors[k]});
-    }
-
-    for (i = 0 ; i < xAxis_n ; i++) {
-        var g = svg.append("g");
-        g.attr("class", "x axis")
-        g.attr("transform", "translate(0," + height + ")")
-        .call(xAxis[i]);
-        if (i == (xAxis_n - 1))
-            g.append("text")
-            .attr("x", width / 2)
-            .attr("y", 30)
-            .attr("dy", ".71em")
-            .attr("text-anchor", "middle")
-            .style("font-size","12px")
-            .text(xAxisLable);
-    }
     svg.append("g")
         .attr("class", "y axis")
         .call(yAxis)
-        .append("text")
+      .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -60)
-        .attr("x", -120)
+        .attr("y", -55)
+        .attr("x", -90)
         .attr("dy", ".71em")
-        .style("font-size","12px")
-        .style("text-anchor", "middle")
-        .text(yAxisLable);
+        .style("text-anchor", "end")
+        .style("font-weight", "bold")
+        .attr("font-size","14px")
+        //.text(respVar);
 
-    textTopTitle = svg.append("text")
+    var name = svg.selectAll(".name")
+        .data(data)
+      .enter().append("g")
+        .attr("class", "g")
+        .attr("transform", function(d) { return "translate(" + x0(d.occur_rates) + ",0)"; });
+
+    name.selectAll("rect")
+        .data(function(d) { return d.ages; })
+      .enter().append("rect")
+        .attr("width", 35)
+        .attr("x", function(d) { return (x1(d.occur_rates)+25); })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("fill", function(d) { return color(d.occur_rates); });
+
+     textTopLable = svg.append("text")
         .attr("x", 0)
-        .attr("y", -47)
+        .attr("y", -35)
         .attr("dy", ".35em")
         .style("font-weight", "bold")
         .attr("font-size","14px")
-        .text(mappedValue1);
+        //.text(assessmentType+ ' ' +dlName);
 
-    textTopTitle2 = svg.append("text")
-        .attr("x", 0)
-        .attr("y", -30)
-        .attr("dy", ".35em")
-        .style("font-weight", "bold")
-        .attr("font-size","14px")
-        .text(mappedValue2);
-
-    textTop = svg.append("text")
-        .attr("x", 0)
-        .attr("y", -15)
-        .attr("dy", ".35em")
-        .style("font-size","11px")
-        .text('');
-
-    $('#chartDialog').append('<div>* Magnitude Frequency Distributions</div>');
-    $('#chartDialog').append('<div id="downloadCurve"><font color="blue">Download Curve</font></div>');
-    $('#downloadCurve').on("hover", function(){
-        $(this).css("cursor", "pointer");
-    });
-
-    var h = $("#chartDialog").height();
-    h = h + 40;
-    $("#chartDialog").css({"height": h+"px"});
-
-    // Prep data for download to CSV
-    $('#downloadCurve').click(function(event) {
-        var csvHeader = selectedCurves;
-        var csvData = [];
-
-        //csvData = csvData.concat(csvHeader);
-        csvData.push("mfds");
-        csvData.push("binWidth");
-        csvData.push("minMag");
-        csvData.push("occurRate");
-        csvData.push("mags");
-        csvData = JSON.stringify(csvData);
-        var lineBreak = "lineBreak";
-        csvData = csvData.concat(lineBreak);
-        var quotationMark = '"';
-
-        csvData = csvData
-            .replace(/lineBreak/, '\r\n')
-            .replace(/\[/g, '')
-            .replace(/\]/g, '')
-            .replace(/","/g, ',')
-            .replace(/"/g, '');
-
-        for (var k in selectedCurves) {
-            curve_name = selectedCurves[k];
-            var curveValue = mfdsJsonObj[curve_name];
-
-            csvData += curve_name;
-            csvData += ',';
-            csvData += curveValue.bin_width;
-            csvData += ',';
-            csvData += curveValue.min_mag;
-            csvData += ',';
-            csvData += quotationMark;
-            csvData += curveValue.occur_rates;
-            csvData += quotationMark;
-            csvData += ',';
-            csvData += quotationMark;
-            csvData += curveValue.mags;
-            csvData += quotationMark;
-            csvData += '\r\n';
-        }
-
-        downloadJSON2CSV(csvData);
-    });
+    var legend = svg.selectAll(".legend")
+        .data(ageNames.slice().reverse())
+      .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 } //End chart
 
