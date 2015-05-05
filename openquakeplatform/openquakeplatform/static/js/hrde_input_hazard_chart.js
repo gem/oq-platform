@@ -32,10 +32,13 @@ function hazardInputD3Chart(mfdsJsonObj) {
         return Math.max.apply(null, this);
     };
 
-    var max = allOccurRatesArray.max();
+    Array.prototype.min = function() {
+        return Math.min.apply(null, this);
+    };
 
-    console.log('max:');
-    console.log(max);
+    var max = allOccurRatesArray.max();
+    var min = allOccurRatesArray.min();
+
     console.log('chartData:');
     console.log(chartData);
 
@@ -48,8 +51,8 @@ function hazardInputD3Chart(mfdsJsonObj) {
 
     var x1 = d3.scale.ordinal();
 
-    var y = d3.scale.linear()
-        .range([height, 0]).domain([0, max]);
+    var y = d3.scale.log()
+        .range([height, 0]).domain([min, max]);
 
     var color = d3.scale.ordinal()
         .range(["#98abc5", "#8a89a6"]);
@@ -117,7 +120,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
       .enter().append("rect")
         .attr("width", 35)
         .attr("x", function(d) { return (x1(d.mags)+25); })
-        .attr("y", function(d) {console.log('d.value:'); console.log(d.value); return y(d.value); })
+        .attr("y", function(d) {console.log('d.value:'); console.log(y(d.value)); return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.mags); });
 
