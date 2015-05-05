@@ -5,12 +5,6 @@
 
 function hazardInputD3Chart(mfdsJsonObj) {
 
-    var mappedValue1 = AppVars.mappedValue.split(':')[0];
-    var mappedValue2 = AppVars.mappedValue.substring(AppVars.mappedValue.indexOf(":") + 1);
-
-    var xAxisLable, yAxisLable, yAxisVariable, curve_vals, curve_coup, curve_name, colors;
-    var min_value = 1000.0, min_value_k = '', max_value = -1, max_value_k = '';
-    var selectedCurves = [];
     // associative array of arrays of values
     curve_vals = [];
 
@@ -18,19 +12,32 @@ function hazardInputD3Chart(mfdsJsonObj) {
     xAxisLable = 'Magnitude';
 
     // find the min and max value when there are multipe MFDs
-    var keys = Object.keys(mfdsJsonObj).length;
-    var max = [];
+    var allOccurRatesArray = [];
     var chartData = [];
     for (var k in mfdsJsonObj) {
         for (var i = 0; i < mfdsJsonObj[k].mags.length; i++) {
-            max.push(mfdsJsonObj[k].mags[i]);
-            var tempObj = {
-                mags: mfdsJsonObj[k].mags[i],
-                occur_rates: mfdsJsonObj[k].occur_rates[i]
-            };
+            allOccurRatesArray.push(mfdsJsonObj[k].occur_rates[i]);
+            // Append only values > 0
+            if (mfdsJsonObj[k].occur_rates[i] > 0) {
+                var tempObj = {
+                    mags: mfdsJsonObj[k].mags[i],
+                    occur_rates: mfdsJsonObj[k].occur_rates[i]
+                };
+            }
             chartData.push(tempObj);
         }
     }
+
+    Array.prototype.max = function() {
+        return Math.max.apply(null, this);
+    };
+
+    var max = allOccurRatesArray.max();
+
+    console.log('max:');
+    console.log(max);
+    console.log('chartData:');
+    console.log(chartData);
 
     var margin = {top: 60, right: 20, bottom: 50, left: 60},
         width = 480 - margin.left - margin.right,
@@ -42,7 +49,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
     var x1 = d3.scale.ordinal();
 
     var y = d3.scale.linear()
-        .range([height, 0]);
+        .range([height, 0]).domain([0, max]);
 
     var color = d3.scale.ordinal()
         .range(["#98abc5", "#8a89a6"]);
@@ -64,15 +71,15 @@ function hazardInputD3Chart(mfdsJsonObj) {
 
     var data = chartData;
 
-    var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "occur_rates"; });
+    var keys = d3.keys(data[0]).filter(function(key) { return key !== "mags"; });
 
     data.forEach(function(d) {
-      d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });
+      d.ages = keys.map(function(name) { return {name: name, value: +d[name]}; });
     });
 
-    x0.domain(data.map(function(d) { return d.occur_rates; }));
-    x1.domain(ageNames).rangeRoundBands([0, x0.rangeBand()]);
-    y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
+    x0.domain(data.map(function(d) { return d.mags; }));
+    x1.domain(keys).rangeRoundBands([0, x0.rangeBand()]);
+    //y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
 
     svg.append("g")
         .attr("class", "x axis")
@@ -103,16 +110,16 @@ function hazardInputD3Chart(mfdsJsonObj) {
         .data(data)
       .enter().append("g")
         .attr("class", "g")
-        .attr("transform", function(d) { return "translate(" + x0(d.occur_rates) + ",0)"; });
+        .attr("transform", function(d) { return "translate(" + x0(d.mags) + ",0)"; });
 
     name.selectAll("rect")
         .data(function(d) { return d.ages; })
       .enter().append("rect")
         .attr("width", 35)
-        .attr("x", function(d) { return (x1(d.occur_rates)+25); })
-        .attr("y", function(d) { return y(d.value); })
+        .attr("x", function(d) { return (x1(d.mags)+25); })
+        .attr("y", function(d) {console.log('d.value:'); console.log(d.value); return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
-        .style("fill", function(d) { return color(d.occur_rates); });
+        .style("fill", function(d) { return color(d.mags); });
 
      textTopLable = svg.append("text")
         .attr("x", 0)
@@ -123,7 +130,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
         //.text(assessmentType+ ' ' +dlName);
 
     var legend = svg.selectAll(".legend")
-        .data(ageNames.slice().reverse())
+        .data(keys.slice().reverse())
       .enter().append("g")
         .attr("class", "legend")
         .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
