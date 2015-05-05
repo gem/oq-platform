@@ -3,15 +3,15 @@
   <div class="control-group" id="permission-view-download" >
 
 
-    {% if request.user.get_profile.organization_name = 'undefined' or request.user.get_profile.country = None %}
+    {% if request.user.get_profile.name = None or request.user.get_profile.name = '' or request.user.get_profile.organization = None or request.user.get_profile.position = None or request.user.get_profile.position = '' or request.user.get_profile.position = '' %}
 
-    <div class="alert alert-danger" role="alert">
-      Hi {{ request.user.username }}, your profile is incomplete, before sharing your work with the GEM community please update.
-      </br></br>
-      <a class="btn btn-xs btn-blue" target="_blank" href="/people/edit/{{ request.user.username }} ">Update Profile</a>
-    </div>
+      <div class="alert alert-danger" role="alert">
+        Hi {{ request.user.username }}, your profile is incomplete, before sharing your work with the GEM community please update.
+        </br></br>
+        <a class="btn btn-xs btn-blue" target="_blank" href="/people/edit/{{ request.user.username }} ">Update Profile</a>
+      </div>
 
-{% endif %}
+    {% endif %}
 
     <label>By making this item available to other OpenQuake Platform users you acknowledge that you have read and agree the terms of use.</label>
     <a class="btn btn-xs btn-blue" target="_blank" href="{% url 'terms' %}">Terms of Use</a>
