@@ -39,12 +39,15 @@ def index(request, **kwargs):
     except ValueError as e:
         tab_id = 1
 
-    try:
-        subtab_id = int(request.GET.get("subtab_id", 1))
-        if subtab_id < 1 or subtab_id > 2:
+    subtab_id = 1
+    if tab_id == 1:
+        try:
+            subtab_id = int(request.GET.get("subtab_id", 1))
+            if subtab_id < 1 or subtab_id > 2:
+                subtab_id = 1
+                print "MOP: qui %d" % subtab_id
+        except ValueError as e:
             subtab_id = 1
-    except ValueError as e:
-        subtab_id = 1
 
     if 'HTTP_HOST' in request.META:
         proto = (request.META['HTTP_X_FORWARDED_PROTO'] if
@@ -80,6 +83,7 @@ def index(request, **kwargs):
                               dict(taxonomy=taxonomy,
                                    is_popup=is_popup,
                                    tab_id=tab_id,
+                                   subtab_id=subtab_id,
                                    tab_content=tab_content,
                                    sub1tab_content=sub1tab_content,
                                    taxt_prefix=taxt_prefix,

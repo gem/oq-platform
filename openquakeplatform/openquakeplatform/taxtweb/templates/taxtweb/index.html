@@ -163,7 +163,9 @@ table.dir_spec td {
 var taxt_prefix = '{{ taxt_prefix }}';
 window.onload = function () {
     var tab_cur = {{ tab_id }};
-    tab_set(tab_cur);
+    var subtab_cur = {{ subtab_id }};
+
+    tab_set(tab_cur, subtab_cur);
     /*
     var    demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH2+RMT1+RE+RE1+RWCP/FW+FW3+FWCN/FOSDN";
     */
