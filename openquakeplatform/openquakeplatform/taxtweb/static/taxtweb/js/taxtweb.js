@@ -98,7 +98,7 @@ var llrs_duct =
     { 'L99': [],
       'LN': [],
       'LFM': llrs_duct_grp[0],
-      'LINF': llrs_duct_grp[0],
+      'LFINF': llrs_duct_grp[0],
       'LFBR': llrs_duct_grp[0],
       'LPB': llrs_duct_grp[0],
       'LWAL': llrs_duct_grp[0],
@@ -397,7 +397,7 @@ function taxt_ValidateMaterial1() // Ok
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
         /* LN   */ SystemCB11.push('No lateral load-resisting system');
         /* LFM  */ SystemCB11.push('Moment frame');
-        /* LINF */ SystemCB11.push('Infilled frame');
+        /* LFINF */ SystemCB11.push('Infilled frame');
         /* LFBR */ SystemCB11.push('Braced frame');
         /* LPB  */ SystemCB11.push('Post and beam');
         /* LWAL */ SystemCB11.push('Wall');
