@@ -69,6 +69,6 @@ def taxonomy_short2full(t_short):
             if max_pos < cur_pos:
                 max_pos = cur_pos
         else:
-            print "t_el: %s not found" % t_el
-    
-    return ('/'.join(tfull_arr))
+            return (None, "Unknown item '%s'" % t_el)
+
+    return (('/'.join(tfull_arr)), None)

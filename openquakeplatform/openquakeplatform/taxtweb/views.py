@@ -77,10 +77,11 @@ def index(request, **kwargs):
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
-    taxonomy = taxonomy_short2full(kwargs['taxonomy'])
+    (taxonomy, error_msg) = taxonomy_short2full(kwargs['taxonomy'])
 
     return render_to_response("taxtweb/index.html",
                               dict(taxonomy=taxonomy,
+                                   error_msg=error_msg,
                                    is_popup=is_popup,
                                    tab_id=tab_id,
                                    subtab_id=subtab_id,
