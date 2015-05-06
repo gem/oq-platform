@@ -19,15 +19,15 @@ function hazardInputD3Chart(mfdsJsonObj) {
     var chartData = [];
     for (var k in mfdsJsonObj) {
         for (var i = 0; i < mfdsJsonObj[k].mags.length; i++) {
-            allOccurRatesArray.push(mfdsJsonObj[k].occur_rates[i]);
             // Append only values > 0
             if (mfdsJsonObj[k].occur_rates[i] > 0) {
+                allOccurRatesArray.push(mfdsJsonObj[k].occur_rates[i]);
                 var tempObj = {
                     mags: mfdsJsonObj[k].mags[i],
                     occur_rates: mfdsJsonObj[k].occur_rates[i]
                 };
-            }
             chartData.push(tempObj);
+            }
         }
     }
 
@@ -42,8 +42,8 @@ function hazardInputD3Chart(mfdsJsonObj) {
     var max = allOccurRatesArray.max();
     var min = allOccurRatesArray.min();
 
-    var margin = {top: 60, right: 20, bottom: 80, left: 60},
-        width = 480 - margin.left - margin.right,
+    var margin = {top: 60, right: 60, bottom: 80, left: 80},
+        width = 600 - margin.left - margin.right,
         height = 440 - margin.top - margin.bottom;
 
     var x0 = d3.scale.ordinal()
@@ -66,7 +66,6 @@ function hazardInputD3Chart(mfdsJsonObj) {
         .scale(y)
         .orient("left")
         .ticks(5);
-        //.tickFormat(d3.format(".2r"));;
 
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -143,7 +142,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -120)
-        .attr("y", -60)
+        .attr("y", 480)
         .attr("dy", ".71em")
         .style("text-anchor", "middle")
         .attr("font-size","14px")
