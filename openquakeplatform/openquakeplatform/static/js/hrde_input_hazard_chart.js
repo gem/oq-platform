@@ -5,6 +5,9 @@
 
 function hazardInputD3Chart(mfdsJsonObj) {
 
+    console.log('mfdsJsonObj:');
+    console.log(mfdsJsonObj);
+
     // associative array of arrays of values
     curve_vals = [];
 
@@ -28,6 +31,9 @@ function hazardInputD3Chart(mfdsJsonObj) {
         }
     }
 
+    console.log('chartData:');
+    console.log(chartData);
+
     Array.prototype.max = function() {
         return Math.max.apply(null, this);
     };
@@ -38,9 +44,6 @@ function hazardInputD3Chart(mfdsJsonObj) {
 
     var max = allOccurRatesArray.max();
     var min = allOccurRatesArray.min();
-
-    console.log('chartData:');
-    console.log(chartData);
 
     var margin = {top: 60, right: 20, bottom: 50, left: 60},
         width = 480 - margin.left - margin.right,
@@ -59,12 +62,14 @@ function hazardInputD3Chart(mfdsJsonObj) {
 
     var xAxis = d3.svg.axis()
         .scale(x0)
-        .orient("bottom");
+        .orient("bottom")
+        .ticks(5);
 
     var yAxis = d3.svg.axis()
         .scale(y)
         .orient("left")
-        .tickFormat(d3.format(".2r"));
+        .ticks(5);
+        //.tickFormat(d3.format(".2r"));
 
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -88,6 +93,13 @@ function hazardInputD3Chart(mfdsJsonObj) {
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
+        .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", function(d) {
+                return "rotate(-90)";
+                })
         .append("text")
         .attr("y", 30)
         .attr("x", 225)
@@ -120,7 +132,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
       .enter().append("rect")
         .attr("width", 35)
         .attr("x", function(d) { return (x1(d.mags)+25); })
-        .attr("y", function(d) {console.log('d.value:'); console.log(y(d.value)); return y(d.value); })
+        .attr("y", function(d) { return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.mags); });
 
