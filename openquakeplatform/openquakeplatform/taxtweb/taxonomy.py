@@ -48,8 +48,6 @@ def taxonomy_short2full(t_short):
                 elif t_el == 'DX+PF':
                     tfull_arr[0] = t_el
                     tfull_arr[3] = 'DY+OF'
-                else:
-                    return None
             elif cur_pos == 3:
                 # manage special case for coupled DX,DY cell
                 tfull_arr[4] = tfull_arr_orig[4]
@@ -60,8 +58,6 @@ def taxonomy_short2full(t_short):
                 elif t_el == 'DY+OF':
                     tfull_arr[0] = 'DX+PF'
                     tfull_arr[3] = t_el
-                else:
-                    return None
             else:
                 tfull_arr[cur_pos] = t_el
                 # manage special case paired direction Y cells for
