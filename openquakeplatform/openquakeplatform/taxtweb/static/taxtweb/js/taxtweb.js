@@ -1048,7 +1048,26 @@ function taxt_ValidateFloor()
     $('#FloorCB2').val(0);
 }
 
-function taxt_SetDirection2() // Ok
+function taxt_BreakDirection2(obj) // Ok
+{
+    /* the check is performed just when called with parameter (triggered indirectly
+       from an event or if forced by another function */
+    if (typeof(obj) == 'undefined') {
+        return;
+    }
+    if ($('#DirectionCB').prop('checked')) {
+        if ($('#MaterialCB12').val() != $('#MaterialCB11').val() ||
+            $('#MaterialCB22').val() != $('#MaterialCB21').val() ||
+            $('#MaterialCB32').val() != $('#MaterialCB31').val() ||
+            $('#MaterialCB42').val() != $('#MaterialCB41').val() ||
+            $('#SystemCB12').val() != $('#SystemCB11').val() ||
+            $('#SystemCB22').val() != $('#SystemCB21').val()) {
+            $('#DirectionCB').prop('checked', false);
+        }
+    }
+}
+
+function taxt_SetDirection2(obj) // Ok
 {
     if ($('#DirectionCB').prop('checked')) {
         $('#MaterialCB12').val($('#MaterialCB11').val());
@@ -1079,6 +1098,7 @@ function taxt_MaterialCB11Select(obj) // Ok
 function taxt_MaterialCB12Select(obj) // Ok
 {
     taxt_ValidateMaterial2();
+    taxt_BreakDirection2(obj);
     taxt_ValidateSystem2();
     taxt_BuildTaxonomy();
 }
@@ -1091,7 +1111,8 @@ function taxt_MaterialCB21Select(obj) // Ok
 
 function taxt_MaterialCB22Select(obj) // Ok
 {
-taxt_BuildTaxonomy();
+    taxt_BreakDirection2(obj);
+    taxt_BuildTaxonomy();
 }
 
 function taxt_MaterialCB31Select(obj) // Ok
@@ -1102,7 +1123,8 @@ function taxt_MaterialCB31Select(obj) // Ok
 
 function taxt_MaterialCB32Select(obj) // Ok
 {
-taxt_BuildTaxonomy();
+    taxt_BreakDirection2(obj);
+    taxt_BuildTaxonomy();
 }
 
 function taxt_MaterialCB41Select(obj) // Ok
@@ -1113,6 +1135,7 @@ function taxt_MaterialCB41Select(obj) // Ok
 
 function taxt_MaterialCB42Select(obj) // Ok
 {
+    taxt_BreakDirection2(obj);
     taxt_BuildTaxonomy();
 }
 
@@ -1129,6 +1152,7 @@ function taxt_SystemCB11Select(obj) // Ok
 function taxt_SystemCB12Select(obj) // Ok
 {
     taxt_ValidateSystem2();
+    taxt_BreakDirection2(obj);
     taxt_BuildTaxonomy();
 }
 
@@ -1140,6 +1164,7 @@ function taxt_SystemCB21Select(obj) // Ok
 
 function taxt_SystemCB22Select(obj) // Ok
 {
+    taxt_BreakDirection2(obj);
     taxt_BuildTaxonomy();
     /* FIXME ask probably question
     if SystemCB22.ItemIndex>0 then begin
