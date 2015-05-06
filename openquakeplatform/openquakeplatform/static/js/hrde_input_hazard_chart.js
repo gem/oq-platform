@@ -5,8 +5,8 @@
 
 function hazardInputD3Chart(mfdsJsonObj) {
 
-    console.log('mfdsJsonObj:');
-    console.log(mfdsJsonObj);
+    var mappedValue1 = AppVars.mappedValue.split(':')[0];
+    var mappedValue2 = AppVars.mappedValue.substring(AppVars.mappedValue.indexOf(":") + 1);
 
     // associative array of arrays of values
     curve_vals = [];
@@ -31,9 +31,6 @@ function hazardInputD3Chart(mfdsJsonObj) {
         }
     }
 
-    console.log('chartData:');
-    console.log(chartData);
-
     Array.prototype.max = function() {
         return Math.max.apply(null, this);
     };
@@ -45,7 +42,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
     var max = allOccurRatesArray.max();
     var min = allOccurRatesArray.min();
 
-    var margin = {top: 60, right: 20, bottom: 50, left: 60},
+    var margin = {top: 60, right: 20, bottom: 80, left: 60},
         width = 480 - margin.left - margin.right,
         height = 440 - margin.top - margin.bottom;
 
@@ -69,7 +66,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
         .scale(y)
         .orient("left")
         .ticks(5);
-        //.tickFormat(d3.format(".2r"));
+        //.tickFormat(d3.format(".2r"));;
 
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -100,26 +97,27 @@ function hazardInputD3Chart(mfdsJsonObj) {
             .attr("transform", function(d) {
                 return "rotate(-90)";
                 })
-        .append("text")
-        .attr("y", 30)
-        .attr("x", 225)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("font-weight", "bold")
-        .text("Damage State");
+        .append("text");
+
+    // x axis lable
+    svg.append("text")
+        .attr("x", width / 2 )
+        .attr("y",  360)
+        .style("font-size","14px")
+        .style("text-anchor", "middle")
+        .text(xAxisLable);
 
     svg.append("g")
         .attr("class", "y axis")
         .call(yAxis)
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", -55)
-        .attr("x", -90)
+        .attr("x", -120)
+        .attr("y", -60)
         .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .style("font-weight", "bold")
+        .style("text-anchor", "middle")
         .attr("font-size","14px")
-        //.text(respVar);
+        .text(yAxisLable);
 
     var name = svg.selectAll(".name")
         .data(data)
@@ -136,13 +134,21 @@ function hazardInputD3Chart(mfdsJsonObj) {
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.mags); });
 
-     textTopLable = svg.append("text")
+    textTopTitle = svg.append("text")
         .attr("x", 0)
-        .attr("y", -35)
+        .attr("y", -47)
         .attr("dy", ".35em")
         .style("font-weight", "bold")
         .attr("font-size","14px")
-        //.text(assessmentType+ ' ' +dlName);
+        .text(mappedValue1);
+
+    textTopTitle2 = svg.append("text")
+        .attr("x", 0)
+        .attr("y", -30)
+        .attr("dy", ".35em")
+        .style("font-weight", "bold")
+        .attr("font-size","14px")
+        .text(mappedValue2);
 
     var legend = svg.selectAll(".legend")
         .data(keys.slice().reverse())
