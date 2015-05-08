@@ -65,6 +65,7 @@ AppProtoType.prototype = {
     selectedHazardLayerName: null,
     selectedLayerValue: null,
     allLayers: [],
+    leafletClickEventIdx: {},
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -83,30 +84,28 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var startApp = function() {
 
     function checkForIdMatch(topLayerId) {
-        console.log('AppVars.allLayers:');
-        console.log(AppVars.allLayers);
-        console.log('AppVars.utfGrid:');
-        console.log(AppVars.utfGrid);
-        for (var i = 0; i < AppVars.allLayers.length; i++) {
-            if (AppVars.allLayers[i]._leaflet_id === (topLayerId -1)) {
-                console.log('AppVars.allLayers[i]:');
-                console.log(AppVars.allLayers[i]);
-                AppVars.utfGrid = AppVars.allLayers[i];
+        for (var k in AppVars.leafletClickEventIdx) {
+            // convert leafelt click event index to a number
+            var key = parseFloat(k);
+            key = key + 1;
+            topLayerId = parseFloat(topLayerId);
+
+            if (key == topLayerId) {
+                // set the leaflet click event index
+                var tempObj = {};
+                tempObj[key] = AppVars.leafletClickEventIdx[k];
+                map._leaflet_events.click_idx = tempObj;
             }
         }
-        foobar();
+        getControlLayerId();
     }
 
-    function foobar() {
+    function getControlLayerId() {
 
         // Get the div id of the layer when layer order is changed
         $('.leaflet-down').click(function() {
             // If there is a change in the layer order, find the 'top'
             // layer and assigne it's utfGrid
-            console.log('$(.leaflet-control-layers-overlays)');
-            console.log($('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id);
-
-
             var topLayerId = $('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id;
             topLayerId = topLayerId.split('.')[1];
             checkForIdMatch(topLayerId);
@@ -224,7 +223,7 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.orderlayers(app.baseLayers, null, {collapsed:false});
+    AppVars.layerControl = L.control.orderlayers(app.baseLayers, null, {collapsed:true, order:'qgis'});
     checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
@@ -1075,7 +1074,15 @@ var startApp = function() {
         map.addLayer(utfGridGroup);
         checkLayerController();
         AppVars.allLayers.push(AppVars.utfGrid);
-        foobar();
+
+        // Capture the layer click event object
+        for(var k  in map._leaflet_events.click_idx) {
+            if (k !== 'key') {
+                AppVars.leafletClickEventIdx[k] = map._leaflet_events.click_idx[k];
+            }
+        }
+
+        getControlLayerId();
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
@@ -1111,8 +1118,6 @@ var startApp = function() {
         var utfGrid = createUtfLayerGroups(selectedLayer);
 
         AppVars.utfGrid.on('click', function (e) {
-            console.log(' input curve e:');
-            console.log(e);
             if (e.data) {
                 $('#chartDialog').empty();
                 $('#chartDialog').dialog('open');
@@ -1256,8 +1261,6 @@ var startApp = function() {
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
         AppVars.utfGrid.on('click', function (e) {
-            console.log('hi??? hazardCurveUtfGridClickEvent:');
-            console.log(e);
             // format the selected map and layer names
             try {
                 AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
