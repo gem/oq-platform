@@ -3,10 +3,11 @@
 //////// Input Hazard Chart /////////
 /////////////////////////////////////
 
-function hazardInputD3Chart(mfdsJsonObj) {
+function hazardInputD3Chart(mfdsJsonObj, latlng) {
 
     var mappedValue1 = AppVars.mappedValue.split(':')[0];
     var mappedValue2 = AppVars.mappedValue.substring(AppVars.mappedValue.indexOf(":") + 1);
+    var barWidth;
 
     // associative array of arrays of values
     curve_vals = [];
@@ -29,6 +30,14 @@ function hazardInputD3Chart(mfdsJsonObj) {
             chartData.push(tempObj);
             }
         }
+    }
+
+    if (chartData.length >= 30) {
+        barWidth = 10;
+    } else if (chartData.length < 30 && chartData.length >= 15) {
+        barWidth = 20;
+    } else if (chartData.length < 15) {
+        barWidth = 30;
     }
 
     Array.prototype.max = function() {
@@ -157,7 +166,7 @@ function hazardInputD3Chart(mfdsJsonObj) {
     name.selectAll("rect")
         .data(function(d) { return d.ages; })
       .enter().append("rect")
-        .attr("width", 35)
+        .attr("width", barWidth)
         .attr("x", function(d) { return (x1(d.mags)+25); })
         .attr("y", function(d) { return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
@@ -175,14 +184,41 @@ function hazardInputD3Chart(mfdsJsonObj) {
         .attr("x", 0)
         .attr("y", -30)
         .attr("dy", ".35em")
-        .style("font-weight", "bold")
         .attr("font-size","14px")
-        .text(mappedValue2);
+        .text(mappedValue2 + ' lat/lng ' + Math.round(latlng.lat * 100) / 100 + '/' + Math.round(latlng.lng * 100) / 100 );
 
-    var legend = svg.selectAll(".legend")
-        .data(keys.slice().reverse())
-      .enter().append("g")
-        .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+    $('#chartDialog').append('<div id="downloadCurve"><p style="color: blue;">Download Curve</p></div>');
+    $('#downloadCurve').on('hover', function(){
+        $(this).css('cursor', 'pointer');
+    });
+
+    // Prep data for download to CSV
+    $('#downloadCurve').click(function() {
+        // access the mag and occurance rate arrays
+        var magsArray, occurRatesArray;
+        for (var k in mfdsJsonObj) {
+            magsArray = mfdsJsonObj[k].mags;
+            occurRatesArray = mfdsJsonObj[k].occur_rates;
+        }
+
+        var lat = latlng.lat;
+        var lng = latlng.lng;
+
+        var csvData = [];
+        csvData = csvData.concat('magnitude');
+        csvData = csvData.concat('occurrence_rate');
+        csvData = csvData.concat('lon');
+        csvData = csvData.concat('lat');
+        csvData = JSON.stringify(csvData);
+        var lineBreak = 'lineBreak';
+        csvData += lineBreak;
+        csvData += '"' + magsArray + '","' + occurRatesArray + ',' + lng + ',' + lat;
+        csvData = csvData
+            .replace(/lineBreak/, '\r\n')
+            .replace(/\[/g, '')
+            .replace(/\]/g, '')
+            .replace(/''/g, '","');
+        downloadJSON2CSV(csvData);
+    });
 } //End chart
 
