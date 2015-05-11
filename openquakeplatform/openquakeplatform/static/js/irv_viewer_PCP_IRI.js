@@ -24,6 +24,9 @@ function IRI_PCP_Chart(iriPcpData) {
     // TODO use the plotelements from the object instead of this array
     var plotElements = ["iri", "svi", "ri"];
     var keys = [];
+    var sum = {};
+    var sumMean = {};
+    var sumMeanArray = [];
 
     for (var k in iriPcpData) {
         keys.push(k);
@@ -204,6 +207,48 @@ function IRI_PCP_Chart(iriPcpData) {
     function path(d) {
         return line(regions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
+
+    //////////////////////
+    //// Median line ////
+    //////////////////////
+
+     // Build skeleton array
+     for (var t in iriPcpData[0]) {
+         sum[t] = 0;
+     }
+
+     // Sum all the paths
+     // Access the objects contained in the theme data array
+     for (var region_idx = 0; region_idx < iriPcpData.length; region_idx++) {
+        // iterate over the each
+         for (var elementName in iriPcpData[region_idx]) {
+            // This will sum all the values inside each theme object
+             sum[elementName] += iriPcpData[region_idx][elementName];
+         }
+     }
+
+     // Get the mean
+     for (var f in sum) {
+         var thisSum = sum[f];
+         sumMean[f] = (thisSum / iriPcpData.length);
+     }
+
+     sumMeanArray.push(sumMean);
+
+     // Plot the median line
+     meanPath = svg.append("g")
+         .attr("class", "PI-meanPath")
+         .selectAll("path")
+         .data(sumMeanArray)
+         .enter().append("path")
+         .attr("d", path)
+         .attr('id', function(d) { return d.region; })
+             .on('mouseover', function() {
+                 textTop.text('Median');
+             }).on('mouseout', function() {
+                 textTop.text('');
+             });
+
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
         var actives = regions.filter(function(p) { return !y[p].brush.empty(); }),
