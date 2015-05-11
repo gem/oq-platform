@@ -678,7 +678,6 @@ function watchForPdSelection(boundingBox, tempProjectDef) {
                         )
                     );
                 }
-                $('#projectDef-spinner').hide();
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
                 processIndicators(layerAttributes, sessionProjectDef);
@@ -798,6 +797,7 @@ var startApp = function() {
                 for (var key in layerAttributes.features[0].properties) {
                     layerFields.push(key);
                 }
+                getLayerInfo(layerAttributes);
             },
             error: function() {
             $('#ajaxErrorDialog').empty();
@@ -870,17 +870,19 @@ var startApp = function() {
                             );
                         }
                         $('#iri-spinner').hide();
+                        $('#primary-spinner').hide();
                         $('#project-definition-svg').show();
                         processIndicators(layerAttributes, sessionProjectDef);
                     }
+                    $('#projectDef-spinner').hide();
                 });
             },
             error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                '<p>This application was not able to get the supplemental information about the selected layer</p>'
-            );
-            $('#ajaxErrorDialog').dialog('open');
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get the supplemental information about the selected layer</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
             }
         });
     }
