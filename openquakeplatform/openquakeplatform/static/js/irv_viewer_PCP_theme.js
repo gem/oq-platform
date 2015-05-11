@@ -32,11 +32,16 @@ function Theme_PCP_Chart(themeData) {
         height = winH - margin.top - margin.bottom;
     var eachValueInThemeData = [];
     var eachElementInThemeData = [];
+    var sum = {};
+    var sumMean = {};
+    var sumMeanArray = [];
+
     for (var i = 0; i < themeData.length; i++) {
         for (var k in themeData[i]){
             eachElementInThemeData.push(themeData[i][k]);
         }
     }
+
 
     for (var i = 0; i < eachElementInThemeData.length; i++) {
         if (!isNaN(parseFloat(eachElementInThemeData[i])) && isFinite(eachElementInThemeData[i])) {
@@ -45,11 +50,9 @@ function Theme_PCP_Chart(themeData) {
     }
 
     var maxVal = Math.max.apply( Math, eachValueInThemeData );
+    var minVal = Math.min.apply( Math, eachValueInThemeData );
 
     var x = d3.scale.ordinal().rangePoints([0, width], 1);
-
-    var x2 = d3.scale.linear()
-        .range([0, width], 1);
 
     var y = d3.scale.linear()
         .range([height, 0]);
@@ -57,20 +60,6 @@ function Theme_PCP_Chart(themeData) {
     var line = d3.svg.line(),
         axis = d3.svg.axis().orient('left'),
         foreground;
-
-    var stack = d3.layout.stack()
-        .offset("zero")
-        .values(function(d) { return d.values; })
-        .x(function(d) { return d.economy; })
-        .y(function(d) { return d.education; });
-
-    var nest = d3.nest()
-        .key(function(d) { return d.key; });
-
-    var area = d3.svg.area()
-        .x(function(d) {  return x2(d.economy); })
-        .y0(function(d) {  return y(d.y0); })
-        .y1(function(d) {  return y(d.y); });
 
     $('#cat-chart').empty();
 
@@ -83,10 +72,9 @@ function Theme_PCP_Chart(themeData) {
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(themeData[0]).filter(function(d) {
         return d != 'region' && d != 'scaleCIvalues' && d != 'getCIvalues' && (y[d] = d3.scale.linear()
-            .domain([0, maxVal])
+            .domain([minVal, maxVal])
             .range([height, 0]));
     }));
-    var z = d3.scale.category20c();
 
     // Add blue foreground lines for focus.
     foreground = svg.append('g')
@@ -107,7 +95,6 @@ function Theme_PCP_Chart(themeData) {
                 .style('stroke', 'steelblue');
                 textTop.text('');
             });
-    var layers = stack(nest.entries(data));
 
     // Add a group element for each dimension.
     var g = svg.selectAll('.dimension')
@@ -146,6 +133,47 @@ function Theme_PCP_Chart(themeData) {
     function path(d) {
         return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
+
+    //////////////////////
+    //// Median line ////
+    //////////////////////
+
+     // Build skeleton array
+     for (var t in themeData[0]) {
+         sum[t] = 0;
+     }
+
+     // Sum all the paths
+     // Access the objects contained in the theme data array
+     for (var region_idx = 0; region_idx < themeData.length; region_idx++) {
+        // iterate over the each
+         for (var themeName in themeData[region_idx]) {
+            // This will sum all the values inside each theme object
+             sum[themeName] += themeData[region_idx][themeName];
+         }
+     }
+
+     // Get the mean
+     for (var f in sum) {
+         var thisSum = sum[f];
+         sumMean[f] = (thisSum / themeData.length);
+     }
+
+     sumMeanArray.push(sumMean);
+
+     // Plot the median line
+     meanPath = svg.append("g")
+         .attr("class", "PI-meanPath")
+         .selectAll("path")
+         .data(sumMeanArray)
+         .enter().append("path")
+         .attr("d", path)
+         .attr('id', function(d) { return d.region; })
+             .on('mouseover', function() {
+                 textTop.text('Median');
+             }).on('mouseout', function() {
+                 textTop.text('');
+             });
 
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {

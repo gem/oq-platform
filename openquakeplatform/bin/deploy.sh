@@ -619,7 +619,7 @@ oq_platform_install () {
 
     #
     # Update Django 'sites' with real hostname
-    DJANGO_SETTINGS_MODULE='openquakeplatform.settings' python -c "from django.contrib.sites.models import Site; from openquakeplatform import settings; mysite = Site.objects.all()[0]; mysite.domain = '$gem_host_name'; mysite.name = settings.SITENAME; mysite.save()"
+    openquakeplatform fixsitename
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # Load our users. Default password must be changed
