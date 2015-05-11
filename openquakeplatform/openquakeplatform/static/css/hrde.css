@@ -129,5 +129,24 @@ a {
 }
 
 .leaflet-control-layers {
-  width: 300px;
+  width: 350px;
 }
+
+.leaflet-control {
+  clear: none;
+}
+
+.leaflet-control-layers .leaflet-row .leaflet-input {
+  width: 5%;
+}
+
+.leaflet-control-layers .leaflet-row .leaflet-up {
+  padding-right: 20px;
+  float: right;
+}
+
+.leaflet-control-layers .leaflet-row .leaflet-down {
+  float: right;
+}
+
+

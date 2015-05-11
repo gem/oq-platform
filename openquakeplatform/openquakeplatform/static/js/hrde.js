@@ -101,10 +101,16 @@ var startApp = function() {
                 map._leaflet_events.mousemove_idx = tempMouseObj;
             }
         }
-        getControlLayerId();
+        layerControlLayerSwitch();
     }
 
     function getControlLayerId() {
+        var topLayerId = $('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id;
+            topLayerId = topLayerId.split('.')[1];
+            checkForIdMatch(topLayerId);
+    }
+
+    function layerControlLayerSwitch() {
         // Get the div id of the layer when layer order is changed
         $('.leaflet-down').click(function() {
             // If there is a change in the layer order, find the 'top'
@@ -115,7 +121,6 @@ var startApp = function() {
         });
 
         $('.leaflet-up').click(function() {
-
             var layerId = $(this).parent()[0].children[0].firstChild.id;
             layerId = layerId.split('.')[1];
             checkForIdMatch(layerId);
@@ -1086,8 +1091,8 @@ var startApp = function() {
             }
         }
 
+        layerControlLayerSwitch();
         getControlLayerId();
-        $('.leaflet-down').trigger('click');
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
