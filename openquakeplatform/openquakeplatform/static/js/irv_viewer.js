@@ -660,6 +660,7 @@ function watchForPdSelection(boundingBox, tempProjectDef) {
         var pdSelection = $('#pdSelection').val();
         for (var i = 0; i < tempProjectDef.length; i++) {
             if (tempProjectDef[i].title === pdSelection) {
+                selectedRegion = tempProjectDef[i].zone_label_field;
                 sessionProjectDef = tempProjectDef[i];
                 loadPD(sessionProjectDef);
                 // get b-box
@@ -680,7 +681,6 @@ function watchForPdSelection(boundingBox, tempProjectDef) {
                 $('#projectDef-spinner').hide();
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
-                $('#region-selection-list').show();
                 processIndicators(layerAttributes, sessionProjectDef);
             }
         }
@@ -729,9 +729,7 @@ var startApp = function() {
 
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
-    $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
-    $('#region-selection-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -774,7 +772,6 @@ var startApp = function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
         $('#primary-spinner').show();
-        $('#regionSelectionDialog').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
         selectedLayer = document.getElementById('svir-project-list').value;
@@ -801,25 +798,6 @@ var startApp = function() {
                 for (var key in layerAttributes.features[0].properties) {
                     layerFields.push(key);
                 }
-
-                $('#regionSelectionDialog').append(
-                    '<p>Please select the field that contains the layer&#39s region labels</p>'+
-                    '<select id="region-selection-list">'+
-                    '<option selected disabled>Select Field</option>'+
-                    '</select>'
-                );
-
-                // append each field to the selection menu
-                for (var i = 0; i < layerFields.length; i++) {
-                    $('#region-selection-list').append('<option>'+ layerFields[i] +'</option>');
-                }
-
-                $('#regionSelectionDialog').dialog('open');
-
-                $('#region-selection-list').change(function() {
-                    selectedRegion = document.getElementById('region-selection-list').value;
-                    getLayerInfo(layerAttributes);
-                });
             },
             error: function() {
             $('#ajaxErrorDialog').empty();
@@ -832,7 +810,6 @@ var startApp = function() {
     });
 
     function getLayerInfo(layerAttributes) {
-        $('#regionSelectionDialog').dialog('close');
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
@@ -892,10 +869,8 @@ var startApp = function() {
                                 )
                             );
                         }
-                        $('#projectDef-spinner').hide();
                         $('#iri-spinner').hide();
                         $('#project-definition-svg').show();
-                        $('#region-selection-list').show();
                         processIndicators(layerAttributes, sessionProjectDef);
                     }
                 });
@@ -909,15 +884,6 @@ var startApp = function() {
             }
         });
     }
-
-    // Region selection dialog
-    $('#regionSelectionDialog').dialog({
-        autoOpen: false,
-        height: 150,
-        width: 400,
-        closeOnEscape: true,
-        modal: true
-    });
 
     // AJAX error dialog
     $('#ajaxErrorDialog').dialog({
