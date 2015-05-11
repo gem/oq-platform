@@ -898,15 +898,6 @@ var startApp = function() {
                         $('#region-selection-list').show();
                         processIndicators(layerAttributes, sessionProjectDef);
                     }
-<<<<<<< HEAD
-=======
-                    $('#projectDef-spinner').hide();
-                    $('#iri-spinner').hide();
-                    $('#primary-spinner').hide();
-                    $('#project-definition-svg').show();
-                    $('#region-selection-list').show();
-                    processIndicators(layerAttributes, sessionProjectDef);
->>>>>>> master
                 });
             },
             error: function() {
