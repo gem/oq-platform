@@ -66,6 +66,7 @@ AppProtoType.prototype = {
     selectedLayerValue: null,
     allLayers: [],
     leafletClickEventIdx: {},
+    leafletMouseEventIdx: {},
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -85,23 +86,25 @@ var startApp = function() {
 
     function checkForIdMatch(topLayerId) {
         for (var k in AppVars.leafletClickEventIdx) {
-            // convert leafelt click event index to a number
+            // convert leafelt mouse and click event index to a number
             var key = parseFloat(k);
             key = key + 1;
             topLayerId = parseFloat(topLayerId);
 
             if (key == topLayerId) {
-                // set the leaflet click event index
-                var tempObj = {};
-                tempObj[key] = AppVars.leafletClickEventIdx[k];
-                map._leaflet_events.click_idx = tempObj;
+                // set the leaflet mouse and click event index
+                var tempClickObj = {};
+                var tempMouseObj = {};
+                tempClickObj[key] = AppVars.leafletClickEventIdx[k];
+                tempMouseObj[key] = AppVars.leafletMouseEventIdx[k];
+                map._leaflet_events.click_idx = tempClickObj;
+                map._leaflet_events.mousemove_idx = tempMouseObj;
             }
         }
         getControlLayerId();
     }
 
     function getControlLayerId() {
-
         // Get the div id of the layer when layer order is changed
         $('.leaflet-down').click(function() {
             // If there is a change in the layer order, find the 'top'
@@ -1075,14 +1078,16 @@ var startApp = function() {
         checkLayerController();
         AppVars.allLayers.push(AppVars.utfGrid);
 
-        // Capture the layer click event object
+        // Capture the leaflet mouse and click event object
         for(var k  in map._leaflet_events.click_idx) {
             if (k !== 'key') {
                 AppVars.leafletClickEventIdx[k] = map._leaflet_events.click_idx[k];
+                AppVars.leafletMouseEventIdx[k] = map._leaflet_events.mousemove_idx[k];
             }
         }
 
         getControlLayerId();
+        $('.leaflet-down').trigger('click');
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
