@@ -94,6 +94,7 @@
 
         function saveProjData() {
             $('#saveBtn').click(function() {
+                $('#saveState-spinner').hide();
                 var pdLicense = sessionProjectDef.license;
                 var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
                 var pdLicenseURL = sessionProjectDef.license.split('(')[1];
@@ -114,10 +115,19 @@
                     }
                 });
 
-                var projectDefStg = JSON.stringify(projectDef);
-
                 $('#submitPD').click(function() {
                     // Hit the API endpoint and grab the very very latest version of the PD object
+                    $('#saveState-spinner').show();
+                    var inputVal = $('#giveNamePD').val();
+                    projectDef.title = inputVal;
+
+                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                        //avoid circularity in JSON by removing the parent key
+                        if (key == "parent") {
+                            return 'undefined';
+                          }
+                          return value;
+                        });
 
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,
@@ -132,6 +142,7 @@
                             );
                             $('#saveStateDialog').dialog('close');
                             $('#ajaxErrorDialog').dialog('open');
+                            $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
                         }).fail(function() {
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(

@@ -19,10 +19,11 @@ var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
+var tempProjectDef;
+var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
-var sessionProjectDefStr;
 var projectLayerAttributes;
 var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
@@ -655,41 +656,38 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
-function watchForPdSelection(boundingBox, tempProjectDef) {
-    $('#pdSelection').change(function() {
-        var pdSelection = $('#pdSelection').val();
-        for (var i = 0; i < tempProjectDef.length; i++) {
-            if (tempProjectDef[i].title === pdSelection) {
-                selectedRegion = tempProjectDef[i].zone_label_field;
-                sessionProjectDef = tempProjectDef[i];
-                loadPD(sessionProjectDef);
-                // get b-box
-                if (boundingBox != undefined) {
-                    map.fitBounds (
-                        L.latLngBounds (
-                            L.latLng (
-                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                            ),
-                            L.latLng (
-                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                            )
+function watchForPdSelection() {
+    var pdSelection = $('#pdSelection').val();
+    for (var i = 0; i < tempProjectDef.length; i++) {
+        if (tempProjectDef[i].title === pdSelection) {
+            selectedRegion = tempProjectDef[i].zone_label_field;
+            sessionProjectDef = tempProjectDef[i];
+            loadPD(sessionProjectDef);
+            // get b-box
+            if (boundingBox != undefined) {
+                map.fitBounds (
+                    L.latLngBounds (
+                        L.latLng (
+                            parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                            parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                        ),
+                        L.latLng (
+                            parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                            parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
                         )
-                    );
-                }
-                $('#iri-spinner').hide();
-                $('#project-definition-svg').show();
-                processIndicators(layerAttributes, sessionProjectDef);
+                    )
+                );
             }
+            $('#iri-spinner').hide();
+            $('#project-definition-svg').show();
+            processIndicators(layerAttributes, sessionProjectDef);
         }
-    });
+    }
 }
 
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
-    $('#primary-spinner').hide();
     $('#primary_indicator').hide();
     map = new L.Map('map', {
         minZoom: 2,
@@ -770,7 +768,10 @@ var startApp = function() {
     $('#svir-project-list').change(function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
-        $('#primary-spinner').show();
+        $('#projectDef-tree').empty();
+        $('#iri-chart').empty();
+        $('#cat-chart').empty();
+        $('#primary-chart').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
         selectedLayer = document.getElementById('svir-project-list').value;
@@ -831,49 +832,25 @@ var startApp = function() {
                     // Pass a string representing the project def into the d3 tree chart
                     projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
 
-                    var tempProjectDef = jQuery.parseJSON(projectDefStr);
+                    tempProjectDef = jQuery.parseJSON(projectDefStr);
 
                     // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                    var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-
-                    if (tempProjectDef.constructor === Array) {
-                        $('#project-def').prepend('<select id="pdSelection"><option value"" disabled selected>Select a Project Definition</option></select>');
-                        var pdTitles = [];
-                        // break the array into objects, present the user with a choice of PDs
-                        for (var i = 0; i < tempProjectDef.length; i++) {
-                            // Get the PD title
-                            pdTitles.push(tempProjectDef[i].title);
-                        }
-                        // Provide the user with a selection dropdown of the available PDs
-                        for (var ia = 0; ia < pdTitles.length; ia++) {
-                            $('#pdSelection').append(
-                                '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
-                            );
-                            watchForPdSelection(boundingBox, tempProjectDef);
-                        }
-                    } else {
-                        // get b-box
-                        sessionProjectDef = tempProjectDef;
-                        selectedRegion = tempProjectDef.zone_label_field;
-                        loadPD(sessionProjectDef);
-                        if (boundingBox != undefined) {
-                            map.fitBounds (
-                                L.latLngBounds (
-                                    L.latLng (
-                                        parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                        parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                                    ),
-                                    L.latLng (
-                                        parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                        parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                                    )
-                                )
-                            );
-                        }
-                        $('#iri-spinner').hide();
-                        $('#primary-spinner').hide();
-                        $('#project-definition-svg').show();
-                        processIndicators(layerAttributes, sessionProjectDef);
+                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
+                    if ($('#pdSelection').length > 0) {
+                        $('#pdSelection').remove();
+                    }
+                    $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+                    var pdTitles = [];
+                    // break the array into objects, present the user with a choice of PDs
+                    for (var i = 0; i < tempProjectDef.length; i++) {
+                        // Get the PD title
+                        pdTitles.push(tempProjectDef[i].title);
+                    }
+                    // Provide the user with a selection dropdown of the available PDs
+                    for (var ia = 0; ia < pdTitles.length; ia++) {
+                        $('#pdSelection').append(
+                            '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                        );
                     }
                     $('#projectDef-spinner').hide();
                 });
