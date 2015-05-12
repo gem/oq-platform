@@ -93,6 +93,7 @@
 
         function saveProjData() {
             $('#saveBtn').click(function() {
+                $('#saveState-spinner').hide();
                 var pdLicense = sessionProjectDef.license;
                 var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
                 var pdLicenseURL = sessionProjectDef.license.split('(')[1];
@@ -117,18 +118,18 @@
                 });
 
                 $('#submitPD').click(function() {
+                    // Hit the API endpoint and grab the very very latest version of the PD object
                     $('#saveState-spinner').show();
-                    // Include the user provided title
-                    var giveName = $('#giveNamePD').val();
-                    projectDef.title = giveName;
+                    var inputVal = $('#giveNamePD').val();
+                    projectDef.title = inputVal;
 
-                    var projectDefStg = JSON.stringify(root, function(key, value) {
-                        // Avoid circularity in JSON by removing the parent key
+                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                        //avoid circularity in JSON by removing the parent key
                         if (key == "parent") {
                             return 'undefined';
                           }
-                        return value;
-                    });
+                          return value;
+                        });
 
                     // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
@@ -138,18 +139,10 @@
                         function(){
                             // success
                         }).done(function() {
-                            $('#ajaxErrorDialog').dialog('option', 'title', 'success');
-                            $('#ajaxErrorDialog').empty();
-                            $('#ajaxErrorDialog').append(
-                                '<p>The Project Definition has been added to the layer metedata</p>'
-                            );
                             $('#saveStateDialog').dialog('close');
-                            $('#ajaxErrorDialog').dialog('open');
                             $('#saveState-spinner').hide();
-                            $('#pdSelection').append(
-                                '<option value="'+ giveName +'">'+ giveName +'</option>'
-                            );
                             $('#saveBtn').prop('disabled', true);
+                            $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
                         }).fail(function() {
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(

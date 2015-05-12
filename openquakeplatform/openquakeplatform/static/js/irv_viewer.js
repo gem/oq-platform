@@ -19,27 +19,16 @@ var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
-var boundingBox;
 var tempProjectDef;
+var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
-var sessionProjectDefStr;
 var projectLayerAttributes;
 var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
-
-$(function() {
-    $('#saveStateDialog').dialog({
-        autoOpen: false,
-        height: 520,
-        width: 620,
-        closeOnEscape: true,
-        position: {at: 'right bottom'}
-    });
-});
 
 function createIndex(la, index) {
     var indicator = [];
@@ -659,9 +648,9 @@ function thematicMap(layerAttributes) {
 
 function watchForPdSelection() {
     var pdSelection = $('#pdSelection').val();
-    $('#saveBtn').prop('disabled', true);
     for (var i = 0; i < tempProjectDef.length; i++) {
         if (tempProjectDef[i].title === pdSelection) {
+            selectedRegion = tempProjectDef[i].zone_label_field;
             sessionProjectDef = tempProjectDef[i];
             loadPD(sessionProjectDef);
             // get b-box
@@ -683,9 +672,9 @@ function watchForPdSelection() {
             $('#iri-spinner').hide();
             $('#project-definition-svg').show();
             $('#region-selection-list').show();
+            processIndicators(layerAttributes, sessionProjectDef);
         }
     }
-    processIndicators(layerAttributes, sessionProjectDef);
 }
 
 var startApp = function() {
@@ -731,10 +720,10 @@ var startApp = function() {
 
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
-    $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
     $('#region-selection-list').hide();
     $('#thematic-map-selection').hide();
+
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -781,14 +770,17 @@ var startApp = function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
         $('#regionSelectionDialog').empty();
+        $('#projectDef-tree').empty();
+        $('#iri-chart').empty();
+        $('#cat-chart').empty();
+        $('#primary-chart').empty();
+
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
         selectedLayer = document.getElementById('svir-project-list').value;
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-
-
 
         // Get layer attributes from GeoServer
         $.ajax({
@@ -828,19 +820,20 @@ var startApp = function() {
                     $('#projectDef-spinner').text('Select a project definition ...');
                     $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
                 });
+
+                getLayerInfo(layerAttributes);
             },
             error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get information about the selected layer</p>'
-                );
-            $('#ajaxErrorDialog').dialog('open');
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                        '<p>This application was not able to get information about the selected layer</p>'
+                    );
+                $('#ajaxErrorDialog').dialog('open');
             }
         });
     });
 
     function getLayerInfo(layerAttributes) {
-        $('#regionSelectionDialog').dialog('close');
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
@@ -853,6 +846,8 @@ var startApp = function() {
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // file 6
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
+                // Portugal-test
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4 ";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     // Convert XML to JSON
@@ -862,61 +857,40 @@ var startApp = function() {
                     projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
 
                     tempProjectDef = jQuery.parseJSON(projectDefStr);
-                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
 
                     // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                    if (tempProjectDef.constructor === Array) {
+                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
+                    if ($('#pdSelection').length > 0) {
                         $('#pdSelection').remove();
-                        $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
-                        var pdTitles = [];
-                        // break the array into objects, present the user with a choice of PDs
-                        for (var i = 0; i < tempProjectDef.length; i++) {
-                            // Get the PD title
-                            pdTitles.push(tempProjectDef[i].title);
-                        }
-                        // Provide the user with a selection dropdown of the available PDs
-                        for (var ia = 0; ia < pdTitles.length; ia++) {
-                            $('#pdSelection').append(
-                                '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
-                            );
-                        }
-                    } else {
-                        sessionProjectDef = tempProjectDef;
-                        loadPD(sessionProjectDef);
-                        if (boundingBox != undefined) {
-                            map.fitBounds (
-                                L.latLngBounds (
-                                    L.latLng (
-                                        parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                        parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                                    ),
-                                    L.latLng (
-                                        parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                        parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                                    )
-                                )
-                            );
-                        }
-                        $('#projectDef-spinner').hide();
-                        $('#iri-spinner').hide();
-                        $('#project-definition-svg').show();
-                        $('#region-selection-list').show();
-                        processIndicators(layerAttributes, sessionProjectDef);
                     }
+                    $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+                    var pdTitles = [];
+                    // break the array into objects, present the user with a choice of PDs
+                    for (var i = 0; i < tempProjectDef.length; i++) {
+                        // Get the PD title
+                        pdTitles.push(tempProjectDef[i].title);
+                    }
+                    // Provide the user with a selection dropdown of the available PDs
+                    for (var ia = 0; ia < pdTitles.length; ia++) {
+                        $('#pdSelection').append(
+                            '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                        );
+                    }
+                    $('#projectDef-spinner').hide();
                 });
             },
             error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                '<p>This application was not able to get the supplemental information about the selected layer</p>'
-            );
-            $('#ajaxErrorDialog').dialog('open');
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get the supplemental information about the selected layer</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
             }
         });
     }
 
-    // Region selection dialog
-    $('#regionSelectionDialog').dialog({
+    // AJAX error dialog
+    $('#ajaxErrorDialog').dialog({
         autoOpen: false,
         height: 150,
         width: 400,
@@ -924,8 +898,15 @@ var startApp = function() {
         modal: true
     });
 
-    // AJAX error dialog
-    $('#ajaxErrorDialog').dialog({
+    $('#saveStateDialog').dialog({
+        autoOpen: false,
+        height: 150,
+        width: 400,
+        closeOnEscape: true,
+        modal: true
+    });
+
+    $('#successDialog').dialog({
         autoOpen: false,
         height: 150,
         width: 400,
