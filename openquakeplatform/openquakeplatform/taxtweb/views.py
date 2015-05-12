@@ -81,7 +81,7 @@ def index(request, **kwargs):
 
     return render_to_response("taxtweb/index.html",
                               dict(taxonomy=taxonomy,
-                                   error_msg=error_msg,
+                                   error_msg=("" if error_msg == None else error_msg),
                                    is_popup=is_popup,
                                    tab_id=tab_id,
                                    subtab_id=subtab_id,
