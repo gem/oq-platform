@@ -900,10 +900,10 @@ var startApp = function() {
 
     $('#saveStateDialog').dialog({
         autoOpen: false,
-        height: 150,
-        width: 400,
+        height: 520,
+        width: 620,
         closeOnEscape: true,
-        modal: true
+        position: {at: 'right bottom'}
     });
 
     $('#successDialog').dialog({

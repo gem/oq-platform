@@ -143,6 +143,10 @@
                             $('#saveState-spinner').hide();
                             $('#saveBtn').prop('disabled', true);
                             $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                            $('#successDialog').dialog('open');
+                            $('#successDialog').append(
+                                '<p>The project definition has been added to the layer metedata</p>'
+                            );
                         }).fail(function() {
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
