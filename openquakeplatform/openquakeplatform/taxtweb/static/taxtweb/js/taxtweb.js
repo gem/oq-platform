@@ -3971,11 +3971,11 @@ function populate(s, ret_s) {
     occu = sar[8].split('+');
     occu_label = occu[0];
 
-    if (occu_label == 'OC99' && occu.length != 1
-        ||
-        occu_label != 'OC99' && occu.length != 2) {
-        ret_s.s = "Occupancy not defined properly.";
-        return (false);
+    if (occu_label == 'OC99') {
+        if (occu.length != 1) {
+            ret_s.s = "Occupancy not defined properly (" + occu_label + ").";
+            return (false);
+        }
     }
 
     for (i = 0 ; i < occu_type.length ; i++) {
@@ -3992,8 +3992,15 @@ function populate(s, ret_s) {
     }
 
     if (occu_label != 'OC99') {
-        // Occupancy specification
-        occu_atom = occu[1];
+        if (occu.length > 1) {
+            // Occupancy specification
+            occu_atom = occu[1];
+        }
+        else {
+            // select the first item of proper sub-selection
+            occu_atom = occu_spec[occu_id][0].id;
+        }
+
         for (i = 0 ; i < occu_spec[occu_id].length ;  i++) {
             if (occu_atom == occu_spec[occu_id][i].id) {
                 $('#OccupancyCB2').val(i);
