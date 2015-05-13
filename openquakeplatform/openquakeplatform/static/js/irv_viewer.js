@@ -14,6 +14,11 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+
+$(document).ready(function() {
+    $('#cover').remove();
+});
+
 var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
@@ -711,14 +716,24 @@ var startApp = function() {
             '<option selected disabled>Select Project</option>'+
         '</select>'
     );
-
+/*
     $('#map-tools').append(
         '<select id="thematic-map-selection">'+
             '<option>Select Indicator</option>'+
         '</select>'
     );
+*/
 
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
+    $('#map-tools').append(
+        '<button id="loadProjectBtn" type="button" class="btn btn-primary">Load Project</button>'
+    );
+
+    $('#loadProjectBtn').click(function() {
+        $('#loadProjectDialog').dialog('open');
+    });
+
+    // TODO remove thematic-map-selection stuff
+
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
     $('#region-selection-list').hide();
@@ -746,11 +761,23 @@ var startApp = function() {
                     SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
                 }
             }
-            // Append the layer to the selection dropdown menu
+
+            // Create AngularJS dropdown menu
+            var mapScope = angular.element($("#layer-list")).scope();
+            var mapLayerList = [];
             for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+                //TODO remove this...
                 $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
+                var tempObj = {};
+                tempObj.name = SVIRLayerNames[ij];
+                mapLayerList.push(tempObj);
             }
+
             $('#svir-project-list').show();
+
+            mapScope.$apply(function(){
+                mapScope.maps = mapLayerList;
+            });
         },
         error: function() {
             $('#ajaxErrorDialog').empty();
@@ -762,7 +789,9 @@ var startApp = function() {
     });
 
     // Get the layer metadata (project def)
-    $('#svir-project-list').change(function() {
+    //$('#svir-project-list').change(function() {
+    $('#loadProjectBtn').click(function() {
+    //function tom() {
         $("#themeTabs").tabs("option", "active", 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
@@ -777,7 +806,16 @@ var startApp = function() {
 
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
+        var scope = angular.element($("#layer-list")).scope();
+        mapLayerId = scope.selected_map.name;
+        console.log('mapLayerId:');
+        console.log(mapLayerId);
+
+        // TODO remove this...
         selectedLayer = document.getElementById('svir-project-list').value;
+        console.log('selectedLayer:');
+        console.log(selectedLayer);
+
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
@@ -912,6 +950,13 @@ var startApp = function() {
         width: 400,
         closeOnEscape: true,
         modal: true
+    });
+
+    $('#loadProjectDialog').dialog({
+        autoOpen: false,
+        height: 520,
+        width: 620,
+        closeOnEscape: true
     });
 
     $(function() {
