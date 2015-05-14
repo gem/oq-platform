@@ -716,30 +716,13 @@ var startApp = function() {
     });
 
     $('#map-tools').append(
-        '<select id="svir-project-list">'+
-            '<option selected disabled>Select Project</option>'+
-        '</select>'
-    );
-/*
-    $('#map-tools').append(
-        '<select id="thematic-map-selection">'+
-            '<option>Select Indicator</option>'+
-        '</select>'
-    );
-*/
-
-    $('#map-tools').append(
-        '<button id="loadProjectdialogBtn" onclick="foobarbob()" type="button" class="btn btn-primary">Load Project</button>'
+        '<button id="loadProjectdialogBtn" onclick="foobarbob()" type="button" class="btn btn-blue">Load Project</button>'
     );
 
     $('#loadProjectdialogBtn').click(function() {
         $('#loadProjectDialog').dialog('open');
     });
 
-    // TODO remove thematic-map-selection stuff
-
-    $('#svir-project-list').css({ 'margin-bottom' : 0 });
-    $('#svir-project-list').hide();
     $('#region-selection-list').hide();
     $('#thematic-map-selection').hide();
 
@@ -770,14 +753,10 @@ var startApp = function() {
             var mapScope = angular.element($("#layer-list")).scope();
             var mapLayerList = [];
             for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-                //TODO remove this...
-                $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
                 var tempObj = {};
                 tempObj.name = SVIRLayerNames[ij];
                 mapLayerList.push(tempObj);
             }
-
-            $('#svir-project-list').show();
 
             mapScope.$apply(function(){
                 mapScope.maps = mapLayerList;
@@ -815,14 +794,7 @@ var startApp = function() {
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
         var scope = angular.element($("#layer-list")).scope();
-        mapLayerId = scope.selected_map.name;
-        console.log('mapLayerId:');
-        console.log(mapLayerId);
-
-        // TODO remove this...
-        selectedLayer = document.getElementById('svir-project-list').value;
-        console.log('selectedLayer:');
-        console.log(selectedLayer);
+        selectedLayer = scope.selected_map.name;
 
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
@@ -833,6 +805,7 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(data) {
+                $('#loadProjectDialog').dialog('close');
 
                 // Make a global variable used by the d3-tree chart
                 // when a weight is modified
