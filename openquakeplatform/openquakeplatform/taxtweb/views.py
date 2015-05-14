@@ -30,7 +30,6 @@ from django.utils.text import slugify
 from django.contrib.messages.api import get_messages
 from openquakeplatform.taxtweb.taxonomy import taxonomy_short2full
 
-
 def index(request, **kwargs):
     try:
         tab_id = int(request.GET.get("tab_id", 1))

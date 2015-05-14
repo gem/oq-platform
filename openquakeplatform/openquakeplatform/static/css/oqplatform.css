@@ -361,3 +361,7 @@ footer.footer div.container {
    Used by widgets in Leaflet apps.
 */
 .ui-dialog, .ui-widget { }
+
+#site_wide_announcements {
+    margin-left: -20px;
+}

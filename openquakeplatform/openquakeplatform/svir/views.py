@@ -17,11 +17,14 @@
 # License along with this program. If not, see
 # <https://www.gnu.org/licenses/agpl.html>.
 
+from cStringIO import StringIO
 import csv
+import json
 from django.http import (HttpResponse,
                          HttpResponseBadRequest,
-                         HttpResponseNotFound,)
-from django.core.exceptions import ObjectDoesNotExist
+                         HttpResponseNotFound,
+                         )
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.views.decorators.http import condition
 from openquakeplatform.utils import (allowed_methods,
                                      sign_in_required)
@@ -33,10 +36,11 @@ from openquakeplatform.svir.models import (Theme,
                                            CountryIndicator,)
 
 from geonode.base.models import Link
+from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 
 
 COPYRIGHT_HEADER = u"""\
- Copyright (C) 2014 GEM Foundation
+ Copyright (C) 2014-2015 GEM Foundation
 
  Contributions by: see http://www.globalquakemodel.org/contributors
 
@@ -93,6 +97,66 @@ def get_layer_metadata_url(request):
 
 
 @condition(etag_func=None)
+@allowed_methods(('POST', ))
+@sign_in_required
+def add_project_definition(request):
+    """
+    Given a layer identifier and a project definition, if the logged user
+    is enabled to modify the layer, the project definition will be added to
+    the layer's supplemental information. In order to ensure backward
+    compatibility, the supplemental information can contain a single json
+    object. In that case, it will be converted into an array, and both the
+    existing project definition and the new one will be sequentially appended.
+
+    :param request:
+        A "POST" :class:`django.http.HttpRequest` object containing
+        the following parameter:
+            * 'layer_name': the layer identifier
+            * 'project_definition': the project definition to be added to the
+                                    layer's supplemental information
+    """
+    layer_name = request.POST.get('layer_name')
+    if not layer_name:
+        return HttpResponseBadRequest(
+            'Please provide the layer_name parameter')
+    project_definition_str = request.POST.get('project_definition')
+    if not project_definition_str:
+        return HttpResponseBadRequest(
+            'Please provide the project_definition parameter')
+    try:
+        project_definition = json.loads(project_definition_str)
+    except Exception as e:
+        return HttpResponseBadRequest(
+            'Invalid project_definition: %s' % str(e))
+    try:
+        layer = _resolve_layer(
+            request, layer_name, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    except PermissionDenied:
+        return HttpResponse(
+            'You are not allowed to modify this layer',
+            mimetype='text/plain',
+            status=401)
+    supplemental_information = layer.supplemental_information
+    try:
+        project_definitions = json.loads(supplemental_information)
+    except Exception as e:
+        return HttpResponseBadRequest(
+            "The layer's supplemental information do not contain valid"
+            "project definitions: %s", str(e))
+    # if there's only one project definition (it is a simple dict),
+    # create a list and append to it the existing
+    # project definition.
+    # Once the list is there, we can append to it the new project_definition.
+    if isinstance(project_definitions, dict):
+        project_definitions = [project_definitions]
+    project_definitions.append(project_definition)
+    layer.supplemental_information = json.dumps(
+        project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
+    layer.save()
+    return HttpResponse("The new project definition has been added")
+
+
+@condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
 def list_themes(request):
@@ -117,7 +181,7 @@ def list_subthemes_by_theme(request):
     theme_str = request.GET.get('theme')
     if not theme_str:
         return HttpResponseBadRequest(
-            'Please provide a theme to get the corresponding subthemes.')
+            'Please provide the theme parameter')
     try:
         theme_obj = Theme.objects.get(name=theme_str)
     except ObjectDoesNotExist:
@@ -182,7 +246,7 @@ def export_variables_info(request):
     theme_str = request.GET.get('theme')
     subtheme_str = request.GET.get('subtheme')
     copyright = copyright_csv(COPYRIGHT_HEADER)
-    response.write(copyright + "\n")
+    response.write(copyright)
     writer = csv.writer(response)
 
     keywords = []
@@ -261,7 +325,7 @@ def export_countries_info(request):
         'attachment; filename="countries_info_export.csv"'
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
-    response.write(copyright + "\n")
+    response.write(copyright)
     writer.writerow(['ISO', 'NAME'])
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
@@ -296,37 +360,53 @@ def export_variables_data(request):
     """
     req_dict = request.GET if request.method == 'GET' else request.POST
     if not req_dict.get('sv_variables_ids'):
-        msg = ('A list of comma-separated social vulnerability variable codes'
-               ' must be specified')
+        msg = ('Please specify the sv_variables_ids parameter: a list of'
+               ' comma-separated codes of social vulnerability variables.'
+               ' Optional parameters: country_iso_codes (default: get data'
+               ' for all countries); export_geometries (default: False)')
         response = HttpResponse(msg, status="400")
         return response
     sv_variables_ids = req_dict['sv_variables_ids']
     country_iso_codes = req_dict.get('country_iso_codes')
-    export_geometries = req_dict.get('export_geometries') == 'True'
+    export_geometries = (req_dict.get('export_geometries') == 'True')
     country_iso_codes_list = []
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
                                   for iso in country_iso_codes.split(',')]
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = \
-        'attachment; filename="sv_data_by_variables_ids_export.csv"'
+    response_data = _stream_variables_data_as_csv(
+        sv_variables_ids, export_geometries, country_iso_codes_list)
+    filename = 'sv_data_by_variables_ids_export.csv'
+    content_disp = 'attachment; filename="%s"' % filename
+    mimetype = 'text/csv'
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    # response['content-length'] = len(response.content)
+    return response
+
+
+def _stream_variables_data_as_csv(
+        sv_variables_ids, export_geometries, country_iso_codes_list):
     copyright = copyright_csv(COPYRIGHT_HEADER)
-    writer = csv.writer(response)
-    response.write(copyright + "\n")
+    yield copyright
     sv_variables_ids_list = [var_id.strip()
                              for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
     header_list = ["ISO", "COUNTRY_NAME"]
-    for sv_variable_id in sv_variables_ids_list:
-        header_list.append(sv_variable_id)
+    indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    # NOTE: unavailable indicators will be ignored
+    for indicator in indicators:
+        header_list.append(indicator.code)
     if export_geometries:
         header_list.append("GEOMETRY")
-    writer.writerow(header_list)
-    indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    csvfile = StringIO()
+    csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
+    csvwriter.writerow(header_list)
+    yield csvfile.getvalue()
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
     for country in inclusive_region.countries.all():
-        if country_iso_codes and country.iso not in country_iso_codes_list:
+        if (country_iso_codes_list
+                and country.iso not in country_iso_codes_list):
             continue
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
@@ -342,9 +422,11 @@ def export_variables_data(request):
         row.extend(ind_vals)
         if export_geometries:
             row.append(country.the_geom)
-        writer.writerow(row)
-    response['content-length'] = len(response.content)
-    return response
+        # redefine csvfile and csvwriter to avoid yielding again previous stuff
+        csvfile = StringIO()
+        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
+        csvwriter.writerow(row)
+        yield csvfile.getvalue()
 
 
 def copyright_csv(cr_text):
@@ -352,4 +434,4 @@ def copyright_csv(cr_text):
     # prepend the # comment character to each line
     lines = ['#%s' % line for line in lines]
     # rejoin into a single multiline string:
-    return '\n'.join(lines)
+    return '\n'.join(lines) + "\n"
