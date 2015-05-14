@@ -682,6 +682,10 @@ function watchForPdSelection() {
     }
 }
 
+        var foobarbob = function() {
+            console.log('hi there:');
+        }
+
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -725,10 +729,10 @@ var startApp = function() {
 */
 
     $('#map-tools').append(
-        '<button id="loadProjectBtn" type="button" class="btn btn-primary">Load Project</button>'
+        '<button id="loadProjectdialogBtn" onclick="foobarbob()" type="button" class="btn btn-primary">Load Project</button>'
     );
 
-    $('#loadProjectBtn').click(function() {
+    $('#loadProjectdialogBtn').click(function() {
         $('#loadProjectDialog').dialog('open');
     });
 
@@ -788,10 +792,14 @@ var startApp = function() {
         }
     });
 
-    // Get the layer metadata (project def)
-    //$('#svir-project-list').change(function() {
+    $('#loadProjectBtn').prop('disabled', true);
+
+    // Enable the load project button once a project has been selected
+    $('#layer-list').change(function() {
+        $('#loadProjectBtn').prop('disabled', false);
+    });
+
     $('#loadProjectBtn').click(function() {
-    //function tom() {
         $("#themeTabs").tabs("option", "active", 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
@@ -876,16 +884,12 @@ var startApp = function() {
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
+                console.log('layerMetadataURL:');
+                console.log(layerMetadataURL);
 
                 // ***** TEMP remove this ****
-                // file 4
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
-                // file 5
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
-                // file 6
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // Portugal-test
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4 ";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4 ";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     // Convert XML to JSON

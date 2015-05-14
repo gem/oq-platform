@@ -143,3 +143,7 @@ svg {
   height: 100%;
   width: 100%;
 }
+
+select#layer-list {
+  width: 95%;
+}
