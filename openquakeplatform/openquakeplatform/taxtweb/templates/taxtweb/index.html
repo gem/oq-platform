@@ -57,8 +57,8 @@ table.doubletable tr td div table tr td {
 ul.tab
 {
     margin:0;
-height: 30px;
-padding-left: 20px;
+    height: 30px;
+    padding-left: 20px;
     list-style-type:none;
     background-image: url('{{ STATIC_URL }}taxtweb/img/OQ_header_bg.png');
     background-position: left bottom;
@@ -68,7 +68,7 @@ padding-left: 20px;
 li.tab {
     margin: 0px;
     display: inline-block;
-height: 29px;
+    height: 29px;
     cursor: pointer;
     color: #1B75A7;
 }
@@ -98,7 +98,7 @@ ul.tab li span {
 ul.subtab
 {
     margin:0;
-height: 30px;
+    height: 30px;
     list-style-type:none;
     /* background-image: url('{{ STATIC_URL }}taxtweb/img/OQ_header_bg.png'); */
     background-color: #f8f8f8;
@@ -109,7 +109,7 @@ height: 30px;
 li.subtab {
     margin: 0px;
     display: inline-block;
-height: 29px;
+    height: 29px;
     cursor: pointer;
     color: #1B75A7;
 }
@@ -117,7 +117,7 @@ height: 29px;
 li.subtab_selected {
     margin: 0px;
     display: inline-block;
-height: 29px;
+    height: 29px;
     color: black;
     background-color: #f0f0f0;
     border: 1px solid #1b75a7;
@@ -195,7 +195,7 @@ window.onload = function () {
                 <li class="subtab"><span><input type="checkbox" id="DirectionCB">Use same parameters in both directions</span></li>
             </ul>
 
-    <div id="sub1_content-1" style="position: absolute; display: none; width: 798px; background-color: #f0f0f0; border: 1px solid; border-color: #f0f0f0 #f0f0f0 #1b75a7 #f0f0f0;">
+            <div id="sub1_content-1" style="position: absolute; display: none; width: 798px; background-color: #f0f0f0; border: 1px solid; border-color: #f0f0f0 #f0f0f0 #1b75a7 #f0f0f0;">
                 <div class="data-group">
                     <h4>Direction specification:</h4>
                     <table class="dir_spec"><tr>
@@ -272,8 +272,8 @@ window.onload = function () {
                     <td style="width: 50%;"><div>Number of storey above ground:</div></td>
                     <td style="width: 50%;"><div>Number of storey below ground:</div></td>
                 </tr><tr>
-    <td><select id="HeightCB1"></select></td>
-    <td><select id="HeightCB2"></select></td>
+                    <td><select id="HeightCB1"></select></td>
+                    <td><select id="HeightCB2"></select></td>
                 </tr><tr>
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE11"><input style="display:none; width: 45%;" type="text" id="noStoreysE12"></div></td>
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE21"><input style="display:none; width: 45%;" type="text" id="noStoreysE22"></div></td>
@@ -281,8 +281,8 @@ window.onload = function () {
                     <td><div>Height of ground floor level above grade (m):</div></td>
                     <td><div>Slope of the ground (degrees):</div></td>
                 </tr><tr>
-    <td><select id="HeightCB3"></select></td>
-    <td><select id="HeightCB4"></select></td>
+                    <td><select id="HeightCB3"></select></td>
+                    <td><select id="HeightCB4"></select></td>
                 </tr><tr>
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE31"><input style="display:none; width: 45%;" type="text" id="noStoreysE32"></div></td>
 
@@ -440,4 +440,5 @@ window.onload = function () {
 
 <hr>
 <div><p>This tool is part of the <a href="{{ SITEURL }}">OpenQuake Platform</a></p></div>
-</body> </html>
+</body>
+</html>
