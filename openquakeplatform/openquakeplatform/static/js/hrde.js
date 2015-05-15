@@ -70,6 +70,9 @@ AppProtoType.prototype = {
     selectedMappedValue: null,
     selectedHazardLayerName: null,
     selectedLayerValue: null,
+    allLayers: [],
+    leafletClickEventIdx: {},
+    leafletMouseEventIdx: {},
 
     //Keep track of layer specific information
     layerInvestigationTime: null,
@@ -87,14 +90,57 @@ var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 
 var startApp = function() {
 
+    function checkForIdMatch(topLayerId) {
+        for (var k in AppVars.leafletClickEventIdx) {
+            // convert leafelt mouse and click event index to a number
+            var key = parseFloat(k);
+            key = key + 1;
+            topLayerId = parseFloat(topLayerId);
+
+            if (key == topLayerId) {
+                // set the leaflet mouse and click event index
+                var tempClickObj = {};
+                var tempMouseObj = {};
+                tempClickObj[key] = AppVars.leafletClickEventIdx[k];
+                tempMouseObj[key] = AppVars.leafletMouseEventIdx[k];
+                map._leaflet_events.click_idx = tempClickObj;
+                map._leaflet_events.mousemove_idx = tempMouseObj;
+            }
+        }
+        layerControlLayerSwitch();
+    }
+
+    function getControlLayerId() {
+        var topLayerId = $('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id;
+            topLayerId = topLayerId.split('.')[1];
+            checkForIdMatch(topLayerId);
+    }
+
+    function layerControlLayerSwitch() {
+        // Get the div id of the layer when layer order is changed
+        $('.leaflet-down').click(function() {
+            // If there is a change in the layer order, find the 'top'
+            // layer and assigne it's utfGrid
+            var topLayerId = $('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id;
+            topLayerId = topLayerId.split('.')[1];
+            checkForIdMatch(topLayerId);
+        });
+
+        $('.leaflet-up').click(function() {
+            var layerId = $(this).parent()[0].children[0].firstChild.id;
+            layerId = layerId.split('.')[1];
+            checkForIdMatch(layerId);
+        });
+    }
+
     // Show hide layer controller
     function checkLayerController() {
         if ($.isEmptyObject(AppVars.layerControl._layers) ) {
             setTimeout(function() {
-                $('.leaflet-control-layers-toggle').css({'display': 'none'});
+                $('.leaflet-control-layers').css({'display': 'none'});
             }, 100);
         } else {
-            $('.leaflet-control-layers-toggle').css({'display': 'block'});
+            $('.leaflet-control-layers').css({'display': 'block'});
         }
     }
 
@@ -191,7 +237,7 @@ var startApp = function() {
 
     layers = {};
 
-    AppVars.layerControl = L.control.layers(app.baseLayers);
+    AppVars.layerControl = L.control.orderlayers(app.baseLayers, null, {collapsed:true, order:'qgis'});
     checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
@@ -959,7 +1005,13 @@ var startApp = function() {
             AppVars.selectedHazardLayerName = json.name;
             AppVars.selectedLayerValue = json.mapped_value;
             AppVars.layerInvestigationTime = json.investigationTime;
-            AppVars.layerIml = json.periods;
+
+            if (json.periods) {
+                AppVars.layerIml = json.periods;
+            } else {
+                AppVars.layerIml = json.iml;
+            }
+
             AppVars.layerPoe = json.poe;
             AppVars.layerImt = json.imt;
             var bounds = json.bounds;
@@ -977,7 +1029,7 @@ var startApp = function() {
         AppVars.utfGrid = new L.UtfGrid(TILESTREAM_URL +
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
-        var utfGridGroup = L.layerGroup([
+        var utfGridGroup = L.featureGroup([
             AppVars.utfGrid,
             tileLayer
         ]);
@@ -985,6 +1037,18 @@ var startApp = function() {
         AppVars.layerControl.addOverlay(utfGridGroup, selectedLayer);
         map.addLayer(utfGridGroup);
         checkLayerController();
+        AppVars.allLayers.push(AppVars.utfGrid);
+
+        // Capture the leaflet mouse and click event object
+        for(var k  in map._leaflet_events.click_idx) {
+            if (k !== 'key') {
+                AppVars.leafletClickEventIdx[k] = map._leaflet_events.click_idx[k];
+                AppVars.leafletMouseEventIdx[k] = map._leaflet_events.mousemove_idx[k];
+            }
+        }
+
+        layerControlLayerSwitch();
+        getControlLayerId();
         if (curveType == undefined || curveType == 'map') {
             Opacity(tileLayer);
         }
@@ -992,8 +1056,9 @@ var startApp = function() {
         return AppVars.utfGrid;
     }
 
+
     // add input curve layers from tilestream
-    function inputCurve(curveType) {
+    function inputCurve() {
         var scope = angular.element($("#input-list")).scope();
         var inputLayerId = scope.selected_input.name;
 
@@ -1043,7 +1108,8 @@ var startApp = function() {
                     mags = occurRateArray.map(function(x) { return Math.round((minMag + binWidth * x) * 100) / 100; });
                     mfdsJsonObj[k].mags = mags;
                 }
-                hazardInputD3Chart(mfdsJsonObj);
+                var latlng = e.latlng;
+                hazardInputD3Chart(mfdsJsonObj, latlng);
             }
         }); // End utfGrid click
     }
@@ -1076,7 +1142,7 @@ var startApp = function() {
             selectedLayer +
             '/{z}/{x}/{y}.grid.json?callback={cb}', {Default: false, JsonP: false});
 
-        var utfGrid = L.layerGroup([
+        var utfGrid = L.featureGroup([
             utfGridLoss,
             tileLayer
         ]);
@@ -1125,12 +1191,12 @@ var startApp = function() {
             // Look up the layer id using the layer name
             var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
             var selectedLayer = spectrumLayerIdArray.toString();
-
             getLayerMetadata(selectedLayer);
             utfGrid = createUtfLayerGroups(selectedLayer);
             utfGrid.utfGridType = "curve";
             hazardSpectrumUtfGridClickEventMixed(curveType, utfGrid, selectedLayer);
         }
+
 
     }
 
@@ -1301,7 +1367,7 @@ var startApp = function() {
     };
 
     var hazardCurveUtfGridClickEvent = function(curveType, utfGrid, selectedLayer) {
-        utfGrid.on('click', function (e) {
+        AppVars.utfGrid.on('click', function (e) {
             // format the selected map and layer names
             try {
                 AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
