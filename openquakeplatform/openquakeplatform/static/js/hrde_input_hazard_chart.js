@@ -79,7 +79,7 @@ function hazardInputD3Chart(mfdsJsonObj, latlng) {
     var svg = d3.select("#chartDialog").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+        .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var data = chartData;
@@ -87,7 +87,7 @@ function hazardInputD3Chart(mfdsJsonObj, latlng) {
     var keys = d3.keys(data[0]).filter(function(key) { return key !== "mags"; });
 
     data.forEach(function(d) {
-      d.ages = keys.map(function(name) { return {name: name, value: +d[name]}; });
+        d.ages = keys.map(function(name) { return {name: name, value: +d[name]}; });
     });
 
     x0.domain(data.map(function(d) { return d.mags; }));
@@ -148,7 +148,7 @@ function hazardInputD3Chart(mfdsJsonObj, latlng) {
     svg.append("g")
         .attr("class", "y axis")
         .call(yAxis)
-      .append("text")
+        .append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -120)
         .attr("y", 480)
@@ -159,13 +159,13 @@ function hazardInputD3Chart(mfdsJsonObj, latlng) {
 
     var name = svg.selectAll(".name")
         .data(data)
-      .enter().append("g")
+        .enter().append("g")
         .attr("class", "g")
         .attr("transform", function(d) { return "translate(" + x0(d.mags) + ",0)"; });
 
     name.selectAll("rect")
         .data(function(d) { return d.ages; })
-      .enter().append("rect")
+        .enter().append("rect")
         .attr("width", barWidth)
         .attr("x", function(d) { return (x1(d.mags)+25); })
         .attr("y", function(d) { return y(d.value); })
@@ -185,7 +185,7 @@ function hazardInputD3Chart(mfdsJsonObj, latlng) {
         .attr("y", -30)
         .attr("dy", ".35em")
         .attr("font-size","14px")
-        .text(mappedValue2 + ' lat/lng ' + Math.round(latlng.lat * 100) / 100 + '/' + Math.round(latlng.lng * 100) / 100 );
+        .text(mappedValue2 + ' lat/long ' + Math.round(latlng.lat * 100) / 100 + '/' + Math.round(latlng.lng * 100) / 100 );
 
     $('#chartDialog').append('<div id="downloadCurve"><p style="color: blue;">Download Curve</p></div>');
     $('#downloadCurve').on('hover', function(){
