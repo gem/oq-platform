@@ -18,6 +18,7 @@ var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
+var selectedLayer;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -28,6 +29,15 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
+$(function() {
+    $('#saveStateDialog').dialog({
+        autoOpen: false,
+        height: 520,
+        width: 620,
+        closeOnEscape: true,
+        position: {at: 'right bottom'}
+    });
+});
 
 function createIndex(la, index) {
     var indicator = [];
@@ -645,6 +655,37 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
+function watchForPdSelection(boundingBox, tempProjectDef) {
+    $('#pdSelection').change(function() {
+        var pdSelection = $('#pdSelection').val();
+        for (var i = 0; i < tempProjectDef.length; i++) {
+            if (tempProjectDef[i].title === pdSelection) {
+                selectedRegion = tempProjectDef[i].zone_label_field;
+                sessionProjectDef = tempProjectDef[i];
+                loadPD(sessionProjectDef);
+                // get b-box
+                if (boundingBox != undefined) {
+                    map.fitBounds (
+                        L.latLngBounds (
+                            L.latLng (
+                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                            ),
+                            L.latLng (
+                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                            )
+                        )
+                    );
+                }
+                $('#iri-spinner').hide();
+                $('#project-definition-svg').show();
+                processIndicators(layerAttributes, sessionProjectDef);
+            }
+        }
+    });
+}
+
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -687,9 +728,7 @@ var startApp = function() {
 
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
-    $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
-    $('#region-selection-list').hide();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -732,10 +771,9 @@ var startApp = function() {
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
         $('#primary-spinner').show();
-        $('#regionSelectionDialog').empty();
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
-        var selectedLayer = document.getElementById('svir-project-list').value;
+        selectedLayer = document.getElementById('svir-project-list').value;
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
@@ -757,39 +795,19 @@ var startApp = function() {
                 for (var key in layerAttributes.features[0].properties) {
                     layerFields.push(key);
                 }
-
-                $('#regionSelectionDialog').append(
-                    '<p>Please select the field that contains the layer&#39s region labels</p>'+
-                    '<select id="region-selection-list">'+
-                    '<option selected disabled>Select Field</option>'+
-                    '</select>'
-                );
-
-                // append each field to the selection menu
-                for (var i = 0; i < layerFields.length; i++) {
-                    $('#region-selection-list').append('<option>'+ layerFields[i] +'</option>');
-                }
-
-                $('#regionSelectionDialog').dialog('open');
-
-                $('#region-selection-list').change(function() {
-                    selectedRegion = document.getElementById('region-selection-list').value;
-                    getLayerInfo(selectedLayer, layerAttributes);
-                });
+                getLayerInfo(layerAttributes);
             },
             error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get information about the selected layer</p>'
-                );
-            $('#ajaxErrorDialog').dialog('open');
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                        '<p>This application was not able to get information about the selected layer</p>'
+                    );
+                $('#ajaxErrorDialog').dialog('open');
             }
         });
     });
 
-
-    function getLayerInfo(selectedLayer, layerAttributes) {
-        $('#regionSelectionDialog').dialog('close');
+    function getLayerInfo(layerAttributes) {
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
@@ -802,58 +820,73 @@ var startApp = function() {
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // file 6
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
+                // Portugal-test
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4 ";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
-                    //convert XML to JSON
+                    // Convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    //pass a string representing the project def into the d3 tree chart
-                    sessionProjectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
-                    loadPD(sessionProjectDefStr);
-                    sessionProjectDef = jQuery.parseJSON(sessionProjectDefStr);
-                    // get b-box
+                    // Pass a string representing the project def into the d3 tree chart
+                    projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
+
+                    var tempProjectDef = jQuery.parseJSON(projectDefStr);
+
+                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
                     var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-                    if (boundingBox != undefined) {
-                        map.fitBounds (
-                            L.latLngBounds (
-                                L.latLng (
-                                    parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                    parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                                ),
-                                L.latLng (
-                                    parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                    parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+
+                    if (tempProjectDef.constructor === Array) {
+                        $('#project-def').prepend('<select id="pdSelection"><option value"" disabled selected>Select a Project Definition</option></select>');
+                        var pdTitles = [];
+                        // break the array into objects, present the user with a choice of PDs
+                        for (var i = 0; i < tempProjectDef.length; i++) {
+                            // Get the PD title
+                            pdTitles.push(tempProjectDef[i].title);
+                        }
+                        // Provide the user with a selection dropdown of the available PDs
+                        for (var ia = 0; ia < pdTitles.length; ia++) {
+                            $('#pdSelection').append(
+                                '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                            );
+                            watchForPdSelection(boundingBox, tempProjectDef);
+                        }
+                    } else {
+                        // get b-box
+                        sessionProjectDef = tempProjectDef;
+                        selectedRegion = tempProjectDef.zone_label_field;
+                        loadPD(sessionProjectDef);
+                        if (boundingBox != undefined) {
+                            map.fitBounds (
+                                L.latLngBounds (
+                                    L.latLng (
+                                        parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                        parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                                    ),
+                                    L.latLng (
+                                        parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                        parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                                    )
                                 )
-                            )
-                        );
+                            );
+                        }
+                        $('#iri-spinner').hide();
+                        $('#primary-spinner').hide();
+                        $('#project-definition-svg').show();
+                        processIndicators(layerAttributes, sessionProjectDef);
                     }
                     $('#projectDef-spinner').hide();
-                    $('#iri-spinner').hide();
-                    $('#primary-spinner').hide();
-                    $('#project-definition-svg').show();
-                    $('#region-selection-list').show();
-                    processIndicators(layerAttributes, sessionProjectDef);
                 });
             },
             error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
                     '<p>This application was not able to get the supplemental information about the selected layer</p>'
                 );
-            $('#ajaxErrorDialog').dialog('open');
+                $('#ajaxErrorDialog').dialog('open');
             }
         });
     }
-
-    // Region selection dialog
-    $('#regionSelectionDialog').dialog({
-        autoOpen: false,
-        height: 150,
-        width: 400,
-        closeOnEscape: true,
-        modal: true
-    });
 
     // AJAX error dialog
     $('#ajaxErrorDialog').dialog({

@@ -16,6 +16,7 @@
 */
 
     var CIRCLE_SCALE = 30;
+    var saveBtnCount = 0;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
 
@@ -89,10 +90,74 @@
             });
         }
 
+        $('#submitPD').attr('disabled',true);
+
+        function saveProjData() {
+            $('#saveBtn').click(function() {
+                var pdLicense = sessionProjectDef.license;
+                var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
+                var pdLicenseURL = sessionProjectDef.license.split('(')[1];
+                pdLicenseURL = pdLicenseURL.replace(')', '');
+
+                $('#saveStateDialog').dialog('open');
+                $('#licenseName').empty();
+                $('#licenseURL').empty();
+                $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
+                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
+
+                $('#checkboxPD').change(function() {
+                    var inputVal = $('#giveNamePD').val();
+                    if (this.checked) {
+                        $('#submitPD').attr('disabled', false);
+                    } else {
+                        $('#submitPD').attr('disabled', true);
+                    }
+                });
+
+                var projectDefStg = JSON.stringify(projectDef);
+
+                $('#submitPD').click(function() {
+                    // Hit the API endpoint and grab the very very latest version of the PD object
+
+                    $.post( "../svir/add_project_definition", {
+                        layer_name: selectedLayer,
+                        project_definition: projectDefStg
+                        },
+                        function(){
+                            // success
+                        }).done(function() {
+                            $('#ajaxErrorDialog').empty();
+                            $('#ajaxErrorDialog').append(
+                                '<p>The Project definition has been added to the layer metedata</p>'
+                            );
+                            $('#saveStateDialog').dialog('close');
+                            $('#ajaxErrorDialog').dialog('open');
+                        }).fail(function() {
+                            $('#ajaxErrorDialog').empty();
+                            $('#ajaxErrorDialog').append(
+                                '<p>This application was not able to write the project definition to the database</p>'
+                            );
+                            $('#ajaxErrorDialog').dialog('open');
+                        });
+
+                // Add the current PD version as a new object, and pass it back to the API to be
+                // saved into the supplemental information
+                });
+            });
+        }
+
         var nodeEnter;
-        function updateButton(){
-            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value">Update</button>');
+        function updateButton() {
+            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
+                saveBtnCount += 1;
+                // Append save project definition button the first time weights are modified
+                if (saveBtnCount === 1) {
+                    $('#saveBtnPlaceHolder').append('<button id="saveBtn" class="btn btn-blue">Save Project Definition</button>');
+                    saveProjData();
+                }
+
+                //$('#project-def').append('<button id="saveBtn">save</button>');
                 pdTempWeights = [];
                 pdTempWeightsComputed = [];
                 pdTempInverters = [];
@@ -226,15 +291,16 @@
         }
 
         // empty any previously drawen chart
-        $('#project-def').empty();
-        var svg = d3.select("#project-def").append("svg")
+        $('#projectDef-tree').empty();
+        var svg = d3.select("#projectDef-tree").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .attr("id", "project-definition-svg")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            data = JSON.parse(selectedPDef);
+            //data = JSON.parse(selectedPDef);
+            data = selectedPDef;
 
             root = data;
             root.x0 = height / 2;
@@ -354,7 +420,8 @@
 
             // Render weight values in tree
             nodeEnter.append("text")
-                .attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
+                //TODO uncoment this ...
+                //.attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
