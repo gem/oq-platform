@@ -33,10 +33,10 @@
 	background-image: url(../images/arrow-up.png);
 	background-repeat: no-repeat;
 	background-position: center;
-    height: 20px;
-    width: 16px;
-    opacity: 0.75;
-    cursor: pointer;
+	height: 20px;
+	width: 16px;
+	opacity: 0.75;
+	cursor: pointer;
 }
 
 .leaflet-control-layers .leaflet-row .leaflet-down {
@@ -44,8 +44,8 @@
 	background-image: url(../images/arrow-down.png);
 	background-repeat: no-repeat;
 	background-position: center;
-    height: 20px;
-    width: 16px;
-    opacity: 0.75;
-    cursor: pointer;
+	height: 20px;
+	width: 16px;
+	opacity: 0.75;
+	cursor: pointer;
 }
