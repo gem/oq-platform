@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from time import sleep
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -11,7 +12,11 @@ from selenium.common.exceptions import NoAlertPresentException
 import csv
 
 from config import basepath
-# from selenium.webdriver.support import expected_conditions as EC
+
+if basepath == "":
+    print "configuration 'basepath' variable is empty."
+    print "Please edit config.py file following the included instructions."
+    sys.exit(1)
 
 newarr = []
 # Create a new instance of the Firefox driver
