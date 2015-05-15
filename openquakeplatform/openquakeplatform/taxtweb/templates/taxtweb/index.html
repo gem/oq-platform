@@ -164,11 +164,18 @@ table.dir_spec td {
 var taxt_prefix = '{{ taxt_prefix }}';
 window.onload = function () {
     var tab_cur = {{ tab_id }};
-    tab_set(tab_cur);
+    var subtab_cur = {{ subtab_id }};
+    var error_msg = "{{ error_msg | safe }}".replace(/&quot;/g,"\"");
+
+    tab_set(tab_cur, subtab_cur);
     /*
     var    demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH2+RMT1+RE+RE1+RWCP/FW+FW3+FWCN/FOSDN";
     */
     var taxonomy_in = '{{ taxonomy }}';
+
+    if (error_msg != "") {
+        alert(error_msg);
+    }
 
     var ret_s = { s: "" };
 
@@ -433,7 +440,8 @@ window.onload = function () {
         <div style="position: absolute; bottom: 0px; margin: 8px;" >
             <p>Taxonomy string for this building typology: </p>
             <p><input id="resultE" type="text" size="80" maxlength="120"></input></p>
-            <p><input id="OmitCB" type="checkbox" onclick="taxt_OmitCBClick(this);">Omit code if corresponding parameter is unknown&nbsp;&nbsp;&nbsp;&nbsp;<a id="permalink" target="_blank" href="">Permalink</a></p>
+            <p>Type of taxonomy: <select id="OutTypeCB"></select>
+            &nbsp;&nbsp;&nbsp;&nbsp;<a id="permalink" target="_blank" href="">Permalink</a></p>
         </div>
     </div>
 </div>

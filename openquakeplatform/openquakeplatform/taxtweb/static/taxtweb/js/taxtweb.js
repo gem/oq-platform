@@ -1,4 +1,3 @@
-
 var mat_tech =
     { 'MAT99': [],
       'C99': mat_tech_grp[0],
@@ -80,14 +79,18 @@ var llrs_type =
       'SRC':  llrs_type_grp[2],
       'S':    llrs_type_grp[2],
       'ME':   llrs_type_grp[2],
+
       'M99':  llrs_type_grp[1],
       'MUR':  llrs_type_grp[1],
       'MCF':  llrs_type_grp[1],
       'MR':   llrs_type_grp[1],
+
       'E99':  llrs_type_grp[0],
       'EU':   llrs_type_grp[0],
       'ER':   llrs_type_grp[0],
+
       'W':    llrs_type_grp[1],
+
       'MATO': llrs_type_grp[2]
     };
 
@@ -95,7 +98,7 @@ var llrs_duct =
     { 'L99': [],
       'LN': [],
       'LFM': llrs_duct_grp[0],
-      'LINF': llrs_duct_grp[0],
+      'LFINF': llrs_duct_grp[0],
       'LFBR': llrs_duct_grp[0],
       'LPB': llrs_duct_grp[0],
       'LWAL': llrs_duct_grp[0],
@@ -142,16 +145,25 @@ var floo_conn =
       'FO':  []
     };
 
+var taxonomy_form = "";
 
+function ends_with(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+function is_or_are_given(n)
+{
+    return n + (n <= 1 ? " is" : " are") + " given.";
+}
 
 function populate_form()
 {
     try {
-          var el = window.opener.document.getElementById("id_taxonomy_text");
-          el.value = $('#resultE').val();
-          }
-          catch(e) {
-          }
+        var el = window.opener.document.getElementById("id_taxonomy_text");
+        el.value = taxonomy_form;
+    }
+    catch(e) {
+    }
 }
 
 function select_populate(name, items)
@@ -385,7 +397,7 @@ function taxt_ValidateMaterial1() // Ok
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
         /* LN   */ SystemCB11.push('No lateral load-resisting system');
         /* LFM  */ SystemCB11.push('Moment frame');
-        /* LINF */ SystemCB11.push('Infilled frame');
+        /* LFINF */ SystemCB11.push('Infilled frame');
         /* LFBR */ SystemCB11.push('Braced frame');
         /* LPB  */ SystemCB11.push('Post and beam');
         /* LWAL */ SystemCB11.push('Wall');
@@ -846,9 +858,10 @@ function taxt_ValidateRegularity()
         $('#RegularityCB2').prop("disabled", false);
         select_populate('RegularityCB2', RegularityCB2, disabled_cb2);
     }
-
     $('#RegularityCB2').val(default_cb2);
     $('#RegularityCB3').val(default_cb3);
+    taxt_RegularityCB2Select(null);
+    taxt_RegularityCB3Select(null);
     $('#RegularityCB4').val(0);
     $('#RegularityCB5').val(0);
 }
@@ -877,7 +890,7 @@ function taxt_ValidateRegularity2()
 {
     $('#RegularityCB4').empty();
 
-    if ($('#RegularityCB2').val() == 0) {
+    if ($('#RegularityCB1').val() < 2 || $('#RegularityCB2').val() == 0 || $('#RegularityCB2').val() == null) {
         $('#RegularityCB4').prop("disabled", true);
     }
     else {
@@ -898,7 +911,7 @@ function taxt_ValidateRegularity3()
 {
     $('#RegularityCB5').empty();
 
-    if ($('#RegularityCB3').val() == 0) {
+    if ($('#RegularityCB1').val() < 2 || $('#RegularityCB3').val() == 0 || $('#RegularityCB3').val() == null) {
         $('#RegularityCB5').prop("disabled", true);
     }
     else {
@@ -1035,15 +1048,40 @@ function taxt_ValidateFloor()
     $('#FloorCB2').val(0);
 }
 
-function taxt_SetDirection2() // Ok
+function taxt_BreakDirection2(obj) // Ok
+{
+    /* the check is performed just when called with parameter (triggered indirectly
+       from an event or if forced by another function */
+    if (typeof(obj) == 'undefined') {
+        return;
+    }
+    if ($('#DirectionCB').prop('checked')) {
+        if ($('#MaterialCB12').val() != $('#MaterialCB11').val() ||
+            $('#MaterialCB22').val() != $('#MaterialCB21').val() ||
+            $('#MaterialCB32').val() != $('#MaterialCB31').val() ||
+            $('#MaterialCB42').val() != $('#MaterialCB41').val() ||
+            $('#SystemCB12').val() != $('#SystemCB11').val() ||
+            $('#SystemCB22').val() != $('#SystemCB21').val()) {
+            $('#DirectionCB').prop('checked', false);
+        }
+    }
+}
+
+function taxt_SetDirection2(obj) // Ok
 {
     if ($('#DirectionCB').prop('checked')) {
         $('#MaterialCB12').val($('#MaterialCB11').val());
+        taxt_MaterialCB12Select();
         $('#MaterialCB22').val($('#MaterialCB21').val());
+        taxt_MaterialCB22Select();
         $('#MaterialCB32').val($('#MaterialCB31').val());
+        taxt_MaterialCB32Select();
         $('#MaterialCB42').val($('#MaterialCB41').val());
+        taxt_MaterialCB42Select();
         $('#SystemCB12').val($('#SystemCB11').val());
+        taxt_SystemCB12Select();
         $('#SystemCB22').val($('#SystemCB21').val());
+        taxt_SystemCB22Select();
     }
 }
 
@@ -1060,6 +1098,7 @@ function taxt_MaterialCB11Select(obj) // Ok
 function taxt_MaterialCB12Select(obj) // Ok
 {
     taxt_ValidateMaterial2();
+    taxt_BreakDirection2(obj);
     taxt_ValidateSystem2();
     taxt_BuildTaxonomy();
 }
@@ -1072,7 +1111,8 @@ function taxt_MaterialCB21Select(obj) // Ok
 
 function taxt_MaterialCB22Select(obj) // Ok
 {
-taxt_BuildTaxonomy();
+    taxt_BreakDirection2(obj);
+    taxt_BuildTaxonomy();
 }
 
 function taxt_MaterialCB31Select(obj) // Ok
@@ -1083,7 +1123,8 @@ function taxt_MaterialCB31Select(obj) // Ok
 
 function taxt_MaterialCB32Select(obj) // Ok
 {
-taxt_BuildTaxonomy();
+    taxt_BreakDirection2(obj);
+    taxt_BuildTaxonomy();
 }
 
 function taxt_MaterialCB41Select(obj) // Ok
@@ -1094,6 +1135,7 @@ function taxt_MaterialCB41Select(obj) // Ok
 
 function taxt_MaterialCB42Select(obj) // Ok
 {
+    taxt_BreakDirection2(obj);
     taxt_BuildTaxonomy();
 }
 
@@ -1110,6 +1152,7 @@ function taxt_SystemCB11Select(obj) // Ok
 function taxt_SystemCB12Select(obj) // Ok
 {
     taxt_ValidateSystem2();
+    taxt_BreakDirection2(obj);
     taxt_BuildTaxonomy();
 }
 
@@ -1121,6 +1164,7 @@ function taxt_SystemCB21Select(obj) // Ok
 
 function taxt_SystemCB22Select(obj) // Ok
 {
+    taxt_BreakDirection2(obj);
     taxt_BuildTaxonomy();
     /* FIXME ask probably question
     if SystemCB22.ItemIndex>0 then begin
@@ -1321,7 +1365,7 @@ function taxt_OmitCBClick(obj) // Ok
 
 
 
-function taxt_BuildTaxonomy()
+function BuildTaxonomyString(out_type)
 {
     var Taxonomy = [], ResTax, direction1, direction2;
 
@@ -1329,7 +1373,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[i] = "";
     /* Structural System: Direction X */
 
-    if ( $('#MaterialCB11').val() == 0 && !$('#OmitCB').prop('checked') )
+    if ( $('#MaterialCB11').val() == 0 && (out_type == 0) )
         Taxonomy[0] = 'MAT99';
     if ($('#MaterialCB11').val() == 1)
         Taxonomy[0] = 'C99';
@@ -1341,7 +1385,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[0] = 'SRC';
 
     if ( ($('#MaterialCB11').val() > 0) && ($('#MaterialCB11').val() < 5) ) {
-        if ( ($('#MaterialCB21').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB21').val() == 0) && (out_type == 0) )
             Taxonomy[1] = '+CT99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+CIP';
@@ -1354,7 +1398,7 @@ function taxt_BuildTaxonomy()
     }
     if ($('#MaterialCB11').val() == 5) {
         Taxonomy[0] = 'S';
-        if ( $('#MaterialCB21').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB21').val() == 0 && (out_type == 0) )
             Taxonomy[1] = '+S99';
         if ( $('#MaterialCB21').val() == 1 )
             Taxonomy[1] = '+SL';
@@ -1366,7 +1410,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB11').val() == 6) {
         Taxonomy[0] = 'ME';
-        if ( $('#MaterialCB21').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB21').val() == 0 && (out_type == 0) )
             Taxonomy[1] = '+ME99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+MEIR';
@@ -1375,7 +1419,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#MaterialCB11').val() == 5) {
-        if ( $('#MaterialCB31').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB31').val() == 0 && (out_type == 0) )
             Taxonomy[2] = '+SC99';
         if ($('#MaterialCB31').val() == 1)
             Taxonomy[2] = '+WEL';
@@ -1393,7 +1437,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB11').val() == 9)
             Taxonomy[0] = 'MCF';
 
-        if ( $('#MaterialCB21').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB21').val() == 0 && (out_type == 0) )
             Taxonomy[1] = '+MUN99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+ADO';
@@ -1422,7 +1466,7 @@ function taxt_BuildTaxonomy()
 
         if ($('#MaterialCB11').val() == 10) {
             Taxonomy[0] = 'MR';
-            if ( ($('#MaterialCB41').val() == 0) && !$('#OmitCB').prop('checked') )
+            if ( ($('#MaterialCB41').val() == 0) && (out_type == 0) )
                 Taxonomy[34] = '+MR99';
             if ($('#MaterialCB41').val() == 1)
                 Taxonomy[34] = '+RS';
@@ -1436,7 +1480,7 @@ function taxt_BuildTaxonomy()
                 Taxonomy[34] = '+RCB';
         }
 
-        if (($('#MaterialCB31').val() == 0) && !$('#OmitCB').prop('checked') )
+        if (($('#MaterialCB31').val() == 0) && (out_type == 0) )
             Taxonomy[2] = '+MO99';
         if ($('#MaterialCB31').val() == 1)
             Taxonomy[2] = '+MON';
@@ -1474,7 +1518,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB11').val() == 13)
             Taxonomy[0] = 'ER';
 
-        if ( ($('#MaterialCB21').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB21').val() == 0) && (out_type == 0) )
             Taxonomy[1] = '+ET99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+ETR';
@@ -1486,7 +1530,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB11').val() == 14) {
         Taxonomy[0] = 'W';
-        if (($('#MaterialCB21').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#MaterialCB21').val() == 0) && (out_type == 0))
             Taxonomy[1] = '+W99';
         if ($('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+WHE';
@@ -1505,7 +1549,7 @@ function taxt_BuildTaxonomy()
     if ($('#MaterialCB11').val() == 15)
         Taxonomy[0] = 'MATO';
 
-    if (($('#SystemCB11').val() == 0) && !$('#OmitCB').prop('checked'))
+    if (($('#SystemCB11').val() == 0) && (out_type == 0))
         Taxonomy[3] = 'L99';
 
     if ( ($('#MaterialCB11').val()>10) && ($('#MaterialCB11').val()<14) ) {
@@ -1558,7 +1602,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#SystemCB11').val() > 0) {
-        if (($('#SystemCB21').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#SystemCB21').val() == 0) && (out_type == 0))
             Taxonomy[4] = '+DU99';
         if ($('#SystemCB21').val() == 1)
             Taxonomy[4] = '+DUC';
@@ -1576,7 +1620,7 @@ function taxt_BuildTaxonomy()
 
 
 
-    if ( $('#MaterialCB12').val() == 0 && !$('#OmitCB').prop('checked') )
+    if ( $('#MaterialCB12').val() == 0 && (out_type == 0) )
         Taxonomy[5] = 'MAT99';
     if ($('#MaterialCB12').val() == 1)
         Taxonomy[5] = 'C99';
@@ -1588,7 +1632,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[5] = 'SRC';
 
     if ( ($('#MaterialCB12').val() > 0) && ($('#MaterialCB12').val() < 5) ) {
-        if ( ($('#MaterialCB22').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB22').val() == 0) && (out_type == 0) )
             Taxonomy[6] = '+CT99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+CIP';
@@ -1601,7 +1645,7 @@ function taxt_BuildTaxonomy()
     }
     if ($('#MaterialCB12').val() == 5) {
         Taxonomy[5] = 'S';
-        if ( $('#MaterialCB22').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB22').val() == 0 && (out_type == 0) )
             Taxonomy[6] = '+S99';
         if ( $('#MaterialCB22').val() == 1 )
             Taxonomy[6] = '+SL';
@@ -1613,7 +1657,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB12').val() == 6) {
         Taxonomy[5] = 'ME';
-        if ( $('#MaterialCB22').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB22').val() == 0 && (out_type == 0) )
             Taxonomy[6] = '+ME99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+MEIR';
@@ -1622,7 +1666,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#MaterialCB12').val() == 5) {
-        if ( $('#MaterialCB32').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB32').val() == 0 && (out_type == 0) )
             Taxonomy[7] = '+SC99';
         if ($('#MaterialCB32').val() == 1)
             Taxonomy[7] = '+WEL';
@@ -1640,7 +1684,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB12').val() == 9)
             Taxonomy[5] = 'MCF';
 
-        if ( $('#MaterialCB22').val() == 0 && !$('#OmitCB').prop('checked') )
+        if ( $('#MaterialCB22').val() == 0 && (out_type == 0) )
             Taxonomy[6] = '+MUN99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+ADO';
@@ -1669,7 +1713,7 @@ function taxt_BuildTaxonomy()
 
         if ($('#MaterialCB12').val() == 10) {
             Taxonomy[5] = 'MR';
-            if ( ($('#MaterialCB42').val() == 0) && !$('#OmitCB').prop('checked') )
+            if ( ($('#MaterialCB42').val() == 0) && (out_type == 0) )
                 Taxonomy[35] = '+MR99';
             if ($('#MaterialCB42').val() == 1)
                 Taxonomy[35] = '+RS';
@@ -1683,7 +1727,7 @@ function taxt_BuildTaxonomy()
                 Taxonomy[35] = '+RCB';
         }
 
-        if (($('#MaterialCB32').val() == 0) && !$('#OmitCB').prop('checked') )
+        if (($('#MaterialCB32').val() == 0) && (out_type == 0) )
             Taxonomy[7] = '+MO99';
         if ($('#MaterialCB32').val() == 1)
             Taxonomy[7] = '+MON';
@@ -1721,7 +1765,7 @@ function taxt_BuildTaxonomy()
         if ($('#MaterialCB12').val() == 13)
             Taxonomy[5] = 'ER';
 
-        if ( ($('#MaterialCB22').val() == 0) && !$('#OmitCB').prop('checked') )
+        if ( ($('#MaterialCB22').val() == 0) && (out_type == 0) )
             Taxonomy[6] = '+ET99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+ETR';
@@ -1733,7 +1777,7 @@ function taxt_BuildTaxonomy()
 
     if ($('#MaterialCB12').val() == 14) {
         Taxonomy[5] = 'W';
-        if (($('#MaterialCB22').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#MaterialCB22').val() == 0) && (out_type == 0))
             Taxonomy[6] = '+W99';
         if ($('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+WHE';
@@ -1752,7 +1796,7 @@ function taxt_BuildTaxonomy()
     if ($('#MaterialCB12').val() == 15)
         Taxonomy[5] = 'MATO';
 
-    if (($('#SystemCB12').val() == 0) && !$('#OmitCB').prop('checked'))
+    if (($('#SystemCB12').val() == 0) && (out_type == 0))
         Taxonomy[8] = 'L99';
 
     if ( ($('#MaterialCB12').val()>10) && ($('#MaterialCB12').val()<14) ) {
@@ -1805,7 +1849,7 @@ function taxt_BuildTaxonomy()
     }
 
     if ($('#SystemCB12').val() > 0) {
-        if (($('#SystemCB22').val() == 0) && !$('#OmitCB').prop('checked'))
+        if (($('#SystemCB22').val() == 0) && (out_type == 0))
             Taxonomy[9] = '+DU99';
         if ($('#SystemCB22').val() == 1)
             Taxonomy[9] = '+DUC';
@@ -1815,7 +1859,7 @@ function taxt_BuildTaxonomy()
             Taxonomy[9] = '+DBD';
     }
 
-    if ($('#DateCB1').val() == 0  && !$('#OmitCB').prop('checked'))
+    if ($('#DateCB1').val() == 0  && (out_type == 0))
         Taxonomy[10] = 'Y99';
     if ($('#DateCB1').val() == 1)
         Taxonomy[10] = 'YEX:' + $('#DateE1').val();
@@ -1827,7 +1871,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[10] = 'YAPP:' + $('#DateE1').val();
 
     if ($('#HeightCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type == 0))
             Taxonomy[11] ='H99';
     }
     else {
@@ -1838,7 +1882,7 @@ function taxt_BuildTaxonomy()
         if ($('#HeightCB1').val() == 3)
             Taxonomy[11] = 'HAPP:' + $('#noStoreysE11').val();
 
-        if ($('#HeightCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#HeightCB2').val() == 0 && (out_type == 0))
             Taxonomy[12] = '+HB99';
         if ($('#HeightCB2').val() == 1)
             Taxonomy[12] = '+HBBET:' + $('#noStoreysE21').val() + ',' + $('#noStoreysE22').val();
@@ -1847,7 +1891,7 @@ function taxt_BuildTaxonomy()
         if ($('#HeightCB2').val() == 3)
             Taxonomy[12] = '+HBAPP:' + $('#noStoreysE21').val();
 
-        if ($('#HeightCB3').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#HeightCB3').val() == 0 && (out_type == 0))
             Taxonomy[13] = '+HF99';
         if ($('#HeightCB3').val() == 1)
             Taxonomy[13] = '+HFBET:' + $('#noStoreysE31').val() + ',' + $('#noStoreysE32').val();
@@ -1856,19 +1900,19 @@ function taxt_BuildTaxonomy()
         if ($('#HeightCB3').val() == 3)
             Taxonomy[13] = '+HFAPP:' + $('#noStoreysE31').val();
 
-        if ($('#HeightCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#HeightCB4').val() == 0 && (out_type == 0))
             Taxonomy[14] = '+HD99';
         if ($('#HeightCB4').val() == 1)
             Taxonomy[14] = '+HD:' + $('#noStoreysE4').val();
     }
 
     if ($('#OccupancyCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type == 0))
             Taxonomy[15] = 'OC99';
     }
     else if ($('#OccupancyCB1').val() == 1) {
         Taxonomy[15] = 'RES';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+RES99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+RES1';
@@ -1897,7 +1941,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 2) {
         Taxonomy[15] = 'COM';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+COM99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+COM1';
@@ -1924,7 +1968,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 3) {
         Taxonomy[15] = 'MIX';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+MIX99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+MIX1';
@@ -1941,7 +1985,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 4) {
         Taxonomy[15] = 'IND';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+IND99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+IND1';
@@ -1950,7 +1994,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 5) {
         Taxonomy[15] = 'AGR';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+AGR99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+AGR1';
@@ -1961,7 +2005,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 6) {
         Taxonomy[15] = 'ASS';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+ASS99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+ASS1';
@@ -1974,7 +2018,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 7) {
         Taxonomy[15] = 'GOV';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+GOV99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+GOV1';
@@ -1983,7 +2027,7 @@ function taxt_BuildTaxonomy()
     }
     else if ($('#OccupancyCB1').val() == 8) {
         Taxonomy[15] = 'EDU';
-        if ($('#OccupancyCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+EDU99';
         if ($('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+EDU1';
@@ -1998,7 +2042,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[15] = 'OCO';
     }
 
-    if ($('#PositionCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#PositionCB').val() == 0 && (out_type == 0))
         Taxonomy[17] = 'BP99';
     else if ($('#PositionCB').val() == 1)
         Taxonomy[17] = 'BPD';
@@ -2011,7 +2055,7 @@ function taxt_BuildTaxonomy()
     else if ($('#PositionCB').val() == 5)
         Taxonomy[17] = 'BPI';
 
-    if ($('#PlanShapeCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#PlanShapeCB').val() == 0 && (out_type == 0))
         Taxonomy[18] = 'PLF99';
     else if ($('#PlanShapeCB').val() == 1)
         Taxonomy[18] = 'PLFSQ';
@@ -2053,7 +2097,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[18] = 'PLFI';
 
     if ($('#RegularityCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type == 0))
             Taxonomy[19] = 'IR99';
     }
     else {
@@ -2061,7 +2105,7 @@ function taxt_BuildTaxonomy()
             Taxonomy[19] = 'IRRE';
         if ($('#RegularityCB1').val() == 2) {
             Taxonomy[19] = 'IRIR';
-            if ($('#RegularityCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RegularityCB2').val() == 0 && (out_type == 0))
                 Taxonomy[20] = '+IRPP:IRN';
             if ($('#RegularityCB2').val() == 1)
                 Taxonomy[20] = '+IRPP:TOR';
@@ -2070,7 +2114,7 @@ function taxt_BuildTaxonomy()
             if ($('#RegularityCB2').val() == 3)
                 Taxonomy[20] = '+IRPP:IRHO';
 
-            if ($('#RegularityCB3').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RegularityCB3').val() == 0 && (out_type == 0))
                 Taxonomy[21] = '+IRVP:IRN';
             if ($('#RegularityCB3').val() == 1)
                 Taxonomy[21] = '+IRVP:SOS';
@@ -2118,7 +2162,7 @@ function taxt_BuildTaxonomy()
         }
     }
 
-    if ($('#WallsCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#WallsCB').val() == 0 && (out_type == 0))
         Taxonomy[24] = 'EW99';
     if ($('#WallsCB').val() == 1)
         Taxonomy[24] = 'EWC';
@@ -2143,7 +2187,7 @@ function taxt_BuildTaxonomy()
     if ($('#WallsCB').val() == 11)
         Taxonomy[24] = 'EWO';
 
-    if ($('#RoofCB1').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#RoofCB1').val() == 0 && (out_type == 0))
         Taxonomy[25] = 'RSH99';
     if ($('#RoofCB1').val() == 1)
         Taxonomy[25] = 'RSH1';
@@ -2166,7 +2210,7 @@ function taxt_BuildTaxonomy()
     if ($('#RoofCB1').val() == 10)
         Taxonomy[25] = 'RSHO';
 
-    if ($('#RoofCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#RoofCB2').val() == 0 && (out_type == 0))
         Taxonomy[26] = '+RMT99';
     if ($('#RoofCB2').val() == 1)
         Taxonomy[26] = '+RMN';
@@ -2196,13 +2240,13 @@ function taxt_BuildTaxonomy()
         Taxonomy[26] = '+RMTO';
 
     if ($('#RoofCB3').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type == 0))
             Taxonomy[27] = '+R99';
     }
     else {
         if ($('#RoofCB3').val() == 1) {
             Taxonomy[27] = '+RM';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RM99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RM1';
@@ -2213,14 +2257,14 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#RoofCB3').val() == 2) {
             Taxonomy[27] = '+RE';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RE99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RE1';
         }
         else if ($('#RoofCB3').val() == 3) {
             Taxonomy[27] = '+RC';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RC99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RC1';
@@ -2233,7 +2277,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#RoofCB3').val() == 4) {
             Taxonomy[27] = '+RME';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RME99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RME1';
@@ -2244,7 +2288,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#RoofCB3').val() == 5) {
             Taxonomy[27] = '+RWO';
-            if ($('#RoofCB4').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RWO99';
             if ($('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RWO1';
@@ -2269,7 +2313,7 @@ function taxt_BuildTaxonomy()
         }
     }
 
-    if ($('#RoofCB5').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#RoofCB5').val() == 0 && (out_type == 0))
         Taxonomy[29] = '+RWC99';
     if ($('#RoofCB5').val() == 1)
         Taxonomy[29] = '+RWCN';
@@ -2283,7 +2327,7 @@ function taxt_BuildTaxonomy()
         Taxonomy[29] = '+RTDP';
 
     if ($('#FloorCB1').val() == 0) {
-        if (!$('#OmitCB').prop('checked'))
+        if ((out_type == 0))
             Taxonomy[30] = 'F99';
     }
     else if ($('#FloorCB1').val() == 1) {
@@ -2292,7 +2336,7 @@ function taxt_BuildTaxonomy()
     else {
         if ($('#FloorCB1').val() == 2) {
             Taxonomy[30] = 'FM';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FM99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FM1';
@@ -2303,12 +2347,12 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#FloorCB1').val() == 3) {
             Taxonomy[30] = 'FE';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FE99';
         }
         else if ($('#FloorCB1').val() == 4) {
             Taxonomy[30] = 'FC';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FC99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FC1';
@@ -2321,7 +2365,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#FloorCB1').val() == 5) {
             Taxonomy[30] = 'FME';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FME99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FME1';
@@ -2332,7 +2376,7 @@ function taxt_BuildTaxonomy()
         }
         else if ($('#FloorCB1').val() == 6) {
             Taxonomy[30] = 'FW';
-            if ($('#FloorCB2').val() == 0 && !$('#OmitCB').prop('checked'))
+            if ($('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FW99';
             if ($('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FW1';
@@ -2347,14 +2391,14 @@ function taxt_BuildTaxonomy()
             Taxonomy[30] = 'FO';
         }
     }
-    if ($('#FloorCB3').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#FloorCB3').val() == 0 && (out_type == 0))
         Taxonomy[32] = '+FWC99';
     if ($('#FloorCB3').val() == 1)
         Taxonomy[32] = '+FWCN';
     if ($('#FloorCB3').val() == 2)
         Taxonomy[32] = '+FWCP';
 
-    if ($('#FoundationsCB').val() == 0 && !$('#OmitCB').prop('checked'))
+    if ($('#FoundationsCB').val() == 0 && (out_type == 0))
         Taxonomy[33] = 'FOS99';
     if ($('#FoundationsCB').val() == 1)
         Taxonomy[33] = 'FOSSL';
@@ -2372,7 +2416,7 @@ function taxt_BuildTaxonomy()
     direction1 = 'DX';
     direction2 = 'DY';
 
-    if ($('#Direction1RB1').prop('checked')  && !$('#OmitCB').prop('checked')) {
+    if ($('#Direction1RB1').prop('checked')  && (out_type == 0)) {
         direction1 = direction1 + '+D99';
         direction2 = direction2 + '+D99';
         }
@@ -2445,11 +2489,61 @@ function taxt_BuildTaxonomy()
         '/' + Taxonomy[19] + Taxonomy[20] + Taxonomy[22] + Taxonomy[21] + Taxonomy[23] +
         '/' + Taxonomy[24] + '/' + Taxonomy[25] + Taxonomy[26] + Taxonomy[27] + Taxonomy[28] + Taxonomy[29] +
         '/' + Taxonomy[30] + Taxonomy[31] + Taxonomy[32] + '/' + Taxonomy[33];
-    $('#resultE').val(ResTax);
-    $('#permalink').attr("href", taxt_prefix + "/" +  ResTax);
+
+    if (out_type == 2) {
+        var is_first = true, ResAtoms = ResTax.split('/');
+        if (ResAtoms[1] == ResAtoms[4] && ResAtoms[2] == ResAtoms[5]) {
+            // same params case
+            ResAtoms[3] = ResAtoms[4] = ResAtoms[5] = "";
+            if ($('#Direction1RB1').prop('checked')) {
+                ResAtoms[0] = "";
+            }
+            else {
+                ResAtoms[0] = "PF";
+            }
+        }
+        else {
+            if ($('#Direction1RB1').prop('checked')) {
+                ResAtoms[0] = "DX";
+                ResAtoms[3] = "DY";
+            }
+            else {
+                ResAtoms[0] = "DX+PF";
+                ResAtoms[3] = "DY+PO";
+            }
+        }
+
+        ResTax = "";
+        for (id in ResAtoms) {
+            if (ResAtoms[id] == "") {
+                continue;
+            }
+            if (!is_first)
+                ResTax += "/";
+            else
+                is_first = false;
+            ResTax += ResAtoms[id];
+        }
+    }
+    return (ResTax);
 }
 
+function taxt_BuildTaxonomy()
+{
+    var ResTax, ResTaxFull = BuildTaxonomyString(0);
+    var out_type = $('#OutTypeCB').val();
 
+    if (out_type != 0) {
+        ResTax = BuildTaxonomyString(out_type);
+    }
+    else {
+        ResTax = ResTaxFull;
+    }
+    taxonomy_form = ResTaxFull;
+
+    $('#resultE').val(ResTax);
+    $('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
+}
 
 
 /*
@@ -3143,11 +3237,21 @@ end;
 end.
 */
 
-
+function taxt_OutTypeCBSelect(obj)
+{
+    taxt_BuildTaxonomy();
+}
 
 function taxt_Initiate() {
+    var OutTypeCB = [];
+    OutTypeCB.push('Full');
+    OutTypeCB.push('Omit Unknown');
+    OutTypeCB.push('Short');
+    select_populate('OutTypeCB', OutTypeCB);
+    $('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
 
     $('#DirectionCB').prop('checked', true);
+    $('#DirectionCB').on('change', taxt_SetDirection2);
 
     // FIXME: t0 only, load a preview saved taxonomy must be done
     var MaterialCB11 = [];
@@ -3699,186 +3803,112 @@ function populate(s, ret_s) {
         $('#DirectionCB').prop('checked', true);
     }
 
-
     //
     //  Height
     //
-    var h, h_items, h_label, h_id, h_vals;
+    var h, h_first = false, h_items, h_label, h_id, h_vals;
+    var h_map = [ 'H99' , 'HBET' , 'HEX' , 'HAPP' ,
+                  'HB99', 'HBBET', 'HBEX', 'HBAPP',
+                  'HF99', 'HFBET', 'HFEX', 'HFAPP',
+                  'HD99', 'HD' ]
+
+    var h_pref = [ 'H', 'HB', 'HF', 'HD' ];
+    var h_cbid = [  1 ,   2 ,   3,    4  ];
+    var h_cbfun = [ taxt_HeightCB1Select, taxt_HeightCB2Select, taxt_HeightCB3Select, taxt_HeightCB4Select ];
 
     h = sar[6].split('+');
-    h_items = h[0].split(':');
-    h_label = h_items[0];
 
-    if (h_label == 'H99' && h.length != 1
-        ||
-        h_label != 'H99' && h.length != 4) {
-        ret_s.s = "Height not defined properly.";
-        return (false);
-    }
+    for (sub_i = 0 ; sub_i < h.length ; sub_i++) {
+        var dynfunc;
 
-    for (i = 0 ; i < h_aboveground.length ; i++) {
-        if (h_label == h_aboveground[i].id) {
-            h_id = h_label;
-            $('#HeightCB1').val(i);
-            taxt_HeightCB1Select(null);
-            break;
-        }
-    }
-    if (i == h_aboveground.length) {
-        ret_s.s = "Not identified '" + h_label + "' as specification of height.";
-        return (false);
-    }
-    /* if some height is defined we must retrieve value/intervals and get the other
-       3 height attributes */
-    if (h_id != "H99") {
-        if (h_items.length < 2) {
-            ret_s.s = "Height: no values defined.";
+        h_items = h[sub_i].split(':');
+        h_label = h_items[0];
+
+        h_id = h_map.indexOf(h_label);
+        h_iddd = Math.floor(h_id / 4);
+        h_idty = h_id % 4;
+        if (h_id == -1) {
+            ret_s.s = "Height not defined properly.";
             return (false);
         }
 
-        h_vals = h_items[1].split(',');
-        if (h_id == 'HBET') {
-            if (h_vals.length != 2) {
-                ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
+        $('#HeightCB' + h_cbid[h_iddd]).val(h_idty);
+        if (h_iddd < 3) {
+            if (ends_with(h_label, '99')) {
+                if (h_items.length != 1) {
+                    ret_s.s = "Height: '" + h_label + "' type requires no values, " + is_or_are_given(h_vals.length);
+                    return (false);
+                }
+            }
+            else if (ends_with(h_label, 'BET')) {
+                h_vals = h_items[1].split(',');
+                if (h_vals.length != 2) {
+                    ret_s.s = "Height: '" + h_label + "' type requires exactly 2 values, " + is_or_are_given(h_vals.length);
+                    return (false);
+                }
+
+                $('#noStoreysE' + h_cbid[h_iddd] + '1').val(h_vals[0]);
+                $('#noStoreysE' + h_cbid[h_iddd] + '2').val(h_vals[1]);
+                h_cbfun[h_iddd](null);
+            }
+            else if (ends_with(h_label, 'EX') || ends_with(h_label, 'APP')) {
+                h_vals = h_items[1].split(',');
+                if (h_vals.length != 1) {
+                    ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
+                    return (false);
+                }
+                $('#noStoreysE' + h_cbid[h_iddd] + '1').val(h_vals[0]);
+                h_cbfun[h_iddd](null);
+                taxt_HeightCB1Select(null);
+            }
+            else {
+                ret_s.s = "Height: '" + h_label + "' type unknown.";
                 return (false);
             }
-            $('#noStoreysE11').val(h_vals[0]);
-            $('#noStoreysE12').val(h_vals[1]);
-            taxt_HeightCB1Select(null);
         }
-        else if (h_id == 'HEX' || h_id == 'HAPP') {
-            if (h_vals.length != 1) {
-                ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
+        else if (h_iddd == 3) {
+            for (e = 0 ; e < h_slope.length ; e++) {
+                if (h_label == h_slope[e].id) {
+                    $('#HeightCB4').val(e);
+                    taxt_HeightCB4Select(null);
+                    break;
+                }
+            }
+            if (e == h_slope.length) {
+                ret_s.s = "Height: not identified '" + h_label + "' as specification of slope of the ground.";
                 return (false);
             }
-            $('#noStoreysE11').val(h_vals[0]);
-            taxt_HeightCB1Select(null);
-        }
 
-        for (sub_i = 1 ; sub_i < h.length ; sub_i++) {
-            h_items = h[sub_i].split(':');
-            h_label = h_items[0];
-
-            // Number of storey below ground
-            if (h_label.substring(0,2) == "HB") {
-                for (e = 0 ; e < h_belowground.length ; e++) {
-                    if (h_label == h_belowground[e].id) {
-                        h_id = h_label;
-                        $('#HeightCB2').val(e);
-                        taxt_HeightCB2Select(null);
-                        break;
-                    }
-                }
-                if (e == h_belowground.length) {
-                    ret_s.s = "Not identified '" + h_label + "' as specification of number of storey below ground.";
-                    return (false);
-                }
-                if (h_id == 'HB99') {
-                    if (h_items.length != 1) {
-                        ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
-                        return (false);
-                    }
-                }
-                else {
+            if (ends_with(h_label, '99')) {
+                if (h_items.length != 1) {
                     h_vals = h_items[1].split(',');
-                    if (h_id == 'HBBET') {
-                        if (h_vals.length != 2) {
-                            ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
-                            return (false);
-                        }
-                        $('#noStoreysE21').val(h_vals[0]);
-                        $('#noStoreysE22').val(h_vals[1]);
-                        taxt_HeightCB1Select(null);
-                    }
-                    else if (h_id == 'HBEX' || h_id == 'HBAPP') {
-                        if (h_vals.length != 1) {
-                            ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
-                            return (false);
-                        }
-                        $('#noStoreysE21').val(h_vals[0]);
-                        taxt_HeightCB1Select(null);
-                    }
-                }
-            }
-            // Above grade
-            else if (h_label.substring(0,2) == "HF") {
-                for (e = 0 ; e < h_abovegrade.length ; e++) {
-                    if (h_label == h_abovegrade[e].id) {
-                        h_id = h_label;
-                        $('#HeightCB3').val(e);
-                        taxt_HeightCB2Select(null);
-                        break;
-                    }
-                }
-                if (e == h_abovegrade.length) {
-                    ret_s.s = "Height: not identified '" + h_label + "' as specification of height of ground floor level above grade.";
+                    ret_s.s = "Height: '" + h_iddd + "' type requires no values, " + is_or_are_given(h_vals.length);
                     return (false);
-                }
-
-                if (h_id == 'HF99') {
-                    if (h_items.length != 1) {
-                        ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
-                        return (false);
-                    }
-                }
-                else {
-                    h_vals = h_items[1].split(',');
-                    if (h_id == 'HFBET') {
-                        if (h_vals.length != 2) {
-                            ret_s.s = "Height: '" + h_id + "' type requires exactly 2 values, " + h_vals.length + " are given.";
-                            return (false);
-                        }
-                        $('#noStoreysE31').val(h_vals[0]);
-                        $('#noStoreysE32').val(h_vals[1]);
-                        taxt_HeightCB3Select(null);
-                    }
-                    else if (h_id == 'HFEX' || h_id == 'HFAPP') {
-                        if (h_vals.length != 1) {
-                            ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
-                            return (false);
-                        }
-                        $('#noStoreysE31').val(h_vals[0]);
-                        taxt_HeightCB3Select(null);
-                    }
-                }
-            }
-            // Slope
-            else if (h_label.substring(0,2) == "HD") {
-                for (e = 0 ; e < h_slope.length ; e++) {
-                    if (h_label == h_slope[e].id) {
-                        h_id = h_label;
-                        $('#HeightCB4').val(e);
-                        taxt_HeightCB4Select(null);
-                        break;
-                    }
-                }
-                if (e == h_slope.length) {
-                    ret_s.s = "Height: not identified '" + h_label + "' as specification of slope of the ground.";
-                    return (false);
-                }
-
-                if (h_id == 'HD99') {
-                    if (h_items.length != 1) {
-                        ret_s.s = "Height: '" + h_id + "' type requires no values, " + h_vals.length + " are given.";
-                        return (false);
-                    }
-                }
-                else {
-                    h_vals = h_items[1].split(',');
-                    if (h_id == 'HD') {
-                        if (h_vals.length != 1) {
-                            ret_s.s = "Height: '" + h_id + "' type requires exactly 1 value, " + h_vals.length + " are given.";
-                            return (false);
-                        }
-                        $('#noStoreysE4').val(h_vals[0]);
-                        taxt_HeightCB4Select(null);
-                    }
                 }
             }
             else {
-                ret_s.s = "Height: not identified '" + h_label + "' as specification of height.";
-                return (false);
+                h_vals = h_items[1].split(',');
+                if (h_label == 'HD') {
+                    if (h_vals.length != 1) {
+                        ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
+                        return (false);
+                    }
+                    $('#noStoreysE4').val(h_vals[0]);
+                    taxt_HeightCB4Select(null);
+                }
+                else {
+                    ret_s.s = "Height: not identified '" + h_label + "' as specification of height.";
+                    return (false);
+                }
             }
+        }
+        else {
+            ret_s.s = "Height: '" + h_label + "' not yet implemented.";
+            return (false);
+        }
+
+        if (h_iddd == 0) {
+            h_first = true;
         }
     }
 
@@ -3917,7 +3947,7 @@ function populate(s, ret_s) {
         date_vals = date_items[1].split(',');
         if (date_id == 'YBET') {
             if (date_vals.length != 2) {
-                ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + date_vals.length + " are given.";
+                ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + is_or_are_given(date_vals.length);
                 return (false);
             }
             $('#DateE1').val(date_vals[0]);
@@ -3926,7 +3956,7 @@ function populate(s, ret_s) {
         }
         else if (date_id == 'YEX' || date_id == 'YPRE' || date_id == 'YAPP') {
             if (date_vals.length != 1) {
-                ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + date_vals.length + " are given.";
+                ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + is_or_are_given(date_vals.length);
                 return (false);
             }
             $('#DateE1').val(date_vals[0]);
@@ -3941,11 +3971,11 @@ function populate(s, ret_s) {
     occu = sar[8].split('+');
     occu_label = occu[0];
 
-    if (occu_label == 'OC99' && occu.length != 1
-        ||
-        occu_label != 'OC99' && occu.length != 2) {
-        ret_s.s = "Occupancy not defined properly.";
-        return (false);
+    if (occu_label == 'OC99') {
+        if (occu.length != 1) {
+            ret_s.s = "Occupancy not defined properly (" + occu_label + ").";
+            return (false);
+        }
     }
 
     for (i = 0 ; i < occu_type.length ; i++) {
@@ -3962,8 +3992,15 @@ function populate(s, ret_s) {
     }
 
     if (occu_label != 'OC99') {
-        // Occupancy specification
-        occu_atom = occu[1];
+        if (occu.length > 1) {
+            // Occupancy specification
+            occu_atom = occu[1];
+        }
+        else {
+            // select the first item of proper sub-selection
+            occu_atom = occu_spec[occu_id][0].id;
+        }
+
         for (i = 0 ; i < occu_spec[occu_id].length ;  i++) {
             if (occu_atom == occu_spec[occu_id][i].id) {
                 $('#OccupancyCB2').val(i);
@@ -4031,6 +4068,7 @@ function populate(s, ret_s) {
     //
     var stir, stir_items, stir_label, stir_id, stir_vals, stir_atom;
     var plir_id = "", plse_id = "", veir_id = "", vese_id = "";
+    var ir_values = [ 0, 0, 0, 0, 0 ];
 
     stir = sar[11].split('+');
     stir_label = stir[0];
@@ -4038,8 +4076,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < stir_type.length ; i++) {
         if (stir_label == stir_type[i].id) {
             stir_id = stir_label;
-            $('#RegularityCB1').val(i);
-            taxt_RegularityCB1Select(null);
+            ir_values[0] = i;
             break;
         }
     }
@@ -4068,8 +4105,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < plan_irre.length ; i++) {
                 if (stir_atom == plan_irre[i].id) {
                     plir_id = stir_atom;
-                    $('#RegularityCB2').val(i);
-                    taxt_RegularityCB2Select(null);
+                    ir_values[1] = i;
                     break;
                 }
             }
@@ -4081,8 +4117,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < plan_seco.length ; i++) {
                 if (stir_atom == plan_seco[i].id) {
                     plse_id = stir_atom;
-                    $('#RegularityCB4').val(i);
-                    taxt_RegularityCB4Select(null);
+                    ir_values[3] = i;
                     break;
                 }
             }
@@ -4094,8 +4129,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < vert_irre.length ; i++) {
                 if (stir_atom == vert_irre[i].id) {
                     veir_id = stir_atom;
-                    $('#RegularityCB3').val(i);
-                    taxt_RegularityCB3Select(null);
+                    ir_values[2] = i;
                     break;
                 }
             }
@@ -4107,8 +4141,7 @@ function populate(s, ret_s) {
             for (i = 0 ; i < vert_seco.length ; i++) {
                 if (stir_atom == vert_seco[i].id) {
                     vese_id = stir_atom;
-                    $('#RegularityCB5').val(i);
-                    taxt_RegularityCB5Select(null);
+                    ir_values[4] = i;
                     break;
                 }
             }
@@ -4129,6 +4162,18 @@ function populate(s, ret_s) {
         return (false);
     }
 
+    // all data are retrieved before the population phase to avoid unrequired reset of values permformed
+    // by hierarchical ancestors
+    $('#RegularityCB1').val(ir_values[0]);
+    taxt_RegularityCB1Select(null);
+    $('#RegularityCB2').val(ir_values[1]);
+    taxt_RegularityCB2Select(null);
+    $('#RegularityCB3').val(ir_values[2]);
+    taxt_RegularityCB3Select(null);
+    $('#RegularityCB4').val(ir_values[3]);
+    taxt_RegularityCB4Select(null);
+    $('#RegularityCB5').val(ir_values[4]);
+    taxt_RegularityCB5Select(null);
 
     //
     //  Exterior wall

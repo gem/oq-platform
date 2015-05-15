@@ -128,7 +128,7 @@ llrs_type_grp[2] = [
                     { id: 'L99', desc: 'Unknown lateral load-resisting system' },
                     { id: 'LN', desc: 'No lateral load-resisting system' },
                     { id: 'LFM', desc: 'Moment frame' },
-                    { id: 'LINF', desc: 'Infilled frame' },
+                    { id: 'LFINF', desc: 'Infilled frame' },
                     { id: 'LFBR', desc: 'Braced frame' },
                     { id: 'LPB', desc: 'Post and beam' },
                     { id: 'LWAL', desc: 'Wall' },
