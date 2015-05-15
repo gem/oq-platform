@@ -138,6 +138,7 @@ a {
 
 .leaflet-control {
   clear: none;
+  overflow: hidden;
 }
 
 .leaflet-control-layers .leaflet-row .leaflet-input {
