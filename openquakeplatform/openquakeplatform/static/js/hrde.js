@@ -1005,7 +1005,13 @@ var startApp = function() {
             AppVars.selectedHazardLayerName = json.name;
             AppVars.selectedLayerValue = json.mapped_value;
             AppVars.layerInvestigationTime = json.investigationTime;
-            AppVars.layerIml = json.periods;
+
+            if (json.periods) {
+                AppVars.layerIml = json.periods;
+            } else {
+                AppVars.layerIml = json.iml;
+            }
+
             AppVars.layerPoe = json.poe;
             AppVars.layerImt = json.imt;
             var bounds = json.bounds;
@@ -1102,7 +1108,8 @@ var startApp = function() {
                     mags = occurRateArray.map(function(x) { return Math.round((minMag + binWidth * x) * 100) / 100; });
                     mfdsJsonObj[k].mags = mags;
                 }
-                hazardInputD3Chart(mfdsJsonObj);
+                var latlng = e.latlng;
+                hazardInputD3Chart(mfdsJsonObj, latlng);
             }
         }); // End utfGrid click
     }
