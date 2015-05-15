@@ -137,10 +137,10 @@ var startApp = function() {
     function checkLayerController() {
         if ($.isEmptyObject(AppVars.layerControl._layers) ) {
             setTimeout(function() {
-                $('.leaflet-control-layers-toggle').css({'display': 'none'});
+                $('.leaflet-control-layers').css({'display': 'none'});
             }, 100);
         } else {
-            $('.leaflet-control-layers-toggle').css({'display': 'block'});
+            $('.leaflet-control-layers').css({'display': 'block'});
         }
     }
 
