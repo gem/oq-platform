@@ -150,9 +150,11 @@ def add_project_definition(request):
     if isinstance(project_definitions, dict):
         project_definitions = [project_definitions]
     project_definitions.append(project_definition)
+
     layer.supplemental_information = json.dumps(
         project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
     layer.save()
+
     return HttpResponse("The new project definition has been added")
 
 

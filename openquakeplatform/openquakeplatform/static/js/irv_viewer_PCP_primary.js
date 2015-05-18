@@ -77,6 +77,12 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
+        var dimensions = [];
+
+        for (var i = 0; i < data.length; i++) {
+            dimensions.push(data[i].plotElement);
+        }
+
         ////////////////
         /// d3 chert ///
         ////////////////
