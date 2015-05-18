@@ -28,6 +28,10 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
+function helloWorld() {
+  return "Hello world!";
+}
+
 function createIndex(la, index) {
     var indicator = [];
     // setup the indicator with all the regions
