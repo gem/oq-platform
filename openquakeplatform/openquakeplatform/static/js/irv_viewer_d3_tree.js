@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, GEM Foundation.
+   Copyright (c) 2015, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -106,7 +106,7 @@
                 $('#inputName').empty();
                 $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
                 $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
-                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
+                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a><br>');
 
                 $('#checkboxPD').change(function() {
                     var inputVal = $('#giveNamePD').val();
