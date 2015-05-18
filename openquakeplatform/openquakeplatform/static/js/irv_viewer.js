@@ -18,6 +18,7 @@ var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
+var SVIRLayerNames = [];
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -648,6 +649,42 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
+function GeoServerLayers(url) {
+   // Get layers from GeoServer and populate the layer selection menu
+    $.ajax({
+        url: url,
+        contentType: 'application/json',
+        success: function(xml) {
+            //convert XML to JSON
+            var xmlText = new XMLSerializer().serializeToString(xml);
+            var x2js = new X2JS();
+
+            var jsonElement = x2js.xml_str2json(xmlText);
+            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
+
+            // Find the SVIR keywords
+            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            for (var i = 0; i < featureType.length; i++) {
+                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                }
+            }
+            // Append the layer to the selection dropdown menu
+            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+                $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
+            }
+            $('#svir-project-list').show();
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get a list of layers from GeoServer</p>'
+                );
+            $('#ajaxErrorDialog').dialog('open');
+        }
+    });
+}
+
 var startApp = function() {
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -693,42 +730,9 @@ var startApp = function() {
     $('#region-selection-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
     $('#region-selection-list').hide();
-    var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
-    // Get layers from GeoServer and populate the layer selection menu
-    $.ajax({
-        url: url,
-        contentType: 'application/json',
-        success: function(xml) {
-            //convert XML to JSON
-            var xmlText = new XMLSerializer().serializeToString(xml);
-            var x2js = new X2JS();
-
-            var jsonElement = x2js.xml_str2json(xmlText);
-            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
-
-            // Find the SVIR keywords
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
-            for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
-                }
-            }
-            // Append the layer to the selection dropdown menu
-            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-                $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
-            }
-            $('#svir-project-list').show();
-        },
-        error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get a list of layers from GeoServer</p>'
-                );
-            $('#ajaxErrorDialog').dialog('open');
-        }
-    });
+    GeoServerLayers(url);
 
     // Get the layer metadata (project def)
     $('#svir-project-list').change(function() {
@@ -804,7 +808,7 @@ var startApp = function() {
                 // file 5
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // file 6
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     //convert XML to JSON
