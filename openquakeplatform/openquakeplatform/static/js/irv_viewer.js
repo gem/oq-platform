@@ -381,25 +381,12 @@ function processIndicators(layerAttributes, projectDef) {
         scale(RI);
     } else {
         // If RI does not have any children the simply compute the RI
-
-        // first create an object with all of the district names
-
         // setup the indicator with all the regions using the layer attributes
         for (var ia = 0; ia < la.length; ia++) {
             var region = la[ia].properties[selectedRegion];
             RI[region] = 1;
         }
-        console.log('RI:');
-        console.log(RI);
-        // Using the project def add the RI values
-
-        console.log('la:');
-        console.log(la);
-        console.log('projectDef:');
-        console.log(projectDef);
-
     }
-
 
     ///////////////////////////////
     //// Compute the IRI index ////
@@ -564,10 +551,6 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-console.log('RI:');
-console.log(RI);
-console.log('SVI:');
-console.log(SVI);
     IRI.plotElement = "iri"; // Lable within the object
     if (riskIndicators !== undefined) {
         RI.plotElement = "ri"; // Lable within the object
@@ -579,8 +562,6 @@ console.log(SVI);
     if (riskIndicators !== undefined) {
         iriPcpData.push(RI);
     }
-    console.log('iriPcpData:');
-    console.log(iriPcpData);
     IRI_PCP_Chart(iriPcpData);
 
 
@@ -856,7 +837,7 @@ var startApp = function() {
                 // Portugal-test
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
                 //SA test2
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
 
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
