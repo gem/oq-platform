@@ -22,7 +22,11 @@
 function IRI_PCP_Chart(iriPcpData) {
 
     // TODO use the plotelements from the object instead of this array
-    var plotElements = ["iri", "svi", "ri"];
+    var plotElements = [];
+    for (var i = 0; i < iriPcpData.length; i++) {
+        plotElements.push(iriPcpData[i].plotElement);
+    }
+
     var keys = [];
 
     for (var k in iriPcpData) {

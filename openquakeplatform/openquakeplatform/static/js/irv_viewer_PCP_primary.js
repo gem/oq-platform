@@ -24,10 +24,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     // Find the theme data and create selection dropdown menu
     var themesWithChildren = [];
     for (var i = 0; i < projectDef.children.length; i++) {
-        for (var j = 0; j < projectDef.children[i].children.length; j++) {
-            if (projectDef.children[i].children[j].children) {
-                themesWithChildren.push(projectDef.children[i].children[j].name);
+        try {
+            for (var j = 0; j < projectDef.children[i].children.length; j++) {
+                if (projectDef.children[i].children[j].children) {
+                    themesWithChildren.push(projectDef.children[i].children[j].name);
+                }
             }
+        } catch (e) {
+            // continue
         }
     }
 
@@ -45,10 +49,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         // Find the children of selected theme
         var selectedThemeChildren;
         for (var i = 0; i < projectDef.children.length; i++) {
-            for (var j = 0; j < projectDef.children[i].children.length; j++) {
-                if (projectDef.children[i].children[j].name === selectedTheme) {
-                    selectedThemeChildren = projectDef.children[i].children[j].children;
+            try {
+                for (var j = 0; j < projectDef.children[i].children.length; j++) {
+                    if (projectDef.children[i].children[j].name === selectedTheme) {
+                        selectedThemeChildren = projectDef.children[i].children[j].children;
+                    }
                 }
+            } catch (e) {
+                // continue
             }
         }
 

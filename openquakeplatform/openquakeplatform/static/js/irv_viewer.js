@@ -265,7 +265,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
                         if (p1 == tempIndicatorChildrenKeys[r1]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r1].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -360,24 +360,46 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the risk index ////
     ////////////////////////////////
 
-    var riskIndicator = createIndex(la, riskIndicators);
+    // Create the risk indicator only if it has children
+    var RI = {};
+    if (riskIndicators !== undefined) {
+        var riskIndicator = createIndex(la, riskIndicators);
 
-    // capture all risk indicators for selection menu
-    for (var key in riskIndicator[0]) {
-        if (key != 'region') {
-            allRiskIndicators.push(key);
+        // capture all risk indicators for selection menu
+        for (var key in riskIndicator[0]) {
+            if (key != 'region') {
+                allRiskIndicators.push(key);
+            }
         }
+        ////////////////////////////////////
+        //// Compute the Risk Indicator ////
+        ////////////////////////////////////
+
+        var nameLookUp = 'RI';
+        var riJSONthemes = riskIndicators;
+        RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
+        scale(RI);
+    } else {
+        // If RI does not have any children the simply compute the RI
+
+        // first create an object with all of the district names
+
+        // setup the indicator with all the regions using the layer attributes
+        for (var ia = 0; ia < la.length; ia++) {
+            var region = la[ia].properties[selectedRegion];
+            RI[region] = 1;
+        }
+        console.log('RI:');
+        console.log(RI);
+        // Using the project def add the RI values
+
+        console.log('la:');
+        console.log(la);
+        console.log('projectDef:');
+        console.log(projectDef);
+
     }
 
-    ////////////////////////////////////
-    //// Compute the Risk Indicator ////
-    ////////////////////////////////////
-
-    var RI = {};
-    var nameLookUp = 'RI';
-    var riJSONthemes = riskIndicators;
-    RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
-    scale(RI);
 
     ///////////////////////////////
     //// Compute the IRI index ////
@@ -454,16 +476,19 @@ function processIndicators(layerAttributes, projectDef) {
                 la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
             }
         }
-        for (var key in RI) {
-            if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['IR'] = (RI[key]).toFixed(5);
-            }
-        }
 
-        for (var key in riskIndicator[ix]) {
-            if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][key];
-                la[ix].newProperties[key] = tempThemeName;
+        if (riskIndicators !== undefined) {
+            for (var key in RI) {
+                if (key == la[ix].properties[selectedRegion]) {
+                    la[ix].newProperties['RI'] = (RI[key]).toFixed(5);
+                }
+            }
+
+            for (var key in riskIndicator[ix]) {
+                if (riskIndicator[ix] != 'region') {
+                    var tempThemeName = riskIndicator[ix][key];
+                    la[ix].newProperties[key] = tempThemeName;
+                }
             }
         }
 
@@ -513,10 +538,12 @@ function processIndicators(layerAttributes, projectDef) {
         $('#thematic-map-selection').append('<option>'+allSVIThemes[id]+'</option>');
     }
 
-    // Add IR themes to selection menu
-    $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
-    for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-        $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
+    if (riskIndicators !== undefined) {
+        // Add IR themes to selection menu
+        $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
+        for (var ie = 0; ie < allRiskIndicators.length; ie++) {
+            $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
+        }
     }
 
     // Add all primary indicators to selection menu
@@ -537,14 +564,23 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-
+console.log('RI:');
+console.log(RI);
+console.log('SVI:');
+console.log(SVI);
     IRI.plotElement = "iri"; // Lable within the object
-    RI.plotElement = "ri"; // Lable within the object
+    if (riskIndicators !== undefined) {
+        RI.plotElement = "ri"; // Lable within the object
+    }
     SVI.plotElement = "svi"; // Lable within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
-    iriPcpData.push(RI);
+    if (riskIndicators !== undefined) {
+        iriPcpData.push(RI);
+    }
+    console.log('iriPcpData:');
+    console.log(iriPcpData);
     IRI_PCP_Chart(iriPcpData);
 
 
@@ -671,7 +707,6 @@ function watchForPdSelection() {
             $('#projectDef-spinner').hide();
             $('#iri-spinner').hide();
             $('#project-definition-svg').show();
-            $('#region-selection-list').show();
             processIndicators(layerAttributes, sessionProjectDef);
         }
     }
@@ -721,7 +756,6 @@ var startApp = function() {
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
-    $('#region-selection-list').hide();
     $('#thematic-map-selection').hide();
 
     var SVIRLayerNames = [];
@@ -800,27 +834,6 @@ var startApp = function() {
                     layerFields.push(key);
                 }
 
-                $('#regionSelectionDialog').append(
-                    '<p>Please select the field that contains the layer&#39s region labels</p>'+
-                    '<select id="region-selection-list">'+
-                    '<option selected disabled>Select Field</option>'+
-                    '</select>'
-                );
-
-                // append each field to the selection menu
-                for (var i = 0; i < layerFields.length; i++) {
-                    $('#region-selection-list').append('<option>'+ layerFields[i] +'</option>');
-                }
-
-                $('#regionSelectionDialog').dialog('open');
-
-                $('#region-selection-list').change(function() {
-                    selectedRegion = document.getElementById('region-selection-list').value;
-                    getLayerInfo(layerAttributes);
-                    $('#projectDef-spinner').text('Select a project definition ...');
-                    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
-                });
-
                 getLayerInfo(layerAttributes);
             },
             error: function() {
@@ -840,14 +853,11 @@ var startApp = function() {
             success: function(layerMetadataURL) {
 
                 // ***** TEMP remove this ****
-                // file 4
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
-                // file 5
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
-                // file 6
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // Portugal-test
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4 ";
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
+                //SA test2
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
+
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     // Convert XML to JSON
