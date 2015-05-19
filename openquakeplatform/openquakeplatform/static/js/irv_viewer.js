@@ -551,11 +551,11 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-    IRI.plotElement = "iri"; // Lable within the object
+    IRI.plotElement = "IRI"; // Lable within the object
     if (riskIndicators !== undefined) {
-        RI.plotElement = "ri"; // Lable within the object
+        RI.plotElement = "RI"; // Lable within the object
     }
-    SVI.plotElement = "svi"; // Lable within the object
+    SVI.plotElement = "SVI"; // Lable within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
@@ -837,7 +837,7 @@ var startApp = function() {
                 // Portugal-test
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
                 //SA test2
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
 
 
                 $.get( layerMetadataURL, function( layerMetadata ) {

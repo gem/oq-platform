@@ -235,21 +235,26 @@
                     if (projectDef.children[i].name == tempNewWeight[0]) {
                         projectDefUpdated.children[i].weight = tempNewWeight[1];
                     } else {
-                        for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
-                            if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
-                                projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
-                            } else {
-                                try {
-                                    for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
-                                        if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
-                                            projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
+                        try {
+                            for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
+                                if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                                    projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                                } else {
+                                    try {
+                                        for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
+                                            if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
+                                                projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
+                                            }
                                         }
+                                    } catch (e) {
+                                        // continue
                                     }
-                                } catch (e) {
-                                    // continue
                                 }
                             }
+                        } catch (e) {
+                            // continue
                         }
+                        
                     }
                 }
             }
@@ -432,7 +437,7 @@
             // Render weight values in tree
             nodeEnter.append("text")
                 //TODO uncoment this ...
-                .attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
+                //.attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
