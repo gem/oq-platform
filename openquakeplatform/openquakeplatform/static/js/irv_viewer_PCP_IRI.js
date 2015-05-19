@@ -39,7 +39,7 @@ function IRI_PCP_Chart(iriPcpData) {
         w = (winW - 100) - m[1] - m[3],
         h = winH - m[0] - m[2];
 
-    var x = d3.scale.ordinal().domain(regions).rangePoints([0, w]),
+    var x = d3.scale.ordinal().rangePoints([0, w]),
         y = {};
 
     var line = d3.svg.line(),
@@ -48,6 +48,12 @@ function IRI_PCP_Chart(iriPcpData) {
 
     var x_scale = d3.scale.linear().domain([0, w]).range([0, w]);
     var y_scale = d3.scale.linear().domain([1, 0]).range([0, h]);
+
+    x.domain(dimensions = d3.keys(iriPcpData[0]).filter(function(d) {
+        return d != 'plotElement' && (y[d] = d3.scale.linear()
+            .domain([0, 1])
+            .range([h, 0]));
+    }));
 
     function yAxis() {
         return d3.svg.axis()
@@ -67,18 +73,6 @@ function IRI_PCP_Chart(iriPcpData) {
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + ",5)");
 
-    // Create a scale and brush for each trait.
-    regions.forEach(function(d) {
-        // Coerce values to numbers.
-        iriPcpData.forEach(function(p) { p[d] = +p[d]; });
-        y[d] = d3.scale.linear()
-            .domain([0,1])
-            .range([h, 0]);
-
-        y[d].brush = d3.svg.brush()
-            .y(y[d])
-            .on("brush", brush);
-    });
 
     // grid line functions
     function x_grid() {
@@ -206,11 +200,11 @@ function IRI_PCP_Chart(iriPcpData) {
     // Returns the path for a given data point.
 
     function path(d) {
-        return line(regions.map(function(p) { return [x(p), y[p](d[p])]; }));
+        return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
-        var actives = regions.filter(function(p) { return !y[p].brush.empty(); }),
+        var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
             extents = actives.map(function(p) { return y[p].brush.extent(); });
         foreground.classed("fade", function(d) {
             return !actives.every(function(p, i) {

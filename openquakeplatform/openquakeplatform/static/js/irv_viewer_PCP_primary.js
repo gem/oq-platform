@@ -85,11 +85,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
-        var dimensions = [];
 
-        for (var i = 0; i < data.length; i++) {
-            dimensions.push(data[i].plotElement);
-        }
 
         ////////////////
         /// d3 chert ///
@@ -113,8 +109,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             w = (winW - 100) - m[1] - m[3],
             h = winH - m[0] - m[2];
 
-        var x = d3.scale.ordinal().domain(regions).rangePoints([0, w]),
+        var x = d3.scale.ordinal().rangePoints([0, w]),
             y = {};
+
+        x.domain(dimensions = d3.keys(data[0]).filter(function(d) {
+            return d != 'plotElement' && (y[d] = d3.scale.linear()
+                .domain([0, 1])
+                .range([h, 0]));
+        }));
 
         var line = d3.svg.line(),
             axis = d3.svg.axis().orient("left"),
@@ -132,17 +134,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             .attr("id", "IRI-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
-
-        // Create a scale and brush for each trait.
-        regions.forEach(function(d) {
-            y[d] = d3.scale.linear()
-                .domain([0,1])
-                .range([h, 0]);
-
-            y[d].brush = d3.svg.brush()
-                .y(y[d])
-                .on("brush", brush);
-        });
 
         // grid line functions
         function x_grid() {
@@ -252,11 +243,11 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         // Returns the path for a given data point.
         function path(d) {
-            return line(regions.map(function(p) { return [x(p), y[p](d[p])]; }));
+            return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
-            var actives = regions.filter(function(p) { return !y[p].brush.empty(); }),
+            var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
                 extents = actives.map(function(p) { return y[p].brush.extent(); });
             foreground.classed("fade", function(d) {
                 return !actives.every(function(p, i) {
