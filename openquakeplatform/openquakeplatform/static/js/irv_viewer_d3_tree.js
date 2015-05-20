@@ -136,13 +136,14 @@
                         layer_name: selectedLayer,
                         project_definition: projectDefStg
                         },
-                        function(){
-                            // success
+                        function() {
                         }).done(function() {
                             $('#saveStateDialog').dialog('close');
                             $('#saveState-spinner').hide();
                             $('#saveBtn').prop('disabled', true);
+                            $('#submitPD').attr('disabled',true);
                             $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                            $('option[value='+inputVal+']').attr('selected', 'selected');
                             $('#successDialog').dialog('open');
                             $('#successDialog').append(
                                 '<p>The project definition has been added to the layer metedata</p>'
@@ -153,10 +154,8 @@
                                 '<p>This application was not able to write the project definition to the database</p>'
                             );
                             $('#ajaxErrorDialog').dialog('open');
-                        });
-
-                // Add the current PD version as a new object, and pass it back to the API to be
-                // saved into the supplemental information
+                            $('#submitPD').attr('disabled',true);
+                    });
                 });
             });
         }
