@@ -164,60 +164,62 @@
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
+                $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
+                setTimeout(function() {
+                    $('#saveBtn').prop('disabled', false);
+                    saveProjData();
 
-                $('#saveBtn').prop('disabled', false);
-                saveProjData();
+                    pdTempWeights = [];
+                    pdTempWeightsComputed = [];
+                    pdTempInverters = [];
 
-                pdTempWeights = [];
-                pdTempWeightsComputed = [];
-                pdTempInverters = [];
+                    // Get the values of the spinners and inverters
+                    for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                        var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
+                        var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
 
-                // Get the values of the spinners and inverters
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
-                    var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
-
-                    pdTempInverters.push(isInverted);
-                    pdTempWeights.push(spinnerValue);
-                }
-
-                // Adjust the values into percentages
-                pdTempWeights = pdTempWeights.map(Number);
-                var totalWeights = 0;
-                $.each(pdTempWeights,function() {
-                    totalWeights += parseFloat(this);
-                });
-
-                for (var ia = 0; ia < pdTempWeights.length; ia++) {
-                    if (totalWeights === 0) {
-                        pdTempWeightsComputed.push(0);
-                    } else {
-                        pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                        pdTempInverters.push(isInverted);
+                        pdTempWeights.push(spinnerValue);
                     }
-                }
 
-                // Update the results back into the spinners and to the d3.js chart
-                for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
-                    $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
-                }
+                    // Adjust the values into percentages
+                    pdTempWeights = pdTempWeights.map(Number);
+                    var totalWeights = 0;
+                    $.each(pdTempWeights,function() {
+                        totalWeights += parseFloat(this);
+                    });
 
-                // Upadte the json with new values
-                for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
-                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
-                }
+                    for (var ia = 0; ia < pdTempWeights.length; ia++) {
+                        if (totalWeights === 0) {
+                            pdTempWeightsComputed.push(0);
+                        } else {
+                            pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                        }
+                    }
 
-                for (var id = 0; id < pdTempSpinnerIds.length; id++) {
-                    // get the elements that have been modified
-                    var tempNewWeight = [];
-                    var value = $('#'+pdTempSpinnerIds[id]).val();
-                    var element = $('#'+pdTempSpinnerIds[id]).attr('element');
-                    tempNewWeight.push(element);
-                    tempNewWeight.push(parseFloat(value));
-                    traverse(pdData, tempNewWeight);
-                }
+                    // Update the results back into the spinners and to the d3.js chart
+                    for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
+                        $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
+                    }
 
-                nodeEnter.remove("text");
-                updateD3Tree(pdData);
+                    // Upadte the json with new values
+                    for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
+                        updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
+                    }
+
+                    for (var id = 0; id < pdTempSpinnerIds.length; id++) {
+                        // get the elements that have been modified
+                        var tempNewWeight = [];
+                        var value = $('#'+pdTempSpinnerIds[id]).val();
+                        var element = $('#'+pdTempSpinnerIds[id]).attr('element');
+                        tempNewWeight.push(element);
+                        tempNewWeight.push(parseFloat(value));
+                        traverse(pdData, tempNewWeight);
+                    }
+
+                    nodeEnter.remove("text");
+                    updateD3Tree(pdData);
+                }, 100);
             });
         }
 
@@ -537,6 +539,7 @@
                     qt_page.json_updated(pdData);
                 }
             }
+            $('#projectDefWeight-spinner').hide();
         }
     } //end d3 tree
 

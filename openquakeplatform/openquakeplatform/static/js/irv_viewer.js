@@ -564,10 +564,7 @@ function processIndicators(layerAttributes, projectDef) {
     }
     IRI_PCP_Chart(iriPcpData);
 
-
-    ///////////////////////////////////
-    //// Compute the IRI Indicator ////
-    ///////////////////////////////////
+    $('#projectDef-spinner').hide();
 
 } // End processIndicators
 
@@ -664,36 +661,39 @@ function thematicMap(layerAttributes) {
 }
 
 function watchForPdSelection() {
-    var pdSelection = $('#pdSelection').val();
-    for (var i = 0; i < tempProjectDef.length; i++) {
-        if (tempProjectDef[i].title === pdSelection) {
-            selectedRegion = tempProjectDef[i].zone_label_field;
-            sessionProjectDef = tempProjectDef[i];
-            loadPD(sessionProjectDef);
-            // get b-box
-            if (boundingBox != undefined) {
-                map.fitBounds (
-                    L.latLngBounds (
-                        L.latLng (
-                            parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                            parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                        ),
-                        L.latLng (
-                            parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                            parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+    $('#projectDef-spinner').show();
+    setTimeout(function() {
+        var pdSelection = $('#pdSelection').val();
+        for (var i = 0; i < tempProjectDef.length; i++) {
+            if (tempProjectDef[i].title === pdSelection) {
+                selectedRegion = tempProjectDef[i].zone_label_field;
+                sessionProjectDef = tempProjectDef[i];
+                loadPD(sessionProjectDef);
+                // get b-box
+                if (boundingBox != undefined) {
+                    map.fitBounds (
+                        L.latLngBounds (
+                            L.latLng (
+                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
+                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
+                            ),
+                            L.latLng (
+                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
+                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
+                            )
                         )
-                    )
-                );
+                    );
+                }
+                $('#iri-spinner').hide();
+                $('#project-definition-svg').show();
+                processIndicators(layerAttributes, sessionProjectDef);
             }
-            $('#projectDef-spinner').show();
-            $('#iri-spinner').hide();
-            $('#project-definition-svg').show();
-            processIndicators(layerAttributes, sessionProjectDef);
         }
-    }
+    }, 100);
 }
 
 var startApp = function() {
+    $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
     $('#primary_indicator').hide();
