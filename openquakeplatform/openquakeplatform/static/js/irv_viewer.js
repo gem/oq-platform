@@ -712,7 +712,7 @@ var startApp = function() {
     });
 
     $('#map-tools').append(
-        '<button id="loadProjectdialogBtn" onclick="foobarbob()" type="button" class="btn btn-blue">Load Project</button>'
+        '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
 
     $('#loadProjectdialogBtn').click(function() {
