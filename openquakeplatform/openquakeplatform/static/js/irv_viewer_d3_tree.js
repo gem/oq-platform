@@ -437,8 +437,6 @@
 
             // Render weight values in tree
             nodeEnter.append("text")
-                //TODO uncoment this ...
-                //.attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
