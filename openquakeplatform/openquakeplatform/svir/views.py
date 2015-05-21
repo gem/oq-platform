@@ -36,7 +36,10 @@ from openquakeplatform.svir.models import (Theme,
                                            CountryIndicator,)
 
 from geonode.base.models import Link
-from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
+from geonode.layers.views import (_resolve_layer,
+                                  _PERMISSION_MSG_MODIFY,
+                                  _PERMISSION_MSG_VIEW,
+                                  )
 
 
 COPYRIGHT_HEADER = u"""\
@@ -63,6 +66,48 @@ COPYRIGHT_HEADER = u"""\
 
  More information on licensing: http://www.globalquakemodel.org/licensing
 """
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def get_project_definitions(request):
+    """
+    Given a layer name, read the corresponding project definitions from
+    the layer's metadata and return that as a json
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing
+        the following parameter:
+            * 'layer_name': the layer identifier
+
+    :return:
+        A JSON containing the layer's project definitions
+    """
+    layer_name = request.GET.get('layer_name')
+    if not layer_name:
+        return HttpResponseBadRequest(
+            'Please provide the layer_name parameter')
+    try:
+        layer = _resolve_layer(
+            request, layer_name, 'layers.view_layer', _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(
+            'You are not allowed to view this layer',
+            mimetype='text/plain',
+            status=401)
+    supplemental_information = layer.supplemental_information
+    try:
+        project_definitions = json.loads(supplemental_information)
+    except Exception as e:
+        return HttpResponseBadRequest(
+            "The layer's supplemental information do not contain valid"
+            "project definitions: %s", str(e))
+    return HttpResponse(json.dumps(project_definitions,
+                                   sort_keys=False,
+                                   indent=2,
+                                   separators=(',', ': ')),
+                        content_type="application/json")
 
 
 @condition(etag_func=None)
