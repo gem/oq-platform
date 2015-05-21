@@ -828,6 +828,8 @@ var startApp = function() {
     });
 
     function getLayerInfo(layerAttributes) {
+
+        // Get the bounding box
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
@@ -845,30 +847,36 @@ var startApp = function() {
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
-
-                    tempProjectDef = jQuery.parseJSON(projectDefStr);
-
                     // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
                     boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-                    if ($('#pdSelection').length > 0) {
-                        $('#pdSelection').remove();
-                    }
-                    $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
-                    var pdTitles = [];
-                    // break the array into objects, present the user with a choice of PDs
-                    for (var i = 0; i < tempProjectDef.length; i++) {
-                        // Get the PD title
-                        pdTitles.push(tempProjectDef[i].title);
-                    }
-                    // Provide the user with a selection dropdown of the available PDs
-                    for (var ia = 0; ia < pdTitles.length; ia++) {
-                        $('#pdSelection').append(
-                            '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
-                        );
-                    }
-                    $('#projectDef-spinner').hide();
                 });
+            }
+        });
+
+        // Get the project definition
+        $.ajax({
+            type: 'get',
+            url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
+            success: function(data) {
+                tempProjectDef = data;
+
+                if ($('#pdSelection').length > 0) {
+                    $('#pdSelection').remove();
+                }
+                $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+                var pdTitles = [];
+                // break the array into objects, present the user with a choice of PDs
+                for (var i = 0; i < tempProjectDef.length; i++) {
+                    // Get the PD title
+                    pdTitles.push(tempProjectDef[i].title);
+                }
+                // Provide the user with a selection dropdown of the available PDs
+                for (var ia = 0; ia < pdTitles.length; ia++) {
+                    $('#pdSelection').append(
+                        '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                    );
+                }
+                $('#projectDef-spinner').hide();
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
