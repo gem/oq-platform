@@ -20,7 +20,7 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
-var boundingBox;
+//var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -670,6 +670,7 @@ function watchForPdSelection() {
                 sessionProjectDef = tempProjectDef[i];
                 loadPD(sessionProjectDef);
                 // get b-box
+                /*
                 if (boundingBox != undefined) {
                     map.fitBounds (
                         L.latLngBounds (
@@ -684,6 +685,7 @@ function watchForPdSelection() {
                         )
                     );
                 }
+                */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
                 processIndicators(layerAttributes, sessionProjectDef);
@@ -828,7 +830,7 @@ var startApp = function() {
     });
 
     function getLayerInfo(layerAttributes) {
-
+        /*
         // Get the bounding box
         $.ajax({
             type: 'get',
@@ -852,7 +854,7 @@ var startApp = function() {
                 });
             }
         });
-
+        */
         // Get the project definition
         $.ajax({
             type: 'get',
@@ -903,14 +905,6 @@ var startApp = function() {
         width: 620,
         closeOnEscape: true,
         position: {at: 'right bottom'}
-    });
-
-    $('#successDialog').dialog({
-        autoOpen: false,
-        height: 150,
-        width: 400,
-        closeOnEscape: true,
-        modal: true
     });
 
     $(function() {
