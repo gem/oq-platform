@@ -108,7 +108,7 @@
                 $('#inputName').empty();
                 $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
                 $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
-                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a><br>');
+                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">  Info</a><br>');
 
                 $('#checkboxPD').change(function() {
                     var inputVal = $('#giveNamePD').val();
@@ -327,7 +327,6 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            //data = JSON.parse(selectedPDef);
             data = selectedPDef;
 
             root = data;
