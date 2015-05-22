@@ -28,6 +28,7 @@ from django.views.generic.detail import BaseDetailView
 from django.utils.cache import add_never_cache_headers
 from django.utils.text import slugify
 from django.contrib.messages.api import get_messages
+from openquakeplatform.taxtweb.taxonomy import taxonomy_short2full
 
 def index(request, **kwargs):
     try:
@@ -37,12 +38,15 @@ def index(request, **kwargs):
     except ValueError as e:
         tab_id = 1
 
-    try:
-        subtab_id = int(request.GET.get("subtab_id", 1))
-        if subtab_id < 1 or subtab_id > 2:
+    subtab_id = 1
+    if tab_id == 1:
+        try:
+            subtab_id = int(request.GET.get("subtab_id", 1))
+            if subtab_id < 1 or subtab_id > 2:
+                subtab_id = 1
+                print "MOP: qui %d" % subtab_id
+        except ValueError as e:
             subtab_id = 1
-    except ValueError as e:
-        subtab_id = 1
 
     if 'HTTP_HOST' in request.META:
         proto = (request.META['HTTP_X_FORWARDED_PROTO'] if
@@ -72,10 +76,14 @@ def index(request, **kwargs):
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
+    (taxonomy, error_msg) = taxonomy_short2full(kwargs['taxonomy'])
+
     return render_to_response("taxtweb/index.html",
-                              dict(taxonomy=kwargs['taxonomy'],
+                              dict(taxonomy=taxonomy,
+                                   error_msg=("" if error_msg == None else error_msg),
                                    is_popup=is_popup,
                                    tab_id=tab_id,
+                                   subtab_id=subtab_id,
                                    tab_content=tab_content,
                                    sub1tab_content=sub1tab_content,
                                    taxt_prefix=taxt_prefix,

@@ -106,7 +106,7 @@
                 $('#inputName').empty();
                 $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
                 $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
-                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a></br>');
+                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">Info</a><br>');
 
                 $('#checkboxPD').change(function() {
                     var inputVal = $('#giveNamePD').val();
@@ -136,13 +136,14 @@
                         layer_name: selectedLayer,
                         project_definition: projectDefStg
                         },
-                        function(){
-                            // success
+                        function() {
                         }).done(function() {
                             $('#saveStateDialog').dialog('close');
                             $('#saveState-spinner').hide();
                             $('#saveBtn').prop('disabled', true);
+                            $('#submitPD').attr('disabled',true);
                             $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                            $('option[value='+inputVal+']').attr('selected', 'selected');
                             $('#successDialog').dialog('open');
                             $('#successDialog').append(
                                 '<p>The project definition has been added to the layer metedata</p>'
@@ -153,10 +154,8 @@
                                 '<p>This application was not able to write the project definition to the database</p>'
                             );
                             $('#ajaxErrorDialog').dialog('open');
-                        });
-
-                // Add the current PD version as a new object, and pass it back to the API to be
-                // saved into the supplemental information
+                            $('#submitPD').attr('disabled',true);
+                    });
                 });
             });
         }
@@ -165,61 +164,62 @@
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
+                $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
+                setTimeout(function() {
+                    $('#saveBtn').prop('disabled', false);
+                    saveProjData();
 
-                $('#saveBtn').prop('disabled', false);
-                saveProjData();
+                    pdTempWeights = [];
+                    pdTempWeightsComputed = [];
+                    pdTempInverters = [];
 
-                //$('#project-def').append('<button id="saveBtn">save</button>');
-                pdTempWeights = [];
-                pdTempWeightsComputed = [];
-                pdTempInverters = [];
+                    // Get the values of the spinners and inverters
+                    for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                        var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
+                        var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
 
-                // Get the values of the spinners and inverters
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
-                    var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
-
-                    pdTempInverters.push(isInverted);
-                    pdTempWeights.push(spinnerValue);
-                }
-
-                // Adjust the values into percentages
-                pdTempWeights = pdTempWeights.map(Number);
-                var totalWeights = 0;
-                $.each(pdTempWeights,function() {
-                    totalWeights += parseFloat(this);
-                });
-
-                for (var ia = 0; ia < pdTempWeights.length; ia++) {
-                    if (totalWeights === 0) {
-                        pdTempWeightsComputed.push(0);
-                    } else {
-                        pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                        pdTempInverters.push(isInverted);
+                        pdTempWeights.push(spinnerValue);
                     }
-                }
 
-                // Update the results back into the spinners and to the d3.js chart
-                for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
-                    $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
-                }
+                    // Adjust the values into percentages
+                    pdTempWeights = pdTempWeights.map(Number);
+                    var totalWeights = 0;
+                    $.each(pdTempWeights,function() {
+                        totalWeights += parseFloat(this);
+                    });
 
-                // Upadte the json with new values
-                for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
-                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
-                }
+                    for (var ia = 0; ia < pdTempWeights.length; ia++) {
+                        if (totalWeights === 0) {
+                            pdTempWeightsComputed.push(0);
+                        } else {
+                            pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                        }
+                    }
 
-                for (var id = 0; id < pdTempSpinnerIds.length; id++) {
-                    // get the elements that have been modified
-                    var tempNewWeight = [];
-                    var value = $('#'+pdTempSpinnerIds[id]).val();
-                    var element = $('#'+pdTempSpinnerIds[id]).attr('element');
-                    tempNewWeight.push(element);
-                    tempNewWeight.push(parseFloat(value));
-                    traverse(pdData, tempNewWeight);
-                }
+                    // Update the results back into the spinners and to the d3.js chart
+                    for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
+                        $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
+                    }
 
-                nodeEnter.remove("text");
-                updateD3Tree(pdData);
+                    // Upadte the json with new values
+                    for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
+                        updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
+                    }
+
+                    for (var id = 0; id < pdTempSpinnerIds.length; id++) {
+                        // get the elements that have been modified
+                        var tempNewWeight = [];
+                        var value = $('#'+pdTempSpinnerIds[id]).val();
+                        var element = $('#'+pdTempSpinnerIds[id]).attr('element');
+                        tempNewWeight.push(element);
+                        tempNewWeight.push(parseFloat(value));
+                        traverse(pdData, tempNewWeight);
+                    }
+
+                    nodeEnter.remove("text");
+                    updateD3Tree(pdData);
+                }, 100);
             });
         }
 
@@ -236,21 +236,26 @@
                     if (projectDef.children[i].name == tempNewWeight[0]) {
                         projectDefUpdated.children[i].weight = tempNewWeight[1];
                     } else {
-                        for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
-                            if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
-                                projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
-                            } else {
-                                try {
-                                    for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
-                                        if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
-                                            projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
+                        try {
+                            for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
+                                if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                                    projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                                } else {
+                                    try {
+                                        for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
+                                            if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
+                                                projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
+                                            }
                                         }
+                                    } catch (e) {
+                                        // continue
                                     }
-                                } catch (e) {
-                                    // continue
                                 }
                             }
+                        } catch (e) {
+                            // continue
                         }
+                        
                     }
                 }
             }
@@ -432,8 +437,6 @@
 
             // Render weight values in tree
             nodeEnter.append("text")
-                //TODO uncoment this ...
-                //.attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
@@ -534,6 +537,7 @@
                     qt_page.json_updated(pdData);
                 }
             }
+            $('#projectDefWeight-spinner').hide();
         }
     } //end d3 tree
 
