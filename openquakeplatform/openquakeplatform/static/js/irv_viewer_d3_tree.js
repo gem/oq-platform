@@ -91,8 +91,10 @@
 
         $('#submitPD').attr('disabled',true);
 
+        var isSubmitting = false;
         function saveProjData() {
             $('#saveBtn').click(function() {
+                $('#checkboxPD').attr('checked', false);
                 $('#saveState-spinner').hide();
                 var pdLicense = sessionProjectDef.license;
                 var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
@@ -118,7 +120,8 @@
                 });
 
                 $('#submitPD').click(function() {
-                    // Hit the API endpoint and grab the very very latest version of the PD object
+                    $('#submitPD').attr('disabled',true);
+                    $('#checkboxPD').attr('checked', false);
                     $('#saveState-spinner').show();
                     var inputVal = $('#giveNamePD').val();
                     projectDef.title = inputVal;
@@ -131,6 +134,11 @@
                           return value;
                         });
 
+                    // prevent multiple AJAX calls
+                    if (isSubmitting) {
+                        return;
+                    }
+                    isSubmitting = true;
                     // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,
@@ -138,23 +146,18 @@
                         },
                         function() {
                         }).done(function() {
+                            isSubmitting = false;
                             $('#saveStateDialog').dialog('close');
                             $('#saveState-spinner').hide();
                             $('#saveBtn').prop('disabled', true);
-                            $('#submitPD').attr('disabled',true);
                             // append the new element into the dropdown menu
                             $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
                             // access the last or newest element in the dropdown menu
                             var lastValue = $('#pdSelection option:last-child').val();
                             // select the newest element in the dropdown menu
                             $("#pdSelection").val(lastValue);
-
-                            // TODO check with project owner to understand if this should be removed
-                            $('#successDialog').dialog('open');
-                            $('#successDialog').append(
-                                '<p>The project definition has been added to the layer metedata</p>'
-                            );
                         }).fail(function() {
+                            isSubmitting = false;
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
                                 '<p>This application was not able to write the project definition to the database</p>'
