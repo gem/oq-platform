@@ -142,8 +142,14 @@
                             $('#saveState-spinner').hide();
                             $('#saveBtn').prop('disabled', true);
                             $('#submitPD').attr('disabled',true);
+                            // append the new element into the dropdown menu
                             $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
-                            $('option[value='+inputVal+']').attr('selected', 'selected');
+                            // access the last or newest element in the dropdown menu
+                            var lastValue = $('#pdSelection option:last-child').val();
+                            // select the newest element in the dropdown menu
+                            $("#pdSelection").val(lastValue);
+
+                            // TODO check with project owner to understand if this should be removed
                             $('#successDialog').dialog('open');
                             $('#successDialog').append(
                                 '<p>The project definition has been added to the layer metedata</p>'
