@@ -252,6 +252,8 @@
                                 } else {
                                     try {
                                         for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
+                                            console.log('g:');
+                                            console.log(g);
                                             if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
                                                 projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
                                             }
@@ -411,7 +413,7 @@
                     }
                 })
                 .style("fill", function(d) {
-                    if (d.operator != undefined) {
+                    if (d.operator != 'undefined') {
                         // Check for operators that ignore weights and style accordingly
                         var color = 'black';
                         return color;
@@ -434,7 +436,7 @@
                     }
                 })
                 .style("fill", function(d) {
-                    if (d.operator != undefined) {
+                    if (d.operator != 'undefined') {
                         // Check for operators that ignore weights and style accordingly
                         var color = '#660000';
                         return color;
@@ -456,7 +458,7 @@
                         return getRadius(d) + 12;
                     }})
                 .text(function(d) {
-                    if (d.parent === undefined) {
+                    if (d.parent === 'undefined') {
                         return "";
                     }
                     return (d.weight * 100).toFixed(1) + '%';
