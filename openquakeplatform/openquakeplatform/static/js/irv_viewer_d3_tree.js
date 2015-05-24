@@ -18,6 +18,7 @@
     var CIRCLE_SCALE = 30;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
+    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -92,82 +93,80 @@
         $('#submitPD').attr('disabled',true);
 
         var isSubmitting = false;
-        function saveProjData() {
-            $('#saveBtn').click(function() {
+        $('#saveBtn').click(function() {
+            $('#checkboxPD').attr('checked', false);
+            $('#saveState-spinner').hide();
+            var pdLicense = sessionProjectDef.license;
+            var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
+            var pdLicenseURL = sessionProjectDef.license.split('(')[1];
+            pdLicenseURL = pdLicenseURL.replace(')', '');
+
+            $('#saveState-spinner').hide();
+            $('#saveStateDialog').dialog('open');
+            $('#licenseName').empty();
+            $('#licenseURL').empty();
+            $('#inputName').empty();
+            $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
+            $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
+            $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">  Info</a><br>');
+
+            $('#checkboxPD').change(function() {
+                var inputVal = $('#giveNamePD').val();
+                if (this.checked) {
+                    $('#submitPD').attr('disabled', false);
+                } else {
+                    $('#submitPD').attr('disabled', true);
+                }
+            });
+
+            $('#submitPD').click(function() {
+                $('#submitPD').attr('disabled',true);
                 $('#checkboxPD').attr('checked', false);
-                $('#saveState-spinner').hide();
-                var pdLicense = sessionProjectDef.license;
-                var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
-                var pdLicenseURL = sessionProjectDef.license.split('(')[1];
-                pdLicenseURL = pdLicenseURL.replace(')', '');
+                $('#saveState-spinner').show();
+                var inputVal = $('#giveNamePD').val();
+                projectDef.title = inputVal;
 
-                $('#saveState-spinner').hide();
-                $('#saveStateDialog').dialog('open');
-                $('#licenseName').empty();
-                $('#licenseURL').empty();
-                $('#inputName').empty();
-                $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
-                $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
-                $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">  Info</a><br>');
-
-                $('#checkboxPD').change(function() {
-                    var inputVal = $('#giveNamePD').val();
-                    if (this.checked) {
-                        $('#submitPD').attr('disabled', false);
-                    } else {
-                        $('#submitPD').attr('disabled', true);
-                    }
-                });
-
-                $('#submitPD').click(function() {
-                    $('#submitPD').attr('disabled',true);
-                    $('#checkboxPD').attr('checked', false);
-                    $('#saveState-spinner').show();
-                    var inputVal = $('#giveNamePD').val();
-                    projectDef.title = inputVal;
-
-                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
-                        //avoid circularity in JSON by removing the parent key
-                        if (key == "parent") {
-                            return 'undefined';
-                          }
-                          return value;
-                        });
-
-                    // prevent multiple AJAX calls
-                    if (isSubmitting) {
-                        return;
-                    }
-                    isSubmitting = true;
-                    // Hit the API endpoint and grab the very very latest version of the PD object
-                    $.post( "../svir/add_project_definition", {
-                        layer_name: selectedLayer,
-                        project_definition: projectDefStg
-                        },
-                        function() {
-                        }).done(function() {
-                            isSubmitting = false;
-                            $('#saveStateDialog').dialog('close');
-                            $('#saveState-spinner').hide();
-                            $('#saveBtn').prop('disabled', true);
-                            // append the new element into the dropdown menu
-                            $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
-                            // access the last or newest element in the dropdown menu
-                            var lastValue = $('#pdSelection option:last-child').val();
-                            // select the newest element in the dropdown menu
-                            $("#pdSelection").val(lastValue);
-                        }).fail(function() {
-                            isSubmitting = false;
-                            $('#ajaxErrorDialog').empty();
-                            $('#ajaxErrorDialog').append(
-                                '<p>This application was not able to write the project definition to the database</p>'
-                            );
-                            $('#ajaxErrorDialog').dialog('open');
-                            $('#submitPD').attr('disabled',true);
+                var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                    //avoid circularity in JSON by removing the parent key
+                    if (key == "parent") {
+                        return 'undefined';
+                      }
+                      return value;
                     });
+
+                // prevent multiple AJAX calls
+                if (isSubmitting) {
+                    return;
+                }
+                isSubmitting = true;
+                // Hit the API endpoint and grab the very very latest version of the PD object
+                $.post( "../svir/add_project_definition", {
+                    layer_name: selectedLayer,
+                    project_definition: projectDefStg
+                    },
+                    function() {
+                    }).done(function() {
+                        isSubmitting = false;
+                        $('#saveStateDialog').dialog('close');
+                        $('#saveState-spinner').hide();
+                        $('#saveBtn').prop('disabled', true);
+                        // append the new element into the dropdown menu
+                        $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                        // access the last or newest element in the dropdown menu
+                        var lastValue = $('#pdSelection option:last-child').val();
+                        // select the newest element in the dropdown menu
+                        $("#pdSelection").val(lastValue);
+                    }).fail(function() {
+                        isSubmitting = false;
+                        $('#ajaxErrorDialog').empty();
+                        $('#ajaxErrorDialog').append(
+                            '<p>This application was not able to write the project definition to the database</p>'
+                        );
+                        $('#ajaxErrorDialog').dialog('open');
+                        $('#submitPD').attr('disabled',true);
                 });
             });
-        }
+        });
 
         var nodeEnter;
         function updateButton() {
@@ -176,7 +175,6 @@
                 $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
                 setTimeout(function() {
                     $('#saveBtn').prop('disabled', false);
-                    saveProjData();
 
                     pdTempWeights = [];
                     pdTempWeightsComputed = [];
@@ -227,6 +225,8 @@
                     }
 
                     nodeEnter.remove("text");
+
+                    processIndicators(projectLayerAttributes, projectDefUpdated);
                     updateD3Tree(pdData);
                 }, 100);
             });
@@ -235,46 +235,32 @@
         // update the JSON with new weights
         function traverse(projectDef, tempNewWeight) {
 
-            var projectDefUpdated = projectDef;
-            var ct = 0;
+            projectDefUpdated = projectDef;
+
             // Check each level of the project definition and update the weight if a match is found
             if (projectDef.name == tempNewWeight[0]) {
                 projectDefUpdated.weight = tempNewWeight[1];
-            } else {
-                for (var i = 0; i < projectDef.children.length; i++) {
-                    if (projectDef.children[i].name == tempNewWeight[0]) {
-                        projectDefUpdated.children[i].weight = tempNewWeight[1];
-                    } else {
-                        try {
-                            for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
-                                if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
-                                    projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
-                                } else {
-                                    try {
-                                        for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
-                                            console.log('g:');
-                                            console.log(g);
-                                            if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
-                                                projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
-                                            }
-                                        }
-                                    } catch (e) {
-                                        // continue
-                                    }
+            }
+
+            for (var i = 0; i < projectDef.children.length; i++) {
+                if (projectDef.children[i].name == tempNewWeight[0]) {
+                    projectDefUpdated.children[i].weight = tempNewWeight[1];
+                }
+                if (projectDef.children[i].children !== undefined) {
+                    for (var j = 0; j < projectDef.children[i].children.length; j++) {
+                        if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                            projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                        }
+                        if (projectDef.children[i].children[j].children !== undefined) {
+                            for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
+                                if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
+                                    projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
                                 }
                             }
-                        } catch (e) {
-                            // continue
                         }
-                        
                     }
                 }
             }
-            /////////////////////////////
-            /// Recreate all the data ///
-            /////////////////////////////
-
-            processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
         function getRadius(d) {

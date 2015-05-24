@@ -154,7 +154,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
-
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -671,6 +670,7 @@ function watchForPdSelection() {
                 loadPD(sessionProjectDef);
                 // get b-box
                 /*
+                // This feature is removed until the proj def format is refactored
                 if (boundingBox != undefined) {
                     map.fitBounds (
                         L.latLngBounds (
@@ -688,7 +688,6 @@ function watchForPdSelection() {
                 */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
-                processIndicators(layerAttributes, sessionProjectDef);
             }
         }
     }, 100);
@@ -831,6 +830,7 @@ var startApp = function() {
 
     function getLayerInfo(layerAttributes) {
         /*
+        // This feature is removed until the proj def format is refactored
         // Get the bounding box
         $.ajax({
             type: 'get',
