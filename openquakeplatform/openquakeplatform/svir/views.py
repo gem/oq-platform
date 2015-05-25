@@ -23,6 +23,7 @@ import json
 from django.http import (HttpResponse,
                          HttpResponseBadRequest,
                          HttpResponseNotFound,
+                         HttpResponseForbidden,
                          )
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.views.decorators.http import condition
@@ -194,6 +195,19 @@ def add_project_definition(request):
     # Once the list is there, we can append to it the new project_definition.
     if isinstance(project_definitions, dict):
         project_definitions = [project_definitions]
+    try:
+        new_title = project_definition['title']
+    except KeyError:
+        return HttpResponseBadRequest(
+            "The project definition should have a title.")
+    if not new_title:
+        return HttpResponseBadRequest(
+            "The project definition's title must not be blank.")
+    old_titles = [proj_def['title'] for proj_def in project_definitions]
+    if new_title in old_titles:
+        return HttpResponseForbidden(
+            "The title '%s' was already assigned to another project"
+            " definition. Please provide a new unique one." % new_title)
     project_definitions.append(project_definition)
     layer.supplemental_information = json.dumps(
         project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
