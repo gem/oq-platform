@@ -246,8 +246,8 @@ _devtest_innervm_run () {
     ssh $lxc_ip "sudo service postgresql restart"
 
     repo_id="$GEM_GIT_REPO"
-    ssh $lxc_ip "git clone --depth=1 -b $branch_id $repo_id"
-    ssh $lxc_ip "cd ~/oq-platform
+    ssh $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh $lxc_ip "cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
