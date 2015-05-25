@@ -47,7 +47,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     $('#primary_indicator').change(function() {
         var selectedTheme = $('#primary_indicator').val();
         // Find the children of selected theme
-        var selectedThemeChildren;
+        var selectedThemeChildren = [];
         for (var i = 0; i < projectDef.children.length; i++) {
             try {
                 for (var j = 0; j < projectDef.children[i].children.length; j++) {
