@@ -126,6 +126,16 @@
                 $('#checkboxPD').attr('checked', false);
                 $('#saveState-spinner').show();
                 var inputVal = $('#giveNamePD').val();
+                if (inputVal === '' || inputVal === null) {
+                    // TODO avoid duplicate names
+                    $('#ajaxErrorDialog').empty();
+                    $('#ajaxErrorDialog').append(
+                        '<p>A valid name was not provided</p>'
+                    );
+                    $('#ajaxErrorDialog').dialog('open');
+                    $('#saveState-spinner').hide();
+                    return;
+                }
                 projectDef.title = inputVal;
 
                 var projectDefStg = JSON.stringify(projectDef, function(key, value) {
