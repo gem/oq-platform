@@ -168,7 +168,7 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     # reset .json files to original version
     local("for i in $(find -name '*.json.orig'); do mv \"$i\" \"$(echo $i | sed 's/\.orig//g')\" ; done")
     local("pwd")
-    local("GEM_SET_DEBUG='y' openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
+    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
