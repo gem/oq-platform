@@ -107,8 +107,10 @@
             $('#licenseURL').empty();
             $('#inputName').empty();
             $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
-            $('#licenseName').append('<p>This project has been created using the '+ pdLicenseName +' license</p>');
-            $('#licenseURL').append('<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'">  Info</a><br>');
+            $('#licenseName').append(
+                '<p>This project has been created using the '+ pdLicenseName +' license ' +
+                '<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'"> Info</a><br> </p>'
+            );
 
             $('#checkboxPD').change(function() {
                 var inputVal = $('#giveNamePD').val();
