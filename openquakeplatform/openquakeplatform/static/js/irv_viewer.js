@@ -688,6 +688,7 @@ function watchForPdSelection() {
                 */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
+                processIndicators(layerAttributes, sessionProjectDef);
             }
         }
     }, 100);
