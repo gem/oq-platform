@@ -147,4 +147,7 @@ svg {
 select#layer-list {
   width: 95%;
   height: 70%;
+
+.ui-dialog {
+  z-index: 1000;
 }

@@ -22,7 +22,7 @@ IRV - {{block.super}}
 
 {% block map_tools %}
 {{block.super}}
-
+<div id="cover"></div>
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
 
@@ -36,17 +36,16 @@ IRV - {{block.super}}
 
 {% block middle %}
 {{block.super}}
+
 <div id="cover"></div>
 <div ng-app="irvApp">
   <div id="ajaxErrorDialog" title="Error" style="overflow: hidden;"></div>
-  <div id="successDialog" title="Success" style="overflow: hidden;"></div>
   <div id="saveStateDialog" title="Save Project Definition" style="overflow: hidden;">
     <p>Please provide a title for the new project definition:</p><br>
     <div id="inputName"></div>
     <div id="licenseName"></div>
-    <div id="licenseURL"></div>
     <br><br>
-    <input id="checkboxPD" type="checkbox" name="license">I confirm that I have read and agree to the license conditions.<br><br>
+    <input id="checkboxPD" type="checkbox" name="license">&nbsp I confirm that I have read and agree to the license conditions.<br><br>
     <button id="submitPD" type="button" class="btn btn-primary">Save</button>
     <div id="saveState-spinner" >Saving ...<img src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
   </div>
