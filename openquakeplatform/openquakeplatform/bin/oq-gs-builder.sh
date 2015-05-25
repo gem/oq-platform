@@ -2,6 +2,7 @@
 if [ $GEM_SET_DEBUG ]; then
     set -x
 fi
+set -x
 set -e
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 export PS4='+${LINENO}:${FUNCNAME[0]}: '
