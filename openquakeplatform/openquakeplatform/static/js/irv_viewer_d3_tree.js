@@ -18,6 +18,7 @@
     var CIRCLE_SCALE = 30;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
+    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -89,99 +90,189 @@
             });
         }
 
-        var nodeEnter;
-        function updateButton(){
-            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value">Update</button>');
-            $('#update-spinner-value').click(function() {
-                pdTempWeights = [];
-                pdTempWeightsComputed = [];
-                pdTempInverters = [];
+        $('#submitPD').attr('disabled',true);
 
-                // Get the values of the spinners and inverters
-                for (var i = 0; i < pdTempSpinnerIds.length; i++) {
-                    var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
-                    var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
+        var isSubmitting = false;
+        $('#saveBtn').click(function() {
+            $('#checkboxPD').attr('checked', false);
+            $('#saveState-spinner').hide();
+            var pdLicense = sessionProjectDef.license;
+            var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
+            var pdLicenseURL = sessionProjectDef.license.split('(')[1];
+            pdLicenseURL = pdLicenseURL.replace(')', '');
 
-                    pdTempInverters.push(isInverted);
-                    pdTempWeights.push(spinnerValue);
+            $('#saveState-spinner').hide();
+            $('#saveStateDialog').dialog('open');
+            $('#licenseName').empty();
+            $('#licenseURL').empty();
+            $('#inputName').empty();
+            $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
+            $('#licenseName').append(
+                '<p>This project has been created using the '+ pdLicenseName +' license ' +
+                '<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'"> Info</a><br> </p>'
+            );
+
+            $('#checkboxPD').change(function() {
+                var inputVal = $('#giveNamePD').val();
+                if (this.checked) {
+                    $('#submitPD').attr('disabled', false);
+                } else {
+                    $('#submitPD').attr('disabled', true);
                 }
+            });
 
-                // Adjust the values into percentages
-                pdTempWeights = pdTempWeights.map(Number);
-                var totalWeights = 0;
-                $.each(pdTempWeights,function() {
-                    totalWeights += parseFloat(this);
-                });
+            $('#submitPD').click(function() {
+                $('#submitPD').attr('disabled',true);
+                $('#checkboxPD').attr('checked', false);
+                $('#saveState-spinner').show();
+                var inputVal = $('#giveNamePD').val();
+                if (inputVal === '' || inputVal === null) {
+                    // TODO avoid duplicate names
+                    $('#ajaxErrorDialog').empty();
+                    $('#ajaxErrorDialog').append(
+                        '<p>A valid name was not provided</p>'
+                    );
+                    $('#ajaxErrorDialog').dialog('open');
+                    $('#saveState-spinner').hide();
+                } else {
+                    projectDef.title = inputVal;
 
-                for (var ia = 0; ia < pdTempWeights.length; ia++) {
-                    if (totalWeights === 0) {
-                        pdTempWeightsComputed.push(0);
-                    } else {
-                        pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                        //avoid circularity in JSON by removing the parent key
+                        if (key == "parent") {
+                            return 'undefined';
+                          }
+                          return value;
+                        });
+
+                    // prevent multiple AJAX calls
+                    if (isSubmitting) {
+                        return;
                     }
+                    isSubmitting = true;
+                    // Hit the API endpoint and grab the very very latest version of the PD object
+                    $.post( "../svir/add_project_definition", {
+                        layer_name: selectedLayer,
+                        project_definition: projectDefStg
+                        },
+                        function() {
+                        }).done(function() {
+                            isSubmitting = false;
+                            $('#saveStateDialog').dialog('close');
+                            $('#saveState-spinner').hide();
+                            $('#saveBtn').prop('disabled', true);
+                            // append the new element into the dropdown menu
+                            $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                            // access the last or newest element in the dropdown menu
+                            var lastValue = $('#pdSelection option:last-child').val();
+                            // select the newest element in the dropdown menu
+                            $("#pdSelection").val(lastValue);
+                        }).fail(function() {
+                            isSubmitting = false;
+                            $('#ajaxErrorDialog').empty();
+                            $('#ajaxErrorDialog').append(
+                                '<p>This application was not able to write the project definition to the database</p>'
+                            );
+                            $('#ajaxErrorDialog').dialog('open');
+                            $('#submitPD').attr('disabled',true);
+                    });
                 }
+            });
+        });
 
-                // Update the results back into the spinners and to the d3.js chart
-                for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
-                    $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
-                }
+        var nodeEnter;
+        function updateButton() {
+            $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
+            $('#update-spinner-value').click(function() {
+                $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
+                setTimeout(function() {
+                    $('#saveBtn').prop('disabled', false);
 
-                // Upadte the json with new values
-                for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
-                    updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
-                }
+                    pdTempWeights = [];
+                    pdTempWeightsComputed = [];
+                    pdTempInverters = [];
 
-                for (var id = 0; id < pdTempSpinnerIds.length; id++) {
-                    // get the elements that have been modified
-                    var tempNewWeight = [];
-                    var value = $('#'+pdTempSpinnerIds[id]).val();
-                    var element = $('#'+pdTempSpinnerIds[id]).attr('element');
-                    tempNewWeight.push(element);
-                    tempNewWeight.push(parseFloat(value));
-                    traverse(pdData, tempNewWeight);
-                }
+                    // Get the values of the spinners and inverters
+                    for (var i = 0; i < pdTempSpinnerIds.length; i++) {
+                        var isInverted = $('#inverter-' + pdTempSpinnerIds[i]).is(':checked');
+                        var spinnerValue = $('#'+pdTempSpinnerIds[i]).val();
 
-                nodeEnter.remove("text");
-                updateD3Tree(pdData);
+                        pdTempInverters.push(isInverted);
+                        pdTempWeights.push(spinnerValue);
+                    }
+
+                    // Adjust the values into percentages
+                    pdTempWeights = pdTempWeights.map(Number);
+                    var totalWeights = 0;
+                    $.each(pdTempWeights,function() {
+                        totalWeights += parseFloat(this);
+                    });
+
+                    for (var ia = 0; ia < pdTempWeights.length; ia++) {
+                        if (totalWeights === 0) {
+                            pdTempWeightsComputed.push(0);
+                        } else {
+                            pdTempWeightsComputed.push(pdTempWeights[ia] / totalWeights);
+                        }
+                    }
+
+                    // Update the results back into the spinners and to the d3.js chart
+                    for (var ib = 0; ib < pdTempSpinnerIds.length; ib++) {
+                        $('#'+pdTempSpinnerIds[ib]).spinner("value", pdTempWeightsComputed[ib]);
+                    }
+
+                    // Upadte the json with new values
+                    for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
+                        updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
+                    }
+
+                    for (var id = 0; id < pdTempSpinnerIds.length; id++) {
+                        // get the elements that have been modified
+                        var tempNewWeight = [];
+                        var value = $('#'+pdTempSpinnerIds[id]).val();
+                        var element = $('#'+pdTempSpinnerIds[id]).attr('element');
+                        tempNewWeight.push(element);
+                        tempNewWeight.push(parseFloat(value));
+                        traverse(pdData, tempNewWeight);
+                    }
+
+                    nodeEnter.remove("text");
+
+                    processIndicators(projectLayerAttributes, projectDefUpdated);
+                    updateD3Tree(pdData);
+                }, 100);
             });
         }
 
         // update the JSON with new weights
         function traverse(projectDef, tempNewWeight) {
 
-            var projectDefUpdated = projectDef;
-            var ct = 0;
+            projectDefUpdated = projectDef;
+
             // Check each level of the project definition and update the weight if a match is found
             if (projectDef.name == tempNewWeight[0]) {
                 projectDefUpdated.weight = tempNewWeight[1];
-            } else {
-                for (var i = 0; i < projectDef.children.length; i++) {
-                    if (projectDef.children[i].name == tempNewWeight[0]) {
-                        projectDefUpdated.children[i].weight = tempNewWeight[1];
-                    } else {
-                        for (var j = 0; j < projectDef.children[i].children.length; j++, ct++) {
-                            if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
-                                projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
-                            } else {
-                                try {
-                                    for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
-                                        if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
-                                            projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
-                                        }
-                                    }
-                                } catch (e) {
-                                    // continue
+            }
+
+            for (var i = 0; i < projectDef.children.length; i++) {
+                if (projectDef.children[i].name == tempNewWeight[0]) {
+                    projectDefUpdated.children[i].weight = tempNewWeight[1];
+                }
+                if (projectDef.children[i].children !== undefined) {
+                    for (var j = 0; j < projectDef.children[i].children.length; j++) {
+                        if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                            projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
+                        }
+                        if (projectDef.children[i].children[j].children !== undefined) {
+                            for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
+                                if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
+                                    projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
                                 }
                             }
                         }
                     }
                 }
             }
-            /////////////////////////////
-            /// Recreate all the data ///
-            /////////////////////////////
-
-            processIndicators(projectLayerAttributes, projectDefUpdated);
         }
 
         function getRadius(d) {
@@ -226,15 +317,15 @@
         }
 
         // empty any previously drawen chart
-        $('#project-def').empty();
-        var svg = d3.select("#project-def").append("svg")
+        $('#projectDef-tree').empty();
+        var svg = d3.select("#projectDef-tree").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .attr("id", "project-definition-svg")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            data = JSON.parse(selectedPDef);
+            data = selectedPDef;
 
             root = data;
             root.x0 = height / 2;
@@ -319,7 +410,7 @@
                     }
                 })
                 .style("fill", function(d) {
-                    if (d.operator != undefined) {
+                    if (d.operator != 'undefined') {
                         // Check for operators that ignore weights and style accordingly
                         var color = 'black';
                         return color;
@@ -342,7 +433,7 @@
                     }
                 })
                 .style("fill", function(d) {
-                    if (d.operator != undefined) {
+                    if (d.operator != 'undefined') {
                         // Check for operators that ignore weights and style accordingly
                         var color = '#660000';
                         return color;
@@ -354,7 +445,6 @@
 
             // Render weight values in tree
             nodeEnter.append("text")
-                .attr("id", (function(d) {return 'node-weight-' + d.name.replace(' ', '-'); }))
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) { return "-1em"; })
@@ -365,7 +455,7 @@
                         return getRadius(d) + 12;
                     }})
                 .text(function(d) {
-                    if (d.parent === undefined) {
+                    if (d.parent === 'undefined') {
                         return "";
                     }
                     return (d.weight * 100).toFixed(1) + '%';
@@ -455,6 +545,7 @@
                     qt_page.json_updated(pdData);
                 }
             }
+            $('#projectDefWeight-spinner').hide();
         }
     } //end d3 tree
 

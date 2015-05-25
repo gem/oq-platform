@@ -209,9 +209,11 @@ def add_project_definition(request):
             "The title '%s' was already assigned to another project"
             " definition. Please provide a new unique one." % new_title)
     project_definitions.append(project_definition)
+
     layer.supplemental_information = json.dumps(
         project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
     layer.save()
+
     return HttpResponse("The new project definition has been added")
 
 

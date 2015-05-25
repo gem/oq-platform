@@ -22,7 +22,7 @@ IRV - {{block.super}}
 
 {% block map_tools %}
 {{block.super}}
-
+<div id="cover"></div>
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
 
@@ -36,8 +36,17 @@ IRV - {{block.super}}
 
 {% block middle %}
 {{block.super}}
-<div id="regionSelectionDialog" title="Required" style="overflow: hidden;"></div>
 <div id="ajaxErrorDialog" title="Error" style="overflow: hidden;"></div>
+<div id="saveStateDialog" title="Save Project Definition" style="overflow: hidden;">
+  <p>Please provide a title for the new project definition:</p><br>
+  <div id="inputName"></div>
+  <div id="licenseName"></div>
+  <br><br>
+  <input id="checkboxPD" type="checkbox" name="license">&nbsp I confirm that I have read and agree to the license conditions.<br><br>
+  <button id="submitPD" type="button" class="btn btn-primary">Save</button>
+  <div id="saveState-spinner" >Saving ...<img src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+
+</div>
 
 <!-- Theme tags-->
 <div id="themeTabs">
@@ -50,8 +59,10 @@ IRV - {{block.super}}
   </ul>
 
   <div id="project-def">
+    <button id="saveBtn" class="btn btn-blue">Save Project Definition</button>
+    <div id="projectDef-tree"></div>
     <div id="projectDefDialog" title="Project Definition">
-      <div id="projectDef-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+      <div id="projectDef-spinner" ></div>
     </div>
   </div>
   <div id="iri-chart">
@@ -59,7 +70,6 @@ IRV - {{block.super}}
   </div>
   <div id="cat-chart"></div>
   <div id="primary-tab">
-    <div id="primary-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
     <div>
       <p>
         <select id="primary_indicator" name="primary_indicator">
