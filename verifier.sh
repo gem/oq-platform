@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 #
 # packager.sh  Copyright (c) 2015, GEM Foundation.
 #
