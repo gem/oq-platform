@@ -121,7 +121,7 @@
                 }
             });
 
-            $('#submitPD').click(function() {
+            $( "#submitPD" ).one( "click", function() {
                 $('#submitPD').attr('disabled',true);
                 $('#checkboxPD').attr('checked', false);
                 $('#saveState-spinner').show();
