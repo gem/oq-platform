@@ -24,6 +24,7 @@ from django.http import (HttpResponse,
                          HttpResponseBadRequest,
                          HttpResponseNotFound,
                          HttpResponseForbidden,
+                         HttpResponseServerError,
                          )
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.views.decorators.http import condition
@@ -97,6 +98,9 @@ def get_project_definitions(request):
             'You are not allowed to view this layer',
             mimetype='text/plain',
             status=401)
+    except Exception as e:
+        return HttpResponseServerError(
+            "It was not possible to retrieve the layer: %s", str(e))
     supplemental_information = layer.supplemental_information
     try:
         project_definitions = json.loads(supplemental_information)
@@ -182,6 +186,9 @@ def add_project_definition(request):
             'You are not allowed to modify this layer',
             mimetype='text/plain',
             status=401)
+    except Exception as e:
+        return HttpResponseServerError(
+            "It was not possible to retrieve the layer: %s", str(e))
     supplemental_information = layer.supplemental_information
     try:
         project_definitions = json.loads(supplemental_information)
