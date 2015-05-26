@@ -733,6 +733,12 @@ var startApp = function() {
         '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
 
+     $('#map-tools').append(
+        '<select id="thematic-map-selection">'+
+            '<option>Select Indicator</option>'+
+        '</select>'
+    );
+
     $('#loadProjectdialogBtn').click(function() {
         $('#loadProjectDialog').dialog('open');
     });
