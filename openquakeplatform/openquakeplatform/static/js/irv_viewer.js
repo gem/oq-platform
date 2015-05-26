@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2014, GEM Foundation.
+   Copyright (c) 2015, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -14,30 +14,26 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+
+$(document).ready(function() {
+    $('#cover').remove();
+});
+
 var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
+var tempProjectDef;
+//var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
-var sessionProjectDefStr;
 var projectLayerAttributes;
 var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
-
-$(function() {
-    $('#saveStateDialog').dialog({
-        autoOpen: false,
-        height: 520,
-        width: 620,
-        closeOnEscape: true,
-        position: {at: 'right bottom'}
-    });
-});
 
 function createIndex(la, index) {
     var indicator = [];
@@ -163,7 +159,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
-
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -274,7 +269,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
                         if (p1 == tempIndicatorChildrenKeys[r1]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r1].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -369,24 +364,33 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the risk index ////
     ////////////////////////////////
 
-    var riskIndicator = createIndex(la, riskIndicators);
+    // Create the risk indicator only if it has children
+    var RI = {};
+    if (riskIndicators !== undefined) {
+        var riskIndicator = createIndex(la, riskIndicators);
 
-    // capture all risk indicators for selection menu
-    for (var key in riskIndicator[0]) {
-        if (key != 'region') {
-            allRiskIndicators.push(key);
+        // capture all risk indicators for selection menu
+        for (var key in riskIndicator[0]) {
+            if (key != 'region') {
+                allRiskIndicators.push(key);
+            }
+        }
+        ////////////////////////////////////
+        //// Compute the Risk Indicator ////
+        ////////////////////////////////////
+
+        var nameLookUp = 'RI';
+        var riJSONthemes = riskIndicators;
+        RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
+        scale(RI);
+    } else {
+        // If RI does not have any children the simply compute the RI
+        // setup the indicator with all the regions using the layer attributes
+        for (var ia = 0; ia < la.length; ia++) {
+            var region = la[ia].properties[selectedRegion];
+            RI[region] = 1;
         }
     }
-
-    ////////////////////////////////////
-    //// Compute the Risk Indicator ////
-    ////////////////////////////////////
-
-    var RI = {};
-    var nameLookUp = 'RI';
-    var riJSONthemes = riskIndicators;
-    RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
-    scale(RI);
 
     ///////////////////////////////
     //// Compute the IRI index ////
@@ -463,16 +467,19 @@ function processIndicators(layerAttributes, projectDef) {
                 la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
             }
         }
-        for (var key in RI) {
-            if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['IR'] = (RI[key]).toFixed(5);
-            }
-        }
 
-        for (var key in riskIndicator[ix]) {
-            if (riskIndicator[ix] != 'region') {
-                var tempThemeName = riskIndicator[ix][key];
-                la[ix].newProperties[key] = tempThemeName;
+        if (riskIndicators !== undefined) {
+            for (var key in RI) {
+                if (key == la[ix].properties[selectedRegion]) {
+                    la[ix].newProperties['RI'] = (RI[key]).toFixed(5);
+                }
+            }
+
+            for (var key in riskIndicator[ix]) {
+                if (riskIndicator[ix] != 'region') {
+                    var tempThemeName = riskIndicator[ix][key];
+                    la[ix].newProperties[key] = tempThemeName;
+                }
             }
         }
 
@@ -522,10 +529,12 @@ function processIndicators(layerAttributes, projectDef) {
         $('#thematic-map-selection').append('<option>'+allSVIThemes[id]+'</option>');
     }
 
-    // Add IR themes to selection menu
-    $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
-    for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-        $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
+    if (riskIndicators !== undefined) {
+        // Add IR themes to selection menu
+        $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
+        for (var ie = 0; ie < allRiskIndicators.length; ie++) {
+            $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
+        }
     }
 
     // Add all primary indicators to selection menu
@@ -546,20 +555,20 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-
-    IRI.plotElement = "iri"; // Lable within the object
-    RI.plotElement = "ri"; // Lable within the object
-    SVI.plotElement = "svi"; // Lable within the object
+    IRI.plotElement = "IRI"; // Lable within the object
+    if (riskIndicators !== undefined) {
+        RI.plotElement = "RI"; // Lable within the object
+    }
+    SVI.plotElement = "SVI"; // Lable within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
-    iriPcpData.push(RI);
+    if (riskIndicators !== undefined) {
+        iriPcpData.push(RI);
+    }
     IRI_PCP_Chart(iriPcpData);
 
-
-    ///////////////////////////////////
-    //// Compute the IRI Indicator ////
-    ///////////////////////////////////
+    $('#projectDef-spinner').hide();
 
 } // End processIndicators
 
@@ -655,8 +664,9 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
-function watchForPdSelection(boundingBox, tempProjectDef) {
-    $('#pdSelection').change(function() {
+function watchForPdSelection() {
+    $('#projectDef-spinner').show();
+    setTimeout(function() {
         var pdSelection = $('#pdSelection').val();
         for (var i = 0; i < tempProjectDef.length; i++) {
             if (tempProjectDef[i].title === pdSelection) {
@@ -664,6 +674,8 @@ function watchForPdSelection(boundingBox, tempProjectDef) {
                 sessionProjectDef = tempProjectDef[i];
                 loadPD(sessionProjectDef);
                 // get b-box
+                /*
+                // This feature is removed until the proj def format is refactored
                 if (boundingBox != undefined) {
                     map.fitBounds (
                         L.latLngBounds (
@@ -678,19 +690,22 @@ function watchForPdSelection(boundingBox, tempProjectDef) {
                         )
                     );
                 }
+                */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
                 processIndicators(layerAttributes, sessionProjectDef);
             }
         }
-    });
+    }, 100);
 }
 
 var startApp = function() {
+    $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
-    $('#primary-spinner').hide();
     $('#primary_indicator').hide();
+    $('#saveBtn').prop('disabled', true);
+    $('#saveBtn').addClass('btn-disabled');
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -715,20 +730,27 @@ var startApp = function() {
     });
 
     $('#map-tools').append(
-        '<select id="svir-project-list">'+
-            '<option selected disabled>Select Project</option>'+
-        '</select>'
+        '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
 
-    $('#map-tools').append(
+     $('#map-tools').append(
         '<select id="thematic-map-selection">'+
             '<option>Select Indicator</option>'+
         '</select>'
     );
 
+    $('#loadProjectdialogBtn').click(function() {
+        $('#loadProjectDialog').dialog('open');
+    });
+
+    // TODO check these are all needed
+    $('#region-selection-list').hide();
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
+
+    $('#thematic-map-selection').hide();
+
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
@@ -751,11 +773,19 @@ var startApp = function() {
                     SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
                 }
             }
-            // Append the layer to the selection dropdown menu
+
+            // Create AngularJS dropdown menu
+            var mapScope = angular.element($("#layer-list")).scope();
+            var mapLayerList = [];
             for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-                $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
+                var tempObj = {};
+                tempObj.name = SVIRLayerNames[ij];
+                mapLayerList.push(tempObj);
             }
-            $('#svir-project-list').show();
+
+            mapScope.$apply(function(){
+                mapScope.maps = mapLayerList;
+            });
         },
         error: function() {
             $('#ajaxErrorDialog').empty();
@@ -766,14 +796,31 @@ var startApp = function() {
         }
     });
 
-    // Get the layer metadata (project def)
-    $('#svir-project-list').change(function() {
+    $('#loadProjectBtn').prop('disabled', true);
+
+    // Enable the load project button once a project has been selected
+    $('#layer-list').change(function() {
+        $('#loadProjectBtn').prop('disabled', false);
+    });
+
+    $('#loadProjectBtn').click(function() {
+        $("#themeTabs").tabs("option", "active", 0);
+        $('#thematic-map-selection').show();
+        $('#projectDef-spinner').text('Loading ...');
+        $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
         $('#projectDef-spinner').show();
         $('#iri-spinner').show();
-        $('#primary-spinner').show();
+        $('#regionSelectionDialog').empty();
+        $('#projectDef-tree').empty();
+        $('#iri-chart').empty();
+        $('#cat-chart').empty();
+        $('#primary-chart').empty();
+
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
-        selectedLayer = document.getElementById('svir-project-list').value;
+        var scope = angular.element($("#layer-list")).scope();
+        selectedLayer = scope.selected_map.name;
+
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
@@ -783,6 +830,7 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(data) {
+                $('#loadProjectDialog').dialog('close');
 
                 // Make a global variable used by the d3-tree chart
                 // when a weight is modified
@@ -795,6 +843,7 @@ var startApp = function() {
                 for (var key in layerAttributes.features[0].properties) {
                     layerFields.push(key);
                 }
+
                 getLayerInfo(layerAttributes);
             },
             error: function() {
@@ -808,75 +857,56 @@ var startApp = function() {
     });
 
     function getLayerInfo(layerAttributes) {
+        /*
+        // This feature is removed until the proj def format is refactored
+        // Get the bounding box
         $.ajax({
             type: 'get',
             url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
             success: function(layerMetadataURL) {
 
                 // ***** TEMP remove this ****
-                // file 4
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=658a1e8a-b80a-11e4-8cb5-0800278c33b4";
-                // file 5
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
-                // file 6
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=3dc19270-e41a-11e4-9826-0800278c33b4";
                 // Portugal-test
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4 ";
+                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
+                //SA test2
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
+
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
                     // Convert XML to JSON
                     var xmlText = new XMLSerializer().serializeToString(layerMetadata);
                     var x2js = new X2JS();
                     var jsonElement = x2js.xml_str2json(xmlText);
-                    // Pass a string representing the project def into the d3 tree chart
-                    projectDefStr = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.supplementalInformation.CharacterString.__text;
-
-                    var tempProjectDef = jQuery.parseJSON(projectDefStr);
-
                     // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                    var boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-
-                    if (tempProjectDef.constructor === Array) {
-                        $('#project-def').prepend('<select id="pdSelection"><option value"" disabled selected>Select a Project Definition</option></select>');
-                        var pdTitles = [];
-                        // break the array into objects, present the user with a choice of PDs
-                        for (var i = 0; i < tempProjectDef.length; i++) {
-                            // Get the PD title
-                            pdTitles.push(tempProjectDef[i].title);
-                        }
-                        // Provide the user with a selection dropdown of the available PDs
-                        for (var ia = 0; ia < pdTitles.length; ia++) {
-                            $('#pdSelection').append(
-                                '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
-                            );
-                            watchForPdSelection(boundingBox, tempProjectDef);
-                        }
-                    } else {
-                        // get b-box
-                        sessionProjectDef = tempProjectDef;
-                        selectedRegion = tempProjectDef.zone_label_field;
-                        loadPD(sessionProjectDef);
-                        if (boundingBox != undefined) {
-                            map.fitBounds (
-                                L.latLngBounds (
-                                    L.latLng (
-                                        parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                        parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                                    ),
-                                    L.latLng (
-                                        parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                        parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                                    )
-                                )
-                            );
-                        }
-                        $('#iri-spinner').hide();
-                        $('#primary-spinner').hide();
-                        $('#project-definition-svg').show();
-                        processIndicators(layerAttributes, sessionProjectDef);
-                    }
-                    $('#projectDef-spinner').hide();
+                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
                 });
+            }
+        });
+        */
+        // Get the project definition
+        $.ajax({
+            type: 'get',
+            url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
+            success: function(data) {
+                tempProjectDef = data;
+
+                if ($('#pdSelection').length > 0) {
+                    $('#pdSelection').remove();
+                }
+                $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+                var pdTitles = [];
+                // break the array into objects, present the user with a choice of PDs
+                for (var i = 0; i < tempProjectDef.length; i++) {
+                    // Get the PD title
+                    pdTitles.push(tempProjectDef[i].title);
+                }
+                // Provide the user with a selection dropdown of the available PDs
+                for (var ia = 0; ia < pdTitles.length; ia++) {
+                    $('#pdSelection').append(
+                        '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                    );
+                }
+                $('#projectDef-spinner').hide();
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
@@ -895,6 +925,21 @@ var startApp = function() {
         width: 400,
         closeOnEscape: true,
         modal: true
+    });
+
+    $('#saveStateDialog').dialog({
+        autoOpen: false,
+        height: 520,
+        width: 620,
+        closeOnEscape: true,
+        position: {at: 'right bottom'}
+    });
+
+     $('#loadProjectDialog').dialog({
+        autoOpen: false,
+        height: 520,
+        width: 620,
+        closeOnEscape: true
     });
 
     $(function() {
