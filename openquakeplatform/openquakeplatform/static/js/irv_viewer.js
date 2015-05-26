@@ -929,6 +929,13 @@ var startApp = function() {
         position: {at: 'right bottom'}
     });
 
+     $('#loadProjectDialog').dialog({
+        autoOpen: false,
+        height: 520,
+        width: 620,
+        closeOnEscape: true
+    });
+
     $(function() {
         $( '#themeTabs' ).tabs({
             collapsible: false,
