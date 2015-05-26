@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2014, GEM Foundation.
+   Copyright (c) 2015, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -14,13 +14,18 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+
+$(document).ready(function() {
+    $('#cover').remove();
+});
+
 var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
-var boundingBox;
+//var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -159,7 +164,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
-
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -675,6 +679,8 @@ function watchForPdSelection() {
                 sessionProjectDef = tempProjectDef[i];
                 loadPD(sessionProjectDef);
                 // get b-box
+                /*
+                // This feature is removed until the proj def format is refactored
                 if (boundingBox != undefined) {
                     map.fitBounds (
                         L.latLngBounds (
@@ -689,6 +695,7 @@ function watchForPdSelection() {
                         )
                     );
                 }
+                */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
                 processIndicators(layerAttributes, sessionProjectDef);
@@ -728,20 +735,25 @@ var startApp = function() {
     });
 
     $('#map-tools').append(
-        '<select id="svir-project-list">'+
-            '<option selected disabled>Select Project</option>'+
-        '</select>'
+        '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
 
-    $('#map-tools').append(
+     $('#map-tools').append(
         '<select id="thematic-map-selection">'+
             '<option>Select Indicator</option>'+
         '</select>'
     );
 
+    $('#loadProjectdialogBtn').click(function() {
+        $('#loadProjectDialog').dialog('open');
+    });
+
+    // TODO check these are all needed
+    $('#region-selection-list').hide();
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
+
     $('#thematic-map-selection').hide();
 
     var SVIRLayerNames = [];
@@ -766,11 +778,19 @@ var startApp = function() {
                     SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
                 }
             }
-            // Append the layer to the selection dropdown menu
+
+            // Create AngularJS dropdown menu
+            var mapScope = angular.element($("#layer-list")).scope();
+            var mapLayerList = [];
             for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-                $('#svir-project-list').append('<option>'+ SVIRLayerNames[ij] +'</option>');
+                var tempObj = {};
+                tempObj.name = SVIRLayerNames[ij];
+                mapLayerList.push(tempObj);
             }
-            $('#svir-project-list').show();
+
+            mapScope.$apply(function(){
+                mapScope.maps = mapLayerList;
+            });
         },
         error: function() {
             $('#ajaxErrorDialog').empty();
@@ -781,8 +801,14 @@ var startApp = function() {
         }
     });
 
-    // Get the layer metadata (project def)
-    $('#svir-project-list').change(function() {
+    $('#loadProjectBtn').prop('disabled', true);
+
+    // Enable the load project button once a project has been selected
+    $('#layer-list').change(function() {
+        $('#loadProjectBtn').prop('disabled', false);
+    });
+
+    $('#loadProjectBtn').click(function() {
         $("#themeTabs").tabs("option", "active", 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
@@ -797,7 +823,9 @@ var startApp = function() {
 
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
-        selectedLayer = document.getElementById('svir-project-list').value;
+        var scope = angular.element($("#layer-list")).scope();
+        selectedLayer = scope.selected_map.name;
+
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
@@ -807,6 +835,7 @@ var startApp = function() {
             type: 'get',
             url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
             success: function(data) {
+                $('#loadProjectDialog').dialog('close');
 
                 // Make a global variable used by the d3-tree chart
                 // when a weight is modified
@@ -833,7 +862,8 @@ var startApp = function() {
     });
 
     function getLayerInfo(layerAttributes) {
-
+        /*
+        // This feature is removed until the proj def format is refactored
         // Get the bounding box
         $.ajax({
             type: 'get',
@@ -844,7 +874,7 @@ var startApp = function() {
                 // Portugal-test
                 //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
                 //SA test2
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
+                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
 
 
                 $.get( layerMetadataURL, function( layerMetadata ) {
@@ -857,7 +887,7 @@ var startApp = function() {
                 });
             }
         });
-
+        */
         // Get the project definition
         $.ajax({
             type: 'get',
@@ -910,12 +940,11 @@ var startApp = function() {
         position: {at: 'right bottom'}
     });
 
-    $('#successDialog').dialog({
+     $('#loadProjectDialog').dialog({
         autoOpen: false,
-        height: 150,
-        width: 400,
-        closeOnEscape: true,
-        modal: true
+        height: 520,
+        width: 620,
+        closeOnEscape: true
     });
 
     $(function() {

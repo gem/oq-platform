@@ -160,26 +160,6 @@
         }
     },
     {
-        "pk": 13,
-        "model": "maps.maplayer",
-        "fields": {
-            "opacity": 1.0,
-            "map": 24,
-            "group": "background",
-            "name": "bluemarble",
-            "format": null,
-            "visibility": false,
-            "source_params": "{\"id\": \"1\", \"ptype\": \"gxp_olsource\"}",
-            "layer_params": "{\"selected\": false, \"title\": \"bluemarble\", \"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-            "ows_url": null,
-            "stack_order": 5,
-            "styles": null,
-            "fixed": true,
-            "local": false,
-            "transparent": false
-        }
-    },
-    {
         "pk": 14,
         "model": "maps.maplayer",
         "fields": {
@@ -300,26 +280,6 @@
         }
     },
     {
-        "pk": 28,
-        "model": "maps.maplayer",
-        "fields": {
-            "opacity": 1.0,
-            "map": 23,
-            "group": "background",
-            "name": "bluemarble",
-            "format": null,
-            "visibility": false,
-            "source_params": "{\"ptype\": \"gxp_olsource\", \"id\": \"0\"}",
-            "layer_params": "{\"selected\": false, \"title\": \"bluemarble\", \"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-            "ows_url": null,
-            "stack_order": 5,
-            "styles": null,
-            "fixed": true,
-            "local": false,
-            "transparent": false
-        }
-    },
-    {
         "pk": 29,
         "model": "maps.maplayer",
         "fields": {
@@ -433,26 +393,6 @@
             "layer_params": "{\"title\": \"Bing Aerial With Labels\", \"selected\": false}",
             "ows_url": null,
             "stack_order": 4,
-            "styles": null,
-            "fixed": true,
-            "local": false,
-            "transparent": false
-        }
-    },
-    {
-        "pk": 35,
-        "model": "maps.maplayer",
-        "fields": {
-            "opacity": 1.0,
-            "map": 25,
-            "group": "background",
-            "name": "bluemarble",
-            "format": null,
-            "visibility": false,
-            "source_params": "{\"ptype\": \"gxp_olsource\", \"id\": \"0\"}",
-            "layer_params": "{\"selected\": true, \"title\": \"bluemarble\", \"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-            "ows_url": null,
-            "stack_order": 5,
             "styles": null,
             "fixed": true,
             "local": false,
@@ -593,26 +533,6 @@
             "layer_params": "{\"title\": \"Bing Aerial With Labels\", \"selected\": false}",
             "ows_url": null,
             "stack_order": 4,
-            "styles": null,
-            "fixed": true,
-            "local": false,
-            "transparent": false
-        }
-    },
-    {
-        "pk": 43,
-        "model": "maps.maplayer",
-        "fields": {
-            "opacity": 1.0,
-            "map": 26,
-            "group": "background",
-            "name": "bluemarble",
-            "format": null,
-            "visibility": false,
-            "source_params": "{\"id\": \"1\", \"ptype\": \"gxp_olsource\"}",
-            "layer_params": "{\"selected\": false, \"title\": \"bluemarble\", \"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-            "ows_url": null,
-            "stack_order": 5,
             "styles": null,
             "fixed": true,
             "local": false,
