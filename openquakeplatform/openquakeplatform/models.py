@@ -55,6 +55,12 @@ class UnaccentCharField(models.CharField):
     def get_db_prep_lookup(self, lookup_type, value,
                            connection, prepared=False):
         if lookup_type == 'unaccent':
+            # EXAMPLE:
+            # Filtering GeneralInformation by author,
+            # filter(authors__unaccent=author), with author='test'
+            # would produce a query like:
+            # SELECT [...] WHERE
+            # UPPER("vulnerability_generalinformation"."authors"::text) =~@ %test%
             return ["%%%s%%" % connection.ops.prep_for_like_query(value)]
         else:
             return super(UnaccentCharField, self).get_db_prep_lookup(
