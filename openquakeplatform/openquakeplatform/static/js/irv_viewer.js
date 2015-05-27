@@ -25,6 +25,7 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
+var SVIRLayerNames = [];
 //var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
@@ -704,6 +705,55 @@ function watchForPdSelection() {
     }, 100);
 }
 
+GeoServerAjaxCall.prototype.fetch = function (url) {
+    // Get layers from GeoServer and populate the layer selection menu
+    $.ajax({
+        url: url,
+        contentType: 'application/json',
+        success: function(xml) {
+            // TODO get from server JSON directly
+            console.log('xml:');
+            console.log(xml);
+            //convert XML to JSON
+            var xmlText = new XMLSerializer().serializeToString(xml);
+            var x2js = new X2JS();
+
+            var jsonElement = x2js.xml_str2json(xmlText);
+            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
+            console.log('featureType:');
+            console.log(featureType);
+
+            // Find the SVIR keywords
+            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            for (var i = 0; i < featureType.length; i++) {
+                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                }
+            }
+
+            // Create AngularJS dropdown menu
+            var mapScope = angular.element($("#layer-list")).scope();
+            var mapLayerList = [];
+            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+                var tempObj = {};
+                tempObj.name = SVIRLayerNames[ij];
+                mapLayerList.push(tempObj);
+            }
+
+            mapScope.$apply(function(){
+                mapScope.maps = mapLayerList;
+            });
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get a list of layers from GeoServer</p>'
+                );
+            $('#ajaxErrorDialog').dialog('open');
+        }
+    });
+}
+
 var startApp = function() {
     $('#cover').remove();
     $('#projectDef-spinner').hide();
@@ -759,47 +809,7 @@ var startApp = function() {
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
 
-    // Get layers from GeoServer and populate the layer selection menu
-    $.ajax({
-        url: url,
-        contentType: 'application/json',
-        success: function(xml) {
-            //convert XML to JSON
-            var xmlText = new XMLSerializer().serializeToString(xml);
-            var x2js = new X2JS();
-
-            var jsonElement = x2js.xml_str2json(xmlText);
-            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
-
-            // Find the SVIR keywords
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
-            for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
-                }
-            }
-
-            // Create AngularJS dropdown menu
-            var mapScope = angular.element($("#layer-list")).scope();
-            var mapLayerList = [];
-            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-                var tempObj = {};
-                tempObj.name = SVIRLayerNames[ij];
-                mapLayerList.push(tempObj);
-            }
-
-            mapScope.$apply(function(){
-                mapScope.maps = mapLayerList;
-            });
-        },
-        error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get a list of layers from GeoServer</p>'
-                );
-            $('#ajaxErrorDialog').dialog('open');
-        }
-    });
+    GeoServerAjaxCall.call(url);
 
     $('#loadProjectBtn').prop('disabled', true);
 
