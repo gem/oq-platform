@@ -53,10 +53,9 @@ IRV - {{block.super}}
   <div
     id="loadProjectDialog"
     ng-controller="HazardMapDropdown"
-    title="Load Project Definition"
+    title="Load Project"
     style="overflow: hidden;">
 
-      <br>Load Integrated Risk Project:<br>
       Filter the project list:<br><input type="text" ng-model="search">
       <br><br>
       <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
