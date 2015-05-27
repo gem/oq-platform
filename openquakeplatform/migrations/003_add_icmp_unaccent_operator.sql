@@ -1,6 +1,6 @@
-DROP EXTENSION IF EXISTS unaccent;
 DROP OPERATOR IF EXISTS =~@ (character varying, character varying);
 DROP FUNCTION IF EXISTS icompare_unaccent(character varying, character varying);
+DROP EXTENSION IF EXISTS unaccent;
 
 CREATE EXTENSION unaccent;
 CREATE FUNCTION icompare_unaccent(character varying, character varying) RETURNS boolean
