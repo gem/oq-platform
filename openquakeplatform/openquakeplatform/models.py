@@ -46,8 +46,11 @@ DatabaseOperations.lookup_cast = my_lookup_cast
 
 class UnaccentCharField(models.CharField):
     """
-    Custom CharField that can be filtered using a custom lookup criterion,
-    that is both case insensitive and 'accent insensitive'
+    Custom CharField that can be filtered using the 'unaccent' custom
+    lookup criterion. It leverages the custom '=~@' postgres operator,
+    that uses as procedure the custom 'icompare_unaccent' function.
+    This fieldtype can therefore be filtered both case insensitive
+    and accent insensitive.
     """
     def get_db_prep_lookup(self, lookup_type, value,
                            connection, prepared=False):
