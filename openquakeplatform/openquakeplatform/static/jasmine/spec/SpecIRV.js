@@ -1,51 +1,45 @@
 
 
+/*
 beforeEach(function() {
     jasmine.Ajax.install();
 });
+*/
 
-
+/*
 describe("Hello world", function() {
   it("says hello", function() {
     expect(helloWorld()).toEqual("Hello world!");
   });
 });
+*/
 
-describe("1st Async call", function () {
-    it("should fetch from GeoServer", function () {
-    	console.log('hi there:');
-        var async = new GeoServerAjaxCall();
+describe("Post New Project Definition", function () {
+    it("should post to GeoServer", function () {
 
-        // creating our spied callback
-        var callback = jasmine.createSpy('callback');
-        console.log('callback:');
-        console.log(callback);
-        var data = [
-              {x: 0,  y: 0},
-        ];
+    	//var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
+        //var async = GeoServerAjaxCall;
+        console.log('addProjectDefinition:');
+        console.log(addProjectDefinition);
+        var information = {"i am": Math.random()};
+        console.log('information:');
+        console.log(information);
 
-        // this does nothing
-        spyOn($, 'ajax').and.callFake(function (req) {
-        	console.log('req:');
-        	console.log(req);
-            var d = $.Deferred();
-           // resolve using our mock data
-            d.resolve(data);
-            return d.promise();
+        spyOn($, "ajax");
+
+        addProjectDefinition.send(information);
+
+        expect($.ajax).toHaveBeenCalledWith({
+        	method: "POST",
+        	url: "../svir/add_project_definition",
+        	data: information
         });
 
-        console.log('async:');
-        console.log(async);
-
-        async.fetch(callback);
-
-        // grabbing the returned arguments from the spied call:
-        var fakeData = callback.calls.mostRecent().args[0];
-        expect(fakeData[0].x).toEqual(data[0].x);
     });
 });
 
-
+/*
 afterEach(function() {
     jasmine.Ajax.uninstall();
 });
+*/
