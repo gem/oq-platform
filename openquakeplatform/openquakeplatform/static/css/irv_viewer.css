@@ -125,3 +125,29 @@ svg {
 #map {
   height: 300px !important;
 }
+
+#licenseName {
+  float: left;
+  clear: none;
+}
+
+#licenseURL  {
+  float: left;
+  clear: none;
+}
+
+#cover {
+  text-align: center;
+  background: no-repeat scroll center center #FFF;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+select#layer-list {
+  width: 95%;
+  height: 70%;
+
+.ui-dialog {
+  z-index: 1000;
+}
