@@ -14,16 +14,36 @@ describe("Hello world", function() {
 });
 */
 
-describe("Post New Project Definition", function () {
-    it("should post to GeoServer", function () {
+describe("ServerFunctions", function () {
+    it("Should fire success event from GeoServer", function () {
 
     	//var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
-        //var async = GeoServerAjaxCall;
-        console.log('addProjectDefinition:');
-        console.log(addProjectDefinition);
-        var information = {"i am": Math.random()};
-        console.log('information:');
-        console.log(information);
+    	var url = "fooabr";
+        spyOn($, "ajax").and.callFake( function() {
+        	return {
+        		done: function() {
+        			return {
+        				fail: function() {}
+        			};
+        		}
+        	};
+        });
+
+        GeoServerAjaxCall.send(url);
+
+        expect($.ajax).toHaveBeenCalledWith({
+        	method: "GET",
+        	url: url,
+        });
+
+    });
+});
+
+describe("Post New Project Definition", function () {
+    it("Should post to GeoServer", function () {
+
+        var selectedLayer = "Layer Name";
+        var projectDefStg = {"some values" : Math.random()};
 
         spyOn($, "ajax").and.callFake( function() {
         	return {
@@ -35,12 +55,12 @@ describe("Post New Project Definition", function () {
         	};
         });
 
-        addProjectDefinition.send(information);
+        addProjectDefinition.send(selectedLayer, projectDefStg);
 
         expect($.ajax).toHaveBeenCalledWith({
         	method: "POST",
         	url: "../svir/add_project_definition",
-        	data: information
+        	data: [selectedLayer, projectDefStg]
         });
 
     });

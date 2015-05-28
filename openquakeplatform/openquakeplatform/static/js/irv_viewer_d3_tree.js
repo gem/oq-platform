@@ -31,36 +31,16 @@
         });
     });
 
+    // Post New Project Definition
     function addProjectDefinition() {}
 
-    addProjectDefinition.send = function(information) {
-        // Hit the API endpoint and grab the very very latest version of the PD object
-        $.ajax({
-            method: "POST",
-            url: "../svir/add_project_definition",
-            data: information
-        }).done(function(){
-            //console.log('hi there:');
-        }).fail(function(){
-            //console.log('hi i faild:');
-        });
-
-    };
-
-/*
     addProjectDefinition.send = function(selectedLayer, projectDefStg) {
         // Hit the API endpoint and grab the very very latest version of the PD object
         $.ajax({
             method: "POST",
             url: "../svir/add_project_definition",
-            data: information
-        });
-        $.post( "../svir/add_project_definition", {
-            layer_name: selectedLayer,
-            project_definition: projectDefStg
-            },
-            function() {
-            }).done(function() {
+            data: [selectedLayer, projectDefStg]
+        }).done(function() {
                 isSubmitting = false;
                 $('#saveStateDialog').dialog('close');
                 $('#saveState-spinner').hide();
@@ -81,7 +61,7 @@
                 $('#submitPD').attr('disabled',true);
         });
     };
-*/
+
 
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
@@ -201,7 +181,7 @@
                         return;
                     }
                     isSubmitting = true;
-                    addProjectDefinition(selectedLayer, projectDefStg);
+                    addProjectDefinition.send(selectedLayer, projectDefStg);
                 }
             });
         });

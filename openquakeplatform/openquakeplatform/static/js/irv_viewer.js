@@ -704,126 +704,60 @@ function watchForPdSelection() {
         }
     }, 100);
 }
-/*
-// unit test stuff to be removed
-(function($) {
 
-    var options = {
-        slowTimeout: 2000,
-        onConnection: $.noop(),
-        onSlowConnection: $.noop(),
-        onDeadConnection: $.noop()
-    };
-
-    var counter = 0;
-
-    var timeStamps = {};
-
-    var onSend = function(event, xhr, settings) {
-        xhr.identifier = ++counter;
-        timeStamps[xhr.identifier] = event.timeStamp;
-    };
-
-    var onSuccess = function(event, xhr, settings) {
-        if (event.timeStamp > timeStamps[xhr.identifier] + options.slowTimeout) {
-            options.onSlowConnection(xhr.responseText);
-        } else {
-            options.onConnection(xhr.responseText);
-        }
-    };
-
-    var onError = function(event, xhr, settings) {
-        if (xhr.statusText == 'timeout') {
-            options.onDeadConnection(xhr.statusText);
-        }
-    };
-
-    var $doc = $(document);
-
-    var methods = {
-
-        init: function(opts) {
-            $.extend(options, opts);    
-        },
-
-        start: function() {
-            $doc.ajaxSend(onSend);
-
-            $doc.ajaxSuccess(onSuccess);
-
-            $doc.ajaxError(onError);
-        },
-
-        stop: function() {
-            $doc.off('ajaxSend', onSend);
-            $doc.off('ajaxSuccess', onSuccess);
-            $doc.off('ajaxError', onError);
-        }
-    }
-
-    $.connectivityMonitor = function(methodOrOpts) {
-        if (methods[methodOrOpts]) {
-            return methods[methodOrOpts].apply(this, Array.prototype.slice.call(arguments, 1));
-        } else if (typeof methodOrOpts === 'object' || !methodOrOpts) {
-            return methods.init.apply(this, arguments);
-        } else {
-            $.error('Method ' + methodOrOpts + ' does not exist on jQuery.connectivityMonitor');
-        }
-    };
-
-})(jQuery);
-*/
-
-function GeoServerAjaxCall () {};
+// first GeoServer call to get layer info
+function GeoServerAjaxCall () {}
 
 GeoServerAjaxCall.send = function(url) {
     // Get layers from GeoServer and populate the layer selection menu
     $.ajax({
-        url: url,
-        contentType: 'application/json',
-        success: function(xml) {
-            // TODO get from server JSON directly
-            console.log('xml:');
-            console.log(xml);
-            //convert XML to JSON
-            var xmlText = new XMLSerializer().serializeToString(xml);
-            var x2js = new X2JS();
+        method: "GET",
+        url: url
+    }).done(function(xml) {
+        console.log('hi there:');
+        // TODO get data from server directly in JSON format
+        // the XML conversion is a potential breaking point
+        //convert XML to JSON
+        var xmlText = new XMLSerializer().serializeToString(xml);
+        var x2js = new X2JS();
 
-            var jsonElement = x2js.xml_str2json(xmlText);
-            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
-            console.log('featureType:');
-            console.log(featureType);
+        var jsonElement = x2js.xml_str2json(xmlText);
+        var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
+        console.log('featureType:');
+        console.log(featureType);
 
-            // Find the SVIR keywords
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
-            for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
-                }
+        // Find the SVIR keywords
+        var stringToLookFor = 'SVIR_QGIS_Plugin';
+        for (var i = 0; i < featureType.length; i++) {
+            if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
             }
-
-            // Create AngularJS dropdown menu
-            var mapScope = angular.element($("#layer-list")).scope();
-            var mapLayerList = [];
-            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-                var tempObj = {};
-                tempObj.name = SVIRLayerNames[ij];
-                mapLayerList.push(tempObj);
-            }
-
-            mapScope.$apply(function(){
-                mapScope.maps = mapLayerList;
-            });
-        },
-        error: function() {
-            $('#ajaxErrorDialog').empty();
-            $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get a list of layers from GeoServer</p>'
-                );
-            $('#ajaxErrorDialog').dialog('open');
         }
+
+        // Create AngularJS dropdown menu
+        var mapScope = angular.element($("#layer-list")).scope();
+        var mapLayerList = [];
+        for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+            var tempObj = {};
+            tempObj.name = SVIRLayerNames[ij];
+            mapLayerList.push(tempObj);
+        }
+
+        console.log('mapScope:');
+        console.log(mapScope);
+
+        mapScope.$apply(function(){
+            mapScope.maps = mapLayerList;
+        });
+    }).fail(function() {
+        $('#ajaxErrorDialog').empty();
+        $('#ajaxErrorDialog').append(
+                '<p>This application was not able to get a list of layers from GeoServer</p>'
+            );
+        $('#ajaxErrorDialog').dialog('open');
     });
-}
+};
+
 
 var startApp = function() {
     $('#cover').remove();
@@ -878,9 +812,9 @@ var startApp = function() {
     $('#thematic-map-selection').hide();
 
     var SVIRLayerNames = [];
-    var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
+    var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326";
 
-    GeoServerAjaxCall(url);
+    GeoServerAjaxCall.send(url);
 
     $('#loadProjectBtn').prop('disabled', true);
 
