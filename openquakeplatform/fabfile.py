@@ -19,6 +19,7 @@ from fabric.context_managers import hide
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
+env.password = 'openquake'
 
 # NOTE(LB): There are some minor differences with respect to how OSX and Linux
 # shells behave. Thus the following is required:
@@ -269,7 +270,7 @@ def _pgsudo(command, **kwargs):
     # Without this leading `cd /tmp && `, we get errors like this:
     # `could not change directory to "/home/lars"`
     # I observed this only on Linux, but not on OSX.
-    return sudo('cd /tmp && ' + command, user='postgres', **kwargs)
+    return sudo('cd /tmp && ' + command, user='postgres', shell=False, **kwargs)
 
 
 def _pgquery(query):
