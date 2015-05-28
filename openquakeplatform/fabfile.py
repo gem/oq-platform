@@ -270,7 +270,7 @@ def _pgsudo(command, **kwargs):
     # Without this leading `cd /tmp && `, we get errors like this:
     # `could not change directory to "/home/lars"`
     # I observed this only on Linux, but not on OSX.
-    return local('cd /tmp && sudo -u postgres ' + command)
+    return local('cd /tmp && sudo -u postgres ' + command, capture=True)
 
     # return sudo('cd /tmp && ' + command, user='postgres', shell=False, **kwargs)
 
