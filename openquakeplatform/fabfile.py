@@ -354,9 +354,9 @@ def _maybe_install_postgis(db_name):
     """
     # Check if postgis is installed:
     with settings(warn_only=True):
-        postgis_version = _pgquery('SELECT PostGIS_full_version()')
+        postgis_version = _pgquery("SELECT count(*) FROM pg_proc WHERE proname = 'postgis_full_version'")
 
-    if 'error' in postgis_version.lower():
+    if '0' in postgis_version.lower():
         # No PostGIS installed
         print('PostGIS extensions are not installed in database "%s"!'
               ' Installing...' % db_name)
