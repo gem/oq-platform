@@ -468,9 +468,6 @@ var startApp = function() {
             .attr("viewBox", "-180 -40 " + winW +" " + winH)
             .append("g");
 
-            console.log('attributes:');
-            console.log(attributes);
-
         // Create a scale and brush for each trait.
         attributes.forEach(function(d) {
             // Coerce values to numbers.
@@ -608,7 +605,7 @@ var startApp = function() {
         var econIndicators;
         var econIndicatorsArray = [];
         $.getJSON(TILESTREAM_API_URL, function(json) {
-            for (var i = json.length - 1; i >= 0; i--) {
+            for (var i = 0; i < json.length; i++) {
                 if (json[i].category == 'economy') {
                     econIndicators = json[i].indicators;
                 }
@@ -668,7 +665,8 @@ var startApp = function() {
         var popIndicatorsArray = [];
         $.getJSON(TILESTREAM_API_URL, function(json) {
 
-            for (var i = json.length - 1; i >= 0; i--) {
+            for (var i = 0; i < json.length; i++) {
+
                 if (json[i].category == 'population') {
                     popIndicators = json[i].indicators;
                 }
@@ -727,8 +725,7 @@ var startApp = function() {
         var infraIndicators;
         var infraIndicatorsArray = [];
         $.getJSON(TILESTREAM_API_URL, function(json) {
-
-            for (var i = json.length - 1; i >= 0; i--) {
+            for (var i = 0; i < json.length; i++) {
                 if (json[i].category == 'infrastructure') {
                     infraIndicators = json[i].indicators;
                 }
@@ -787,8 +784,7 @@ var startApp = function() {
         var govIndicators;
         var govIndicatorsArray = [];
         $.getJSON(TILESTREAM_API_URL, function(json) {
-
-            for (var i = json.length - 1; i >= 0; i--) {
+            for (var i = 0; i < json.length; i++) {
                 if (json[i].category == 'government') {
                     govIndicators = json[i].indicators;
                 }
@@ -844,7 +840,7 @@ var startApp = function() {
         var eduIndicators;
         var eduIndicatorsArray = [];
         $.getJSON(TILESTREAM_API_URL, function(json) {
-            for (var i = json.length - 1; i >= 0; i--) {
+            for (var i = 0; i < json.length; i++) {
                 if (json[i].category == 'education') {
                     eduIndicators = json[i].indicators;
                 }
