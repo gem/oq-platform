@@ -25,7 +25,15 @@ describe("Post New Project Definition", function () {
         console.log('information:');
         console.log(information);
 
-        spyOn($, "ajax");
+        spyOn($, "ajax").and.callFake( function() {
+        	return {
+        		done: function() {
+        			return {
+        				fail: function() {}
+        			};
+        		}
+        	};
+        });
 
         addProjectDefinition.send(information);
 

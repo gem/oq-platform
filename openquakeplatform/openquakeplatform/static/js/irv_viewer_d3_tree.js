@@ -35,16 +35,16 @@
 
     addProjectDefinition.send = function(information) {
         // Hit the API endpoint and grab the very very latest version of the PD object
-        var foobar = $.ajax({
+        $.ajax({
             method: "POST",
             url: "../svir/add_project_definition",
             data: information
+        }).done(function(){
+            //console.log('hi there:');
+        }).fail(function(){
+            //console.log('hi i faild:');
         });
-/*
-        foobar.done(function(){
-            console.log('hi there:');
-        });
-*/
+
     };
 
 /*
