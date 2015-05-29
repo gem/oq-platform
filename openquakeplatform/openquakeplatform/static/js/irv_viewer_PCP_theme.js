@@ -24,6 +24,26 @@
 
 function Theme_PCP_Chart(themeData) {
 
+    // Disable the theme tab if there is only on theme and the region attributes in themeData.
+    function countProperties(themeData) {
+        var themeCount = 0;
+
+        for(var prop in themeData) {
+            if(themeData.hasOwnProperty(prop))
+                ++themeCount;
+        }
+        return themeCount;
+    }
+
+    var themeCount = countProperties(themeData[0]);
+
+    if (themeCount <= 2) {
+        // Disable the theme tab.
+        $("#themeTabs").tabs("disable", 2);
+        // Stop the function from continuing.
+        return;
+    }
+
     var data = themeData;
     var winH = ($(window).height() / 1.5);
     var winW = ($(window).width());
@@ -44,15 +64,11 @@ function Theme_PCP_Chart(themeData) {
         }
     }
 
-
     for (var i = 0; i < eachElementInThemeData.length; i++) {
         if (!isNaN(parseFloat(eachElementInThemeData[i])) && isFinite(eachElementInThemeData[i])) {
             eachValueInThemeData.push(eachElementInThemeData[i]);
         }
     }
-
-    console.log('eachValueInThemeData:');
-    console.log(eachValueInThemeData);
 
     var maxVal = Math.max.apply( Math, eachValueInThemeData );
     var minVal = Math.min.apply( Math, eachValueInThemeData );
