@@ -259,10 +259,11 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
     ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
-. platform-env/bin/activate
+. platform-env/bin/activatel'
 pip install -e openquakeplatform
 cd openquakeplatform
-fab --show=everything bootstrap"
+fab --show=everything bootstrap >fab.log 2>&1"
+# fab --show=everything bootstrap"
     echo "_devtest_innervm_run: exit"
 
     return 0
