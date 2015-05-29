@@ -55,6 +55,7 @@ IRV - {{block.super}}
     ng-controller="HazardMapDropdown"
     title="Load Project"
     style="overflow: hidden;">
+      <div id="load-project-spinner" >Loading ...<img src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
 
       Filter the project list:<br><input type="text" ng-model="search">
       <br><br>
