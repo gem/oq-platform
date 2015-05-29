@@ -15,6 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+    var DEFAULT_OPERATOR = "Weighted sum"
     var CIRCLE_SCALE = 30;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
