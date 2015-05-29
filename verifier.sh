@@ -260,7 +260,7 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
-pip install -e openquakeplatform"
+pip install -e openquakeplatform
 cd openquakeplatform
 fab --show=everything bootstrap"
     echo "_devtest_innervm_run: exit"
