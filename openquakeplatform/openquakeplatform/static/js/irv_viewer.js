@@ -912,10 +912,10 @@ var startApp = function() {
                 }
                 $('#projectDef-spinner').hide();
 
-                // select the first indicator
+                // select the first project definition
                 var menuOption = $('#pdSelection');
                 menuOption[0].selectedIndex = 1;
-                // trigger first indicator
+                // trigger first project definition
                 setTimeout(function() {
                     $('#pdSelection').trigger('change');
                 }, 100);
