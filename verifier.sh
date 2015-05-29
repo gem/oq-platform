@@ -76,7 +76,19 @@ GEM_ALWAYS_YES=false
 if [ "$GEM_EPHEM_CMD" = "" ]; then
     GEM_EPHEM_CMD="lxc-start-ephemeral"
 fi
-GEM_EPHEM_NAME="ubuntu-x11-lxc-eph"
+if [ "$GEM_EPHEM_NAME" = "" ]; then
+    GEM_EPHEM_NAME="ubuntu-x11-lxc-eph"
+fi
+
+if command -v lxc-shutdown &> /dev/null; then
+    # Older lxc (< 1.0.0) with lxc-shutdown
+    LXC_TERM="lxc-shutdown -t 10 -w"
+    LXC_KILL="lxc-stop"
+else
+    # Newer lxc (>= 1.0.0) with lxc-stop only
+    LXC_TERM="lxc-stop -t 10"
+    LXC_KILL="lxc-stop -k"
+fi
 
 NL="
 "
@@ -93,15 +105,13 @@ sig_hand () {
     echo "signal trapped"
     if [ "$lxc_name" != "" ]; then
         set +e
-        scp "${lxc_ip}:/var/tmp/openquake-db-installation" openquake-db-installation
-        scp "${lxc_ip}:/tmp/celeryd.log" celeryd.log
         scp "${lxc_ip}:ssh.log" ssh.history
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
         if [ -f "${upper}.dsk" ]; then
             loop_dev="$(sudo losetup -a | grep "(${upper}.dsk)$" | cut -d ':' -f1)"
         fi
-        sudo lxc-stop -n $lxc_name
+        sudo $LXC_KILL -n $lxc_name
         sudo umount /var/lib/lxc/$lxc_name/rootfs
         sudo umount /var/lib/lxc/$lxc_name/ephemeralbind
         echo "$upper" | grep -q '^/tmp/'
@@ -232,29 +242,27 @@ _devtest_innervm_run () {
 
     trap 'local LASTERR="$?" ; trap ERR ; (exit $LASTERR) ; return' ERR
 
-    ssh $lxc_ip "rm -f ssh.log"
+    ssh -t  $lxc_ip "rm -f ssh.log"
 
-    ssh $lxc_ip "sudo apt-get update"
-    ssh $lxc_ip "sudo apt-get -y upgrade"
+    ssh -t  $lxc_ip "sudo apt-get update"
+    ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev python-numpy xmlstarlet imagemagick"
+    ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran"
 
-    ssh $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
+    ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
     
-    ssh $lxc_ip "sudo sed -i \"s/\([#        ]*listen_addresses[     ]*=[    ]*\)[^#]*\(#.*\)*/listen_addresses = '*'    \2/g\" /etc/postgresql/9.1/main/postgresql.conf"
+    ssh -t  $lxc_ip "sudo sed -i \"s/\([#        ]*listen_addresses[     ]*=[    ]*\)[^#]*\(#.*\)*/listen_addresses = '*'    \2/g\" /etc/postgresql/9.1/main/postgresql.conf"
 
-    ssh $lxc_ip "sudo service postgresql restart"
+    ssh -t  $lxc_ip "sudo service postgresql restart"
 
     repo_id="$GEM_GIT_REPO"
-    ssh $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
-    ssh $lxc_ip "cd ~/$GEM_GIT_PACKAGE
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-fab bootstrap
-sleep 36000
-"
+fab --show=everything bootstrap"
 
     return 0
 }
@@ -312,7 +320,7 @@ devtest_run () {
 
     scp "${lxc_ip}:ssh.log" devtest.history
 
-    sudo lxc-shutdown -n $lxc_name -w -t 10
+    sudo $LXC_TERM -n $lxc_name
 
     set -e
 
@@ -323,11 +331,6 @@ devtest_run () {
 #
 #  MAIN
 #
-BUILD_SOURCES_COPY=0
-BUILD_BINARIES=0
-BUILD_REPOSITORY=0
-BUILD_DEVEL=0
-BUILD_UNSIGN=0
 BUILD_FLAGS=""
 
 trap sig_hand SIGINT SIGTERM
@@ -349,4 +352,4 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-exit 1
+exit 0
