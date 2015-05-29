@@ -262,8 +262,9 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-fab --show=everything bootstrap 2>&1 | tee fab.log"
-# fab --show=everything bootstrap"
+fab --show=everything bootstrap
+sleep 5
+fab stop"
     echo "_devtest_innervm_run: exit"
 
     return 0
