@@ -262,7 +262,7 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-fab --show=everything bootstrap >fab.log 2>&1"
+fab --show=everything bootstrap 2>&1 | tee fab.log"
 # fab --show=everything bootstrap"
     echo "_devtest_innervm_run: exit"
 
@@ -321,6 +321,7 @@ devtest_run () {
     inner_ret=$?
 
     scp "${lxc_ip}:ssh.log" devtest.history
+    scp "${lxc_ip}:oq-platform/openquakeplatform/fab.log" fab.history
 
     sudo $LXC_TERM -n $lxc_name
 
