@@ -48,6 +48,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     }
     $('#primary_indicator').show();
 
+    // select the first indicator
+    var menuOption = $('#primary_indicator');
+    menuOption[0].selectedIndex = 1;
+    // trigger first indicator
+    setTimeout(function() {
+        $('#primary_indicator').trigger('change');
+    }, 100);
+
     $('#primary_indicator').change(function() {
         var selectedTheme = $('#primary_indicator').val();
         // Find the children of selected theme
