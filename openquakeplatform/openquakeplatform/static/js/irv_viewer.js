@@ -907,6 +907,14 @@ var startApp = function() {
                     );
                 }
                 $('#projectDef-spinner').hide();
+
+                // select the first indicator
+                var menuOption = $('#pdSelection');
+                menuOption[0].selectedIndex = 1;
+                // trigger first indicator
+                setTimeout(function() {
+                    $('#pdSelection').trigger('change');
+                }, 100);
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
