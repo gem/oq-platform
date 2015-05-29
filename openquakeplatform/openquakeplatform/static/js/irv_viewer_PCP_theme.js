@@ -38,7 +38,9 @@ function Theme_PCP_Chart(themeData) {
 
     for (var i = 0; i < themeData.length; i++) {
         for (var k in themeData[i]){
-            eachElementInThemeData.push(themeData[i][k]);
+            if (k != 'region') {
+                eachElementInThemeData.push(themeData[i][k]);
+            }
         }
     }
 
@@ -48,6 +50,9 @@ function Theme_PCP_Chart(themeData) {
             eachValueInThemeData.push(eachElementInThemeData[i]);
         }
     }
+
+    console.log('eachValueInThemeData:');
+    console.log(eachValueInThemeData);
 
     var maxVal = Math.max.apply( Math, eachValueInThemeData );
     var minVal = Math.min.apply( Math, eachValueInThemeData );
