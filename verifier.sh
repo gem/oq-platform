@@ -322,7 +322,6 @@ devtest_run () {
     inner_ret=$?
 
     scp "${lxc_ip}:ssh.log" devtest.history
-    scp "${lxc_ip}:oq-platform/openquakeplatform/fab.log" fab.history
 
     sudo $LXC_TERM -n $lxc_name
 
