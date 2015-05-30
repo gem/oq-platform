@@ -9,7 +9,7 @@ sys.excepthook = ultratb.FormattedTB(mode='Verbose',
 from openquake.platform_test.utils import *
 
 try:
-    from config_my import pla_basepath, pla_user, pla_passwd, pla_debugger
+    from config import pla_basepath, pla_user, pla_passwd, pla_debugger
 except ImportError:
     print "ERROR: config_my.py not found. Copy config.py in config_my.py and configure it properl ."
     sys.exit(1)
