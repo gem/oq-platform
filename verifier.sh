@@ -105,6 +105,7 @@ sig_hand () {
     echo "signal trapped"
     if [ "$lxc_name" != "" ]; then
         set +e
+        ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd /openquakeplatform ; fab stop"
         scp "${lxc_ip}:ssh.log" ssh.history
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
@@ -257,14 +258,19 @@ _devtest_innervm_run () {
 
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
-    ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE
+    ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
+set -e
+if [ \$GEM_SET_DEBUG ]; then
+    set -x
+fi
+cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
+false
 cd openquakeplatform
-fab --show=everything bootstrap
-sleep 5
-fab stop"
+fab --show=everything bootstrap"
+    ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd /openquakeplatform ; fab stop"
     echo "_devtest_innervm_run: exit"
 
     return 0
