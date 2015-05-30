@@ -267,9 +267,13 @@ cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
-false
 cd openquakeplatform
-fab --show=everything bootstrap"
+fab --show=everything bootstrap
+cd test
+export PYTHONPATH=\$(pwd)
+cp config.py.tmpl config.py
+./test_isc.py
+"
     ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd /openquakeplatform ; fab stop"
     echo "_devtest_innervm_run: exit"
 
