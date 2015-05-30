@@ -333,6 +333,10 @@ devtest_run () {
 
     scp "${lxc_ip}:ssh.log" devtest.history
 
+    if [ $inner_ret != 0 ]; then
+        ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd /openquakeplatform ; fab stop"
+    fi
+
     sudo $LXC_TERM -n $lxc_name
 
     set -e
