@@ -269,11 +269,11 @@ virtualenv --system-site-packages platform-env
 pip install -e openquakeplatform
 cd openquakeplatform
 fab --show=everything bootstrap >/dev/null 2>&1
+cd test
+export PYTHONPATH=\$(pwd)
+cp config.py.tmpl config.py
+./test_isc.py
 "
-# cd test
-# export PYTHONPATH=\$(pwd)
-# cp config.py.tmpl config.py
-# ./test_isc.py
 
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 set -e
