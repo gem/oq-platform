@@ -273,7 +273,7 @@ cd test
 sleep 360000
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
-export DISPLAY=:0.0
+export DISPLAY=:1
 ./test_isc.py
 "
 
