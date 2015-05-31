@@ -272,6 +272,7 @@ fab --show=everything bootstrap >/dev/null 2>&1
 cd test
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
+export DISPLAY=:0.0
 ./test_isc.py
 "
 
