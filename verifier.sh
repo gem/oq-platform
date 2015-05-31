@@ -270,6 +270,7 @@ pip install -e openquakeplatform
 cd openquakeplatform
 fab --show=everything bootstrap >/dev/null 2>&1
 cd test
+sleep 360000
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
 export DISPLAY=:0.0
