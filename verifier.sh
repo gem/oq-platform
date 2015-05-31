@@ -269,22 +269,27 @@ virtualenv --system-site-packages platform-env
 pip install -e openquakeplatform
 cd openquakeplatform
 fab --show=everything bootstrap
-sleep 5
-fab stop
 "
+#sleep 5
+#fab stop
+#"
 #cd test
 #export PYTHONPATH=\$(pwd)
 #cp config.py.tmpl config.py
 #./test_isc.py >selenium.log 2>&1
 #"
-#     ssh -t  $lxc_ip "
-# export GEM_SET_DEBUG=$GEM_SET_DEBUG
-# set -e
-# if [ \$GEM_SET_DEBUG ]; then
-#     set -x
-# fi
-# cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
-#     echo "_devtest_innervm_run: exit"
+    ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
+set -e
+if [ \$GEM_SET_DEBUG ]; then
+    set -x
+fi
+cd ~/$GEM_GIT_PACKAGE
+. platform-env/bin/activate
+cd openquakeplatform
+sleep 5
+fab stop
+"
+    echo "_devtest_innervm_run: exit"
 
     return 0
 }
