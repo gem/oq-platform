@@ -18,6 +18,7 @@ except ImportError:
 # Create a new instance of the Firefox driver
 
 driver = pla_driver("firefox", pla_debugger)
+driver.maximize_window()
 pla_homepage_login(driver, pla_basepath, pla_user, pla_passwd)
 
 pla_navigate(driver, pla_basepath, 'explore')
