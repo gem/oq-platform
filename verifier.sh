@@ -270,14 +270,11 @@ pip install -e openquakeplatform
 cd openquakeplatform
 fab --show=everything bootstrap
 "
-#sleep 5
-#fab stop
-#"
-#cd test
-#export PYTHONPATH=\$(pwd)
-#cp config.py.tmpl config.py
-#./test_isc.py >selenium.log 2>&1
-#"
+cd test
+export PYTHONPATH=\$(pwd)
+cp config.py.tmpl config.py
+./test_isc.py
+"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 set -e
 if [ \$GEM_SET_DEBUG ]; then
