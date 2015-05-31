@@ -269,7 +269,6 @@ virtualenv --system-site-packages platform-env
 pip install -e openquakeplatform
 cd openquakeplatform
 fab --show=everything bootstrap
-"
 cd test
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
