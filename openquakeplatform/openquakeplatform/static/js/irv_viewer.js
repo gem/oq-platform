@@ -804,8 +804,6 @@ var startApp = function() {
 
     // TODO check these are all needed
     $('#region-selection-list').hide();
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
-    $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
 
     $('#thematic-map-selection').hide();
@@ -962,6 +960,20 @@ var startApp = function() {
         height: 520,
         width: 620,
         closeOnEscape: true
+    });
+
+    $('#map-tools').css({
+        'padding': '6px',
+        'position': 'absolute',
+        'top': '43px',
+        'left': '39px',
+        'width': '94%',
+        'z-index': 6
+    });
+
+    $('#themeTabs').css({
+        'width': '500px',
+        'height':  '400px'
     });
 
 };
