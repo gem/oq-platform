@@ -195,4 +195,4 @@ def pla_isc_test(driver, basepath):
 
     popup_ctx = xpath_finduniq(driver, "//div[text() = '1951-03-19T04:23:00']")
 
-    raise ValueError
+    return True
