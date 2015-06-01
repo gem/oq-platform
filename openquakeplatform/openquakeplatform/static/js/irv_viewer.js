@@ -806,6 +806,9 @@ var startApp = function() {
     $('#region-selection-list').hide();
     $('#svir-project-list').hide();
 
+    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
+    $('#svir-project-list').css({ 'margin-bottom' : 0 });
+
     $('#thematic-map-selection').hide();
 
     $('#loadProjectBtn').prop('disabled', true);
