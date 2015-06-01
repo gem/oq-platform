@@ -269,7 +269,7 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-nohup fab --show=everything bootstrap | tee bootstrap.log &
+nohup fab --show=everything bootstrap &
 bootstrap_pid=\$!
 bootstrap_tout=900
 for i in \$(seq 1 \$bootstrap_tout); do
