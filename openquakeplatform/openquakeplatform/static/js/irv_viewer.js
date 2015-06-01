@@ -972,7 +972,7 @@ var startApp = function() {
     });
 
     $('#themeTabs').css({
-        'width': '500px',
+        'width': '700px',
         'height':  '400px'
     });
 
