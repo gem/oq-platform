@@ -107,6 +107,7 @@ sig_hand () {
         set +e
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
         scp "${lxc_ip}:ssh.log" ssh.history
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
         if [ -f "${upper}.dsk" ]; then
@@ -268,7 +269,28 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-fab --show=everything bootstrap >/dev/null 2>&1
+nohup fab --show=everything bootstrap | tee bootstrap.log &
+bootstrap_pid=\$!
+bootstrap_tout=900
+for i in \$(seq 1 \$bootstrap_tout); do
+    if ! kill -0 \$bootstrap_pid >/dev/null 2>&1 ; then
+        wait \$bootstrap_pid
+        ret=\$?
+        break
+    fi
+    sleep 5
+done
+if [ \$i -eq \$bootstrap_tout ]; then
+    echo "timeout reached"
+    kill -TERM \$bootstrap_pid
+    sleep 5
+    kill -KILL \$bootstrap_pid || true
+    ret=126
+fi
+if [ \$ret -ne 0 ]; then
+    exit \$ret
+fi
+
 cd test
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
@@ -344,6 +366,7 @@ devtest_run () {
     inner_ret=$?
 
     scp "${lxc_ip}:ssh.log" devtest.history
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history
 
     if [ $inner_ret != 0 ]; then
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
