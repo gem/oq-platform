@@ -122,10 +122,6 @@ svg {
   fill: blue;
 }
 
-#map {
-  height: 300px !important;
-}
-
 #licenseName {
   float: left;
   clear: none;
@@ -151,3 +147,18 @@ select#layer-list {
 .ui-dialog {
   z-index: 1000;
 }
+
+#map-tools {
+  padding: 6px;
+  position: absolute;
+  top: 43px;
+  left: 39px;
+  width: 94%;
+  z-index: 6;
+}
+
+#themeTabs {
+  width: 500px;
+  height:  400px;
+}
+

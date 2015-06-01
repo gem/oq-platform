@@ -748,6 +748,16 @@ function getGeoServerLayers() {
 }
 
 var startApp = function() {
+    // theme tabls behavior
+    $("#themeTabs").resizable();
+    $("#themeTabs").draggable();
+
+    $( '#themeTabs' ).tabs({
+        collapsible: false,
+        selected: -1,
+        active: false,
+    });
+
     $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -952,15 +962,6 @@ var startApp = function() {
         height: 520,
         width: 620,
         closeOnEscape: true
-    });
-
-    $(function() {
-        $( '#themeTabs' ).tabs({
-            collapsible: false,
-            selected: -1,
-            active: false,
-            height: 550
-        });
     });
 
 };
