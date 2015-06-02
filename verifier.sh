@@ -107,6 +107,7 @@ sig_hand () {
         set +e
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
         scp "${lxc_ip}:ssh.log" ssh.history
+        scp "${lxc_ip}:.pip/pip.log" pip.history
         scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
@@ -366,6 +367,7 @@ devtest_run () {
     inner_ret=$?
 
     scp "${lxc_ip}:ssh.log" devtest.history
+    scp "${lxc_ip}:.pip/pip.log" pip.history
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history
 
     if [ $inner_ret != 0 ]; then
