@@ -297,19 +297,14 @@ export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
 export DISPLAY=:1
 ./test_isc.py
-"
 
-    ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
-set -e
-if [ \$GEM_SET_DEBUG ]; then
-    set -x
-fi
+sleep 3
 cd ~/$GEM_GIT_PACKAGE
 . platform-env/bin/activate
 cd openquakeplatform
-sleep 5
 fab stop
 "
+
     echo "_devtest_innervm_run: exit"
 
     return 0
