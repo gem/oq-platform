@@ -106,9 +106,9 @@ sig_hand () {
     if [ "$lxc_name" != "" ]; then
         set +e
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
-        scp "${lxc_ip}:ssh.log" ssh.history
-        scp "${lxc_ip}:.pip/pip.log" pip.history
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history
+        scp "${lxc_ip}:ssh.log" ssh.history || true
+        scp "${lxc_ip}:.pip/pip.log" pip.history || true
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
         if [ -f "${upper}.dsk" ]; then
@@ -366,9 +366,9 @@ devtest_run () {
     _devtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    scp "${lxc_ip}:ssh.log" devtest.history
-    scp "${lxc_ip}:.pip/pip.log" pip.history
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history
+    scp "${lxc_ip}:ssh.log" devtest.history || true
+    scp "${lxc_ip}:.pip/pip.log" pip.history || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
 
     if [ $inner_ret != 0 ]; then
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
