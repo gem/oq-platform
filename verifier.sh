@@ -301,7 +301,7 @@ cp config.py.tmpl config.py
 export DISPLAY=:1
 ./test_isc.py
 
-sleep 3
+sleep 30000
 cd ~/$GEM_GIT_PACKAGE
 . platform-env/bin/activate
 cd openquakeplatform
