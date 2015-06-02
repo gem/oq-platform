@@ -270,7 +270,7 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-nohup fab --show=everything bootstrap 2>&1 &
+nohup fab --show=everything bootstrap &
 bootstrap_pid=\$!
 bootstrap_tout=900
 for i in \$(seq 1 \$bootstrap_tout); do
@@ -301,7 +301,7 @@ cp config.py.tmpl config.py
 export DISPLAY=:1
 ./test_isc.py
 
-sleep 30000
+sleep 3
 cd ~/$GEM_GIT_PACKAGE
 . platform-env/bin/activate
 cd openquakeplatform
