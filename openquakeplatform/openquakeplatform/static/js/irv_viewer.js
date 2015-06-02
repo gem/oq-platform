@@ -749,7 +749,10 @@ function getGeoServerLayers() {
 
 var startApp = function() {
     // theme tabls behavior
-    $("#themeTabs").resizable();
+    $("#themeTabs").resizable({
+        minHeight: 450,
+        minWidth: 640
+    });
     $("#themeTabs").draggable();
 
     $( '#themeTabs' ).tabs({

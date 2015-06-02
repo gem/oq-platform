@@ -39,9 +39,13 @@
 
     function loadPD(selectedPDef, qt_page) {
         var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
+        var winH = ($(window).height() / 1.7);
+        var winW = ($(window).width());
         var margin = {top: 0, right: 80, bottom: 20, left: 80},
-            width = 960 - margin.right - margin.left,
-            height = 800 - margin.top - margin.bottom;
+            width = (winW - 100) - margin.right - margin.left,
+            height = winH - margin.top - margin.bottom;
+            //width = 960 - margin.right - margin.left,
+            //height = 800 - margin.top - margin.bottom;
 
         var i = 0,
             duration = 750,
@@ -320,11 +324,10 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("width", width + margin.right + margin.left)
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("id", "project-definition-svg")
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("viewBox", "-30 -20 " +(winW - 200)+" " + (winH +20))
+            .attr("id", "primary-svg-element")
+            .append("svg:g")
+            .attr("transform", "translate(" + margin.left + ",5)");
 
             data = selectedPDef;
 

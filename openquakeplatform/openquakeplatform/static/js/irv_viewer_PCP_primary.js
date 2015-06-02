@@ -143,7 +143,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         var svg = d3.select("#primary-chart").append("svg")
             .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
-            .attr("id", "IRI-svg-element")
+            .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
 
