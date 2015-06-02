@@ -271,7 +271,7 @@ virtualenv --system-site-packages platform-env
 pip install -e openquakeplatform
 cd openquakeplatform
 nohup fab --show=everything bootstrap | tee bootstrap.log &
-bootstrap_pid=\$!
+bootstrap_pid=\$(jobs -x echo %1)
 bootstrap_tout=900
 for i in \$(seq 1 \$bootstrap_tout); do
     if ! kill -0 \$bootstrap_pid >/dev/null 2>&1 ; then
