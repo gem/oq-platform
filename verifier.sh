@@ -270,16 +270,14 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-mkfifo pipe
-exec 3<>pipe
-rm -f pipe
-( fab --show=everything bootstrap & echo "\$!" >&3) 3>pid |& tee bootstrap.log &
-bootstrap_pid=\$(<pid)
+nohup fab --show=everything bootstrap &
+bootstrap_pid=\$!
 bootstrap_tout=900
 for i in \$(seq 1 \$bootstrap_tout); do
     if ! kill -0 \$bootstrap_pid >/dev/null 2>&1 ; then
         wait \$bootstrap_pid
         ret=\$?
+        mv nohup.out bootstrap.log
         break
     fi
     sleep 5
