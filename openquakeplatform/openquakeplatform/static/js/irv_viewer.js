@@ -980,9 +980,27 @@ var startApp = function() {
     $('#themeTabs').css({
         'width': '700px',
         'height': '600px',
-        'overflow': 'auto'
+        'overflow': 'auto',
+        'position': 'fixed',
+        'left': '10px',
+        'top': '110px'
     });
 
+    $('#loadProjectdialogBtn').css({
+        'position': 'fixed',
+        'left': '50px'
+    });
+
+    $('#base-map-menu').css({
+        'position': 'fixed',
+        'left': '390px'
+    });
+
+    $('#thematic-map-selection').css({
+        'position': 'fixed',
+        'left': '160px',
+        'display': 'block'
+    });
 };
 
 app.initialize(startApp);
