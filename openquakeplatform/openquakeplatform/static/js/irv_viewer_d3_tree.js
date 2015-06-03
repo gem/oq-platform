@@ -329,7 +329,7 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("viewBox", "-30 50 " + winW +" " + winH)
+            .attr("viewBox", "-60 50 " + winW +" " + winH)
             .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + margin.left + ",5)");
