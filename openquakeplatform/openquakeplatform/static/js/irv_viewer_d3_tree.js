@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-    var DEFAULT_OPERATOR = "Weighted sum"
+    var DEFAULT_OPERATOR = "Weighted sum";
     var CIRCLE_SCALE = 30;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
@@ -37,12 +37,21 @@
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
 
-    function loadPD(selectedPDef, qt_page) {
+    function loadPD(selectedPDef) {
+
+        // default tab window size
+        var winH = 600;
+        var winW = 700;
+
+        // detect tab window resize
+        $('#themeTabs').resize(function(event) {
+            winH = event.clientY;
+            winW = event.clientX;
+        });
+
         var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
-        var winH = ($(window).height() / 1.7);
-        var winW = ($(window).width());
         var margin = {top: 0, right: 80, bottom: 20, left: 80},
-            width = (winW - 100) - margin.right - margin.left,
+            width = winW - margin.right - margin.left,
             height = winH - margin.top - margin.bottom;
             //width = 960 - margin.right - margin.left,
             //height = 800 - margin.top - margin.bottom;
@@ -101,7 +110,6 @@
         $('#saveBtn').click(function() {
             $('#checkboxPD').attr('checked', false);
             $('#saveState-spinner').hide();
-            var pdLicense = sessionProjectDef.license;
             var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
             var pdLicenseURL = sessionProjectDef.license.split('(')[1];
             pdLicenseURL = pdLicenseURL.replace(')', '');
@@ -118,7 +126,6 @@
             );
 
             $('#checkboxPD').change(function() {
-                var inputVal = $('#giveNamePD').val();
                 if (this.checked) {
                     $('#submitPD').attr('disabled', false);
                 } else {
@@ -171,7 +178,7 @@
                             // access the last or newest element in the dropdown menu
                             var lastValue = $('#pdSelection option:last-child').val();
                             // select the newest element in the dropdown menu
-                            $("#pdSelection").val(lastValue);
+                            $('#pdSelection').val(lastValue);
                         }).fail(function() {
                             isSubmitting = false;
                             $('#ajaxErrorDialog').empty();
@@ -324,7 +331,7 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("viewBox", "-30 -20 " +(winW - 200)+" " + (winH +20))
+            .attr("viewBox", "-30 -20 " + winW +" " + winH)
             .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + margin.left + ",5)");

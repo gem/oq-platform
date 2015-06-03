@@ -749,13 +749,13 @@ function getGeoServerLayers() {
 
 var startApp = function() {
     // theme tabls behavior
-    $("#themeTabs").resizable({
+    $('#themeTabs').resizable({
         minHeight: 500,
         minWidth: 640
     });
-    $("#themeTabs").draggable();
+    $('#themeTabs').draggable();
 
-    $( '#themeTabs' ).tabs({
+    $('#themeTabs').tabs({
         collapsible: false,
         selected: -1,
         active: false,
@@ -822,7 +822,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
-        $("#themeTabs").tabs("option", "active", 0);
+        $('#themeTabs').tabs('option', 'active', 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
         $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
@@ -979,7 +979,7 @@ var startApp = function() {
 
     $('#themeTabs').css({
         'width': '700px',
-        'height': '500px',
+        'height': '600px',
         'overflow': 'auto'
     });
 
