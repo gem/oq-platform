@@ -50,11 +50,9 @@
         });
 
         var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
-        var margin = {top: 0, right: 80, bottom: 20, left: 80},
+        var margin = {top: 0, right: 20, bottom: 20, left: 20},
             width = winW - margin.right - margin.left,
             height = winH - margin.top - margin.bottom;
-            //width = 960 - margin.right - margin.left,
-            //height = 800 - margin.top - margin.bottom;
 
         var i = 0,
             duration = 750,
@@ -331,7 +329,7 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("viewBox", "-30 -20 " + winW +" " + winH)
+            .attr("viewBox", "-30 50 " + winW +" " + winH)
             .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + margin.left + ",5)");
@@ -342,7 +340,6 @@
             root.x0 = height / 2;
             root.y0 = 0;
 
-            //root.children.forEach(collapse);
             updateD3Tree(root);
 
         $('#project-definition-svg').hide();
