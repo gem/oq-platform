@@ -643,8 +643,8 @@ function thematicMap(layerAttributes) {
         locationMode: L.LocationModes.GEOJSON,
         geoJSONField: 'geometry',
         layerOptions: {
-            fillOpacity: 1,
-            opacity: 1,
+            fillOpacity: 0.5,
+            opacity: 0.5,
             weight: 1,
             stroke: true,
             color: '#0000FF'
