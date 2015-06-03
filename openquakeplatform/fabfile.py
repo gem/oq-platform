@@ -19,7 +19,7 @@ from fabric.context_managers import hide
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
-env.password = 'openquake'
+# env.password = 'openquake'
 
 # NOTE(LB): There are some minor differences with respect to how OSX and Linux
 # shells behave. Thus the following is required:
@@ -168,7 +168,6 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
 
     # reset .json files to original version
     local("for i in $(find -name '*.json.orig'); do mv \"$i\" \"$(echo $i | sed 's/\.orig//g')\" ; done")
-    local("pwd")
     local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
     local('openquakeplatform/bin/oq-gs-builder.sh drop')
     local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
@@ -271,8 +270,6 @@ def _pgsudo(command, **kwargs):
     # `could not change directory to "/home/lars"`
     # I observed this only on Linux, but not on OSX.
     return local('cd /tmp && sudo -u postgres ' + command, capture=True)
-
-    # return sudo('cd /tmp && ' + command, user='postgres', shell=False, **kwargs)
 
 
 def _pgquery(query):

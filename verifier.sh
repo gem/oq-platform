@@ -18,10 +18,9 @@
 #
 # DESCRIPTION
 #
-# packager.sh automates procedures to:
-#  - test sources
-#  - build Ubuntu package (official or development version)
-#  - test Ubuntu package
+# verifier.sh automates procedures to:
+#  - test development environment
+#  - TODO test production environment
 #
 # tests are performed inside linux containers (lxc) to achieve
 # a good compromise between speed and isolation
@@ -43,12 +42,6 @@
 # hname=...
 # sed -i 's/127.0.1.1   \+\([^ ]\+\)/127.0.1.1   \1 \1.gem.lan/g'  /etc/hosts
 # echo -e "y\ny\ny\n" | ./oq-platform/openquakeplatform/bin/deploy.sh -H $hname
-
-
-# curl -c first.jar -L -X GET -o first.htm 'http://ubuntu-lxc-eph-temp-pl3o3hb.gem.lan/explore/'
-# curl -L -c second.jar -d username=admin -d password=admin -o second.htm -X POST 'http://ubuntu-lxc-eph-temp-pl3o3hb.gem.lan/account/login/?next=/explore/'
-
-
 
 # export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
 if [ $GEM_SET_DEBUG ]; then
