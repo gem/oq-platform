@@ -609,7 +609,7 @@ function taxt_ValidateHeight() // Ok
     $('#noStoreysE22').prop("disabled", true);
     $('#noStoreysE31').prop("disabled", true);
     $('#noStoreysE32').prop("disabled", true);
-    $('#noStoreysE4').prop("disabled", true);
+    $('#noStoreysE41').prop("disabled", true);
 
     if ($('#HeightCB1').val() > 0) {
         $('#HeightCB2').prop("disabled", false);
@@ -670,10 +670,10 @@ function taxt_ValidateHeight() // Ok
         }
 
         if ($('#HeightCB4').val() == 0) {
-            $('#noStoreysE4').prop("disabled", true);
+            $('#noStoreysE41').prop("disabled", true);
         }
         else {
-            $('#noStoreysE4').prop("disabled", false);
+            $('#noStoreysE41').prop("disabled", false);
         }
     }
     else {
@@ -1903,7 +1903,7 @@ function BuildTaxonomyString(out_type)
         if ($('#HeightCB4').val() == 0 && (out_type == 0))
             Taxonomy[14] = '+HD99';
         if ($('#HeightCB4').val() == 1)
-            Taxonomy[14] = '+HD:' + $('#noStoreysE4').val();
+            Taxonomy[14] = '+HD:' + $('#noStoreysE41').val();
     }
 
     if ($('#OccupancyCB1').val() == 0) {
@@ -2901,7 +2901,7 @@ begin
     if HeightCB3.ItemIndex=3 then Taxonomy[13]:='+HFAPP:'+noStoreysE31.Text;
 
     if (HeightCB4.ItemIndex=1) and (OmitCB.checked = false) then Taxonomy[14]:='+HD99';
-    if HeightCB4.ItemIndex=1 then Taxonomy[14]:='+HD:'+noStoreysE4.Text;
+    if HeightCB4.ItemIndex=1 then Taxonomy[14]:='+HD:'+noStoreysE41.Text;
   end;
 
  if OccupancyCB1.ItemIndex=0 then begin
@@ -3343,7 +3343,7 @@ function taxt_Initiate() {
     select_populate('HeightCB4', HeightCB4);
     $('#HeightCB4').val(0);
     $('#HeightCB4').on('change', taxt_HeightCB4Select);
-    $('#noStoreysE4').on('change', taxt_HeightCB4Select);
+    $('#noStoreysE41').on('change', taxt_HeightCB4Select);
 
     var DateCB1 = [];
     /* Y99  */ DateCB1.push('Year unknown');
@@ -3893,7 +3893,7 @@ function populate(s, ret_s) {
                         ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
                         return (false);
                     }
-                    $('#noStoreysE4').val(h_vals[0]);
+                    $('#noStoreysE41').val(h_vals[0]);
                     taxt_HeightCB4Select(null);
                 }
                 else {
