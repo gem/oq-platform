@@ -21,6 +21,8 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
+    console.log('projectDef:');
+    console.log(projectDef);
     // Find the theme data and create selection dropdown menu
     var themesWithChildren = [];
     var sum = {};
@@ -74,26 +76,33 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         // Get the data for each selected theme child
         var data = [];
-        // first setup an object with all regions and the plot element
+        // first setup an object with all regions and the plot element and 0 for each value
         var la = layerAttributes.features;
         for (var ia = 0; ia < selectedThemeChildren.length; ia++) {
             var temp = {};
             temp.plotElement = selectedThemeChildren[ia].field;
             for (var s = 0; s < la.length; s++) {
-                var bar = la[s].properties[selectedRegion];
-                temp[bar] = 0;
+                var eachReagion = la[s].properties[selectedRegion];
+                temp[eachReagion] = 0;
             }
             data.push(temp);
         }
 
+        // Poipulate the object created above with values
         for (var n = 0; n < data.length; n++) {
             for (var o = 0; o < layerAttributes.features.length; o++) {
                 var field = data[n].plotElement;
                 var value = layerAttributes.features[o].properties[field];
+
+                if (value === null) {
+                    value = 211.309;
+                }
                 var region = layerAttributes.features[o].properties[selectedRegion];
                 data[n][region] = value;
             }
         }
+        console.log('data:');
+        console.log(data);
 
         $('#primary-tab').append('<div id="primary-chart"></div>');
 

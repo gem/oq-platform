@@ -848,7 +848,7 @@ var startApp = function() {
                     layerFields.push(key);
                 }
 
-                getLayerInfo(layerAttributes);
+                getLayerInfo();
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
@@ -860,7 +860,7 @@ var startApp = function() {
         });
     });
 
-    function getLayerInfo(layerAttributes) {
+    function getLayerInfo() {
         /*
         // This feature is removed until the proj def format is refactored
         // Get the bounding box
