@@ -17,7 +17,7 @@ def pla_driver(name, debugger):
         if debugger != "":
             fp.add_extension(extension=debugger)
             fp.native_events_enabled = False
-            fp.set_preference("extensions.firebug.currentVersion", "2.0.9") 
+            fp.set_preference("browser.tabs.warnOnClose", False)
             fp.set_preference("extensions.firebug.allPagesActivation", "on") 
             fp.set_preference("extensions.firebug.console.enableSites", True) 
             fp.set_preference("extensions.firebug.defaultPanelName", "console") 
@@ -61,6 +61,7 @@ def xpath_finduniq(driver, xpath_str):
     return field[0]
     
 def pla_homepage_login(driver, basepath, user, passwd):
+    # "" is the (empty) path for the page required for login
     driver.get(basepath + "")
     # <a class="dropdown-toggle" data-toggle="dropdown" href="#">Sign in</a>
     inputs = driver.find_elements(By.XPATH, "//a[text()='Sign in']")

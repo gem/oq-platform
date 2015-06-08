@@ -11,7 +11,7 @@ from openquake.platform_test.utils import *
 try:
     from config import pla_basepath, pla_user, pla_passwd, pla_debugger
 except ImportError:
-    print "ERROR: config.py not found. Copy config.py in config_my.py and configure it properl ."
+    print "ERROR: config.py not found. Copy config.py in config_my.py and configure it properly."
     sys.exit(1)
 
 failed = False
