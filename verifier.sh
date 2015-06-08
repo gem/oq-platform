@@ -254,6 +254,15 @@ _devtest_innervm_run () {
     repo_id="$GEM_GIT_REPO"
     ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
+rem_sig_hand() {
+    trap ERR
+    echo 'signal trapped'
+    cd ~/$GEM_GIT_PACKAGE
+    . platform-env/bin/activate
+    cd openquakeplatform
+    fab stop
+}
+trap rem_sig_hand ERR
 set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
@@ -290,7 +299,7 @@ fi
 
 cd openquakeplatform/test
 export PYTHONPATH=\$(pwd)
-cp config.py.tmpl config.py
+cp config.py.tmplxxx config.py
 export DISPLAY=:1
 ./test_isc.py
 
