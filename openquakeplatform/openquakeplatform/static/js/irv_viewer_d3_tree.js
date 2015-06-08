@@ -553,7 +553,7 @@
                     qt_page.json_updated(pdData);
                 }
             }
-            $('#projectDefWeight-spinner').hide();
+            $('#projectDefWeight-spinner').remove();
         }
     } //end d3 tree
 

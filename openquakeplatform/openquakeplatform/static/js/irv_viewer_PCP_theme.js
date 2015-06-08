@@ -83,8 +83,6 @@ function Theme_PCP_Chart(themeData) {
         foreground;
 
     $('#cat-chart').empty();
-    console.log('winW:');
-    console.log(winW);
 
     var svg = d3.select('#cat-chart').append('svg')
         .attr("viewBox", "100 20 " +(winW -400)+" " +winH)
