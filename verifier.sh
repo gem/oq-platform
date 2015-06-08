@@ -305,7 +305,7 @@ fi
 
 cd openquakeplatform/test
 export PYTHONPATH=\$(pwd)
-cp config.py.tmplxxx config.py
+cp config.py.tmpl config.py
 export DISPLAY=:1
 ./test_isc.py
 
