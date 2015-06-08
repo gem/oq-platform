@@ -288,7 +288,7 @@ if [ \$ret -ne 0 ]; then
     exit \$ret
 fi
 
-cd test
+cd openquakeplatform/test
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
 export DISPLAY=:1
