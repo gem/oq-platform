@@ -272,29 +272,35 @@ virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
-nohup fab --show=everything bootstrap &
-bootstrap_pid=\$!
-bootstrap_tout=900
-for i in \$(seq 1 \$bootstrap_tout); do
-    if ! kill -0 \$bootstrap_pid >/dev/null 2>&1 ; then
-        wait \$bootstrap_pid
-        ret=\$?
-        if [ -f nohup.out ]; then
-            mv nohup.out bootstrap.log
+if [ 1 -eq 1 ]; then
+    # NEW METHOD: more simple to prevent hang
+    fab --show=everything bootstrap
+else
+    # OLD METHOD
+    nohup fab --show=everything bootstrap &
+    bootstrap_pid=\$!
+    bootstrap_tout=900
+    for i in \$(seq 1 \$bootstrap_tout); do
+        if ! kill -0 \$bootstrap_pid >/dev/null 2>&1 ; then
+            wait \$bootstrap_pid
+            ret=\$?
+            if [ -f nohup.out ]; then
+                mv nohup.out bootstrap.log
+            fi
+            break
         fi
-        break
+        sleep 5
+    done
+    if [ \$i -eq \$bootstrap_tout ]; then
+        echo "timeout reached"
+        kill -TERM \$bootstrap_pid
+        sleep 5
+        kill -KILL \$bootstrap_pid || true
+        ret=126
     fi
-    sleep 5
-done
-if [ \$i -eq \$bootstrap_tout ]; then
-    echo "timeout reached"
-    kill -TERM \$bootstrap_pid
-    sleep 5
-    kill -KILL \$bootstrap_pid || true
-    ret=126
-fi
-if [ \$ret -ne 0 ]; then
-    exit \$ret
+    if [ \$ret -ne 0 ]; then
+        exit \$ret
+    fi
 fi
 
 cd openquakeplatform/test
