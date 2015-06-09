@@ -149,14 +149,14 @@ var taxonomy_form = "";
 
 function is_not_negative_float(s)
 {
-    if (isNaN(parseFloat(s)) || parseFloat(s) < 0.0)
+    if (isNaN(s) || parseFloat(s) < 0.0)
         return false;
     return true;
 }
 
 function is_not_negative_int(s)
 {
-    if (isNaN(parseInt(s)) || parseInt(s) < 0.0 || parseInt(s) != parseFloat(s))
+    if (isNaN(s) || parseInt(s) < 0.0 || parseInt(s) != parseFloat(s))
         return false;
     return true;
 }
