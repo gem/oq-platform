@@ -643,8 +643,8 @@ function thematicMap(layerAttributes) {
         locationMode: L.LocationModes.GEOJSON,
         geoJSONField: 'geometry',
         layerOptions: {
-            fillOpacity: 1,
-            opacity: 1,
+            fillOpacity: 0.5,
+            opacity: 0.5,
             weight: 1,
             stroke: true,
             color: '#0000FF'
@@ -748,6 +748,19 @@ function getGeoServerLayers() {
 }
 
 var startApp = function() {
+    // theme tabls behavior
+    $('#themeTabs').resizable({
+        minHeight: 500,
+        minWidth: 640
+    });
+    $('#themeTabs').draggable();
+
+    $('#themeTabs').tabs({
+        collapsible: false,
+        selected: -1,
+        active: false,
+    });
+
     $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -794,9 +807,10 @@ var startApp = function() {
 
     // TODO check these are all needed
     $('#region-selection-list').hide();
+    $('#svir-project-list').hide();
+
     $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
-    $('#svir-project-list').hide();
 
     $('#thematic-map-selection').hide();
 
@@ -808,7 +822,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
-        $("#themeTabs").tabs("option", "active", 0);
+        $('#themeTabs').tabs('option', 'active', 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
         $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
@@ -954,15 +968,39 @@ var startApp = function() {
         closeOnEscape: true
     });
 
-    $(function() {
-        $( '#themeTabs' ).tabs({
-            collapsible: false,
-            selected: -1,
-            active: false,
-            height: 550
-        });
+    $('#map-tools').css({
+        'padding': '6px',
+        'position': 'absolute',
+        'top': '43px',
+        'left': '39px',
+        'width': '94%',
+        'z-index': 6
     });
 
+    $('#themeTabs').css({
+        'width': '700px',
+        'height': '600px',
+        'overflow': 'auto',
+        'position': 'fixed',
+        'left': '10px',
+        'top': '110px'
+    });
+
+    $('#loadProjectdialogBtn').css({
+        'position': 'fixed',
+        'left': '50px'
+    });
+
+    $('#base-map-menu').css({
+        'position': 'fixed',
+        'left': '390px'
+    });
+
+    $('#thematic-map-selection').css({
+        'position': 'fixed',
+        'left': '160px',
+        'display': 'block'
+    });
 };
 
 app.initialize(startApp);

@@ -707,6 +707,6 @@ else
     echo
     read -p "press ENTER to continue or CTRL+C to abort:" a
     echo
-    sudo -p "To install openquake platform root permissions are required.${NL}Please type password for $wai: " $0 --norm_user="$wai" --norm_dir="$PWD" "$@"
+    sudo -p "To install openquake platform root permissions are required.${NL}Please type password for $wai: " GEM_SET_DEBUG=$GEM_SET_DEBUG $0 --norm_user="$wai" --norm_dir="$PWD" "$@"
     exit $?
 fi

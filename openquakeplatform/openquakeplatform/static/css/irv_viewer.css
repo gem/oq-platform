@@ -122,10 +122,6 @@ svg {
   fill: blue;
 }
 
-#map {
-  height: 300px !important;
-}
-
 #licenseName {
   float: left;
   clear: none;
@@ -151,3 +147,5 @@ select#layer-list {
 .ui-dialog {
   z-index: 1000;
 }
+
+

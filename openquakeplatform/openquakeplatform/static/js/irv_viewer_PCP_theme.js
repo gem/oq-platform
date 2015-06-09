@@ -85,7 +85,7 @@ function Theme_PCP_Chart(themeData) {
     $('#cat-chart').empty();
 
     var svg = d3.select('#cat-chart').append('svg')
-        .attr("viewBox", "-30 20 " +(winW -130)+" " +winH)
+        .attr("viewBox", "100 20 " +(winW -400)+" " +winH)
         .attr("id", "CI-svg-element")
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
