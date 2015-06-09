@@ -170,7 +170,7 @@ def pla_click_at(driver, x, y):
 def pla_isc_test(driver, basepath):
     #<li>
     #<a href="/maps/23">
-    enter_button = xpath_finduniq(driver, "//li/a[@href='/maps/23' and normalize-space(text()) = 'Global Instrumental Earthquake Catalogue (1900 - 2009)']")
+    enter_button = xpath_finduniq(driver, "//li/a[@href='/maps/23' and normalize-space(text()) = 'Global Instrumental Earthquake Catalogue (1900 - 2011)']")
     enter_button.click()
     wait_new_page(driver, enter_button, basepath + '/maps/23')
 
