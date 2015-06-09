@@ -709,6 +709,9 @@ function taxt_ValidateHeight() // Ok
 
 function taxt_ValidateDate() // Ok
 {
+    $('#DateE1').removeClass('gem_field_alert');
+    $('#DateE2').removeClass('gem_field_alert');
+
     if ($('#DateCB1').val() == 0) {
         $('#DateE1').css('width', '90%');
         $('#DateE1').prop("disabled", true);
@@ -2557,133 +2560,166 @@ function taxt_BuildTaxonomy()
     var out_type = $('#OutTypeCB').val();
 
     /* validation part */
-    var height1 = $('#HeightCB1');
-    var height2 = $('#HeightCB2');
-    var height3 = $('#HeightCB3');
-    var height4 = $('#HeightCB4');
+    var height1 = $('#HeightCB1').val();
+    var height2 = $('#HeightCB2').val();
+    var height3 = $('#HeightCB3').val();
+    var height4 = $('#HeightCB4').val();
+    var date1 = $('#DateCB1').val();
     var validated = false;
     var validate_msg = "";
     var h11 = true, h12 = true, h21 = true, h22 = true, h31 = true, h32 = true;
+    var d1 = true, d2 = true;
 
-    do {
-        if (height1.val() > 0) {
-            if (!is_not_negative_int($('#noStoreysE11').val())) {
-                if (height1.val() == 1) {
-                    validate_msg = "Number of storey above ground: lower limit not positive integer. ";
-                }
-                else {
-                    validate_msg = validate_msg + "Number of storey above ground: not positive integer. ";
-                }
-                $('#noStoreysE11').addClass('gem_field_alert');
-                h11 = false;
+    if (height1 > 0) {
+        if (!is_not_negative_int($('#noStoreysE11').val())) {
+            if (height1 == 1) {
+                validate_msg += "Number of storey above ground: lower limit not positive integer. ";
             }
             else {
-                $('#noStoreysE11').removeClass('gem_field_alert');
+                validate_msg += "Number of storey above ground: not positive integer. ";
+            }
+            $('#noStoreysE11').addClass('gem_field_alert');
+            h11 = false;
+        }
+        else {
+            $('#noStoreysE11').removeClass('gem_field_alert');
+        }
+    }
+    if (height1 == 1) {
+        if (!is_not_negative_int($('#noStoreysE12').val())) {
+            validate_msg += "Number of storey above ground: upper limit not positive integer. ";
+            $('#noStoreysE12').addClass('gem_field_alert');
+            h12 = false;
+        }
+        else {
+            $('#noStoreysE12').removeClass('gem_field_alert');
+        }
+
+        // swap items if wrong order
+        if (h11 && h12) {
+            if (parseInt($('#noStoreysE11').val()) > parseInt($('#noStoreysE12').val())) {
+                var swap = $('#noStoreysE11').val();
+                $('#noStoreysE11').val($('#noStoreysE12').val());
+                $('#noStoreysE12').val(swap);
             }
         }
-        if (height1.val() == 1) {
-            if (!is_not_negative_int($('#noStoreysE12').val())) {
-                validate_msg = validate_msg + "Number of storey above ground: upper limit not positive integer. ";
-                $('#noStoreysE12').addClass('gem_field_alert');
-                h12 = false;
+    }
+
+    if (height2 > 0) {
+        if (!is_not_negative_int($('#noStoreysE21').val())) {
+            if (height2 == 1) {
+                validate_msg += "Number of storey above ground: lower limit not positive integer. ";
             }
             else {
-                $('#noStoreysE12').removeClass('gem_field_alert');
+                validate_msg += "Number of storey above ground: not positive integer. ";
             }
+            $('#noStoreysE21').addClass('gem_field_alert');
+            h21 = false;
+        }
+        else {
+            $('#noStoreysE21').removeClass('gem_field_alert');
+        }
+    }
 
-            // swap items if wrong order
-            if (h11 && h12) {
-                if (parseInt($('#noStoreysE11').val()) > parseInt($('#noStoreysE12').val())) {
-                    var swap = $('#noStoreysE11').val();
-                    $('#noStoreysE11').val($('#noStoreysE12').val());
-                    $('#noStoreysE12').val(swap);
-                }
-            }
+    if (height2 == 1) {
+        if (!is_not_negative_int($('#noStoreysE22').val())) {
+            validate_msg += "Number of storey above ground: upper limit not positive integer. ";
+            $('#noStoreysE22').addClass('gem_field_alert');
+            h22 = false;
+        }
+        else {
+            $('#noStoreysE22').removeClass('gem_field_alert');
         }
 
+        // swap items if wrong order
+        if (h21 && h22) {
+            if (parseInt($('#noStoreysE21').val()) > parseInt($('#noStoreysE22').val())) {
+                var swap = $('#noStoreysE21').val();
+                $('#noStoreysE21').val($('#noStoreysE22').val());
+                $('#noStoreysE22').val(swap);
+            }
+        }
+    }
 
-        if (height2.val() > 0) {
-            if (!is_not_negative_int($('#noStoreysE21').val())) {
-                if (height2.val() == 1) {
-                    validate_msg = "Number of storey above ground: lower limit not positive integer. ";
-                }
-                else {
-                    validate_msg = validate_msg + "Number of storey above ground: not positive integer. ";
-                }
-                $('#noStoreysE21').addClass('gem_field_alert');
-                h21 = false;
+    if (height3 > 0) {
+        if (!is_not_negative_float($('#noStoreysE31').val())) {
+            if (height3 == 1) {
+                validate_msg += "Height of ground floor level: lower limit not positive real";
             }
             else {
-                $('#noStoreysE21').removeClass('gem_field_alert');
+                validate_msg += "Height of ground floor level: not positive real. ";
+            }
+            $('#noStoreysE31').addClass('gem_field_alert');
+        }
+        else {
+            $('#noStoreysE31').removeClass('gem_field_alert');
+        }
+    }
+    if (height3 == 1) {
+        if (!is_not_negative_float($('#noStoreysE32').val())) {
+            validate_msg += "Height of ground floor level: upper limit not positive real. ";
+            $('#noStoreysE32').addClass('gem_field_alert');
+        }
+        else {
+            $('#noStoreysE32').removeClass('gem_field_alert');
+        }
+
+        // swap items if wrong order
+        if ($('#noStoreysE31').val() != "" && $('#noStoreysE32').val() != "") {
+            if (parseFloat($('#noStoreysE31').val()) > parseFloat($('#noStoreysE32').val())) {
+                var swap = $('#noStoreysE31').val();
+                $('#noStoreysE31').val($('#noStoreysE32').val());
+                $('#noStoreysE32').val(swap);
             }
         }
-        if (height2.val() == 1) {
-            if (!is_not_negative_int($('#noStoreysE22').val())) {
-                validate_msg = validate_msg + "Number of storey above ground: upper limit not positive integer. ";
-                $('#noStoreysE22').addClass('gem_field_alert');
-                h22 = false;
+    }
+    if (height4 > 0) {
+        if (!is_not_negative_int($('#noStoreysE41').val())) {
+            validate_msg += "Slope of the ground: not positive integer. ";
+            $('#noStoreysE41').addClass('gem_field_alert');
+        }
+        else {
+            $('#noStoreysE41').removeClass('gem_field_alert');
+        }
+    }
+
+    if (date1 > 0) {
+        if (!is_not_negative_int($('#DateE1').val())) {
+            if (date1 == 1) {
+                validate_msg += "Date of construction or retrofit: lower limit not positive integer. ";
             }
             else {
-                $('#noStoreysE22').removeClass('gem_field_alert');
+                validate_msg += "Date of construction or retrofit: not positive integer. ";
             }
-
-            // swap items if wrong order
-            if (h21 && h22) {
-                if (parseInt($('#noStoreysE21').val()) > parseInt($('#noStoreysE22').val())) {
-                    var swap = $('#noStoreysE21').val();
-                    $('#noStoreysE21').val($('#noStoreysE22').val());
-                    $('#noStoreysE22').val(swap);
-                }
-            }
+            $('#DateE1').addClass('gem_field_alert');
+            d1 = false;
+        }
+        else {
+            $('#DateE1').removeClass('gem_field_alert');
+        }
+    }
+    if (date1 == 2) {
+        if (!is_not_negative_int($('#DateE2').val())) {
+            validate_msg += "Date of construction or retrofit: upper limit not positive integer. ";
+            $('#DateE2').addClass('gem_field_alert');
+            d2 = false;
+        }
+        else {
+            $('#DateE2').removeClass('gem_field_alert');
         }
 
-
-        if (height3.val() > 0) {
-            if (!is_not_negative_float($('#noStoreysE31').val())) {
-                if (height3.val() == 1) {
-                    validate_msg = "Height of ground floor level: lower limit not positive real";
-                }
-                else {
-                    validate_msg = validate_msg + "Height of ground floor level: not positive real. ";
-                }
-                $('#noStoreysE31').addClass('gem_field_alert');
-            }
-            else {
-                $('#noStoreysE31').removeClass('gem_field_alert');
+        // swap items if wrong order
+        if (d1 && d2) {
+            if (parseInt($('#DateE1').val()) > parseInt($('#DateE2').val())) {
+                var swap = $('#DateE1').val();
+                $('#DateE1').val($('#DateE2').val());
+                $('#DateE2').val(swap);
             }
         }
-        if (height3.val() == 1) {
-            if (!is_not_negative_float($('#noStoreysE32').val())) {
-                validate_msg = validate_msg + "Height of ground floor level: upper limit not positive real. ";
-                $('#noStoreysE32').addClass('gem_field_alert');
-            }
-            else {
-                $('#noStoreysE32').removeClass('gem_field_alert');
-            }
+    }
 
-            // swap items if wrong order
-            if ($('#noStoreysE31').val() != "" && $('#noStoreysE32').val() != "") {
-                if (parseFloat($('#noStoreysE31').val()) > parseFloat($('#noStoreysE32').val())) {
-                    var swap = $('#noStoreysE31').val();
-                    $('#noStoreysE31').val($('#noStoreysE32').val());
-                    $('#noStoreysE32').val(swap);
-                }
-            }
-        }
-        if (height4.val() > 0) {
-            if (!is_not_negative_int($('#noStoreysE41').val())) {
-                validate_msg = validate_msg + "Slope of the ground: not positive integer. ";
-                $('#noStoreysE41').addClass('gem_field_alert');
-            }
-            else {
-                $('#noStoreysE41').removeClass('gem_field_alert');
-            }
-        }
-
-
-        if (validate_msg == "")
-            validated = true;
-    } while (false);
+    if (validate_msg == "")
+        validated = true;
 
     if (validated) {
         if (out_type != 0) {
