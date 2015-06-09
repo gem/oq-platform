@@ -4128,18 +4128,41 @@ function populate(s, ret_s) {
                 ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + is_or_are_given(date_vals.length);
                 return (false);
             }
-            $('#DateE1').val(date_vals[0]);
-            $('#DateE2').val(date_vals[1]);
-            taxt_HeightCB1Select(null);
         }
         else if (date_id == 'YEX' || date_id == 'YPRE' || date_id == 'YAPP') {
             if (date_vals.length != 1) {
                 ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + is_or_are_given(date_vals.length);
                 return (false);
             }
-            $('#DateE1').val(date_vals[0]);
-            taxt_HeightCB1Select(null);
         }
+
+        if (!is_not_negative_int(date_vals[0])) {
+            if (date_id == 'YBET') {
+                ret_s.s = "Date of construction or retrofit: lower limit is not positive integer.";
+            }
+            else {
+                ret_s.s = "Date of construction or retrofit: it is not positive integer.";
+            }
+            return (false);
+        }
+
+        if (date_id == 'YBET') {
+            if (!is_not_negative_int(date_vals[1])) {
+                ret_s.s = "Date of construction or retrofit: higher limit is not positive integer.";
+                return (false);
+            }
+
+            // swap items if wrong order
+            if (parseInt(date_vals[0]) > parseInt(date_vals[1])) {
+                var swap = date_vals[1];
+                date_vals[1] = date_vals[0];
+                date_vals[0] = swap;
+            }
+            $('#DateE2').val(date_vals[1]);
+        }
+        $('#DateE1').val(date_vals[0]);
+
+        taxt_ValidateDate();
     }
 
     //
