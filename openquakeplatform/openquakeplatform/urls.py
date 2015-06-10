@@ -159,6 +159,14 @@ urlpatterns = patterns('',
 
     )
 
+# Example of an experimental application
+# if settings.GEM_EXPERIMENTAL:
+#     urlpatterns += patterns('',
+#         url(r'^irv_viewer/$', TemplateView.as_view(
+#             template_name="irv_viewer.html"), name='irv_viewer'),
+#     )
+
+
 # Documents views
 if 'geonode.documents' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
