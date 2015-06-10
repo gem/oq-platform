@@ -166,7 +166,6 @@ urlpatterns = patterns('',
 #             template_name="irv_viewer.html"), name='irv_viewer'),
 #     )
 
-
 # Documents views
 if 'geonode.documents' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
