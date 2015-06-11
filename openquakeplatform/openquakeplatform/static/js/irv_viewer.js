@@ -157,13 +157,16 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Geometric mean (ignore weights)') {
         for (var v5 = 0; v5 < themeObj.length; v5++) {
+            var power;
             var tempElementValue = 1;
             var themeObjRegion = themeObj[v5].region;
             // compute the themes
             for (var w5 = 0; w5 < themeKeys.length; w5++) {
+                power = themeKeys.length
                 var tempThemeName = themeKeys[w5];
-                tempElementValue = Math.sqrt(tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor));
+                tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
             }
+            tempElementValue = Math.pow(tempElementValue, power);
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
@@ -249,7 +252,6 @@ function processIndicators(layerAttributes, projectDef) {
             tempIndicatorChildrenKeys.push(tempChildren[q].field);
         }
 
-        // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++) {
             var tempValue = 0;
             var region = la[o].properties[selectedRegion];
@@ -349,10 +351,13 @@ function processIndicators(layerAttributes, projectDef) {
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
             } else if ( operator == "Geometric mean (ignore weights)") {
                 tempValue = 1;
+
                 for (var p3 in la[o].properties) {
+
                     // iterate over the indicator child keys
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
+                            var power = tempIndicatorChildrenKeys.length;
                             // Sum the theme indicators
                             var primaryInversionFactor;
                             if (tempChildren[r3].isInverted === true) {
@@ -360,10 +365,11 @@ function processIndicators(layerAttributes, projectDef) {
                             } else {
                                 primaryInversionFactor = 1;
                             }
-                            tempValue = Math.sqrt(tempValue * (la[o].properties[p3] * primaryInversionFactor));
+                            tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
                         }
                     }
                 }
+                tempValue = Math.pow(tempValue, power);
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
             }
         }
@@ -478,7 +484,7 @@ function processIndicators(layerAttributes, projectDef) {
         }
     } else if (iriOperator == "Geometric mean (ignore weights)") {
         for (var regionName in SVI) {
-            tempVal = Math.sqrt(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor);
+            tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 2);
             IRI[regionName] = tempVal;
         }
     }
