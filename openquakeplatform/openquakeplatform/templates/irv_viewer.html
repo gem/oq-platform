@@ -88,7 +88,13 @@ IRV - {{block.super}}
     </div>
     <div id="cat-chart"></div>
     <div id="primary-tab">
-      <div>
+      <div id="mainContainer">
+        <div class="alert-unscaled-data">
+          <div class="alert alert-danger" role="alert">
+            The data provided has not been scaled and may not render well in this chart.
+            <button type="button" class="btn btn-danger scaleTheData">Scale the Data</button>
+          </div>
+        </div>
         <p>
           <select id="primary_indicator" name="primary_indicator"></select>
         </p>
