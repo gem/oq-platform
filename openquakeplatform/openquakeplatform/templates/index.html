@@ -45,6 +45,17 @@
             </section>
         </div>
       </div>
+      <div class="row">
+        <div class="span8">
+            <section class="widget list latest-maps paginate-contents">
+              <h2>{% trans "Featured Maps" %}</h2>
+              {% featured_maps as featured_maps %}
+              {% for map in featured_maps %}
+                {% include "maps/_map_list_item.html" %}
+              {% endfor %}
+            </section>
+        </div>
+      </div>
       {% endblock %}
       {% endif %}
 
