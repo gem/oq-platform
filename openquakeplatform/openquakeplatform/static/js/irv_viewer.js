@@ -350,13 +350,11 @@ function processIndicators(layerAttributes, projectDef) {
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
             } else if ( operator == "Geometric mean (ignore weights)") {
                 tempValue = 1;
-
+                var power = 1 / tempIndicatorChildrenKeys.length;
                 for (var p3 in la[o].properties) {
-
                     // iterate over the indicator child keys
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
-                            var power = 1 / tempIndicatorChildrenKeys.length;
                             // Sum the theme indicators
                             var primaryInversionFactor;
                             if (tempChildren[r3].isInverted === true) {
