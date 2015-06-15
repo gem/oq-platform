@@ -157,12 +157,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Geometric mean (ignore weights)') {
         for (var v5 = 0; v5 < themeObj.length; v5++) {
-            var power;
+            power = 1 / themeKeys.length;
             var tempElementValue = 1;
             var themeObjRegion = themeObj[v5].region;
             // compute the themes
             for (var w5 = 0; w5 < themeKeys.length; w5++) {
-                power = themeKeys.length
                 var tempThemeName = themeKeys[w5];
                 tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
             }
@@ -357,7 +356,7 @@ function processIndicators(layerAttributes, projectDef) {
                     // iterate over the indicator child keys
                     for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
                         if (p3 == tempIndicatorChildrenKeys[r3]) {
-                            var power = tempIndicatorChildrenKeys.length;
+                            var power = 1 / tempIndicatorChildrenKeys.length;
                             // Sum the theme indicators
                             var primaryInversionFactor;
                             if (tempChildren[r3].isInverted === true) {
