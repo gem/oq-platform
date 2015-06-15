@@ -21,8 +21,6 @@
 /////////////////////////////////////////////////
 
 function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
-    console.log('projectDef:');
-    console.log(projectDef);
     // Find the theme data and create selection dropdown menu
     var themesWithChildren = [];
     var sum = {};
@@ -101,8 +99,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
                 data[n][region] = value;
             }
         }
-        console.log('data:');
-        console.log(data);
 
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
