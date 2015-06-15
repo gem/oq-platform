@@ -3623,7 +3623,7 @@ function taxt_Initiate() {
     /* EWMA */  WallsCB.push('Masonry exterior walls');
     /* EWME */  WallsCB.push('Metal exterior walls');
     /* EWV  */  WallsCB.push('Vegetative exterior walls');
-    /* EWW9 */  WallsCB.push('Wooden exterior walls');
+    /* EWW  */  WallsCB.push('Wooden exterior walls');
     /* EWSL */  WallsCB.push('Stucco finish on light framing for exterior walls');
     /* EWPL */  WallsCB.push('Plastic/vinyl exterior walls, various');
     /* EWCB */  WallsCB.push('Cement-based boards for exterior walls');
