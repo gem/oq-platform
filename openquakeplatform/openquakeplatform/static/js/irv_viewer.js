@@ -646,7 +646,7 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Add all primary indicators to selection menu
-    $('#thematic-map-selection').append('<optgroup label="Primary Indicators">');
+    $('#thematic-map-selection').append('<optgroup label="Composite Indicators">');
     for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
         $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
     }
