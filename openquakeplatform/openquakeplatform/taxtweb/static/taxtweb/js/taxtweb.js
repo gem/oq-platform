@@ -4079,8 +4079,8 @@ function populate(s, ret_s) {
                 // swap items if wrong order
                 if (parseInt(h_vals[0]) > parseInt(h_vals[1])) {
                     var swap = h_vals[1];
-                    h_vals[0] = h_vals[1];
-                    h_vals[1] = swap;
+                    h_vals[1] = h_vals[0];
+                    h_vals[0] = swap;
                 }
                 $('#noStoreysE' + h_cbid[h_grp] + '2').val(h_vals[1]);
             }
