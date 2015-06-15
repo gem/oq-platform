@@ -500,6 +500,7 @@ function processIndicators(layerAttributes, projectDef) {
                 la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
             }
         }
+
         for (var key in SVI) {
             if (key == la[ix].properties[selectedRegion]) {
                 la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
