@@ -156,8 +156,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Geometric mean (ignore weights)') {
+        power = 1 / themeKeys.length;
         for (var v5 = 0; v5 < themeObj.length; v5++) {
-            power = 1 / themeKeys.length;
             var tempElementValue = 1;
             var themeObjRegion = themeObj[v5].region;
             // compute the themes
@@ -481,7 +481,7 @@ function processIndicators(layerAttributes, projectDef) {
         }
     } else if (iriOperator == "Geometric mean (ignore weights)") {
         for (var regionName in SVI) {
-            tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 2);
+            tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 0.5);
             IRI[regionName] = tempVal;
         }
     }
