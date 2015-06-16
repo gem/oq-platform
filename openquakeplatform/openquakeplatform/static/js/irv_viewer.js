@@ -38,7 +38,7 @@ var indicatorChildrenKey = [];
 
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
-    // We are not scalling any of the IR indicators
+    // We are not scaling any of the IR indicators
     var indicatorsToBeScaled = {};
     for (var i = 0; i < projectDef.children[1].children.length; i++) {
         for (var j = 0; j < projectDef.children[1].children[i].children.length; j++) {
@@ -47,7 +47,7 @@ function scaleTheData() {
         }
     }
 
-    // Populate the list with vlaues
+    // Populate the list with values
     for (var key in indicatorsToBeScaled) {
         for (var i = 0; i < layerAttributes.features.length; i++) {
             var tempRegion = layerAttributes.features[i].properties[selectedRegion];
@@ -121,7 +121,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         var tempRegion = themeObj[t].region;
         subIndex[tempRegion] = 0;
     }
-    // get some info aobut the themes
+    // get some info about the themes
     var themeKeys = [];
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
@@ -417,6 +417,31 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
+    /////////////////////////////////////////////////
+    //// Check for null values primary indicators ///
+    /////////////////////////////////////////////////
+
+    // Try and remove the warning message on each iteration.
+    try {
+        $('.incompleteData').remove();
+    } catch (e) {
+        // continue
+    }
+
+    if (laValuesArray.indexOf(null) > -1) {
+        var warningMsg =
+            '<div class="alert alert-danger incompleteData" role="alert">'+
+                'The application is not able to render charts for this project because the composite indicator data is incomplete.'+
+            '</div>';
+
+        // Provide warning message if the composite indicator data is incomplete
+        $('#iri-chart').append(warningMsg);
+        $('#cat-chart').append(warningMsg);
+        $('#primary-tab').append(warningMsg);
+        // Stop the function
+        return;
+    }
+
     ////////////////////////////////
     //// Check for scaled values ///
     ////////////////////////////////
@@ -663,11 +688,11 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-    IRI.plotElement = "IRI"; // Lable within the object
+    IRI.plotElement = "IRI"; // Label within the object
     if (riskIndicators !== undefined) {
-        RI.plotElement = "RI"; // Lable within the object
+        RI.plotElement = "RI"; // Label within the object
     }
-    SVI.plotElement = "SVI"; // Lable within the object
+    SVI.plotElement = "SVI"; // Label within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
@@ -689,7 +714,7 @@ function scale(IndicatorObj) {
     var tempMin = Math.min.apply(null, ValueArray),
         tempMax = Math.max.apply(null, ValueArray);
     for (var j = 0; j < ValueArray.length; j++) {
-        // make sure not to devide by zero
+        // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
         if (tempMax  == tempMin) {
             ValueArray[j] = 1;
