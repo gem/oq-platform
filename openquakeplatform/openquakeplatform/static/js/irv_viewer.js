@@ -17,6 +17,7 @@
 
 $(document).ready(function() {
     $('#cover').remove();
+    $('.alert-unscaled-data').hide();
 });
 
 var layerAttributes;
@@ -34,6 +35,47 @@ var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
+
+function scaleTheData() {
+    // Create a list of primary indicators that need to be scaled
+    // We are not scalling any of the IR indicators
+    var indicatorsToBeScaled = {};
+    for (var i = 0; i < projectDef.children[1].children.length; i++) {
+        for (var j = 0; j < projectDef.children[1].children[i].children.length; j++) {
+            var tempName = projectDef.children[1].children[i].children[j].field;
+            indicatorsToBeScaled[tempName] = {};
+        }
+    }
+
+    // Populate the list with vlaues
+    for (var key in indicatorsToBeScaled) {
+        for (var i = 0; i < layerAttributes.features.length; i++) {
+            var tempRegion = layerAttributes.features[i].properties[selectedRegion];
+            indicatorsToBeScaled[key][tempRegion] = layerAttributes.features[i].properties[key];
+        }
+    }
+
+    for (var k in indicatorsToBeScaled) {
+        scale(indicatorsToBeScaled[k]);
+    }
+
+    // Put values back into the layerAttributes obj
+    for (var key in indicatorsToBeScaled) {
+        for (var i = 0; i < layerAttributes.features.length; i++) {
+            for (var layerAttributesKey in layerAttributes.features[i].properties) {
+                if (key === layerAttributesKey) {
+                    for(var indicatorKey in indicatorsToBeScaled[key]) {
+                        if (layerAttributes.features[i].properties[selectedRegion] == indicatorKey) {
+                            layerAttributes.features[i].properties[layerAttributesKey] = indicatorsToBeScaled[key][indicatorKey];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // Process the indicators again
+    processIndicators(layerAttributes, sessionProjectDef);
+}
 
 function createIndex(la, index) {
     var indicator = [];
@@ -209,6 +251,7 @@ function processIndicators(layerAttributes, projectDef) {
     //build the theme indicator object
     var themeData = [];
     indicatorInfo = [];
+    var laValuesArray = [];
 
     function generateThemeObject(indicatorObj) {
         var region = indicatorObj.region;
@@ -307,6 +350,8 @@ function processIndicators(layerAttributes, projectDef) {
                                 primaryInversionFactor = 1;
                             }
                             tempValue = tempValue + ((la[o].properties[p2] * primaryInversionFactor) * weight);
+                            // Collect an array of all the values that pass through the loop
+                            laValuesArray.push(la[o].properties[p2]);
                         }
                     }
                 }
@@ -370,6 +415,31 @@ function processIndicators(layerAttributes, projectDef) {
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
             }
         }
+    }
+
+    ////////////////////////////////
+    //// Check for scaled values ///
+    ////////////////////////////////
+
+    Array.prototype.max = function() {
+        return Math.max.apply(null, this);
+    };
+
+    Array.prototype.min = function() {
+        return Math.min.apply(null, this);
+    };
+
+    var maxValue = laValuesArray.max();
+    var minValue = laValuesArray.min();
+
+    if (minValue === 0 && maxValue === 1) {
+        $('.alert-unscaled-data').hide();
+    } else {
+        $('.alert-unscaled-data').show();
+        $('.scaleTheData').click(function() {
+            // Scale the primary indicators
+            scaleTheData();
+        });
     }
 
     for (var p5 = 0; p5 < indicatorInfo.length; p5++) {
@@ -576,7 +646,7 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Add all primary indicators to selection menu
-    $('#thematic-map-selection').append('<optgroup label="Primary Indicators">');
+    $('#thematic-map-selection').append('<optgroup label="Composite Indicators">');
     for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
         $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
     }
@@ -900,7 +970,7 @@ var startApp = function() {
                     layerFields.push(key);
                 }
 
-                getLayerInfo(layerAttributes);
+                getLayerInfo();
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
@@ -912,7 +982,7 @@ var startApp = function() {
         });
     });
 
-    function getLayerInfo(layerAttributes) {
+    function getLayerInfo() {
         /*
         // This feature is removed until the proj def format is refactored
         // Get the bounding box
