@@ -4061,9 +4061,6 @@ function populate(s, ret_s) {
         h_grp = Math.floor(h_id / 4);
         h_type = h_id % 4;
 
-        // set value (in the case of 'HD' the real index must be (h_type - 1))
-        $('#HeightCB' + h_cbid[h_grp]).val(h_map[h_id] == 'HD' ? h_type - 1 : h_type);
-
         if (h_type == hsfx_99) {
             if (h_items.length != 1) {
                 ret_s.s = "Height: '" + h_label + "' type requires no values, " + is_or_are_given(h_vals.length);
@@ -4114,6 +4111,10 @@ function populate(s, ret_s) {
                 }
                 $('#noStoreysE' + h_cbid[h_grp] + '2').val(h_vals[1]);
             }
+
+            // set value (in the case of 'HD' the real index must be (h_type - 1))
+            $('#HeightCB' + h_cbid[h_grp]).val(h_map[h_id] == 'HD' ? h_type - 1 : h_type);
+
             $('#noStoreysE' + h_cbid[h_grp] + '1').val(h_vals[0]);
 
             h_cbfun[h_grp](null);
@@ -4123,7 +4124,7 @@ function populate(s, ret_s) {
     //
     //  Date
     //
-    var date, date_items, date_label, date_id, date_vals;
+    var date, date_index = -1, date_items, date_label, date_id, date_vals;
 
     date = sar[7].split('+');
     date_items = date[0].split(':');
@@ -4136,9 +4137,8 @@ function populate(s, ret_s) {
 
     for (i = 0 ; i < date_type.length ; i++) {
         if (date_label == date_type[i].id) {
+            date_index = i;
             date_id = date_label;
-            $('#DateCB1').val(i);
-            taxt_DateCB1Select(null);
             break;
         }
     }
@@ -4178,7 +4178,7 @@ function populate(s, ret_s) {
 
         if (date_id == 'YBET') {
             if (!is_not_negative_int(date_vals[1]) || date_vals[1].length > 4) {
-                ret_s.s = "Date of construction or retrofit: higher limit is a valid date.";
+                ret_s.s = "Date of construction or retrofit: higher limit is not a valid date.";
                 return (false);
             }
 
@@ -4195,6 +4195,8 @@ function populate(s, ret_s) {
             }
             $('#DateE2').val(date_vals[1]);
         }
+        $('#DateCB1').val(date_index);
+        taxt_DateCB1Select(null);
         $('#DateE1').val(date_vals[0]);
 
         taxt_ValidateDate();
