@@ -154,6 +154,15 @@ function is_not_negative_float(s)
     return true;
 }
 
+function is_in_rect_angle_float(s)
+{
+    if (!is_not_negative_float(s))
+        return false;
+    if (parseFloat(s) > 90.0)
+        return false;
+    return true;
+}
+
 function is_not_negative_int(s)
 {
     if (isNaN(s) || parseInt(s) < 0.0 || parseInt(s) != parseFloat(s))
@@ -2686,8 +2695,8 @@ function taxt_BuildTaxonomy()
         }
     }
     if (height4 > 0) {
-        if (!is_not_negative_int($('#noStoreysE41').val())) {
-            validate_msg += "Slope of the ground: not positive integer. ";
+        if (!is_in_rect_angle_float($('#noStoreysE41').val())) {
+            validate_msg += "Slope of the ground: it is not positive real between 0 and 90. ";
             $('#noStoreysE41').addClass('gem_field_alert');
         }
         else {
@@ -4033,8 +4042,8 @@ function populate(s, ret_s) {
     var hsfx_99 = 0, hsfx_bet = 1, hsfx_ex = 2, hsfx_app = 3;
 
     var h_cbfun = [ taxt_HeightCB1Select, taxt_HeightCB2Select, taxt_HeightCB3Select, taxt_HeightCB4Select ];
-    var h_typck = [ is_not_negative_int, is_not_negative_int, is_not_negative_float, is_not_negative_int ];
-    var h_typck_s = [ "positive integer", "positive integer", "positive real", "positive integer" ];
+    var h_typck = [ is_not_negative_int, is_not_negative_int, is_not_negative_float, is_in_rect_angle_float ];
+    var h_typck_s = [ "positive integer", "positive integer", "positive real", "positive real between 0 and 90" ];
     var h_convf = [ parseInt, parseInt, parseFloat, parseInt ];
     h = sar[6].split('+');
 
