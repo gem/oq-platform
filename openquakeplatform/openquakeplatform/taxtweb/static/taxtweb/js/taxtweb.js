@@ -2568,7 +2568,8 @@ function taxt_BuildTaxonomy()
     var ResTax, ResTaxFull = BuildTaxonomyString(0);
     var out_type = $('#OutTypeCB').val();
 
-    /* validation part */
+    /* validation part: '#HeightCBx' are dropdown menus with it's current selected item */
+
     var height1 = $('#HeightCB1').val();
     var height2 = $('#HeightCB2').val();
     var height3 = $('#HeightCB3').val();
