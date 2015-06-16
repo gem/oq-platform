@@ -105,7 +105,7 @@ taxonomy_map = { # Direction spec
              'EWMA': 12,
              'EWME': 12,
              'EWV': 12,
-             'EWW9': 12,
+             'EWW': 12,
              'EWSL': 12,
              'EWPL': 12,
              'EWCB': 12,
