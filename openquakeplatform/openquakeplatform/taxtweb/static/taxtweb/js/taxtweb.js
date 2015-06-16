@@ -2591,6 +2591,10 @@ function taxt_BuildTaxonomy()
             $('#noStoreysE12').addClass('gem_field_alert');
             h12 = false;
         }
+        else if (parseInt($('#noStoreysE11').val()) == parseInt($('#noStoreysE12').val())) {
+            ret_s.s = "Number of storey above ground: invalid range.";
+            return (false);
+        }
         else {
             $('#noStoreysE12').removeClass('gem_field_alert');
         }
@@ -2627,6 +2631,10 @@ function taxt_BuildTaxonomy()
             $('#noStoreysE22').addClass('gem_field_alert');
             h22 = false;
         }
+        else if (parseInt($('#noStoreysE21').val()) == parseInt($('#noStoreysE22').val())) {
+            ret_s.s = "Number of storey above ground: invalid range.";
+            return (false);
+        }
         else {
             $('#noStoreysE22').removeClass('gem_field_alert');
         }
@@ -2659,6 +2667,10 @@ function taxt_BuildTaxonomy()
         if (!is_not_negative_float($('#noStoreysE32').val())) {
             validate_msg += "Height of ground floor level: upper limit not positive real. ";
             $('#noStoreysE32').addClass('gem_field_alert');
+        }
+        else if (parseInt($('#noStoreysE31').val()) == parseInt($('#noStoreysE32').val())) {
+            ret_s.s = "Height of ground floor level: invalid range.";
+            return (false);
         }
         else {
             $('#noStoreysE32').removeClass('gem_field_alert');
@@ -2703,6 +2715,10 @@ function taxt_BuildTaxonomy()
             validate_msg += "Date of construction or retrofit: upper limit not positive integer. ";
             $('#DateE2').addClass('gem_field_alert');
             d2 = false;
+        }
+        else if (parseInt($('#DateE1').val()) == parseInt($('#DateE2').val())) {
+            ret_s.s = "Date of construction or retrofit: invalid range.";
+            return (false);
         }
         else {
             $('#DateE2').removeClass('gem_field_alert');
@@ -4019,6 +4035,7 @@ function populate(s, ret_s) {
     var h_cbfun = [ taxt_HeightCB1Select, taxt_HeightCB2Select, taxt_HeightCB3Select, taxt_HeightCB4Select ];
     var h_typck = [ is_not_negative_int, is_not_negative_int, is_not_negative_float, is_not_negative_int ];
     var h_typck_s = [ "positive integer", "positive integer", "positive real", "positive integer" ];
+    var h_convf = [ parseInt, parseInt, parseFloat, parseInt ];
     h = sar[6].split('+');
 
     for (sub_i = 0 ; sub_i < h.length ; sub_i++) {
@@ -4073,6 +4090,10 @@ function populate(s, ret_s) {
             if (h_type == hsfx_bet) {
                 if (!h_typck[h_grp](h_vals[1])) {
                     ret_s.s = h_title[h_grp] + ": higher limit not " + h_typck_s[h_grp] + ". ";
+                    return (false);
+                }
+                else if (h_convf[h_grp](h_vals[0]) == h_convf[h_grp](h_vals[1])) {
+                    ret_s.s = h_title[h_grp] + ": invalid range. ";
                     return (false);
                 }
 
@@ -4149,6 +4170,11 @@ function populate(s, ret_s) {
         if (date_id == 'YBET') {
             if (!is_not_negative_int(date_vals[1])) {
                 ret_s.s = "Date of construction or retrofit: higher limit is not positive integer.";
+                return (false);
+            }
+
+            if (parseInt(date_vals[0]) == parseInt(date_vals[1])) {
+                ret_s.s = "Date of construction or retrofit: invalid range.";
                 return (false);
             }
 
