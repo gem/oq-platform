@@ -91,10 +91,6 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             for (var o = 0; o < layerAttributes.features.length; o++) {
                 var field = data[n].plotElement;
                 var value = layerAttributes.features[o].properties[field];
-
-                if (value === null) {
-                    value = 211.309;
-                }
                 var region = layerAttributes.features[o].properties[selectedRegion];
                 data[n][region] = value;
             }
