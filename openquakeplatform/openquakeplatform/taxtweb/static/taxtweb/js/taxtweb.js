@@ -2601,8 +2601,9 @@ function taxt_BuildTaxonomy()
             h12 = false;
         }
         else if (parseInt($('#noStoreysE11').val()) == parseInt($('#noStoreysE12').val())) {
-            ret_s.s = "Number of storey above ground: invalid range.";
-            return (false);
+            validate_msg += "Number of storey above ground: invalid range.";
+            $('#noStoreysE12').addClass('gem_field_alert');
+            h12 = false;
         }
         else {
             $('#noStoreysE12').removeClass('gem_field_alert');
@@ -2641,8 +2642,9 @@ function taxt_BuildTaxonomy()
             h22 = false;
         }
         else if (parseInt($('#noStoreysE21').val()) == parseInt($('#noStoreysE22').val())) {
-            ret_s.s = "Number of storey above ground: invalid range.";
-            return (false);
+            validate_msg += "Number of storey above ground: invalid range.";
+            $('#noStoreysE22').addClass('gem_field_alert');
+            h22 = false;
         }
         else {
             $('#noStoreysE22').removeClass('gem_field_alert');
@@ -2667,6 +2669,7 @@ function taxt_BuildTaxonomy()
                 validate_msg += "Height of ground floor level: not positive real. ";
             }
             $('#noStoreysE31').addClass('gem_field_alert');
+            h31 = false;
         }
         else {
             $('#noStoreysE31').removeClass('gem_field_alert');
@@ -2676,17 +2679,19 @@ function taxt_BuildTaxonomy()
         if (!is_not_negative_float($('#noStoreysE32').val())) {
             validate_msg += "Height of ground floor level: upper limit not positive real. ";
             $('#noStoreysE32').addClass('gem_field_alert');
+            h32 = false;
         }
         else if (parseInt($('#noStoreysE31').val()) == parseInt($('#noStoreysE32').val())) {
-            ret_s.s = "Height of ground floor level: invalid range.";
-            return (false);
+            validate_msg += "Height of ground floor level: invalid range.";
+            $('#noStoreysE32').addClass('gem_field_alert');
+            h32 = false;
         }
         else {
             $('#noStoreysE32').removeClass('gem_field_alert');
         }
 
         // swap items if wrong order
-        if ($('#noStoreysE31').val() != "" && $('#noStoreysE32').val() != "") {
+        if (h31 && h32) {
             if (parseFloat($('#noStoreysE31').val()) > parseFloat($('#noStoreysE32').val())) {
                 var swap = $('#noStoreysE31').val();
                 $('#noStoreysE31').val($('#noStoreysE32').val());
@@ -2694,6 +2699,7 @@ function taxt_BuildTaxonomy()
             }
         }
     }
+
     if (height4 > 0) {
         if (!is_in_rect_angle_float($('#noStoreysE41').val())) {
             validate_msg += "Slope of the ground: it is not positive real between 0 and 90. ";
