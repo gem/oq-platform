@@ -2696,12 +2696,12 @@ function taxt_BuildTaxonomy()
     }
 
     if (date1 > 0) {
-        if (!is_not_negative_int($('#DateE1').val())) {
-            if (date1 == 1) {
-                validate_msg += "Date of construction or retrofit: lower limit not positive integer. ";
+        if (!is_not_negative_int($('#DateE1').val()) || $('#DateE1').val().length > 4) {
+            if (date1 == 2) {
+                validate_msg += "Date of construction or retrofit: lower limit is not a valid date. ";
             }
             else {
-                validate_msg += "Date of construction or retrofit: not positive integer. ";
+                validate_msg += "Date of construction or retrofit: it is not a valid date. ";
             }
             $('#DateE1').addClass('gem_field_alert');
             d1 = false;
@@ -2711,8 +2711,8 @@ function taxt_BuildTaxonomy()
         }
     }
     if (date1 == 2) {
-        if (!is_not_negative_int($('#DateE2').val())) {
-            validate_msg += "Date of construction or retrofit: upper limit not positive integer. ";
+        if (!is_not_negative_int($('#DateE2').val()) || $('#DateE2').val().length > 4) {
+            validate_msg += "Date of construction or retrofit: upper limit is not a valid date. ";
             $('#DateE2').addClass('gem_field_alert');
             d2 = false;
         }
@@ -4157,19 +4157,19 @@ function populate(s, ret_s) {
             }
         }
 
-        if (!is_not_negative_int(date_vals[0])) {
+        if (!is_not_negative_int(date_vals[0]) || date_vals[0].length > 4) {
             if (date_id == 'YBET') {
-                ret_s.s = "Date of construction or retrofit: lower limit is not positive integer.";
+                ret_s.s = "Date of construction or retrofit: lower limit is not a valid date.";
             }
             else {
-                ret_s.s = "Date of construction or retrofit: it is not positive integer.";
+                ret_s.s = "Date of construction or retrofit: it is not a valid date.";
             }
             return (false);
         }
 
         if (date_id == 'YBET') {
-            if (!is_not_negative_int(date_vals[1])) {
-                ret_s.s = "Date of construction or retrofit: higher limit is not positive integer.";
+            if (!is_not_negative_int(date_vals[1]) || date_vals[1].length > 4) {
+                ret_s.s = "Date of construction or retrofit: higher limit is a valid date.";
                 return (false);
             }
 
