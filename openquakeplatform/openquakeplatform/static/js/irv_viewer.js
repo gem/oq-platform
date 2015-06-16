@@ -421,9 +421,16 @@ function processIndicators(layerAttributes, projectDef) {
     //// Check for null values primary indicators ///
     /////////////////////////////////////////////////
 
+    // Try and remove the warning message on each iteration.
+    try {
+        $('.incompleteData').remove();
+    } catch (e) {
+        // continue
+    }
+
     if (laValuesArray.indexOf(null) > -1) {
         var warningMsg =
-            '<div class="alert alert-danger" role="alert">'+
+            '<div class="alert alert-danger incompleteData" role="alert">'+
                 'The application is not able to render charts for this project because the composite indicator data is incomplete.'+
             '</div>';
 
