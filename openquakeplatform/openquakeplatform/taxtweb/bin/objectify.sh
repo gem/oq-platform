@@ -1,23 +1,31 @@
 #!/bin/bash
+# export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]}: '
+fpy="mat_and_llrs.py"
 fin="$1"
 ct=0
-IFS='
+NL='
 '
+IFS="$NL"
+rm $fpy
 echo
 echo "var material = ["
+echo "taxt_mat = ( " >> $fpy
 comma=""
 for i in $(grep 'MaterialCB11.push' $fin) ; do
     if [ "$comma" != "" ]; then
         echo "$comma"
+        echo "$comma" >> $fpy
     fi
     id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
     desc="$(echo "$i" | sed "s@.*MaterialCB11\.push('@@g;s@');\$@@g")"
     echo "                 { id: '$id', desc: '$desc' }" | tr -d '\n'
+    echo "    ('$id', '$desc')" | tr -d '\n' >> $fpy
     comma=","
 done
 echo
 echo "               ];"
-
+echo >> $fpy
+echo " )" >> $fpy
 # Material Technology
 echo
 echo "var mat_tech_grp = [];"
@@ -105,12 +113,12 @@ for i in $(egrep 'var MaterialCB41 = \[\];|MaterialCB41\.push' $fin ; echo "THE 
     fi
 done
 
-
 # Lateral load-resisting system
 echo
 echo "var llrs_type_grp = [];"
 first_grp="true"
 grp=0
+declare -a llrs_ls
 for i in $(egrep 'var SystemCB11 = \[\];|SystemCB11\.push' $fin ; echo "THE END") ; do
     if echo "$i" | grep -q "var SystemCB11 = \[\];"; then
         if [ "$first_grp" != "true" ]; then
@@ -120,21 +128,92 @@ for i in $(egrep 'var SystemCB11 = \[\];|SystemCB11\.push' $fin ; echo "THE END"
         echo "llrs_type_grp[$grp] = ["
         first_grp="false"
         comma=""
+        nl=""
         grp=$((grp + 1))
     elif echo "$i" | grep -q "SystemCB11.push"; then
         if [ "$comma" != "" ]; then
             echo "$comma"
         fi
         id="$(echo "$i" | sed 's@^[ /\*]\+@@g;s@[ /\*].*@@g')"
-        desc="$(echo "$i" | sed "s@.*SystemCB11\.push('@@g;s@');\$@@g")"
+        desc="$(echo "$i" | sed "s@.*SystemCB11\.push('@@g;s@');\$@@g" | tr -d '\n')"
         echo "                    { id: '$id', desc: '$desc' }" | tr -d '\n'
         comma=","
+        llrs_ls[$grp]+="${nl}${id}|${desc}"
+        nl="$NL"
     else
         echo
         echo "                  ];"
     fi
 done
 
+declare -a a_arr b_arr c_arr
+
+mapfile -t a_arr <<< "${llrs_ls[1]}"
+
+for curr in $(seq 2 $grp); do
+    b_arr=()
+    c_arr=()
+    mapfile -t b_arr <<< "${llrs_ls[${curr}]}"
+    a_cur=0
+    b_cur=0
+    catched="false"
+    a_n=$((${#a_arr[*]} - 1))
+    for a in $(seq $a_cur $a_n); do
+        b_n=$((${#b_arr[*]} - 1))
+        for b in $(seq $b_cur $b_n); do
+            if [ "${a_arr[$a]}" = "${b_arr[$b]}" ]; then
+                catched="true"
+                break
+            fi
+        done
+
+        if [ $b -eq $b_cur -o "$catched" = "false" ]; then
+            # echo "FROM_A: ${a_arr[$a]}"
+            c_arr+=(${a_arr[$a]})
+            b_cur=$((b_cur + 1))
+        elif [ "$catched" = "true" ]; then
+            bbef=$b
+            for bb in $(seq $b_cur $bbef); do
+                recatch="false"
+                for aa in $(seq $((a_cur + 1)) $a_n); do
+                    if [ "${a_arr[$aa]}" = "${b_arr[$bb]}" ]; then
+                        recatch="true"
+                        break
+                    fi
+                done
+                if [ "$recatch" = "false" ]; then
+                    # echo "FROM_B: ${b_arr[$bb]}"
+                    c_arr+=(${b_arr[$bb]})
+                fi
+            done
+            # echo "FROM_Q: ${a_arr[$a]}"
+            c_arr+=(${a_arr[$a]})
+            b_cur=$((bbef + 1))
+        fi
+    done
+    a_arr=("${c_arr[@]}")
+    # echo "FROM_FINISH"
+done
+
+#a_n=$((${#a_arr[*]} - 1))
+#for a in $(seq 0 $a_n); do
+#    echo "${a_arr[$a]}"
+#done
+
+echo  >> $fpy
+echo "taxt_llrs = ( " >> $fpy
+comma=""
+for i in ${a_arr[@]} ; do
+    if [ "$comma" != "" ]; then
+        echo "$comma" >> $fpy
+    fi
+    id="$(echo "$i" | cut -d '|' -f 1)"
+    desc="$(echo "$i" | cut -d '|' -f 2)"
+    echo "    ('$id', '$desc')" | tr -d '\n' >> $fpy
+    comma=","
+done
+echo >> $fpy
+echo " )" >> $fpy
 
 # Lateral load-resisting system ductility
 echo
