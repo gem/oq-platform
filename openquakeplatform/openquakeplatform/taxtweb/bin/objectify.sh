@@ -9,7 +9,7 @@ IFS="$NL"
 rm $fpy
 echo
 echo "var material = ["
-echo "taxt_mat = ( " >> $fpy
+echo "taxt_mat = (" >> $fpy
 comma=""
 for i in $(grep 'MaterialCB11.push' $fin) ; do
     if [ "$comma" != "" ]; then
@@ -150,6 +150,8 @@ declare -a a_arr b_arr c_arr
 
 mapfile -t a_arr <<< "${llrs_ls[1]}"
 
+# this loop produces an acceptable union of all groups of primary LLRS levels
+# A = ( a, b, c, z ) , B = ( a, f, x, b, d, z ) => A U B = ( a, f, x, b, c, d, z )
 for curr in $(seq 2 $grp); do
     b_arr=()
     c_arr=()
@@ -195,13 +197,8 @@ for curr in $(seq 2 $grp); do
     # echo "FROM_FINISH"
 done
 
-#a_n=$((${#a_arr[*]} - 1))
-#for a in $(seq 0 $a_n); do
-#    echo "${a_arr[$a]}"
-#done
-
 echo  >> $fpy
-echo "taxt_llrs = ( " >> $fpy
+echo "taxt_llrs = (" >> $fpy
 comma=""
 for i in ${a_arr[@]} ; do
     if [ "$comma" != "" ]; then

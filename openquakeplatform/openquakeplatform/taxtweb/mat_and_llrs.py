@@ -1,4 +1,4 @@
-taxt_mat = ( 
+taxt_mat = (
     ('MAT99', 'Unknown Material'),
     ('C99', 'Concrete, unknown reinforcement'),
     ('CU', 'Concrete, unreinforced'),
@@ -17,7 +17,7 @@ taxt_mat = (
     ('MATO', 'Other material')
  )
 
-taxt_llrs = ( 
+taxt_llrs = (
     ('L99', 'Unknown lateral load-resisting system'),
     ('LN', 'No lateral load-resisting system'),
     ('LFM', 'Moment frame'),
