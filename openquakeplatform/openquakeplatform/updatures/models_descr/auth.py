@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
+                                                 ModelDescription, models_descr)
+
 # auth models
 models_descr['auth.permission'] = ModelDescription(
     'auth.permission',

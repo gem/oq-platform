@@ -23,17 +23,18 @@ import types
 from pprint import pprint
 from collections import OrderedDict
 from django.core.management import call_command, execute_manager
-import updatures
-from updatures.classes import BackInheritance, ModelRefs, ModelDescription, models_descr
-import updatures.models_descr.auth
-import updatures.models_descr.base
-import updatures.models_descr.contenttypes
-import updatures.models_descr.maps
-import updatures.models_descr.people
-import updatures.models_descr.security
-import updatures.models_descr.taggit
-import updatures.models_descr.tests
-import updatures.models_descr.vulnerability
+from openquakeplatform import updatures
+from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
+                                                 ModelDescription, models_descr)
+import openquakeplatform.updatures.models_descr.auth
+import openquakeplatform.updatures.models_descr.base
+import openquakeplatform.updatures.models_descr.contenttypes
+import openquakeplatform.updatures.models_descr.maps
+import openquakeplatform.updatures.models_descr.people
+import openquakeplatform.updatures.models_descr.security
+import openquakeplatform.updatures.models_descr.taggit
+import openquakeplatform.updatures.models_descr.tests
+import openquakeplatform.updatures.models_descr.vulnerability
 import pdb
 
 def pdebug(level, s):
