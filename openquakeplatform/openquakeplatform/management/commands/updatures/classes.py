@@ -31,14 +31,14 @@ class ModelRefs(object):
         self.is_many = is_many
 
 
-class model_description(object):
+class ModelDescription(object):
     '''
     inheritance management:
 
       - first step during the loading phase:
           . for each inheriting model record must exists the inherited record
           . assigning a '__backinhe__' field that link { 'model', 'item' }
-          . set the model_description as 'is_inherited'
+          . set the ModelDescription as 'is_inherited'
 
       - second step: filtering not inherited instances
           . if an inherited model instance havn't '__backinhe__' field: remove it

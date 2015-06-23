@@ -9,7 +9,7 @@ from pprint import pprint
 from collections import OrderedDict
 from django.core.management import call_command, execute_manager
 import updatures
-from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, ModelDescription, models_descr
 import updatures.models_descr.auth
 import updatures.models_descr.base
 import updatures.models_descr.contenttypes
@@ -152,7 +152,7 @@ def group_objs(base):
         model = item['model']
         md = models_descr[model]
 
-        # if dynamic references populate the model_description with more virtual references
+        # if dynamic references populate the ModelDescription with more virtual references
         for ref_field, ref in md.refs.iteritems():
             if isinstance(ref.model, types.FunctionType):
                 dyn_key = "__dynamic__.%s.fk" % ref.model(item)

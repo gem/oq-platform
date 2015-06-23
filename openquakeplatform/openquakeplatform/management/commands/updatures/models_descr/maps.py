@@ -1,7 +1,7 @@
-from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, ModelDescription, models_descr
 
 # auth models
-models_descr['maps.map'] = model_description(
+models_descr['maps.map'] = ModelDescription(
     'maps.map',
     None,
     {},
@@ -10,7 +10,7 @@ models_descr['maps.map'] = model_description(
     )
 
 
-models_descr['maps.maplayer'] = model_description(
+models_descr['maps.maplayer'] = ModelDescription(
     'maps.maplayer',
     None,
     {'map': ModelRefs('maps.map', False)}

@@ -1,7 +1,7 @@
-from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, ModelDescription, models_descr
 
 # auth models
-models_descr['security.objectrole'] = model_description(
+models_descr['security.objectrole'] = ModelDescription(
     'security.objectrole',
     lambda i: [ i['fields']['codename'], i['fields']['content_type'][0], i['fields']['content_type'][1] ],
     {'permissions': ModelRefs('auth.permission', True),
@@ -9,7 +9,7 @@ models_descr['security.objectrole'] = model_description(
     )
 
 
-models_descr['security.userobjectrolemapping'] = model_description(
+models_descr['security.userobjectrolemapping'] = ModelDescription(
     'security.userobjectrolemapping',
     None,
 
@@ -20,7 +20,7 @@ models_descr['security.userobjectrolemapping'] = model_description(
     )
 
 
-models_descr['security.genericobjectrolemapping'] = model_description(
+models_descr['security.genericobjectrolemapping'] = ModelDescription(
     'security.genericobjectrolemapping',
     None,
     { 'object_ct': ModelRefs('contenttypes.contenttype', False),

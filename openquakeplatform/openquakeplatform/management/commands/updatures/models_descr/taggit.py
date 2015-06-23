@@ -1,12 +1,12 @@
-from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, ModelDescription, models_descr
 
-models_descr['taggit.tag'] = model_description(
+models_descr['taggit.tag'] = ModelDescription(
     'taggit.tag',
     None,
     {}
     )
 
-models_descr['taggit.taggeditem'] = model_description(
+models_descr['taggit.taggeditem'] = ModelDescription(
     'taggit.taggeditem',
     None,
     {'tag': ModelRefs('taggit.tag', False),
