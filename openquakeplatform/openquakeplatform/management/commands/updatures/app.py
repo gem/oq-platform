@@ -62,7 +62,7 @@ def rebuild_order():
 
     return models_order
 
-class items_info(object):
+class ItemsInfo(object):
 
     def __init__(self, item, pk_natural=False):
         self.occur = 1
@@ -102,7 +102,7 @@ def inspect(base):
         md = models_descr[model]
 
         if not model in models:
-            models[model] = items_info(item, pk_natural = md.pk_natural)
+            models[model] = ItemsInfo(item, pk_natural = md.pk_natural)
         else:
             models[model].update(item)
 
