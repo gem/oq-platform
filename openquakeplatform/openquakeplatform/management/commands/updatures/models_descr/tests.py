@@ -1,15 +1,15 @@
-from updatures.classes import BackInheritance, model_refs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
  
 # test models
 models_descr['test.one2one'] = model_description(
     'test.one2one',
     None,
-    {'leaf': model_refs('test.leaf', False)})
+    {'leaf': ModelRefs('test.leaf', False)})
 
 models_descr['test.one2many'] = model_description(
     'test.one2many',
     None,
-    {'leafs': model_refs('test.leaf', True)})
+    {'leafs': ModelRefs('test.leaf', True)})
 
 models_descr['test.leaf'] = model_description(
     'test.leaf',
@@ -20,7 +20,7 @@ models_descr['test.leaf'] = model_description(
 models_descr['test2.specific'] = model_description(
     'test2.specific',
     None,
-    {'pk': model_refs('test2.generic', False)},
+    {'pk': ModelRefs('test2.generic', False)},
     inher='test2.generic')
 
 models_descr['test2.generic'] = model_description(

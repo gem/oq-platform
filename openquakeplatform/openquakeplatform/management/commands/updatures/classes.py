@@ -21,7 +21,7 @@ class BackInheritance(object):
         self.item = item
 
 
-class model_refs(object):
+class ModelRefs(object):
     '''
         model:   model name of referenced item (string)
         is_many: if single or multiple fk (bool)
@@ -50,7 +50,7 @@ class model_description(object):
 
       name - name of the class
       natural - function to extract natural key used
-      refs  - dict of fk to other models (model_refs class as values)
+      refs  - dict of fk to other models (ModelRefs class as values)
       group - reference to another model that is "header" of multiple objects group
       pk_natural - True if pk is not a self-assigned incremental integer
       inher - None or the inherited model

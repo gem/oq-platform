@@ -1,11 +1,11 @@
-from updatures.classes import BackInheritance, model_refs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
 
 # auth models
 models_descr['maps.map'] = model_description(
     'maps.map',
     None,
     {},
-#    {'pk': model_refs('base.resourcebase', False)},
+#    {'pk': ModelRefs('base.resourcebase', False)},
     inher='base.resourcebase'
     )
 
@@ -13,5 +13,5 @@ models_descr['maps.map'] = model_description(
 models_descr['maps.maplayer'] = model_description(
     'maps.maplayer',
     None,
-    {'map': model_refs('maps.map', False)}
+    {'map': ModelRefs('maps.map', False)}
     )

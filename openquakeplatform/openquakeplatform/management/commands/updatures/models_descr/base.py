@@ -1,18 +1,18 @@
-from updatures.classes import BackInheritance, model_refs, model_description, models_descr
+from updatures.classes import BackInheritance, ModelRefs, model_description, models_descr
 
 # base models
 models_descr['base.contactrole'] = model_description(
     'base.contactrole',
     None,
-    {'resource': model_refs('base.resourcebase', False),
-     'contact':  model_refs('people.profile', False),
-     'role': model_refs('people.role', False)}
+    {'resource': ModelRefs('base.resourcebase', False),
+     'contact':  ModelRefs('people.profile', False),
+     'role': ModelRefs('people.role', False)}
     )
 
 models_descr['base.link'] = model_description(
     'base.link',
     None,
-    {'resource': model_refs('base.resourcebase', False)}
+    {'resource': ModelRefs('base.resourcebase', False)}
     )
 
 models_descr['base.region'] = model_description(
@@ -42,11 +42,11 @@ models_descr['base.license'] = model_description(
 models_descr['base.resourcebase'] = model_description(
     'base.resourcebase',
     None,
-    {'owner': model_refs('auth.user', False),
-#     'contacts': model_refs('base.contactrole', True),
-     'regions': model_refs('base.region', True),
-     'restriction_code_type': model_refs('base.restrictioncodetype', False),
-     'license': model_refs('base.license', False),
-     'category': model_refs('base.topiccategory', False),
-     'thumbnail': model_refs('base.thumbnail', False)}
+    {'owner': ModelRefs('auth.user', False),
+#     'contacts': ModelRefs('base.contactrole', True),
+     'regions': ModelRefs('base.region', True),
+     'restriction_code_type': ModelRefs('base.restrictioncodetype', False),
+     'license': ModelRefs('base.license', False),
+     'category': ModelRefs('base.topiccategory', False),
+     'thumbnail': ModelRefs('base.thumbnail', False)}
     )
