@@ -26,6 +26,7 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
+var COMPATIBILITY_VERSION = '1.4.3';
 //var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
@@ -1059,7 +1060,7 @@ var startApp = function() {
                 tempProjectDef = data;
 
                 // Check the svir plugin version
-                var versionCheck = versionCompare(data[0].svir_plugin_version, '1.4.3');
+                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
 
                 if (versionCheck < 0) {
                     // Warn the user and stop the application
