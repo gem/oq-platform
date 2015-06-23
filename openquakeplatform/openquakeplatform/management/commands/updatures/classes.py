@@ -11,7 +11,7 @@ from django.core.management import call_command, execute_manager
 # from updatures import debug_level
 import pdb
 
-class backinheritance(object):
+class BackInheritance(object):
     '''
         model_descr: model description instance of the specialized instance
         item:        item istance of the specialized instance

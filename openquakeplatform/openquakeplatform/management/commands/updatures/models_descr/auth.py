@@ -1,4 +1,4 @@
-from updatures.classes import backinheritance, model_refs, model_description, models_descr
+from updatures.classes import BackInheritance, model_refs, model_description, models_descr
 
 # auth models
 models_descr['auth.permission'] = model_description(

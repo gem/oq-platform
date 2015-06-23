@@ -2,7 +2,7 @@
 import sys
 import json
 import updatures
-from updatures.classes import backinheritance, model_refs, model_description, models_descr
+from updatures.classes import BackInheritance, model_refs, model_description, models_descr
 import updatures.models_descr.auth
 import updatures.models_descr.base
 import updatures.models_descr.contenttypes
