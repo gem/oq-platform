@@ -72,6 +72,48 @@ COPYRIGHT_HEADER = u"""\
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
+def get_supplemental_information(request):
+    """
+    Given a layer name, read the corresponding supplemental_information from
+    the layer's metadata and return that as a json
+
+    :param request:
+        A "GET" :class:`django.http.HttpRequest` object containing
+        the following parameter:
+            * 'layer_name': the layer identifier
+
+    :return:
+        A JSON containing the layer's supplemental_information
+    """
+    layer_name = request.GET.get('layer_name')
+    if not layer_name:
+        return HttpResponseBadRequest(
+            'Please provide the layer_name parameter')
+    try:
+        layer = _resolve_layer(
+            request, layer_name, 'layers.view_layer', _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(
+            'You are not allowed to view this layer',
+            mimetype='text/plain',
+            status=401)
+    supplemental_information_str = layer.supplemental_information
+    try:
+        supplemental_information = json.loads(supplemental_information_str)
+    except Exception as e:
+        return HttpResponseBadRequest(
+            "The layer's supplemental information is not in a valid"
+            "json format: %s", str(e))
+    return HttpResponse(json.dumps(supplemental_information,
+                                   sort_keys=False,
+                                   indent=2,
+                                   separators=(',', ': ')),
+                        content_type="application/json")
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
 def get_project_definitions(request):
     """
     Given a layer name, read the corresponding project definitions from
