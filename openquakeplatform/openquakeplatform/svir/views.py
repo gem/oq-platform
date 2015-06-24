@@ -97,13 +97,19 @@ def get_project_definitions(request):
             'You are not allowed to view this layer',
             mimetype='text/plain',
             status=401)
-    supplemental_information = layer.supplemental_information
+    supplemental_information_str = layer.supplemental_information
     try:
-        project_definitions = json.loads(supplemental_information)
+        supplemental_information = json.loads(supplemental_information_str)
     except Exception as e:
         return HttpResponseBadRequest(
-            "The layer's supplemental information do not contain valid"
-            "project definitions: %s", str(e))
+            "The layer's supplemental information is not in a valid"
+            "json format: %s", str(e))
+    if 'project_definitions' in supplemental_information:
+        project_definitions = supplemental_information['project_definitions']
+    else:
+        # if this is an old project, the project definitions are not nested
+        # into the 'project_definitions' key
+        project_definitions = supplemental_information
     return HttpResponse(json.dumps(project_definitions,
                                    sort_keys=False,
                                    indent=2,
@@ -182,19 +188,26 @@ def add_project_definition(request):
             'You are not allowed to modify this layer',
             mimetype='text/plain',
             status=401)
-    supplemental_information = layer.supplemental_information
+    supplemental_information_str = layer.supplemental_information
     try:
-        project_definitions = json.loads(supplemental_information)
+        supplemental_information = json.loads(supplemental_information_str)
     except Exception as e:
         return HttpResponseBadRequest(
-            "The layer's supplemental information do not contain valid"
-            "project definitions: %s", str(e))
-    # if there's only one project definition (it is a simple dict),
-    # create a list and append to it the existing
-    # project definition.
-    # Once the list is there, we can append to it the new project_definition.
-    if isinstance(project_definitions, dict):
-        project_definitions = [project_definitions]
+            "The layer's supplemental information does not have a valid"
+            "json format: %s", str(e))
+    try:
+        old_project_definitions = supplemental_information[
+            'project_definitions']
+    except KeyError:
+        # for backwards compatibility, attempt to read the list of
+        # project_definitions directly from the root of
+        # supplemental_information, instead of nested into the
+        # project_definitions key, and upgrade the supplemental_information to
+        # the new format
+        old_project_definitions = supplemental_information
+        supplemental_information = dict()
+        supplemental_information[
+            'project_definitions'] = old_project_definitions
     try:
         new_title = project_definition['title']
     except KeyError:
@@ -203,17 +216,17 @@ def add_project_definition(request):
     if not new_title:
         return HttpResponseBadRequest(
             "The project definition's title must not be blank.")
-    old_titles = [proj_def['title'] for proj_def in project_definitions]
+    old_titles = [proj_def['title'] for proj_def in old_project_definitions]
     if new_title in old_titles:
         return HttpResponseForbidden(
             "The title '%s' was already assigned to another project"
             " definition. Please provide a new unique one." % new_title)
-    project_definitions.append(project_definition)
-
-    layer.supplemental_information = json.dumps(
-        project_definitions, sort_keys=False, indent=2, separators=(',', ': '))
+    supplemental_information['project_definitions'].append(project_definition)
+    layer.supplemental_information = json.dumps(supplemental_information,
+                                                sort_keys=False,
+                                                indent=2,
+                                                separators=(',', ': '))
     layer.save()
-
     return HttpResponse("The new project definition has been added")
 
 
