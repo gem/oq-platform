@@ -26,6 +26,7 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
+var COMPATIBILITY_VERSION = '1.4.3';
 var thematicLayer;
 //var boundingBox;
 
@@ -881,6 +882,21 @@ function getGeoServerLayers() {
     });
 }
 
+
+function versionCompare(a, b) {
+    var i, cmp, len, re = /(\.0)+[^\.]*$/;
+    a = (a + '').replace(re, '').split('.');
+    b = (b + '').replace(re, '').split('.');
+    len = Math.min(a.length, b.length);
+    for( i = 0; i < len; i++ ) {
+        cmp = parseInt(a[i], 10) - parseInt(b[i], 10);
+        if( cmp !== 0 ) {
+            return cmp;
+        }
+    }
+    return a.length - b.length;
+}
+
 var startApp = function() {
     // theme tabls behavior
     $('#themeTabs').resizable({
@@ -1034,6 +1050,8 @@ var startApp = function() {
                 });
             }
         });
+
+
         */
         // Get the project definition
         $.ajax({
@@ -1041,6 +1059,20 @@ var startApp = function() {
             url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
             success: function(data) {
                 tempProjectDef = data;
+
+                // Check the svir plugin version
+                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+
+                if (versionCheck < 0) {
+                    // Warn the user and stop the application
+                    $('#projectDef-spinner').hide();
+                    $('#project-def').append(
+                        '<div class="alert alert-danger" role="alert">' +
+                            'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                        '</div>'
+                    );
+                    return
+                }
 
                 if ($('#pdSelection').length > 0) {
                     $('#pdSelection').remove();
