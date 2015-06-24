@@ -21,7 +21,6 @@ $( document ).ready(function() {
     $('#updateBtn').css('display', 'block');
 });
 
-
 $('#updateBtn').click(function() {
     // Remove any existing table
     try {
@@ -29,14 +28,29 @@ $('#updateBtn').click(function() {
     } catch (e) {
         // continue
     }
-    // get info from form
-    var structureArea = $("#structuralSelect option:selected").val();
-    var nonStructureArea = $("#nonStructuralSelect option:selected").val();
-    var contentsCost = $("#contentsSelect option:selected").val();
-    var businessCost = $("#businessSelect option:selected").val();
 
-    var header = [structureArea, nonStructureArea, contentsCost, businessCost];
-    var headerLength =  header.length;
+    var header = ['Longitude', 'Latitude', 'Taxonomy', 'Number', 'Area'];
+    function checkForValue (argument) {
+        if (argument != 'none') {
+            header.push(argument);
+        }
+    }
+
+    $('#economicCheckBoxes input:checked').each(function() {
+        header.push($(this).attr('value'));
+    });
+    // get info from form
+    checkForValue($("#limitSelect option:selected").val());
+    checkForValue($("#deductibleSelect option:selected").val());
+    checkForValue($("#retrofittingSelect option:selected").val());
+
+    console.log('header:');
+    console.log(header);
+
+    $('#occupantsCheckBoxes input:checked').each(function() {
+        header.push($(this).attr('value'));
+    });
+    var headerLength = header.length;
     console.log('header:');
     console.log(header);
 

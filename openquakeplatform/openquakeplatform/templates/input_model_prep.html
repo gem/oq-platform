@@ -27,39 +27,46 @@
       <div id="oq-body-content">
       Exposure...
         <form id="exposureForm" >
-          Structural Cost:<br>
-          <select id="structuralSelect">
-            <option value="area">Per area</option>
-            <option value="building">Per building</option>
+          Economic value:<br>
+          <div id="economicCheckBoxes">
+            <input type="checkbox" value="structural">Structural Cost
+            <input type="checkbox" value="non_structural">Non-Structural Cost
+            <input type="checkbox" value="contents">Contents Cost
+            <input type="checkbox" value="business">Business Int Cost
+          </div>
+          <br>
+          Occupants:<br>
+          <div id="occupantsCheckBoxes">
+            <input type="checkbox" value="day">Day
+            <input type="checkbox" value="night">Night
+            <input type="checkbox" value="transit">Transit
+          </div>
+          <br>
+          Retrofitting Cost:<br>
+          <select id="retrofittingSelect">
+            <option value="none">None</option>
+            <option value="retrofitting">Retrofitting</option>
           </select>
           <br>
-          Non-Structural Cost:<br>
-          <select id="nonStructuralSelect">
-            <option value="foo">foo</option>
-            <option value="bar">bar</option>
+          Limit:<br>
+          <select id="limitSelect">
+            <option value="none">None</option>
+            <option value="limit">Limit</option>
           </select>
           <br>
-          Contents Cost:<br>
-          <select id="contentsSelect">
-            <option value="tom">tom</option>
-            <option value="bob">bob</option>
-          </select>
-          <br>
-          Business int Cost:<br>
-          <select id="businessSelect">
-            <option value="foo">foo</option>
-            <option value="bar">bar</option>
+          Deductible:<br>
+          <select id="deductibleSelect">
+            <option value="none">None</option>
+            <option value="deductible">Deductible</option>
           </select>
           <br>
         </form>
-        <div id="hot"></div>
         <div id="btnDiv">
-          <button id="updateBtn" type="button" style="display:none;" class="btn btn-primary">Update</button>
+          <button id="updateBtn" type="button" style="display:none;" class="btn btn-primary">Create/Update Table</button>
         </div>
+        <br>
+        <div id="hot"></div>
 
-      </div>
-      <div id="oq-body-sidebar">
-        {% include 'includes/sidebar.html' %}
       </div>
     </div>
   </div>
