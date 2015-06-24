@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import os
 import StringIO
 import json
 import unittest
@@ -45,19 +46,20 @@ class UpdaturesTestCase(unittest.TestCase):
         test_result = 0
         for test in test_list:
             output = StringIO.StringIO()
+            data_dir = os.path.dirname(os.path.realpath(__file__)) + '/data/'
             # NOTE: sort must be False to be able to upload fixture to a real environment
-            result = updatures_app(['data/' + test + '_new.json'], output=output,
-                               fakeold='data/' + test + '_old.json',
+            result = updatures_app([data_dir + test + '_new.json'], output=output,
+                               fakeold=data_dir + test + '_old.json',
                                sort_output=True, debug=debug)
 
-            exp = file('data/' + test + '_exp.json', 'r').read()
+            exp = file(data_dir + test + '_exp.json', 'r').read()
 
             if result == 0:
                 if output.getvalue() == exp:
                     print "TEST SUCCESS %s" % test
                 else:
                     test_result = 1
-                    fnameout = 'data/' + test + '_out.json'
+                    fnameout = data_dir + test + '_out.json'
                     file(fnameout, 'w').write(output.getvalue())
                     print "TEST DIFFER %s, OUTPUT IS SAVED IN %s" % (test, fnameout)
             else:
