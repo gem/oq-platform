@@ -26,6 +26,7 @@ from openquakeplatform.svir.views import (list_themes,
                                           export_countries_info,
                                           get_layer_metadata_url,
                                           add_project_definition,
+                                          get_project_definitions,
                                           )
 
 from django.contrib import admin
@@ -44,4 +45,5 @@ urlpatterns = patterns(
     url(r'^export_countries_info', export_countries_info),
     url(r'^get_layer_metadata_url', get_layer_metadata_url),
     url(r'^add_project_definition', add_project_definition),
+    url(r'^get_project_definitions', get_project_definitions),
 )
