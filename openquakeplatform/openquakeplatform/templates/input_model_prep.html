@@ -25,8 +25,24 @@
         {% endblock oq_body_heading %}
       </div>
       <div id="oq-body-content">
-      Exposure...
+      <h3>Exposure</h3>
         <form id="exposureForm" >
+          Define Cost:<br>
+          <select id="defineCostSelect">
+            <option value="none">None</option>
+            <option value="aggregated">Aggregated</option>
+            <option value="perBuilding">Per Building</option>
+            <option value="perArea">Per Area</option>
+          </select>
+          <br>
+          <div id="perArea">
+            Per Area:<br>
+            <select id="perAreaSelect">
+              <option value="aggregated">Aggregated</option>
+              <option value="perArea">Per Area</option>
+            </select>
+            <br>
+          </div>
           Economic value:<br>
           <div id="economicCheckBoxes">
             <input type="checkbox" value="structural"> Structural Cost
@@ -48,21 +64,22 @@
           </div>
           <br>
           Retrofitting Cost:<br>
-          <select id="retrofittingSelect">
-            <option value="none">None</option>
-            <option value="retrofitting">Retrofitting</option>
-          </select>
+          <div id="retrofittingSelect">
+            <input type="checkbox" value="retrofitting"> Retrofitting
+          </div>
           <br>
           Limit:<br>
           <select id="limitSelect">
             <option value="none">None</option>
-            <option value="limit">Limit</option>
+            <option value="absolute">Absolute</option>
+            <option value="relative">Relative</option>
           </select>
           <br>
           Deductible:<br>
           <select id="deductibleSelect">
             <option value="none">None</option>
-            <option value="deductible">Deductible</option>
+            <option value="absolute">Absolute</option>
+            <option value="relative">Relative</option>
           </select>
           <br>
         </form>

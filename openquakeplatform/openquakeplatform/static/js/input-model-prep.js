@@ -17,8 +17,30 @@
 
 var hot;
 
+$('#perArea').hide();
 $( document ).ready(function() {
     $('#updateBtn').css('display', 'block');
+});
+
+
+$('#defineCostSelect').change(function() {
+    var defineCost = $('#defineCostSelect').val();
+    if (defineCost == 'none') {
+        //continue;
+        $('#perArea').hide();
+    } else if (defineCost == 'aggregated') {
+        // type="aggregated"
+        $('#perArea').hide();
+    } else if (defineCost == 'perBuilding') {
+        // type="per_asset"
+        $('#perArea').hide();
+    } else if (defineCost == 'perArea') {
+        // type="per_area"
+        // <area type="aggregated" unit="square meters"/>
+        // OR
+        // <area type="per_asset" unit="square meters"/>
+        $('#perArea').show();
+    }
 });
 
 $('#updateBtn').click(function() {
@@ -29,31 +51,40 @@ $('#updateBtn').click(function() {
         // continue
     }
 
-    var header = ['Longitude', 'Latitude', 'Taxonomy', 'Number', 'Area'];
+    // Default columns
+    var header = ['longitude', 'latitude', 'taxonomy', 'number'];
+
     function checkForValue (argument) {
         if (argument != 'none') {
             header.push(argument);
         }
     }
 
+    // Get info from form
     $('#economicCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
     });
-    // get info from form
-    checkForValue($("#limitSelect option:selected").val());
-    checkForValue($("#deductibleSelect option:selected").val());
-    checkForValue($("#retrofittingSelect option:selected").val());
 
-    console.log('header:');
-    console.log(header);
+    checkForValue($('#limitSelect option:selected').val());
+    checkForValue($('#deductibleSelect option:selected').val());
+    var perAreaVisible = $('#perArea:visible').length;
+    if (perAreaVisible === 1) {
+        header.push('area', 'value');
+    }
 
     $('#occupantsCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
     });
+
+    $('#retrofittingSelect input:checked').each(function() {
+        header.push($(this).attr('value'));
+    });
+
     var headerLength = header.length;
     console.log('header:');
     console.log(header);
 
+    // Create the table
     var container = document.getElementById('hot');
     hot = new Handsontable(container,
     {
