@@ -1,0 +1,77 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} Explore - {{ block.super }} {% endblock title %}
+
+{% block extra_head %}
+    {{block.super}}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/handsontable.full.css" rel="stylesheet"/>
+{% endblock extra_head %}
+
+
+{% block body %}
+  <div class="span12">
+    <div class="hero-unit">
+      <div id="oq-context-ribbon">
+        {% block oq_context_ribbon %}
+        {% endblock oq_context_ribbon %}
+      </div>
+      <div id="oq-body-heading">
+        {% block oq_body_heading %}
+          <h1>{% trans "OpenQuake Input Model Thingy" %}</h1>
+          <br />
+        {% endblock oq_body_heading %}
+      </div>
+      <div id="oq-body-content">
+      Exposure...
+        <form id="exposureForm" >
+          Structural Cost:<br>
+          <select id="structuralSelect">
+            <option value="area">Per area</option>
+            <option value="building">Per building</option>
+          </select>
+          <br>
+          Non-Structural Cost:<br>
+          <select id="nonStructuralSelect">
+            <option value="foo">foo</option>
+            <option value="bar">bar</option>
+          </select>
+          <br>
+          Contents Cost:<br>
+          <select id="contentsSelect">
+            <option value="tom">tom</option>
+            <option value="bob">bob</option>
+          </select>
+          <br>
+          Business int Cost:<br>
+          <select id="businessSelect">
+            <option value="foo">foo</option>
+            <option value="bar">bar</option>
+          </select>
+          <br>
+        </form>
+        <div id="hot"></div>
+        <div id="btnDiv">
+          <button id="updateBtn" type="button" style="display:none;" class="btn btn-primary">Update</button>
+        </div>
+
+      </div>
+      <div id="oq-body-sidebar">
+        {% include 'includes/sidebar.html' %}
+      </div>
+    </div>
+  </div>
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+    {% include 'search_scripts.html' %}
+    <script>
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/explore/'; }
+    </script>
+    <script src="{{ STATIC_URL }}js/handsontable.full.js"></script>
+    <script src="{{ STATIC_URL }}js/input-model-prep.js"></script>
+{% endblock extra_script %}

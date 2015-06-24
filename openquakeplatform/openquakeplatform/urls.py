@@ -112,6 +112,7 @@ urlpatterns = patterns('',
     url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
     url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
+    url(r'^input_tool/$', TemplateView.as_view(template_name='input_model_prep.html'), name='input_tool'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
