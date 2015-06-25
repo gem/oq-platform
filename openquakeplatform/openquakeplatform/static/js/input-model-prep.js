@@ -16,6 +16,9 @@
 */
 
 var hot;
+var costTypesType;
+var costTypesAreaType;
+var header;
 
 $('#perArea').hide();
 $( document ).ready(function() {
@@ -27,18 +30,16 @@ $('#defineCostSelect').change(function() {
     var defineCost = $('#defineCostSelect').val();
     if (defineCost == 'none') {
         //continue;
+        // WARNING no costTypesType set here!!!
         $('#perArea').hide();
     } else if (defineCost == 'aggregated') {
-        // type="aggregated"
+        costTypesType = 'type="aggregated"';
         $('#perArea').hide();
     } else if (defineCost == 'perBuilding') {
-        // type="per_asset"
+        costTypesType = 'type="per_asset"';
         $('#perArea').hide();
     } else if (defineCost == 'perArea') {
-        // type="per_area"
-        // <area type="aggregated" unit="square meters"/>
-        // OR
-        // <area type="per_asset" unit="square meters"/>
+        costTypesType = 'type="per_area"';
         $('#perArea').show();
     }
 });
@@ -52,7 +53,7 @@ $('#updateBtn').click(function() {
     }
 
     // Default columns
-    var header = ['longitude', 'latitude', 'taxonomy', 'number'];
+    header = ['longitude', 'latitude', 'taxonomy', 'number'];
 
     function checkForValue (argument) {
         if (argument != 'none') {
@@ -60,16 +61,24 @@ $('#updateBtn').click(function() {
         }
     }
 
-    // Get info from form
+    // Get info from da form
     $('#economicCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
     });
+
 
     checkForValue($('#limitSelect option:selected').val());
     checkForValue($('#deductibleSelect option:selected').val());
     var perAreaVisible = $('#perArea:visible').length;
     if (perAreaVisible === 1) {
         header.push('area', 'value');
+    }
+
+    var perArea = $('#perAreaSelect').val();
+    if (perArea == 'aggregated') {
+        costTypesAreaType = '<area type="aggregated" unit="square meters"/>';
+    } else if (perArea == 'perArea') {
+        costTypesAreaType = '<area type="per_asset" unit="square meters"/>';
     }
 
     $('#occupantsCheckBoxes input:checked').each(function() {
@@ -98,7 +107,106 @@ $('#updateBtn').click(function() {
         maxCols: headerLength
     });
 
-
+    $('#saveBtn').css('display', 'block');
 });
 
+$('#saveBtn').click(function() {
+    // Get the values from the table
+    var data = hot.getData();
+    console.log('data:');
+    console.log(data);
+
+    // Check for null values
+    for (var i = 0; i < data.length -1 ; i++) {
+        for (var j = 0; j < data[i].length; j++) {
+            if (data[i][j] === null) {
+                alert("whoops, there seem to be some empty cells");
+                return;
+            }
+        }
+    }
+
+    // Check for header match
+    function checkHeaderMatch (argument) {
+        // Get the the index for each header element
+        return header.indexOf(argument);
+    }
+
+    var asset = '';
+    var latitude = 'latitude';
+    var longitude = 'longitude';
+    var taxonomy = 'taxonomy';
+    var number = 'number';
+    var area = 'area';
+
+    // Get the the index for each header element
+    /*
+    latitude = header.indexOf(latitude);
+    longitude = header.indexOf(longitude);
+    taxonomy = header.indexOf(taxonomy);
+    number = header.indexOf(number);
+    area = header.indexOf(area);
+*/
+    latitudeInx = checkHeaderMatch(latitude);
+    longitudeInx = checkHeaderMatch(longitude);
+    taxonomyInx = checkHeaderMatch(taxonomy);
+    numberInx = checkHeaderMatch(number);
+    areaInx = checkHeaderMatch(area);
+
+    // Create the asset
+    for (var i = 0; i < data.length -1; i++) {
+        if (numberInx > -1 ) {
+            number = 'number="'+ data[i][numberInx]+'"';
+        } else {
+            number = '';
+        }
+        if (latitudeInx > -1 ) {
+            latitude = 'latitude="'+ data[i][latitudeInx]+'"';
+        } else {
+            latitude = '';
+        }
+        if (longitudeInx > -1 ) {
+            longitude = 'longitude="'+ data[i][longitudeInx]+'"';
+        } else {
+            longitude = '';
+        }
+        if (taxonomyInx > -1 ) {
+            taxonomy = 'taxonomy="'+ data[i][taxonomyInx]+'"';
+        } else {
+            taxonomy = '';
+        }
+        if (areaInx > -1 ) {
+            area = 'area="'+ data[i][areaInx]+'"';
+        } else {
+            area = '';
+        }
+        asset += '\t\t\t<asset id="'+i+'" '+number+' '+area+' '+taxonomy+' > \n';
+    }
+
+    //Create a NRML element
+    var NRML =
+        '<?xml version="1.0" encoding="UTF-8"?> \n' +
+        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
+            '\t<exposureModel id="ex1" \n' +
+                '\t\tcategory="buildings" \n' +
+                '\t\ttaxonomySource="GEM taxonomy"> \n' +
+                '\t\t<description>exposure model</description> \n' +
+                '\t\t<conversions> \n' +
+                    '\t\t\t<area type="aggregated" unit="SQM" /> \n' +
+                    '\t\t\t<costTypes> \n' +
+                        //'<costType name="nonstructural" '+costTypesType+' unit="USD" /> \n' +
+                    '\t\t\t</costTypes> \n' +
+                '\t\t</conversions> \n' +
+                '\t\t<assets> \n' +
+                    asset +
+                '\t\t</assets> \n' +
+            '\t</exposureModel> \n' +
+        '</nrml>';
+
+    console.log('NRML:');
+    console.log(NRML);
+
+    $('#outPut').empty();
+    $('#outPut').append('<textarea rows="100" cols="500">'+NRML+'</textarea>');
+});
 

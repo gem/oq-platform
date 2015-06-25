@@ -25,7 +25,8 @@
         {% endblock oq_body_heading %}
       </div>
       <div id="oq-body-content">
-      <h3>Exposure</h3>
+      <h3>Exposure</h2>
+      <br>
         <form id="exposureForm" >
           Define Cost:<br>
           <select id="defineCostSelect">
@@ -83,12 +84,13 @@
           </select>
           <br>
         </form>
-        <div id="btnDiv">
-          <button id="updateBtn" type="button" style="display:none;" class="btn btn-primary">Create/Update Table</button>
-        </div>
+        <button id="updateBtn" type="button" style="display:none;" class="btn btn-primary">Create/Update Table</button>
         <br>
         <div id="hot"></div>
-
+        <br>
+        <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Save to NRML</button>
+        <br>
+        <div id="outPut" style="width:500px"></div>
       </div>
     </div>
   </div>
