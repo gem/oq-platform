@@ -106,7 +106,7 @@ $('#updateBtn').click(function() {
         startCols: headerLength,
         maxCols: headerLength
     });
-
+    $('#outPut').empty();
     $('#saveBtn').css('display', 'block');
 });
 
@@ -142,25 +142,30 @@ $('#saveBtn').click(function() {
     var non_structural = 'non_structural';
     var contents = 'contents';
     var business = 'business';
-    var foo = 'foo';
+    var day = 'day';
+    var night = 'night';
+    var transit = 'transit';
 
 
     // Get the the index for each header element
-    latitudeInx = checkHeaderMatch(latitude);
-    longitudeInx = checkHeaderMatch(longitude);
-    taxonomyInx = checkHeaderMatch(taxonomy);
-    numberInx = checkHeaderMatch(number);
-    areaInx = checkHeaderMatch(area);
-    valueInx = checkHeaderMatch(value);
-    structuralInx = checkHeaderMatch(structural);
-    non_structuralInx = checkHeaderMatch(non_structural);
-    contentsInx = checkHeaderMatch(contents);
-    businessInx = checkHeaderMatch(business);
-    fooInx = checkHeaderMatch(foo);
+    var latitudeInx = checkHeaderMatch(latitude);
+    var longitudeInx = checkHeaderMatch(longitude);
+    var taxonomyInx = checkHeaderMatch(taxonomy);
+    var numberInx = checkHeaderMatch(number);
+    var areaInx = checkHeaderMatch(area);
+    var valueInx = checkHeaderMatch(value);
+    var structuralInx = checkHeaderMatch(structural);
+    var non_structuralInx = checkHeaderMatch(non_structural);
+    var contentsInx = checkHeaderMatch(contents);
+    var businessInx = checkHeaderMatch(business);
+    var dayInx = checkHeaderMatch(day);
+    var nightInx = checkHeaderMatch(night);
+    var transitInx = checkHeaderMatch(transit);
 
     // Create the asset
     for (var i = 0; i < data.length -1; i++) {
         var costs ='\t\t\t\t<costs>\n';
+        var occupancies = '\t\t\t\t<occupancies>\n';
 
         if (numberInx > -1 ) {
             number = 'number="'+ data[i][numberInx]+'"';
@@ -192,6 +197,8 @@ $('#saveBtn').click(function() {
         } else {
             value = '';
         }
+
+        // Economic Cost
         if (structuralInx > -1 ) {
             costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"/>\n';
         }
@@ -205,14 +212,26 @@ $('#saveBtn').click(function() {
             costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'"/>\n';
         }
 
+        // Occupancies
+        if (dayInx > -1 ) {
+            occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][dayInx]+'"/>\n';
+        }
+        if (nightInx > -1 ) {
+            occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][nightInx]+'"/>\n';
+        }
+        if (transitInx > -1 ) {
+            occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][transitInx]+'"/>\n';
+        }
+
         costs += '\t\t\t\t</costs>\n';
+
+        occupancies += '\t\t\t\t</occupancies>\n';
 
         asset +=
             '\t\t\t<asset id="'+i+'" '+number+' '+area+' '+taxonomy+' > \n' +
                 '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
                 costs +
-                '\t\t\t\t<occupancies>\n' +
-                '\t\t\t\t</occupancies>\n' +
+                occupancies +
             '\t\t\t</asset>';
     }
 
@@ -238,10 +257,9 @@ $('#saveBtn').click(function() {
 
     console.log('NRML:');
     console.log(NRML);
-    var collength = (data.length * 30) + 60;
 
     // Provide the user with the xml output
     $('#outPut').empty();
-    $('#outPut').append('<textarea style="width: 500px;  height: '+collength+'px; rows="'+collength+'" cols="70">'+NRML+'</textarea>');
+    $('#outPut').append('<textarea style="width: 500px;  height: 700px;>'+NRML+'</textarea>');
 });
 
