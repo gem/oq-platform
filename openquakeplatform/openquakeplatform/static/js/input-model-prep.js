@@ -21,6 +21,7 @@ var hot;
 var header;
 
 $('#perArea').hide();
+$('#retrofittingSelect').hide();
 $( document ).ready(function() {
     $('#updateBtn').css('display', 'block');
 });
@@ -39,6 +40,14 @@ $('#defineCostSelect').change(function() {
     }
 });
 
+$('#structuralChbx').change(function() {
+    if(this.checked) {
+        $('#retrofittingSelect').show();
+    } else {
+        $('#retrofittingSelect').hide();
+    }
+});
+
 $('#updateBtn').click(function() {
     // Remove any existing table
     try {
@@ -50,20 +59,20 @@ $('#updateBtn').click(function() {
     // Default columns
     header = ['longitude', 'latitude', 'taxonomy', 'number'];
 
-/*
+
     function checkForValue (argument) {
         if (argument != 'none') {
             header.push(argument);
         }
     }
-*/
+
     // Get info from da form an build the table header
     $('#economicCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
     });
 
-    //checkForValue($('#limitSelect option:selected').val());
-    //checkForValue($('#deductibleSelect option:selected').val());
+    checkForValue($('#limitSelect option:selected').val());
+    checkForValue($('#deductibleSelect option:selected').val());
 
     var defineCostSelect = $('#defineCostSelect option:selected').val();
     if (defineCostSelect != 'none') {
@@ -148,6 +157,8 @@ $('#saveBtn').click(function() {
     var transit = 'transit';
     var insuranceLimit = '';
     var deductible = '';
+    var retrofitting = '';
+    var limit = '';
 
     // Get the the index for each header element
     var latitudeInx = checkHeaderMatch(latitude);
@@ -163,6 +174,8 @@ $('#saveBtn').click(function() {
     var dayInx = checkHeaderMatch(day);
     var nightInx = checkHeaderMatch(night);
     var transitInx = checkHeaderMatch(transit);
+    var retrofittingInx = checkHeaderMatch('retrofitting');
+    var limitInx = checkHeaderMatch('limit');
 
     // Create the asset
     for (var i = 0; i < data.length -1; i++) {
@@ -240,10 +253,22 @@ $('#saveBtn').click(function() {
             deductible = '\t\t\t<deductible isAbsolute="false"/>\n';
         }
 
+        // Retrofitted
+        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
+        if (retrofittingSelect == 'retrofitting') {
+            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
+        }
+
+        // limit value
+        var limitSelect = $('#limitSelect input:checked').val();
+        if (limitSelect == 'retrofitting') {
+            limit = 'insuranceLimit="'+data[i][limitInx]+'"';
+        }
+
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
-            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"/>\n';
+            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+'/>\n';
         }
         if (non_structuralInx > -1 ) {
             costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'"/>\n';
@@ -257,13 +282,13 @@ $('#saveBtn').click(function() {
 
         // Occupancies
         if (dayInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancy period="'+ data[i][dayInx]+'"/>\n';
+            occupancies += '\t\t\t\t\t<occupancy occupants="'+ data[i][dayInx]+'" period="day"/>\n';
         }
         if (nightInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancy period="'+ data[i][nightInx]+'"/>\n';
+            occupancies += '\t\t\t\t\t<occupancy occupants="'+ data[i][nightInx]+'" period="night"/>\n';
         }
         if (transitInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancy period="'+ data[i][transitInx]+'"/>\n';
+            occupancies += '\t\t\t\t\t<occupancy occupants="'+ data[i][transitInx]+'" period="transit"/>\n';
         }
 
         costs += '\t\t\t\t</costs>\n';
