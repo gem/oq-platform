@@ -205,8 +205,9 @@ $('#saveBtn').click(function() {
 
     console.log('NRML:');
     console.log(NRML);
+    var collength = (data.length * 30) + 60;
 
     $('#outPut').empty();
-    $('#outPut').append('<textarea rows="100" cols="500">'+NRML+'</textarea>');
+    $('#outPut').append('<textarea style="width: 500px;  height: '+collength+'px; rows="'+collength+'" cols="70">'+NRML+'</textarea>');
 });
 
