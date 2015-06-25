@@ -128,7 +128,6 @@ $('#saveBtn').click(function() {
 
     // Check for header match
     function checkHeaderMatch (argument) {
-        // Get the the index for each header element
         return header.indexOf(argument);
     }
 
@@ -138,35 +137,43 @@ $('#saveBtn').click(function() {
     var taxonomy = 'taxonomy';
     var number = 'number';
     var area = 'area';
+    var value = 'value';
+    var structural = 'structural';
+    var non_structural = 'non_structural';
+    var contents = 'contents';
+    var business = 'business';
+    var foo = 'foo';
+
 
     // Get the the index for each header element
-    /*
-    latitude = header.indexOf(latitude);
-    longitude = header.indexOf(longitude);
-    taxonomy = header.indexOf(taxonomy);
-    number = header.indexOf(number);
-    area = header.indexOf(area);
-*/
     latitudeInx = checkHeaderMatch(latitude);
     longitudeInx = checkHeaderMatch(longitude);
     taxonomyInx = checkHeaderMatch(taxonomy);
     numberInx = checkHeaderMatch(number);
     areaInx = checkHeaderMatch(area);
+    valueInx = checkHeaderMatch(value);
+    structuralInx = checkHeaderMatch(structural);
+    non_structuralInx = checkHeaderMatch(non_structural);
+    contentsInx = checkHeaderMatch(contents);
+    businessInx = checkHeaderMatch(business);
+    fooInx = checkHeaderMatch(foo);
 
     // Create the asset
     for (var i = 0; i < data.length -1; i++) {
+        var costs ='\t\t\t\t<costs>\n';
+
         if (numberInx > -1 ) {
             number = 'number="'+ data[i][numberInx]+'"';
         } else {
             number = '';
         }
         if (latitudeInx > -1 ) {
-            latitude = 'latitude="'+ data[i][latitudeInx]+'"';
+            latitude = 'lat="'+ data[i][latitudeInx]+'"';
         } else {
             latitude = '';
         }
         if (longitudeInx > -1 ) {
-            longitude = 'longitude="'+ data[i][longitudeInx]+'"';
+            longitude = 'lon="'+ data[i][longitudeInx]+'"';
         } else {
             longitude = '';
         }
@@ -180,10 +187,36 @@ $('#saveBtn').click(function() {
         } else {
             area = '';
         }
-        asset += '\t\t\t<asset id="'+i+'" '+number+' '+area+' '+taxonomy+' > \n';
+        if (valueInx > -1 ) {
+            value = 'value="'+ data[i][valueInx]+'"';
+        } else {
+            value = '';
+        }
+        if (structuralInx > -1 ) {
+            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"/>\n';
+        }
+        if (non_structuralInx > -1 ) {
+            costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'"/>\n';
+        }
+        if (contentsInx > -1 ) {
+            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'"/>\n';
+        }
+        if (businessInx > -1 ) {
+            costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'"/>\n';
+        }
+
+        costs += '\t\t\t\t</costs>\n';
+
+        asset +=
+            '\t\t\t<asset id="'+i+'" '+number+' '+area+' '+taxonomy+' > \n' +
+                '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
+                costs +
+                '\t\t\t\t<occupancies>\n' +
+                '\t\t\t\t</occupancies>\n' +
+            '\t\t\t</asset>';
     }
 
-    //Create a NRML element
+    // Create a NRML element
     var NRML =
         '<?xml version="1.0" encoding="UTF-8"?> \n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
@@ -207,6 +240,7 @@ $('#saveBtn').click(function() {
     console.log(NRML);
     var collength = (data.length * 30) + 60;
 
+    // Provide the user with the xml output
     $('#outPut').empty();
     $('#outPut').append('<textarea style="width: 500px;  height: '+collength+'px; rows="'+collength+'" cols="70">'+NRML+'</textarea>');
 });
