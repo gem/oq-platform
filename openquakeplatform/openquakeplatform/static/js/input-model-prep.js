@@ -50,19 +50,20 @@ $('#updateBtn').click(function() {
     // Default columns
     header = ['longitude', 'latitude', 'taxonomy', 'number'];
 
+/*
     function checkForValue (argument) {
         if (argument != 'none') {
             header.push(argument);
         }
     }
-
+*/
     // Get info from da form an build the table header
     $('#economicCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
     });
 
-    checkForValue($('#limitSelect option:selected').val());
-    checkForValue($('#deductibleSelect option:selected').val());
+    //checkForValue($('#limitSelect option:selected').val());
+    //checkForValue($('#deductibleSelect option:selected').val());
 
     var defineCostSelect = $('#defineCostSelect option:selected').val();
     if (defineCostSelect != 'none') {
@@ -145,7 +146,8 @@ $('#saveBtn').click(function() {
     var day = 'day';
     var night = 'night';
     var transit = 'transit';
-
+    var insuranceLimit = '';
+    var deductible = '';
 
     // Get the the index for each header element
     var latitudeInx = checkHeaderMatch(latitude);
@@ -203,22 +205,44 @@ $('#saveBtn').click(function() {
         var costTypeSelection = $('#defineCostSelect option:selected').val();
         var costTypePerAreaSelection = $('#perAreaSelect option:selected').val();
         if (costTypeSelection == 'aggregated') {
-            costTypes += '\t\t\t\t<costType name="structural" type="aggregated" unit="EUR"/>';
+            costTypes += '\t\t\t\t<costType name="structural" type="aggregated" unit="EUR"/>\n' +
+                '\t\t\t</costTypes>\n';
         } else if (costTypeSelection == 'perBuilding') {
-            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="EUR"/>';
+            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="EUR"/>\n' +
+                '\t\t\t</costTypes>\n';
         } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'aggregated') {
             costTypes +=
                 '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
-                    '\t\t\t\t\t<area type="aggregated" unit="square meters"/>';
+                    '\t\t\t\t\t<area type="aggregated" unit="square meters"/>\n' +
+                '\t\t\t</costTypes>\n';
         } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'perArea') {
             costTypes +=
                 '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
-                    '\t\t\t\t\t<area type="per_asset" unit="square meters"/>';
+                    '\t\t\t\t\t<area type="per_asset" unit="square meters"/>\n' +
+                '\t\t\t</costTypes>\n';
+        } else if (costTypeSelection == 'none') {
+            costTypes = '';
+        }
+
+        // Insurance Limit
+        var limitState = $('#limitSelect option:selected').val();
+        if (limitState == 'absolute') {
+            insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="true"/>\n';
+        } else if (limitState == 'relative') {
+            insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="false"/>\n';
+        }
+
+        // deductibleSelect
+        var deductibleState = $('#deductibleSelect option:selected').val();
+        if (deductibleState == 'absolute') {
+            deductible = '\t\t\t<deductible isAbsolute="true"/>\n';
+        } else if (deductibleState == 'relative') {
+            deductible = '\t\t\t<deductible isAbsolute="false"/>\n';
         }
 
         // Economic Cost
         if (structuralInx > -1 ) {
-            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />'
+            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
             costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"/>\n';
         }
         if (non_structuralInx > -1 ) {
@@ -233,16 +257,15 @@ $('#saveBtn').click(function() {
 
         // Occupancies
         if (dayInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][dayInx]+'"/>\n';
+            occupancies += '\t\t\t\t\t<occupancy period="'+ data[i][dayInx]+'"/>\n';
         }
         if (nightInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][nightInx]+'"/>\n';
+            occupancies += '\t\t\t\t\t<occupancy period="'+ data[i][nightInx]+'"/>\n';
         }
         if (transitInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][transitInx]+'"/>\n';
+            occupancies += '\t\t\t\t\t<occupancy period="'+ data[i][transitInx]+'"/>\n';
         }
 
-        costTypes += '\t\t\t</costTypes>\n';
         costs += '\t\t\t\t</costs>\n';
         occupancies += '\t\t\t\t</occupancies>\n';
 
@@ -263,6 +286,8 @@ $('#saveBtn').click(function() {
                 '\t\t<conversions> \n' +
                     '\t\t\t<area type="aggregated" unit="SQM" /> \n' +
                     costTypes +
+                    insuranceLimit +
+                    deductible +
                 '\t\t</conversions> \n' +
                 '\t\t<assets> \n' +
                     asset +
@@ -275,6 +300,6 @@ $('#saveBtn').click(function() {
 
     // Provide the user with the xml output
     $('#outPut').empty();
-    $('#outPut').append('<textarea style="width: 500px;  height: 700px;>'+NRML+'</textarea>');
+    $('#outPut').append('<textarea style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
 });
 
