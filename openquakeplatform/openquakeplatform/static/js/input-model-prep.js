@@ -16,8 +16,8 @@
 */
 
 var hot;
-var costTypesType;
-var costTypesAreaType;
+//var costTypesType;
+//var costTypesAreaType;
 var header;
 
 $('#perArea').hide();
@@ -25,21 +25,16 @@ $( document ).ready(function() {
     $('#updateBtn').css('display', 'block');
 });
 
-
+// Manage the visibility of the perArea selection menu
 $('#defineCostSelect').change(function() {
     var defineCost = $('#defineCostSelect').val();
     if (defineCost == 'none') {
-        //continue;
-        // WARNING no costTypesType set here!!!
         $('#perArea').hide();
     } else if (defineCost == 'aggregated') {
-        costTypesType = 'type="aggregated"';
         $('#perArea').hide();
     } else if (defineCost == 'perBuilding') {
-        costTypesType = 'type="per_asset"';
         $('#perArea').hide();
     } else if (defineCost == 'perArea') {
-        costTypesType = 'type="per_area"';
         $('#perArea').show();
     }
 });
@@ -61,17 +56,22 @@ $('#updateBtn').click(function() {
         }
     }
 
-    // Get info from da form
+    // Get info from da form an build the table header
     $('#economicCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
     });
 
-
     checkForValue($('#limitSelect option:selected').val());
     checkForValue($('#deductibleSelect option:selected').val());
+
+    var defineCostSelect = $('#defineCostSelect option:selected').val();
+    if (defineCostSelect != 'none') {
+        header.push('value');
+    }
+
     var perAreaVisible = $('#perArea:visible').length;
     if (perAreaVisible === 1) {
-        header.push('area', 'value');
+        header.push('area');
     }
 
     var perArea = $('#perAreaSelect').val();
@@ -164,6 +164,7 @@ $('#saveBtn').click(function() {
 
     // Create the asset
     for (var i = 0; i < data.length -1; i++) {
+        var costTypes = '\t\t\t<costTypes> \n';
         var costs ='\t\t\t\t<costs>\n';
         var occupancies = '\t\t\t\t<occupancies>\n';
 
@@ -198,8 +199,26 @@ $('#saveBtn').click(function() {
             value = '';
         }
 
+        // Cost Type
+        var costTypeSelection = $('#defineCostSelect option:selected').val();
+        var costTypePerAreaSelection = $('#perAreaSelect option:selected').val();
+        if (costTypeSelection == 'aggregated') {
+            costTypes += '\t\t\t\t<costType name="structural" type="aggregated" unit="EUR"/>';
+        } else if (costTypeSelection == 'perBuilding') {
+            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="EUR"/>';
+        } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'aggregated') {
+            costTypes +=
+                '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
+                    '\t\t\t\t\t<area type="aggregated" unit="square meters"/>';
+        } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'perArea') {
+            costTypes +=
+                '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
+                    '\t\t\t\t\t<area type="per_asset" unit="square meters"/>';
+        }
+
         // Economic Cost
         if (structuralInx > -1 ) {
+            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />'
             costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"/>\n';
         }
         if (non_structuralInx > -1 ) {
@@ -223,8 +242,8 @@ $('#saveBtn').click(function() {
             occupancies += '\t\t\t\t\t<occupancies period="'+ data[i][transitInx]+'"/>\n';
         }
 
+        costTypes += '\t\t\t</costTypes>\n';
         costs += '\t\t\t\t</costs>\n';
-
         occupancies += '\t\t\t\t</occupancies>\n';
 
         asset +=
@@ -239,15 +258,11 @@ $('#saveBtn').click(function() {
     var NRML =
         '<?xml version="1.0" encoding="UTF-8"?> \n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
-            '\t<exposureModel id="ex1" \n' +
-                '\t\tcategory="buildings" \n' +
-                '\t\ttaxonomySource="GEM taxonomy"> \n' +
+            '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy"> \n' +
                 '\t\t<description>exposure model</description> \n' +
                 '\t\t<conversions> \n' +
                     '\t\t\t<area type="aggregated" unit="SQM" /> \n' +
-                    '\t\t\t<costTypes> \n' +
-                        //'<costType name="nonstructural" '+costTypesType+' unit="USD" /> \n' +
-                    '\t\t\t</costTypes> \n' +
+                    costTypes +
                 '\t\t</conversions> \n' +
                 '\t\t<assets> \n' +
                     asset +
