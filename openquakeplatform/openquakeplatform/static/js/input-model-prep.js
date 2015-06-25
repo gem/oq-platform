@@ -251,7 +251,7 @@ $('#saveBtn').click(function() {
                 '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
                 costs +
                 occupancies +
-            '\t\t\t</asset>';
+            '\t\t\t</asset>\n';
     }
 
     // Create a NRML element
