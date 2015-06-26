@@ -8,6 +8,7 @@
     {{block.super}}
     <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/handsontable.full.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/input_model_prep.css" rel="stylesheet"/>
 {% endblock extra_head %}
 
 
@@ -27,36 +28,60 @@
       <div id="oq-body-content">
       <h3>Exposure</h2>
       <br>
-        <div id="exposureForm" >
-          Define Cost:<br>
-          <select id="defineCostSelect">
-            <option value="none">None</option>
-            <option value="aggregated">Aggregated</option>
-            <option value="perBuilding">Per Building</option>
-            <option value="perArea">Per Area</option>
-          </select>
-          <br>
+        <div id="exposureForm">
+          <div id="cost">
+            Define Cost:<br>
+            <select id="defineCostSelect">
+              <option value="none">None</option>
+              <option value="aggregated">Aggregated</option>
+              <option value="perBuilding">Per Building</option>
+              <option value="perArea">Per Area</option>
+            </select>
+          </div>
           <div id="perArea">
             Per Area:<br>
             <select id="perAreaSelect">
               <option value="aggregated">Aggregated</option>
               <option value="perArea">Per Area</option>
             </select>
+          </div>
+          <div id="limit">
+            Limit:<br>
+            <select id="limitSelect">
+              <option value="none">None</option>
+              <option value="absolute">Absolute</option>
+              <option value="relative">Relative</option>
+            </select>
+          </div>
+          <div id="deductible">
+            Deductible:<br>
+            <select id="deductibleSelect">
+              <option value="none">None</option>
+              <option value="absolute">Absolute</option>
+              <option value="relative">Relative</option>
+            </select>
+          </div>
+          <div id="econ">
+            <div id="economicCheckBoxes">
+            Economic value:<br>
+              <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
+              <br>
+              <input type="checkbox" value="non_structural"> Non-Structural Cost
+              <br>
+              <input type="checkbox" value="contents"> Contents Cost
+              <br>
+              <input type="checkbox" value="business"> Business Int Cost
+              <br>
+            </div>
+          </div>
+          <div id="retrofittingSelect">
+            Retrofitting Cost:<br>
+            <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting
             <br>
           </div>
-          Economic value:<br>
-          <div id="economicCheckBoxes">
-            <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
-            <br>
-            <input type="checkbox" value="non_structural"> Non-Structural Cost
-            <br>
-            <input type="checkbox" value="contents"> Contents Cost
-            <br>
-            <input type="checkbox" value="business"> Business Int Cost
-          </div>
-          <br>
-          Occupants:<br>
           <div id="occupantsCheckBoxes">
+            <br>
+            Occupants:<br>
             <input type="checkbox" value="day"> Day
             <br>
             <input type="checkbox" value="night"> Night
@@ -64,30 +89,13 @@
             <input type="checkbox" value="transit"> Transit
           </div>
           <br>
-          <div id="retrofittingSelect">
-            Retrofitting Cost:<br>
-            <input type="checkbox" value="retrofitting"> Retrofitting
-          </div>
-          <br>
-          Limit:<br>
-          <select id="limitSelect">
-            <option value="none">None</option>
-            <option value="absolute">Absolute</option>
-            <option value="relative">Relative</option>
-          </select>
-          <br>
-          Deductible:<br>
-          <select id="deductibleSelect">
-            <option value="none">None</option>
-            <option value="absolute">Absolute</option>
-            <option value="relative">Relative</option>
-          </select>
-          <br>
         </div>
         <br>
-        <div id="hot"></div>
+        <div id="table"></div>
         <br>
         <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+        <br>
+        <button id="selectAll" type="button" style="display:none;" class="btn btn-primary">Select</button>
         <br>
         <div id="outPut" style="width:500px;"></div>
       </div>

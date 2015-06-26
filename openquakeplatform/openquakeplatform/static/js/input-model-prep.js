@@ -15,16 +15,15 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var hot;
-//var costTypesType;
-//var costTypesAreaType;
+var table;
 var header;
+
+$( document ).ready(function() {
+    updateTable();
+});
 
 $('#perArea').hide();
 $('#retrofittingSelect').hide();
-$( document ).ready(function() {
-    $('#updateBtn').css('display', 'block');
-});
 
 // Manage the visibility of the perArea selection menu
 $('#defineCostSelect').change(function() {
@@ -45,6 +44,8 @@ $('#structuralChbx').change(function() {
         $('#retrofittingSelect').show();
     } else {
         $('#retrofittingSelect').hide();
+        // uncheck retrofitting
+        $('#retroChbx').attr('checked', false);
     }
 });
 
@@ -55,14 +56,13 @@ $('#exposureForm').change(function() {
 function updateTable () {
     // Remove any existing table
     try {
-        hot.destroy();
+        table.destroy();
     } catch (e) {
         // continue
     }
 
     // Default columns
     header = ['longitude', 'latitude', 'taxonomy', 'number'];
-
 
     function checkForValue (argument) {
         if (argument != 'none') {
@@ -108,8 +108,8 @@ function updateTable () {
     console.log(header);
 
     // Create the table
-    var container = document.getElementById('hot');
-    hot = new Handsontable(container,
+    var container = document.getElementById('table');
+    table = new Handsontable(container,
     {
         //data: data,
         colHeaders: header,
@@ -126,7 +126,7 @@ function updateTable () {
 
 $('#saveBtn').click(function() {
     // Get the values from the table
-    var data = hot.getData();
+    var data = table.getData();
     console.log('data:');
     console.log(data);
 
@@ -324,11 +324,36 @@ $('#saveBtn').click(function() {
             '\t</exposureModel> \n' +
         '</nrml>';
 
-    console.log('NRML:');
-    console.log(NRML);
-
     // Provide the user with the xml output
     $('#outPut').empty();
-    $('#outPut').append('<textarea style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
+    $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
+    $('#selectAll').css('display', 'block');
+    selectAllText();
 });
+
+$('#selectAll').click(function() {
+    var textBox = document.getElementById("textarea");
+    textBox.select();
+});
+
+function selectAllText () {
+    var textBox = document.getElementById("textarea");
+    textBox.onfocus = function() {
+        textBox.select();
+
+        // Work around Chrome's little problem
+        textBox.onmouseup = function() {
+            // Prevent further mouseup intervention
+            textBox.onmouseup = null;
+            return false;
+        };
+    };
+}
+
+
+
+
+
+
+
 
