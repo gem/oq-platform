@@ -26,8 +26,9 @@
         {% endblock oq_body_heading %}
       </div>
       <div id="oq-body-content">
-      <h3>Exposure</h2>
+      <h1>Exposure</h1>
       <br>
+      <div class="alert alert-info" role="alert">Use this form to modify the table header.</div>
         <div id="exposureForm">
           <div id="cost">
             Define Cost:<br>
@@ -90,14 +91,17 @@
           </div>
           <br>
         </div>
-        <br>
+        <div class="alert alert-info" role="alert">Copy and paste values from your spreadsheet into the table bellow.</div>
         <div id="table"></div>
         <br>
         <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
         <br>
-        <button id="selectAll" type="button" style="display:none;" class="btn btn-primary">Select</button>
-        <br>
-        <div id="outPut" style="width:500px;"></div>
+        <div id="outputDiv">
+          <div class="alert alert-info" role="alert">Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+          <button id="selectAll" type="button" class="btn btn-primary">Select</button>
+          <br>
+          <div id="outPut" style="width:500px;"></div>
+        </div>
       </div>
     </div>
   </div>

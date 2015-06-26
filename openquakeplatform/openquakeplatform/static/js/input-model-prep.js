@@ -20,6 +20,7 @@ var header;
 
 $( document ).ready(function() {
     updateTable();
+    $('#outputDiv').css('display', 'none');
 });
 
 $('#perArea').hide();
@@ -51,6 +52,7 @@ $('#structuralChbx').change(function() {
 
 $('#exposureForm').change(function() {
     updateTable();
+    $('#outputDiv').css('display', 'none');
 });
 
 function updateTable () {
@@ -109,17 +111,20 @@ function updateTable () {
 
     // Create the table
     var container = document.getElementById('table');
-    table = new Handsontable(container,
-    {
-        //data: data,
+
+    //////////////////////
+    /// Table Settings ///
+    //////////////////////
+
+    table = new Handsontable(container, {
         colHeaders: header,
         rowHeaders: true,
-        minSpareRows: 1,
-        //colHeaders: true,
         contextMenu: true,
         startCols: headerLength,
-        maxCols: headerLength
+        maxCols: headerLength,
+        startRows: 1
     });
+
     $('#outPut').empty();
     $('#saveBtn').css('display', 'block');
 };
@@ -131,7 +136,7 @@ $('#saveBtn').click(function() {
     console.log(data);
 
     // Check for null values
-    for (var i = 0; i < data.length -1 ; i++) {
+    for (var i = 0; i < data.length; i++) {
         for (var j = 0; j < data[i].length; j++) {
             if (data[i][j] === null) {
                 alert("whoops, there seem to be some empty cells");
@@ -182,7 +187,7 @@ $('#saveBtn').click(function() {
     var limitInx = checkHeaderMatch('limit');
 
     // Create the asset
-    for (var i = 0; i < data.length -1; i++) {
+    for (var i = 0; i < data.length; i++) {
         var costTypes = '\t\t\t<costTypes> \n';
         var costs ='\t\t\t\t<costs>\n';
         var occupancies = '\t\t\t\t<occupancies>\n';
@@ -327,7 +332,7 @@ $('#saveBtn').click(function() {
     // Provide the user with the xml output
     $('#outPut').empty();
     $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
-    $('#selectAll').css('display', 'block');
+    $('#outputDiv').css('display', 'block');
     selectAllText();
 });
 
