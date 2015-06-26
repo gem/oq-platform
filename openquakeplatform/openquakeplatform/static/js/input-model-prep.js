@@ -48,7 +48,11 @@ $('#structuralChbx').change(function() {
     }
 });
 
-$('#updateBtn').click(function() {
+$('#exposureForm').change(function() {
+    updateTable();
+});
+
+function updateTable () {
     // Remove any existing table
     try {
         hot.destroy();
@@ -118,7 +122,7 @@ $('#updateBtn').click(function() {
     });
     $('#outPut').empty();
     $('#saveBtn').css('display', 'block');
-});
+};
 
 $('#saveBtn').click(function() {
     // Get the values from the table
