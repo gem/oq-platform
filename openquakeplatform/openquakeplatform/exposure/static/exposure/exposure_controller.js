@@ -124,7 +124,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
                 '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
-                '<input type="hidden" name="study" value="'+study.study_id+'">'+
+		'<p>Study ID='+study.study_id+' :::: Study Region ID='+$scope.selectedRegion[0].study_region_id+
+                '<input type="hidden" name="old-study" value="'+study.study_id+'">'+
+                '<input type="hidden" name="study" value="'+$scope.selectedRegion[0].study_region_id+'">'+
                 '<br>'+
             '</form>';
     }
@@ -176,6 +178,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 // Check the grid count
                 if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
                     $('#exposure-building-form').append(
+			'<input type="hidden" name="ph-sr_id" value="'+$scope.selectedRegion[0].study_region_id+'"/>'+
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
                 } else {
