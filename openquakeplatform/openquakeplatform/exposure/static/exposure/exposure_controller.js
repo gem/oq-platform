@@ -113,8 +113,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // National level building exposure download form
     function nationalForm(study) {
+	var selectedStudy=$scope.selectedRegion[0];
+	console.log("PH: Study=",study,'SelectedStudy=',selectedStudy);
         return '<form id="exposure-building-form" class="exposure_export_form"'+
-                '<p><b>Download Study Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_id+'">Download</button></br></br>'+
+                '<p><b>Download Study Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+selectedStudy.study_region_id+'">Download</button></br></br>'+
                 '<b>Download Gridded Building Exposure:</b></br>'+
                 '<p><label for="id_residential_0">Building Type:</label></br>'+
                 '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
@@ -124,9 +126,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
                 '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label></br>'+
                 '</p>'+
-		'<p>Study ID='+study.study_id+' :::: Study Region ID='+$scope.selectedRegion[0].study_region_id+
-                '<input type="hidden" name="old-study" value="'+study.study_id+'">'+
-                '<input type="hidden" name="study" value="'+$scope.selectedRegion[0].study_region_id+'">'+
+                '<input type="hidden" name="study" value="'+selectedStudy.study_region_id+'">'+
                 '<br>'+
             '</form>';
     }
