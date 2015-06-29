@@ -114,7 +114,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     // National level building exposure download form
     function nationalForm(study) {
 	var selectedStudy=$scope.selectedRegion[0];
-	console.log("PH: Study=",study,'SelectedStudy=',selectedStudy);
         return '<form id="exposure-building-form" class="exposure_export_form"'+
                 '<p><b>Download Study Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+selectedStudy.study_region_id+'">Download</button></br></br>'+
                 '<b>Download Gridded Building Exposure:</b></br>'+
