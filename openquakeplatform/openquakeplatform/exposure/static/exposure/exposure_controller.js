@@ -177,7 +177,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 // Check the grid count
                 if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
                     $('#exposure-building-form').append(
-			'<input type="hidden" name="ph-sr_id" value="'+$scope.selectedRegion[0].study_region_id+'"/>'+
                         '<button id="nationalExposureBldgDownload" type="button">Download</button>'
                     );
                 } else {
