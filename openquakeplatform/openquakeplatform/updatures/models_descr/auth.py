@@ -19,18 +19,19 @@ from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
 # auth models
 models_descr['auth.permission'] = ModelDescription(
     'auth.permission',
-    lambda i: [ i['fields']['codename'], i['fields']['content_type'][0], i['fields']['content_type'][1] ],
+    lambda i: [i['fields']['codename'], i['fields']['content_type'][0],
+               i['fields']['content_type'][1]],
     {})
 
 models_descr['auth.group'] = ModelDescription(
     'auth.group',
-    lambda i: [ i['fields']['name'] ],
+    lambda i: [i['fields']['name']],
     {'permissions': ModelRefs('auth.permission', True)},
     fie_type={'permissions': ModelDescription.FIE_TY_UNION})
 
 models_descr['auth.user'] = ModelDescription(
     'auth.user',
-    lambda i: [ i['fields']['username'] ],
+    lambda i: [i['fields']['username']],
     {'user_permissions': ModelRefs('auth.permission', True),
      'groups':           ModelRefs('auth.group', True)},
     fie_type={'user_permissions': ModelDescription.FIE_TY_UNION,

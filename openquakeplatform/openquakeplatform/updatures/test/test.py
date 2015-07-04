@@ -64,11 +64,11 @@ class UpdaturesTestCase(unittest.TestCase):
                     print "TEST DIFFER %s, OUTPUT IS SAVED IN %s" % (test, fnameout)
             else:
                 exp = json.loads(exp)
-                if [ result ] == exp:
+                if [result] == exp:
                     print "TEST SUCCESS %s, failure was expected" % test
                 else:
                     test_result = 1
-                    print "TEST FAILS %s excting a failure %s was expected but %s was returned" % (test, exp, [ result ])
+                    print "TEST FAILS executing %s a failure %s was expected but %s was returned" % (test, exp, [ result ])
 
         self.assertEqual(test_result, 0)
 

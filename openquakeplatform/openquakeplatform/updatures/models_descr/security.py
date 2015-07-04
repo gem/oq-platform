@@ -19,7 +19,8 @@ from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
 # auth models
 models_descr['security.objectrole'] = ModelDescription(
     'security.objectrole',
-    lambda i: [ i['fields']['codename'], i['fields']['content_type'][0], i['fields']['content_type'][1] ],
+    lambda i: [i['fields']['codename'], i['fields']['content_type'][0],
+               i['fields']['content_type'][1]],
     {'permissions': ModelRefs('auth.permission', True),
      'content_type': ModelRefs('contenttypes.contenttype', False)}
     )

@@ -20,27 +20,18 @@ import os
 import sys
 import copy
 import types
-from pprint import pprint
 from collections import OrderedDict
-from django.core.management import call_command, execute_manager
+from django.core.management import call_command
 from openquakeplatform import updatures
-from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
-                                                 ModelDescription, models_descr)
-import openquakeplatform.updatures.models_descr.auth
-import openquakeplatform.updatures.models_descr.base
-import openquakeplatform.updatures.models_descr.contenttypes
-import openquakeplatform.updatures.models_descr.maps
-import openquakeplatform.updatures.models_descr.people
-import openquakeplatform.updatures.models_descr.security
-import openquakeplatform.updatures.models_descr.taggit
-import openquakeplatform.updatures.models_descr.tests
-import openquakeplatform.updatures.models_descr.vulnerability
-import pdb
+from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs)
+from openquakeplatform.updatures.models_descr import models_descr
+
+MODELS_ORDER = []
 
 def pdebug(level, s):
-    if updatures.debug_level < level:
+    if updatures.DEBUG_LEVEL < level:
         return
-    print >>sys.stderr, s
+    print >> sys.stderr, s
 
 
 def rebuild_order():
@@ -58,7 +49,7 @@ def rebuild_order():
                 else:
                     models_descr_rest[model] = descr
             else:
-                for ref_field, ref in descr.refs.iteritems():
+                for _, ref in descr.refs.iteritems():
                     if isinstance(ref.model, types.FunctionType):
                         continue
                     if ref.model not in models_order:
@@ -90,11 +81,11 @@ class ItemsInfo(object):
     def update(self, item):
         self.occur += 1
         if str(self.maxpk) != 'pk_is_natural':
-            self.maxpk = item['pk'] if item['pk'] > self.maxpk else self.maxpk
+            self.maxpk = max(item['pk'], self.maxpk)
 
     def newpk(self):
         if str(self.maxpk) != 'pk_is_natural':
-            self.maxpk = self.maxpk + 1
+            self.maxpk += 1
             return self.maxpk
         else:
             raise TypeError
@@ -108,17 +99,19 @@ def inspect(base):
 
     for item in base:
         if not 'model' in item:
-            sys.stderr.write("malformed item, 'model' key doesn't exists: %s" % str(item))
+            sys.stderr.write("malformed item, 'model' key doesn't exists: %s"
+                             % str(item))
             return 1
         if not 'pk' in item:
-            sys.stderr.write("malformed item, 'pk' key doesn't exists" % str(item))
+            sys.stderr.write("malformed item, 'pk' key doesn't exists: %s"
+                             % str(item))
             return 1
         model = item['model']
 
         md = models_descr[model]
 
         if not model in models:
-            models[model] = ItemsInfo(item, pk_natural = md.pk_natural)
+            models[model] = ItemsInfo(item, pk_natural=md.pk_natural)
         else:
             models[model].update(item)
 
@@ -127,7 +120,7 @@ def inspect(base):
 def maxpk_models(models, oldels):
     maxpks = {}
 
-    for model in models_order:
+    for model in MODELS_ORDER:
         md = models_descr[model]
         if md.pk_natural:
             maxpks[model] = { 'maxpk': '_gem_unreachable_key_'}
@@ -159,7 +152,7 @@ def group_objs(base):
     dyn_refs = {}
     groupk = {}
 
-    for model in models_order:
+    for model in MODELS_ORDER:
         group[model] = []
         dyn_refs[model] = {}
         groupk[model] = {}
@@ -168,7 +161,8 @@ def group_objs(base):
         model = item['model']
         md = models_descr[model]
 
-        # if dynamic references populate the ModelDescription with more virtual references
+        # if dynamic references populate the ModelDescription with more
+        # virtual references
         for ref_field, ref in md.refs.iteritems():
             if isinstance(ref.model, types.FunctionType):
                 dyn_key = "__dynamic__.%s.fk" % ref.model(item)
@@ -180,8 +174,9 @@ def group_objs(base):
         k = key_get(md, item)
         groupk[model][k] = item
 
-    for model in models_order:
-        models_descr[model].refs = dict(models_descr[model].refs.items() + dyn_refs[model].items())
+    for model in MODELS_ORDER:
+        models_descr[model].refs = dict(models_descr[model].refs.items()
+                                        + dyn_refs[model].items())
 
     return (group, groupk)
 
@@ -217,7 +212,8 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
         if item_same_pk['pk'] == new_pk:
             old_pk = item['pk']
             item['pk'] = maxpks[model]['maxpk'] + 1
-            update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, maxpks[model]['maxpk'])
+            update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks,
+                      maxpks[model]['maxpk'])
             item['pk'] = old_pk
             break
     else:
@@ -226,7 +222,8 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     # update all references
     if md.natural is None:
         for ref_model, ref_md in models_descr.iteritems():
-            # found each model has a refs value associated with the current item model
+            # found each model has a refs value associated with
+            # the current item model
             for ref_reffield, ref in ref_md.refs.iteritems():
                 if isinstance(ref.model, types.FunctionType):
                     continue
@@ -268,13 +265,15 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     ret = True
     for backinhe in item.get('__backinhe__', []):
         if ret:
-            update_pk(updates_gr, updatesk_gr, backinhe.model_descr.name, backinhe.item, maxpks, new_pk)
+            update_pk(updates_gr, updatesk_gr, backinhe.model_descr.name,
+                      backinhe.item, maxpks, new_pk)
 
     # if another item had the same pk value of new_pk before swap it
     # with the old pk value of the updated item
     if item_same_pk is not None:
         if ret:
-            ret = update_pk(updates_gr, updatesk_gr, model, item_same_pk, maxpks, old_pk)
+            ret = update_pk(updates_gr, updatesk_gr, model, item_same_pk,
+                            maxpks, old_pk)
 
     return ret
 
@@ -327,13 +326,14 @@ def item_compare(a, b, pk_included=True):
         try:
             backinhe_b = b['__backinhe__'][idx]
         except (KeyError, IndexError):
-            pdebug(2, "differences between backinherited fields A: %s   B %s, return False",
-                   (a, b))
+            pdebug(2, "differences between backinherited fields A: %s   B %s,"
+                   " return False", (a, b))
             return False
 
         if backinhe_a.model_descr.name != backinhe_b.model_descr.name:
             return False
-        ret = item_compare(backinhe_a.item, backinhe_b.item, pk_included=pk_included)
+        ret = item_compare(backinhe_a.item, backinhe_b.item,
+                           pk_included=pk_included)
         if not ret:
             return False
 
@@ -353,10 +353,11 @@ def set_value(item, field, value):
 
 def consistencymeter(dates_gr):
     """
+    Inspect references to identify what are outside json file records.
     """
     cm_out_gr = OrderedDict()
 
-    for model in models_order:
+    for model in MODELS_ORDER:
         pdebug(2, "CC: MODEL: %s" % model)
         cm_out_gr[model] = { 'fields_n': 0, 'incons': 0, 'incons_is_many': 0 }
         cm_out = cm_out_gr[model]
@@ -367,13 +368,13 @@ def consistencymeter(dates_gr):
                 if isinstance(ref.model, types.FunctionType):
                     continue
                 ref_md = models_descr[ref.model]
-                pdebug(2, "CC: REF_FIELD, REF.MODEL: %s, %s, %s" % (ref_field, ref.model, ref_md.natural))
+                pdebug(2, "CC: REF_FIELD, REF.MODEL: %s, %s, %s"
+                       % (ref_field, ref.model, ref_md.natural))
                 ref_value = get_value(item, ref_field)
                 if not ref_value:
                     continue
 
                 cm_out['fields_n'] += 1
-                ty = type(ref_value)
 
                 if ref_md.natural is not None:
                     if ref.is_many:
@@ -381,7 +382,7 @@ def consistencymeter(dates_gr):
                         refs_fk = ref_value
                     else: # if ref.is_many:
                         # any2one case:
-                        refs_fk = [ ref_value ]
+                        refs_fk = [ref_value]
 
                     for fk in refs_fk:
                         for fktem in dates_gr[ref.model]:
@@ -389,7 +390,8 @@ def consistencymeter(dates_gr):
                                 break
                         else:
                             pdebug(1, "CC: natural")
-                            cm_out['incons'+('_is_many' if ref.is_many else '')] += 1
+                            cm_out['incons' +
+                                   ('_is_many' if ref.is_many else '')] += 1
 
                 else: # if ref_md.natural
                     pdebug(2, "CC: NOT NATURAL")
@@ -398,7 +400,7 @@ def consistencymeter(dates_gr):
                     if ref.is_many:
                         refs_fk = ref_value
                     else:
-                        refs_fk = [ ref_value ]
+                        refs_fk = [ref_value]
 
 
                     for fk in refs_fk:
@@ -406,8 +408,10 @@ def consistencymeter(dates_gr):
                             if fk == fktem['pk']:
                                 break
                         else:
-                            pdebug(1, "CC: not natural model: %s %s" % (model, item))
-                            cm_out['incons'+('_is_many' if ref.is_many else '')] += 1
+                            pdebug(1, "CC: not natural model: %s %s" %
+                                   (model, item))
+                            cm_out['incons' + ('_is_many' if ref.is_many
+                                             else '')] += 1
 
     return cm_out_gr
 
@@ -418,8 +422,7 @@ def reference_get(dates_gr, model, pk):
         if md.natural:
             if md.natural(item) == pk:
                 return item
-        else:
-            if item['pk'] == pk:
+        elif item['pk'] == pk:
                 return item
     else:
         return None
@@ -438,7 +441,7 @@ def grouping_set(dates_gr, datesk_gr):
     """
     group_heads = []
 
-    for model in models_order:
+    for model in MODELS_ORDER:
         md = models_descr[model]
         pdebug(2, "Mod: %s  Is grouped: %s" % (model, md.group))
         if md.group is None or not dates_gr[model]:
@@ -447,7 +450,9 @@ def grouping_set(dates_gr, datesk_gr):
 
         if md.group not in group_heads:
             group_heads.append(md.group)
-        dirref_groups = [(k,v) for k,v in md.refs.iteritems() if not isinstance(v.model, types.FunctionType) and v.model == md.group]
+        dirref_groups = [(k, v) for k, v in md.refs.iteritems()
+                         if not isinstance(v.model, types.FunctionType)
+                         and v.model == md.group]
         if dirref_groups:
             pdebug(2, "Direct group for model %s" % model)
             for item in dates_gr[model]:
@@ -455,7 +460,6 @@ def grouping_set(dates_gr, datesk_gr):
                 for ref_field, ref in dirref_groups:
                     if ref.is_many:
                         continue
-                    ref_md = models_descr[ref.model]
 
                     if item['fields'][ref_field]:
                         k = item['fields'][ref_field]
@@ -466,9 +470,11 @@ def grouping_set(dates_gr, datesk_gr):
                             kk = tuple([k])
 
                         try:
-                            datesk_gr[ref.model][kk]['__backrefs__'].append((model, item))
+                            datesk_gr[ref.model][kk]['__backrefs__'].append(
+                                (model, item))
                         except KeyError:
-                            datesk_gr[ref.model][kk]['__backrefs__'] = [(model, item)]
+                            datesk_gr[ref.model][kk]['__backrefs__'] = \
+                                [(model, item)]
                         break
                 else:
                     pdebug(0, "Direct reference not found")
@@ -482,8 +488,9 @@ def grouping_set(dates_gr, datesk_gr):
 
                     if ref.is_many or not item['fields'][ref_field]:
                         continue
-                    ref_record = reference_get(dates_gr, ref.model, item['fields'][ref_field])
-                    if ref_record == None:
+                    ref_record = reference_get(dates_gr, ref.model,
+                                               item['fields'][ref_field])
+                    if ref_record is None:
                         pdebug(0, "No reference record found, abort")
                         sys.exit(20)
 
@@ -497,9 +504,11 @@ def grouping_set(dates_gr, datesk_gr):
                         kk = tuple([item['fields'][ref_field]])
 
                     try:
-                        datesk_gr[ref.model][kk]['__backrefs__'].append((model, item))
+                        datesk_gr[ref.model][kk]['__backrefs__'].append(
+                            (model, item))
                     except KeyError:
-                        datesk_gr[ref.model][kk]['__backrefs__'] = [(model, item)]
+                        datesk_gr[ref.model][kk]['__backrefs__'] = \
+                            [(model, item)]
                     item['fields']['__group__'] = group_ref
                     break
                 else:
@@ -513,7 +522,7 @@ def inheriting_set(dates_gr, datesk_gr):
     """
     set back inheritance between generic and specialized models
     """
-    for model in models_order:
+    for model in MODELS_ORDER:
         md = models_descr[model]
         if md.inher is None:
             continue
@@ -529,16 +538,15 @@ def inheriting_set(dates_gr, datesk_gr):
 
 
     # remove generic inheritable items that havn't a specialized counterpart
-    for model in models_order:
+    for model in MODELS_ORDER:
         md = models_descr[model]
         if not md.is_inherited:
             continue
 
         for item in list(dates_gr[model]):
             if item.get('__backinhe__', None) is None:
-                pk = item['pk']
-                pdebug(1, "WARNING: generic instance of %s with pk [%s] not inherited, remove it" %
-                       (model, key_get(md, item)))
+                pdebug(1, "WARNING: generic instance of %s with pk [%s] not"
+                       " inherited, remove it" % (model, key_get(md, item)))
                 del(datesk_gr[model][key_get(md, item)])
                 dates_gr[model].remove(item)
 
@@ -547,15 +555,15 @@ def print_refs(spc, item_in):
     if '__backrefs__' not in item_in:
         return
 
-    for mod,item in item_in['__backrefs__']:
-        print >>sys.stderr, "%s%s (%s)" % (" "*spc, mod, item['pk'])
+    for mod, item in item_in['__backrefs__']:
+        print >> sys.stderr, "%s%s (%s)" % (" "*spc, mod, item['pk'])
         print_refs(spc + 4, item)
 
 
 def model_groups_get():
     model_groups = []
 
-    for model in models_order:
+    for model in MODELS_ORDER:
         if models_descr[model].group:
             if models_descr[model].group not in model_groups:
                 model_groups.append(models_descr[model].group)
@@ -578,15 +586,16 @@ def groupstruct_issubset(subset, item):
 
     for sub_model, sub_item in subset['__backrefs__']:
         # Note:
-        #    a second loop is needed to manage cases where 2 references to the same model
-        #    have different sub-branch structures like:
+        #    a second loop is needed to manage cases where 2 references
+        #    to the same model have different sub-branch structures like:
         #                 A
         #               /   \
         #             B       B
         #           /      /     \
         #         C      D         E
         #
-        for br_model, br_item in [ (mod, itm) for mod, itm in item['__backrefs__'] if mod == sub_model ]:
+        for _, br_item in ((mod, itm) for mod, itm in
+                            item['__backrefs__'] if mod == sub_model):
             if groupstruct_issubset(sub_item, br_item):
                 backrefs_out.remove((sub_model, sub_item))
                 break
@@ -598,10 +607,10 @@ def groupstruct_issubset(subset, item):
     else:
         return False
 
-def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updatesk_gr):
+def grouping_update(updates_gheads, oldatesk_gr, updates_gr):
     """
-    Check if groups that already exists became inconsistent after update in the other case
-    adjust pk indexes accordingly.
+    Check if groups that already exists became inconsistent after update
+    in the other case adjust pk indexes accordingly.
     """
     result = True
     for gmodel in updates_gheads:
@@ -615,45 +624,48 @@ def grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updates
                 # print "FOUND THE SAME CURVE [%s]" % key
                 issubset = groupstruct_issubset(otem, item)
                 if not issubset:
-                    print >>sys.stderr, "WARNING: in model '%s' the istance '%s' isn't totally replaced by new version, remove it manually from the database and retry" % (gmodel, key)
+                    print >> sys.stderr, ("WARNING: in model '%s' the istance"
+                                         "'%s' isn't totally replaced by new"
+                                         " version, remove it manually from"
+                                         " the database and retry"
+                                         % (gmodel, key))
                     result = False
     return result
 
-def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort_output=False, debug=None):
+def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True,
+                  sort_output=False, debug=None):
+    """
+ - load from fixture in updates list
+ - group by model in 'updates_gr' dict of lists and 'updatesk_gr' dict of dicts
+ - set grouping accordingly with 'models_descr' option
+   (item['fields']['__group__'])
+ - for each model in updates load corresponding old data from db or from fake
+   fixtures files
+ - group old data by model in 'oldates_gr' dict of lists and 'oldatesk_gr'
+   dict of dicts
+ - grouping matching and comparison
+   if new header group match an old header group:
+      - check consistency of the DB after update and stop update if check fails
+      - update all group pk to overwrite old pk in db
     """
 
-    - load from fixture in updates list
-    - group by model in 'updates_gr' dict of lists and 'updatesk_gr' dict of dicts
-    - set grouping accordingly with 'models_descr'iption (item['fields']['__group__'])
-    - for each model in updates load corresponding old data from db or from fake fixtures files
-    - group old data by model in 'oldates_gr' dict of lists and 'oldatesk_gr' dict of dicts
-    - grouping matching and comparison
-      if new header group match an old header group:
-         - check consistency of the DB after update and stop update if check fails
-         - update all group pk to overwrite old pk in db
-
-
-    """
-
-    global models_order
+    global MODELS_ORDER
 
     if debug is not None:
-        updatures.debug_level = debug
-
-    if output == None:
-        output = sys.stdout
+        updatures.DEBUG_LEVEL = debug
 
     updates = []
     oldates = []
     finals = []
 
-    pdebug(1, "DEBUG LEVEL: %d" % updatures.debug_level)
+    pdebug(1, "DEBUG LEVEL: %d" % updatures.DEBUG_LEVEL)
 
     pdebug(1, "loading updates")
     for fname in argv:
         pdebug(1, "FNAME %s" % fname)
         updates += json.load(file(fname, 'r'))
     pdebug(1, "retrieving current data")
+    models = inspect(updates)
     if not fakeold:
         # load the associated data from db
         for k in models:
@@ -667,17 +679,16 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     else:
         oldates = json.load(file(fakeold, 'r'))
 
-    # models_order is currently not ordered by reference dependencies
-    models_order = []
+    # MODELS_ORDER is currently not ordered by reference dependencies
     for model in models_descr:
-        models_order.append(model)
+        MODELS_ORDER.append(model)
 
     pdebug(1, "grouping data")
     updates_gr, updatesk_gr = group_objs(updates)
     oldates_gr, oldatesk_gr = group_objs(oldates)
 
     pdebug(1, "ordering models")
-    models_order = rebuild_order()
+    MODELS_ORDER = rebuild_order()
 
     pdebug(1, "grouping models")
     model_groups = model_groups_get()
@@ -691,11 +702,12 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     inheriting_set(updates_gr, updatesk_gr)
     inheriting_set(oldates_gr, oldatesk_gr)
 
-    if updatures.debug_level > 0:
+    if updatures.DEBUG_LEVEL > 0:
         for ghead in updates_gheads:
-            print >>sys.stderr, "MODEL: %s" % ghead
+            print >> sys.stderr, "MODEL: %s" % ghead
             for i in updates_gr[ghead]:
-                print >>sys.stderr, "GENERAL INFO: %s (%s)" % (i['fields']['name'], i['pk'])
+                print >> sys.stderr, "GENERAL INFO: %s (%s)" % \
+                    (i['fields']['name'], i['pk'])
                 print_refs(4, i)
 
     if check_consistency:
@@ -704,7 +716,6 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     finals_gr, finalsk_gr = group_objs([])
 
     pdebug(3, "MOP GROUPS: %s" % str(updates_gr))
-    models = inspect(updates)
 
     oldates_gheads = grouping_set(oldates_gr, oldatesk_gr)
 
@@ -713,13 +724,14 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     maxpks = maxpk_models(models, oldels)
 
     # grouping matching and comparison
-    grouping_consistent = grouping_update(updates_gheads, oldates_gr, oldatesk_gr, updates_gr, updatesk_gr)
+    grouping_consistent = grouping_update(updates_gheads, oldatesk_gr,
+                                          updates_gr)
 
     if not grouping_consistent:
         return 1
 
     # loops on models in a way that a foreign key appear before its related item
-    for model in models_order:
+    for model in MODELS_ORDER:
         if updates_gr[model] == []:
             continue
         else:
@@ -727,8 +739,8 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
         md = models_descr[model]
 
-        # if inheriting from another model skip this verification (will be performed
-        # on the inherited model instance)
+        # if inheriting from another model skip this verification
+        # (will be performed on the inherited model instance)
         if md.inher:
             pdebug(2, "Model: %s inher, skip it" % md.name )
             continue
@@ -736,8 +748,10 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
         for item in updates_gr[model]:
             if item.get('__replace__', None):
-                # this item replace an old item associated with it (by grouping only, currently)
-                update_pk(updates_gr, updatesk_gr, model, item, maxpks, item['__replace__']['pk'])
+                # this item replace an old item associated with it
+                # (by grouping only, currently)
+                update_pk(updates_gr, updatesk_gr, model, item, maxpks,
+                          item['__replace__']['pk'])
 
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
@@ -762,10 +776,13 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
                     # no: pk key case
                     if item_compare(item, otem, pk_included=False):
-                        # identical items except for pk, skip it and update all references
-                        pdebug(1, "identical item except for pk, skip it and update all references")
+                        # identical items except for pk, skip it and update
+                        #  all references
+                        pdebug(1, "identical item except for pk, skip it and"
+                               " update all references")
                         substitute_it = True
-                        update_pk(updates_gr, updatesk_gr, model, item, maxpks, otem['pk'])
+                        update_pk(updates_gr, updatesk_gr, model, item, maxpks,
+                                  otem['pk'])
                         break
 
                 if substitute_it:
@@ -773,12 +790,14 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                     pdebug(2, "SKIP IT")
                 else:
                     if not md.pk_natural:
-                        # loop to identify if new item has the same pk of old item
+                        # loop to identify if new item has the same pk of
+                        # old item
                         for otem in oldates_gr[model] + finals_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
                                 pdebug(3, "NEWPK: %d" % new_pk)
-                                update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk)
+                                update_pk(updates_gr, updatesk_gr, model, item,
+                                          maxpks, new_pk)
                                 break
 
                 pdebug(2, "ADD IT")
@@ -788,7 +807,8 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
 
                 for backinhe in item.get('__backinhe__', []):
                     finals_gr[backinhe.model_descr.name].append(backinhe.item)
-                    kappend(finalsk_gr, backinhe.model_descr.name, backinhe.item)
+                    kappend(finalsk_gr, backinhe.model_descr.name,
+                            backinhe.item)
                     finals.append(backinhe.item)
 
             else: # if not md.natural:
@@ -807,15 +827,18 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                         break
 
                     if md.natural(item) == md.natural(otem):
-                        # same natural keys found, update new pk value to match old pk
+                        # same natural keys found, update new pk value to match
+                        # old pk
                         item['pk'] = otem['pk']
                         found_it = True
 
                         # no: pk key case
                         pdebug(3, "OTEM: %s" % otem)
                         if item_compare(item, otem, pk_included=True):
-                            # identical items except for pk, skip it and update all references
-                            pdebug(1, "identical item except for pk, skip it and update all references")
+                            # identical items except for pk, skip it and
+                            # update all references
+                            pdebug(1, "identical item except for pk, skip"
+                                   " it and update all references")
                             substitute_it = True
 
                         break
@@ -831,13 +854,15 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
                                 new_pk = oldels[model].newpk()
                                 pdebug(1, "SAME PK, UPDATE IT [%d]" % new_pk)
                                 pdebug(1, "NEWPK: %d" % new_pk)
-                                update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk)
+                                update_pk(updates_gr, updatesk_gr, model, item,
+                                          maxpks, new_pk)
                                 item['pk'] = new_pk
                                 break
                             
                 for backinhe in item.get('__backinhe__', []):
                     finals_gr[backinhe.model_descr.name].append(backinhe.item)
-                    kappend(finalsk_gr, backinhe.model_descr.name, backinhe.item)
+                    kappend(finalsk_gr, backinhe.model_descr.name,
+                            backinhe.item)
                     finals.append(backinhe.item)
 
                 pdebug(1, "ADD IT")
@@ -848,35 +873,37 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     if check_consistency:
         cm_fin = consistencymeter(finals_gr)
         # print "Consistency Report"
-        for k,v in cm_new.iteritems():
+        for k, v in cm_new.iteritems():
             if v['fields_n'] > 0:
                 pdebug(1, "k: %s v: %s" % (v, k))
             if cm_new[k] != cm_fin[k]:
-                print >>sys.stderr, "WARNING: consistency Report: k: %s new: %s fin: [%s]" % (
-                    k, v, cm_fin[k])
+                print >> sys.stderr, "WARNING: consistency Report: "
+                "k: %s new: %s fin: [%s]" % (k, v, cm_fin[k])
                 # sys.exit(2)
 
     model_groups = model_groups_get()
 
-    for model in models_order:
+    for model in MODELS_ORDER:
         md = models_descr[model]
 
         for final in finals_gr[model]:
             final.pop('__backrefs__', None)
             final.pop('__replace__', None)
             final.pop('__backinhe__', None)
-            final['fields'].pop('__group__', None)
+            final_fields = final['fields']
+            final_fields.pop('__group__', None)
 
             for ref_field, ref in md.refs.iteritems():
                 if ref.is_many:
-                    final['fields'][ref_field].sort()
+                    final_fields[ref_field].sort()
 
                 if isinstance(ref.model, types.FunctionType):
                     dyn_key = "__dynamic__.%s.fk" % ref.model(final)
                     try:
-                        if final['fields'][dyn_key]:
-                            final['fields'][ref_field] = final['fields'][dyn_key]
-                        final['fields'].pop(dyn_key, None)
+                        if final_fields[dyn_key]:
+                            final_fields[ref_field] = \
+                                final_fields[dyn_key]
+                        final_fields.pop(dyn_key, None)
                     except KeyError:
                         pass
 
@@ -898,10 +925,10 @@ def updatures_app(argv, output=None, fakeold=False, check_consistency=True, sort
     return 0
 
 if __name__ == "__main__":
-    for k,v in models_descr.iteritems():
+    for k, v in models_descr.iteritems():
         if not v.refs:
             continue
-        for kr,r in v.refs.iteritems():
+        for kr, r in v.refs.iteritems():
             if r.is_many:
                 pdebug(2, "model: %s, field %s is_many" % (k, kr) )
     argv = []
@@ -909,8 +936,8 @@ if __name__ == "__main__":
     check_consistency = False
     kwarg = {}
     skipnext = False
-    for id in range(1,len(sys.argv)):
-        arg = sys.argv[id]
+    for idx in range(1, len(sys.argv)):
+        arg = sys.argv[idx]
         if skipnext:
             skipnext = False
             continue
@@ -920,12 +947,13 @@ if __name__ == "__main__":
         elif arg in [ '-s', '--sort' ]:
             kwarg['sort_output'] = True
         elif arg in [ '-f', '--fakeold' ]:
-            kwarg['fakeold'] = sys.argv[id + 1]
+            kwarg['fakeold'] = sys.argv[idx + 1]
             skipnext = True
         else:
             argv.append(arg)
 
     kwarg['debug'] = debug
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openquakeplatform.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE",
+                          "openquakeplatform.settings")
     sys.exit(updatures_app(argv, **kwarg))
