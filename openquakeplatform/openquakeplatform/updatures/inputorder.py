@@ -16,20 +16,9 @@
 
 import sys
 import json
-from openquakeplatform import updatures
-from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
-                                                 ModelDescription, models_descr)
-import openquakeplatform.updatures.models_descr.auth
-import openquakeplatform.updatures.models_descr.base
-import openquakeplatform.updatures.models_descr.contenttypes
-import openquakeplatform.updatures.models_descr.maps
-import openquakeplatform.updatures.models_descr.people
-import openquakeplatform.updatures.models_descr.security
-import openquakeplatform.updatures.models_descr.taggit
-import openquakeplatform.updatures.models_descr.tests
-import openquakeplatform.updatures.models_descr.vulnerability
+from openquakeplatform.updatures.models_descr import models_descr
 
-if __name__ == '__main__':
+def main():
     finals = json.load(sys.stdin)
 
     fin_n = len(finals)
@@ -54,3 +43,6 @@ if __name__ == '__main__':
 
     json.dump(finals, sys.stdout, indent=4, sort_keys=True)
     print
+
+if __name__ == '__main__':
+    main()
