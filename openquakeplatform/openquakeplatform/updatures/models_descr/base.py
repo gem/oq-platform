@@ -14,10 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
 # base models
-models_descr['base.contactrole'] = ModelDescription(
+MODELS_DESCR['base.contactrole'] = ModelDescription(
     'base.contactrole',
     None,
     {'resource': ModelRefs('base.resourcebase', False),
@@ -25,37 +25,37 @@ models_descr['base.contactrole'] = ModelDescription(
      'role': ModelRefs('people.role', False)}
     )
 
-models_descr['base.link'] = ModelDescription(
+MODELS_DESCR['base.link'] = ModelDescription(
     'base.link',
     None,
     {'resource': ModelRefs('base.resourcebase', False)}
     )
 
-models_descr['base.region'] = ModelDescription(
+MODELS_DESCR['base.region'] = ModelDescription(
     'base.region',
     None, {})
 
-models_descr['base.restrictioncodetype'] = ModelDescription(
+MODELS_DESCR['base.restrictioncodetype'] = ModelDescription(
     'base.restrictioncodetype',
     None, {})
       
-models_descr['base.spatialrepresentationtype'] = ModelDescription(
+MODELS_DESCR['base.spatialrepresentationtype'] = ModelDescription(
     'base.spatialrepresentationtype',
     None, {})
 
-models_descr['base.thumbnail'] = ModelDescription(
+MODELS_DESCR['base.thumbnail'] = ModelDescription(
     'base.thumbnail',
     None, {})
 
-models_descr['base.topiccategory'] = ModelDescription(
+MODELS_DESCR['base.topiccategory'] = ModelDescription(
     'base.topiccategory',
     None, {})
 
-models_descr['base.license'] = ModelDescription(
+MODELS_DESCR['base.license'] = ModelDescription(
     'base.license',
     None, {})
 
-models_descr['base.resourcebase'] = ModelDescription(
+MODELS_DESCR['base.resourcebase'] = ModelDescription(
     'base.resourcebase',
     None,
     {'owner': ModelRefs('auth.user', False),

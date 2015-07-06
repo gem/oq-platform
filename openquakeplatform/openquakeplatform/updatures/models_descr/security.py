@@ -14,10 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
 # auth models
-models_descr['security.objectrole'] = ModelDescription(
+MODELS_DESCR['security.objectrole'] = ModelDescription(
     'security.objectrole',
     lambda i: [i['fields']['codename'], i['fields']['content_type'][0],
                i['fields']['content_type'][1]],
@@ -26,7 +26,7 @@ models_descr['security.objectrole'] = ModelDescription(
     )
 
 
-models_descr['security.userobjectrolemapping'] = ModelDescription(
+MODELS_DESCR['security.userobjectrolemapping'] = ModelDescription(
     'security.userobjectrolemapping',
     None,
 
@@ -36,7 +36,7 @@ models_descr['security.userobjectrolemapping'] = ModelDescription(
     )
 
 
-models_descr['security.genericobjectrolemapping'] = ModelDescription(
+MODELS_DESCR['security.genericobjectrolemapping'] = ModelDescription(
     'security.genericobjectrolemapping',
     None,
     { 'object_ct': ModelRefs('contenttypes.contenttype', False),

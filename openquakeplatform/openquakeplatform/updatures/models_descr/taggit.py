@@ -14,15 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
-models_descr['taggit.tag'] = ModelDescription(
+MODELS_DESCR['taggit.tag'] = ModelDescription(
     'taggit.tag',
     None,
     {}
     )
 
-models_descr['taggit.taggeditem'] = ModelDescription(
+MODELS_DESCR['taggit.taggeditem'] = ModelDescription(
     'taggit.taggeditem',
     None,
     {'tag': ModelRefs('taggit.tag', False),

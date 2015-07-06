@@ -14,22 +14,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
 # auth models
-models_descr['auth.permission'] = ModelDescription(
+MODELS_DESCR['auth.permission'] = ModelDescription(
     'auth.permission',
     lambda i: [i['fields']['codename'], i['fields']['content_type'][0],
                i['fields']['content_type'][1]],
     {})
 
-models_descr['auth.group'] = ModelDescription(
+MODELS_DESCR['auth.group'] = ModelDescription(
     'auth.group',
     lambda i: [i['fields']['name']],
     {'permissions': ModelRefs('auth.permission', True)},
     fie_type={'permissions': ModelDescription.FIE_TY_UNION})
 
-models_descr['auth.user'] = ModelDescription(
+MODELS_DESCR['auth.user'] = ModelDescription(
     'auth.user',
     lambda i: [i['fields']['username']],
     {'user_permissions': ModelRefs('auth.permission', True),
@@ -47,51 +47,51 @@ models_descr['auth.user'] = ModelDescription(
               "password": ModelDescription.FIE_TY_OLD,
               })
 
-models_descr['account.account'] = ModelDescription(
+MODELS_DESCR['account.account'] = ModelDescription(
     'account.account',
     None,
     {'user':             ModelRefs('auth.user', False)})
 
 # account models
-models_descr['account.signupcode'] = ModelDescription(
+MODELS_DESCR['account.signupcode'] = ModelDescription(
     'account.signupcode',
     None,
     {'inviter':          ModelRefs('auth.user', False)})
 
-models_descr['account.signupcodeextended'] = ModelDescription(
+MODELS_DESCR['account.signupcodeextended'] = ModelDescription(
     'account.signupcodeextended',
     None,
     # signupcode is pk too, strange case
     {'signupcode':       ModelRefs('account.signupcode', False)})
 
-models_descr['account.signupcoderesult'] = ModelDescription(
+MODELS_DESCR['account.signupcoderesult'] = ModelDescription(
     'account.signupcoderesult',
     None,
     {'signup_code':      ModelRefs('account.signupcode', False),
      'user':             ModelRefs('auth.user', False)})
 
-models_descr['account.emailaddress'] = ModelDescription(
+MODELS_DESCR['account.emailaddress'] = ModelDescription(
     'account.emailaddress',
     None,
     {'user':             ModelRefs('auth.user', False)})
 
-models_descr['account.emailconfirmation'] = ModelDescription(
+MODELS_DESCR['account.emailconfirmation'] = ModelDescription(
     'account.emailconfirmation',
     None,
     {'email_address':    ModelRefs('account.emailaddress', False)})
 
-models_descr['account.accountdeletion'] = ModelDescription(
+MODELS_DESCR['account.accountdeletion'] = ModelDescription(
     'account.accountdeletion',
     None,
     {'user':             ModelRefs('auth.user', False)})
 
     # maps models
-models_descr['maps.map'] = ModelDescription(
+MODELS_DESCR['maps.map'] = ModelDescription(
     'maps.map',
     None,
     {})
 
-models_descr['maps.maplayer'] = ModelDescription(
+MODELS_DESCR['maps.maplayer'] = ModelDescription(
     'maps.maplayer',
     None,
     {'map':              ModelRefs('maps.map', False)})

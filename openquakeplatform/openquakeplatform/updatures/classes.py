@@ -155,4 +155,4 @@ class ModelDescription(object):
 
 
 
-models_descr = OrderedDict()
+MODELS_DESCR = OrderedDict()

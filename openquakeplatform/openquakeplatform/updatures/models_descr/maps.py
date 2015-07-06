@@ -14,10 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
 # auth models
-models_descr['maps.map'] = ModelDescription(
+MODELS_DESCR['maps.map'] = ModelDescription(
     'maps.map',
     None,
     {},
@@ -26,7 +26,7 @@ models_descr['maps.map'] = ModelDescription(
     )
 
 
-models_descr['maps.maplayer'] = ModelDescription(
+MODELS_DESCR['maps.maplayer'] = ModelDescription(
     'maps.maplayer',
     None,
     {'map': ModelRefs('maps.map', False)}

@@ -14,15 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
-models_descr['people.role'] = ModelDescription(
+MODELS_DESCR['people.role'] = ModelDescription(
     'people.role',
     None,
     {'permissions': ModelRefs('auth.permission', True)}
     )
 
-models_descr['people.profile'] = ModelDescription(
+MODELS_DESCR['people.profile'] = ModelDescription(
     'people.profile',
     None,
     {'user': ModelRefs('auth.user', True)}

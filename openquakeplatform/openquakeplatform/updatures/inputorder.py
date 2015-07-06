@@ -16,7 +16,7 @@
 
 import sys
 import json
-from openquakeplatform.updatures.models_descr import models_descr
+from openquakeplatform.updatures.models_descr import MODELS_DESCR
 
 def main():
     finals = json.load(sys.stdin)
@@ -26,7 +26,7 @@ def main():
     # sort all fields list considered always unordered
     for final in finals:
         model = final['model']
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
 
         for ref_field, ref in md.refs.iteritems():
             if ref.is_many:

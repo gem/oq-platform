@@ -24,7 +24,7 @@ from collections import OrderedDict
 from django.core.management import call_command
 from openquakeplatform import updatures
 from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs)
-from openquakeplatform.updatures.models_descr import models_descr
+from openquakeplatform.updatures.models_descr import MODELS_DESCR
 
 MODELS_ORDER = []
 
@@ -37,7 +37,7 @@ def pdebug(level, s):
 def rebuild_order():
     reloop = True
     first_loop = True
-    models_descr_old = models_descr.copy()
+    models_descr_old = MODELS_DESCR.copy()
     models_descr_rest = {}
     models_order = []
     while reloop:
@@ -108,7 +108,7 @@ def inspect(base):
             return 1
         model = item['model']
 
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
 
         if not model in models:
             models[model] = ItemsInfo(item, pk_natural=md.pk_natural)
@@ -121,7 +121,7 @@ def maxpk_models(models, oldels):
     maxpks = {}
 
     for model in MODELS_ORDER:
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
         if md.pk_natural:
             maxpks[model] = { 'maxpk': '_gem_unreachable_key_'}
             continue
@@ -159,7 +159,7 @@ def group_objs(base):
 
     for item in base:
         model = item['model']
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
 
         # if dynamic references populate the ModelDescription with more
         # virtual references
@@ -175,14 +175,14 @@ def group_objs(base):
         groupk[model][k] = item
 
     for model in MODELS_ORDER:
-        models_descr[model].refs = dict(models_descr[model].refs.items()
+        MODELS_DESCR[model].refs = dict(MODELS_DESCR[model].refs.items()
                                         + dyn_refs[model].items())
 
     return (group, groupk)
 
 def kappend(groupk, model, item):
     model = item['model']
-    md = models_descr[model]
+    md = MODELS_DESCR[model]
 
     if md.natural:
         k = tuple(md.natural(item))
@@ -200,7 +200,7 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     maxpks       dict of maximum numeric pk reached
     new_pk       new key
     """
-    md = models_descr[model]
+    md = MODELS_DESCR[model]
     if md.pk_natural:
         return False
 
@@ -221,7 +221,7 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
 
     # update all references
     if md.natural is None:
-        for ref_model, ref_md in models_descr.iteritems():
+        for ref_model, ref_md in MODELS_DESCR.iteritems():
             # found each model has a refs value associated with
             # the current item model
             for ref_reffield, ref in ref_md.refs.iteritems():
@@ -294,7 +294,7 @@ def item_compare(a, b, pk_included=True):
     if a['model'] != b['model']:
         return False
 
-    md = models_descr[a['model']]
+    md = MODELS_DESCR[a['model']]
 
     b_keys = b['fields'].keys()
 
@@ -361,13 +361,13 @@ def consistencymeter(dates_gr):
         pdebug(2, "CC: MODEL: %s" % model)
         cm_out_gr[model] = { 'fields_n': 0, 'incons': 0, 'incons_is_many': 0 }
         cm_out = cm_out_gr[model]
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
         for item in dates_gr[model]:
             pdebug(2, "CC: ITEM: %s" % item)
             for ref_field, ref in md.refs.iteritems():
                 if isinstance(ref.model, types.FunctionType):
                     continue
-                ref_md = models_descr[ref.model]
+                ref_md = MODELS_DESCR[ref.model]
                 pdebug(2, "CC: REF_FIELD, REF.MODEL: %s, %s, %s"
                        % (ref_field, ref.model, ref_md.natural))
                 ref_value = get_value(item, ref_field)
@@ -417,7 +417,7 @@ def consistencymeter(dates_gr):
 
 
 def reference_get(dates_gr, model, pk):
-    md = models_descr[model]
+    md = MODELS_DESCR[model]
     for item in dates_gr[model]:
         if md.natural:
             if md.natural(item) == pk:
@@ -428,7 +428,7 @@ def reference_get(dates_gr, model, pk):
         return None
 
 def item_key(model, item):
-    md = models_descr[model]
+    md = MODELS_DESCR[model]
     if md.natural:
         return md.natural(item)
     else:
@@ -442,7 +442,7 @@ def grouping_set(dates_gr, datesk_gr):
     group_heads = []
 
     for model in MODELS_ORDER:
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
         pdebug(2, "Mod: %s  Is grouped: %s" % (model, md.group))
         if md.group is None or not dates_gr[model]:
             pdebug(2, "No grouping or items for model %s" % model)
@@ -523,7 +523,7 @@ def inheriting_set(dates_gr, datesk_gr):
     set back inheritance between generic and specialized models
     """
     for model in MODELS_ORDER:
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
         if md.inher is None:
             continue
         for item in dates_gr[model]:
@@ -534,12 +534,12 @@ def inheriting_set(dates_gr, datesk_gr):
                 genitem['__backinhe__'].append(BackInheritance(md, item))
             except KeyError:
                 genitem['__backinhe__'] = [BackInheritance(md, item)]
-            models_descr[md.inher].is_inherited = True
+            MODELS_DESCR[md.inher].is_inherited = True
 
 
     # remove generic inheritable items that havn't a specialized counterpart
     for model in MODELS_ORDER:
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
         if not md.is_inherited:
             continue
 
@@ -564,9 +564,9 @@ def model_groups_get():
     model_groups = []
 
     for model in MODELS_ORDER:
-        if models_descr[model].group:
-            if models_descr[model].group not in model_groups:
-                model_groups.append(models_descr[model].group)
+        if MODELS_DESCR[model].group:
+            if MODELS_DESCR[model].group not in model_groups:
+                model_groups.append(MODELS_DESCR[model].group)
 
     return model_groups
 
@@ -614,7 +614,7 @@ def grouping_update(updates_gheads, oldatesk_gr, updates_gr):
     """
     result = True
     for gmodel in updates_gheads:
-        md = models_descr[gmodel]
+        md = MODELS_DESCR[gmodel]
         for item in updates_gr[gmodel]:
             key = key_get(md, item)
             pdebug(2, "KEY: %s[%s]" % (gmodel, key))
@@ -637,7 +637,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
     """
  - load from fixture in updates list
  - group by model in 'updates_gr' dict of lists and 'updatesk_gr' dict of dicts
- - set grouping accordingly with 'models_descr' option
+ - set grouping accordingly with 'MODELS_DESCR' option
    (item['fields']['__group__'])
  - for each model in updates load corresponding old data from db or from fake
    fixtures files
@@ -680,7 +680,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
         oldates = json.load(file(fakeold, 'r'))
 
     # MODELS_ORDER is currently not ordered by reference dependencies
-    for model in models_descr:
+    for model in MODELS_DESCR:
         MODELS_ORDER.append(model)
 
     pdebug(1, "grouping data")
@@ -737,7 +737,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
         else:
             pdebug(1, "MODEL: %s" % model)
 
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
 
         # if inheriting from another model skip this verification
         # (will be performed on the inherited model instance)
@@ -884,7 +884,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
     model_groups = model_groups_get()
 
     for model in MODELS_ORDER:
-        md = models_descr[model]
+        md = MODELS_DESCR[model]
 
         for final in finals_gr[model]:
             final.pop('__backrefs__', None)
@@ -925,7 +925,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
     return 0
 
 if __name__ == "__main__":
-    for k, v in models_descr.iteritems():
+    for k, v in MODELS_DESCR.iteritems():
         if not v.refs:
             continue
         for kr, r in v.refs.iteritems():

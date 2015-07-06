@@ -14,9 +14,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from openquakeplatform.updatures.classes import (ModelDescription,
-                                                 models_descr)
+                                                 MODELS_DESCR)
 
 # contenttypes models
-models_descr['contenttypes.contenttype'] = ModelDescription(
+MODELS_DESCR['contenttypes.contenttype'] = ModelDescription(
     'contenttypes.contenttype',
     None, {})

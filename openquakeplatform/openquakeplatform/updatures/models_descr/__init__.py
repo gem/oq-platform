@@ -18,6 +18,6 @@
 from openquakeplatform.updatures.models_descr import (
     auth, base, contenttypes, maps, people, security, taggit,
     tests, vulnerability)
-from openquakeplatform.updatures.classes import models_descr
+from openquakeplatform.updatures.classes import MODELS_DESCR
 
 
