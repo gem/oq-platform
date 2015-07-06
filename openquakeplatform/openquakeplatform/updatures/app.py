@@ -327,7 +327,7 @@ def item_compare(a, b, pk_included=True):
             backinhe_b = b['__backinhe__'][idx]
         except (KeyError, IndexError):
             pdebug(2, "differences between backinherited fields A: %s   B %s,"
-                   " return False", (a, b))
+                   " return False" % (a, b))
             return False
 
         if backinhe_a.model_descr.name != backinhe_b.model_descr.name:
@@ -423,7 +423,7 @@ def reference_get(dates_gr, model, pk):
             if md.natural(item) == pk:
                 return item
         elif item['pk'] == pk:
-                return item
+            return item
     else:
         return None
 

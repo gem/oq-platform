@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
-                                                 ModelDescription, models_descr)
+from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
+                                                 models_descr)
  
 # test models
 models_descr['test.one2one'] = ModelDescription(

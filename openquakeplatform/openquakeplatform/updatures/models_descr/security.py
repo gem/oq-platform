@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
-                                                 ModelDescription, models_descr)
+from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
+                                                 models_descr)
 
 # auth models
 models_descr['security.objectrole'] = ModelDescription(
@@ -32,7 +32,6 @@ models_descr['security.userobjectrolemapping'] = ModelDescription(
 
     { 'user': ModelRefs('auth.user', False),
       'object_ct': ModelRefs('contenttypes.contenttype', False),
-#      'object': ModelRefs(lambda i: "%s.%s" % (i['fields']['object_ct'], i['fields']['object_id']), False),
       'role': ModelRefs('security.objectrole', False) }
     )
 
@@ -41,6 +40,5 @@ models_descr['security.genericobjectrolemapping'] = ModelDescription(
     'security.genericobjectrolemapping',
     None,
     { 'object_ct': ModelRefs('contenttypes.contenttype', False),
-#      'object': ModelRefs(lambda i: "%s.%s" % (i['fields']['object_ct'], i['fields']['object_id']), False),
       'role': ModelRefs('security.objectrole', False) }
     )

@@ -22,14 +22,14 @@ import unittest
 
 from openquakeplatform.updatures.app import updatures_app
 
-import pdb, sys, traceback
-def info(type, value, tb):
-    traceback.print_exception(type, value, tb)
+import pdb, traceback
+def info(typ, value, trbk):
+    traceback.print_exception(typ, value, trbk)
     pdb.pm()
 sys.excepthook = info
 
 
-test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
+TEST_LIST_ORIG = [ '000pk-rewrite', '001pk-already-exists', '002identical',
                    '003nat-identical', '004nat-pk-already-exists',
                    '005inher-ok', '006inher-skip-generic',
                    '007inher-change-pk', '008strategies',
@@ -37,20 +37,21 @@ test_list_orig = [ '000pk-rewrite', '001pk-already-exists', '002identical',
                    '102group-replace-fail',  '300taggit',
                    '400maps', '401maps-pkrename' ]
 
-test_list = test_list_orig
-debug = 0
+TEST_LIST = TEST_LIST_ORIG
+DEBUG = 0
 
 class UpdaturesTestCase(unittest.TestCase):
 
     def test_updatures(self):
         test_result = 0
-        for test in test_list:
+        for test in TEST_LIST:
             output = StringIO.StringIO()
             data_dir = os.path.dirname(os.path.realpath(__file__)) + '/data/'
-            # NOTE: sort must be False to be able to upload fixture to a real environment
-            result = updatures_app([data_dir + test + '_new.json'], output=output,
-                               fakeold=data_dir + test + '_old.json',
-                               sort_output=True, debug=debug)
+            # NOTE: sort must be False to be able to upload
+            #       fixture to a real environment
+            result = updatures_app([data_dir + test + '_new.json'],
+                                   output=output, fakeold=data_dir + test +
+                                   '_old.json', sort_output=True, debug=DEBUG)
 
             exp = file(data_dir + test + '_exp.json', 'r').read()
 
@@ -61,29 +62,18 @@ class UpdaturesTestCase(unittest.TestCase):
                     test_result = 1
                     fnameout = data_dir + test + '_out.json'
                     file(fnameout, 'w').write(output.getvalue())
-                    print "TEST DIFFER %s, OUTPUT IS SAVED IN %s" % (test, fnameout)
+                    print ("TEST DIFFER %s, OUTPUT IS SAVED IN %s"
+                           % (test, fnameout))
             else:
                 exp = json.loads(exp)
                 if [result] == exp:
                     print "TEST SUCCESS %s, failure was expected" % test
                 else:
                     test_result = 1
-                    print "TEST FAILS executing %s a failure %s was expected but %s was returned" % (test, exp, [ result ])
+                    print ("TEST FAILS executing %s a failure %s was expected"
+                           " but %s was returned" % (test, exp, [ result ]))
 
         self.assertEqual(test_result, 0)
 
 if __name__ == "__main__":
-    argv = []
-    for arg in sys.argv[1:]:
-        if arg in [ '-v', '--verbose' ]:
-            debug += 1
-        else:
-            argv.append(arg)
-
-    if argv == []:
-        test_list = test_list_orig
-    else:
-        test_list = argv
-
-    test_updatures()
-    sys.exit(test_result)
+    print "Use nose to run these tests."

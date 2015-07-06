@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from openquakeplatform.updatures.classes import (BackInheritance, ModelRefs,
-                                                 ModelDescription, models_descr)
+from openquakeplatform.updatures.classes import (ModelRefs, ModelDescription,
+                                                 models_descr)
 
 models_descr['taggit.tag'] = ModelDescription(
     'taggit.tag',
@@ -27,7 +27,8 @@ models_descr['taggit.taggeditem'] = ModelDescription(
     None,
     {'tag': ModelRefs('taggit.tag', False),
      'object_id': ModelRefs(
-            lambda i: "%s.%s" % (i['fields']['content_type'][0], i['fields']['content_type'][1]),
+            lambda i: "%s.%s" % (i['fields']['content_type'][0],
+                                 i['fields']['content_type'][1]),
             False),
      }
     )
