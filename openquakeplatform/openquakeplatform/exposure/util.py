@@ -189,7 +189,6 @@ SELECT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [sr_id])
-    cursor.close()
     column_names = tuple(description[0] for description in cursor.description)
     is_first_iteration = True
     while True:
@@ -201,6 +200,7 @@ SELECT
             if row is None:
                 break
             yield row
+    cursor.close()
     return
 
 
@@ -238,7 +238,6 @@ def _stream_exposure_by_sr_id(sr_id, occupancy=0):
                                                                          occupancy)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-    cursor.close()
     column_names = tuple(description[0] for description in cursor.description)
     is_first_iteration = True
     while True:
@@ -250,6 +249,7 @@ def _stream_exposure_by_sr_id(sr_id, occupancy=0):
             if row is None:
                 break
             yield row
+    cursor.close()
     return
 
 
@@ -268,7 +268,6 @@ def _stream_exposure_by_bb_and_sr_id(
             lng1, lat1, lng2, lat2, sr_id, occupancy)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-    cursor.close()
     column_names = tuple(description[0] for description in cursor.description)
     is_first_iteration = True
     while True:
@@ -280,6 +279,7 @@ def _stream_exposure_by_bb_and_sr_id(
             if row is None:
                 break
             yield row
+    cursor.close()
     return
 
 
