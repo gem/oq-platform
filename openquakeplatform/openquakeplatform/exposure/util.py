@@ -43,8 +43,10 @@ ORDER BY name;
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
+    results = cursor.fetchall()
+    cursor.close()
 
-    return cursor.fetchall()
+    return results
 
 
 def _get_geographic_region_id_and_name_by_iso(iso):
@@ -60,8 +62,10 @@ ORDER BY g1name, g2name, g3name;
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [iso])
+    results = cursor.fetchall()
+    cursor.close()
 
-    return cursor.fetchall()
+    return results
 
 
 def _get_all_studies():
@@ -96,7 +100,10 @@ SELECT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
-    return cursor.fetchall()
+    results = cursor.fetchall()
+    cursor.close()
+
+    return results
 
 
 def _get_studies_by_country(iso, level_filter, study_filter):
@@ -150,8 +157,10 @@ SELECT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query.format(query_filter), [iso])
+    results = cursor.fetchall()
+    cursor.close()
 
-    return cursor.fetchall()
+    return results
 
 
 def _stream_fractions_by_study_region_id(sr_id):
@@ -180,6 +189,7 @@ SELECT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [sr_id])
+    cursor.close()
     column_names = tuple(description[0] for description in cursor.description)
     is_first_iteration = True
     while True:
@@ -208,8 +218,10 @@ SELECT gr.tot_pop, gr.tot_grid_count, ST_AsText(gr.bounding_box)
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [sr_id])
+    results = cursor.fetchall()
+    cursor.close()
 
-    return cursor.fetchall()
+    return results
 
 
 def _stream_exposure_by_sr_id(sr_id, occupancy=0):
@@ -226,6 +238,7 @@ def _stream_exposure_by_sr_id(sr_id, occupancy=0):
                                                                          occupancy)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
+    cursor.close()
     column_names = tuple(description[0] for description in cursor.description)
     is_first_iteration = True
     while True:
@@ -255,6 +268,7 @@ def _stream_exposure_by_bb_and_sr_id(
             lng1, lat1, lng2, lat2, sr_id, occupancy)
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
+    cursor.close()
     column_names = tuple(description[0] for description in cursor.description)
     is_first_iteration = True
     while True:
@@ -290,5 +304,7 @@ SELECT DISTINCT
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query, [sr_id, occupancy])
+    results = cursor.fetchone()
+    cursor.close()
 
-    return cursor.fetchone()
+    return results
