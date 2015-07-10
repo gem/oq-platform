@@ -308,7 +308,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -383,7 +383,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r4].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
