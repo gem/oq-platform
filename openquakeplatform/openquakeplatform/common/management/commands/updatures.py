@@ -14,7 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.core.management.base import BaseCommand, CommandError
-from openquakeplatform.updatures.app import updatures_app, models_descr, pdebug
+from openquakeplatform.updatures.app import updatures_app, pdebug
+from openquakeplatform.updatures.models_descr import MODELS_DESCR
 from optparse import make_option
 
 class Command(BaseCommand):
@@ -38,7 +39,7 @@ class Command(BaseCommand):
                     help='use an old json dump instead of the current data'), )
 
     def handle(self, updates_filename, *args, **options):
-        for k,v in models_descr.iteritems():
+        for k,v in MODELS_DESCR.iteritems():
             if not v.refs:
                 continue
             for kr,r in v.refs.iteritems():
