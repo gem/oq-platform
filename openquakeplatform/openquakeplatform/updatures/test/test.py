@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sys
 import os
 import StringIO
@@ -21,6 +22,7 @@ import json
 import unittest
 
 from openquakeplatform.updatures.app import updatures_app
+from openquakeplatform import updatures
 
 import pdb, traceback
 def info(typ, value, trbk):
@@ -38,11 +40,16 @@ TEST_LIST_ORIG = [ '000pk-rewrite', '001pk-already-exists', '002identical',
                    '400maps', '401maps-pkrename' ]
 
 TEST_LIST = TEST_LIST_ORIG
-DEBUG = 0
 
 class UpdaturesTestCase(unittest.TestCase):
 
     def test_updatures(self):
+        updatures.UPD_LOG = logging.getLogger("updatures")
+        updatures.UPD_LOG.setLevel(30)
+
+        logging_curr = updatures.UPD_LOG.getEffectiveLevel()
+        updatures.UPD_LOG.log(20, "LOGGING LEVEL TEST: %d" % logging_curr)
+
         test_result = 0
         for test in TEST_LIST:
             output = StringIO.StringIO()
@@ -51,7 +58,7 @@ class UpdaturesTestCase(unittest.TestCase):
             #       fixture to a real environment
             result = updatures_app([data_dir + test + '_new.json'],
                                    output=output, fakeold=data_dir + test +
-                                   '_old.json', sort_output=True, debug=DEBUG)
+                                   '_old.json', sort_output=True)
 
             exp = file(data_dir + test + '_exp.json', 'r').read()
 

@@ -13,8 +13,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+import logging
 from django.core.management.base import BaseCommand, CommandError
-from openquakeplatform.updatures.app import updatures_app, pdebug
+from openquakeplatform import updatures
+from openquakeplatform.updatures.app import updatures_app
 from openquakeplatform.updatures.models_descr import MODELS_DESCR
 from optparse import make_option
 
@@ -39,21 +42,28 @@ class Command(BaseCommand):
                     help='use an old json dump instead of the current data'), )
 
     def handle(self, updates_filename, *args, **options):
+        argv = []
+        check_consistency = False
+        kwarg = {}
+        logging.basicConfig(stream=sys.stderr, level=((3 - (int(options['verbosity']))) * 10))
+        updatures.UPD_LOG = logging.getLogger("updatures")
+        updatures.UPD_LOG.setLevel((3 - (int(options['verbosity']))) * 10)
+
+        logging_curr = updatures.UPD_LOG.getEffectiveLevel()
+        updatures.UPD_LOG.log(20, "LOGGING LEVEL TEST: %d" % logging_curr)
+
+        kwarg['sort_output'] = options['sort']
+        if options['fakeold']:
+            kwarg['fakeold'] = options['fakeold']
+        argv += [ updates_filename ]
+
         for k,v in MODELS_DESCR.iteritems():
             if not v.refs:
                 continue
             for kr,r in v.refs.iteritems():
                 if r.is_many:
-                    pdebug(2, "model: %s, field %s is_many" % (k, kr) )
+                    logging.log(20, "model: %s, field %s is_many" % (k, kr) )
 
-        argv = []
-        check_consistency = False
-        kwarg = {}
-        kwarg['debug'] = int(options['verbosity']) - 1
-        kwarg['sort_output'] = options['sort']
-        if options['fakeold']:
-            kwarg['fakeold'] = options['fakeold']
-        argv += [ updates_filename ]
 
         updatures_app(argv, **kwarg)
 
