@@ -37,7 +37,7 @@ def rebuild_order():
     models_order = []
     while reloop:
         for model, descr in models_descr_old.iteritems():
-            updatures.UPD_LOG.log(10, "rebuild_order: model %s" % model)
+            updatures.UPD_LOG.info("rebuild_order: model %s" % model)
             if first_loop:
                 if descr.refs == {} and not descr.inher:
                     models_order.append(model)
@@ -226,7 +226,7 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
                 if ref.model != model:
                     continue
 
-                updatures.UPD_LOG.log(0, "MDREF: %s" % ref_model)
+                updatures.UPD_LOG.debug("MDREF: %s" % ref_model)
 
                 for itemod in updates_gr[ref_model]:
                     # if field not set or empty list continue
@@ -234,10 +234,10 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
                     if not ref_value:
                         continue
 
-                    updatures.UPD_LOG.log(0, "ITEMOD: %s" % itemod)
+                    updatures.UPD_LOG.debug("ITEMOD: %s" % itemod)
                     if ref.is_many:
                         if type(ref_value[0]) is list:
-                            updatures.UPD_LOG.log(0, "itemod list of lists case not managed")
+                            updatures.UPD_LOG.debug("itemod list of lists case not managed")
                             sys.exit(10)
                         for i, pk in enumerate(ref_value):
                             if pk == item['pk']:
@@ -245,7 +245,7 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
                                 break
                     else:
                         if ref_value == item['pk']:
-                            updatures.UPD_LOG.log(0, "UPDATE KEY: %s" % itemod)
+                            updatures.UPD_LOG.debug("UPDATE KEY: %s" % itemod)
                             set_value(itemod, ref_reffield, new_pk)
 
     # remove the item from the key based list of items
@@ -314,14 +314,14 @@ def item_compare(a, b, pk_included=True):
 
     # not all b keys are processed => the 2 items are different
     if b_keys:
-        updatures.UPD_LOG.log(20, "differences between fields list, return False")
+        updatures.UPD_LOG.warning("differences between fields list, return False")
         return False
 
     for idx, backinhe_a in enumerate(a.get('__backinhe__', [])):
         try:
             backinhe_b = b['__backinhe__'][idx]
         except (KeyError, IndexError):
-            updatures.UPD_LOG.log(10, "differences between backinherited fields A: %s   B %s,"
+            updatures.UPD_LOG.info("differences between backinherited fields A: %s   B %s,"
                    " return False" % (a, b))
             return False
 
@@ -353,17 +353,17 @@ def consistencymeter(dates_gr):
     cm_out_gr = OrderedDict()
 
     for model in MODELS_ORDER:
-        updatures.UPD_LOG.log(10, "CC: MODEL: %s" % model)
+        updatures.UPD_LOG.info("CC: MODEL: %s" % model)
         cm_out_gr[model] = { 'fields_n': 0, 'incons': 0, 'incons_is_many': 0 }
         cm_out = cm_out_gr[model]
         md = MODELS_DESCR[model]
         for item in dates_gr[model]:
-            updatures.UPD_LOG.log(10, "CC: ITEM: %s" % item)
+            updatures.UPD_LOG.info("CC: ITEM: %s" % item)
             for ref_field, ref in md.refs.iteritems():
                 if isinstance(ref.model, types.FunctionType):
                     continue
                 ref_md = MODELS_DESCR[ref.model]
-                updatures.UPD_LOG.log(10, "CC: REF_FIELD, REF.MODEL: %s, %s, %s"
+                updatures.UPD_LOG.info("CC: REF_FIELD, REF.MODEL: %s, %s, %s"
                        % (ref_field, ref.model, ref_md.natural))
                 ref_value = get_value(item, ref_field)
                 if not ref_value:
@@ -384,12 +384,12 @@ def consistencymeter(dates_gr):
                             if fk == ref_md.natural(fktem):
                                 break
                         else:
-                            updatures.UPD_LOG.log(20, "CC: natural")
+                            updatures.UPD_LOG.warning("CC: natural")
                             cm_out['incons' +
                                    ('_is_many' if ref.is_many else '')] += 1
 
                 else: # if ref_md.natural
-                    updatures.UPD_LOG.log(10, "CC: NOT NATURAL")
+                    updatures.UPD_LOG.info("CC: NOT NATURAL")
 
                     # many2many case
                     if ref.is_many:
@@ -403,7 +403,7 @@ def consistencymeter(dates_gr):
                             if fk == fktem['pk']:
                                 break
                         else:
-                            updatures.UPD_LOG.log(20, "CC: not natural model: %s %s" %
+                            updatures.UPD_LOG.warning("CC: not natural model: %s %s" %
                                    (model, item))
                             cm_out['incons' + ('_is_many' if ref.is_many
                                              else '')] += 1
@@ -438,9 +438,9 @@ def grouping_set(dates_gr, datesk_gr):
 
     for model in MODELS_ORDER:
         md = MODELS_DESCR[model]
-        updatures.UPD_LOG.log(10, "Mod: %s  Is grouped: %s" % (model, md.group))
+        updatures.UPD_LOG.info("Mod: %s  Is grouped: %s" % (model, md.group))
         if md.group is None or not dates_gr[model]:
-            updatures.UPD_LOG.log(10, "No grouping or items for model %s" % model)
+            updatures.UPD_LOG.info("No grouping or items for model %s" % model)
             continue
 
         if md.group not in group_heads:
@@ -449,7 +449,7 @@ def grouping_set(dates_gr, datesk_gr):
                          if not isinstance(v.model, types.FunctionType)
                          and v.model == md.group]
         if dirref_groups:
-            updatures.UPD_LOG.log(10, "Direct group for model %s" % model)
+            updatures.UPD_LOG.info("Direct group for model %s" % model)
             for item in dates_gr[model]:
                 # grouped with a direct reference
                 for ref_field, ref in dirref_groups:
@@ -472,10 +472,10 @@ def grouping_set(dates_gr, datesk_gr):
                                 [(model, item)]
                         break
                 else:
-                    updatures.UPD_LOG.log(30, "Direct reference not found")
+                    updatures.UPD_LOG.error("Direct reference not found")
                     return False
         else:
-            updatures.UPD_LOG.log(10, "No direct group for model %s" % model)
+            updatures.UPD_LOG.info("No direct group for model %s" % model)
             for item in dates_gr[model]:
                 for ref_field, ref in md.refs.iteritems():
                     if isinstance(ref.model, types.FunctionType):
@@ -486,7 +486,7 @@ def grouping_set(dates_gr, datesk_gr):
                     ref_record = reference_get(dates_gr, ref.model,
                                                item['fields'][ref_field])
                     if ref_record is None:
-                        updatures.UPD_LOG.log(30, "No reference record found, abort")
+                        updatures.UPD_LOG.error("No reference record found, abort")
                         sys.exit(20)
 
                     group_ref = ref_record['fields'].get('__group__', None)
@@ -507,8 +507,8 @@ def grouping_set(dates_gr, datesk_gr):
                     item['fields']['__group__'] = group_ref
                     break
                 else:
-                    updatures.UPD_LOG.log(30, "ITEM: %s" % item)
-                    updatures.UPD_LOG.log(30, "Not found any grouping reference, abort")
+                    updatures.UPD_LOG.error("ITEM: %s" % item)
+                    updatures.UPD_LOG.error("Not found any grouping reference, abort")
                     sys.exit(22)
     return group_heads
 
@@ -540,7 +540,7 @@ def inheriting_set(dates_gr, datesk_gr):
 
         for item in list(dates_gr[model]):
             if item.get('__backinhe__', None) is None:
-                updatures.UPD_LOG.log(20, "WARNING: generic instance of %s with pk [%s] not"
+                updatures.UPD_LOG.warning("WARNING: generic instance of %s with pk [%s] not"
                        " inherited, remove it" % (model, key_get(md, item)))
                 del(datesk_gr[model][key_get(md, item)])
                 dates_gr[model].remove(item)
@@ -612,7 +612,7 @@ def grouping_update(updates_gheads, oldatesk_gr, updates_gr):
         md = MODELS_DESCR[gmodel]
         for item in updates_gr[gmodel]:
             key = key_get(md, item)
-            updatures.UPD_LOG.log(10, "KEY: %s[%s]" % (gmodel, key))
+            updatures.UPD_LOG.info("KEY: %s[%s]" % (gmodel, key))
             # print oldatesk_gr.keys()
             if key in oldatesk_gr[gmodel]:
                 otem = copy.deepcopy(oldatesk_gr[gmodel][key])
@@ -651,18 +651,18 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
     finals = []
 
     logging_curr = updatures.UPD_LOG.getEffectiveLevel()
-    updatures.UPD_LOG.log(10, "LOGGING LEVEL: %d" % logging_curr)
+    updatures.UPD_LOG.error("LOGGING LEVEL: %d" % logging_curr)
 
-    updatures.UPD_LOG.log(20, "loading updates")
+    updatures.UPD_LOG.warning("loading updates")
     for fname in argv:
-        updatures.UPD_LOG.log(20, "FNAME %s" % fname)
+        updatures.UPD_LOG.warning("FNAME %s" % fname)
         updates += json.load(file(fname, 'r'))
-    updatures.UPD_LOG.log(20, "retrieving current data")
+    updatures.UPD_LOG.warning("retrieving current data")
     models = inspect(updates)
     if not fakeold:
         # load the associated data from db
         for k in models:
-            updatures.UPD_LOG.log(20, "KEY: %s" % k)
+            updatures.UPD_LOG.warning("KEY: %s" % k)
             fname = '/tmp/command_output_' + k + '.json'
             with open(fname, "w") as f:
                 call_command('dumpdata', k, use_natural_keys=True,
@@ -676,22 +676,22 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
     for model in MODELS_DESCR:
         MODELS_ORDER.append(model)
 
-    updatures.UPD_LOG.log(20, "grouping data")
+    updatures.UPD_LOG.warning("grouping data")
     updates_gr, updatesk_gr = group_objs(updates)
     oldates_gr, oldatesk_gr = group_objs(oldates)
 
-    updatures.UPD_LOG.log(20, "ordering models")
+    updatures.UPD_LOG.warning("ordering models")
     MODELS_ORDER = rebuild_order()
 
-    updatures.UPD_LOG.log(20, "grouping models")
+    updatures.UPD_LOG.warning("grouping models")
     model_groups = model_groups_get()
 
-    updatures.UPD_LOG.log(0, "MOP UPDATES: %s" % str(updates))
+    updatures.UPD_LOG.debug("MOP UPDATES: %s" % str(updates))
 
-    updatures.UPD_LOG.log(20, "grouping set")
+    updatures.UPD_LOG.warning("grouping set")
     updates_gheads = grouping_set(updates_gr, updatesk_gr)
 
-    updatures.UPD_LOG.log(20, "inheriting set")
+    updatures.UPD_LOG.warning("inheriting set")
     inheriting_set(updates_gr, updatesk_gr)
     inheriting_set(oldates_gr, oldatesk_gr)
 
@@ -708,7 +708,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
 
     finals_gr, finalsk_gr = group_objs([])
 
-    updatures.UPD_LOG.log(0, "MOP GROUPS: %s" % str(updates_gr))
+    updatures.UPD_LOG.debug("MOP GROUPS: %s" % str(updates_gr))
 
     oldates_gheads = grouping_set(oldates_gr, oldatesk_gr)
 
@@ -728,14 +728,14 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
         if updates_gr[model] == []:
             continue
         else:
-            updatures.UPD_LOG.log(20, "MODEL: %s" % model)
+            updatures.UPD_LOG.warning("MODEL: %s" % model)
 
         md = MODELS_DESCR[model]
 
         # if inheriting from another model skip this verification
         # (will be performed on the inherited model instance)
         if md.inher:
-            updatures.UPD_LOG.log(10, "Model: %s inher, skip it" % md.name )
+            updatures.UPD_LOG.info("Model: %s inher, skip it" % md.name )
             continue
 
 
@@ -755,14 +755,14 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
             if not md.natural:
                 #
                 #  found identical item with different pk
-                updatures.UPD_LOG.log(0, "ITEM: [%s]" % item)
+                updatures.UPD_LOG.debug("ITEM: [%s]" % item)
                 substitute_it = False
 
 
                 # item already exists ?
                 for otem in oldates_gr[model] + finals_gr[model]:
                     if item_compare(item, otem, pk_included=True):
-                        updatures.UPD_LOG.log(10, "identical items, skip it")
+                        updatures.UPD_LOG.info("identical items, skip it")
                         # identical case: continue
                         substitute_it = True
                         break
@@ -771,7 +771,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
                     if item_compare(item, otem, pk_included=False):
                         # identical items except for pk, skip it and update
                         #  all references
-                        updatures.UPD_LOG.log(20, "identical item except for pk, skip it and"
+                        updatures.UPD_LOG.warning("identical item except for pk, skip it and"
                                " update all references")
                         substitute_it = True
                         update_pk(updates_gr, updatesk_gr, model, item, maxpks,
@@ -780,7 +780,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
 
                 if substitute_it:
                     md.apply_strategy(item, otem)
-                    updatures.UPD_LOG.log(10, "SKIP IT")
+                    updatures.UPD_LOG.info("SKIP IT")
                 else:
                     if not md.pk_natural:
                         # loop to identify if new item has the same pk of
@@ -788,12 +788,12 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
                         for otem in oldates_gr[model] + finals_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
-                                updatures.UPD_LOG.log(0, "NEWPK: %d" % new_pk)
+                                updatures.UPD_LOG.debug("NEWPK: %d" % new_pk)
                                 update_pk(updates_gr, updatesk_gr, model, item,
                                           maxpks, new_pk)
                                 break
 
-                updatures.UPD_LOG.log(10, "ADD IT")
+                updatures.UPD_LOG.info("ADD IT")
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
                 finals.append(item)
@@ -805,15 +805,15 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
                     finals.append(backinhe.item)
 
             else: # if not md.natural:
-                updatures.UPD_LOG.log(0, "ITEM: [%s]" % item)
+                updatures.UPD_LOG.debug("ITEM: [%s]" % item)
                 substitute_it = False
                 found_it = False
 
                 # item already exists ?
                 for otem in oldates_gr[model] + finals_gr[model]:
-                    updatures.UPD_LOG.log(0, "OTEM: [%s]" % otem)
+                    updatures.UPD_LOG.debug("OTEM: [%s]" % otem)
                     if item_compare(item, otem, pk_included=True):
-                        updatures.UPD_LOG.log(10, "identical items, skip it")
+                        updatures.UPD_LOG.info("identical items, skip it")
                         # identical case: continue
                         found_it = True
                         substitute_it = True
@@ -826,11 +826,11 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
                         found_it = True
 
                         # no: pk key case
-                        updatures.UPD_LOG.log(0, "OTEM: %s" % otem)
+                        updatures.UPD_LOG.debug("OTEM: %s" % otem)
                         if item_compare(item, otem, pk_included=True):
                             # identical items except for pk, skip it and
                             # update all references
-                            updatures.UPD_LOG.log(20, "identical item except for pk, skip"
+                            updatures.UPD_LOG.warning("identical item except for pk, skip"
                                    " it and update all references")
                             substitute_it = True
 
@@ -838,15 +838,15 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
 
                 if substitute_it:
                     md.apply_strategy(item, otem)
-                    updatures.UPD_LOG.log(10, "SKIP IT")
+                    updatures.UPD_LOG.info("SKIP IT")
                 else:
                     # loop to identify if new item has the same pk of old item
                     if not found_it and not md.pk_natural:
                         for otem in oldates_gr[model] + finals_gr[model]:
                             if item['pk'] == otem['pk']:
                                 new_pk = oldels[model].newpk()
-                                updatures.UPD_LOG.log(20, "SAME PK, UPDATE IT [%d]" % new_pk)
-                                updatures.UPD_LOG.log(20, "NEWPK: %d" % new_pk)
+                                updatures.UPD_LOG.warning("SAME PK, UPDATE IT [%d]" % new_pk)
+                                updatures.UPD_LOG.warning("NEWPK: %d" % new_pk)
                                 update_pk(updates_gr, updatesk_gr, model, item,
                                           maxpks, new_pk)
                                 item['pk'] = new_pk
@@ -858,7 +858,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
                             backinhe.item)
                     finals.append(backinhe.item)
 
-                updatures.UPD_LOG.log(20, "ADD IT")
+                updatures.UPD_LOG.warning("ADD IT")
                 finals_gr[model].append(item)
                 kappend(finalsk_gr, model, item)
                 finals.append(item)
@@ -868,7 +868,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
         # print "Consistency Report"
         for k, v in cm_new.iteritems():
             if v['fields_n'] > 0:
-                updatures.UPD_LOG.log(20, "k: %s v: %s" % (v, k))
+                updatures.UPD_LOG.warning("k: %s v: %s" % (v, k))
             if cm_new[k] != cm_fin[k]:
                 print >> sys.stderr, "WARNING: consistency Report: "
                 "k: %s new: %s fin: [%s]" % (k, v, cm_fin[k])
@@ -911,7 +911,7 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
                     finals[i] = finals[e]
                     finals[e] = tmp
 
-    updatures.UPD_LOG.log(20, "FINAL: ")
+    updatures.UPD_LOG.warning("FINAL: ")
     json.dump(finals, output, indent=4, sort_keys=True)
     output.write("\n")
 
@@ -923,7 +923,7 @@ if __name__ == "__main__":
             continue
         for kr, r in v.refs.iteritems():
             if r.is_many:
-                updatures.UPD_LOG.log(10, "model: %s, field %s is_many" % (k, kr) )
+                updatures.UPD_LOG.info("model: %s, field %s is_many" % (k, kr) )
     argv = []
     debug = 0
     check_consistency = False

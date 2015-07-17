@@ -45,10 +45,10 @@ class UpdaturesTestCase(unittest.TestCase):
 
     def test_updatures(self):
         updatures.UPD_LOG = logging.getLogger("updatures")
-        updatures.UPD_LOG.setLevel(30)
+        updatures.UPD_LOG.setLevel(40)
 
         logging_curr = updatures.UPD_LOG.getEffectiveLevel()
-        updatures.UPD_LOG.log(20, "LOGGING LEVEL TEST: %d" % logging_curr)
+        updatures.UPD_LOG.error("LOGGING LEVEL TEST: %d" % logging_curr)
 
         test_result = 0
         for test in TEST_LIST:
