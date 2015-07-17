@@ -273,6 +273,8 @@ def update_pk(updates_gr, updatesk_gr, model, item, maxpks, new_pk):
     return ret
 
 def fk_compare(a, b):
+    '''this function is used to verify if two lists includes the same elements.
+    '''
     b = list(b)
     try:
         for elem in a:
