@@ -740,7 +740,6 @@ def updatures_app(argv, output=sys.stdout, fakeold=False, check_consistency=True
             updatures.UPD_LOG.info("Model: %s inher, skip it" % md.name )
             continue
 
-
         for item in updates_gr[model]:
             if item.get('__replace__', None):
                 # this item replace an old item associated with it

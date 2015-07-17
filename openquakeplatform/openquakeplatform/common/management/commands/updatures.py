@@ -45,7 +45,7 @@ class Command(BaseCommand):
         argv = []
         check_consistency = False
         kwarg = {}
-        logging.basicConfig(stream=sys.stderr, level=((5 - (int(options['verbosity']))) * 10))
+        logging.basicConfig(stream=sys.stderr, level=((5 - int(options['verbosity'])) * 10))
         updatures.UPD_LOG = logging.getLogger("updatures")
         updatures.UPD_LOG.setLevel((5 - (int(options['verbosity']))) * 10)
 
