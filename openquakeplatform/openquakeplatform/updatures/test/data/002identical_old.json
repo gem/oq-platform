@@ -1,0 +1,10 @@
+[
+    {
+        "fields": {
+            "one": "yes", 
+            "two": "yessss"
+        }, 
+        "model": "test.leaf", 
+        "pk": 1
+    }
+]
