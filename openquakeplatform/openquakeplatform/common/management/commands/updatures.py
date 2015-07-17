@@ -50,7 +50,7 @@ class Command(BaseCommand):
         updatures.UPD_LOG.setLevel((5 - (int(options['verbosity']))) * 10)
 
         logging_curr = updatures.UPD_LOG.getEffectiveLevel()
-        updatures.UPD_LOG.log(20, "LOGGING LEVEL TEST: %d" % logging_curr)
+        updatures.UPD_LOG.error("LOGGING LEVEL TEST: %d" % logging_curr)
 
         kwarg['sort_output'] = options['sort']
         if options['fakeold']:
@@ -62,7 +62,7 @@ class Command(BaseCommand):
                 continue
             for kr,r in v.refs.iteritems():
                 if r.is_many:
-                    logging.log(20, "model: %s, field %s is_many" % (k, kr) )
+                    updatures.UPD_LOG.error("model: %s, field %s is_many" % (k, kr) )
 
 
         updatures_app(argv, **kwarg)
