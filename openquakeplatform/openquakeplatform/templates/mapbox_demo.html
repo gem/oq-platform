@@ -1,0 +1,72 @@
+
+{% extends "data_viewer_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} Explore - {{ block.super }} {% endblock title %}
+
+{% block extra_head %}
+    {{block.super}}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+{% endblock extra_head %}
+
+
+{% block body %}
+
+  <div class="span12">
+    <div class="hero-unit">
+      <div id="oq-context-ribbon">
+        {% block oq_context_ribbon %}
+        {% endblock oq_context_ribbon %}
+      </div>
+      <div id="oq-body-heading">
+        {% block oq_body_heading %}
+          <h1>{% trans "Mapbox-GL-JS Demo" %}</h1>
+          <br />
+        {% endblock oq_body_heading %}
+      </div>
+      <div id="oq-body-content">
+        {% block oq_body_content %}
+        <div id='map' class="myMap"></div>
+
+              {% endblock oq_body_content %}
+            </div>
+            <div id="oq-body-sidebar">
+                      <div id="rightSide">
+          <div>Select Map Color Scheme:
+            <select id="colorSelection">
+              <option selected value="red">Red</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="brown">Brown</option>
+            </select>
+          </div>
+            <div>Select Social Vulnerability Indicator:
+            <select id="breakSelection">
+              <option selected value="1">Composite index for infrastructure</option>
+              <option value="2">Composite index for infratsructure</option>
+              <option value="3">Percent Housing with no Electricity</option>
+              <option value="4">Percent Housing with no Water</option>
+              <option value="5">Percent of Households with no Bathroom</option>
+              <option value="6">Housing Density</option>
+            </select>
+          </div>
+          <center><h2 id="name"></h2></center>
+          <center id='features'></center>
+          </div>
+            </div>
+          </div>
+        </div>
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+    {% include 'search_scripts.html' %}
+    <script>
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/explore/'; }
+    </script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.8.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.8.0/mapbox-gl.js'></script>
+    <script src="{{ STATIC_URL }}js/mapbox_demo.js"></script>
+{% endblock extra_script %}
