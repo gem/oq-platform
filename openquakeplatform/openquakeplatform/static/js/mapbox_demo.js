@@ -3,6 +3,8 @@
 
 var map;
 
+$('#base-map-menu').remove();
+
 $('#map').css({'height': '600px'});
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
@@ -19,10 +21,6 @@ map = new mapboxgl.Map({
     center: [-1.83, -78.183],
     zoom: 6.3,
 });
-console.log('map:');
-console.log(map);
-
-
 
 
 map.on('style.load', function() {
@@ -42,6 +40,7 @@ map.on('style.load', function() {
 var selAttribute = 'QHHNOBATH';
 
 $('#breakSelection').change(function() {
+    map.removeLayer('borders');
     if ($('#breakSelection').val() == '1') {
         try {
             map.removeLayer('ec-layer1');
@@ -169,6 +168,7 @@ var colorsPal = colorsPalRed;
 
 
 $('#colorSelection').change(function() {
+    map.removeLayer('borders');
     if ($('#colorSelection').val() === 'red') {
         try {
             map.removeLayer('ec-layer1');
@@ -251,8 +251,6 @@ $('#colorSelection').change(function() {
 
 // Create the layer
 function createLayer () {
-    console.log('colorsPal:');
-    console.log(colorsPal);
 
 /*
 //////////////////////////
@@ -356,6 +354,18 @@ function createLayer () {
             '>=', selAttribute, 1.46
         ]
     });
+
+    map.addLayer({
+        'id': 'borders',
+        'type': 'line',
+        'source': 'ecuador',
+        "source-layer": "eq-simple",
+        'paint': {
+            'line-color': "#000",
+            'line-opacity': 0.3,
+            'line-blur': 4
+        }
+    });
 /*
     // text lables
     map.addLayer({
@@ -375,14 +385,10 @@ function createLayer () {
         },
     });
 */
-    console.log('map:');
-    console.log(map);
 
     // mouse click event
     map.on('click', function(e) {
       	map.featuresAt(e.point, { radius : 6}, function(err, features) {
-            console.log('features:');
-            console.log(features);
           	if (err) throw err;
                 $('#name').empty();
                 $('#name').append('District: ' + features[0].properties.REGION);
@@ -418,8 +424,6 @@ function createLayer () {
         for (var i = 0; i < values.length; i++) {
            data[i] = {"label":keys[i], "value":values[i]};
         }
-        console.log('data:');
-        console.log(data);
 
         var total = d3.sum(data, function(d) {
             return d3.sum(d3.values(d));
