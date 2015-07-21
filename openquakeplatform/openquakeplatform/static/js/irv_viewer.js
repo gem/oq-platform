@@ -26,6 +26,8 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
+var COMPATIBILITY_VERSION = '1.4.3';
+var thematicLayer;
 //var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
@@ -306,7 +308,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -381,7 +383,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r4].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -731,7 +733,7 @@ function scale(IndicatorObj) {
 }
 
 function thematicMap(layerAttributes) {
-    // Initialise the legend
+    // Initialize the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
 
@@ -790,7 +792,7 @@ function thematicMap(layerAttributes) {
         fillColor: yellowToRed
     };
 
-    var thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
+    thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
     map.addLayer(thematicLayer);
 
     legendControl = new L.Control.Legend();
@@ -878,6 +880,21 @@ function getGeoServerLayers() {
             $('#ajaxErrorDialog').dialog('open');
         }
     });
+}
+
+
+function versionCompare(a, b) {
+    var i, cmp, len, re = /(\.0)+[^\.]*$/;
+    a = (a + '').replace(re, '').split('.');
+    b = (b + '').replace(re, '').split('.');
+    len = Math.min(a.length, b.length);
+    for( i = 0; i < len; i++ ) {
+        cmp = parseInt(a[i], 10) - parseInt(b[i], 10);
+        if( cmp !== 0 ) {
+            return cmp;
+        }
+    }
+    return a.length - b.length;
 }
 
 var startApp = function() {
@@ -1033,6 +1050,8 @@ var startApp = function() {
                 });
             }
         });
+
+
         */
         // Get the project definition
         $.ajax({
@@ -1040,6 +1059,20 @@ var startApp = function() {
             url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
             success: function(data) {
                 tempProjectDef = data;
+
+                // Check the svir plugin version
+                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+
+                if (versionCheck < 0) {
+                    // Warn the user and stop the application
+                    $('#projectDef-spinner').hide();
+                    $('#project-def').append(
+                        '<div class="alert alert-danger" role="alert">' +
+                            'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                        '</div>'
+                    );
+                    return
+                }
 
                 if ($('#pdSelection').length > 0) {
                     $('#pdSelection').remove();

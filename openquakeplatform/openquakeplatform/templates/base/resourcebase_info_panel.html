@@ -136,9 +136,9 @@ and overrides the original GeoNode template.
     </li>
   {% endif %}
 
-  {% if resourcebase.supplemental_information %}
+  {% if resourcebase.supplemental_information and resourcebase.category|stringformat:"s" != 'SVIR' %}
     <li>
-      <strong>{% trans "Supplemental Information" %}:</strong> 
+      <strong>{% trans "Supplemental Information" %}:</strong>
       {{ resourcebase.supplemental_information|escape|urlize|linebreaks|safe }}
     </li>
   {% endif %}

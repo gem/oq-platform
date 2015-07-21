@@ -302,6 +302,7 @@ else
         exit \$ret
     fi
 fi
+fab --show=everything test
 
 cd openquakeplatform/test
 export PYTHONPATH=\$(pwd)
