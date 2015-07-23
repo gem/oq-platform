@@ -27,7 +27,7 @@ SLD_CONTENT_TYPE = 'application/vnd.ogc.sld+xml'
 
 
 def geoserver_rest(
-        url, file_path=None, base_url=GEOSERVER_BASE_URL,
+        url, file_path=None, content=None, base_url=GEOSERVER_BASE_URL,
         username='admin', password='geoserver',
         content_type=XML_CONTENT_TYPE,
         method='POST',
@@ -46,8 +46,6 @@ def geoserver_rest(
         if substitutions:
             content = content % substitutions
         headers['Content-Length'] = len(content)
-    else:
-        content = None
     url = _urljoin(base_url, url)
     request = urllib2.Request(url,
                               data=content,

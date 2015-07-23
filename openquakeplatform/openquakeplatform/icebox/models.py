@@ -321,6 +321,14 @@ class OutputLayer(models.Model):
             substitutions=dict(layer_name=layer_name,
                                class_name=self.output_type.__name__))
 
+        geoserver.geoserver_rest(
+            geoserver.LAYER_URL % layer_name,
+            content="""<layer><styles>
+                         <style><name>HazardMapHeat</name></style>
+                       </styles></layer>""",
+            method='PUT',
+            message='Adding extra styles to %s layer...' % layer_name)
+
     def xml_attributes(self):
         """
         :returns:
