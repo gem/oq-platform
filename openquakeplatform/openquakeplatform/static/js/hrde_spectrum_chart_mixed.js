@@ -77,7 +77,7 @@ function buildMixedSpectrumChart(spectrumCurves, lat, lng) {
         svg.append('path')
             .data([data])
             .attr('class', 'spectrum-line')
-            .style("stroke", colors[count])
+            .style({"stroke": colors[count], "fill": "none"})
             .attr('d', line);
 
         legend.append("text")
