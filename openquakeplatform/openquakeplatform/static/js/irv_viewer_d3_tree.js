@@ -64,6 +64,51 @@
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
+        function isComputable(node) {
+            if (node.name === 'IRI') {
+                if (typeof node.children === 'undefined') {
+                    return false;
+                }
+                // check if both RI and SVI are computable
+                var areRiAndSviComputable = true;
+                for (var i = 0; i < node.children.length; i++) {
+                    if (!isComputable(node.children[i])) {
+                        areRiAndSviComputable = false;
+                    }
+                }
+                if (areRiAndSviComputable) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            if (node.name === 'SVI') {
+                if (typeof node.children === 'undefined') {
+                    return false;
+                }
+                // Check if all themes are computable
+                var areAllThemesComputable = true;
+                for (var i = 0; i < node.children.length; i++) {
+                    if (!isComputable(node.children[i])) {
+                        areAllThemesComputable = false;
+                    }
+                }
+                if (areAllThemesComputable) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            if (node.name === 'RI' || node.name === 'SVI' ) {
+                if (typeof node.children === 'undefined' || (typeof node.children !== 'undefined' && node.children.length === 0)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return true;
+        }
+
         function createSpinner(id, weight, name, operator, isInverted) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
@@ -527,6 +572,13 @@
             // Enter any new links at the parent's previous position.
             link.enter().insert("path", "g")
                 .attr("class", "link")
+                .style("opacity", function(d) {
+                    if (isComputable(d.source)) {
+                        return 1;
+                    } else {
+                        return 0.1;
+                    }
+                })
                 .attr("d", function(d) {
                   var o = {x: source.x0, y: source.y0};
                   return diagonal({source: o, target: o});
