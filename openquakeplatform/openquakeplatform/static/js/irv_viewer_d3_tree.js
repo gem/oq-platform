@@ -38,8 +38,6 @@
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
-        console.log('selectedPDef:');
-        console.log(selectedPDef);
 
         // default tab window size
         var winH = 600;
@@ -532,6 +530,13 @@
                     // d.weight is expected to be between 0 and 1
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
                     return d.weight ? Math.max(getRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                })
+                .style("opacity", function(d) {
+                    if (isComputable(d)) {
+                        return 1;
+                    } else {
+                        return 0.3;
+                    }
                 })
                 .style("stroke", function(d) {
                     if (d.isInverted) {
