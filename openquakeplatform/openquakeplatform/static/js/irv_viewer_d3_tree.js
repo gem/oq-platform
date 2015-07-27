@@ -38,6 +38,8 @@
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
+        console.log('selectedPDef:');
+        console.log(selectedPDef);
 
         // default tab window size
         var winH = 600;
