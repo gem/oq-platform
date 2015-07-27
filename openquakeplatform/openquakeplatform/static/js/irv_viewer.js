@@ -715,6 +715,9 @@ function processIndicators(layerAttributes, projectDef) {
     if (svThemes) {
         SVI.plotElement = "SVI"; // Label within the object
         iriPcpData.push(SVI);
+    } else {
+        // Disable the primary tab.
+        $("#themeTabs").tabs("disable", 3);
     }
 
     if (riskIndicators !== undefined) {
@@ -994,6 +997,10 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
+        // set tabs to back default
+        $("#themeTabs").tabs("enable", 2);
+        $("#themeTabs").tabs("enable", 3);
+
         $('#themeTabs').tabs('option', 'active', 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
