@@ -601,9 +601,9 @@ function processIndicators(layerAttributes, projectDef) {
 
     // Pass indicators into a 'newProperties' element
     for (var ix = 0; ix < la.length; ix++) {
+        la[ix].newProperties = {};
         for (var key in IRI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties = {};
                 la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
             }
         }
@@ -704,17 +704,24 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-    IRI.plotElement = "IRI"; // Label within the object
+
+    var iriPcpData = [];
+
+    if (IRI) {
+        IRI.plotElement = "IRI"; // Label within the object
+        iriPcpData.push(IRI);
+    }
+
+    if (svThemes) {
+        SVI.plotElement = "SVI"; // Label within the object
+        iriPcpData.push(SVI);
+    }
+
     if (riskIndicators !== undefined) {
         RI.plotElement = "RI"; // Label within the object
-    }
-    SVI.plotElement = "SVI"; // Label within the object
-    var iriPcpData = [];
-    iriPcpData.push(IRI);
-    iriPcpData.push(SVI);
-    if (riskIndicators !== undefined) {
         iriPcpData.push(RI);
     }
+
     IRI_PCP_Chart(iriPcpData);
 
     $('#projectDef-spinner').hide();
@@ -862,6 +869,7 @@ function getGeoServerLayers() {
             var x2js = new X2JS();
 
             var jsonElement = x2js.xml_str2json(xmlText);
+
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
             // Find the SVIR keywords
