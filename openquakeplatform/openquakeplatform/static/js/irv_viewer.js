@@ -530,64 +530,70 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the IRI index ////
     ///////////////////////////////
 
-    var IRI = {};
-    var sviWeight;
-    var riWeight;
-    var riInversionFactor;
-    var sviInversionFactor;
-    var iriOperator = projectDef.operator;
-    for (var ik = 0; ik < projectDef.children.length; ik++) {
-        if (projectDef.children[ik].name == 'RI') {
-            riWeight = projectDef.children[ik].weight;
-            if (projectDef.children[ik].isInverted === true) {
-                riInversionFactor = -1;
-            } else {
-                riInversionFactor = 1;
-            }
-        } else if (projectDef.children[ik].name == 'SVI') {
-            sviWeight = projectDef.children[ik].weight;
-            if (projectDef.children[ik].isInverted === true) {
-                sviInversionFactor = -1;
-            } else {
-                sviInversionFactor = 1;
+
+    if (svThemes === undefined || riskIndicators === undefined) {
+        //return;
+    } else {
+        var IRI = {};
+        var sviWeight;
+        var riWeight;
+        var riInversionFactor;
+        var sviInversionFactor;
+        var iriOperator = projectDef.operator;
+
+        for (var ik = 0; ik < projectDef.children.length; ik++) {
+            if (projectDef.children[ik].name == 'RI') {
+                riWeight = projectDef.children[ik].weight;
+                if (projectDef.children[ik].isInverted === true) {
+                    riInversionFactor = -1;
+                } else {
+                    riInversionFactor = 1;
+                }
+            } else if (projectDef.children[ik].name == 'SVI') {
+                sviWeight = projectDef.children[ik].weight;
+                if (projectDef.children[ik].isInverted === true) {
+                    sviInversionFactor = -1;
+                } else {
+                    sviInversionFactor = 1;
+                }
             }
         }
+
+        if (iriOperator == "Average (ignore weights)") {
+            for (var regionName in SVI) {
+                tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
+                var iriAverage = tempVal / 2;
+                IRI[regionName] = iriAverage;
+            }
+        } else if (iriOperator == "Simple sum (ignore weights)") {
+            for (var regionName in SVI) {
+                tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
+                IRI[regionName] = tempVal;
+            }
+        } else if (iriOperator == "Weighted sum") {
+            for (var regionName in SVI) {
+                tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) + ((RI[regionName] * riWeight) * riInversionFactor);
+                IRI[regionName] = tempVal;
+            }
+        } else if (iriOperator == "Simple multiplication (ignore weights)") {
+            for (var regionName in SVI) {
+                tempVal = (SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor);
+                IRI[regionName] = tempVal;
+            }
+        } else if (iriOperator == "Weighted multiplication") {
+            for (var regionName in SVI) {
+                tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) * ((RI[regionName] * riWeight) * riInversionFactor);
+                IRI[regionName] = tempVal;
+            }
+        } else if (iriOperator == "Geometric mean (ignore weights)") {
+            for (var regionName in SVI) {
+                tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 0.5);
+                IRI[regionName] = tempVal;
+            }
+        }
+        scale(IRI);
     }
 
-    if (iriOperator == "Average (ignore weights)") {
-        for (var regionName in SVI) {
-            tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
-            var iriAverage = tempVal / 2;
-            IRI[regionName] = iriAverage;
-        }
-    } else if (iriOperator == "Simple sum (ignore weights)") {
-        for (var regionName in SVI) {
-            tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
-            IRI[regionName] = tempVal;
-        }
-    } else if (iriOperator == "Weighted sum") {
-        for (var regionName in SVI) {
-            tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) + ((RI[regionName] * riWeight) * riInversionFactor);
-            IRI[regionName] = tempVal;
-        }
-    } else if (iriOperator == "Simple multiplication (ignore weights)") {
-        for (var regionName in SVI) {
-            tempVal = (SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor);
-            IRI[regionName] = tempVal;
-        }
-    } else if (iriOperator == "Weighted multiplication") {
-        for (var regionName in SVI) {
-            tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) * ((RI[regionName] * riWeight) * riInversionFactor);
-            IRI[regionName] = tempVal;
-        }
-    } else if (iriOperator == "Geometric mean (ignore weights)") {
-        for (var regionName in SVI) {
-            tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 0.5);
-            IRI[regionName] = tempVal;
-        }
-    }
-
-    scale(IRI);
 
     ////////////////////////////////////
     //// Prep data for thematic map ////
