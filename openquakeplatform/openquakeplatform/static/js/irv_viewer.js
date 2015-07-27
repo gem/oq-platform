@@ -877,6 +877,12 @@ function getGeoServerLayers() {
 
             // Find the SVIR keywords
             var stringToLookFor = 'SVIR_QGIS_Plugin';
+            // Reload if the api call was incomplete
+            if (featureType.length === undefined) {
+                getGeoServerLayers();
+                return;
+            }
+
             for (var i = 0; i < featureType.length; i++) {
                 if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
                     SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
