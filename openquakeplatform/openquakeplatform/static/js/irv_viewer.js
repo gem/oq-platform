@@ -240,9 +240,11 @@ function processIndicators(layerAttributes, projectDef) {
 
     // process each Social Vulnerability Index nodes
     // Get all the primary indicators
-    for (var i = 0; i < svThemes.length; i++) {
-        for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
-            allPrimaryIndicators.push(svThemes[i].children[e].field);
+    if (svThemes) {
+        for (var i = 0; i < svThemes.length; i++) {
+            for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
+                allPrimaryIndicators.push(svThemes[i].children[e].field);
+            }
         }
     }
 
@@ -276,145 +278,147 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Find the theme information
-    for (var m = 0; m < svThemes.length; m++) {
-        var themeInversionFactor;
-        if (svThemes[m].isInverted === true) {
-            themeInversionFactor = -1;
-        } else {
-            themeInversionFactor = 1;
-        }
+    if (svThemes) {
+        for (var m = 0; m < svThemes.length; m++) {
+            var themeInversionFactor;
+            if (svThemes[m].isInverted === true) {
+                themeInversionFactor = -1;
+            } else {
+                themeInversionFactor = 1;
+            }
 
-        var operator = svThemes[m].operator;
-        var weight = svThemes[m].weight;
-        var name = svThemes[m].name;
-        allSVIThemes.push(name);
-        var tempChildren = svThemes[m].children;
-        var tempIndicatorChildrenKeys = [];
+            var operator = svThemes[m].operator;
+            var weight = svThemes[m].weight;
+            var name = svThemes[m].name;
+            allSVIThemes.push(name);
+            var tempChildren = svThemes[m].children;
+            var tempIndicatorChildrenKeys = [];
 
-        for (var q = 0; q < tempChildren.length; q++) {
-            // Get the indicators children keys
-            tempIndicatorChildrenKeys.push(tempChildren[q].field);
-        }
+            for (var q = 0; q < tempChildren.length; q++) {
+                // Get the indicators children keys
+                tempIndicatorChildrenKeys.push(tempChildren[q].field);
+            }
 
-        for (var o = 0; o < la.length; o++) {
-            var tempValue = 0;
-            var region = la[o].properties[selectedRegion];
-            var theme = name;
+            for (var o = 0; o < la.length; o++) {
+                var tempValue = 0;
+                var region = la[o].properties[selectedRegion];
+                var theme = name;
 
-            // check the operator type and compute accordingly
-            if (operator == "Average (ignore weights)") {
-                for (var p in la[o].properties) {
-                    // iterate over the indicator child keys
-                    for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
-                        if (p == tempIndicatorChildrenKeys[r]) {
-                            var primaryInversionFactor;
-                            if (tempChildren[r].isInverted === true) {
-                                primaryInversionFactor = -1;
-                            } else {
-                                primaryInversionFactor = 1;
+                // check the operator type and compute accordingly
+                if (operator == "Average (ignore weights)") {
+                    for (var p in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
+                            if (p == tempIndicatorChildrenKeys[r]) {
+                                var primaryInversionFactor;
+                                if (tempChildren[r].isInverted === true) {
+                                    primaryInversionFactor = -1;
+                                } else {
+                                    primaryInversionFactor = 1;
+                                }
+                                // Sum the theme indicators
+                                tempValue = tempValue + (la[o].properties[p] * primaryInversionFactor);
                             }
-                            // Sum the theme indicators
-                            tempValue = tempValue + (la[o].properties[p] * primaryInversionFactor);
                         }
                     }
-                }
-                // Grab the average
-                var average = tempValue / tempIndicatorChildrenKeys.length;
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':average * themeInversionFactor});
-            } else if ( operator == "Simple sum (ignore weights)") {
-                for (var p1 in la[o].properties) {
-                    // iterate over the indicator child keys
-                    for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
-                        if (p1 == tempIndicatorChildrenKeys[r1]) {
-                            var primaryInversionFactor;
-                            if (tempChildren[r1].isInverted === true) {
-                                primaryInversionFactor = -1;
-                            } else {
-                                primaryInversionFactor = 1;
+                    // Grab the average
+                    var average = tempValue / tempIndicatorChildrenKeys.length;
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average * themeInversionFactor});
+                } else if ( operator == "Simple sum (ignore weights)") {
+                    for (var p1 in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
+                            if (p1 == tempIndicatorChildrenKeys[r1]) {
+                                var primaryInversionFactor;
+                                if (tempChildren[r1].isInverted === true) {
+                                    primaryInversionFactor = -1;
+                                } else {
+                                    primaryInversionFactor = 1;
+                                }
+                                // Sum the theme indicators
+                                tempValue = tempValue + (la[o].properties[p1] * primaryInversionFactor);
                             }
-                            // Sum the theme indicators
-                            tempValue = tempValue + (la[o].properties[p1] * primaryInversionFactor);
                         }
                     }
-                }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
-            } else if ( operator == "Weighted sum") {
-                for (var p2 in la[o].properties) {
-                    // iterate over the indicator child keys
-                    for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++) {
-                        if (p2 == tempIndicatorChildrenKeys[r2]) {
-                            // Sum the theme indicators
-                            var weight = tempChildren[r2].weight;
-                            var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
-                                primaryInversionFactor = -1;
-                            } else {
-                                primaryInversionFactor = 1;
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                } else if ( operator == "Weighted sum") {
+                    for (var p2 in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++) {
+                            if (p2 == tempIndicatorChildrenKeys[r2]) {
+                                // Sum the theme indicators
+                                var weight = tempChildren[r2].weight;
+                                var primaryInversionFactor;
+                                if (tempChildren[r2].isInverted === true) {
+                                    primaryInversionFactor = -1;
+                                } else {
+                                    primaryInversionFactor = 1;
+                                }
+                                tempValue = tempValue + ((la[o].properties[p2] * primaryInversionFactor) * weight);
+                                // Collect an array of all the values that pass through the loop
+                                laValuesArray.push(la[o].properties[p2]);
                             }
-                            tempValue = tempValue + ((la[o].properties[p2] * primaryInversionFactor) * weight);
-                            // Collect an array of all the values that pass through the loop
-                            laValuesArray.push(la[o].properties[p2]);
                         }
                     }
-                }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
-            } else if ( operator == "Simple multiplication (ignore weights)") {
-                tempValue = 1;
-                for (var p3 in la[o].properties) {
-                    // iterate over the indicator child keys
-                    for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
-                        if (p3 == tempIndicatorChildrenKeys[r3]) {
-                            // Sum the theme indicators
-                            var primaryInversionFactor;
-                            if (tempChildren[r3].isInverted === true) {
-                                primaryInversionFactor = -1;
-                            } else {
-                                primaryInversionFactor = 1;
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                } else if ( operator == "Simple multiplication (ignore weights)") {
+                    tempValue = 1;
+                    for (var p3 in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
+                            if (p3 == tempIndicatorChildrenKeys[r3]) {
+                                // Sum the theme indicators
+                                var primaryInversionFactor;
+                                if (tempChildren[r3].isInverted === true) {
+                                    primaryInversionFactor = -1;
+                                } else {
+                                    primaryInversionFactor = 1;
+                                }
+                                tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
                             }
-                            tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
                         }
                     }
-                }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
-            } else if ( operator == "Weighted multiplication") {
-                tempValue = 1;
-                for (var p4 in la[o].properties) {
-                    // iterate over the indicator child keys
-                    for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
-                        if (p4 == tempIndicatorChildrenKeys[r4]) {
-                            var primaryInversionFactor;
-                            if (tempChildren[r4].isInverted === true) {
-                                primaryInversionFactor = -1;
-                            } else {
-                                primaryInversionFactor = 1;
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                } else if ( operator == "Weighted multiplication") {
+                    tempValue = 1;
+                    for (var p4 in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
+                            if (p4 == tempIndicatorChildrenKeys[r4]) {
+                                var primaryInversionFactor;
+                                if (tempChildren[r4].isInverted === true) {
+                                    primaryInversionFactor = -1;
+                                } else {
+                                    primaryInversionFactor = 1;
+                                }
+                                // Sum the theme indicators
+                                var weight = tempChildren[r4].weight;
+                                tempValue = tempValue * (la[o].properties[p4] * primaryInversionFactor * weight);
                             }
-                            // Sum the theme indicators
-                            var weight = tempChildren[r4].weight;
-                            tempValue = tempValue * (la[o].properties[p4] * primaryInversionFactor * weight);
                         }
                     }
-                }
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
-            } else if ( operator == "Geometric mean (ignore weights)") {
-                tempValue = 1;
-                var power = 1 / tempIndicatorChildrenKeys.length;
-                for (var p3 in la[o].properties) {
-                    // iterate over the indicator child keys
-                    for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
-                        if (p3 == tempIndicatorChildrenKeys[r3]) {
-                            // Sum the theme indicators
-                            var primaryInversionFactor;
-                            if (tempChildren[r3].isInverted === true) {
-                                primaryInversionFactor = -1;
-                            } else {
-                                primaryInversionFactor = 1;
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                } else if ( operator == "Geometric mean (ignore weights)") {
+                    tempValue = 1;
+                    var power = 1 / tempIndicatorChildrenKeys.length;
+                    for (var p3 in la[o].properties) {
+                        // iterate over the indicator child keys
+                        for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
+                            if (p3 == tempIndicatorChildrenKeys[r3]) {
+                                // Sum the theme indicators
+                                var primaryInversionFactor;
+                                if (tempChildren[r3].isInverted === true) {
+                                    primaryInversionFactor = -1;
+                                } else {
+                                    primaryInversionFactor = 1;
+                                }
+                                tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
                             }
-                            tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
                         }
                     }
+                    tempValue = Math.pow(tempValue, power);
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
                 }
-                tempValue = Math.pow(tempValue, power);
-                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
             }
         }
     }
@@ -487,8 +491,10 @@ function processIndicators(layerAttributes, projectDef) {
     var sviNameLookUp = 'SVI';
     var sviJSONthemes = svThemes;
     // SVI is an object with region and value
-    SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
-    scale(SVI);
+    if (svThemes) {
+        SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
+        scale(SVI);
+    }
 
     ////////////////////////////////
     //// Compute the risk index ////
@@ -505,10 +511,8 @@ function processIndicators(layerAttributes, projectDef) {
                 allRiskIndicators.push(key);
             }
         }
-        ////////////////////////////////////
-        //// Compute the Risk Indicator ////
-        ////////////////////////////////////
 
+        // Compute the Risk Indicator
         var nameLookUp = 'RI';
         var riJSONthemes = riskIndicators;
         RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
@@ -597,9 +601,11 @@ function processIndicators(layerAttributes, projectDef) {
                 la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
             }
         }
-        for (var key in SVI) {
-            if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
+        if (svThemes) {
+            for (var key in SVI) {
+                if (key == la[ix].properties[selectedRegion]) {
+                    la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
+                }
             }
         }
 
@@ -629,20 +635,22 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Pass primary indicators into a 'newProperties' element
-    for (var ia = 0; ia < svThemes.length; ia++) {
-        var indicatorChildrenKey = [];
-        var tempChildren = svThemes[ia].children;
-        // Get the indicators children keys
-        for (var q = 0; q < tempChildren.length; q++) {
-            indicatorChildrenKey.push(tempChildren[q].field);
-        }
+    if (svThemes) {
+        for (var ia = 0; ia < svThemes.length; ia++) {
+            var indicatorChildrenKey = [];
+            var tempChildren = svThemes[ia].children;
+            // Get the indicators children keys
+            for (var q = 0; q < tempChildren.length; q++) {
+                indicatorChildrenKey.push(tempChildren[q].field);
+            }
 
-        for (var ib = 0; ib < la.length; ib++) {
-            for (var p in la[ib].properties) {
-                for (var id = 0; id < indicatorChildrenKey.length; id++) {
-                    if (p == indicatorChildrenKey[id]) {
-                        var tempName = p;
-                        la[ib].newProperties[tempName] = la[ib].properties[p];
+            for (var ib = 0; ib < la.length; ib++) {
+                for (var p in la[ib].properties) {
+                    for (var id = 0; id < indicatorChildrenKey.length; id++) {
+                        if (p == indicatorChildrenKey[id]) {
+                            var tempName = p;
+                            la[ib].newProperties[tempName] = la[ib].properties[p];
+                        }
                     }
                 }
             }
