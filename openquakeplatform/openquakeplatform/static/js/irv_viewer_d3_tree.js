@@ -191,9 +191,7 @@
                         return;
                     }
                     isSubmitting = true;
-<<<<<<< HEAD
-                    addProjectDefinition.send(selectedLayer, projectDefStg);
-=======
+
                     // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,
@@ -220,7 +218,6 @@
                             $('#ajaxErrorDialog').dialog('open');
                             $('#submitPD').attr('disabled',true);
                     });
->>>>>>> master
                 }
             });
         });
