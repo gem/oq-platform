@@ -23,6 +23,10 @@
 function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     // Find the theme data and create selection dropdown menu
     var themesWithChildren = [];
+    var sum = {};
+    var sumMean = {};
+    var sumMeanArray = [];
+
     for (var i = 0; i < projectDef.children.length; i++) {
         try {
             for (var j = 0; j < projectDef.children[i].children.length; j++) {
@@ -44,6 +48,14 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
     }
     $('#primary_indicator').show();
 
+    // select the first indicator
+    var menuOption = $('#primary_indicator');
+    menuOption[0].selectedIndex = 1;
+    // trigger first indicator
+    setTimeout(function() {
+        $('#primary_indicator').trigger('change');
+    }, 100);
+
     $('#primary_indicator').change(function() {
         var selectedTheme = $('#primary_indicator').val();
         // Find the children of selected theme
@@ -62,18 +74,19 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         // Get the data for each selected theme child
         var data = [];
-        // first setup an object with all regions and the plot element
+        // first setup an object with all regions and the plot element and 0 for each value
         var la = layerAttributes.features;
         for (var ia = 0; ia < selectedThemeChildren.length; ia++) {
             var temp = {};
             temp.plotElement = selectedThemeChildren[ia].field;
             for (var s = 0; s < la.length; s++) {
-                var bar = la[s].properties[selectedRegion];
-                temp[bar] = 0;
+                var eachReagion = la[s].properties[selectedRegion];
+                temp[eachReagion] = 0;
             }
             data.push(temp);
         }
 
+        // Poipulate the object created above with values
         for (var n = 0; n < data.length; n++) {
             for (var o = 0; o < layerAttributes.features.length; o++) {
                 var field = data[n].plotElement;
@@ -131,7 +144,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         var svg = d3.select("#primary-chart").append("svg")
             .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
-            .attr("id", "IRI-svg-element")
+            .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
 
@@ -245,6 +258,49 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         function path(d) {
             return line(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
         }
+
+
+        //////////////////////
+        //// Median line ////
+        //////////////////////
+
+        // Build skeleton array
+        for (var t in data[0]) {
+            sum[t] = 0;
+        }
+
+        // Sum all the paths
+        // Access the objects contained in the theme data array
+        for (var region_idx = 0; region_idx < data.length; region_idx++) {
+            // iterate over the each
+            for (var elementName in data[region_idx]) {
+                // This will sum all the values inside each theme object
+                sum[elementName] += data[region_idx][elementName];
+            }
+        }
+
+        // Get the mean
+        for (var f in sum) {
+            var thisSum = sum[f];
+            sumMean[f] = (thisSum / data.length);
+        }
+
+        sumMeanArray.push(sumMean);
+
+        // Plot the median line
+        meanPath = svg.append("g")
+            .attr("class", "PI-meanPath")
+            .selectAll("path")
+            .data(sumMeanArray)
+            .enter().append("path")
+            .attr("d", path)
+            .attr('id', function(d) { return d.region; })
+                .on('mouseover', function() {
+                    textTop.text('Median');
+                }).on('mouseout', function() {
+                    textTop.text('');
+                });
+
         // Handles a brush event, toggling the display of foreground lines.
         function brush() {
             var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
@@ -257,4 +313,5 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
         }
     });
 }
+
 

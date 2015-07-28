@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:UserStyle xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
   <sld:Name>LossMap</sld:Name>
-  <sld:Title/>
+  <sld:Title>Loss Map</sld:Title>
   <sld:FeatureTypeStyle>
     <sld:Name>LossMap</sld:Name>
     <sld:Title>Loss Map Style</sld:Title>

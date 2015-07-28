@@ -15,6 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+    var DEFAULT_OPERATOR = "Weighted sum";
     var CIRCLE_SCALE = 30;
     var MAX_STROKE_SIZE = 4;
     var MIN_CIRCLE_SIZE = 0.001;
@@ -67,11 +68,22 @@
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
 
-    function loadPD(selectedPDef, qt_page) {
+    function loadPD(selectedPDef) {
+
+        // default tab window size
+        var winH = 600;
+        var winW = 700;
+
+        // detect tab window resize
+        $('#themeTabs').resize(function(event) {
+            winH = event.clientY;
+            winW = event.clientX;
+        });
+
         var qt_page = typeof qt_page !== 'undefined' ? qt_page : false;
-        var margin = {top: 0, right: 80, bottom: 20, left: 80},
-            width = 960 - margin.right - margin.left,
-            height = 800 - margin.top - margin.bottom;
+        var margin = {top: 0, right: 20, bottom: 20, left: 20},
+            width = winW - margin.right - margin.left,
+            height = winH - margin.top - margin.bottom;
 
         var i = 0,
             duration = 750,
@@ -127,7 +139,6 @@
         $('#saveBtn').click(function() {
             $('#checkboxPD').attr('checked', false);
             $('#saveState-spinner').hide();
-            var pdLicense = sessionProjectDef.license;
             var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
             var pdLicenseURL = sessionProjectDef.license.split('(')[1];
             pdLicenseURL = pdLicenseURL.replace(')', '');
@@ -144,7 +155,6 @@
             );
 
             $('#checkboxPD').change(function() {
-                var inputVal = $('#giveNamePD').val();
                 if (this.checked) {
                     $('#submitPD').attr('disabled', false);
                 } else {
@@ -181,7 +191,36 @@
                         return;
                     }
                     isSubmitting = true;
+<<<<<<< HEAD
                     addProjectDefinition.send(selectedLayer, projectDefStg);
+=======
+                    // Hit the API endpoint and grab the very very latest version of the PD object
+                    $.post( "../svir/add_project_definition", {
+                        layer_name: selectedLayer,
+                        project_definition: projectDefStg
+                        },
+                        function() {
+                        }).done(function() {
+                            isSubmitting = false;
+                            $('#saveStateDialog').dialog('close');
+                            $('#saveState-spinner').hide();
+                            $('#saveBtn').prop('disabled', true);
+                            // append the new element into the dropdown menu
+                            $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                            // access the last or newest element in the dropdown menu
+                            var lastValue = $('#pdSelection option:last-child').val();
+                            // select the newest element in the dropdown menu
+                            $('#pdSelection').val(lastValue);
+                        }).fail(function() {
+                            isSubmitting = false;
+                            $('#ajaxErrorDialog').empty();
+                            $('#ajaxErrorDialog').append(
+                                '<p>This application was not able to write the project definition to the database</p>'
+                            );
+                            $('#ajaxErrorDialog').dialog('open');
+                            $('#submitPD').attr('disabled',true);
+                    });
+>>>>>>> master
                 }
             });
         });
@@ -325,11 +364,10 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("width", width + margin.right + margin.left)
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("id", "project-definition-svg")
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("viewBox", "-60 50 " + winW +" " + winH)
+            .attr("id", "primary-svg-element")
+            .append("svg:g")
+            .attr("transform", "translate(" + margin.left + ",5)");
 
             data = selectedPDef;
 
@@ -337,7 +375,6 @@
             root.x0 = height / 2;
             root.y0 = 0;
 
-            //root.children.forEach(collapse);
             updateD3Tree(root);
 
         $('#project-definition-svg').hide();
@@ -551,7 +588,7 @@
                     qt_page.json_updated(pdData);
                 }
             }
-            $('#projectDefWeight-spinner').hide();
+            $('#projectDefWeight-spinner').remove();
         }
     } //end d3 tree
 

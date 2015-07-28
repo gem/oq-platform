@@ -17,6 +17,7 @@
 
 $(document).ready(function() {
     $('#cover').remove();
+    $('.alert-unscaled-data').hide();
 });
 
 var layerAttributes;
@@ -25,7 +26,8 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
-var SVIRLayerNames = [];
+var COMPATIBILITY_VERSION = '1.4.3';
+var thematicLayer;
 //var boundingBox;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
@@ -40,6 +42,46 @@ function helloWorld() {
     return "Hello world!";
 }
 
+function scaleTheData() {
+    // Create a list of primary indicators that need to be scaled
+    // We are not scaling any of the IR indicators
+    var indicatorsToBeScaled = {};
+    for (var i = 0; i < projectDef.children[1].children.length; i++) {
+        for (var j = 0; j < projectDef.children[1].children[i].children.length; j++) {
+            var tempName = projectDef.children[1].children[i].children[j].field;
+            indicatorsToBeScaled[tempName] = {};
+        }
+    }
+
+    // Populate the list with values
+    for (var key in indicatorsToBeScaled) {
+        for (var i = 0; i < layerAttributes.features.length; i++) {
+            var tempRegion = layerAttributes.features[i].properties[selectedRegion];
+            indicatorsToBeScaled[key][tempRegion] = layerAttributes.features[i].properties[key];
+        }
+    }
+
+    for (var k in indicatorsToBeScaled) {
+        scale(indicatorsToBeScaled[k]);
+    }
+
+    // Put values back into the layerAttributes obj
+    for (var key in indicatorsToBeScaled) {
+        for (var i = 0; i < layerAttributes.features.length; i++) {
+            for (var layerAttributesKey in layerAttributes.features[i].properties) {
+                if (key === layerAttributesKey) {
+                    for(var indicatorKey in indicatorsToBeScaled[key]) {
+                        if (layerAttributes.features[i].properties[selectedRegion] == indicatorKey) {
+                            layerAttributes.features[i].properties[layerAttributesKey] = indicatorsToBeScaled[key][indicatorKey];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // Process the indicators again
+    processIndicators(layerAttributes, sessionProjectDef);
+}
 
 function createIndex(la, index) {
     var indicator = [];
@@ -85,7 +127,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         var tempRegion = themeObj[t].region;
         subIndex[tempRegion] = 0;
     }
-    // get some info aobut the themes
+    // get some info about the themes
     var themeKeys = [];
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
@@ -127,6 +169,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
+
             var tempElementValue = 0;
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
@@ -158,6 +201,19 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal * themeInversionFactor);
             }
+            subIndex[themeObjRegion] = tempElementValue;
+        }
+    } else if (operator == 'Geometric mean (ignore weights)') {
+        power = 1 / themeKeys.length;
+        for (var v5 = 0; v5 < themeObj.length; v5++) {
+            var tempElementValue = 1;
+            var themeObjRegion = themeObj[v5].region;
+            // compute the themes
+            for (var w5 = 0; w5 < themeKeys.length; w5++) {
+                var tempThemeName = themeKeys[w5];
+                tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
+            }
+            tempElementValue = Math.pow(tempElementValue, power);
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
@@ -201,6 +257,7 @@ function processIndicators(layerAttributes, projectDef) {
     //build the theme indicator object
     var themeData = [];
     indicatorInfo = [];
+    var laValuesArray = [];
 
     function generateThemeObject(indicatorObj) {
         var region = indicatorObj.region;
@@ -243,7 +300,6 @@ function processIndicators(layerAttributes, projectDef) {
             tempIndicatorChildrenKeys.push(tempChildren[q].field);
         }
 
-        // iterate over the layerAttributes to access the data
         for (var o = 0; o < la.length; o++) {
             var tempValue = 0;
             var region = la[o].properties[selectedRegion];
@@ -256,7 +312,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
                         if (p == tempIndicatorChildrenKeys[r]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -300,6 +356,8 @@ function processIndicators(layerAttributes, projectDef) {
                                 primaryInversionFactor = 1;
                             }
                             tempValue = tempValue + ((la[o].properties[p2] * primaryInversionFactor) * weight);
+                            // Collect an array of all the values that pass through the loop
+                            laValuesArray.push(la[o].properties[p2]);
                         }
                     }
                 }
@@ -329,7 +387,7 @@ function processIndicators(layerAttributes, projectDef) {
                     for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
                         if (p4 == tempIndicatorChildrenKeys[r4]) {
                             var primaryInversionFactor;
-                            if (tempChildren[r2].isInverted === true) {
+                            if (tempChildren[r4].isInverted === true) {
                                 primaryInversionFactor = -1;
                             } else {
                                 primaryInversionFactor = 1;
@@ -341,8 +399,78 @@ function processIndicators(layerAttributes, projectDef) {
                     }
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+            } else if ( operator == "Geometric mean (ignore weights)") {
+                tempValue = 1;
+                var power = 1 / tempIndicatorChildrenKeys.length;
+                for (var p3 in la[o].properties) {
+                    // iterate over the indicator child keys
+                    for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
+                        if (p3 == tempIndicatorChildrenKeys[r3]) {
+                            // Sum the theme indicators
+                            var primaryInversionFactor;
+                            if (tempChildren[r3].isInverted === true) {
+                                primaryInversionFactor = -1;
+                            } else {
+                                primaryInversionFactor = 1;
+                            }
+                            tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
+                        }
+                    }
+                }
+                tempValue = Math.pow(tempValue, power);
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
             }
         }
+    }
+
+    /////////////////////////////////////////////////
+    //// Check for null values primary indicators ///
+    /////////////////////////////////////////////////
+
+    // Try and remove the warning message on each iteration.
+    try {
+        $('.incompleteData').remove();
+    } catch (e) {
+        // continue
+    }
+
+    if (laValuesArray.indexOf(null) > -1) {
+        var warningMsg =
+            '<div class="alert alert-danger incompleteData" role="alert">'+
+                'The application is not able to render charts for this project because the composite indicator data is incomplete.'+
+            '</div>';
+
+        // Provide warning message if the composite indicator data is incomplete
+        $('#iri-chart').append(warningMsg);
+        $('#cat-chart').append(warningMsg);
+        $('#primary-tab').append(warningMsg);
+        // Stop the function
+        return;
+    }
+
+    ////////////////////////////////
+    //// Check for scaled values ///
+    ////////////////////////////////
+
+    Array.prototype.max = function() {
+        return Math.max.apply(null, this);
+    };
+
+    Array.prototype.min = function() {
+        return Math.min.apply(null, this);
+    };
+
+    var maxValue = laValuesArray.max();
+    var minValue = laValuesArray.min();
+
+    if (minValue === 0 && maxValue === 1) {
+        $('.alert-unscaled-data').hide();
+    } else {
+        $('.alert-unscaled-data').show();
+        $('.scaleTheData').click(function() {
+            // Scale the primary indicators
+            scaleTheData();
+        });
     }
 
     for (var p5 = 0; p5 < indicatorInfo.length; p5++) {
@@ -452,6 +580,11 @@ function processIndicators(layerAttributes, projectDef) {
             tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) * ((RI[regionName] * riWeight) * riInversionFactor);
             IRI[regionName] = tempVal;
         }
+    } else if (iriOperator == "Geometric mean (ignore weights)") {
+        for (var regionName in SVI) {
+            tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 0.5);
+            IRI[regionName] = tempVal;
+        }
     }
 
     scale(IRI);
@@ -544,7 +677,7 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     // Add all primary indicators to selection menu
-    $('#thematic-map-selection').append('<optgroup label="Primary Indicators">');
+    $('#thematic-map-selection').append('<optgroup label="Composite Indicators">');
     for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
         $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
     }
@@ -561,11 +694,11 @@ function processIndicators(layerAttributes, projectDef) {
     });
 
     thematicMap(layerAttributes);
-    IRI.plotElement = "IRI"; // Lable within the object
+    IRI.plotElement = "IRI"; // Label within the object
     if (riskIndicators !== undefined) {
-        RI.plotElement = "RI"; // Lable within the object
+        RI.plotElement = "RI"; // Label within the object
     }
-    SVI.plotElement = "SVI"; // Lable within the object
+    SVI.plotElement = "SVI"; // Label within the object
     var iriPcpData = [];
     iriPcpData.push(IRI);
     iriPcpData.push(SVI);
@@ -587,7 +720,7 @@ function scale(IndicatorObj) {
     var tempMin = Math.min.apply(null, ValueArray),
         tempMax = Math.max.apply(null, ValueArray);
     for (var j = 0; j < ValueArray.length; j++) {
-        // make sure not to devide by zero
+        // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
         if (tempMax  == tempMin) {
             ValueArray[j] = 1;
@@ -604,7 +737,7 @@ function scale(IndicatorObj) {
 }
 
 function thematicMap(layerAttributes) {
-    // Initialise the legend
+    // Initialize the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
 
@@ -649,8 +782,8 @@ function thematicMap(layerAttributes) {
         locationMode: L.LocationModes.GEOJSON,
         geoJSONField: 'geometry',
         layerOptions: {
-            fillOpacity: 1,
-            opacity: 1,
+            fillOpacity: 0.5,
+            opacity: 0.5,
             weight: 1,
             stroke: true,
             color: '#0000FF'
@@ -663,7 +796,7 @@ function thematicMap(layerAttributes) {
         fillColor: yellowToRed
     };
 
-    var thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
+    thematicLayer = new L.ChoroplethDataLayer(layerAttributes, options);
     map.addLayer(thematicLayer);
 
     legendControl = new L.Control.Legend();
@@ -705,61 +838,83 @@ function watchForPdSelection() {
     }, 100);
 }
 
-// first GeoServer call to get layer info
-function GeoServerAjaxCall () {}
-
-GeoServerAjaxCall.send = function(url) {
+function getGeoServerLayers() {
+    $('#load-project-spinner').show();
+    var SVIRLayerNames = [];
+    var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
     // Get layers from GeoServer and populate the layer selection menu
     $.ajax({
-        method: "GET",
-        url: url
-    }).done(function(xml) {
-        console.log('hi there:');
-        // TODO get data from server directly in JSON format
-        // the XML conversion is a potential breaking point
-        //convert XML to JSON
-        var xmlText = new XMLSerializer().serializeToString(xml);
-        var x2js = new X2JS();
+        url: url,
+        contentType: 'application/json',
+        success: function(xml) {
+            //convert XML to JSON
+            var xmlText = new XMLSerializer().serializeToString(xml);
+            var x2js = new X2JS();
 
-        var jsonElement = x2js.xml_str2json(xmlText);
-        var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
-        console.log('featureType:');
-        console.log(featureType);
+            var jsonElement = x2js.xml_str2json(xmlText);
+            var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
-        // Find the SVIR keywords
-        var stringToLookFor = 'SVIR_QGIS_Plugin';
-        for (var i = 0; i < featureType.length; i++) {
-            if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+            // Find the SVIR keywords
+            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            for (var i = 0; i < featureType.length; i++) {
+                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                }
             }
+
+            // Create AngularJS dropdown menu
+            var mapScope = angular.element($("#layer-list")).scope();
+            var mapLayerList = [];
+            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+                var tempObj = {};
+                tempObj.name = SVIRLayerNames[ij];
+                mapLayerList.push(tempObj);
+            }
+
+            mapScope.$apply(function(){
+                mapScope.maps = mapLayerList;
+            });
+            $('#load-project-spinner').hide();
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to get a list of layers from GeoServer</p>'
+                );
+            $('#ajaxErrorDialog').dialog('open');
         }
-
-        // Create AngularJS dropdown menu
-        var mapScope = angular.element($("#layer-list")).scope();
-        var mapLayerList = [];
-        for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
-            var tempObj = {};
-            tempObj.name = SVIRLayerNames[ij];
-            mapLayerList.push(tempObj);
-        }
-
-        console.log('mapScope:');
-        console.log(mapScope);
-
-        mapScope.$apply(function(){
-            mapScope.maps = mapLayerList;
-        });
-    }).fail(function() {
-        $('#ajaxErrorDialog').empty();
-        $('#ajaxErrorDialog').append(
-                '<p>This application was not able to get a list of layers from GeoServer</p>'
-            );
-        $('#ajaxErrorDialog').dialog('open');
     });
-};
+}
 
+
+function versionCompare(a, b) {
+    var i, cmp, len, re = /(\.0)+[^\.]*$/;
+    a = (a + '').replace(re, '').split('.');
+    b = (b + '').replace(re, '').split('.');
+    len = Math.min(a.length, b.length);
+    for( i = 0; i < len; i++ ) {
+        cmp = parseInt(a[i], 10) - parseInt(b[i], 10);
+        if( cmp !== 0 ) {
+            return cmp;
+        }
+    }
+    return a.length - b.length;
+}
 
 var startApp = function() {
+    // theme tabls behavior
+    $('#themeTabs').resizable({
+        minHeight: 500,
+        minWidth: 640
+    });
+    $('#themeTabs').draggable();
+
+    $('#themeTabs').tabs({
+        collapsible: false,
+        selected: -1,
+        active: false,
+    });
+
     $('#cover').remove();
     $('#projectDef-spinner').hide();
     $('#iri-spinner').hide();
@@ -800,21 +955,18 @@ var startApp = function() {
     );
 
     $('#loadProjectdialogBtn').click(function() {
+        getGeoServerLayers();
         $('#loadProjectDialog').dialog('open');
     });
 
     // TODO check these are all needed
     $('#region-selection-list').hide();
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
-    $('#svir-project-list').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').hide();
 
+    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
+    $('#svir-project-list').css({ 'margin-bottom' : 0 });
+
     $('#thematic-map-selection').hide();
-
-    var SVIRLayerNames = [];
-    var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326";
-
-    GeoServerAjaxCall.send(url);
 
     $('#loadProjectBtn').prop('disabled', true);
 
@@ -824,7 +976,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
-        $("#themeTabs").tabs("option", "active", 0);
+        $('#themeTabs').tabs('option', 'active', 0);
         $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
         $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
@@ -864,7 +1016,7 @@ var startApp = function() {
                     layerFields.push(key);
                 }
 
-                getLayerInfo(layerAttributes);
+                getLayerInfo();
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
@@ -876,7 +1028,7 @@ var startApp = function() {
         });
     });
 
-    function getLayerInfo(layerAttributes) {
+    function getLayerInfo() {
         /*
         // This feature is removed until the proj def format is refactored
         // Get the bounding box
@@ -902,6 +1054,8 @@ var startApp = function() {
                 });
             }
         });
+
+
         */
         // Get the project definition
         $.ajax({
@@ -909,6 +1063,20 @@ var startApp = function() {
             url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
             success: function(data) {
                 tempProjectDef = data;
+
+                // Check the svir plugin version
+                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+
+                if (versionCheck < 0) {
+                    // Warn the user and stop the application
+                    $('#projectDef-spinner').hide();
+                    $('#project-def').append(
+                        '<div class="alert alert-danger" role="alert">' +
+                            'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                        '</div>'
+                    );
+                    return
+                }
 
                 if ($('#pdSelection').length > 0) {
                     $('#pdSelection').remove();
@@ -927,6 +1095,14 @@ var startApp = function() {
                     );
                 }
                 $('#projectDef-spinner').hide();
+
+                // select the first project definition
+                var menuOption = $('#pdSelection');
+                menuOption[0].selectedIndex = 1;
+                // trigger first project definition
+                setTimeout(function() {
+                    $('#pdSelection').trigger('change');
+                }, 100);
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
@@ -962,15 +1138,39 @@ var startApp = function() {
         closeOnEscape: true
     });
 
-    $(function() {
-        $( '#themeTabs' ).tabs({
-            collapsible: false,
-            selected: -1,
-            active: false,
-            height: 550
-        });
+    $('#map-tools').css({
+        'padding': '6px',
+        'position': 'absolute',
+        'top': '43px',
+        'left': '39px',
+        'width': '94%',
+        'z-index': 6
     });
 
+    $('#themeTabs').css({
+        'width': '700px',
+        'height': '600px',
+        'overflow': 'auto',
+        'position': 'fixed',
+        'left': '10px',
+        'top': '110px'
+    });
+
+    $('#loadProjectdialogBtn').css({
+        'position': 'fixed',
+        'left': '50px'
+    });
+
+    $('#base-map-menu').css({
+        'position': 'fixed',
+        'left': '390px'
+    });
+
+    $('#thematic-map-selection').css({
+        'position': 'fixed',
+        'left': '160px',
+        'display': 'block'
+    });
 };
 
 app.initialize(startApp);

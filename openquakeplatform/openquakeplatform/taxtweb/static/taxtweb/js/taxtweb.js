@@ -147,6 +147,29 @@ var floo_conn =
 
 var taxonomy_form = "";
 
+function is_not_negative_float(s)
+{
+    if (isNaN(s) || parseFloat(s) < 0.0)
+        return false;
+    return true;
+}
+
+function is_in_rect_angle_float(s)
+{
+    if (!is_not_negative_float(s))
+        return false;
+    if (parseFloat(s) > 90.0)
+        return false;
+    return true;
+}
+
+function is_not_negative_int(s)
+{
+    if (isNaN(s) || parseInt(s) < 0.0 || parseInt(s) != parseFloat(s))
+        return false;
+    return true;
+}
+
 function ends_with(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -604,12 +627,21 @@ function taxt_ValidateHeight() // Ok
     $('#HeightCB3').prop("disabled", true);
     $('#HeightCB4').prop("disabled", true);
     $('#noStoreysE11').prop("disabled", true);
+    $('#noStoreysE11').removeClass('gem_field_alert');
     $('#noStoreysE12').prop("disabled", true);
+    $('#noStoreysE12').removeClass('gem_field_alert');
+
     $('#noStoreysE21').prop("disabled", true);
+    $('#noStoreysE21').removeClass('gem_field_alert');
     $('#noStoreysE22').prop("disabled", true);
+    $('#noStoreysE22').removeClass('gem_field_alert');
+
     $('#noStoreysE31').prop("disabled", true);
+    $('#noStoreysE31').removeClass('gem_field_alert');
     $('#noStoreysE32').prop("disabled", true);
-    $('#noStoreysE4').prop("disabled", true);
+    $('#noStoreysE32').removeClass('gem_field_alert');
+    $('#noStoreysE41').prop("disabled", true);
+    $('#noStoreysE41').removeClass('gem_field_alert');
 
     if ($('#HeightCB1').val() > 0) {
         $('#HeightCB2').prop("disabled", false);
@@ -670,10 +702,10 @@ function taxt_ValidateHeight() // Ok
         }
 
         if ($('#HeightCB4').val() == 0) {
-            $('#noStoreysE4').prop("disabled", true);
+            $('#noStoreysE41').prop("disabled", true);
         }
         else {
-            $('#noStoreysE4').prop("disabled", false);
+            $('#noStoreysE41').prop("disabled", false);
         }
     }
     else {
@@ -686,6 +718,9 @@ function taxt_ValidateHeight() // Ok
 
 function taxt_ValidateDate() // Ok
 {
+    $('#DateE1').removeClass('gem_field_alert');
+    $('#DateE2').removeClass('gem_field_alert');
+
     if ($('#DateCB1').val() == 0) {
         $('#DateE1').css('width', '90%');
         $('#DateE1').prop("disabled", true);
@@ -1903,7 +1938,7 @@ function BuildTaxonomyString(out_type)
         if ($('#HeightCB4').val() == 0 && (out_type == 0))
             Taxonomy[14] = '+HD99';
         if ($('#HeightCB4').val() == 1)
-            Taxonomy[14] = '+HD:' + $('#noStoreysE4').val();
+            Taxonomy[14] = '+HD:' + $('#noStoreysE41').val();
     }
 
     if ($('#OccupancyCB1').val() == 0) {
@@ -2533,16 +2568,208 @@ function taxt_BuildTaxonomy()
     var ResTax, ResTaxFull = BuildTaxonomyString(0);
     var out_type = $('#OutTypeCB').val();
 
-    if (out_type != 0) {
-        ResTax = BuildTaxonomyString(out_type);
+    /* validation part: '#HeightCBx' are dropdown menus with it's current selected item */
+
+    var height1 = $('#HeightCB1').val();
+    var height2 = $('#HeightCB2').val();
+    var height3 = $('#HeightCB3').val();
+    var height4 = $('#HeightCB4').val();
+    var date1 = $('#DateCB1').val();
+    var validated = false;
+    var validate_msg = "";
+    var h11 = true, h12 = true, h21 = true, h22 = true, h31 = true, h32 = true;
+    var d1 = true, d2 = true;
+
+    if (height1 > 0) {
+        if (!is_not_negative_int($('#noStoreysE11').val())) {
+            if (height1 == 1) {
+                validate_msg += "Number of storey above ground: lower limit not positive integer. ";
+            }
+            else {
+                validate_msg += "Number of storey above ground: not positive integer. ";
+            }
+            $('#noStoreysE11').addClass('gem_field_alert');
+            h11 = false;
+        }
+        else {
+            $('#noStoreysE11').removeClass('gem_field_alert');
+        }
+    }
+    if (height1 == 1) {
+        if (!is_not_negative_int($('#noStoreysE12').val())) {
+            validate_msg += "Number of storey above ground: upper limit not positive integer. ";
+            $('#noStoreysE12').addClass('gem_field_alert');
+            h12 = false;
+        }
+        else if (parseInt($('#noStoreysE11').val()) == parseInt($('#noStoreysE12').val())) {
+            validate_msg += "Number of storey above ground: invalid range.";
+            $('#noStoreysE12').addClass('gem_field_alert');
+            h12 = false;
+        }
+        else {
+            $('#noStoreysE12').removeClass('gem_field_alert');
+        }
+
+        // swap items if wrong order
+        if (h11 && h12) {
+            if (parseInt($('#noStoreysE11').val()) > parseInt($('#noStoreysE12').val())) {
+                var swap = $('#noStoreysE11').val();
+                $('#noStoreysE11').val($('#noStoreysE12').val());
+                $('#noStoreysE12').val(swap);
+            }
+        }
+    }
+
+    if (height2 > 0) {
+        if (!is_not_negative_int($('#noStoreysE21').val())) {
+            if (height2 == 1) {
+                validate_msg += "Number of storey above ground: lower limit not positive integer. ";
+            }
+            else {
+                validate_msg += "Number of storey above ground: not positive integer. ";
+            }
+            $('#noStoreysE21').addClass('gem_field_alert');
+            h21 = false;
+        }
+        else {
+            $('#noStoreysE21').removeClass('gem_field_alert');
+        }
+    }
+
+    if (height2 == 1) {
+        if (!is_not_negative_int($('#noStoreysE22').val())) {
+            validate_msg += "Number of storey above ground: upper limit not positive integer. ";
+            $('#noStoreysE22').addClass('gem_field_alert');
+            h22 = false;
+        }
+        else if (parseInt($('#noStoreysE21').val()) == parseInt($('#noStoreysE22').val())) {
+            validate_msg += "Number of storey above ground: invalid range.";
+            $('#noStoreysE22').addClass('gem_field_alert');
+            h22 = false;
+        }
+        else {
+            $('#noStoreysE22').removeClass('gem_field_alert');
+        }
+
+        // swap items if wrong order
+        if (h21 && h22) {
+            if (parseInt($('#noStoreysE21').val()) > parseInt($('#noStoreysE22').val())) {
+                var swap = $('#noStoreysE21').val();
+                $('#noStoreysE21').val($('#noStoreysE22').val());
+                $('#noStoreysE22').val(swap);
+            }
+        }
+    }
+
+    if (height3 > 0) {
+        if (!is_not_negative_float($('#noStoreysE31').val())) {
+            if (height3 == 1) {
+                validate_msg += "Height of ground floor level: lower limit not positive real";
+            }
+            else {
+                validate_msg += "Height of ground floor level: not positive real. ";
+            }
+            $('#noStoreysE31').addClass('gem_field_alert');
+            h31 = false;
+        }
+        else {
+            $('#noStoreysE31').removeClass('gem_field_alert');
+        }
+    }
+    if (height3 == 1) {
+        if (!is_not_negative_float($('#noStoreysE32').val())) {
+            validate_msg += "Height of ground floor level: upper limit not positive real. ";
+            $('#noStoreysE32').addClass('gem_field_alert');
+            h32 = false;
+        }
+        else if (parseInt($('#noStoreysE31').val()) == parseInt($('#noStoreysE32').val())) {
+            validate_msg += "Height of ground floor level: invalid range.";
+            $('#noStoreysE32').addClass('gem_field_alert');
+            h32 = false;
+        }
+        else {
+            $('#noStoreysE32').removeClass('gem_field_alert');
+        }
+
+        // swap items if wrong order
+        if (h31 && h32) {
+            if (parseFloat($('#noStoreysE31').val()) > parseFloat($('#noStoreysE32').val())) {
+                var swap = $('#noStoreysE31').val();
+                $('#noStoreysE31').val($('#noStoreysE32').val());
+                $('#noStoreysE32').val(swap);
+            }
+        }
+    }
+
+    if (height4 > 0) {
+        if (!is_in_rect_angle_float($('#noStoreysE41').val())) {
+            validate_msg += "Slope of the ground: it is not positive real between 0 and 90. ";
+            $('#noStoreysE41').addClass('gem_field_alert');
+        }
+        else {
+            $('#noStoreysE41').removeClass('gem_field_alert');
+        }
+    }
+
+    if (date1 > 0) {
+        if (!is_not_negative_int($('#DateE1').val()) || $('#DateE1').val().length > 4) {
+            if (date1 == 2) {
+                validate_msg += "Date of construction or retrofit: lower limit is not a valid date. ";
+            }
+            else {
+                validate_msg += "Date of construction or retrofit: it is not a valid date. ";
+            }
+            $('#DateE1').addClass('gem_field_alert');
+            d1 = false;
+        }
+        else {
+            $('#DateE1').removeClass('gem_field_alert');
+        }
+    }
+    if (date1 == 2) {
+        if (!is_not_negative_int($('#DateE2').val()) || $('#DateE2').val().length > 4) {
+            validate_msg += "Date of construction or retrofit: upper limit is not a valid date. ";
+            $('#DateE2').addClass('gem_field_alert');
+            d2 = false;
+        }
+        else if (parseInt($('#DateE1').val()) == parseInt($('#DateE2').val())) {
+            ret_s.s = "Date of construction or retrofit: invalid range.";
+            return (false);
+        }
+        else {
+            $('#DateE2').removeClass('gem_field_alert');
+        }
+
+        // swap items if wrong order
+        if (d1 && d2) {
+            if (parseInt($('#DateE1').val()) > parseInt($('#DateE2').val())) {
+                var swap = $('#DateE1').val();
+                $('#DateE1').val($('#DateE2').val());
+                $('#DateE2').val(swap);
+            }
+        }
+    }
+
+    if (validate_msg == "")
+        validated = true;
+
+    if (validated) {
+        if (out_type != 0) {
+            ResTax = BuildTaxonomyString(out_type);
+        }
+        else {
+            ResTax = ResTaxFull;
+        }
+        taxonomy_form = ResTaxFull;
+
+        $('#resultE').val(ResTax);
+        $('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
     }
     else {
-        ResTax = ResTaxFull;
+        taxonomy_form = "";
+        $('#resultE').val(validate_msg);
+        $('#permalink').attr("href", taxt_prefix);
     }
-    taxonomy_form = ResTaxFull;
-
-    $('#resultE').val(ResTax);
-    $('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
 }
 
 
@@ -2901,7 +3128,7 @@ begin
     if HeightCB3.ItemIndex=3 then Taxonomy[13]:='+HFAPP:'+noStoreysE31.Text;
 
     if (HeightCB4.ItemIndex=1) and (OmitCB.checked = false) then Taxonomy[14]:='+HD99';
-    if HeightCB4.ItemIndex=1 then Taxonomy[14]:='+HD:'+noStoreysE4.Text;
+    if HeightCB4.ItemIndex=1 then Taxonomy[14]:='+HD:'+noStoreysE41.Text;
   end;
 
  if OccupancyCB1.ItemIndex=0 then begin
@@ -3343,7 +3570,7 @@ function taxt_Initiate() {
     select_populate('HeightCB4', HeightCB4);
     $('#HeightCB4').val(0);
     $('#HeightCB4').on('change', taxt_HeightCB4Select);
-    $('#noStoreysE4').on('change', taxt_HeightCB4Select);
+    $('#noStoreysE41').on('change', taxt_HeightCB4Select);
 
     var DateCB1 = [];
     /* Y99  */ DateCB1.push('Year unknown');
@@ -3428,7 +3655,7 @@ function taxt_Initiate() {
     /* EWMA */  WallsCB.push('Masonry exterior walls');
     /* EWME */  WallsCB.push('Metal exterior walls');
     /* EWV  */  WallsCB.push('Vegetative exterior walls');
-    /* EWW9 */  WallsCB.push('Wooden exterior walls');
+    /* EWW  */  WallsCB.push('Wooden exterior walls');
     /* EWSL */  WallsCB.push('Stucco finish on light framing for exterior walls');
     /* EWPL */  WallsCB.push('Plastic/vinyl exterior walls, various');
     /* EWCB */  WallsCB.push('Cement-based boards for exterior walls');
@@ -3806,16 +4033,25 @@ function populate(s, ret_s) {
     //
     //  Height
     //
-    var h, h_first = false, h_items, h_label, h_id, h_vals;
+    var h, h_items, h_label, h_id, h_vals, h_grp;
     var h_map = [ 'H99' , 'HBET' , 'HEX' , 'HAPP' ,
                   'HB99', 'HBBET', 'HBEX', 'HBAPP',
                   'HF99', 'HFBET', 'HFEX', 'HFAPP',
-                  'HD99', 'HD' ]
+                  'HD99',  null  , 'HD' ]
 
     var h_pref = [ 'H', 'HB', 'HF', 'HD' ];
     var h_cbid = [  1 ,   2 ,   3,    4  ];
-    var h_cbfun = [ taxt_HeightCB1Select, taxt_HeightCB2Select, taxt_HeightCB3Select, taxt_HeightCB4Select ];
+    var h_title = [ 'Number of storey above ground',
+                    'Number of storey below ground',
+                    'Height of ground floor level above grade',
+                    'Slope of the ground' ];
 
+    var hsfx_99 = 0, hsfx_bet = 1, hsfx_ex = 2, hsfx_app = 3;
+
+    var h_cbfun = [ taxt_HeightCB1Select, taxt_HeightCB2Select, taxt_HeightCB3Select, taxt_HeightCB4Select ];
+    var h_typck = [ is_not_negative_int, is_not_negative_int, is_not_negative_float, is_in_rect_angle_float ];
+    var h_typck_s = [ "positive integer", "positive integer", "positive real", "positive real between 0 and 90" ];
+    var h_convf = [ parseInt, parseInt, parseFloat, parseInt ];
     h = sar[6].split('+');
 
     for (sub_i = 0 ; sub_i < h.length ; sub_i++) {
@@ -3825,97 +4061,77 @@ function populate(s, ret_s) {
         h_label = h_items[0];
 
         h_id = h_map.indexOf(h_label);
-        h_iddd = Math.floor(h_id / 4);
-        h_idty = h_id % 4;
         if (h_id == -1) {
             ret_s.s = "Height not defined properly.";
             return (false);
         }
+        h_grp = Math.floor(h_id / 4);
+        h_type = h_id % 4;
 
-        $('#HeightCB' + h_cbid[h_iddd]).val(h_idty);
-        if (h_iddd < 3) {
-            if (ends_with(h_label, '99')) {
-                if (h_items.length != 1) {
-                    ret_s.s = "Height: '" + h_label + "' type requires no values, " + is_or_are_given(h_vals.length);
-                    return (false);
-                }
-            }
-            else if (ends_with(h_label, 'BET')) {
-                h_vals = h_items[1].split(',');
-                if (h_vals.length != 2) {
-                    ret_s.s = "Height: '" + h_label + "' type requires exactly 2 values, " + is_or_are_given(h_vals.length);
-                    return (false);
-                }
-
-                $('#noStoreysE' + h_cbid[h_iddd] + '1').val(h_vals[0]);
-                $('#noStoreysE' + h_cbid[h_iddd] + '2').val(h_vals[1]);
-                h_cbfun[h_iddd](null);
-            }
-            else if (ends_with(h_label, 'EX') || ends_with(h_label, 'APP')) {
-                h_vals = h_items[1].split(',');
-                if (h_vals.length != 1) {
-                    ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
-                    return (false);
-                }
-                $('#noStoreysE' + h_cbid[h_iddd] + '1').val(h_vals[0]);
-                h_cbfun[h_iddd](null);
-                taxt_HeightCB1Select(null);
-            }
-            else {
-                ret_s.s = "Height: '" + h_label + "' type unknown.";
+        if (h_type == hsfx_99) {
+            if (h_items.length != 1) {
+                ret_s.s = "Height: '" + h_label + "' type requires no values, " + is_or_are_given(h_vals.length);
                 return (false);
             }
         }
-        else if (h_iddd == 3) {
-            for (e = 0 ; e < h_slope.length ; e++) {
-                if (h_label == h_slope[e].id) {
-                    $('#HeightCB4').val(e);
-                    taxt_HeightCB4Select(null);
-                    break;
-                }
-            }
-            if (e == h_slope.length) {
-                ret_s.s = "Height: not identified '" + h_label + "' as specification of slope of the ground.";
+        else if (h_type == hsfx_bet) {
+            h_vals = h_items[1].split(',');
+            if (h_vals.length != 2) {
+                ret_s.s = "Height: '" + h_label + "' type requires exactly 2 values, " + is_or_are_given(h_vals.length);
                 return (false);
-            }
-
-            if (ends_with(h_label, '99')) {
-                if (h_items.length != 1) {
-                    h_vals = h_items[1].split(',');
-                    ret_s.s = "Height: '" + h_iddd + "' type requires no values, " + is_or_are_given(h_vals.length);
-                    return (false);
-                }
-            }
-            else {
-                h_vals = h_items[1].split(',');
-                if (h_label == 'HD') {
-                    if (h_vals.length != 1) {
-                        ret_s.s = "Height: '" + h_label + "' type requires exactly 1 value, " + is_or_are_given(h_vals.length);
-                        return (false);
-                    }
-                    $('#noStoreysE4').val(h_vals[0]);
-                    taxt_HeightCB4Select(null);
-                }
-                else {
-                    ret_s.s = "Height: not identified '" + h_label + "' as specification of height.";
-                    return (false);
-                }
             }
         }
         else {
-            ret_s.s = "Height: '" + h_label + "' not yet implemented.";
-            return (false);
+            h_vals = h_items[1].split(',');
+            if (h_vals.length != 1) {
+                ret_s.s = "Height: '" + h_label + "' type requires exactly 2 values, " + is_or_are_given(h_vals.length);
+                return (false);
+            }
         }
 
-        if (h_iddd == 0) {
-            h_first = true;
+        if (h_type != hsfx_99) {
+            // is_not_negative_int || is_not_negative_float
+            if (! h_typck[h_grp](h_vals[0])) {
+                if (h_type == hsfx_bet) {
+                    ret_s.s = h_title[h_grp] + ": lower limit not " + h_typck_s[h_grp] + ". ";
+                }
+                else {
+                    ret_s.s = h_title[h_grp] + ": not " + h_typck_s[h_grp] + ". ";
+                }
+                return (false);
+            }
+            if (h_type == hsfx_bet) {
+                if (!h_typck[h_grp](h_vals[1])) {
+                    ret_s.s = h_title[h_grp] + ": higher limit not " + h_typck_s[h_grp] + ". ";
+                    return (false);
+                }
+                else if (h_convf[h_grp](h_vals[0]) == h_convf[h_grp](h_vals[1])) {
+                    ret_s.s = h_title[h_grp] + ": invalid range. ";
+                    return (false);
+                }
+
+                // swap items if wrong order
+                if (parseInt(h_vals[0]) > parseInt(h_vals[1])) {
+                    var swap = h_vals[1];
+                    h_vals[1] = h_vals[0];
+                    h_vals[0] = swap;
+                }
+                $('#noStoreysE' + h_cbid[h_grp] + '2').val(h_vals[1]);
+            }
+
+            // set value (in the case of 'HD' the real index must be (h_type - 1))
+            $('#HeightCB' + h_cbid[h_grp]).val(h_map[h_id] == 'HD' ? h_type - 1 : h_type);
+
+            $('#noStoreysE' + h_cbid[h_grp] + '1').val(h_vals[0]);
+
+            h_cbfun[h_grp](null);
         }
     }
 
     //
     //  Date
     //
-    var date, date_items, date_label, date_id, date_vals;
+    var date, date_index = -1, date_items, date_label, date_id, date_vals;
 
     date = sar[7].split('+');
     date_items = date[0].split(':');
@@ -3928,9 +4144,8 @@ function populate(s, ret_s) {
 
     for (i = 0 ; i < date_type.length ; i++) {
         if (date_label == date_type[i].id) {
+            date_index = i;
             date_id = date_label;
-            $('#DateCB1').val(i);
-            taxt_DateCB1Select(null);
             break;
         }
     }
@@ -3950,18 +4165,48 @@ function populate(s, ret_s) {
                 ret_s.s = "Date: '" + date_id + "' type requires exactly 2 values, " + is_or_are_given(date_vals.length);
                 return (false);
             }
-            $('#DateE1').val(date_vals[0]);
-            $('#DateE2').val(date_vals[1]);
-            taxt_HeightCB1Select(null);
         }
         else if (date_id == 'YEX' || date_id == 'YPRE' || date_id == 'YAPP') {
             if (date_vals.length != 1) {
                 ret_s.s = "Date: '" + date_id + "' type requires exactly 1 value, " + is_or_are_given(date_vals.length);
                 return (false);
             }
-            $('#DateE1').val(date_vals[0]);
-            taxt_HeightCB1Select(null);
         }
+
+        if (!is_not_negative_int(date_vals[0]) || date_vals[0].length > 4) {
+            if (date_id == 'YBET') {
+                ret_s.s = "Date of construction or retrofit: lower limit is not a valid date.";
+            }
+            else {
+                ret_s.s = "Date of construction or retrofit: it is not a valid date.";
+            }
+            return (false);
+        }
+
+        if (date_id == 'YBET') {
+            if (!is_not_negative_int(date_vals[1]) || date_vals[1].length > 4) {
+                ret_s.s = "Date of construction or retrofit: higher limit is not a valid date.";
+                return (false);
+            }
+
+            if (parseInt(date_vals[0]) == parseInt(date_vals[1])) {
+                ret_s.s = "Date of construction or retrofit: invalid range.";
+                return (false);
+            }
+
+            // swap items if wrong order
+            if (parseInt(date_vals[0]) > parseInt(date_vals[1])) {
+                var swap = date_vals[1];
+                date_vals[1] = date_vals[0];
+                date_vals[0] = swap;
+            }
+            $('#DateE2').val(date_vals[1]);
+        }
+        $('#DateCB1').val(date_index);
+        taxt_DateCB1Select(null);
+        $('#DateE1').val(date_vals[0]);
+
+        taxt_ValidateDate();
     }
 
     //

@@ -19,6 +19,10 @@
 #
 #  vars
 
+if [ $GEM_SET_DEBUG ]; then
+    set -x
+fi
+
 MIGRATIONS_HISTORY="/var/lib/openquake/platform/migrations/history"
 PLATFORM_LOG="/var/log/openquake/platform"
 export NL='
@@ -35,10 +39,6 @@ sighand () {
     exit 1
 }
 
-
-if [ $GEM_SET_DEBUG ]; then
-    set -x
-fi
 
 #
 #  <name_long>|<opt>[:],[...]
@@ -72,7 +72,7 @@ parsargs () {
 
                 if echo "$frmt" | tr ',' '\n' | grep -q "\b$name|[a-zA-Z]\+:" ; then
                     # echo "WITH PARAMETER"
-                    if echo "$arg" | grep "^--${name}=" ; then
+                    if echo "$arg" | grep -q "^--${name}=" ; then
                         # with equal case
                         value="$(echo "${arg:2}" | cut -d '=' -f 2-)"
                     else
@@ -117,13 +117,11 @@ parsargs () {
 }
 
 migrate () {
-    local norm_user norm_dir
+    local norm_user norm_dir db_info db_name db_port mig
 
-    echo "PRE"
     set -e
     set -o pipefail
     trap sighand ERR
-    echo "POST"
 
     if [ "${globargs['norm_user']}" == "" -o "${globargs['norm_dir']}" == "" ]; then
         usage "$0" 1
@@ -140,16 +138,18 @@ migrate () {
         chgrp adm "$PLATFORM_LOG"
         chmod g+s "$PLATFORM_LOG"
     fi
-
+    db_info="$(python -c "execfile('/etc/openquake/platform/local_settings.py'); db = DATABASES['default'] ; print '%s:%s:%s:%s:%s:%s' % (db['ENGINE'], db['HOST'], db['NAME'], db['PASSWORD'], db['PORT'], db['USER'])")"
+    db_name="$(echo "$db_info" | cut -d ':' -f 3 )"
+    db_port="$(echo "$db_info" | cut -d ':' -f 5 )"
     echo "===== BEGIN MIGRATIONS =====" >> "$PLATFORM_LOG"/migrations.log
 
     oldifs="$IFS"
     IFS="
 "
-    for mig in $(ls oq-platform/openquakeplatform/migrations/*.{py,sh,sql}); do
+    for mig in $(ls oq-platform/openquakeplatform/migrations/*.{py,sh,sql} 2>/dev/null); do
         mig_name="$(basename "$mig")"
         if [ -f "${MIGRATIONS_HISTORY}/$mig_name" ]; then
-            if diff -q "${MIGRATIONS_HISTORY}/$mig_name" "$mig"; then
+            if ! diff -q "${MIGRATIONS_HISTORY}/$mig_name" "$mig"; then
                 echo "WARNING: '${MIGRATIONS_HISTORY}/$mig_name' and '$mig' are different"
             fi
             echo "Migration $mig_name already found, skip it"
@@ -163,13 +163,12 @@ migrate () {
                 echo "Shell script found: $mig"  | tee -a "$PLATFORM_LOG"/migrations.log
                 "$mig" "$PLATFORM_LOG/migration_${mig_name}_$$" 2>&1 | tee -a "$PLATFORM_LOG"/migrations.log
                 ;;
-            *.py)
-                echo "PY: $mig"
-                echo "not yet implemented"
-                return 1
-                ;;
             *.sql)
                 echo "SQL: $mig"
+                sudo -u postgres psql -e "$db_name" -p "$db_port" -f "$mig"
+                ;;
+            *.py)
+                echo "PY: $mig"
                 echo "not yet implemented"
                 return 1
                 ;;
@@ -210,13 +209,10 @@ if [ "$wai" = "root" ]; then
     migrate
     exit $?
 else
-    echo "You are running the openquake platform installation script."
-    echo
-    echo "During this operation some git repositories will be downloaded into the current"
-    echo "directory $PWD"
+    echo "You are running the openquake platform migration script."
     echo
     read -p "press ENTER to continue or CTRL+C to abort:" a
     echo
-    sudo -p "To install openquake platform root permissions are required.${NL}Please type password for $wai: " $0 --norm_user="$wai" --norm_dir="$PWD" "$@"
+    sudo -p "To apply missing migrations root permissions are required.${NL}Please type password for $wai: " GEM_SET_DEBUG=$GEM_SET_DEBUG $0 --norm_user="$wai" --norm_dir="$PWD" "$@"
     exit $?
 fi

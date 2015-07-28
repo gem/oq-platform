@@ -345,7 +345,7 @@ var wall_type = [
                  { id: 'EWMA', desc: 'Masonry exterior walls' },
                  { id: 'EWME', desc: 'Metal exterior walls' },
                  { id: 'EWV', desc: 'Vegetative exterior walls' },
-                 { id: 'EWW9', desc: 'Wooden exterior walls' },
+                 { id: 'EWW',  desc: 'Wooden exterior walls' },
                  { id: 'EWSL', desc: 'Stucco finish on light framing for exterior walls' },
                  { id: 'EWPL', desc: 'Plastic/vinyl exterior walls, various' },
                  { id: 'EWCB', desc: 'Cement-based boards for exterior walls' },

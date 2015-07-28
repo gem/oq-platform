@@ -19,6 +19,7 @@ from fabric.context_managers import hide
 
 # NOTE(LB): This script is designed to be run only on the local machine.
 env.hosts = ['localhost']
+# env.password = 'openquake'
 
 # NOTE(LB): There are some minor differences with respect to how OSX and Linux
 # shells behave. Thus the following is required:
@@ -268,7 +269,7 @@ def _pgsudo(command, **kwargs):
     # Without this leading `cd /tmp && `, we get errors like this:
     # `could not change directory to "/home/lars"`
     # I observed this only on Linux, but not on OSX.
-    return sudo('cd /tmp && ' + command, user='postgres', **kwargs)
+    return local('cd /tmp && sudo -u postgres ' + command, capture=True)
 
 
 def _pgquery(query):
@@ -350,9 +351,9 @@ def _maybe_install_postgis(db_name):
     """
     # Check if postgis is installed:
     with settings(warn_only=True):
-        postgis_version = _pgquery('SELECT PostGIS_full_version()')
+        postgis_version = _pgquery("SELECT count(*) FROM pg_proc WHERE proname = 'postgis_full_version'")
 
-    if 'error' in postgis_version.lower():
+    if '0' in postgis_version.lower():
         # No PostGIS installed
         print('PostGIS extensions are not installed in database "%s"!'
               ' Installing...' % db_name)

@@ -53,10 +53,10 @@ IRV - {{block.super}}
   <div
     id="loadProjectDialog"
     ng-controller="HazardMapDropdown"
-    title="Load Project Definition"
+    title="Load Project"
     style="overflow: hidden;">
+      <div id="load-project-spinner" >Loading ...<img src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
 
-      <br>Load Integrated Risk Project:<br>
       Filter the project list:<br><input type="text" ng-model="search">
       <br><br>
       <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
@@ -72,7 +72,7 @@ IRV - {{block.super}}
       <li id="1" ><a href="#project-def">Project Definition</a></li>
       <li id="2"><a href="#iri-chart">IRI Chart</a></li>
       <li id="3"><a href="#cat-chart">SVI Theme Chart</a></li>
-      <li id="4"><a href="#primary-tab">Primary Indicator Chart</a></li>
+      <li id="4"><a href="#primary-tab">Composite Indicator Chart</a></li>
 
     </ul>
 
@@ -88,7 +88,13 @@ IRV - {{block.super}}
     </div>
     <div id="cat-chart"></div>
     <div id="primary-tab">
-      <div>
+      <div id="mainContainer">
+        <div class="alert-unscaled-data">
+          <div class="alert alert-danger" role="alert">
+            The data in this project appears to not have been scaled and may not render well in this chart because values of the indicators appear non-commensurate.
+            <button type="button" class="btn btn-danger scaleTheData">Scale the Data</button>
+          </div>
+        </div>
         <p>
           <select id="primary_indicator" name="primary_indicator"></select>
         </p>
