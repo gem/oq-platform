@@ -164,34 +164,6 @@ describe("Test Combine Indicators Function", function() {
 
 });
 
-/*
-describe("Get asynchronous request", function() {
-    it("says hi", function() {
-        // Asynchronous jQuery.ajax mock
-        spyOn($, 'ajax').and.callFake(function(url) {
-            var ajaxMock = $.Deferred();
-
-            setTimeout(function() {
-                switch (url) {
-                    case undefined:
-                        ajaxMock.resolve({
-                            'error': 'Please use POST request'
-                        });
-                        break;
-                    case 'valid_url':
-                        ajaxMock.resolve('some data');
-                        break;
-                    default:  // invalid url
-                        ajaxMock.reject();
-                }
-            }, 5);
-
-            return ajaxMock.promise();
-        });
-    });
-});
-*/
-
 describe("Mock Post New Project Definition", function () {
 	var selectedLayer = "Layer Name";
     var projectDefStg = {"some values" : Math.random()};
