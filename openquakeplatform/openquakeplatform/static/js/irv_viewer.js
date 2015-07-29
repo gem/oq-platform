@@ -38,10 +38,6 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-function helloWorld() {
-    return "Hello world!";
-}
-
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
     // We are not scaling any of the IR indicators
@@ -83,7 +79,7 @@ function scaleTheData() {
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createIndex(la, index) {
+function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -507,7 +503,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Create the risk indicator only if it has children
     var RI = {};
     if (riskIndicators !== undefined) {
-        var riskIndicator = createIndex(la, riskIndicators);
+        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
