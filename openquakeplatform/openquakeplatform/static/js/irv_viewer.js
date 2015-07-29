@@ -173,7 +173,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectD
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
-
             var tempElementValue = 0;
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
