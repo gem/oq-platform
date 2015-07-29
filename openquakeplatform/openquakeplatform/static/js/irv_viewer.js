@@ -105,8 +105,16 @@ function createRiskIndicator(la, index, selectedRegion) {
     return indicator;
 }
 
-function combineIndicators(nameLookUp, themeObj, JSONthemes) {
-    projectDef = sessionProjectDef;
+function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectDef) {
+
+    //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
+    // an empty object in order to test the function
+    if (!jQuery.isEmptyObject(sessionProjectDef)) {
+        projectDef = sessionProjectDef;
+    } else {
+        projectDef = testSessionProjectDef;
+    }
+
     var subIndex = {};
     var operator;
     var themeInversionFactor;
@@ -213,6 +221,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
+
     return subIndex;
 }
 
