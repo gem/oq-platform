@@ -131,6 +131,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectD
         var tempRegion = themeObj[t].region;
         subIndex[tempRegion] = 0;
     }
+
     // get some info about the themes
     var themeKeys = [];
     var themeWeightObj = {};
