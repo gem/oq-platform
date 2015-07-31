@@ -19,6 +19,14 @@
     var CIRCLE_SCALE = 30.0;
     var MAX_STROKE_SIZE = 4.0;
     var MIN_CIRCLE_SIZE = 0.001;
+    var NODE_TYPES = {
+        'IRI': 'Integrated Risk Index',
+        'RI': 'Risk Index',
+        'RISK_INDICATOR': 'Risk Indicator',
+        'SVI': 'Social Vulnerability Index',
+        'SV_THEME': 'Social Vulnerability Theme',
+        'SV_INDICATOR': 'Social Vulnerability Indicator',
+    };
     var projectDefUpdated;
 
     $(document).ready(function() {
@@ -65,7 +73,7 @@
             .projection(function(d) { return [d.y, d.x]; });
 
         function isComputable(node) {
-            if (node.name === 'IRI') {
+            if (node.type === NODE_TYPES.IRI) {
                 if (typeof node.children === 'undefined') {
                     return false;
                 }
@@ -82,7 +90,7 @@
                     return false;
                 }
             }
-            if (node.name === 'SVI') {
+            if (node.type === NODE_TYPES.SVI) {
                 if (typeof node.children === 'undefined') {
                     return false;
                 }
@@ -99,10 +107,12 @@
                     return false;
                 }
             }
-            if (node.name === 'RI' || node.name === 'SVI' ) {
+            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI) {
                 if (typeof node.children === 'undefined' || (typeof node.children !== 'undefined' && node.children.length === 0)) {
+                    console.log('false:');
                     return false;
                 } else {
+                    console.log('true:');
                     return true;
                 }
             }
