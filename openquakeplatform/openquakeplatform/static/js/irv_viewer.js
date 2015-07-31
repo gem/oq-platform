@@ -875,8 +875,8 @@ function getGeoServerLayers() {
         error: function() {
             $('#ajaxErrorDialog').empty();
             $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get a list of layers from GeoServer</p>'
-                );
+                '<p>This application was not able to get a list of layers from GeoServer</p>'
+            );
             $('#ajaxErrorDialog').dialog('open');
         }
     });
@@ -1017,8 +1017,8 @@ var startApp = function() {
             error: function() {
                 $('#ajaxErrorDialog').empty();
                 $('#ajaxErrorDialog').append(
-                        '<p>This application was not able to get information about the selected layer</p>'
-                    );
+                    '<p>This application was not able to get information about the selected layer</p>'
+                );
                 $('#ajaxErrorDialog').dialog('open');
             }
         });

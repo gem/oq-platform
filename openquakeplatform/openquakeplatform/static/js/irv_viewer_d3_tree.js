@@ -16,9 +16,17 @@
 */
 
     var DEFAULT_OPERATOR = "Weighted sum";
-    var CIRCLE_SCALE = 30;
-    var MAX_STROKE_SIZE = 4;
+    var CIRCLE_SCALE = 30.0;
+    var MAX_STROKE_SIZE = 4.0;
     var MIN_CIRCLE_SIZE = 0.001;
+    var NODE_TYPES = {
+        'IRI': 'Integrated Risk Index',
+        'RI': 'Risk Index',
+        'RISK_INDICATOR': 'Risk Indicator',
+        'SVI': 'Social Vulnerability Index',
+        'SVI_THEME': 'Social Vulnerability Theme',
+        'SVI_INDICATOR': 'Social Vulnerability Indicator',
+    };
     var projectDefUpdated;
 
     $(document).ready(function() {
@@ -63,6 +71,51 @@
 
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
+
+        function isComputable(node) {
+            if (node.type === NODE_TYPES.IRI) {
+                if (typeof node.children === 'undefined') {
+                    return false;
+                }
+                // check if both RI and SVI are computable
+                var areRiAndSviComputable = true;
+                for (var i = 0; i < node.children.length; i++) {
+                    if (!isComputable(node.children[i])) {
+                        areRiAndSviComputable = false;
+                    }
+                }
+                if (areRiAndSviComputable) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            if (node.type === NODE_TYPES.SVI) {
+                if (typeof node.children === 'undefined') {
+                    return false;
+                }
+                // Check if all themes are computable
+                var areAllThemesComputable = true;
+                for (var i = 0; i < node.children.length; i++) {
+                    if (!isComputable(node.children[i])) {
+                        areAllThemesComputable = false;
+                    }
+                }
+                if (areAllThemesComputable) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI || node.type == NODE_TYPES.SVI_THEME) {
+                if (typeof node.children === 'undefined' || (typeof node.children !== 'undefined' && node.children.length === 0)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return true;
+        }
 
         function createSpinner(id, weight, name, operator, isInverted) {
             pdTempSpinnerIds.push("spinner-"+id);
@@ -286,15 +339,18 @@
         }
 
         function getRadius(d) {
+            var radius = MIN_CIRCLE_SIZE;
+            if (typeof d.weight != 'undefined') {
+                radius = Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE);
+            }
             if (typeof d.parent != 'undefined') {
                 if (typeof d.parent.operator != 'undefined') {
                     if (d.parent.operator.indexOf('ignore weights') != -1) {
-                        radius = Math.max(1 / d.parent.children.length * CIRCLE_SCALE, MIN_CIRCLE_SIZE);
-                        return radius;
+                        radius = Math.max(1.0 / d.parent.children.length * CIRCLE_SCALE, MIN_CIRCLE_SIZE);
                     }
                 }
             }
-            return d.weight ? Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+            return radius;
         }
 
         function findTreeBranchInfo(pdData, pdName, pdLevel) {
@@ -483,6 +539,13 @@
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
                     return d.weight ? Math.max(getRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
+                .style("opacity", function(d) {
+                    if (isComputable(d)) {
+                        return 1;
+                    } else {
+                        return 0.3;
+                    }
+                })
                 .style("stroke", function(d) {
                     if (d.isInverted) {
                         return "PowderBlue";
@@ -491,7 +554,7 @@
                     }
                 })
                 .style("stroke-width", function(d) {
-                    return d.weight ? Math.min(getRadius(d) / 2, MAX_STROKE_SIZE): 4;
+                    return d.weight ? Math.min(getRadius(d) / 2.0, MAX_STROKE_SIZE): 4.0;
                 })
                 .style("fill", function(d) {
                     // return d.source ? d.source.linkColor: d.linkColor;
@@ -524,6 +587,13 @@
             // Enter any new links at the parent's previous position.
             link.enter().insert("path", "g")
                 .attr("class", "link")
+                .style("opacity", function(d) {
+                    if (isComputable(d.source)) {
+                        return 1;
+                    } else {
+                        return 0.1;
+                    }
+                })
                 .attr("d", function(d) {
                   var o = {x: source.x0, y: source.y0};
                   return diagonal({source: o, target: o});
