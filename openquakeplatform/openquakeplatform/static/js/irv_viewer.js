@@ -1136,9 +1136,10 @@ var startApp = function() {
                 }
                 $('#projectDef-spinner').hide();
 
-                // select the first project definition
+                // select the first project definition in menu dropdown list
                 var menuOption = $('#pdSelection');
                 menuOption[0].selectedIndex = 1;
+
                 // trigger first project definition
                 setTimeout(function() {
                     $('#pdSelection').trigger('change');
