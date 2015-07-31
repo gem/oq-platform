@@ -107,7 +107,7 @@
                     return false;
                 }
             }
-            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI) {
+            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI || node.type == 'SVI_THEME') {
                 if (typeof node.children === 'undefined' || (typeof node.children !== 'undefined' && node.children.length === 0)) {
                     console.log('false:');
                     return false;
