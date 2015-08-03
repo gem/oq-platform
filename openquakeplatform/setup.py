@@ -75,7 +75,7 @@ setup(
         "django-announcements==1.0.2",
         "django-appconf==0.6",
         "django-chained-multi-checkboxes==0.4",
-        "django-chained-selectbox==0.2",
+        "django-chained-selectbox==0.2.1",
         "django-downloadview==1.2",
         "django-extensions==1.1.1",
         "django-extras==0.3",
