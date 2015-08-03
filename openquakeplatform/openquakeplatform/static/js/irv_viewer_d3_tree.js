@@ -426,6 +426,12 @@
             var node = svg.selectAll("g.node")
                 .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
+            // Define 'div' for tooltips
+            var tooltip = d3.select("body")
+                .append("projectDef-tree")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
             // Enter any new nodes at the parent's previous position.
             nodeEnter = node.enter().append("g")
                 .attr("class", "node")
@@ -452,13 +458,48 @@
                 })
                 .attr("text-anchor", function(d) { return "end"; })
                 .text(function(d) {
-                    if (d.isInverted) {
+                    if (d.isInverted && d.name.length <= 20) {
                         return "- " + d.name;
-                    } else {
+                    } else if (d.isInverted && d.name.length > 20) {
+                        var matches = d.name.match(/\b(\w)/g);
+                        var acronym = matches.join('').toUpperCase();
+                        return "- " + acronym;
+                    } else if (d.name.length <= 20) {
                         return d.name;
+                    } else if (d.name.length > 20) {
+                        var matches = d.name.match(/\b(\w)/g);
+                        var acronym = matches.join('').toUpperCase();
+                        return acronym;
                     }
                 })
-                .style("fill-opacity", 1e-6);
+                // Tooltip stuff after this NEW
+                .on("mouseover", function(d) {
+                        d3.select(this).select("path").transition()
+                            .duration(200)
+                            .attr("d", arcOver);
+                        textTop.text(d3.select(this).datum().data.label)
+                            .attr("y", -10);
+                        textBottom.text(d3.select(this).datum().data.value.toFixed(3))
+                            .attr("y", 10);
+                    })
+                .style("fill-opacity", 1e-6)
+                    // Tooltip for primary indicators
+                    .on("mouseover", function(d) {
+                        tooltip.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        tooltip .text(d.name)
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 28) + "px");
+                        })
+                    .on("mouseout", function(d) {
+                        tooltip .text("")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 28) + "px");
+                        });
 
             // tree operator label
             nodeEnter.append("text")
@@ -516,7 +557,7 @@
                         if (getRadius(d) > 15) {
                             return "-4em";
                         } else {
-                            return "-3em";
+                            return "-3  em";
                         };
                     } else{
                         return "-1em";
@@ -524,8 +565,6 @@
                 })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x && d.field == 'SVI'){
-                        console.log('getRadius(d):');
-                        console.log(getRadius(d));
                         return 30;
                     } else if(typeof d.parent != "undefined" && d.x > d.parent.x){
                         return -(getRadius(d) + 5);

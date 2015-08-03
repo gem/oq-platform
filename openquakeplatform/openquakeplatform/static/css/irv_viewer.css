@@ -33,6 +33,10 @@ svg {
   font: 10px sans-serif;
 }
 
+.tooltip {
+  z-index: 99999;
+}
+
 .domain {
   stroke: gray;
   stroke-width: 2;
