@@ -511,9 +511,23 @@
             nodeEnter.append("text")
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
-                .attr("x", function(d) { return "-1em"; })
+                .attr("x", function(d) {
+                    if ( d.field == 'SVI') {
+                        if (getRadius(d) > 15) {
+                            return "-4em";
+                        } else {
+                            return "-3em";
+                        };
+                    } else{
+                        return "-1em";
+                    }
+                })
                 .attr("dy", function(d) {
-                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x && d.field == 'SVI'){
+                        console.log('getRadius(d):');
+                        console.log(getRadius(d));
+                        return 30;
+                    } else if(typeof d.parent != "undefined" && d.x > d.parent.x){
                         return -(getRadius(d) + 5);
                     } else {
                         return getRadius(d) + 12;
