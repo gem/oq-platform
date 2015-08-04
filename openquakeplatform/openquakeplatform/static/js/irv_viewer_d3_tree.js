@@ -481,7 +481,7 @@
                         if (d.name.length > 20) {
                             d3.select("#tool-tip")
                                 .append("text")
-                                .text(d.name);
+                                .text("Attribute: " + d.name);
                         }
                     })
                     .on("mouseout", function() {
