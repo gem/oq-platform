@@ -37,6 +37,11 @@ svg {
   z-index: 99999;
 }
 
+#tool-tip {
+  height: 1px;
+  width: 300px;
+}
+
 .domain {
   stroke: gray;
   stroke-width: 2;
