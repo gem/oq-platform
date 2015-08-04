@@ -451,8 +451,8 @@
                     return "-1em";
                 })
                 .attr("text-anchor", function(d) { return "end"; })
+                // Convert long attribute names text into acronyms
                 .text(function(d) {
-                    // Convert long attribute names text into acronyms
                     if (d.isInverted && d.name.length <= 20) {
                         return "- " + d.name;
                     } else if (d.isInverted && d.name.length > 20) {
@@ -473,6 +473,12 @@
                 .attr('fill', function(d) {
                     if (d.name.length > 20) {
                         return "#003399";
+                    }
+                })
+                // Provide mouse pointer for long attribute names
+                .attr("class", function(d) {
+                    if (d.name.length > 20) {
+                        return "pointer";
                     }
                 })
                 // Tooltip for long attribute names
