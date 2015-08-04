@@ -554,10 +554,12 @@
                 .style("fill", "#0000EE")
                 .attr("x", function(d) {
                     if ( d.field == 'SVI') {
-                        if (getRadius(d) > 15) {
+                        if (getRadius(d) >= 15 && getRadius(d) < 20 ) {
                             return "-4em";
+                        } else if (getRadius(d) >= 20) {
+                            return "-5em";
                         } else {
-                            return "-3  em";
+                            return "-2.7em";
                         };
                     } else{
                         return "-1em";
