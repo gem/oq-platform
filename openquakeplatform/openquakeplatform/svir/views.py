@@ -75,7 +75,7 @@ COPYRIGHT_HEADER = u"""\
 def get_supplemental_information(request):
     """
     Given a layer name, read the corresponding supplemental_information from
-    the layer's metadata and return that as a json
+    the layer's metadata and return it as a json
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing
@@ -117,7 +117,7 @@ def get_supplemental_information(request):
 def get_project_definitions(request):
     """
     Given a layer name, read the corresponding project definitions from
-    the layer's metadata and return that as a json
+    the layer's metadata and return them as a json
 
     :param request:
         A "GET" :class:`django.http.HttpRequest` object containing
