@@ -681,6 +681,7 @@
             }
             $('#projectDefWeight-spinner').remove();
         }
+        $('#projectDef-spinner').hide();
     } //end d3 tree
 
 

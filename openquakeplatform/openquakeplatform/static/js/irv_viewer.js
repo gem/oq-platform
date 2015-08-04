@@ -727,7 +727,6 @@ function processIndicators(layerAttributes, projectDef) {
 
     IRI_PCP_Chart(iriPcpData);
 
-    $('#projectDef-spinner').hide();
 
 } // End processIndicators
 
