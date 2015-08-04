@@ -458,6 +458,7 @@
                 })
                 .attr("text-anchor", function(d) { return "end"; })
                 .text(function(d) {
+                    // Convert long attribute names text into acronyms
                     if (d.isInverted && d.name.length <= 20) {
                         return "- " + d.name;
                     } else if (d.isInverted && d.name.length > 20) {
