@@ -385,7 +385,7 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("viewBox", "-60 50 " + winW +" " + winH)
+            .attr("viewBox", "-60 10 " + winW +" " + winH)
             .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + margin.left + ",5)");
@@ -425,12 +425,6 @@
             // Update the nodes…
             var node = svg.selectAll("g.node")
                 .data(nodes, function(d) { return d.id || (d.id = ++i); });
-
-            // Define 'div' for tooltips
-            var tooltip = d3.select("body")
-                .append("projectDef-tree")
-                .attr("class", "tooltip")
-                .style("opacity", 0);
 
             // Enter any new nodes at the parent's previous position.
             nodeEnter = node.enter().append("g")
@@ -473,35 +467,28 @@
                         return acronym;
                     }
                 })
-                // Tooltip stuff after this NEW
-                .on("mouseover", function(d) {
-                        d3.select(this).select("path").transition()
-                            .duration(200)
-                            .attr("d", arcOver);
-                        textTop.text(d3.select(this).datum().data.label)
-                            .attr("y", -10);
-                        textBottom.text(d3.select(this).datum().data.value.toFixed(3))
-                            .attr("y", 10);
-                    })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "20px")
+                // Set the color of labels that can be hovered
+                .attr('fill', function(d) {
+                    if (d.name.length > 20) {
+                        return "#003399";
+                    }
+                })
+                // Tooltip for long attribute names
                 .style("fill-opacity", 1e-6)
-                    // Tooltip for primary indicators
                     .on("mouseover", function(d) {
-                        tooltip.transition()
-                            .duration(500)
-                            .style("opacity", 0);
-                        tooltip.transition()
-                            .duration(200)
-                            .style("opacity", .9);
-                        tooltip .text(d.name)
-                            .style("left", (d3.event.pageX) + "px")
-                            .style("top", (d3.event.pageY - 28) + "px");
-                        })
-                    .on("mouseout", function(d) {
-                        tooltip .text("")
-                            .style("left", (d3.event.pageX) + "px")
-                            .style("top", (d3.event.pageY - 28) + "px");
-                        });
-
+                        if (d.name.length > 20) {
+                            d3.select("#tool-tip")
+                                .append("text")
+                                .text(d.name);
+                        }
+                    })
+                    .on("mouseout", function() {
+                        d3.select("#tool-tip")
+                            .select("text")
+                            .remove();
+                    });
             // tree operator label
             nodeEnter.append("text")
                 .text(function(d) {
