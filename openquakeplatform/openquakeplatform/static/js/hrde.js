@@ -176,8 +176,8 @@ var startApp = function() {
         closeOnEscape: true
     });
 
-    $('#map-tools').append($('#supplemental-layer-menu'));
     $('#base-map-menu').css({ 'margin-bottom' : 0 });
+    $('#supplemental-layer-menu').css({ 'margin-bottom' : 0 });
 
     var riskDataDialog = $('#riskDataDialog').dialog({
         autoOpen: false,

@@ -37,8 +37,7 @@ function getGeoServerLayers() {
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
             // Find the supplemental layer keywords
-            // TODO change to: GEM-supplemental-layer
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            var stringToLookFor = 'GEM-supplemental-layer';
 
             for (var i = 0; i < featureType.length; i++) {
                 if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
