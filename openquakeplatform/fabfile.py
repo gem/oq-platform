@@ -168,15 +168,15 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
 
     # reset .json files to original version
     local("for i in $(find -name '*.json.orig'); do mv \"$i\" \"$(echo $i | sed 's/\.orig//g')\" ; done")
+    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
+    local('openquakeplatform/bin/oq-gs-builder.sh drop')
+    local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py categories_cleanup')
     local('python manage.py loaddata openquakeplatform/common/post_fixtures/*.json')
     local('mkdir -p ' + mediaroot + '/thumbs/')
     local('cp openquakeplatform/common/thumbs/*.png ' + mediaroot + '/thumbs/')
-    # GeoServer stuff must be done after the fixtures have been pushed
+    # updatelayers must be done after the fixtures have been pushed
     # to allow synchronization of keywords and metadata from GN to GS
-    local("openquakeplatform/bin/oq-gs-builder.sh populate 'openquakeplatform/' 'openquakeplatform/' 'openquakeplatform/bin' 'oqplatform' 'oqplatform' '" + db_name + "' '" + db_user + "' '" + db_pass + "' 'geoserver/data' " + apps_list)
-    local('openquakeplatform/bin/oq-gs-builder.sh drop')
-    local("openquakeplatform/bin/oq-gs-builder.sh restore 'openquakeplatform/build-gs-tree'")
     local('python manage.py updatelayers')
 
 
