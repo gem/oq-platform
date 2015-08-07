@@ -385,7 +385,7 @@
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
         var svg = d3.select("#projectDef-tree").append("svg")
-            .attr("viewBox", "-60 50 " + winW +" " + winH)
+            .attr("viewBox", "-60 10 " + winW +" " + winH)
             .attr("id", "primary-svg-element")
             .append("svg:g")
             .attr("transform", "translate(" + margin.left + ",5)");
@@ -451,15 +451,52 @@
                     return "-1em";
                 })
                 .attr("text-anchor", function(d) { return "end"; })
+                // Convert long attribute names text into acronyms
                 .text(function(d) {
-                    if (d.isInverted) {
-                        return "- " + d.name;
+                    if (d.name.length > 20) {
+                        var matches = d.name.match(/\b(\w)/g);
+                        var acronym = matches.join('').toUpperCase();
+                        if (d.isInverted) {
+                            return "- " + acronym;
+                        } else {
+                            return acronym;
+                        }
                     } else {
-                        return d.name;
+                        if (d.isInverted) {
+                            return "- " + d.name;
+                        } else {
+                            return d.name;
+                        }
                     }
                 })
-                .style("fill-opacity", 1e-6);
-
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "20px")
+                // Set the color of labels that can be hovered
+                .attr('fill', function(d) {
+                    if (d.name.length > 20) {
+                        return "#003399";
+                    }
+                })
+                // Provide mouse pointer for long attribute names
+                .attr("class", function(d) {
+                    if (d.name.length > 20) {
+                        return "pointer";
+                    }
+                })
+                // Tooltip for long attribute names
+                .style("fill-opacity", 1e-6)
+                    .on("mouseover", function(d) {
+                        if (d.name.length > 20) {
+                            d3.select("#tool-tip")
+                                .append("text")
+                                .text("Attribute: " + d.name);
+                        }
+                    })
+                    .on("mouseout", function() {
+                        d3.select("#tool-tip")
+                            .select("text")
+                            .remove();
+                    });
             // tree operator label
             nodeEnter.append("text")
                 .text(function(d) {
@@ -511,9 +548,23 @@
             nodeEnter.append("text")
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
-                .attr("x", function(d) { return "-1em"; })
+                .attr("x", function(d) {
+                    if (d.type == NODE_TYPES.SVI) {
+                        if (getRadius(d) >= 15 && getRadius(d) < 20 ) {
+                            return "-4em";
+                        } else if (getRadius(d) >= 20) {
+                            return "-5em";
+                        } else {
+                            return "-2.7em";
+                        };
+                    } else{
+                        return "-1em";
+                    }
+                })
                 .attr("dy", function(d) {
-                    if (typeof d.parent != "undefined" && d.x > d.parent.x){
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x && d.type == NODE_TYPES.SVI){
+                        return 30;
+                    } else if(typeof d.parent != "undefined" && d.x > d.parent.x){
                         return -(getRadius(d) + 5);
                     } else {
                         return getRadius(d) + 12;
@@ -625,6 +676,7 @@
             }
             $('#projectDefWeight-spinner').remove();
         }
+        $('#projectDef-spinner').hide();
     } //end d3 tree
 
 
