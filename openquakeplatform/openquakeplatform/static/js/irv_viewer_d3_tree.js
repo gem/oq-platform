@@ -549,7 +549,7 @@
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) {
-                    if ( d.name == 'SVI') {
+                    if (d.type == NODE_TYPES.SVI) {
                         if (getRadius(d) >= 15 && getRadius(d) < 20 ) {
                             return "-4em";
                         } else if (getRadius(d) >= 20) {
@@ -562,7 +562,7 @@
                     }
                 })
                 .attr("dy", function(d) {
-                    if (typeof d.parent != "undefined" && d.x > d.parent.x && d.name == 'SVI'){
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x && d.type == NODE_TYPES.SVI){
                         return 30;
                     } else if(typeof d.parent != "undefined" && d.x > d.parent.x){
                         return -(getRadius(d) + 5);
