@@ -652,6 +652,8 @@ oq_platform_install () {
         fi
     done
 
+    # updatelayers must be done after the fixtures have been pushed
+    # to allow synchronization of keywords and metadata from GN to GS
     openquakeplatform updatelayers
     chown -R www-data.www-data /var/www/openquake
 
