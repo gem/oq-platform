@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2014, GEM Foundation.
+   Copyright (c) 2015, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,10 @@ var bing;
 var bing_key;
 var bingMapApiStatus;
 
+////////////////////////
+// Bing map api stuff //
+////////////////////////
+
 try {
     bing_key = BING_KEY.bing_key;
 } catch(e) {
@@ -36,14 +40,14 @@ function checkBingApi(binz) {
         count_down--;
         setTimeout(function () { checkBingApi(binz); }, 100);
         return;
-        }
+    }
     if (binz.meta.statusCode == 200) {
         //continue
     }
     else {
         bingMapApiStatus = false;
         $("#base-map-menu option[value=2]").remove();
-        }
+    }
 }
 
 // switch base maps
