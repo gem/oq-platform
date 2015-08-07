@@ -7,6 +7,9 @@
   </namespace>
   <title>ghec_viewer_measure</title>
   <abstract>No abstract provided</abstract>
+  <keywords>
+    <string>GEM-supplemental-layer</string>
+  </keywords>
   <metadataLinks>
     <metadataLink>
       <type>text/xml</type>
