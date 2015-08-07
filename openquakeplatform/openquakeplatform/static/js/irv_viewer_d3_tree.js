@@ -453,18 +453,20 @@
                 .attr("text-anchor", function(d) { return "end"; })
                 // Convert long attribute names text into acronyms
                 .text(function(d) {
-                    if (d.isInverted && d.name.length <= 20) {
-                        return "- " + d.name;
-                    } else if (d.isInverted && d.name.length > 20) {
+                    if (d.name.length > 20) {
                         var matches = d.name.match(/\b(\w)/g);
                         var acronym = matches.join('').toUpperCase();
-                        return "- " + acronym;
-                    } else if (d.name.length <= 20) {
-                        return d.name;
-                    } else if (d.name.length > 20) {
-                        var matches = d.name.match(/\b(\w)/g);
-                        var acronym = matches.join('').toUpperCase();
-                        return acronym;
+                        if (d.isInverted) {
+                            return "- " + acronym;
+                        } else {
+                            return acronym;
+                        }
+                    } else {
+                        if (d.isInverted) {
+                            return "- " + d.name;
+                        } else {
+                            return d.name;
+                        }
                     }
                 })
                 .attr("font-family", "sans-serif")
@@ -547,7 +549,7 @@
                 .attr("class", "pointer")
                 .style("fill", "#0000EE")
                 .attr("x", function(d) {
-                    if ( d.field == 'SVI') {
+                    if ( d.name == 'SVI') {
                         if (getRadius(d) >= 15 && getRadius(d) < 20 ) {
                             return "-4em";
                         } else if (getRadius(d) >= 20) {
@@ -560,7 +562,7 @@
                     }
                 })
                 .attr("dy", function(d) {
-                    if (typeof d.parent != "undefined" && d.x > d.parent.x && d.field == 'SVI'){
+                    if (typeof d.parent != "undefined" && d.x > d.parent.x && d.name == 'SVI'){
                         return 30;
                     } else if(typeof d.parent != "undefined" && d.x > d.parent.x){
                         return -(getRadius(d) + 5);
