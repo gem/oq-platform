@@ -176,6 +176,9 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     local('python manage.py loaddata openquakeplatform/common/post_fixtures/*.json')
     local('mkdir -p ' + mediaroot + '/thumbs/')
     local('cp openquakeplatform/common/thumbs/*.png ' + mediaroot + '/thumbs/')
+    # updatelayers must be run again after the fixtures have been pushed
+    # to allow synchronization of keywords and metadata from GN to GS
+    local('python manage.py updatelayers')
 
 
 def clean(db_name=None, db_user=None):
