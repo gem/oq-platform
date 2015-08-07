@@ -644,6 +644,8 @@ oq_platform_install () {
     fi
     ${oqpdir}/bin/oq-gs-builder.sh populate "$oqpdir" "$oqpdir" "${oqpdir}/bin" "$GEM_GS_WS_NAME" "$GEM_GS_DS_NAME" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${GEM_GS_DATADIR}" "${GEM_APP_LIST[@]}"
 
+    openquakeplatform updatelayers
+
     #
     #  post layers creation apps customizations
     for app in "${GEM_APP_LIST[@]}"; do
@@ -652,7 +654,7 @@ oq_platform_install () {
         fi
     done
 
-    # updatelayers must be done after the fixtures have been pushed
+    # updatelayers must be run again after the fixtures have been pushed
     # to allow synchronization of keywords and metadata from GN to GS
     openquakeplatform updatelayers
     chown -R www-data.www-data /var/www/openquake
