@@ -113,6 +113,8 @@ urlpatterns = patterns('',
     url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
     url(r'^input_tool_exposure/$', TemplateView.as_view(template_name='input_model_exposure.html'), name='input_tool_exposure'),
+    url(r'^input_tool_fragility/$', TemplateView.as_view(template_name='input_model_fragility.html'), name='input_tool_fragility'),
+    url(r'^input_tool_vulnerability/$', TemplateView.as_view(template_name='input_model_vulnerability.html'), name='input_tool_vulnerability'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
