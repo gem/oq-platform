@@ -16,101 +16,51 @@
 */
 
 var table;
-var header;
+var header = [];
+var activeTables = [];
+var activeTablesObj = {};
 
-$( document ).ready(function() {
+$('#addFFS').click(function() {
     updateTable();
     $('#outputDiv').css('display', 'none');
 });
 
-$('#perArea').hide();
-$('#retrofittingSelect').hide();
-
-// Manage the visibility of the perArea selection menu
-$('#defineCostSelect').change(function() {
-    var defineCost = $('#defineCostSelect').val();
-    if (defineCost == 'none') {
-        $('#perArea').hide();
-    } else if (defineCost == 'aggregated') {
-        $('#perArea').hide();
-    } else if (defineCost == 'perBuilding') {
-        $('#perArea').hide();
-    } else if (defineCost == 'perArea') {
-        $('#perArea').show();
-    }
-});
-
-$('#structuralChbx').change(function() {
-    if(this.checked) {
-        $('#retrofittingSelect').show();
-    } else {
-        $('#retrofittingSelect').hide();
-        // uncheck retrofitting
-        $('#retroChbx').attr('checked', false);
-    }
-});
-
-$('#exposureForm').change(function() {
-    updateTable();
-    $('#outputDiv').css('display', 'none');
-});
-
+var count = 0;
 function updateTable () {
-    // Remove any existing table
-    try {
-        table.destroy();
-    } catch (e) {
-        // continue
+
+    // disable the fragility function form
+    $('#format').prop('disabled', true);
+    $('#limitStates').prop('disabled', true);
+
+    // Get the fragility format
+    var fFormat = $('#format').val();
+
+    // Setup the header
+    if (fFormat == 'discrete') {
+        header = ['damage state', 'poes'];
+    } else if (fFormat == 'continuous') {
+        header = ['damage state', 'mean', 'stddev'];
     }
-
-    // Default columns
-    header = ['longitude', 'latitude', 'taxonomy', 'number'];
-
-    function checkForValue (argument) {
-        if (argument != 'none') {
-            header.push(argument);
-        }
-    }
-
-    // Get info from da form an build the table header
-    $('#economicCheckBoxes input:checked').each(function() {
-        header.push($(this).attr('value'));
-    });
-
-    checkForValue($('#limitSelect option:selected').val());
-    checkForValue($('#deductibleSelect option:selected').val());
-
-    var defineCostSelect = $('#defineCostSelect option:selected').val();
-    if (defineCostSelect != 'none') {
-        header.push('value');
-    }
-
-    var perAreaVisible = $('#perArea:visible').length;
-    if (perAreaVisible === 1) {
-        header.push('area');
-    }
-
-    var perArea = $('#perAreaSelect').val();
-    if (perArea == 'aggregated') {
-        costTypesAreaType = '<area type="aggregated" unit="square meters"/>';
-    } else if (perArea == 'perArea') {
-        costTypesAreaType = '<area type="per_asset" unit="square meters"/>';
-    }
-
-    $('#occupantsCheckBoxes input:checked').each(function() {
-        header.push($(this).attr('value'));
-    });
-
-    $('#retrofittingSelect input:checked').each(function() {
-        header.push($(this).attr('value'));
-    });
 
     var headerLength = header.length;
-    console.log('header:');
-    console.log(header);
 
-    // Create the table
-    var container = document.getElementById('table');
+    // Get info from the form and build the table header
+    var limitStates = $('#limitStates').val();
+    limitStates = limitStates.split(',');
+
+
+    // Create the table containers, as many as the user wants
+    count += 1;
+    activeTables.push('table'+count);
+    $('#tables').append(
+        '<div id="table'+count+'">' +
+            '<button id="'+count+'" class="btn-danger btn destroyTable">Remove</button>' +
+            '<br><br>' +
+        '</div>'
+    );
+
+    var container = document.getElementById('table'+count);
+
 
     //////////////////////
     /// Table Settings ///
@@ -125,66 +75,60 @@ function updateTable () {
         startRows: 1
     });
 
+    activeTablesObj[count] = table;
+
     $('#outPut').empty();
     $('#saveBtn').css('display', 'block');
-};
+
+    // Logic to remove a table
+    $('.destroyTable').click(function() {
+        $('#table'+this.id).remove();
+        var removedTable = 'table'+this.id;
+        var index = $.inArray(removedTable, activeTables);
+        if (index>=0) activeTables.splice(index, 1);
+        console.log('activeTables:');
+        console.log(activeTables);
+    });
+
+}
 
 $('#saveBtn').click(function() {
-    // Get the values from the table
-    var data = table.getData();
+
+    var data = {};
+    // get the data for each table
+    for(var k in activeTablesObj) {
+        data[k] = activeTablesObj[k].getData();
+    }
+
     console.log('data:');
     console.log(data);
 
     // Check for null values
-    for (var i = 0; i < data.length; i++) {
-        for (var j = 0; j < data[i].length; j++) {
-            if (data[i][j] === null) {
-                alert("whoops, there seem to be some empty cells");
-                return;
+    for(var k in data) {
+        for (var i = 0; i < data[k].length; i++) {
+            for (var j = 0; j < data[k][i].length; j++) {
+                if (data[k][i][j] === null) {
+                    alert("whoops, there seem to be some empty cells");
+                    return;
+                }
             }
         }
     }
+
 
     // Check for header match
     function checkHeaderMatch (argument) {
         return header.indexOf(argument);
     }
 
-    var asset = '';
-    var latitude = 'latitude';
-    var longitude = 'longitude';
+    var functionId = $('#functionId').val();
+    var assetCategory = $('#assetCategory').val();
+    var functionDescription = $('#functionDescription');
     var taxonomy = 'taxonomy';
-    var number = 'number';
-    var area = 'area';
-    var value = 'value';
-    var structural = 'structural';
-    var non_structural = 'non_structural';
-    var contents = 'contents';
-    var business = 'business';
-    var day = 'day';
-    var night = 'night';
-    var transit = 'transit';
-    var insuranceLimit = '';
-    var deductible = '';
-    var retrofitting = '';
-    var limit = '';
 
     // Get the the index for each header element
-    var latitudeInx = checkHeaderMatch(latitude);
-    var longitudeInx = checkHeaderMatch(longitude);
     var taxonomyInx = checkHeaderMatch(taxonomy);
-    var numberInx = checkHeaderMatch(number);
-    var areaInx = checkHeaderMatch(area);
-    var valueInx = checkHeaderMatch(value);
-    var structuralInx = checkHeaderMatch(structural);
-    var non_structuralInx = checkHeaderMatch(non_structural);
-    var contentsInx = checkHeaderMatch(contents);
-    var businessInx = checkHeaderMatch(business);
-    var dayInx = checkHeaderMatch(day);
-    var nightInx = checkHeaderMatch(night);
-    var transitInx = checkHeaderMatch(transit);
-    var retrofittingInx = checkHeaderMatch('retrofitting');
-    var limitInx = checkHeaderMatch('limit');
+
 
     // Create the asset
     for (var i = 0; i < data.length; i++) {
@@ -315,14 +259,15 @@ $('#saveBtn').click(function() {
     var NRML =
         '<?xml version="1.0" encoding="UTF-8"?> \n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
-            '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy"> \n' +
-                '\t\t<description>exposure model</description> \n' +
-                '\t\t<conversions> \n' +
-                    '\t\t\t<area type="aggregated" unit="SQM" /> \n' +
-                    costTypes +
-                    insuranceLimit +
-                    deductible +
-                '\t\t</conversions> \n' +
+            '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'"> \n' +
+                '\t\t<description>'+functionDescription+'</description> \n' +
+                '\t\t<limitStates> \n' +
+                    // TODO make these dynamic based on form input
+                    '\t\t\t slight damage \n' +
+                    '\t\t\t moderate damage \n' +
+                    '\t\t\t collapse \n' +
+                '\t\t</limitStates> \n' +
+
                 '\t\t<assets> \n' +
                     asset +
                 '\t\t</assets> \n' +

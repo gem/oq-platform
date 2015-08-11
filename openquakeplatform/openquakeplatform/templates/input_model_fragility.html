@@ -26,73 +26,40 @@
         {% endblock oq_body_heading %}
       </div>
       <div id="oq-body-content">
-      <h1>Exposure</h1>
+      <h1>Fragility</h1>
       <br>
-      <div class="alert alert-info" role="alert">1. Use this form to modify the table header.</div>
-        <div id="exposureForm">
-          <div id="cost">
-            Define Cost:<br>
-            <select id="defineCostSelect">
-              <option value="none">None</option>
-              <option value="aggregated">Aggregated</option>
-              <option value="perBuilding">Per Building</option>
-              <option value="perArea">Per Area</option>
+      <div class="alert alert-info" role="alert">1. Use this form to initialize the fragility model.</div>
+        <div id="fragilityForm">
+          <div>
+            Function Id: <br>
+            <input id="functionId" type="text">
+          </div>
+          <div>
+            Fragility Format:<br>
+            <select id="format">
+              <option value="discrete">Discrete</option>
+              <option value="continuous">Continuous</option>
             </select>
           </div>
-          <div id="perArea">
-            Per Area:<br>
-            <select id="perAreaSelect">
-              <option value="aggregated">Aggregated</option>
-              <option value="perArea">Per Area</option>
-            </select>
+          <div>
+            Asset Category:<br>
+            <input id="assetCategory" type="text" placeholder="buildings">
           </div>
-          <div id="limit">
-            Limit:<br>
-            <select id="limitSelect">
-              <option value="none">None</option>
-              <option value="absolute">Absolute</option>
-              <option value="relative">Relative</option>
-            </select>
+          <div>
+            Description:<br>
+            <textarea id="functionDescription" rows="4" cols="50">
+            </textarea>
           </div>
-          <div id="deductible">
-            Deductible:<br>
-            <select id="deductibleSelect">
-              <option value="none">None</option>
-              <option value="absolute">Absolute</option>
-              <option value="relative">Relative</option>
-            </select>
+          <div>
+            Limit States (Comma Seperated):<br>
+            <textarea id="limitStates" rows="4" cols="50">slight damage, moderate damage, collapse...
+            </textarea>
           </div>
-          <div id="econ">
-            <div id="economicCheckBoxes">
-            Economic value:<br>
-              <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
-              <br>
-              <div id="retrofittingSelect">
-                Retrofitting Cost:<br>
-                <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting
-                <br>
-              </div>
-              <input type="checkbox" value="non_structural"> Non-Structural Cost
-              <br>
-              <input type="checkbox" value="contents"> Contents Cost
-              <br>
-              <input type="checkbox" value="business"> Business Int Cost
-              <br>
-            </div>
-          </div>
-          <div id="occupantsCheckBoxes">
-            <br>
-            Occupants:<br>
-            <input type="checkbox" value="day"> Day
-            <br>
-            <input type="checkbox" value="night"> Night
-            <br>
-            <input type="checkbox" value="transit"> Transit
-          </div>
-          <br>
         </div>
-        <div class="alert alert-info" role="alert">2. Copy and paste values from your spreadsheet into the table bellow.</div>
-        <div id="table"></div>
+        <div class="alert alert-info" role="alert">2. Create fragility functions sets (ffs) by copy and paste values from your spreadsheet into as many tables as needed. Use the 'add' button to create another ffs</div>
+        <button id="addFFS" type="button" class="btn btn-primary">Add ffs</button>
+        <br><br>
+        <div id="tables"></div>
         <br>
         <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
         <br>
