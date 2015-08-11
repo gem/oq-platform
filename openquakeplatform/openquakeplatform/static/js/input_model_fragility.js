@@ -19,6 +19,10 @@ var table;
 var header = [];
 var activeTables = [];
 var activeTablesObj = {};
+var limitStates;
+// Fragility function set ids
+var ffsIds = {};
+var fFormat;
 
 $('#addFFS').click(function() {
     updateTable();
@@ -33,7 +37,7 @@ function updateTable () {
     $('#limitStates').prop('disabled', true);
 
     // Get the fragility format
-    var fFormat = $('#format').val();
+    fFormat = $('#format').val();
 
     // Setup the header
     if (fFormat == 'discrete') {
@@ -45,21 +49,30 @@ function updateTable () {
     var headerLength = header.length;
 
     // Get info from the form and build the table header
-    var limitStates = $('#limitStates').val();
+    limitStates = $('#limitStates').val();
     limitStates = limitStates.split(',');
-
+    var limitStateLength = limitStates.length;
 
     // Create the table containers, as many as the user wants
     count += 1;
-    activeTables.push('table'+count);
+    //activeTables.push('table'+count);
     $('#tables').append(
-        '<div id="table'+count+'">' +
+        '<div id="table'+count+'" class="panel panel-default">' +
+            '<div>' +
+                'Fragility Function Id: <br>' +
+                '<input id="'+count+'" class="ffsIds" type="text">' +
+            '</div>'+
             '<button id="'+count+'" class="btn-danger btn destroyTable">Remove</button>' +
             '<br><br>' +
         '</div>'
     );
 
+    // force bootstrap style
+    $('.btn-danger').css({'background-color': '#da4f49'});
+
     var container = document.getElementById('table'+count);
+    console.log('limitStateLength:');
+    console.log(limitStateLength);
 
 
     //////////////////////
@@ -68,11 +81,9 @@ function updateTable () {
 
     table = new Handsontable(container, {
         colHeaders: header,
-        rowHeaders: true,
-        contextMenu: true,
         startCols: headerLength,
         maxCols: headerLength,
-        startRows: 1
+        startRows: limitStateLength
     });
 
     activeTablesObj[count] = table;
@@ -83,16 +94,18 @@ function updateTable () {
     // Logic to remove a table
     $('.destroyTable').click(function() {
         $('#table'+this.id).remove();
-        var removedTable = 'table'+this.id;
-        var index = $.inArray(removedTable, activeTables);
-        if (index>=0) activeTables.splice(index, 1);
-        console.log('activeTables:');
-        console.log(activeTables);
+        var removedTable = this.id;
+        delete activeTablesObj[removedTable];
     });
-
 }
 
 $('#saveBtn').click(function() {
+
+    // Get all the ffs Ids
+    var ffsIds = {};
+    $(".ffsIds").each(function() {
+        ffsIds[this.id] = ($(this).val());
+    });
 
     var data = {};
     // get the data for each table
@@ -115,7 +128,6 @@ $('#saveBtn').click(function() {
         }
     }
 
-
     // Check for header match
     function checkHeaderMatch (argument) {
         return header.indexOf(argument);
@@ -129,149 +141,57 @@ $('#saveBtn').click(function() {
     // Get the the index for each header element
     var taxonomyInx = checkHeaderMatch(taxonomy);
 
+    /////////////////////////////
+    // Create limit state list //
+    /////////////////////////////
 
-    // Create the asset
-    for (var i = 0; i < data.length; i++) {
-        var costTypes = '\t\t\t<costTypes> \n';
-        var costs ='\t\t\t\t<costs>\n';
-        var occupancies = '\t\t\t\t<occupancies>\n';
+    // Opening limit state tag
+    var limitStatesXML = '\t\t<limitStates> ';
 
-        if (numberInx > -1 ) {
-            number = 'number="'+ data[i][numberInx]+'"';
-        } else {
-            number = '';
-        }
-        if (latitudeInx > -1 ) {
-            latitude = 'lat="'+ data[i][latitudeInx]+'"';
-        } else {
-            latitude = '';
-        }
-        if (longitudeInx > -1 ) {
-            longitude = 'lon="'+ data[i][longitudeInx]+'"';
-        } else {
-            longitude = '';
-        }
-        if (taxonomyInx > -1 ) {
-            taxonomy = 'taxonomy="'+ data[i][taxonomyInx]+'"';
-        } else {
-            taxonomy = '';
-        }
-        if (areaInx > -1 ) {
-            area = 'area="'+ data[i][areaInx]+'"';
-        } else {
-            area = '';
-        }
-        if (valueInx > -1 ) {
-            value = 'value="'+ data[i][valueInx]+'"';
-        } else {
-            value = '';
-        }
-
-        // Cost Type
-        var costTypeSelection = $('#defineCostSelect option:selected').val();
-        var costTypePerAreaSelection = $('#perAreaSelect option:selected').val();
-        if (costTypeSelection == 'aggregated') {
-            costTypes += '\t\t\t\t<costType name="structural" type="aggregated" unit="EUR"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'perBuilding') {
-            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="EUR"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'aggregated') {
-            costTypes +=
-                '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
-                    '\t\t\t\t\t<area type="aggregated" unit="square meters"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'perArea') {
-            costTypes +=
-                '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
-                    '\t\t\t\t\t<area type="per_asset" unit="square meters"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'none') {
-            costTypes = '';
-        }
-
-        // Insurance Limit
-        var limitState = $('#limitSelect option:selected').val();
-        if (limitState == 'absolute') {
-            insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="true"/>\n';
-        } else if (limitState == 'relative') {
-            insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="false"/>\n';
-        }
-
-        // deductibleSelect
-        var deductibleState = $('#deductibleSelect option:selected').val();
-        if (deductibleState == 'absolute') {
-            deductible = '\t\t\t<deductible isAbsolute="true"/>\n';
-        } else if (deductibleState == 'relative') {
-            deductible = '\t\t\t<deductible isAbsolute="false"/>\n';
-        }
-
-        // Retrofitted
-        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
-        if (retrofittingSelect == 'retrofitting') {
-            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
-        }
-
-        // limit value
-        var limitSelect = $('#limitSelect input:checked').val();
-        if (limitSelect == 'retrofitting') {
-            limit = 'insuranceLimit="'+data[i][limitInx]+'"';
-        }
-
-        // Economic Cost
-        if (structuralInx > -1 ) {
-            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
-            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+'/>\n';
-        }
-        if (non_structuralInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'"/>\n';
-        }
-        if (contentsInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'"/>\n';
-        }
-        if (businessInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'"/>\n';
-        }
-
-        // Occupancies
-        if (dayInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancy occupants="'+ data[i][dayInx]+'" period="day"/>\n';
-        }
-        if (nightInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancy occupants="'+ data[i][nightInx]+'" period="night"/>\n';
-        }
-        if (transitInx > -1 ) {
-            occupancies += '\t\t\t\t\t<occupancy occupants="'+ data[i][transitInx]+'" period="transit"/>\n';
-        }
-
-        costs += '\t\t\t\t</costs>\n';
-        occupancies += '\t\t\t\t</occupancies>\n';
-
-        asset +=
-            '\t\t\t<asset id="'+i+'" '+number+' '+area+' '+taxonomy+' > \n' +
-                '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
-                costs +
-                occupancies +
-            '\t\t\t</asset>\n';
+    for (var i = 0; i < limitStates.length; i++) {
+        // Dynamic limit state tag(s)
+        limitStatesXML += limitStates[i];
     }
+
+    // Closing limit state tag
+    limitStatesXML += '</limitStates> \n';
+
+    ////////////////
+    // Create ffs //
+    ////////////////
+
+    var ffsContainer;
+    console.log('data:');
+    console.log(data);
+
+    var fragilityFunction = '';
+    // Create the ffs elements
+    for (var k in data) {
+        // Opening ffs tag
+        var ffs = '\t\t<fragilityFunction id="'+ffsIds[k]+'" format="'+fFormat+'">\n';
+        for (var i = 0; i < data[k].length; i++) {
+            //data[k][i]
+            // Dynamic ffs tag(s)
+            // TODO include imls tags here
+            ffs += '\t\t\t<poes ls="'+limitStates[i]+'">'+data[k][i][1]+'</poes>\n';
+        }
+        // Closing ffs tags
+        ffs += '\t\t</fragilityFunction>\n';
+        fragilityFunction += ffs;
+    }
+
+    console.log('fragilityFunction:');
+    console.log(fragilityFunction);
 
     // Create a NRML element
     var NRML =
         '<?xml version="1.0" encoding="UTF-8"?> \n' +
-        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
+        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.5"> \n' +
             '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'"> \n' +
                 '\t\t<description>'+functionDescription+'</description> \n' +
-                '\t\t<limitStates> \n' +
-                    // TODO make these dynamic based on form input
-                    '\t\t\t slight damage \n' +
-                    '\t\t\t moderate damage \n' +
-                    '\t\t\t collapse \n' +
-                '\t\t</limitStates> \n' +
-
-                '\t\t<assets> \n' +
-                    asset +
-                '\t\t</assets> \n' +
-            '\t</exposureModel> \n' +
+                limitStatesXML +
+                fragilityFunction +
+            '\t</fragilityModel> \n' +
         '</nrml>';
 
     // Provide the user with the xml output
