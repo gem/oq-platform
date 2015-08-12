@@ -7,4 +7,26 @@
 	margin-left: 30px
 }
 
+label {
+	width: 30%;
+	text-align: right;
+	padding-right: 2%;
+	margin-left: 5px;
+}
 
+.ffsForm {
+	float: right;
+}
+
+.handsontable {
+	float: left;
+}
+
+.ffsTable {
+	width: 50%;
+	margin-left: 30px;
+}
+
+.ffsTableDiv {
+	padding-right: 20%;
+}

@@ -60,28 +60,34 @@ function updateTable () {
     // Imls value needs to be an array for discrete functions,
     // and minIML & maxIML for continuous
     if (fFormat == 'discrete') {
-        imls = 'IML: ' +
-            '<input id="'+count+'" class="imls" placeholder="imls array" type="text">';
+        imls = '<label>IML: </label>' +
+            '<input id="'+count+'" class="imls ffsTable" placeholder="imls array" type="text">';
     } else if (fFormat == 'continuous') {
-        imls = 'minIML: ' +
-            '<input id="'+count+'" class="minImls" type="text"><br>' +
-            'maxIML: ' +
-            '<input id="'+count+'" class="maxImls" type="text">';
+        imls = '<label> minIML: </label>' +
+            '<input id="'+count+'" class="minImls ffsTable" type="text"><br>' +
+            '<label> maxIML: </label>' +
+            '<input id="'+count+'" class="maxImls ffsTable" type="text">';
     }
 
     //activeTables.push('table'+count);
     $('#tables').append(
-        '<div id="table'+count+'" class="panel panel-default">' +
-            '<div>' +
-                'Fragility Function Id: ' +
-                '<input id="'+count+'" class="ffsIds" type="text"><br>' +
-                'IMT: ' +
-                '<input id="'+count+'" class="imt" type="text"><br>' +
-                'No DamageLimit: ' +
-                '<input id="'+count+'" class="noDamageLimit" type="text"><br>' +
+        '<div id="table'+count+'" class="ffsTableDiv panel panel-default">' +
+            '<div class="ffsForm" >' +
+                '<label> Function Id: </label>' +
+                '<input id="'+count+'" class="ffsIds ffsTable" type="text"><br>' +
+                '<label> Format: </label>' +
+                    '<select id="'+count+'" class="format ffsTable">' +
+                        '<option value="discrete">Discrete</option>' +
+                        '<option value="continuous">Continuous</option>' +
+                    '</select><br>' +
+                '<label> IMT: </label>' +
+                '<input id="'+count+'" class="imt ffsTable" type="text"><br>' +
+                '<label> DamageLimit: </label>' +
+                '<input id="'+count+'" class="noDamageLimit ffsTable" type="text"><br>' +
                 imls +
+                '<br>' +
+                '<button id="'+count+'" class="btn-danger btn destroyTable">Remove</button>' +
             '</div>'+
-            '<button id="'+count+'" class="btn-danger btn destroyTable">Remove</button>' +
             '<br><br>' +
         '</div>'
     );
@@ -102,7 +108,8 @@ function updateTable () {
         colHeaders: header,
         startCols: headerLength,
         maxCols: headerLength,
-        startRows: limitStateLength
+        startRows: limitStateLength,
+        colWidthsArray: 300
     });
 
     activeTablesObj[count] = table;
