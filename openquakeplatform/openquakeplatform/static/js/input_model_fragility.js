@@ -39,7 +39,6 @@ var count = 0;
 function updateTable (fFormat) {
 
     // disable the fragility function form
-    $('#format').prop('disabled', true);
     $('#limitStates').prop('disabled', true);
 
     // Setup the header
