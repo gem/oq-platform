@@ -23,6 +23,8 @@ var limitStates;
 // Fragility function set ids
 var ffsIds = {};
 
+$('#outputDiv').hide();
+
 $('#addFfsDiscrete').click(function() {
     var fFormat = 'discrete';
     updateTable(fFormat);
