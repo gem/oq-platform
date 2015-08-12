@@ -55,12 +55,31 @@ function updateTable () {
 
     // Create the table containers, as many as the user wants
     count += 1;
+
+    var imls;
+    // Imls value needs to be an array for discrete functions,
+    // and minIML & maxIML for continuous
+    if (fFormat == 'discrete') {
+        imls = 'IML: ' +
+            '<input id="'+count+'" class="imls" placeholder="imls array" type="text">';
+    } else if (fFormat == 'continuous') {
+        imls = 'minIML: ' +
+            '<input id="'+count+'" class="minImls" type="text"><br>' +
+            'maxIML: ' +
+            '<input id="'+count+'" class="maxImls" type="text">';
+    }
+
     //activeTables.push('table'+count);
     $('#tables').append(
         '<div id="table'+count+'" class="panel panel-default">' +
             '<div>' +
-                'Fragility Function Id: <br>' +
-                '<input id="'+count+'" class="ffsIds" type="text">' +
+                'Fragility Function Id: ' +
+                '<input id="'+count+'" class="ffsIds" type="text"><br>' +
+                'IMT: ' +
+                '<input id="'+count+'" class="imt" type="text"><br>' +
+                'No DamageLimit: ' +
+                '<input id="'+count+'" class="noDamageLimit" type="text"><br>' +
+                imls +
             '</div>'+
             '<button id="'+count+'" class="btn-danger btn destroyTable">Remove</button>' +
             '<br><br>' +
@@ -107,6 +126,37 @@ $('#saveBtn').click(function() {
         ffsIds[this.id] = ($(this).val());
     });
 
+    // Get all the imt values
+    var imtObj = {};
+    $(".imt").each(function() {
+        imtObj[this.id] = ($(this).val());
+    });
+
+    // Get all the noDamageLimit values
+    var noDamageLimitObj = {};
+    $(".noDamageLimit").each(function() {
+        noDamageLimitObj[this.id] = ($(this).val());
+    });
+
+    if (fFormat == 'discrete') {
+        // Get all the imls values
+        var imlsObj = {};
+        $(".imls").each(function() {
+            imlsObj[this.id] = ($(this).val());
+        });
+    } else if (fFormat == 'continuous') {
+        // Get all the minIML values
+        var minImlObj = {};
+        $(".minImls").each(function() {
+            minImlObj[this.id] = ($(this).val());
+        });
+        // Get all the maxIML values
+        var maxImlObj = {};
+        $(".maxImls").each(function() {
+            maxImlObj[this.id] = ($(this).val());
+        });
+    }
+
     var data = {};
     // get the data for each table
     for(var k in activeTablesObj) {
@@ -135,7 +185,7 @@ $('#saveBtn').click(function() {
 
     var functionId = $('#functionId').val();
     var assetCategory = $('#assetCategory').val();
-    var functionDescription = $('#functionDescription');
+    var functionDescription = $('#functionDescription').val();
     var taxonomy = 'taxonomy';
 
     // Get the the index for each header element
@@ -169,10 +219,20 @@ $('#saveBtn').click(function() {
     for (var k in data) {
         // Opening ffs tag
         var ffs = '\t\t<fragilityFunction id="'+ffsIds[k]+'" format="'+fFormat+'">\n';
+
+        // Create the imls tag
+        var imlsTag;
+        if (fFormat == 'discrete') {
+            imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'">'+imlsObj[k]+'</imls>\n';
+        } else if (fFormat == 'continuous') {
+            imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'" minIML="'+minImlObj[k]+'" maxIML="'+maxImlObj[k]+'">\n';
+        }
+        // Dynamic imls tag
+        ffs += imlsTag;
+
+        // Loop through the table rows and create the poes tags
         for (var i = 0; i < data[k].length; i++) {
-            //data[k][i]
             // Dynamic ffs tag(s)
-            // TODO include imls tags here
             ffs += '\t\t\t<poes ls="'+limitStates[i]+'">'+data[k][i][1]+'</poes>\n';
         }
         // Closing ffs tags
