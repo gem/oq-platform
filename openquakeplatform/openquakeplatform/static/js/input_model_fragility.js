@@ -79,7 +79,7 @@ function updateFfsTable (fFormat) {
     // Create the fragility function set (ffs)
     $('#tables').append(
         '<div id="table'+count+'" class="ffsTableDiv panel panel-default">' +
-        '<h3 class="ffsTitle">'+fFormat.toUpperCase()+' <button id="'+count+'" class="btn-danger btn destroyTable">Remove</button> </h3> <br>' +
+        '<strong class="ffsTitle">'+fFormat.toUpperCase()+'</strong><button id="'+count+'" class="btn-danger btn destroyTable">Remove</button><br>' +
             '<div class="ffsForm" >' +
                 '<label> IMT: </label>' +
                 '<input id="'+count+'" class="imt ffsTable" type="text"><br>' +

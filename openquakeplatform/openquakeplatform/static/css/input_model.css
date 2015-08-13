@@ -16,10 +16,7 @@ label {
 
 .ffsForm {
 	float: left;
-}
-
-.handsontable {
-	float: right;
+	margin-top: 20px;
 }
 
 .ffsTable {
@@ -33,6 +30,7 @@ label {
 
 .theTable {
 	float: right;
+	margin-top: 10px;
 }
 
 .ffsTableDiv {
@@ -41,6 +39,7 @@ label {
 
 .ffsTitle {
     padding-left: 10%;
+    font-size: 18px;
 }
 
 textarea {
@@ -49,6 +48,8 @@ textarea {
 
 .destroyTable {
 	margin-left: 20px;
+	float: right;
+    margin-top: 10px;
 }
 
 #tabs {border: none}
