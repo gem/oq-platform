@@ -50,3 +50,5 @@ textarea {
 .destroyTable {
 	margin-left: 20px;
 }
+
+#tabs {border: none}
