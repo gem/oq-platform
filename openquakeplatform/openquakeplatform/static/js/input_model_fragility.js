@@ -19,8 +19,6 @@ var table;
 var header = [];
 var activeTablesObj = {};
 var limitStates;
-// Fragility function set ids
-var ffsIds = {};
 
 $('#outputFFDiv').hide();
 

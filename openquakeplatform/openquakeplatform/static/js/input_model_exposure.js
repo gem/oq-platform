@@ -106,8 +106,6 @@ function updateTable () {
     });
 
     var headerLength = header.length;
-    console.log('header:');
-    console.log(header);
 
     // Create the table
     var container = document.getElementById('table');
@@ -132,8 +130,6 @@ function updateTable () {
 $('#saveBtn').click(function() {
     // Get the values from the table
     var data = table.getData();
-    console.log('data:');
-    console.log(data);
 
     // Check for null values
     for (var i = 0; i < data.length; i++) {
