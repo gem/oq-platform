@@ -15,11 +15,11 @@ label {
 }
 
 .ffsForm {
-	float: right;
+	float: left;
 }
 
 .handsontable {
-	float: left;
+	float: right;
 }
 
 .ffsTable {
@@ -29,4 +29,16 @@ label {
 
 .ffsTableDiv {
 	padding-right: 20%;
+}
+
+.theTable {
+	float: right;
+}
+
+.ffsTableDiv {
+    padding-bottom: 8%;
+}
+
+.ffsTitle {
+    padding-left: 10%;
 }

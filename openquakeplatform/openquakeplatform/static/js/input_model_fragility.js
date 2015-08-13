@@ -78,8 +78,8 @@ function updateTable (fFormat) {
     // Create the fragility function set (ffs)
     $('#tables').append(
         '<div id="table'+count+'" class="ffsTableDiv panel panel-default">' +
+        '<h3 class="ffsTitle">'+fFormat.toUpperCase()+' <button id="'+count+'" class="btn-danger btn destroyTable">Remove</button> </h3> <br>' +
             '<div class="ffsForm" >' +
-                '<h3>'+fFormat+'</h3><br>' +
                 '<label> Function Id: </label>' +
                 '<input id="'+count+'" class="ffsIds ffsTable" type="text"><br>' +
                 '<label> IMT: </label>' +
@@ -89,8 +89,8 @@ function updateTable (fFormat) {
                 imls +
                 '<input id="'+count+'" type="hidden" class="fFormat ffsTable" value="'+fFormat+'" >' +
                 '<br>' +
-                '<button id="'+count+'" class="btn-danger btn destroyTable">Remove</button>' +
             '</div>'+
+            '<div id="tableDiv'+count+'" class="theTable"></div><br><br>' +
             '<br><br>' +
         '</div>'
     );
@@ -98,7 +98,7 @@ function updateTable (fFormat) {
     // force bootstrap style
     $('.btn-danger').css({'background-color': '#da4f49'});
 
-    var container = document.getElementById('table'+count);
+    var container = document.getElementById('tableDiv'+count);
 
 
     //////////////////////
