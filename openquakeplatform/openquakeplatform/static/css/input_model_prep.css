@@ -46,3 +46,7 @@ label {
 textarea {
     height: 30px;
 }
+
+.destroyTable {
+	margin-left: 20px;
+}
