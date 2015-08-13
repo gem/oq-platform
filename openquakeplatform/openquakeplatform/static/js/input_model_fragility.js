@@ -110,6 +110,11 @@ function updateTable (fFormat) {
         colWidthsArray: 300
     });
 
+    // Populate the table with limit states
+    for (var i = 0; i < limitStates.length; i++) {
+        table.setDataAtCell(i, 0, limitStates[i]);
+    }
+
     activeTablesObj[count] = table;
 
     $('#outPut').empty();
