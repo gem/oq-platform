@@ -22,22 +22,22 @@ var limitStates;
 // Fragility function set ids
 var ffsIds = {};
 
-$('#outputDiv').hide();
+$('#outputFFDiv').hide();
 
 $('#addFfsDiscrete').click(function() {
     var fFormat = 'discrete';
-    updateTable(fFormat);
-    $('#outputDiv').css('display', 'none');
+    updateFfsTable(fFormat);
+    $('#outputFFDiv').css('display', 'none');
 });
 
 $('#addFfsContinuous').click(function() {
     var fFormat = 'continuous';
-    updateTable(fFormat);
-    $('#outputDiv').css('display', 'none');
+    updateFfsTable(fFormat);
+    $('#outputFFDiv').css('display', 'none');
 });
 
 var count = 0;
-function updateTable (fFormat) {
+function updateFfsTable (fFormat) {
     var colWidth;
     // disable the fragility function form
     $('#limitStates').prop('disabled', true);
@@ -119,8 +119,8 @@ function updateTable (fFormat) {
 
     activeTablesObj[count] = table;
 
-    $('#outPut').empty();
-    $('#saveBtn').css('display', 'block');
+    $('#outPutFF').empty();
+    $('#saveBtnFF').css('display', 'block');
 
     // Logic to remove a table
     $('.destroyTable').click(function() {
@@ -136,7 +136,7 @@ function updateTable (fFormat) {
 
 }
 
-$('#saveBtn').click(function() {
+$('#saveBtnFF').click(function() {
 
     // Get the fFormat types
     var fFormatObj = {};
@@ -265,18 +265,18 @@ $('#saveBtn').click(function() {
         '</nrml>';
 
     // Provide the user with the xml output
-    $('#outPut').empty();
-    $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
-    $('#outputDiv').css('display', 'block');
-    selectAllText();
+    $('#outPutFF').empty();
+    $('#outPutFF').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
+    $('#outputFFDiv').css('display', 'block');
+    selectAllFFText();
 });
 
-$('#selectAll').click(function() {
+$('#selectAllFF').click(function() {
     var textBox = document.getElementById("textarea");
     textBox.select();
 });
 
-function selectAllText () {
+function selectAllFFText () {
     var textBox = document.getElementById("textarea");
     textBox.onfocus = function() {
         textBox.select();
