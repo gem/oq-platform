@@ -222,11 +222,12 @@ $('#saveBtn').click(function() {
     var fragilityFunction = '';
     // Create the ffs elements
     for (var k in data) {
+        var ffs;
         // Opening ffs tag
-        if (fFormatObj == 'discrete') {
-            var ffs = '\t\t<fragilityFunction id="ff'+[k]+'" format="'+fFormatObj[k]+'">\n';
-        } else if (fFormatObj == 'continuous') {
-            var ffs = '\t\t<fragilityFunction id="'+ffsIds[k]+'" format="'+fFormatObj[k]+'" shape="logncdf">\n';
+        if (fFormatObj[k] == 'discrete') {
+            ffs = '\t\t<fragilityFunction id="ff'+k+'" format="'+fFormatObj[k]+'">\n';
+        } else if (fFormatObj[k] == 'continuous') {
+            ffs = '\t\t<fragilityFunction id="ff'+k+'" format="'+fFormatObj[k]+'" shape="logncdf">\n';
         }
         // Create the imls tag
         var imlsTag;
