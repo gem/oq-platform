@@ -42,3 +42,7 @@ label {
 .ffsTitle {
     padding-left: 10%;
 }
+
+textarea {
+    height: 30px;
+}

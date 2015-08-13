@@ -17,7 +17,6 @@
 
 var table;
 var header = [];
-var activeTables = [];
 var activeTablesObj = {};
 var limitStates;
 // Fragility function set ids
@@ -184,18 +183,9 @@ $('#saveBtn').click(function() {
         }
     }
 
-    // Check for header match
-    function checkHeaderMatch (argument) {
-        return header.indexOf(argument);
-    }
-
     var functionId = $('#functionId').val();
     var assetCategory = $('#assetCategory').val();
     var functionDescription = $('#functionDescription').val();
-    var taxonomy = 'taxonomy';
-
-    // Get the the index for each header element
-    var taxonomyInx = checkHeaderMatch(taxonomy);
 
     /////////////////////////////
     // Create limit state list //
@@ -216,7 +206,6 @@ $('#saveBtn').click(function() {
     // Create ffs //
     ////////////////
 
-    var ffsContainer;
     var fragilityFunction = '';
     // Create the ffs elements
     for (var k in data) {
@@ -286,11 +275,4 @@ function selectAllText () {
         };
     };
 }
-
-
-
-
-
-
-
 
