@@ -178,17 +178,17 @@ $('#saveBtnFF').click(function() {
         }
     }
 
-    var data = {};
+    var dataFF = {};
     // get the data for each table
     for(var k in activeTablesObj) {
-        data[k] = activeTablesObj[k].getData();
+        dataFF[k] = activeTablesObj[k].getData();
     }
 
     // Check for null values
-    for(var k in data) {
-        for (var i = 0; i < data[k].length; i++) {
-            for (var j = 0; j < data[k][i].length; j++) {
-                if (data[k][i][j] === null) {
+    for(var k in dataFF) {
+        for (var i = 0; i < dataFF[k].length; i++) {
+            for (var j = 0; j < dataFF[k][i].length; j++) {
+                if (dataFF[k][i][j] === null) {
                     alert("whoops, there seem to be some empty cells");
                     return;
                 }
@@ -221,7 +221,7 @@ $('#saveBtnFF').click(function() {
 
     var fragilityFunction = '';
     // Create the ffs elements
-    for (var k in data) {
+    for (var k in dataFF) {
         var ffs;
         // Opening ffs tag
         if (fFormatObj[k] == 'discrete') {
@@ -240,12 +240,12 @@ $('#saveBtnFF').click(function() {
         ffs += imlsTag;
 
         // Loop through the table rows and create the poes tags
-        for (var i = 0; i < data[k].length; i++) {
+        for (var i = 0; i < dataFF[k].length; i++) {
             // Dynamic ffs tag(s)
             if (fFormatObj[k] == 'discrete') {
-                ffs += '\t\t\t<poes ls="'+limitStates[i]+'">'+data[k][i][1]+'</poes>\n';
+                ffs += '\t\t\t<poes ls="'+limitStates[i]+'">'+dataFF[k][i][1]+'</poes>\n';
             } else if (fFormatObj[k] == 'continuous') {
-                ffs += '\t\t\t<params ls="'+limitStates[i]+'" mean="'+data[k][i][1]+'" stddev="'+data[k][i][2]+'"/>\n';
+                ffs += '\t\t\t<params ls="'+limitStates[i]+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
             }
         }
         // Closing ffs tags
