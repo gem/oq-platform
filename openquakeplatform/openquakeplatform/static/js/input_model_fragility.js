@@ -38,15 +38,17 @@ $('#addFfsContinuous').click(function() {
 
 var count = 0;
 function updateTable (fFormat) {
-
+    var colWidth;
     // disable the fragility function form
     $('#limitStates').prop('disabled', true);
 
     // Setup the header
     if (fFormat == 'discrete') {
         header = ['damage state', 'poes'];
+        colWidth = 150;
     } else if (fFormat == 'continuous') {
         header = ['damage state', 'mean', 'stddev'];
+        colWidth = 100;
     }
 
     var headerLength = header.length;
@@ -107,7 +109,7 @@ function updateTable (fFormat) {
         startCols: headerLength,
         maxCols: headerLength,
         startRows: limitStateLength,
-        colWidthsArray: 300
+        colWidths: colWidth,
     });
 
     // Populate the table with limit states
