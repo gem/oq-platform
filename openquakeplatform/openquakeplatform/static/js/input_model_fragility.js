@@ -128,6 +128,12 @@ function updateTable (fFormat) {
         var removedTable = this.id;
         delete activeTablesObj[removedTable];
     });
+
+    // Increase the ffs panel when many limit states are defined
+    if (limitStateLength > 5) {
+        $('.ffsTableDiv').height(240 + (limitStateLength * limitStateLength));
+    }
+
 }
 
 $('#saveBtn').click(function() {
