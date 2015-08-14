@@ -19,12 +19,26 @@ label {
 	margin-top: 20px;
 }
 
+.vfsForm {
+	float: left;
+	margin-top: 20px;
+}
+
 .ffsTable {
 	width: 50%;
 	margin-left: 30px;
 }
 
+.vfsTable {
+	width: 65%;
+	margin-left: 3px;
+}
+
 .ffsTableDiv {
+	padding-right: 40px;
+}
+
+.vfsTableDiv {
 	padding-right: 40px;
 }
 
@@ -33,11 +47,23 @@ label {
 	margin-top: 10px;
 }
 
+#tableOverflow {
+	height: 140px;
+    overflow: auto;
+    margin-top: 20px;
+    padding-left: 90px;
+}
+
 .ffsTableDiv {
     padding-bottom: 8%;
 }
 
 .ffsTitle {
+    padding-left: 10%;
+    font-size: 18px;
+}
+
+.vfsTitle {
     padding-left: 10%;
     font-size: 18px;
 }
@@ -52,4 +78,17 @@ textarea {
     margin-top: 10px;
 }
 
-#tabs {border: none}
+.destroyVTable {
+	float: right;
+    margin-top: 10px;
+}
+
+#tabs {
+	border: none;
+}
+
+#textarea {
+	width: 600px;
+	height: 700px;
+}
+

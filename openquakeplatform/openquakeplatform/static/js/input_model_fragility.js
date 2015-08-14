@@ -264,7 +264,7 @@ $('#saveBtnFF').click(function() {
 
     // Provide the user with the xml output
     $('#outPutFF').empty();
-    $('#outPutFF').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
+    $('#outPutFF').append('<textarea id="textarea">'+NRML+'</textarea>');
     $('#outputFFDiv').css('display', 'block');
     selectAllFFText();
 });
