@@ -79,8 +79,10 @@ function updateFfsTable (fFormat) {
         '<div id="table'+count+'" class="ffsTableDiv panel panel-default">' +
         '<strong class="ffsTitle">'+fFormat.toUpperCase()+'</strong><button id="'+count+'" class="btn-danger btn destroyTable">Remove</button><br>' +
             '<div class="ffsForm" >' +
+                '<label> Function Id: </label>' +
+                '<input id="'+count+'" class="ffsIds ffsTable" type="text"><br>' +
                 '<label> IMT: </label>' +
-                '<input id="'+count+'" class="imt ffsTable" type="text"><br>' +
+                '<input id="'+count+'" class="imt ffsTable" type="text" placeholder="PGA"><br>' +
                 '<label> DamageLimit: </label>' +
                 '<input id="'+count+'" class="noDamageLimit ffsTable" type="text"><br>' +
                 imls +
@@ -135,6 +137,12 @@ function updateFfsTable (fFormat) {
 }
 
 $('#saveBtnFF').click(function() {
+
+    // Get all the ffs Ids
+    var ffsIds = {};
+    $(".ffsIds").each(function() {
+        ffsIds[this.id] = ($(this).val());
+    });
 
     // Get the fFormat types
     var fFormatObj = {};
@@ -223,9 +231,9 @@ $('#saveBtnFF').click(function() {
         var ffs;
         // Opening ffs tag
         if (fFormatObj[k] == 'discrete') {
-            ffs = '\t\t<fragilityFunction id="ff'+k+'" format="'+fFormatObj[k]+'">\n';
+            ffs = '\t\t<fragilityFunction id="'+ffsIds[k]+'" format="'+fFormatObj[k]+'">\n';
         } else if (fFormatObj[k] == 'continuous') {
-            ffs = '\t\t<fragilityFunction id="ff'+k+'" format="'+fFormatObj[k]+'" shape="logncdf">\n';
+            ffs = '\t\t<fragilityFunction id="'+ffsIds[k]+'" format="'+fFormatObj[k]+'" shape="logncdf">\n';
         }
         // Create the imls tag
         var imlsTag;
