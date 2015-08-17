@@ -17,28 +17,53 @@
 
 var table;
 var header;
+var showArea = false;
 
 $( document ).ready(function() {
     updateTable();
     $('#outputDiv').css('display', 'none');
 });
 
-$('#perArea').hide();
 $('#retrofittingSelect').hide();
 
-// Manage the visibility of the perArea selection menu
-$('#defineCostSelect').change(function() {
-    var defineCost = $('#defineCostSelect').val();
-    if (defineCost == 'none') {
-        $('#perArea').hide();
-    } else if (defineCost == 'aggregated') {
-        $('#perArea').hide();
-    } else if (defineCost == 'perBuilding') {
-        $('#perArea').hide();
-    } else if (defineCost == 'perArea') {
+/////////////////////////////////////////////////////////
+// Manage the visibility of the perArea selection menu //
+/////////////////////////////////////////////////////////
+$('#perArea').hide();
+
+$('#defineCostStruc').change(function() {
+    var defineCost = $('#defineCostStruc').val();
+    if (defineCost == 'per_area') {
         $('#perArea').show();
+        showArea = true;
     }
 });
+
+$('#defineCostNonStruc').change(function() {
+    var defineCost = $('#defineCostNonStruc').val();
+    if (defineCost == 'per_area') {
+        $('#perArea').show();
+        showArea = true;
+    }
+});
+
+$('#defineCostContent').change(function() {
+    var defineCost = $('#defineCostContent').val();
+    if (defineCost == 'per_area') {
+        $('#perArea').show();
+        showArea = true;
+    }
+});
+
+$('#defineCostBusiness').change(function() {
+    var defineCost = $('#defineCostBusiness').val();
+    if (defineCost == 'per_area') {
+        $('#perArea').show();
+        showArea = true;
+    }
+});
+
+// End
 
 $('#structuralChbx').change(function() {
     if(this.checked) {
@@ -88,13 +113,6 @@ function updateTable () {
     var perAreaVisible = $('#perArea:visible').length;
     if (perAreaVisible === 1) {
         header.push('area');
-    }
-
-    var perArea = $('#perAreaSelect').val();
-    if (perArea == 'aggregated') {
-        costTypesAreaType = '<area type="aggregated" unit="square meters"/>';
-    } else if (perArea == 'perArea') {
-        costTypesAreaType = '<area type="per_asset" unit="square meters"/>';
     }
 
     $('#occupantsCheckBoxes input:checked').each(function() {
@@ -219,27 +237,33 @@ $('#saveBtn').click(function() {
             value = '';
         }
 
+        // Pre area selection
+        var areaType = "";
+        var areaTypeSelected = $('#perAreaSelect').val();
+        if (showArea == true) {
+            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" /> \n';
+        }
+
         // Cost Type
-        var costTypeSelection = $('#defineCostSelect option:selected').val();
-        var costTypePerAreaSelection = $('#perAreaSelect option:selected').val();
-        if (costTypeSelection == 'aggregated') {
-            costTypes += '\t\t\t\t<costType name="structural" type="aggregated" unit="EUR"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'perBuilding') {
-            costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="EUR"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'aggregated') {
-            costTypes +=
-                '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
-                    '\t\t\t\t\t<area type="aggregated" unit="square meters"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'perArea' && costTypePerAreaSelection == 'perArea') {
-            costTypes +=
-                '\t\t\t\t<costType name="structural" type="per_area" unit="EUR"/>\n' +
-                    '\t\t\t\t\t<area type="per_asset" unit="square meters"/>\n' +
-                '\t\t\t</costTypes>\n';
-        } else if (costTypeSelection == 'none') {
-            costTypes = '';
+        var costType= '';
+        var costTypeStruc = $('#defineCostStruc option:selected').val();
+        if (costTypeStruc !== 'none') {
+            costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="EUR"/>\n';
+        }
+
+        var costTypeNonStruc = $('#defineCostNonStruc option:selected').val();
+        if (costTypeNonStruc !== 'none') {
+            costType += '\t\t\t\t<costType name="structural" type="'+costTypeNonStruc+'" unit="EUR"/>\n';
+        }
+
+        var costTypeContent = $('#defineCostContent option:selected').val();
+        if (costTypeContent !== 'none') {
+            costType += '\t\t\t\t<costType name="structural" type="'+costTypeContent+'" unit="EUR"/>\n';
+        }
+
+        var costTypeBusiness = $('#defineCostBusiness option:selected').val();
+        if (costTypeBusiness !== 'none') {
+            costType += '\t\t\t\t<costType name="structural" type="'+costTypeBusiness+'" unit="EUR"/>\n';
         }
 
         // Insurance Limit
@@ -314,8 +338,10 @@ $('#saveBtn').click(function() {
             '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy"> \n' +
                 '\t\t<description>exposure model</description> \n' +
                 '\t\t<conversions> \n' +
-                    '\t\t\t<area type="aggregated" unit="SQM" /> \n' +
-                    costTypes +
+                    areaType +
+                    '\t\t\t<costTypes> \n' +
+                    costType +
+                    '\t\t\t</costTypes> \n' +
                     insuranceLimit +
                     deductible +
                 '\t\t</conversions> \n' +

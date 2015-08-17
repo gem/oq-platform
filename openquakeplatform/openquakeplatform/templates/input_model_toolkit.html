@@ -39,64 +39,85 @@
     <div class="alert alert-info" role="alert">1. Use this form to modify the table header.</div>
     <div id="exposureForm">
       <div id="cost">
-        <label>Define Cost:</label>
-        <select id="defineCostSelect">
+        <label>Structural Costs:</label>
+        <select id="defineCostStruc">
           <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
-          <option value="perBuilding">Per Building</option>
-          <option value="perArea">Per Area</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
         </select><br>
-      </div>
-      <div id="perArea">
-        <label>Per Area:</label>
-        <select id="perAreaSelect">
+        <label>Nonstructural Costs:</label>
+        <select id="defineCostNonStruc">
+          <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
-          <option value="perArea">Per Area</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
         </select><br>
-      </div>
-      <div id="limit">
-        <label>Limit:</label>
-        <select id="limitSelect">
+        <label>Contents Costs:</label>
+        <select id="defineCostContent">
           <option value="none">None</option>
-          <option value="absolute">Absolute</option>
-          <option value="relative">Relative</option>
+          <option value="aggregated">Aggregated</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
         </select><br>
-      </div>
-      <div id="deductible">
-        <label>Deductible:</label>
-        <select id="deductibleSelect">
+        <label>Business Interruption Costs:</label>
+        <select id="defineCostBusiness">
           <option value="none">None</option>
-          <option value="absolute">Absolute</option>
-          <option value="relative">Relative</option>
+          <option value="aggregated">Aggregated</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
         </select><br>
-      </div>
-      <div id="econ">
-        <label>Economic value:</label>
-        <div id="economicCheckBoxes">
-          <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
-          <br>
-          <div id="retrofittingSelect">
-            Retrofitting Cost:<br>
-            <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting
-            <br>
-          </div>
-          <input type="checkbox" value="non_structural"> Non-Structural Cost
-          <br>
-          <input type="checkbox" value="contents"> Contents Cost
-          <br>
-          <input type="checkbox" value="business"> Business Int Cost
         </div>
-      </div>
-      <label>Occupants:</label>
-        <div id="occupantsCheckBoxes">
-        <input type="checkbox" value="day"> Day
+        <div id="perArea">
+          <label>Area:</label>
+          <select id="perAreaSelect">
+            <option value="per_asset">Per Building</option>
+            <option value="aggregated">Aggregated</option>
+          </select><br>
+        </div>
+        <div id="limit">
+          <label>Limit:</label>
+          <select id="limitSelect">
+            <option value="none">None</option>
+            <option value="absolute">Absolute</option>
+            <option value="relative">Relative</option>
+          </select><br>
+        </div>
+        <div id="deductible">
+          <label>Deductible:</label>
+          <select id="deductibleSelect">
+            <option value="none">None</option>
+            <option value="absolute">Absolute</option>
+            <option value="relative">Relative</option>
+          </select><br>
+        </div>
+        <div id="econ">
+          <label>Economic value:</label>
+          <div id="economicCheckBoxes">
+            <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
+            <br>
+            <div id="retrofittingSelect">
+              Retrofitting Cost:<br>
+              <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting
+              <br>
+            </div>
+            <input type="checkbox" value="non_structural"> Non-Structural Cost
+            <br>
+            <input type="checkbox" value="contents"> Contents Cost
+            <br>
+            <input type="checkbox" value="business"> Business Int Cost
+          </div>
+        </div>
+        <label>Occupants:</label>
+          <div id="occupantsCheckBoxes">
+            <input type="checkbox" value="day"> Day
+            <br>
+            <input type="checkbox" value="night"> Night
+            <br>
+            <input type="checkbox" value="transit"> Transit
+          </div>
         <br>
-        <input type="checkbox" value="night"> Night
-        <br>
-        <input type="checkbox" value="transit"> Transit
       </div>
-      <br>
-    </div>
     <div class="alert alert-info" role="alert">2. Copy and paste values from your spreadsheet into the table below.</div>
     <div id="table"></div>
     <br>
