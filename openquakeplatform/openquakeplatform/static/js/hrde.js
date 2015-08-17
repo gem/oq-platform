@@ -157,13 +157,6 @@ var startApp = function() {
     // Add some buttons to the toolbar ribbon
     $('#map-tools').append('<button type="button" id="hazard-data">Load Hazard Data</button>');
     $('#map-tools').append('<button type="button" id="risk-data">Load Risk Data</button>');
-    $('#map-tools').append('<select id="external-layers-menu">'+
-            '<option>Select additional layers</option>'+
-            '<option value="1">Strain</option>'+
-            '<option value="3">Instrumental Earthquake Catalogue</option>'+
-            '<option value="4">Historic Earthquake Catalogue</option>'+
-        '</select>'
-    );
     $('#map-tools').append('<button type="button" id="HMDownload">Download Hazard Map</button>');
     $('#map-tools').append('<button type="button" id="legend">Legend</button>');
     $('#map-tools').append('<button type="button" id="terms">Terms of Use</button>');
@@ -183,9 +176,8 @@ var startApp = function() {
         closeOnEscape: true
     });
 
-    $('#external-layers-menu').css({ 'margin-bottom' : 0 });
-    $('#map-tools').append($('#base-map-menu'));
     $('#base-map-menu').css({ 'margin-bottom' : 0 });
+    $('#supplemental-layer-menu').css({ 'margin-bottom' : 0 });
 
     var riskDataDialog = $('#riskDataDialog').dialog({
         autoOpen: false,
@@ -241,38 +233,6 @@ var startApp = function() {
     checkLayerController();
     map.scrollWheelZoom.enable();
     map.options.maxBounds = null;
-
-    // switch additional data layers
-    $('#external-layers-menu').change(function() {
-        var externalLayerSelection = document.getElementById('external-layers-menu').value;
-
-        if (externalLayerSelection == 1) {
-            var strain = new L.TileLayer(TILESTREAM_URL+'geodetic-strain-v2-1/{z}/{x}/{y}.png');
-            map.addLayer(strain);
-            checkLayerController();
-            AppVars.layerControl.addOverlay(strain, "Strain");
-        } else if (externalLayerSelection == 3) {
-            var iec = L.tileLayer.wms("/geoserver/wms", {
-                layers: 'oqplatform:isc_viewer_measure',
-                format: 'image/png',
-                transparent: true,
-                version: '1.1.0'
-            });
-            map.addLayer(iec);
-            checkLayerController();
-            AppVars.layerControl.addOverlay(iec, "Instrumental Earthquake Catalogue");
-        } else if (externalLayerSelection == 4) {
-            var hec = L.tileLayer.wms("/geoserver/wms", {
-                layers: 'oqplatform:ghec_viewer_measure',
-                format: 'image/png',
-                transparent: true,
-                version: '1.1.0'
-            });
-            map.addLayer(hec);
-            checkLayerController();
-            AppVars.layerControl.addOverlay(hec, "Historic Earthquake Catalogue");
-        }
-    });
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
