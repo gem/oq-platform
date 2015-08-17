@@ -1,7 +1,4 @@
 
-#perArea {
-	margin-left: 30px
-}
 
 #retrofittingSelect {
 	margin-left: 30px
@@ -90,5 +87,13 @@ textarea {
 #textarea {
 	width: 600px;
 	height: 700px;
+}
+
+#economicCheckBoxes {
+	margin-left: 35%;
+}
+
+#occupantsCheckBoxes {
+	margin-left: 35%;
 }
 

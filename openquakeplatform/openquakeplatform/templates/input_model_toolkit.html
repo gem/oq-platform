@@ -39,40 +39,40 @@
     <div class="alert alert-info" role="alert">1. Use this form to modify the table header.</div>
     <div id="exposureForm">
       <div id="cost">
-        Define Cost:<br>
+        <label>Define Cost:</label>
         <select id="defineCostSelect">
           <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
           <option value="perBuilding">Per Building</option>
           <option value="perArea">Per Area</option>
-        </select>
+        </select><br>
       </div>
       <div id="perArea">
-        Per Area:<br>
+        <label>Per Area:</label>
         <select id="perAreaSelect">
           <option value="aggregated">Aggregated</option>
           <option value="perArea">Per Area</option>
-        </select>
+        </select><br>
       </div>
       <div id="limit">
-        Limit:<br>
+        <label>Limit:</label>
         <select id="limitSelect">
           <option value="none">None</option>
           <option value="absolute">Absolute</option>
           <option value="relative">Relative</option>
-        </select>
+        </select><br>
       </div>
       <div id="deductible">
-        Deductible:<br>
+        <label>Deductible:</label>
         <select id="deductibleSelect">
           <option value="none">None</option>
           <option value="absolute">Absolute</option>
           <option value="relative">Relative</option>
-        </select>
+        </select><br>
       </div>
       <div id="econ">
+        <label>Economic value:</label>
         <div id="economicCheckBoxes">
-        Economic value:<br>
           <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
           <br>
           <div id="retrofittingSelect">
@@ -85,12 +85,10 @@
           <input type="checkbox" value="contents"> Contents Cost
           <br>
           <input type="checkbox" value="business"> Business Int Cost
-          <br>
         </div>
       </div>
-      <div id="occupantsCheckBoxes">
-        <br>
-        Occupants:<br>
+      <label>Occupants:</label>
+        <div id="occupantsCheckBoxes">
         <input type="checkbox" value="day"> Day
         <br>
         <input type="checkbox" value="night"> Night
