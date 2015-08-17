@@ -46,6 +46,11 @@
           <option value="per_asset">Per Building</option>
           <option value="per_area">Per Area</option>
         </select><br>
+        <div id="retrofittingSelect">
+          <div id="retroDiv" >
+            <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting Cost
+          </div>
+        </div>
         <label>Nonstructural Costs:</label>
         <select id="defineCostNonStruc">
           <option value="none">None</option>
@@ -90,23 +95,6 @@
             <option value="absolute">Absolute</option>
             <option value="relative">Relative</option>
           </select><br>
-        </div>
-        <div id="econ">
-          <label>Economic value:</label>
-          <div id="economicCheckBoxes">
-            <input id="structuralChbx" type="checkbox" value="structural"> Structural Cost
-            <br>
-            <div id="retrofittingSelect">
-              Retrofitting Cost:<br>
-              <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting
-              <br>
-            </div>
-            <input type="checkbox" value="non_structural"> Non-Structural Cost
-            <br>
-            <input type="checkbox" value="contents"> Contents Cost
-            <br>
-            <input type="checkbox" value="business"> Business Int Cost
-          </div>
         </div>
         <label>Occupants:</label>
           <div id="occupantsCheckBoxes">

@@ -37,6 +37,13 @@ $('#defineCostStruc').change(function() {
         $('#perArea').show();
         showArea = true;
     }
+    if (defineCost != 'none') {
+        $('#retrofittingSelect').show();
+    } else {
+        $('#retrofittingSelect').hide();
+        // uncheck retrofitting
+        $('#retroChbx').attr('checked', false);
+    }
 });
 
 $('#defineCostNonStruc').change(function() {
@@ -65,6 +72,7 @@ $('#defineCostBusiness').change(function() {
 
 // End
 
+// TODO remove this
 $('#structuralChbx').change(function() {
     if(this.checked) {
         $('#retrofittingSelect').show();
@@ -80,7 +88,12 @@ $('#exposureForm').change(function() {
     $('#outputDiv').css('display', 'none');
 });
 
-function updateTable () {
+function checkForValueInHeader(header, argument) {
+    var inx = header.indexOf(argument);
+    return inx;
+}
+
+function updateTable() {
     // Remove any existing table
     try {
         table.destroy();
@@ -91,24 +104,42 @@ function updateTable () {
     // Default columns
     header = ['longitude', 'latitude', 'taxonomy', 'number'];
 
-    function checkForValue (argument) {
-        if (argument != 'none') {
-            header.push(argument);
+    function checkForValue (argument, valueArg) {
+
+        // Check for none
+        if (argument != 'none' && valueArg === undefined) {
+            if (checkForValueInHeader(header, argument) == -1) {
+                header.push(argument);
+            }
+        } else if (argument != 'none' && valueArg !== undefined) {
+            if (checkForValueInHeader(header, argument) == -1) {
+                header.push(argument);
+            }
+            if (checkForValueInHeader(header, valueArg) == -1) {
+                header.push(valueArg);
+            }
         }
     }
 
-    // Get info from da form an build the table header
-    $('#economicCheckBoxes input:checked').each(function() {
-        header.push($(this).attr('value'));
+    // Get info from the expsure form and use it to build the table header
+    $('#defineCostStruc option:selected').each(function() {
+        checkForValue($(this).attr('value'), 'structural value');
+    });
+
+    $('#defineCostNonStruc option:selected').each(function() {
+        checkForValue($(this).attr('value'), 'non-structural value');
+    });
+
+    $('#defineCostContent option:selected').each(function() {
+        checkForValue($(this).attr('value'), 'content value');
+    });
+
+    $('#defineCostBusiness option:selected').each(function() {
+        checkForValue($(this).attr('value'), 'business value');
     });
 
     checkForValue($('#limitSelect option:selected').val());
     checkForValue($('#deductibleSelect option:selected').val());
-
-    var defineCostSelect = $('#defineCostSelect option:selected').val();
-    if (defineCostSelect != 'none') {
-        header.push('value');
-    }
 
     var perAreaVisible = $('#perArea:visible').length;
     if (perAreaVisible === 1) {
@@ -131,6 +162,7 @@ function updateTable () {
     //////////////////////
     /// Table Settings ///
     //////////////////////
+
 
     table = new Handsontable(container, {
         colHeaders: header,
@@ -170,7 +202,6 @@ $('#saveBtn').click(function() {
     var taxonomy = 'taxonomy';
     var number = 'number';
     var area = 'area';
-    var value = 'value';
     var structural = 'structural';
     var non_structural = 'non_structural';
     var contents = 'contents';
@@ -189,7 +220,6 @@ $('#saveBtn').click(function() {
     var taxonomyInx = checkHeaderMatch(taxonomy);
     var numberInx = checkHeaderMatch(number);
     var areaInx = checkHeaderMatch(area);
-    var valueInx = checkHeaderMatch(value);
     var structuralInx = checkHeaderMatch(structural);
     var non_structuralInx = checkHeaderMatch(non_structural);
     var contentsInx = checkHeaderMatch(contents);
@@ -230,11 +260,6 @@ $('#saveBtn').click(function() {
             area = 'area="'+ data[i][areaInx]+'"';
         } else {
             area = '';
-        }
-        if (valueInx > -1 ) {
-            value = 'value="'+ data[i][valueInx]+'"';
-        } else {
-            value = '';
         }
 
         // Pre area selection
