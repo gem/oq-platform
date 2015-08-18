@@ -123,19 +123,19 @@ function updateTable() {
 
     // Get info from the expsure form and use it to build the table header
     $('#defineCostStruc option:selected').each(function() {
-        checkForValue($(this).attr('value'), 'structural value');
+        checkForValue($(this).attr('value'), 'structural');
     });
 
     $('#defineCostNonStruc option:selected').each(function() {
-        checkForValue($(this).attr('value'), 'non-structural value');
+        checkForValue($(this).attr('value'), 'non-structural');
     });
 
     $('#defineCostContent option:selected').each(function() {
-        checkForValue($(this).attr('value'), 'content value');
+        checkForValue($(this).attr('value'), 'content');
     });
 
     $('#defineCostBusiness option:selected').each(function() {
-        checkForValue($(this).attr('value'), 'business value');
+        checkForValue($(this).attr('value'), 'business');
     });
 
     checkForValue($('#limitSelect option:selected').val());
@@ -203,7 +203,7 @@ $('#saveBtn').click(function() {
     var number = 'number';
     var area = 'area';
     var structural = 'structural';
-    var non_structural = 'non_structural';
+    var non_structural = 'non-structural';
     var contents = 'contents';
     var business = 'business';
     var day = 'day';
