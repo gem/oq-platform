@@ -173,6 +173,16 @@ function updateTable() {
         startRows: 1
     });
 
+    // insert new row using keyboard input
+    $(document).keyup(function(e) {
+        // 17 is the 'ctr' key
+        if (e.keyCode == 17 ) {
+            var rowIndex = $('.currentRow').parent().index();
+
+            table.alter("insert_row", rowIndex);
+        }
+    });
+
     $('#outPut').empty();
     $('#saveBtn').css('display', 'block');
 };
