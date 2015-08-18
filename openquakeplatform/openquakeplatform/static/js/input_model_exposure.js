@@ -131,7 +131,7 @@ function updateTable() {
     });
 
     $('#defineCostContent option:selected').each(function() {
-        checkForValue($(this).attr('value'), 'content');
+        checkForValue($(this).attr('value'), 'contents');
     });
 
     $('#defineCostBusiness option:selected').each(function() {
