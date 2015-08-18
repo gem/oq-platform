@@ -102,7 +102,7 @@ function updateTable() {
     }
 
     // Default columns
-    header = ['longitude', 'latitude', 'taxonomy', 'number'];
+    header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
 
     function checkForValue (argument, valueArg) {
 
@@ -213,6 +213,7 @@ $('#saveBtn').click(function() {
     var deductible = '';
     var retrofitting = '';
     var limit = '';
+    var assetId = 'id';
 
     // Get the the index for each header element
     var latitudeInx = checkHeaderMatch(latitude);
@@ -229,6 +230,7 @@ $('#saveBtn').click(function() {
     var transitInx = checkHeaderMatch(transit);
     var retrofittingInx = checkHeaderMatch('retrofitting');
     var limitInx = checkHeaderMatch('limit');
+    var assetIdInx = checkHeaderMatch(assetId);
 
     // Create the asset
     for (var i = 0; i < data.length; i++) {
@@ -260,6 +262,11 @@ $('#saveBtn').click(function() {
             area = 'area="'+ data[i][areaInx]+'"';
         } else {
             area = '';
+        }
+        if (assetIdInx > -1 ) {
+            id = data[i][assetIdInx];
+        } else {
+            id = '';
         }
 
         // Pre area selection
@@ -349,7 +356,7 @@ $('#saveBtn').click(function() {
         occupancies += '\t\t\t\t</occupancies>\n';
 
         asset +=
-            '\t\t\t<asset id="'+i+'" '+number+' '+area+' '+taxonomy+' > \n' +
+            '\t\t\t<asset id="'+id+'" '+number+' '+area+' '+taxonomy+' > \n' +
                 '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
                 costs +
                 occupancies +

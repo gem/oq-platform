@@ -83,7 +83,7 @@ function updateFfsTable (fFormat) {
                 '<input id="'+count+'" class="ffsIds ffsTable" type="text"><br>' +
                 '<label> IMT: </label>' +
                 '<input id="'+count+'" class="imt ffsTable" type="text" placeholder="PGA"><br>' +
-                '<label> DamageLimit: </label>' +
+                '<label> Damage Limit: </label>' +
                 '<input id="'+count+'" class="noDamageLimit ffsTable" type="text"><br>' +
                 imls +
                 '<input id="'+count+'" type="hidden" class="fFormat ffsTable" value="'+fFormat+'" >' +
