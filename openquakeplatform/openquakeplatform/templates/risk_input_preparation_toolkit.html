@@ -8,7 +8,7 @@
     {{block.super}}
     <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/handsontable.full.css" rel="stylesheet"/>
-    <link href="{{ STATIC_URL }}css/input_model.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/risk_input_model.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/bootstrap-v3.3.5.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/jQuery-UI-Bootstrap-0.2.5.css" rel="stylesheet"/>
 {% endblock extra_head %}
@@ -23,7 +23,7 @@
       </div>
       <div id="oq-body-heading">
         {% block oq_body_heading %}
-          <h1>{% trans "OpenQuake Input Model Toolkit" %}</h1>
+          <h1>{% trans "Risk Input Preparation Toolkit" %}</h1>
           <br />
         {% endblock oq_body_heading %}
       </div>
@@ -207,7 +207,7 @@
         $( "#tabs" ).tabs();
     </script>
     <script src="{{ STATIC_URL }}js/handsontable.full.js"></script>
-    <script src="{{ STATIC_URL }}js/input_model_exposure.js"></script>
-    <script src="{{ STATIC_URL }}js/input_model_fragility.js"></script>
-    <script src="{{ STATIC_URL }}js/input_model_vulnerability.js"></script>
+    <script src="{{ STATIC_URL }}js/risk_input_model_exposure.js"></script>
+    <script src="{{ STATIC_URL }}js/risk_input_model_fragility.js"></script>
+    <script src="{{ STATIC_URL }}js/risk_input_model_vulnerability.js"></script>
 {% endblock extra_script %}
