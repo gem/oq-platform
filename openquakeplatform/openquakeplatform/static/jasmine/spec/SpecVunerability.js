@@ -124,7 +124,15 @@ describe("Check discete fragility data structure", function() {
             var structure_type = gl.fields.structure_type;
             expect(structure_type).toMatch('Building');
         }
+    });
 
+    it("Name requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        var name = gl.fields.name;
+        expect(name).toBeDefined();
     });
 
 });
