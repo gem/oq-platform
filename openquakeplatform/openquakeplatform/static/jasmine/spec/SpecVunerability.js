@@ -38,6 +38,8 @@ describe("Check discete fragility data structure", function() {
         });
 
 
+
+    it("Fragility discrete 'limit state prob exceed' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
 
@@ -59,5 +61,23 @@ describe("Check discete fragility data structure", function() {
         expect(limit_state_prob_exceed).toBeDefined();
     });
 
+    it("Fragility discrete 'predictor var im val' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        if (gl.fields.fragility_func === undefined) {
+            var fragilityFunction = gl.fields.fragility_func;
+            expect(fragilityFunction).toBeDefined();
+        }
+
+        if (gl.fields.fragility_func.fields.func_distr_type !== 'Discrete') {
+            var functionType = gl.fields.fragility_func.fields.func_distr_type;
+            expect(functionType).toMatch('Discrete');
+        }
+
+        var predictor_var_im_val = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
+
+        expect(predictor_var_im_val).toBeDefined();
+    });
 });
 
