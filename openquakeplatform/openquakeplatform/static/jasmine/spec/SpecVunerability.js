@@ -37,6 +37,17 @@ describe("Check discete fragility data structure", function() {
         dataType: 'html'
         });
 
+        var globalIdContinuousMatrix = 5;
+        $.ajax({
+            url: '/vulnerability/data/' + globalIdContinuousMatrix + '/',
+            data: {},
+            success: function (response) {
+                ContinuousMatrixData = response;
+                done();
+            },
+        dataType: 'html'
+        });
+    });
 
 
     it("Fragility discrete 'limit state prob exceed' requirement is met", function() {
@@ -79,5 +90,26 @@ describe("Check discete fragility data structure", function() {
 
         expect(predictor_var_im_val).toBeDefined();
     });
+
+    it("Continuous Data Table Correlation Matrix requirement is met", function() {
+        var gl = JSON.parse(ContinuousMatrixData);
+        gl = JSON.parse(gl);
+        console.log('gl:');
+        console.log(gl);
+
+        if (gl.fields.fragility_func === undefined) {
+            var fragilityFunction = gl.fields.fragility_func;
+            expect(fragilityFunction).toBeDefined();
+        }
+
+        if (gl.fields.fragility_func.fields.func_distr_type !== 'Continuous') {
+            var functionType = gl.fields.fragility_func.fields.func_distr_type;
+            expect(functionType).toMatch('Continuous');
+        }
+
+        var predictor_var_corr_matrix = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.predictor_var_corr_matrix;
+        expect(predictor_var_corr_matrix).toBeDefined();
+    });
+
 });
 
