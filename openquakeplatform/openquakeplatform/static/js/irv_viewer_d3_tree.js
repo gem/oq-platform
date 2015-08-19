@@ -40,6 +40,37 @@
         });
     });
 
+    // Post New Project Definition
+    function addProjectDefinition() {}
+
+    addProjectDefinition.send = function(selectedLayer, projectDefStg) {
+        // Hit the API endpoint and grab the very very latest version of the PD object
+        $.ajax({
+            method: "POST",
+            url: "../svir/add_project_definition",
+            data: [selectedLayer, projectDefStg]
+        }).done(function() {
+                isSubmitting = false;
+                $('#saveStateDialog').dialog('close');
+                $('#saveState-spinner').hide();
+                $('#saveBtn').prop('disabled', true);
+                // append the new element into the dropdown menu
+                $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                // access the last or newest element in the dropdown menu
+                var lastValue = $('#pdSelection option:last-child').val();
+                // select the newest element in the dropdown menu
+                $("#pdSelection").val(lastValue);
+            }).fail(function() {
+                isSubmitting = false;
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to write the project definition to the database</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#submitPD').attr('disabled',true);
+        });
+    };
+
 
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
@@ -213,6 +244,7 @@
                         return;
                     }
                     isSubmitting = true;
+
                     // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,

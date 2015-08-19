@@ -79,7 +79,7 @@ function scaleTheData() {
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createIndex(la, index) {
+function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -105,8 +105,16 @@ function createIndex(la, index) {
     return indicator;
 }
 
-function combineIndicators(nameLookUp, themeObj, JSONthemes) {
-    projectDef = sessionProjectDef;
+function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectDef) {
+
+    //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
+    // an empty object in order to test the function
+    if (!jQuery.isEmptyObject(sessionProjectDef)) {
+        projectDef = sessionProjectDef;
+    } else {
+        projectDef = testSessionProjectDef;
+    }
+
     var subIndex = {};
     var operator;
     var themeInversionFactor;
@@ -123,6 +131,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         var tempRegion = themeObj[t].region;
         subIndex[tempRegion] = 0;
     }
+
     // get some info about the themes
     var themeKeys = [];
     var themeWeightObj = {};
@@ -165,7 +174,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
-
             var tempElementValue = 0;
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
@@ -213,6 +221,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
+
     return subIndex;
 }
 
@@ -503,7 +512,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Create the risk indicator only if it has children
     var RI = {};
     if (riskIndicators !== undefined) {
-        var riskIndicator = createIndex(la, riskIndicators);
+        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
@@ -1126,9 +1135,10 @@ var startApp = function() {
                 }
                 $('#projectDef-spinner').hide();
 
-                // select the first project definition
+                // select the first project definition in menu dropdown list
                 var menuOption = $('#pdSelection');
                 menuOption[0].selectedIndex = 1;
+
                 // trigger first project definition
                 setTimeout(function() {
                     $('#pdSelection').trigger('change');
