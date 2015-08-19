@@ -49,7 +49,6 @@ describe("Check discete fragility data structure", function() {
         });
     });
 
-
     it("Fragility discrete 'limit state prob exceed' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -109,6 +108,23 @@ describe("Check discete fragility data structure", function() {
 
         var predictor_var_corr_matrix = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.predictor_var_corr_matrix;
         expect(predictor_var_corr_matrix).toBeDefined();
+    });
+
+    it("Category and structure requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        console.log('gl:');
+        console.log(gl);
+        var category = gl.fields.category;
+        expect(category).toBeDefined();
+
+        if (category === 'Structure specific' || category === 'Structure class') {
+            var structure_type = gl.fields.structure_type;
+            expect(structure_type).toMatch('Building');
+        }
+
     });
 
 });
