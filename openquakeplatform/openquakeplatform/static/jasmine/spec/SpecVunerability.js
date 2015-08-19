@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////
 
 // Test the fragility JSON structure
-describe("Check discete fragility data structure", function() {
+describe("Check JSON data structure", function() {
     // TODO find an elegant way to get a list of available curves from the vulnerability view
 
     var discreteFragilityData;
@@ -49,20 +49,33 @@ describe("Check discete fragility data structure", function() {
         });
     });
 
+    it("Fragility discrete 'predictor var im val' requirement is met", function() {
+        // TODO find elegent way to pass only discrete fragility functions into this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+        var fragilityFunction = null;
+        try {
+            fragilityFunction = gl.fields.fragility_func;
+        } catch (e) {
+            expect(gl.fields.fragility_func).toBeDefined();
+            expect(functionType).toMatch('Discrete');
+        }
+
+        var predictor_var_im_val = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
+
+        expect(predictor_var_im_val).toBeDefined();
+
+    });
+
     it("Fragility discrete 'limit state prob exceed' requirement is met", function() {
+        // TODO find elegent way to pass only discrete fragility functions into this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
 
-        console.log('gl:');
-        console.log(gl);
-
-        if (gl.fields.fragility_func === undefined) {
-            var fragilityFunction = gl.fields.fragility_func;
-            expect(fragilityFunction).toBeDefined();
-        }
-
-        if (gl.fields.fragility_func.fields.func_distr_type !== 'Discrete') {
-            var functionType = gl.fields.fragility_func.fields.func_distr_type;
+        try {
+            fragilityFunction = gl.fields.fragility_func;
+        } catch (e) {
+            expect(gl.fields.fragility_func).toBeDefined();
             expect(functionType).toMatch('Discrete');
         }
 
@@ -71,38 +84,16 @@ describe("Check discete fragility data structure", function() {
         expect(limit_state_prob_exceed).toBeDefined();
     });
 
-    it("Fragility discrete 'predictor var im val' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
-        gl = JSON.parse(gl);
-
-        if (gl.fields.fragility_func === undefined) {
-            var fragilityFunction = gl.fields.fragility_func;
-            expect(fragilityFunction).toBeDefined();
-        }
-
-        if (gl.fields.fragility_func.fields.func_distr_type !== 'Discrete') {
-            var functionType = gl.fields.fragility_func.fields.func_distr_type;
-            expect(functionType).toMatch('Discrete');
-        }
-
-        var predictor_var_im_val = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
-
-        expect(predictor_var_im_val).toBeDefined();
-    });
-
     it("Continuous Data Table Correlation Matrix requirement is met", function() {
         var gl = JSON.parse(ContinuousMatrixData);
         gl = JSON.parse(gl);
         console.log('gl:');
         console.log(gl);
 
-        if (gl.fields.fragility_func === undefined) {
-            var fragilityFunction = gl.fields.fragility_func;
-            expect(fragilityFunction).toBeDefined();
-        }
-
-        if (gl.fields.fragility_func.fields.func_distr_type !== 'Continuous') {
-            var functionType = gl.fields.fragility_func.fields.func_distr_type;
+        try {
+            fragilityFunction = gl.fields.fragility_func;
+        } catch (e) {
+            expect(gl.fields.fragility_func).toBeDefined();
             expect(functionType).toMatch('Continuous');
         }
 
@@ -121,8 +112,12 @@ describe("Check discete fragility data structure", function() {
         expect(category).toBeDefined();
 
         if (category === 'Structure specific' || category === 'Structure class') {
-            var structure_type = gl.fields.structure_type;
-            expect(structure_type).toMatch('Building');
+            var structureType = gl.fields.structure_type;
+            expect(structureType).toMatch('Building');
+            if (structureType === 'Building') {
+                var taxonomyType = gl.fields.taxonomy_type.fields.name;
+                expect(taxonomyType).toMatch('PAGER');
+            }
         }
     });
 
