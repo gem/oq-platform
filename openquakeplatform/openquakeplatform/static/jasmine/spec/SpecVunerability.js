@@ -153,6 +153,15 @@ describe("Check JSON data structure", function() {
         expect(articleTitle).toBeDefined();
     });
 
+    it("Publication conference name requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        var publication = gl.fields.publication_conference_name;
+        expect(publication).toBeDefined();
+    });
+
     it("Assessment type requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
