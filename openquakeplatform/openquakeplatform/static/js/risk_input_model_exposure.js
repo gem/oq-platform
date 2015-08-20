@@ -138,8 +138,13 @@ function updateTable() {
         checkForValue($(this).attr('value'), 'business');
     });
 
-    checkForValue($('#limitSelect option:selected').val());
-    checkForValue($('#deductibleSelect option:selected').val());
+    $('#limitSelect option:selected').each(function() {
+        checkForValue($(this).attr('value'), 'limit');
+    });
+
+    $('#deductibleSelect option:selected').each(function() {
+        checkForValue($(this).attr('value'), 'deductible');
+    });
 
     var perAreaVisible = $('#perArea:visible').length;
     if (perAreaVisible === 1) {
@@ -240,6 +245,7 @@ $('#saveBtn').click(function() {
     var transitInx = checkHeaderMatch(transit);
     var retrofittingInx = checkHeaderMatch('retrofitting');
     var limitInx = checkHeaderMatch('limit');
+    var deductibleInx = checkHeaderMatch('deductible');
     var assetIdInx = checkHeaderMatch(assetId);
 
     // Create the asset
@@ -309,19 +315,25 @@ $('#saveBtn').click(function() {
         }
 
         // Insurance Limit
+        var limitValue = '';
         var limitState = $('#limitSelect option:selected').val();
         if (limitState == 'absolute') {
             insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="true"/>\n';
+            limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
         } else if (limitState == 'relative') {
             insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="false"/>\n';
+            limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
         }
 
         // deductibleSelect
+        var deductibleValue = '';
         var deductibleState = $('#deductibleSelect option:selected').val();
         if (deductibleState == 'absolute') {
             deductible = '\t\t\t<deductible isAbsolute="true"/>\n';
+            deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
         } else if (deductibleState == 'relative') {
             deductible = '\t\t\t<deductible isAbsolute="false"/>\n';
+            deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
         }
 
         // Retrofitted
@@ -336,19 +348,22 @@ $('#saveBtn').click(function() {
             limit = 'insuranceLimit="'+data[i][limitInx]+'"';
         }
 
+        // Deductible
+        if (true) {};
+
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
-            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+'/>\n';
+            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (non_structuralInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'"/>\n';
+            costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (contentsInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'"/>\n';
+            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (businessInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'"/>\n';
+            costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
         }
 
         // Occupancies
