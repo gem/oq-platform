@@ -177,9 +177,37 @@ describe("Check JSON data structure", function() {
         gl = JSON.parse(gl);
 
         var assessmentType = gl.fields.type_of_assessment;
-        var assessmentOptions = ['Fragility', 'Vulnerability', 'Damage-to-loss', 'Capacity curve'];
+        var assessmentOptions = [
+            'Fragility',
+            'Vulnerability',
+            'Damage-to-loss',
+            'Capacity curve'
+        ];
         expect(assessmentOptions).toContain(assessmentType);
     });
+
+    /*
+    // This test is failing, it seems that this is a new requirement that is not met in the test db
+    it("Region requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        var region = gl.fields.geo_applicability.fields.area;
+        var regionOptions = [
+            'Worldwide',
+            'Africa',
+            'North America',
+            'Central America & Caribbean',
+            'South America',
+            'Asia',
+            'Europe',
+            'Oceania',
+            'Antarctica'
+        ];
+        expect(regionOptions).toContain(region);
+    });
+    */
 
 });
 
