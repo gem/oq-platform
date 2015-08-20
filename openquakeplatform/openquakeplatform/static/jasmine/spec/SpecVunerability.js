@@ -135,6 +135,15 @@ describe("Check JSON data structure", function() {
         expect(name).toBeDefined();
     });
 
+    it("Authors requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        var authors = gl.fields.authors;
+        expect(authors).toBeDefined();
+    });
+
     it("Assessment type requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
