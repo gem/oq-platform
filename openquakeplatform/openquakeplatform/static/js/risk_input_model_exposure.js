@@ -435,9 +435,3 @@ function selectAllText () {
 }
 
 
-
-
-
-
-
-
