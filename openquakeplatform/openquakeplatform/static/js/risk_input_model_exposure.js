@@ -105,16 +105,16 @@ function updateTable() {
     header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
 
     function checkForValue (argument, valueArg) {
-
-        // Check for none
+        // Modify the table header only when the menu is altered
+        // This constraint will allow Limit, Deductible and Occupant elements to be
+        // added to the header
         if (argument != 'none' && valueArg === undefined) {
             if (checkForValueInHeader(header, argument) == -1) {
                 header.push(argument);
             }
+        // This constraint will structural, non-structural, contents and business costs
+        // to be added to the header
         } else if (argument != 'none' && valueArg !== undefined) {
-            if (checkForValueInHeader(header, argument) == -1) {
-                header.push(argument);
-            }
             if (checkForValueInHeader(header, valueArg) == -1) {
                 header.push(valueArg);
             }
@@ -295,17 +295,17 @@ $('#saveBtn').click(function() {
 
         var costTypeNonStruc = $('#defineCostNonStruc option:selected').val();
         if (costTypeNonStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="structural" type="'+costTypeNonStruc+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="EUR"/>\n';
         }
 
         var costTypeContent = $('#defineCostContent option:selected').val();
         if (costTypeContent !== 'none') {
-            costType += '\t\t\t\t<costType name="structural" type="'+costTypeContent+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="EUR"/>\n';
         }
 
         var costTypeBusiness = $('#defineCostBusiness option:selected').val();
         if (costTypeBusiness !== 'none') {
-            costType += '\t\t\t\t<costType name="structural" type="'+costTypeBusiness+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="EUR"/>\n';
         }
 
         // Insurance Limit
