@@ -209,5 +209,14 @@ describe("Check JSON data structure", function() {
     });
     */
 
+    it("Countries requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        var geoApp = gl.fields.geo_applicability.fields.countries;
+        expect(geoApp).toBeDefined();
+    });
+
 });
 
