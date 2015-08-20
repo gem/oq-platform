@@ -101,7 +101,7 @@ describe("Check JSON data structure", function() {
         expect(predictor_var_corr_matrix).toBeDefined();
     });
 
-    it("Category and structure requirements is met", function() {
+    it("Category and category children structure requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -133,6 +133,16 @@ describe("Check JSON data structure", function() {
 
         var name = gl.fields.name;
         expect(name).toBeDefined();
+    });
+
+    it("Assessment type requirements is met", function() {
+        // TODO find elegent way to pass ALL functions through this test
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        var assessmentType = gl.fields.type_of_assessment;
+        var assessmentOptions = ['Fragility', 'Vulnerability', 'Damage-to-loss', 'Capacity curve'];
+        expect(assessmentOptions).toContain(assessmentType);
     });
 
 });
