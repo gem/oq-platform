@@ -119,6 +119,9 @@ describe("Check JSON data structure", function() {
                 var taxonomyOptions = ['GEM', 'PAGER', 'ATC58'];
                 var taxonomyType = gl.fields.taxonomy_type.fields.name;
                 expect(taxonomyOptions).toContain(taxonomyType);
+                // Check for taxonomy text
+                var taxonomyType = gl.fields.taxonomy_text;
+                expect(taxonomyType).toBeDefined();
             }
         }
     });
