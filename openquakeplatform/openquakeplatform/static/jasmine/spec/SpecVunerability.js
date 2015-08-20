@@ -115,8 +115,10 @@ describe("Check JSON data structure", function() {
             var structureType = gl.fields.structure_type;
             expect(structureType).toMatch('Building');
             if (structureType === 'Building') {
+                // Check for taxonomy type options
+                var taxonomyOptions = ['GEM', 'PAGER', 'ATC58'];
                 var taxonomyType = gl.fields.taxonomy_type.fields.name;
-                expect(taxonomyType).toMatch('PAGER');
+                expect(taxonomyOptions).toContain(taxonomyType);
             }
         }
     });
