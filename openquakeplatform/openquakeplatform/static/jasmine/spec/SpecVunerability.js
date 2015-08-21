@@ -24,8 +24,9 @@ describe("Check JSON data structure", function() {
     // TODO find an elegant way to get a list of available curves from the vulnerability view
 
     var discreteFragilityData;
-    var ContinuousMatrixData;
+    var continuousMatrixData;
     var vulnerabilityData;
+    var damageData;
     beforeEach(function(done) {
         var globalIdDiscreteFragility = 2;
         $.ajax({
@@ -43,7 +44,7 @@ describe("Check JSON data structure", function() {
             url: '/vulnerability/data/' + globalIdContinuousMatrix + '/',
             data: {},
             success: function (response) {
-                ContinuousMatrixData = response;
+                continuousMatrixData = response;
                 done();
             },
         dataType: 'html'
@@ -60,12 +61,23 @@ describe("Check JSON data structure", function() {
         dataType: 'html'
         });
 
+        var globalIdDamage = 18;
+        $.ajax({
+            url: '/vulnerability/data/' + globalIdDamage + '/',
+            data: {},
+            success: function (response) {
+                damageData = response;
+                done();
+            },
+        dataType: 'html'
+        });
+
     });
 
     //////////////////////////////
     // Fragility specific tests //
     //////////////////////////////
-
+/*
     it("Fragility 'method of estimation' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -87,7 +99,7 @@ describe("Check JSON data structure", function() {
         var method = gl.fields.fragility_func.fields.method_of_estimation;
         expect(methodOptions).toContain(method);
     });
-
+*/
     it("Fragility 'description of limit states' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -297,7 +309,7 @@ describe("Check JSON data structure", function() {
     /////////////////////////////////////////
 
     it("Fragility Continuous Data Table Correlation Matrix requirement is met", function() {
-        var gl = JSON.parse(ContinuousMatrixData);
+        var gl = JSON.parse(continuousMatrixData);
         gl = JSON.parse(gl);
         console.log('gl:');
         console.log(gl);
@@ -322,7 +334,7 @@ describe("Check JSON data structure", function() {
 
     it("Fragility continuous category and category children structure requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
-        var gl = JSON.parse(ContinuousMatrixData);
+        var gl = JSON.parse(continuousMatrixData);
         gl = JSON.parse(gl);
 
         console.log('gl:');
@@ -346,7 +358,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Fragility continuous 'mean' requirement is met", function() {
-        var gl = JSON.parse(ContinuousMatrixData);
+        var gl = JSON.parse(continuousMatrixData);
         gl = JSON.parse(gl);
 
         // Filter only continuous fragility functions into this test
@@ -363,7 +375,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Fragility continuous 'standard deviation' requirement is met", function() {
-        var gl = JSON.parse(ContinuousMatrixData);
+        var gl = JSON.parse(continuousMatrixData);
         gl = JSON.parse(gl);
 
         // Filter only continuous fragility functions into this test
@@ -703,11 +715,48 @@ describe("Check JSON data structure", function() {
         expect(distShapeOptions).toContain(funcDisShape);
     });
 
-
-
     ///////////////////////////////////
     // Damage-to-loss specific tests //
     ///////////////////////////////////
+
+    it("Damage-to-loss 'method of estimation' requirement is met", function() {
+        var gl = JSON.parse(damageData);
+        gl = JSON.parse(gl);
+
+        // Filter only damage-to-loss functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Damage-to-loss';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var methodOptions = [
+            'Analytical',
+            'Empirical',
+            'Expert Opinion'
+        ];
+        var method = gl.fields.damage_to_loss_func.fields.method_of_estimation;
+        expect(methodOptions).toContain(method);
+    });
+
+    it("Damage-to-loss 'description of limit states' requirement is met", function() {
+        var gl = JSON.parse(damageData);
+        gl = JSON.parse(gl);
+
+        // Filter only damage-to-loss functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Damage-to-loss';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var limitStatesArray =  gl.fields.damage_to_loss_func.fields.limit_states_desc;
+        expect(limitStatesArray).toBeDefined();
+    });
 
 
 
