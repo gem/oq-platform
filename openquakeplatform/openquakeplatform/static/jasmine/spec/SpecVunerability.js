@@ -25,6 +25,7 @@ describe("Check JSON data structure", function() {
 
     var discreteFragilityData;
     var ContinuousMatrixData;
+    var VulnerabilityData;
     beforeEach(function(done) {
         var globalIdDiscreteFragility = 2;
         $.ajax({
@@ -47,6 +48,18 @@ describe("Check JSON data structure", function() {
             },
         dataType: 'html'
         });
+
+        var globalIdContinuousMatrix = 11;
+        $.ajax({
+            url: '/vulnerability/data/' + globalIdContinuousMatrix + '/',
+            data: {},
+            success: function (response) {
+                VulnerabilityDat = response;
+                done();
+            },
+        dataType: 'html'
+        });
+
     });
 
     //////////////////////////////
@@ -66,7 +79,11 @@ describe("Check JSON data structure", function() {
         }
 
         // Check for method of estimation options
-        var methodOptions = ['Analytical', 'Empirical', 'Expert Opinion'];
+        var methodOptions = [
+            'Analytical',
+            'Empirical',
+            'Expert Opinion'
+        ];
         var method = gl.fields.fragility_func.fields.method_of_estimation;
         expect(methodOptions).toContain(method);
     });
@@ -311,7 +328,7 @@ describe("Check JSON data structure", function() {
         expect(predictor_var_corr_matrix).toBeDefined();
     });
 
-    it("Category and category children structure requirements is met", function() {
+    it("Fragility continuous category and category children structure requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(ContinuousMatrixData);
         gl = JSON.parse(gl);
@@ -369,6 +386,28 @@ describe("Check JSON data structure", function() {
         var stddevArray = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.std_dev;
         expect(stddevArray).toBeDefined();
     });
+/*
+    // Not testing because the JS app does not require this element
+    it("Fragility continuous 'distribution shape' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Continuous';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var distShapeOptions = [
+            'Lognormal',
+        ];
+        var imtType = gl.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
+        expect(distShapeOptions).toContain(imtType);
+    });
+*/
 
     /////////////////////////////
     // Tests for all functions //
