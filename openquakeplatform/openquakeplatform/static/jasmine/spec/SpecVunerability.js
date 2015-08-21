@@ -169,19 +169,19 @@ describe("Check JSON data structure", function() {
         expect(imtUnite).toBeDefined();
         var imtUnitOptions;
         if (imtType === 'PGA') {
-            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
             expect(imtUnitOptions).toContain(imtUnite);
         } else if (imtType === 'PGV') {
-            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
             expect(imtUnitOptions).toContain(imtUnite);
         }  else if (imtType === 'PGD') {
             imtUnitOptions = ['cm', 'm',];
             expect(imtUnitOptions).toContain(imtUnite);
         }  else if (imtType === 'PGD') {
-            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
             expect(imtUnitOptions).toContain(imtUnite);
         }  else if (imtType === 'Sa(T)') {
-            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
             expect(imtUnitOptions).toContain(imtUnite);
         }  else if (imtType === 'Sd(T)') {
             imtUnitOptions = ['cm', 'm',];
@@ -304,7 +304,7 @@ describe("Check JSON data structure", function() {
     // Continuous fragility specific tests //
     /////////////////////////////////////////
 
-    it("Continuous Data Table Correlation Matrix requirement is met", function() {
+    it("Fragility Continuous Data Table Correlation Matrix requirement is met", function() {
         var gl = JSON.parse(ContinuousMatrixData);
         gl = JSON.parse(gl);
         console.log('gl:');
@@ -511,6 +511,57 @@ describe("Check JSON data structure", function() {
         expect(imtOptions).toContain(intensityType);
     });
 
+    it("Vulnerability 'intensity measure unit' requirement is met", function() {
+        var gl = JSON.parse(VulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for intensity measure unit
+        var imtType = gl.fields.vulnerability_func.fields.predictor_var.fields.intensity_measure_type;
+        var imtUnite = gl.fields.vulnerability_func.fields.predictor_var.fields.intensity_measure_unit;
+        expect(imtUnite).toBeDefined();
+        var imtUnitOptions;
+        if (imtType === 'PGA') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'PGV') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'PGD') {
+            imtUnitOptions = ['cm', 'm',];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'PGD') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'Sa(T)') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'Sd(T)') {
+            imtUnitOptions = ['cm', 'm',];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'IA') {
+            imtUnitOptions = ['cm/s', 'm/s',];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'CAV') {
+            imtUnitOptions = ['g-s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'CAV') {
+            imtUnitOptions = ['s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'MMI') {
+            imtUnitOptions = ['Roman numbers'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }
+    });
+
+
     /////////////////////////////////////
     // General tests for all functions //
     /////////////////////////////////////
@@ -598,7 +649,7 @@ describe("Check JSON data structure", function() {
     });
     */
 
-    it("Countries requirements is met", function() {
+    it("General information Countries requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
