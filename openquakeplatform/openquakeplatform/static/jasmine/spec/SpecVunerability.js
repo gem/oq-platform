@@ -53,6 +53,141 @@ describe("Check JSON data structure", function() {
     // Fragility specific tests //
     //////////////////////////////
 
+    it("Fragility 'method of estimation' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var methodOptions = ['Analytical', 'Empirical', 'Expert Opinion'];
+        var method = gl.fields.fragility_func.fields.method_of_estimation;
+        expect(methodOptions).toContain(method);
+    });
+
+    it("Fragility 'description of limit states' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var limitStatesArray =  gl.fields.fragility_func.fields.limit_states_desc;
+        expect(limitStatesArray).toBeDefined();
+    });
+
+    it("Fragility 'function distribution type' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var distrOptions = ['Discrete', 'Continuous'];
+        var funcDistrType = gl.fields.fragility_func.fields.func_distr_type;
+        expect(distrOptions).toContain(funcDistrType);
+    });
+
+    it("Fragility 'intensity measure type' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var imtOptions = [
+            'PGA',
+            'PGV',
+            'PGD',
+            'Sa(T)',
+            'Sd(T)',
+            'IA',
+            'CAV',
+            'RSD',
+            'MMI'
+        ];
+        var imtType = gl.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
+        expect(imtOptions).toContain(imtType);
+    });
+
+    it("Fragility 'intensity measure unit' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for intensity measure unit
+        var imtType = gl.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
+        var imtUnite = gl.fields.fragility_func.fields.predictor_var.fields.intensity_measure_unit;
+        expect(imtUnite).toBeDefined();
+        var imtUnitOptions;
+        if (imtType === 'PGA') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'PGV') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'PGD') {
+            imtUnitOptions = ['cm', 'm',];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'PGD') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'Sa(T)') {
+            imtUnitOptions = ['g', 'cm/s^2', 'm/s^s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }  else if (imtType === 'Sd(T)') {
+            imtUnitOptions = ['cm', 'm',];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'IA') {
+            imtUnitOptions = ['cm/s', 'm/s',];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'CAV') {
+            imtUnitOptions = ['g-s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'CAV') {
+            imtUnitOptions = ['s'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        } else if (imtType === 'MMI') {
+            imtUnitOptions = ['Roman numbers'];
+            expect(imtUnitOptions).toContain(imtUnite);
+        }
+    });
+
+    ///////////////////////////////////////
+    // Discrete fragility specific tests //
+    ///////////////////////////////////////
+
     it("Fragility discrete 'predictor var im val' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -97,44 +232,9 @@ describe("Check JSON data structure", function() {
         expect(limit_state_prob_exceed).toBeDefined();
     });
 
-    it("Fragility 'method of estimation' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
-        gl = JSON.parse(gl);
-
-        // Filter only fragility functions into this test
-        var assessmentType = gl.fields.type_of_assessment;
-        var thisTestAssessmentType = 'Fragility';
-        if (assessmentType != thisTestAssessmentType) {
-            expect(gl.fields.type_of_assessment).toBeDefined();
-            return;
-        }
-
-        // Check for method of estimation options
-        var methodOptions = ['Analytical', 'Empirical', 'Expert Opinion'];
-        var method = gl.fields.fragility_func.fields.method_of_estimation;
-        expect(methodOptions).toContain(method);
-    });
-
-    it("Fragility 'description of limit states' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
-        gl = JSON.parse(gl);
-
-        // Filter only fragility functions into this test
-        var assessmentType = gl.fields.type_of_assessment;
-        var thisTestAssessmentType = 'Fragility';
-        if (assessmentType != thisTestAssessmentType) {
-            expect(gl.fields.type_of_assessment).toBeDefined();
-            return;
-        }
-
-        // Check for method of estimation options
-        var limitStatesArray =  gl.fields.fragility_func.fields.limit_states_desc;
-        expect(limitStatesArray).toBeDefined();
-    });
-
-    ///////////////////////////////
-    // Continuous specific tests //
-    ///////////////////////////////
+    /////////////////////////////////////////
+    // Continuous fragility specific tests //
+    /////////////////////////////////////////
 
     it("Continuous Data Table Correlation Matrix requirement is met", function() {
         var gl = JSON.parse(ContinuousMatrixData);
