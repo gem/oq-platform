@@ -758,7 +758,46 @@ describe("Check JSON data structure", function() {
         expect(limitStatesArray).toBeDefined();
     });
 
+    it("Damage-to-loss 'response variable' requirement is met", function() {
+        var gl = JSON.parse(damageData);
+        gl = JSON.parse(gl);
 
+        // Filter only damage-to-loss functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Damage-to-loss';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var responseOptions = [
+            'Damage factor',
+            'Fatality rate per occupant',
+            'Nonfatal injury rate per occupant',
+            'Fatality rate per exposed population',
+            'Direct economic factor'
+        ];
+        var responseVal = gl.fields.damage_to_loss_func.fields.resp_var;
+        expect(responseOptions).toContain(responseVal);
+    });
+
+    it("Damage-to-loss continuous 'mean' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only Damage-to-loss functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Damage-to-loss';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var meanDamage = gl.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_mean_val;
+        expect(meanDamage).toBeDefined();
+    });
 
 
     /////////////////////////////////////
