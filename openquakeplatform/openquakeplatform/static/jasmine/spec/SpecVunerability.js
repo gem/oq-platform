@@ -561,6 +561,40 @@ describe("Check JSON data structure", function() {
         }
     });
 
+    it("Vulnerability 'Min IM' requirement is met", function() {
+        var gl = JSON.parse(VulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var minIM = gl.fields.vulnerability_func.fields.predictor_var.fields.minimum_im;
+        expect(minIM).toBeDefined();
+    });
+
+    it("Vulnerability 'Max IM' requirement is met", function() {
+        var gl = JSON.parse(VulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var maxIM = gl.fields.vulnerability_func.fields.predictor_var.fields.maximum_im;
+        expect(maxIM).toBeDefined();
+    });
+
 
     /////////////////////////////////////
     // General tests for all functions //
