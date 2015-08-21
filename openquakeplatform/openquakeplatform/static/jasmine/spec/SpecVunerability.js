@@ -87,6 +87,7 @@ describe("Check JSON data structure", function() {
         var assessmentType = gl.fields.type_of_assessment;
         var thisTestAssessmentType = 'Fragility';
         if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
             return;
         }
 
@@ -104,6 +105,7 @@ describe("Check JSON data structure", function() {
         var assessmentType = gl.fields.type_of_assessment;
         var thisTestAssessmentType = 'Fragility';
         if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
             return;
         }
 
@@ -111,6 +113,23 @@ describe("Check JSON data structure", function() {
         var methodOptions = ['Analytical', 'Empirical', 'Expert Opinion'];
         var method = gl.fields.fragility_func.fields.method_of_estimation;
         expect(methodOptions).toContain(method);
+    });
+
+    it("Fragility 'description of limit states' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var limitStatesArray =  gl.fields.fragility_func.fields.limit_states_desc;
+        expect(limitStatesArray).toBeDefined();
     });
 
     ///////////////////////////////
@@ -127,6 +146,7 @@ describe("Check JSON data structure", function() {
         var assessmentType = gl.fields.type_of_assessment;
         var thisTestAssessmentType = 'Continuous';
         if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
             return;
         }
 
