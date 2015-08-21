@@ -409,6 +409,32 @@ describe("Check JSON data structure", function() {
     });
 */
 
+    //////////////////////////////////
+    // Vulnerability specific tests //
+    /////////////////////////////////
+
+    it("Vulnerability 'method of estimation' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var methodOptions = [
+            'Analytical',
+            'Empirical',
+            'Expert Opinion'
+        ];
+        var method = gl.fields.vulnerability_func.fields.method_of_estimation;
+        expect(method).toContain(method);
+    });
+
     /////////////////////////////
     // Tests for all functions //
     /////////////////////////////
