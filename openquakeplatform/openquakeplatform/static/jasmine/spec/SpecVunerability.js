@@ -19,7 +19,7 @@
 // Unit Test for the physical vulnerability web application //
 //////////////////////////////////////////////////////////////
 
-// Test the fragility JSON structure
+// Test the JSON structure and required fields
 describe("Check JSON data structure", function() {
     // TODO find an elegant way to get a list of available curves from the vulnerability view
 
@@ -50,17 +50,25 @@ describe("Check JSON data structure", function() {
     });
 
     it("Fragility discrete 'predictor var im val' requirement is met", function() {
-        // TODO find elegent way to pass only discrete fragility functions into this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            return;
+        }
+
         var fragilityFunction = null;
+        // Make sure that the function has a fragility_func element
         try {
             fragilityFunction = gl.fields.fragility_func;
         } catch (e) {
             expect(gl.fields.fragility_func).toBeDefined();
-            expect(functionType).toMatch('Discrete');
         }
 
+        // Check that the function includes predictor_var_im_val
         var predictor_var_im_val = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
 
         expect(predictor_var_im_val).toBeDefined();
@@ -68,17 +76,23 @@ describe("Check JSON data structure", function() {
     });
 
     it("Fragility discrete 'limit state prob exceed' requirement is met", function() {
-        // TODO find elegent way to pass only discrete fragility functions into this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            return;
+        }
 
         try {
             fragilityFunction = gl.fields.fragility_func;
         } catch (e) {
             expect(gl.fields.fragility_func).toBeDefined();
-            expect(functionType).toMatch('Discrete');
         }
 
+        // Check that the function includes limit_state_prob_exceed
         var limit_state_prob_exceed = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed;
 
         expect(limit_state_prob_exceed).toBeDefined();
@@ -90,11 +104,17 @@ describe("Check JSON data structure", function() {
         console.log('gl:');
         console.log(gl);
 
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Continuous';
+        if (assessmentType != thisTestAssessmentType) {
+            return;
+        }
+
         try {
             fragilityFunction = gl.fields.fragility_func;
         } catch (e) {
             expect(gl.fields.fragility_func).toBeDefined();
-            expect(functionType).toMatch('Continuous');
         }
 
         var predictor_var_corr_matrix = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.predictor_var_corr_matrix;
