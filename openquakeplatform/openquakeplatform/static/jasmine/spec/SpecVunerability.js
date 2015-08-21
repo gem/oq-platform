@@ -49,9 +49,9 @@ describe("Check JSON data structure", function() {
         dataType: 'html'
         });
 
-        var globalIdContinuousMatrix = 11;
+        var globalIdVulnerability = 11;
         $.ajax({
-            url: '/vulnerability/data/' + globalIdContinuousMatrix + '/',
+            url: '/vulnerability/data/' + globalIdVulnerability + '/',
             data: {},
             success: function (response) {
                 VulnerabilityDat = response;
@@ -416,8 +416,10 @@ describe("Check JSON data structure", function() {
     it("Vulnerability 'method of estimation' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
+        console.log('vulnerability gl:');
+        console.log(gl);
 
-        // Filter only fragility functions into this test
+        // Filter only vulnerability functions into this test
         var assessmentType = gl.fields.type_of_assessment;
         var thisTestAssessmentType = 'Vulnerability';
         if (assessmentType != thisTestAssessmentType) {
@@ -432,14 +434,59 @@ describe("Check JSON data structure", function() {
             'Expert Opinion'
         ];
         var method = gl.fields.vulnerability_func.fields.method_of_estimation;
-        expect(method).toContain(method);
+        expect(methodOptions).toContain(method);
     });
 
-    /////////////////////////////
-    // Tests for all functions //
-    /////////////////////////////
+    it("Vulnerability 'response variable' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
 
-    it("Name requirements is met", function() {
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var responseOptions = [
+            'Damage factor',
+            'Fatality rate per occupant',
+            'Nonfatal injury rate per occupant',
+            'Fatality rate per exposed population',
+            'Direct economic factor'
+        ];
+        var responseVal = gl.fields.vulnerability_func.fields.resp_var;
+        expect(responseOptions).toContain(responseVal);
+    });
+
+    it("Vulnerability 'distribution type' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var responseOptions = [
+            'Discrete',
+            'Continuous'
+        ];
+        var funcDistrType = gl.fields.vulnerability_func.fields.func_distr_type;
+        expect(responseOptions).toContain(funcDistrType);
+    });
+
+    /////////////////////////////////////
+    // General tests for all functions //
+    /////////////////////////////////////
+
+    it("General information name requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -448,7 +495,7 @@ describe("Check JSON data structure", function() {
         expect(name).toBeDefined();
     });
 
-    it("Authors requirements is met", function() {
+    it("General information authors requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -457,7 +504,7 @@ describe("Check JSON data structure", function() {
         expect(authors).toBeDefined();
     });
 
-    it("Article title requirements is met", function() {
+    it("General information article title requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -466,7 +513,7 @@ describe("Check JSON data structure", function() {
         expect(articleTitle).toBeDefined();
     });
 
-    it("Publication conference name requirements is met", function() {
+    it("General information publication conference name requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -475,7 +522,7 @@ describe("Check JSON data structure", function() {
         expect(publication).toBeDefined();
     });
 
-    it("Year requirements is met", function() {
+    it("General information year requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -484,7 +531,7 @@ describe("Check JSON data structure", function() {
         expect(year).toBeDefined();
     });
 
-    it("Assessment type requirements is met", function() {
+    it("General information assessment type requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
