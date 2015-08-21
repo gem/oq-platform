@@ -25,7 +25,7 @@ describe("Check JSON data structure", function() {
 
     var discreteFragilityData;
     var ContinuousMatrixData;
-    var VulnerabilityData;
+    var vulnerabilityData;
     beforeEach(function(done) {
         var globalIdDiscreteFragility = 2;
         $.ajax({
@@ -54,7 +54,7 @@ describe("Check JSON data structure", function() {
             url: '/vulnerability/data/' + globalIdVulnerability + '/',
             data: {},
             success: function (response) {
-                VulnerabilityData = response;
+                vulnerabilityData = response;
                 done();
             },
         dataType: 'html'
@@ -250,14 +250,6 @@ describe("Check JSON data structure", function() {
             return;
         }
 
-        var fragilityFunction = null;
-        // Make sure that the function has a fragility_func element
-        try {
-            fragilityFunction = gl.fields.fragility_func;
-        } catch (e) {
-            expect(gl.fields.fragility_func).toBeDefined();
-        }
-
         // Check that the function includes predictor_var_im_val
         var predictor_var_im_val = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
 
@@ -411,10 +403,10 @@ describe("Check JSON data structure", function() {
 
     //////////////////////////////////
     // Vulnerability specific tests //
-    /////////////////////////////////
+    //////////////////////////////////
 
     it("Vulnerability 'method of estimation' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
         console.log('vulnerability gl:');
         console.log(gl);
@@ -438,7 +430,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'response variable' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -462,7 +454,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'distribution type' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -483,7 +475,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'intensity measure type' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -512,7 +504,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'intensity measure unit' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -562,7 +554,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'Min IM' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -579,7 +571,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'Max IM' requirement is met", function() {
-        var gl = JSON.parse(VulnerabilityData);
+        var gl = JSON.parse(vulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -594,6 +586,75 @@ describe("Check JSON data structure", function() {
         var maxIM = gl.fields.vulnerability_func.fields.predictor_var.fields.maximum_im;
         expect(maxIM).toBeDefined();
     });
+
+    ///////////////////////////////////////////
+    // Discrete vulnerability specific tests //
+    ///////////////////////////////////////////
+
+    it("Vulnerability discrete 'predictor var im val' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            return;
+        }
+
+        // Check that the function includes predictor_var_im_val
+        var predVal = gl.fields.vulnerability_func.fields.func_distr_vuln_discr.fields.predictor_var_im_val;
+
+        expect(predVal).toBeDefined();
+
+    });
+
+    it("Vulnerability discrete 'response mean values' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check that the function includes resp_var_mean_val
+        var respMean = gl.fields.vulnerability_func.fields.func_distr_vuln_discr.fields.resp_var_mean_val;
+
+        expect(respMean).toBeDefined();
+    });
+
+    it("Vulnerability discrete 'number of data points' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var maxIM = gl.fields.vulnerability_func.fields.predictor_var.fields.maximum_im;
+        expect(maxIM).toBeDefined();
+    });
+
+    /////////////////////////////////////////////
+    // Continuous vulnerability specific tests //
+    /////////////////////////////////////////////
+
+
+
+    ///////////////////////////////////
+    // Damage-to-loss specific tests //
+    ///////////////////////////////////
+
+
 
 
     /////////////////////////////////////
