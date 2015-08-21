@@ -336,6 +336,23 @@ describe("Check JSON data structure", function() {
         }
     });
 
+    it("Fragility continuous 'mean' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var meanArray = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.mean;
+        expect(meanArray).toBeDefined();
+    });
+
     /////////////////////////////
     // Tests for all functions //
     /////////////////////////////
