@@ -49,6 +49,10 @@ describe("Check JSON data structure", function() {
         });
     });
 
+    //////////////////////////////
+    // Fragility specific tests //
+    //////////////////////////////
+
     it("Fragility discrete 'predictor var im val' requirement is met", function() {
         var gl = JSON.parse(discreteFragilityData);
         gl = JSON.parse(gl);
@@ -86,17 +90,32 @@ describe("Check JSON data structure", function() {
             return;
         }
 
-        try {
-            fragilityFunction = gl.fields.fragility_func;
-        } catch (e) {
-            expect(gl.fields.fragility_func).toBeDefined();
-        }
-
         // Check that the function includes limit_state_prob_exceed
         var limit_state_prob_exceed = gl.fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed;
 
         expect(limit_state_prob_exceed).toBeDefined();
     });
+
+    it("Fragility 'method of estimation' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            return;
+        }
+
+        // Check for method of estimation options
+        var methodOptions = ['Analytical', 'Empirical', 'Expert Opinion'];
+        var method = gl.fields.fragility_func.fields.method_of_estimation;
+        expect(methodOptions).toContain(method);
+    });
+
+    ///////////////////////////////
+    // Continuous specific tests //
+    ///////////////////////////////
 
     it("Continuous Data Table Correlation Matrix requirement is met", function() {
         var gl = JSON.parse(ContinuousMatrixData);
@@ -145,6 +164,10 @@ describe("Check JSON data structure", function() {
             }
         }
     });
+
+    /////////////////////////////
+    // Tests for all functions //
+    /////////////////////////////
 
     it("Name requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
