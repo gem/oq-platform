@@ -396,8 +396,8 @@ describe("Check JSON data structure", function() {
         var distShapeOptions = [
             'Lognormal',
         ];
-        var imtType = gl.fields.fragility_func.fields.predictor_var.fields.intensity_measure_type;
-        expect(distShapeOptions).toContain(imtType);
+        var funcDisShape = gl.fields.vulnerability_func.fields.func_distr_vuln_discr.fields.func_distr_shape;
+        expect(distShapeOptions).toContain(funcDisShape);
     });
 */
 
@@ -647,6 +647,61 @@ describe("Check JSON data structure", function() {
     /////////////////////////////////////////////
     // Continuous vulnerability specific tests //
     /////////////////////////////////////////////
+
+    it("Vulnerability continuous 'mean' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only continuous vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Continuous';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var meanArray = gl.fields.vulnerability_func.fields.func_distr_frag_cont.fields.mean;
+        expect(meanArray).toBeDefined();
+    });
+
+    it("Vulnerability continuous 'standard deviation' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only continuous vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Continuous';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var stddevArray = gl.fields.vulnerability_func.fields.func_distr_frag_cont.fields.std_dev;
+        expect(stddevArray).toBeDefined();
+    });
+
+    // Not testing because the JS app does not require this element
+    it("Vulnerability continuous 'distribution shape' requirement is met", function() {
+        var gl = JSON.parse(vulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Continuous';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var distShapeOptions = [
+            'Lognormal',
+        ];
+        var funcDisShape = gl.fields.vulnerability_func.fields.func_distr_vuln_discr.fields.func_distr_shape;
+        expect(distShapeOptions).toContain(funcDisShape);
+    });
 
 
 
