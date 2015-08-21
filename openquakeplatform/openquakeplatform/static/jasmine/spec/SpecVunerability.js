@@ -266,7 +266,22 @@ describe("Check JSON data structure", function() {
         expect(limit_state_prob_exceed).toBeDefined();
     });
 
+    it("Fragility discrete 'number of data points' requirement is met", function() {
+        var gl = JSON.parse(discreteFragilityData);
+        gl = JSON.parse(gl);
 
+        // Filter only fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Fragility';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var maxIM = gl.fields.fragility_func.fields.predictor_var.fields.maximum_im;
+        expect(maxIM).toBeDefined();
+    });
 
     /////////////////////////////////////////
     // Continuous fragility specific tests //
