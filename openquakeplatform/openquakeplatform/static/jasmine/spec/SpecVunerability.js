@@ -293,7 +293,7 @@ describe("Check JSON data structure", function() {
         console.log('gl:');
         console.log(gl);
 
-        // Filter only fragility functions into this test
+        // Filter only continuous fragility functions into this test
         var assessmentType = gl.fields.type_of_assessment;
         var thisTestAssessmentType = 'Continuous';
         if (assessmentType != thisTestAssessmentType) {
@@ -313,7 +313,7 @@ describe("Check JSON data structure", function() {
 
     it("Category and category children structure requirements is met", function() {
         // TODO find elegent way to pass ALL functions through this test
-        var gl = JSON.parse(discreteFragilityData);
+        var gl = JSON.parse(ContinuousMatrixData);
         gl = JSON.parse(gl);
 
         console.log('gl:');
@@ -337,12 +337,12 @@ describe("Check JSON data structure", function() {
     });
 
     it("Fragility continuous 'mean' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
+        var gl = JSON.parse(ContinuousMatrixData);
         gl = JSON.parse(gl);
 
-        // Filter only fragility functions into this test
+        // Filter only continuous fragility functions into this test
         var assessmentType = gl.fields.type_of_assessment;
-        var thisTestAssessmentType = 'Fragility';
+        var thisTestAssessmentType = 'Continuous';
         if (assessmentType != thisTestAssessmentType) {
             expect(gl.fields.type_of_assessment).toBeDefined();
             return;
@@ -351,6 +351,23 @@ describe("Check JSON data structure", function() {
         // Check for minimum IM of estimation options
         var meanArray = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.mean;
         expect(meanArray).toBeDefined();
+    });
+
+    it("Fragility continuous 'standard deviation' requirement is met", function() {
+        var gl = JSON.parse(ContinuousMatrixData);
+        gl = JSON.parse(gl);
+
+        // Filter only continuous fragility functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Continuous';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for minimum IM of estimation options
+        var stddevArray = gl.fields.fragility_func.fields.func_distr_frag_cont.fields.std_dev;
+        expect(stddevArray).toBeDefined();
     });
 
     /////////////////////////////
