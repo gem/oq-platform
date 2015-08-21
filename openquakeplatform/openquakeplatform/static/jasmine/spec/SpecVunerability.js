@@ -54,7 +54,7 @@ describe("Check JSON data structure", function() {
             url: '/vulnerability/data/' + globalIdVulnerability + '/',
             data: {},
             success: function (response) {
-                VulnerabilityDat = response;
+                VulnerabilityData = response;
                 done();
             },
         dataType: 'html'
@@ -414,7 +414,7 @@ describe("Check JSON data structure", function() {
     /////////////////////////////////
 
     it("Vulnerability 'method of estimation' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
+        var gl = JSON.parse(VulnerabilityData);
         gl = JSON.parse(gl);
         console.log('vulnerability gl:');
         console.log(gl);
@@ -438,7 +438,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'response variable' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
+        var gl = JSON.parse(VulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -462,7 +462,7 @@ describe("Check JSON data structure", function() {
     });
 
     it("Vulnerability 'distribution type' requirement is met", function() {
-        var gl = JSON.parse(discreteFragilityData);
+        var gl = JSON.parse(VulnerabilityData);
         gl = JSON.parse(gl);
 
         // Filter only vulnerability functions into this test
@@ -480,6 +480,35 @@ describe("Check JSON data structure", function() {
         ];
         var funcDistrType = gl.fields.vulnerability_func.fields.func_distr_type;
         expect(responseOptions).toContain(funcDistrType);
+    });
+
+    it("Vulnerability 'intensity measure type' requirement is met", function() {
+        var gl = JSON.parse(VulnerabilityData);
+        gl = JSON.parse(gl);
+
+        // Filter only vulnerability functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Vulnerability';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var imtOptions = [
+            'PGA',
+            'PGV',
+            'PGD',
+            'Sa(T)',
+            'Sd(T)',
+            'IA',
+            'CAV',
+            'RSD',
+            'MMI'
+        ];
+
+        var intensityType = gl.fields.vulnerability_func.fields.predictor_var.fields.intensity_measure_type;
+        expect(imtOptions).toContain(intensityType);
     });
 
     /////////////////////////////////////
