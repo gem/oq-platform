@@ -27,6 +27,7 @@ describe("Check JSON data structure", function() {
     var continuousMatrixData;
     var vulnerabilityData;
     var damageData;
+    var capacityData;
     beforeEach(function(done) {
         var globalIdDiscreteFragility = 2;
         $.ajax({
@@ -67,6 +68,17 @@ describe("Check JSON data structure", function() {
             data: {},
             success: function (response) {
                 damageData = response;
+                done();
+            },
+        dataType: 'html'
+        });
+
+        var globalIdCapacity = 28;
+        $.ajax({
+            url: '/vulnerability/data/' + globalIdCapacity + '/',
+            data: {},
+            success: function (response) {
+                capacityData = response;
                 done();
             },
         dataType: 'html'
@@ -798,6 +810,32 @@ describe("Check JSON data structure", function() {
         var meanDamage = gl.fields.damage_to_loss_func.fields.func_distr_dtl_discr.fields.var_mean_val;
         expect(meanDamage).toBeDefined();
     });
+
+    /////////////////////////////
+    // Capacity specific tests //
+    /////////////////////////////
+
+    it("Capacity 'method of estimation' requirement is met", function() {
+        var gl = JSON.parse(capacityData);
+        gl = JSON.parse(gl);
+
+        // Filter only capacity functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Capacity';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var methodOptions = [
+            'Analytical',
+            'Empirical'
+        ];
+        var method = gl.fields.capacity_curve_func.fields.method_of_estimation;
+        expect(methodOptions).toContain(method);
+    });
+
 
 
     /////////////////////////////////////
