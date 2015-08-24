@@ -818,10 +818,12 @@ describe("Check JSON data structure", function() {
     it("Capacity 'method of estimation' requirement is met", function() {
         var gl = JSON.parse(capacityData);
         gl = JSON.parse(gl);
+        console.log('capacity gl:');
+        console.log(gl);
 
         // Filter only capacity functions into this test
         var assessmentType = gl.fields.type_of_assessment;
-        var thisTestAssessmentType = 'Capacity';
+        var thisTestAssessmentType = 'Capacity curve';
         if (assessmentType != thisTestAssessmentType) {
             expect(gl.fields.type_of_assessment).toBeDefined();
             return;
@@ -835,6 +837,32 @@ describe("Check JSON data structure", function() {
         var method = gl.fields.capacity_curve_func.fields.method_of_estimation;
         expect(methodOptions).toContain(method);
     });
+
+    it("Capacity 'engineering demand parameter:' requirement is met", function() {
+        var gl = JSON.parse(capacityData);
+        gl = JSON.parse(gl);
+
+        // Filter only capacity functions into this test
+        var assessmentType = gl.fields.type_of_assessment;
+        var thisTestAssessmentType = 'Capacity curve';
+        if (assessmentType != thisTestAssessmentType) {
+            expect(gl.fields.type_of_assessment).toBeDefined();
+            return;
+        }
+
+        // Check for method of estimation options
+        var demandOptions = [
+            'Interstorey drift',
+            'Global drift',
+            'Lateral roof displacement',
+            'Chord rotation',
+            'Curvature',
+            'Spectral displacement'
+        ];
+        var engineeringDemand = gl.fields.capacity_curve_func.fields.cc_predictor_var.fields.engineering_demand_par;
+        expect(demandOptions).toContain(engineeringDemand);
+    });
+
 
 
 
