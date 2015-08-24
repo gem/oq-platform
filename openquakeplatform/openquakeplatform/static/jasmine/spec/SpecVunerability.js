@@ -32,8 +32,6 @@ describe("Check JSON data structure", function() {
             success: function (response) {
                 gl = response;
                 gl = JSON.parse(gl);
-                console.log(' ALL gl:');
-                console.log(gl);
                 done();
                 //discreteFragilityData = response;
             },
@@ -204,7 +202,7 @@ describe("Check JSON data structure", function() {
     ///////////////////////////////////////
     // Discrete fragility specific tests //
     ///////////////////////////////////////
-/*
+
     it("Fragility discrete 'predictor var im val' requirement is met", function() {
 
         for (var i = 0; i < gl.length; i++) {
@@ -212,16 +210,21 @@ describe("Check JSON data structure", function() {
             // Filter only fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
             var thisTestAssessmentType = 'Fragility';
-            if (assessmentType == thisTestAssessmentType) {
-                console.log('gl[i]:');
-                console.log(gl[i]);
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.fragility_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Discrete';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
                 // Check that the function includes predictor_var_im_val
-                var predictor_var_im_val = gl[i].fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
-                expect(predictor_var_im_val).toBeDefined();
+                var predVarVal = gl[i].fields.fragility_func.fields.func_distr_frag_discr.fields.predictor_var_im_val;
+                expect(predVarVal).toBeDefined();
             }
         }
     });
-
 
     it("Fragility discrete 'limit state prob exceed' requirement is met", function() {
 
@@ -229,7 +232,15 @@ describe("Check JSON data structure", function() {
             // Filter only fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
             var thisTestAssessmentType = 'Fragility';
-            if (assessmentType == thisTestAssessmentType) {
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.fragility_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Discrete';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
 
                 // Check that the function includes limit_state_prob_exceed
                 var limit_state_prob_exceed = gl[i].fields.fragility_func.fields.func_distr_frag_discr.fields.limit_state_prob_exceed;
@@ -244,7 +255,15 @@ describe("Check JSON data structure", function() {
             // Filter only fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
             var thisTestAssessmentType = 'Fragility';
-            if (assessmentType == thisTestAssessmentType) {
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.fragility_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Discrete';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
 
                 // Check for minimum IM of estimation options
                 var maxIM = gl[i].fields.fragility_func.fields.predictor_var.fields.maximum_im;
@@ -252,28 +271,31 @@ describe("Check JSON data structure", function() {
             }
         }
     });
-*/
+
     /////////////////////////////////////////
     // Continuous fragility specific tests //
     /////////////////////////////////////////
-/*
-// there is no function that includes this element TODO check that this is still a requierment, if it is
-// include a function in the test db
+
     it("Fragility Continuous Data Table Correlation Matrix requirement is met", function() {
 
         for (var i = 0; i < gl.length; i++) {
             // Filter only continuous fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-            var thisTestAssessmentType = 'Continuous';
-            if (assessmentType == thisTestAssessmentType) {
-                console.log('gl[i]:');
-                console.log(gl[i]);
+            var thisTestAssessmentType = 'Fragility';
+            try {
+                funcDistrType = gl[i].fields.fragility_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Continuous';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
                 var predictor_var_corr_matrix = gl[i].fields.fragility_func.fields.func_distr_frag_cont.fields.predictor_var_corr_matrix;
                 expect(predictor_var_corr_matrix).toBeDefined();
             }
         }
     });
-*/
+
     it("Fragility continuous category and category children structure requirements is met", function() {
         for (var i = 0; i < gl.length; i++) {
             var category = gl[i].fields.category;
@@ -295,33 +317,39 @@ describe("Check JSON data structure", function() {
         }
     });
 
-/*
-// there is no function that includes this element TODO check that this is still a requierment, if it is
-// include a function in the test db
     it("Fragility continuous 'mean' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only continuous fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-            var thisTestAssessmentType = 'Continuous';
-            if (assessmentType == thisTestAssessmentType) {
-                console.log('gl[i]:');
-                console.log(gl[i]);
+            var thisTestAssessmentType = 'Fragility';
+            try {
+                funcDistrType = gl[i].fields.fragility_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Continuous';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
                 // Check for minimum IM of estimation options
                 var meanArray = gl[i].fields.fragility_func.fields.func_distr_frag_cont.fields.mean;
                 expect(meanArray).toBeDefined();
             }
         }
     });
-*/
-/*
-// there is no function that includes this element TODO check that this is still a requierment, if it is
-// include a function in the test db
+
     it("Fragility continuous 'standard deviation' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only continuous fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-            var thisTestAssessmentType = 'Continuous';
-            if (assessmentType == thisTestAssessmentType) {
+            var thisTestAssessmentType = 'Fragility';
+            try {
+                funcDistrType = gl[i].fields.fragility_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Continuous';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
 
                 // Check for minimum IM of estimation options
                 var stddevArray = gl[i].fields.fragility_func.fields.func_distr_frag_cont.fields.std_dev;
@@ -329,7 +357,7 @@ describe("Check JSON data structure", function() {
             }
         }
     });
-*/
+
 
 /*
     // Not testing because the JS app does not require this element
@@ -338,14 +366,16 @@ describe("Check JSON data structure", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-                var thisTestAssessmentType = 'Continuo        if (assessmentType == thisTestAssessmentType) {
+                var thisTestAssessmentType = 'Continuo
+            if (assessmentType == thisTestAssessmentType) {
 
-            // Check for method of estimation options
-            var distShapeOptions = [
-                'Lognormal',
-            ];
-            var funcDisShape = gl[i].fields.vulnerability_func.fields.func_distr_vuln_discr.fields.func_distr_shape;
-            expect(distShapeOptions).toContain(funcDisShape);
+                // Check for method of estimation options
+                var distShapeOptions = [
+                    'Lognormal',
+                ];
+                var funcDisShape = gl[i].fields.vulnerability_func.fields.func_distr_vuln_discr.fields.func_distr_shape;
+                expect(distShapeOptions).toContain(funcDisShape);
+            }
         }
     });
 */
@@ -516,13 +546,21 @@ describe("Check JSON data structure", function() {
     ///////////////////////////////////////////
     // Discrete vulnerability specific tests //
     ///////////////////////////////////////////
-/*
+
     it("Vulnerability discrete 'predictor var im val' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only vulnerability functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
             var thisTestAssessmentType = 'Vulnerability';
-            if (assessmentType == thisTestAssessmentType) {
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.vulnerability_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Discrete';
+            if (assessmentType == thisTestAssessmentType && funcDistrType == thisFuncDistrType) {
 
                 // Check that the function includes predictor_var_im_val
                 var predVal = gl[i].fields.vulnerability_func.fields.func_distr_vuln_discr.fields.predictor_var_im_val;
@@ -536,7 +574,16 @@ describe("Check JSON data structure", function() {
             // Filter only vulnerability functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
             var thisTestAssessmentType = 'Vulnerability';
-            if (assessmentType == thisTestAssessmentType) {
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.vulnerability_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Discrete';
+            if (assessmentType == thisTestAssessmentType && funcDistrType == thisFuncDistrType) {
+
 
                 // Check that the function includes resp_var_mean_val
                 var respMean = gl[i].fields.vulnerability_func.fields.func_distr_vuln_discr.fields.resp_var_mean_val;
@@ -544,7 +591,7 @@ describe("Check JSON data structure", function() {
             }
         }
     });
-*/
+
     it("Vulnerability discrete 'number of data points' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only vulnerability functions into this test
@@ -563,63 +610,76 @@ describe("Check JSON data structure", function() {
     // Continuous vulnerability specific tests //
     /////////////////////////////////////////////
 
-/*
-// there is no function that includes this element TODO check that this is still a requierment, if it is
-// include a function in the test db
     it("Vulnerability continuous 'mean' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
-            // Filter only continuous vulnerability functions into this test
+            // Filter only vulnerability functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-            var thisTestAssessmentType = 'Continuous';
-            if (assessmentType == thisTestAssessmentType) {
+            var thisTestAssessmentType = 'Vulnerability';
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.vulnerability_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
 
+            var thisFuncDistrType = 'Continuous';
+            if (assessmentType == thisTestAssessmentType && thisFuncDistrType == funcDistrType) {
                 // Check for minimum IM of estimation options
-                var meanArray = gl[i].fields.vulnerability_func.fields.func_distr_frag_cont.fields.mean;
+                var meanArray = gl[i].fields.vulnerability_func.fields.func_distr_vuln_cont.fields.mean;
                 expect(meanArray).toBeDefined();
             }
         }
     });
-*/
 
-/*
-// there is no function that includes this element TODO check that this is still a requierment, if it is
-// include a function in the test db
     it("Vulnerability continuous 'standard deviation' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
-            // Filter only continuous vulnerability functions into this test
+            // Filter only vulnerability functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-            var thisTestAssessmentType = 'Continuous';
-            if (assessmentType == thisTestAssessmentType) {
+            var thisTestAssessmentType = 'Vulnerability';
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.vulnerability_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
+
+            var thisFuncDistrType = 'Continuous';
+            if (assessmentType == thisTestAssessmentType && funcDistrType == thisFuncDistrType) {
 
                 // Check for minimum IM of estimation options
-                var stddevArray = gl[i].fields.vulnerability_func.fields.func_distr_frag_cont.fields.std_dev;
+                var stddevArray = gl[i].fields.vulnerability_func.fields.func_distr_vuln_cont.fields.std_dev;
                 expect(stddevArray).toBeDefined();
             }
         }
     });
-*/
 
-/*
-// there is no function that includes this element TODO check that this is still a requierment, if it is
-// include a function in the test db
     // Not testing because the JS app does not require this element
+    // TODO check that this is a valid requirement becaseu the func_distr_shape is not used in the 
+    // JS appliction (for continuous)
     it("Vulnerability continuous 'distribution shape' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only vulnerability functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-            var thisTestAssessmentType = 'Continuous';
-            if (assessmentType == thisTestAssessmentType) {
+            var thisTestAssessmentType = 'Vulnerability';
+            var funcDistrType = '';
+            try {
+                funcDistrType = gl[i].fields.vulnerability_func.fields.func_distr_type;
+            } catch (e) {
+                // continue
+            }
 
+            var thisFuncDistrType = 'Continuous';
+            if (assessmentType == thisTestAssessmentType && funcDistrType == thisFuncDistrType) {
                 // Check for method of estimation options
                 var distShapeOptions = [
                     'Lognormal',
                 ];
-                var funcDisShape = gl[i].fields.vulnerability_func.fields.func_distr_vuln_discr.fields.func_distr_shape;
+                var funcDisShape = gl[i].fields.vulnerability_func.fields.func_distr_vuln_cont.fields.func_distr_shape;
                 expect(distShapeOptions).toContain(funcDisShape);
             }
         }
     });
-*/
+
     ///////////////////////////////////
     // Damage-to-loss specific tests //
     ///////////////////////////////////
