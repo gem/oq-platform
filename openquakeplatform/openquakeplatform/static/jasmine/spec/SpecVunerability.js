@@ -651,9 +651,6 @@ describe("Check JSON data structure", function() {
         }
     });
 
-    // Not testing because the JS app does not require this element
-    // TODO check that this is a valid requirement becaseu the func_distr_shape is not used in the 
-    // JS appliction (for continuous)
     it("Vulnerability continuous 'distribution shape' requirement is met", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only vulnerability functions into this test
