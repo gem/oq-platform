@@ -37,6 +37,79 @@ describe("Check JSON data structure", function() {
         });
     });
 
+    /////////////////////////////////////
+    // General tests for all functions //
+    /////////////////////////////////////
+
+    it("General information name requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var name = gl[i].fields.name;
+            expect(name).toBeDefined();
+        }
+    });
+
+    it("General information authors requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var authors = gl[i].fields.authors;
+            expect(authors).toBeDefined();
+        }
+    });
+
+    it("General information article title requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var articleTitle = gl[i].fields.article_title;
+            expect(articleTitle).toBeDefined();
+        }
+    });
+
+    it("General information publication conference name requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var publication = gl[i].fields.publication_conference_name;
+            expect(publication).toBeDefined();
+        }
+    });
+
+    it("General information year requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var year = gl[i].fields.year;
+            expect(year).toBeDefined();
+        }
+    });
+
+    it("General information assessment type requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var assessmentType = gl[i].fields.type_of_assessment;
+            var assessmentOptions = [
+                'Fragility',
+                'Vulnerability',
+                'Damage-to-loss',
+                'Capacity curve'
+            ];
+            expect(assessmentOptions).toContain(assessmentType);
+        }
+    });
+
+    // This test is failing, it seems that this is a new requirement that is not met in the test db
+    it("Region requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            console.log('gl[i] :');
+            console.log(gl[i] );
+            var countriesArray = gl[i].fields.geo_applicability.fields.countries;
+            var regionOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            for (var j = 0; j < countriesArray.length; j++) {
+                var region = countriesArray[j].fields.region;
+                expect(regionOptions).toContain(region);
+            }
+        }
+    });
+
+    it("General information Countries requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var geoApp = gl[i].fields.geo_applicability.fields.countries;
+            expect(geoApp).toBeDefined();
+        }
+    });
+
     //////////////////////////////
     // Fragility specific tests //
     //////////////////////////////
@@ -790,89 +863,5 @@ describe("Check JSON data structure", function() {
             }
         }
     });
-
-
-
-
-    /////////////////////////////////////
-    // General tests for all functions //
-    /////////////////////////////////////
-
-    it("General information name requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var name = gl[i].fields.name;
-            expect(name).toBeDefined();
-        }
-    });
-
-    it("General information authors requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var authors = gl[i].fields.authors;
-            expect(authors).toBeDefined();
-        }
-    });
-
-    it("General information article title requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var articleTitle = gl[i].fields.article_title;
-            expect(articleTitle).toBeDefined();
-        }
-    });
-
-    it("General information publication conference name requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var publication = gl[i].fields.publication_conference_name;
-            expect(publication).toBeDefined();
-        }
-    });
-
-    it("General information year requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var year = gl[i].fields.year;
-            expect(year).toBeDefined();
-        }
-    });
-
-    it("General information assessment type requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var assessmentType = gl[i].fields.type_of_assessment;
-            var assessmentOptions = [
-                'Fragility',
-                'Vulnerability',
-                'Damage-to-loss',
-                'Capacity curve'
-            ];
-            expect(assessmentOptions).toContain(assessmentType);
-        }
-    });
-
-    /*
-    // This test is failing, it seems that this is a new requirement that is not met in the test db
-    it("Region requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var region = gl[i].fields.geo_applicability.fields.area;
-            var regionOptions = [
-                'Worldwide',
-                'Africa',
-                'North America',
-                'Central America & Caribbean',
-                'South America',
-                'Asia',
-                'Europe',
-                'Oceania',
-                'Antarctica'
-            ];
-            expect(regionOptions).toContain(region);
-        }
-    });
-    */
-
-    it("General information Countries requirements is met", function() {
-        for (var i = 0; i < gl.length; i++) {
-            var geoApp = gl[i].fields.geo_applicability.fields.countries;
-            expect(geoApp).toBeDefined();
-        }
-    });
-
 });
 
