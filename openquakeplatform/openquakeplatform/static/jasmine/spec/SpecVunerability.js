@@ -429,27 +429,25 @@ describe("Check JSON data structure", function() {
         }
     });
 
-
-/*
-    // Not testing because the JS app does not require this element
+    // TODO follow up on this, this attribute is never used
     it("Fragility continuous 'distribution shape' requirement is met", function() {
 
         for (var i = 0; i < gl.length; i++) {
             // Filter only fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-                var thisTestAssessmentType = 'Continuo
+                var thisTestAssessmentType = 'Continuo';
             if (assessmentType == thisTestAssessmentType) {
 
                 // Check for method of estimation options
                 var distShapeOptions = [
                     'Lognormal',
                 ];
-                var funcDisShape = gl[i].fields.vulnerability_func.fields.func_distr_vuln_discr.fields.func_distr_shape;
+                var funcDisShape = gl[i].fields.fragility_func.fields.func_distr_frag_cont.fields.func_distr_shape;
                 expect(distShapeOptions).toContain(funcDisShape);
             }
         }
     });
-*/
+
 
     //////////////////////////////////
     // Vulnerability specific tests //
