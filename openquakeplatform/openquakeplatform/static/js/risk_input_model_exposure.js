@@ -33,10 +33,7 @@ $('#perArea').hide();
 
 $('#defineCostStruc').change(function() {
     var defineCost = $('#defineCostStruc').val();
-    if (defineCost == 'per_area') {
-        $('#perArea').show();
-        showArea = true;
-    }
+    defineCost(defineCost);
     if (defineCost != 'none') {
         $('#retrofittingSelect').show();
     } else {
@@ -48,27 +45,25 @@ $('#defineCostStruc').change(function() {
 
 $('#defineCostNonStruc').change(function() {
     var defineCost = $('#defineCostNonStruc').val();
-    if (defineCost == 'per_area') {
-        $('#perArea').show();
-        showArea = true;
-    }
+    defineCost(defineCost);
 });
 
 $('#defineCostContent').change(function() {
     var defineCost = $('#defineCostContent').val();
-    if (defineCost == 'per_area') {
-        $('#perArea').show();
-        showArea = true;
-    }
+    defineCost(defineCost);
 });
 
 $('#defineCostBusiness').change(function() {
     var defineCost = $('#defineCostBusiness').val();
+    defineCost(defineCost);
+});
+
+function defineCost(costType) {
+    var defineCost = $(costType).val();
     if (defineCost == 'per_area') {
         $('#perArea').show();
         showArea = true;
-    }
-});
+}
 
 // End
 

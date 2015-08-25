@@ -131,6 +131,8 @@ function updateFfsTable (fFormat) {
 
     // Increase the ffs panel when many limit states are defined
     if (limitStateLength > 5) {
+        console.log('limitStateLength:');
+        console.log(limitStateLength);
         $('.ffsTableDiv').height(240 + (limitStateLength * limitStateLength));
     }
 

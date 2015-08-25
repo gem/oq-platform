@@ -11,12 +11,7 @@ label {
 	margin-left: 5px;
 }
 
-.ffsForm {
-	float: left;
-	margin-top: 20px;
-}
-
-.vfsForm {
+.ffsForm, .vfsForm{
 	float: left;
 	margin-top: 20px;
 }
@@ -33,6 +28,7 @@ label {
 
 .ffsTableDiv {
 	padding-right: 40px;
+	padding-bottom: 8%;
 }
 
 .vfsTableDiv {
@@ -51,16 +47,7 @@ label {
     padding-left: 90px;
 }
 
-.ffsTableDiv {
-    padding-bottom: 8%;
-}
-
-.ffsTitle {
-    padding-left: 10%;
-    font-size: 18px;
-}
-
-.vfsTitle {
+.ffsTitle, .vfsTitle {
     padding-left: 10%;
     font-size: 18px;
 }
@@ -89,11 +76,7 @@ textarea {
 	height: 700px;
 }
 
-#economicCheckBoxes {
-	margin-left: 35%;
-}
-
-#occupantsCheckBoxes {
+#occupantsCheckBoxes, #economicCheckBoxes {
 	margin-left: 35%;
 }
 
