@@ -21,8 +21,6 @@
 
 // Test the JSON structure and required fields
 describe("Check JSON data structure", function() {
-    // TODO find an elegant way to get a list of available curves from the vulnerability view
-
     var gl;
 
     beforeAll(function(done) {
@@ -150,15 +148,15 @@ describe("Check JSON data structure", function() {
                     imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 }  else if (imtType === 'Sd(T)') {
-                    imtUnitOptions = ['cm', 'm',];
+                    imtUnitOptions = ['cm', 'm'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'IA') {
-                    imtUnitOptions = ['cm/s', 'm/s',];
+                    imtUnitOptions = ['cm/s', 'm/s'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'CAV') {
                     imtUnitOptions = ['g-s'];
                     expect(imtUnitOptions).toContain(imtUnite);
-                } else if (imtType === 'CAV') {
+                } else if (imtType === 'RSD') {
                     imtUnitOptions = ['s'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'MMI') {
@@ -484,7 +482,7 @@ describe("Check JSON data structure", function() {
                     imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'PGV') {
-                    imtUnitOptions = ['g', 'cm/s^2', 'm/s^2'];
+                    imtUnitOptions = ['cm/s', 'm/s'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 }  else if (imtType === 'PGD') {
                     imtUnitOptions = ['cm', 'm',];
@@ -499,12 +497,12 @@ describe("Check JSON data structure", function() {
                     imtUnitOptions = ['cm', 'm',];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'IA') {
-                    imtUnitOptions = ['cm/s', 'm/s',];
+                    imtUnitOptions = ['cm/s', 'm/s'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'CAV') {
                     imtUnitOptions = ['g-s'];
                     expect(imtUnitOptions).toContain(imtUnite);
-                } else if (imtType === 'CAV') {
+                } else if (imtType === 'RSD') {
                     imtUnitOptions = ['s'];
                     expect(imtUnitOptions).toContain(imtUnite);
                 } else if (imtType === 'MMI') {
