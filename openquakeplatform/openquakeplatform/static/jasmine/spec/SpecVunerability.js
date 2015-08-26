@@ -123,14 +123,14 @@ describe("Check JSON data structure", function() {
 
     it("General information general comments requirements is met", function() {
         for (var i = 0; i < gl.length; i++) {
-            var generalComments = gl.fields.general_comments;
+            var generalComments = gl[i].fields.general_comments;
             expect(generalComments).toBeDefined();
         }
     });
 
     it("General information use case requirements is met", function() {
         for (var i = 0; i < gl.length; i++) {
-            var useCase = gl.fields.use_case_information;
+            var useCase = gl[i].fields.use_case_information;
             expect(useCase).toBeDefined();
         }
     });
