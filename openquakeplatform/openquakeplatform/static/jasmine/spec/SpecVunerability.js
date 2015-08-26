@@ -37,9 +37,9 @@ describe("Check JSON data structure", function() {
         });
     });
 
-    /////////////////////////////////////
-    // General tests for all functions //
-    /////////////////////////////////////
+    ///////////////////////////////////////////////////////
+    // General tests for all functions (required fields) //
+    ///////////////////////////////////////////////////////
 
     it("General information name requirements is met", function() {
         for (var i = 0; i < gl.length; i++) {
@@ -92,8 +92,6 @@ describe("Check JSON data structure", function() {
     // This test is failing, it seems that this is a new requirement that is not met in the test db
     it("Region requirements is met", function() {
         for (var i = 0; i < gl.length; i++) {
-            console.log('gl[i] :');
-            console.log(gl[i] );
             var countriesArray = gl[i].fields.geo_applicability.fields.countries;
             var regionOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
             for (var j = 0; j < countriesArray.length; j++) {
@@ -107,6 +105,33 @@ describe("Check JSON data structure", function() {
         for (var i = 0; i < gl.length; i++) {
             var geoApp = gl[i].fields.geo_applicability.fields.countries;
             expect(geoApp).toBeDefined();
+        }
+    });
+
+    ///////////////////////////////////////////////////////
+    // General tests for all functions (optional fields) //
+    ///////////////////////////////////////////////////////
+
+    // These test are only checking that the JSON structure includes said field
+
+    it("General information web link requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var webLink = gl[i].fields.web_link;
+            expect(webLink).toBeDefined();
+        }
+    });
+
+    it("General information general comments requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var generalComments = gl.fields.general_comments;
+            expect(generalComments).toBeDefined();
+        }
+    });
+
+    it("General information use case requirements is met", function() {
+        for (var i = 0; i < gl.length; i++) {
+            var useCase = gl.fields.use_case_information;
+            expect(useCase).toBeDefined();
         }
     });
 
@@ -435,7 +460,7 @@ describe("Check JSON data structure", function() {
         for (var i = 0; i < gl.length; i++) {
             // Filter only fragility functions into this test
             var assessmentType = gl[i].fields.type_of_assessment;
-                var thisTestAssessmentType = 'Continuo';
+                var thisTestAssessmentType = 'Continuous';
             if (assessmentType == thisTestAssessmentType) {
 
                 // Check for method of estimation options
