@@ -54,8 +54,8 @@ $('#defineCostBusiness').change(function() {
     defineCost($(this).val());
 });
 
-function defineCost(defineCost) {
-    if (defineCost == 'per_area') {
+function defineCost(selectedValue) {
+    if (selectedValue == 'per_area') {
         $('#perArea').show();
         showArea = true;
     }
