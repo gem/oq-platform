@@ -5,6 +5,104 @@
 ///////////////////////////////////////////
 
 // Test the createRiskIndicator function
+
+describe("Get all layers from GeoServer", function() {
+    // object to house the SVIR attribute project defs pairs
+    var SVIRPairs = {};
+
+    var SVIRLayerNames = [];
+
+    beforeAll(function(done) {
+        var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
+        // Get layers from GeoServer and populate the layer selection menu
+        $.ajax({
+            url: url,
+            //contentType: 'application/json',
+            success: function(xml) {
+                console.log('xml:');
+                console.log(xml);
+                //convert XML to JSON
+                var xmlText = new XMLSerializer().serializeToString(xml);
+                var x2js = new X2JS();
+
+                var jsonElement = x2js.xml_str2json(xmlText);
+
+                var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
+
+                // Find the SVIR keywords
+                var stringToLookFor = 'SVIR_QGIS_Plugin';
+
+                // TODO probably remove this
+                // Reload if the api call was incomplete
+                if (featureType.length === undefined) {
+                    getGeoServerLayers();
+                    return;
+                }
+
+                for (var i = 0; i < featureType.length; i++) {
+                    if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                        SVIRLayerNames.push(featureType[i].Name);
+                    }
+                }
+
+                console.log('SVIRLayerNames:');
+                console.log(SVIRLayerNames);
+                var layerAttributesArray = [];
+
+
+                // Alert Jasmine that the AJAX call is done
+                done();
+            },
+            error: function() {
+                // TOSO deal with this
+            }
+        });
+    });
+
+
+    it("The index was created", function() {
+        console.log('SVIRLayerNames:');
+        console.log(SVIRLayerNames);
+        //for (var i = 0; i < SVIRLayerNames.length; i++) {
+
+            var foobar = getAttributeInfo(SVIRLayerNames[0]);
+            // creating our spied callback
+            var callback = jasmine.createSpy('callback');
+
+            console.log('hello1??:');
+            /*
+            spyOn($, 'ajax').and.callFake(function (req) {
+                var d = $.Deferred();
+                d.resolve(data);
+                console.log('d:');
+                console.log(d);
+                return d.promise();
+            });
+*/
+            console.log('hello2??:');
+            setTimeout(function() {
+                console.log('foo:');
+                console.log(foo);
+            }, 5000);
+
+            foobar.fetch(callback);
+
+            // can't get anyting after this
+
+            console.log('foo:');
+            console.log(foo);
+            console.log('hello3??:');
+            var fakeData = callback.calls.mostRecent().args[0];
+            console.log('hello4??:');
+            console.log('fakeData:');
+            console.log(fakeData);
+
+        //}
+
+    });
+});
+
+
 describe("Test Create Risk Indicator Function", function() {
     it("The index was created", function() {
         var selectedRegion = 'COUNTRY_NA';
