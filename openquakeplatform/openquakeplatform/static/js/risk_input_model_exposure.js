@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var table;
+var exposureTable;
 var header;
 var showArea = false;
 
@@ -32,8 +32,7 @@ $('#retrofittingSelect').hide();
 $('#perArea').hide();
 
 $('#defineCostStruc').change(function() {
-    var defineCost = $('#defineCostStruc').val();
-    defineCost(defineCost);
+    defineCost($(this).val());
     if (defineCost != 'none') {
         $('#retrofittingSelect').show();
     } else {
@@ -44,27 +43,23 @@ $('#defineCostStruc').change(function() {
 });
 
 $('#defineCostNonStruc').change(function() {
-    var defineCost = $('#defineCostNonStruc').val();
-    defineCost(defineCost);
+    defineCost($(this).val());
 });
 
 $('#defineCostContent').change(function() {
-    var defineCost = $('#defineCostContent').val();
-    defineCost(defineCost);
+    defineCost($(this).val());
 });
 
 $('#defineCostBusiness').change(function() {
-    var defineCost = $('#defineCostBusiness').val();
-    defineCost(defineCost);
+    defineCost($(this).val());
 });
 
-function defineCost(costType) {
-    var defineCost = $(costType).val();
+function defineCost(defineCost) {
     if (defineCost == 'per_area') {
         $('#perArea').show();
         showArea = true;
+    }
 }
-
 // End
 
 // TODO remove this
@@ -91,7 +86,7 @@ function checkForValueInHeader(header, argument) {
 function updateTable() {
     // Remove any existing table
     try {
-        table.destroy();
+        exposureTable.destroy();
     } catch (e) {
         // continue
     }
@@ -159,12 +154,12 @@ function updateTable() {
     // Create the table
     var container = document.getElementById('table');
 
-    //////////////////////
-    /// Table Settings ///
-    //////////////////////
+    ///////////////////////////////
+    /// Exposure Table Settings ///
+    ///////////////////////////////
 
 
-    table = new Handsontable(container, {
+    exposureTable = new Handsontable(container, {
         colHeaders: header,
         rowHeaders: true,
         contextMenu: true,
@@ -179,17 +174,17 @@ function updateTable() {
         if (e.keyCode == 17 ) {
             var rowIndex = $('.currentRow').parent().index();
 
-            table.alter("insert_row", rowIndex);
+            exposureTable.alter("insert_row", rowIndex);
         }
     });
 
     $('#outPut').empty();
     $('#saveBtn').css('display', 'block');
-};
+}
 
 $('#saveBtn').click(function() {
     // Get the values from the table
-    var data = table.getData();
+    var data = exposureTable.getData();
 
     // Check for null values
     for (var i = 0; i < data.length; i++) {
@@ -428,5 +423,6 @@ function selectAllText () {
         };
     };
 }
+
 
 

@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var table;
+var fragilityTable;
 var header = [];
 var activeTablesObj = {};
 var limitStates;
@@ -100,11 +100,11 @@ function updateFfsTable (fFormat) {
     var container = document.getElementById('tableDiv'+count);
 
 
-    //////////////////////
-    /// Table Settings ///
-    //////////////////////
+    ////////////////////////////////
+    /// fragility Table Settings ///
+    ////////////////////////////////
 
-    table = new Handsontable(container, {
+    fragilityTable = new Handsontable(container, {
         colHeaders: header,
         startCols: headerLength,
         maxCols: headerLength,
@@ -114,10 +114,10 @@ function updateFfsTable (fFormat) {
 
     // Populate the table with limit states
     for (var i = 0; i < limitStates.length; i++) {
-        table.setDataAtCell(i, 0, limitStates[i]);
+        fragilityTable.setDataAtCell(i, 0, limitStates[i]);
     }
 
-    activeTablesObj[count] = table;
+    activeTablesObj[count] = fragilityTable;
 
     $('#outPutFF').empty();
     $('#saveBtnFF').css('display', 'block');
@@ -131,9 +131,7 @@ function updateFfsTable (fFormat) {
 
     // Increase the ffs panel when many limit states are defined
     if (limitStateLength > 5) {
-        console.log('limitStateLength:');
-        console.log(limitStateLength);
-        $('.ffsTableDiv').height(240 + (limitStateLength * limitStateLength));
+        $('.ffsTableDiv').height(240 + (limitStateLength * 1.5));
     }
 
 }
