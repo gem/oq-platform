@@ -1036,6 +1036,10 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
+        getAttributeInfo(selectedLayer);
+    });
+
+    function getAttributeInfo(selectedLayer){
 
         // Get layer attributes from GeoServer
         $.ajax({
@@ -1056,7 +1060,7 @@ var startApp = function() {
                     layerFields.push(key);
                 }
 
-                getLayerInfo();
+                getLayerInfo(selectedLayer);
             },
             error: function() {
                 $('#ajaxErrorDialog').empty();
@@ -1066,9 +1070,9 @@ var startApp = function() {
                 $('#ajaxErrorDialog').dialog('open');
             }
         });
-    });
+    }
 
-    function getLayerInfo() {
+    function getLayerInfo(selectedLayer) {
         /*
         // This feature is removed until the proj def format is refactored
         // Get the bounding box
