@@ -426,7 +426,7 @@ describe("Test Combine Indicators Function", function() {
         }));
     });
 });
-
+/*
 describe("Mock Post New Project Definition", function () {
 	var selectedLayer = "Layer Name";
     var projectDefStg = {"some values" : Math.random()};
@@ -473,3 +473,4 @@ describe("Mock Post New Project Definition", function () {
         });
     });
 });
+*/
