@@ -74,7 +74,7 @@ describe("Get all layers from GeoServer", function() {
             ];
 
             //spyOn($, 'ajax').and.callFake(function (params) {
-                /*
+
             spyOn($, 'ajax').and.callThrough(function (params) {
 
                 var d = $.Deferred();
@@ -85,14 +85,16 @@ describe("Get all layers from GeoServer", function() {
                 console.log(d.promise());
                 return d.promise();
             });
-*/
+
+
+/*
             spyOn($, 'ajax').and.callThrough();
 
             bob.fetch().done(function() {
                 console.log('hello done:');
             })
 
-
+*/
 
             bob.fetch(callback);
 
