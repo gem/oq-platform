@@ -1113,7 +1113,8 @@ foobar.prototype.fetch = function (cb) {
     // Get layer attributes from GeoServer
     $.ajax({
         type: 'get',
-        url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
+        //url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
+        url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=qgis_svir_3d3529dc_e8bf_42b8_a1f1_e4cf602324d3&outputFormat=json',
         success: function(data) {
             console.log('data (success):');
             console.log(data);
@@ -1130,7 +1131,8 @@ foobar.prototype.fetch = function (cb) {
             for (var key in layerAttributes.features[0].properties) {
                 layerFields.push(key);
             }
-            return data;
+            //cb(data);
+            //return data;
         },
         done: function(data) {
             console.log('data (done):');

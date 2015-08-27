@@ -45,8 +45,6 @@ describe("Get all layers from GeoServer", function() {
                     }
                 }
 
-                console.log('SVIRLayerNames:');
-                console.log(SVIRLayerNames);
                 var layerAttributesArray = [];
 
 
@@ -65,30 +63,49 @@ describe("Get all layers from GeoServer", function() {
         console.log(SVIRLayerNames);
         //for (var i = 0; i < SVIRLayerNames.length; i++) {
 
-            var bob = new foobar(SVIRLayerNames[0]);
-
+            var bob = new foobar();
             //var bob = new getAttributeInfo(SVIRLayerNames[0]);
-            console.log('bob:');
-            console.log(bob);
 
             // creating our spied callback
             var callback = jasmine.createSpy('callback');
 
-            console.log('hello1??:');
+            var data = [
+                {x: 0,  y: 0},
+            ];
 
-            spyOn($, 'ajax').andCallFake(function (req) {
+            //spyOn($, 'ajax').and.callFake(function (params) {
+                /*
+            spyOn($, 'ajax').and.callThrough(function (params) {
+
                 var d = $.Deferred();
+                console.log('d:');
+                console.log(d);
                 d.resolve(data);
-                console.log(':');
-                console.log();
+                console.log('d.promise:');
+                console.log(d.promise());
                 return d.promise();
             });
+*/
+            spyOn($, 'ajax').and.callThrough();
+
+            bob.fetch().done(function() {
+                console.log('hello done:');
+            })
+
+
 
             bob.fetch(callback);
 
 
-            // can't get anyting after this
-            var fakeData = callback.calls.mostRecent().args[0];
+            console.log('callback.calls:');
+            console.log(callback.calls);
+
+            var callbackAny = callback.calls.any();
+            console.log('callbackAny:');
+            console.log(callbackAny);
+
+
+            var fakeData = callback.calls.mostRecent.args;
             console.log('fakeData:');
             console.log(fakeData);
 
