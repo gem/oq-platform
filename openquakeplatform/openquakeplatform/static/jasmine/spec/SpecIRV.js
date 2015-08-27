@@ -57,33 +57,61 @@ describe("Get all layers from GeoServer", function() {
         });
     });
 
+        function mySyncFunction (counter, totRecords) {
+            if(counter === undefined)
+                counter = 0;
+            if(counter >=totRecords) return;
+            console.log('counter:');
+            console.log(counter);
+
+            var layerName = SVIRLayerNames + counter;
+            var attributeRequest = getAttributeInfoRequest(layerName);
+            attributeRequest.then(function(attributeResponse) {
+                console.log('attributeRequest:');
+                console.log(attributeRequest);
+            });
+            attributeRequest.done(function() {
+                mySyncFunction(counter, totRecords);
+            });
+        }
+
 
     it("an ajax call", function() {
         console.log('SVIRLayerNames:');
         console.log(SVIRLayerNames);
+        
+        var totRecords = SVIRLayerNames.length();
+        mySyncFunction(0, totRecords);
+
+
+
+        /*
         for (var i = 0; i < SVIRLayerNames.length; i++) {
             var layerName = SVIRLayerNames[i];
-            console.log('layerName1:');
-            console.log(layerName);
+            //console.log('layerName1:');
+            //console.log(layerName);
             var attributeRequest = getAttributeInfoRequest(layerName);
+            console.log('attributeRequest:');
+            console.log(attributeRequest);
 
             attributeRequest.then(function(attributeResponse) {
 
-                console.log('layerName2:');
-                console.log(layerName);
+                //console.log('layerName2:');
+                //console.log(layerName);
 
                 var layerRequest = getLayerInfoRequest(layerName);
 
                     layerRequest.then(function(layerResponse) {
 
-                        console.log('layerResponse:');
-                        console.log(layerResponse);
+                        //console.log('layerResponse:');
+                        //console.log(layerResponse);
                     });
 
-                console.log('attributeResponse:');
-                console.log(attributeResponse);
+                //console.log('attributeResponse:');
+                //console.log(attributeResponse);
             });
         }
+        */
     });
 });
 
