@@ -1165,6 +1165,9 @@ function getLayerInfoRequest(selectedLayer) {
 
     */
     // Get the project definition
+
+    console.log('selectedLayer:');
+    console.log('../svir/get_project_definitions?layer_name='+ selectedLayer);
     return $.ajax({
         type: 'get',
         url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
