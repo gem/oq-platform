@@ -1105,9 +1105,6 @@ var foobar = function() {
 
 };
 
-foobar.prototype.fetch = function() {
-
-};
 
 foobar.prototype.fetch = function (cb) {
 
