@@ -61,22 +61,16 @@ describe("Get all layers from GeoServer", function() {
     it("an ajax call", function() {
         console.log('SVIRLayerNames:');
         console.log(SVIRLayerNames);
-        //for (var i = 0; i < SVIRLayerNames.length; i++) {
-
-            //var bob = new foobar();
-            var request = getAttributeInfo();
- 
+        for (var i = 0; i < SVIRLayerNames.length; i++) {
+            var request = getAttributeInfo(SVIRLayerNames[i]);
 
             request.then(function(response) {
                 console.log('response:');
                 console.log(response);
-                //expect(response).toEqual({ message: 'hi' });
-
-                done();
             });
 
 
-        //}
+        }
 
     });
 });

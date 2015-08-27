@@ -1100,21 +1100,14 @@ var startApp = function() {
         'display': 'block'
     });
 };
-/*
-var foobar = function() {
 
-};
-
-*/
-//foobar.prototype.fetch = function (cb) {
 
 function getAttributeInfo(selectedLayer){
 
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
-        //url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
-        url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=qgis_svir_3d3529dc_e8bf_42b8_a1f1_e4cf602324d3&outputFormat=json',
+        url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
             console.log('data (success):');
             console.log(data);
@@ -1131,12 +1124,6 @@ function getAttributeInfo(selectedLayer){
             for (var key in layerAttributes.features[0].properties) {
                 layerFields.push(key);
             }
-            //cb(data);
-            //return data;
-        },
-        done: function(data) {
-            console.log('data (done):');
-            console.log(data);
         },
         error: function() {
             $('#ajaxErrorDialog').empty();
