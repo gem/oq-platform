@@ -33,7 +33,7 @@ $('#perArea').hide();
 
 $('#defineCostStruc').change(function() {
     defineCost($(this).val());
-    if (defineCost != 'none') {
+    if ($(this).val() != 'none') {
         $('#retrofittingSelect').show();
     } else {
         $('#retrofittingSelect').hide();
