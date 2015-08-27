@@ -57,7 +57,17 @@ describe("Get all layers from GeoServer", function() {
         });
     });
 
-        function mySyncFunction (counter, totRecords) {
+
+    it("an ajax call", function() {
+
+        console.log('SVIRLayerNames:');
+        console.log(SVIRLayerNames);
+        var totRecords = SVIRLayerNames.length;
+        var mySyncFunction = function (counter, totRecord) {
+            console.log('counter:');
+            console.log(counter);
+            console.log('totRecords:');
+            console.log(totRecords);
             if(counter === undefined)
                 counter = 0;
             if(counter >=totRecords) return;
@@ -71,17 +81,12 @@ describe("Get all layers from GeoServer", function() {
                 console.log(attributeRequest);
             });
             attributeRequest.done(function() {
-                mySyncFunction(counter, totRecords);
+                //counter++;
+                mySyncFunction(counter + 1, totRecords);
             });
-        }
+        };
 
-
-    it("an ajax call", function() {
-        console.log('SVIRLayerNames:');
-        console.log(SVIRLayerNames);
-        
-        var totRecords = SVIRLayerNames.length();
-        mySyncFunction(0, totRecords);
+        mySyncFunction(0,totRecords);
 
 
 
