@@ -63,53 +63,24 @@ describe("Get all layers from GeoServer", function() {
         console.log(SVIRLayerNames);
         //for (var i = 0; i < SVIRLayerNames.length; i++) {
 
-            var bob = new foobar();
-            //var bob = new getAttributeInfo(SVIRLayerNames[0]);
+            //var bob = new foobar();
+            var bob = new getAttributeInfo(SVIRLayerNames[0]);
 
             // creating our spied callback
-            var callback = jasmine.createSpy('callback');
+            //var callback = jasmine.createSpy('callback');
 
-            var data = [
-                {x: 0,  y: 0},
-            ];
+            //spyOn($, 'ajax').and.callThrough();
 
-            //spyOn($, 'ajax').and.callFake(function (params) {
+            var request = bob(SVIRLayerNames[0]);
 
-            spyOn($, 'ajax').and.callThrough(function (params) {
+            request.then(function(response) {
+                console.log('response:');
+                console.log(response);
+                //expect(response).toEqual({ message: 'hi' });
 
-                var d = $.Deferred();
-                console.log('d:');
-                console.log(d);
-                d.resolve(data);
-                console.log('d.promise:');
-                console.log(d.promise());
-                return d.promise();
+                done();
             });
 
-
-/*
-            spyOn($, 'ajax').and.callThrough();
-
-            bob.fetch().done(function() {
-                console.log('hello done:');
-            })
-
-*/
-
-            bob.fetch(callback);
-
-
-            console.log('callback.calls:');
-            console.log(callback.calls);
-
-            var callbackAny = callback.calls.any();
-            console.log('callbackAny:');
-            console.log(callbackAny);
-
-
-            var fakeData = callback.calls.mostRecent.args;
-            console.log('fakeData:');
-            console.log(fakeData);
 
         //}
 

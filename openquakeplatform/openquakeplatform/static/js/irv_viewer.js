@@ -1100,18 +1100,18 @@ var startApp = function() {
         'display': 'block'
     });
 };
-
+/*
 var foobar = function() {
 
 };
 
+*/
+//foobar.prototype.fetch = function (cb) {
 
-foobar.prototype.fetch = function (cb) {
-
-//function getAttributeInfo(selectedLayer){
+function getAttributeInfo(selectedLayer){
 
     // Get layer attributes from GeoServer
-    $.ajax({
+    return $.ajax({
         type: 'get',
         //url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=qgis_svir_3d3529dc_e8bf_42b8_a1f1_e4cf602324d3&outputFormat=json',
