@@ -54,7 +54,7 @@ describe("Get all layers from GeoServer", function() {
                 done();
             },
             error: function() {
-                // TODO deal with this
+                // TOSO deal with this
             }
         });
     });
@@ -65,17 +65,32 @@ describe("Get all layers from GeoServer", function() {
         console.log(SVIRLayerNames);
         //for (var i = 0; i < SVIRLayerNames.length; i++) {
 
-            var container = new getAttributeInfo(SVIRLayerNames[0]);
+
+
+            var bob = new getAttributeInfo(SVIRLayerNames[0]);
+            console.log('bob:');
+            console.log(bob);
+
+            // creating our spied callback
             var callback = jasmine.createSpy('callback');
 
-            spyOn($, 'ajax').and.callFake(function (req) {
+            console.log('hello1??:');
+
+            spyOn($, 'ajax').andCallFake(function (req) {
                 var d = $.Deferred();
-                // resolve using our mock data
-                d.resolve(SVIRLayerNames[0]);
+                d.resolve(data);
+                console.log(':');
+                console.log();
                 return d.promise();
             });
 
-            container(callback);
+            bob.fetch(callback);
+
+
+            // can't get anyting after this
+            var fakeData = callback.calls.mostRecent().args[0];
+            console.log('fakeData:');
+            console.log(fakeData);
 
         //}
 

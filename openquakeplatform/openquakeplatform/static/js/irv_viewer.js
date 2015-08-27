@@ -1101,7 +1101,17 @@ var startApp = function() {
     });
 };
 
-function getAttributeInfo(selectedLayer){
+var foobar = function() {
+
+};
+
+foobar.prototype.fetch = function() {
+
+};
+
+foobar.prototype.fetch = function (cb) {
+
+//function getAttributeInfo(selectedLayer){
 
     // Get layer attributes from GeoServer
     $.ajax({
