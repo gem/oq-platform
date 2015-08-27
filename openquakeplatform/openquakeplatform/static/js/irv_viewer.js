@@ -1108,8 +1108,7 @@ function getAttributeInfo(selectedLayer){
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-            foo = data;
-            console.log('data:');
+            console.log('data (success):');
             console.log(data);
             $('#loadProjectDialog').dialog('close');
 
@@ -1124,7 +1123,11 @@ function getAttributeInfo(selectedLayer){
             for (var key in layerAttributes.features[0].properties) {
                 layerFields.push(key);
             }
-            done();
+            return data;
+        },
+        done: function(data) {
+            console.log('data (done):');
+            console.log(data);
         },
         error: function() {
             $('#ajaxErrorDialog').empty();

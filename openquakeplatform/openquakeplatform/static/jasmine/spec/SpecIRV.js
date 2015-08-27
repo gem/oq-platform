@@ -54,48 +54,28 @@ describe("Get all layers from GeoServer", function() {
                 done();
             },
             error: function() {
-                // TOSO deal with this
+                // TODO deal with this
             }
         });
     });
 
 
-    it("The index was created", function() {
+    it("an ajax call", function() {
         console.log('SVIRLayerNames:');
         console.log(SVIRLayerNames);
         //for (var i = 0; i < SVIRLayerNames.length; i++) {
 
-            var foobar = getAttributeInfo(SVIRLayerNames[0]);
-            // creating our spied callback
+            var container = new getAttributeInfo(SVIRLayerNames[0]);
             var callback = jasmine.createSpy('callback');
 
-            console.log('hello1??:');
-            /*
             spyOn($, 'ajax').and.callFake(function (req) {
                 var d = $.Deferred();
-                d.resolve(data);
-                console.log('d:');
-                console.log(d);
+                // resolve using our mock data
+                d.resolve(SVIRLayerNames[0]);
                 return d.promise();
             });
-*/
-            console.log('hello2??:');
-            setTimeout(function() {
-                console.log('foo:');
-                console.log(foo);
-            }, 5000);
 
-            foobar.fetch(callback);
-
-            // can't get anyting after this
-
-            console.log('foo:');
-            console.log(foo);
-            console.log('hello3??:');
-            var fakeData = callback.calls.mostRecent().args[0];
-            console.log('hello4??:');
-            console.log('fakeData:');
-            console.log(fakeData);
+            container(callback);
 
         //}
 
