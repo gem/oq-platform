@@ -1036,8 +1036,8 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-        getAttributeInfo(selectedLayer);
-        getLayerInfo(selectedLayer);
+        getAttributeInfoRequest(selectedLayer);
+        getLayerInfoRequest(selectedLayer);
     });
 
 
@@ -1102,7 +1102,7 @@ var startApp = function() {
 };
 
 
-function getAttributeInfo(selectedLayer){
+function getAttributeInfoRequest(selectedLayer){
 
     // Get layer attributes from GeoServer
     return $.ajax({
@@ -1135,7 +1135,7 @@ function getAttributeInfo(selectedLayer){
     });
 }
 
-function getLayerInfo(selectedLayer) {
+function getLayerInfoRequest(selectedLayer) {
     /*
     // This feature is removed until the proj def format is refactored
     // Get the bounding box
@@ -1165,7 +1165,7 @@ function getLayerInfo(selectedLayer) {
 
     */
     // Get the project definition
-    $.ajax({
+    return $.ajax({
         type: 'get',
         url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
         success: function(data) {
