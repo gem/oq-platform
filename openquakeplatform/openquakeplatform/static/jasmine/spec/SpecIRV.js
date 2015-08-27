@@ -64,14 +64,8 @@ describe("Get all layers from GeoServer", function() {
         //for (var i = 0; i < SVIRLayerNames.length; i++) {
 
             //var bob = new foobar();
-            var bob = new getAttributeInfo(SVIRLayerNames[0]);
-
-            // creating our spied callback
-            //var callback = jasmine.createSpy('callback');
-
-            //spyOn($, 'ajax').and.callThrough();
-
-            var request = bob(SVIRLayerNames[0]);
+            var request = getAttributeInfo();
+ 
 
             request.then(function(response) {
                 console.log('response:');
