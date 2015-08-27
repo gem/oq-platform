@@ -240,7 +240,7 @@ $('#saveBtnFF').click(function() {
         if (fFormatObj[k] == 'discrete') {
             imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'">'+imlsObj[k]+'</imls>\n';
         } else if (fFormatObj[k] == 'continuous') {
-            imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'" minIML="'+minImlObj[k]+'" maxIML="'+maxImlObj[k]+'">\n';
+            imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'" minIML="'+minImlObj[k]+'" maxIML="'+maxImlObj[k]+'"/>\n';
         }
         // Dynamic imls tag
         ffs += imlsTag;
