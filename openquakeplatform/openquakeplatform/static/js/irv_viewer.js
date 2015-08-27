@@ -1207,6 +1207,7 @@ function getLayerInfoRequest(selectedLayer) {
             }
             $('#projectDef-spinner').hide();
 
+            // TODO move this ...
             // select the first project definition in menu dropdown list
             var menuOption = $('#pdSelection');
             menuOption[0].selectedIndex = 1;

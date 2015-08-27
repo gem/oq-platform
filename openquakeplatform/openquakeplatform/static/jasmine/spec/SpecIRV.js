@@ -59,26 +59,39 @@ describe("Get all layers from GeoServer", function() {
 
 
     it("an ajax call", function() {
-
+        // The above ajax call populates a the SVIRLayerNames array with layer names
+        // which are used here
         console.log('SVIRLayerNames:');
         console.log(SVIRLayerNames);
+
+        // Capture the number of iterations to be used in mySyncFunction
         var totRecords = SVIRLayerNames.length;
+
+        // This function will be executed once for each layer name in SVIRLayerNames
+        // This function will execute first the getAttributeInfoRequest function
+        // and then the getLayerInfoRequest function.
+        // During each iteration it will create an object pairs of the layer attributes
+        // and the project definition.
+        // Insparation for this function:
+        // http://stackoverflow.com/questions/22978843/how-to-make-for-loop-wait-until-async-call-was-successful-before-to-continue
         var mySyncFunction = function (counter, totRecord) {
             console.log('counter:');
             console.log(counter);
-            console.log('totRecords:');
-            console.log(totRecords);
             if(counter === undefined)
                 counter = 0;
             if(counter >=totRecords) return;
 
+            // Set the layer neme
             var layerName = SVIRLayerNames[counter];
             console.log('layerName:');
             console.log(layerName);
+
+            // Execute the getAttributeInfoRequest function and pass it the layer neme
             var attributeRequest = getAttributeInfoRequest(layerName);
+
+            // we need to execute the getLayerInfoRequest function after the
+            // getAttributeInfoRequest function is completed
             attributeRequest.then(function(attributeResponse) {
-                console.log('attributeRequest:');
-                console.log(attributeRequest);
                 console.log('layerName:');
                 console.log(layerName);
                 var layerRequest = getLayerInfoRequest(layerName);
@@ -89,44 +102,16 @@ describe("Get all layers from GeoServer", function() {
                     console.log(layerResponse);
                 });
                 layerRequest.done(function() {
+                    // Once this (second / nested ajax call) is complete
+                    // we trigger the next iteration of this function (for each layer name)
                     mySyncFunction(counter + 1, totRecords);
                 });
-            });
-            attributeRequest.done(function() {
             });
         };
 
         mySyncFunction(0,totRecords);
 
-
-
-        /*
-        for (var i = 0; i < SVIRLayerNames.length; i++) {
-            var layerName = SVIRLayerNames[i];
-            //console.log('layerName1:');
-            //console.log(layerName);
-            var attributeRequest = getAttributeInfoRequest(layerName);
-            console.log('attributeRequest:');
-            console.log(attributeRequest);
-
-            attributeRequest.then(function(attributeResponse) {
-
-                //console.log('layerName2:');
-                //console.log(layerName);
-
-                var layerRequest = getLayerInfoRequest(layerName);
-
-                    layerRequest.then(function(layerResponse) {
-
-                        //console.log('layerResponse:');
-                        //console.log(layerResponse);
-                    });
-
-                //console.log('attributeResponse:');
-                //console.log(attributeResponse);
-            });
-        }
-        */
+        // TODO tests go here...
     });
 });
 
