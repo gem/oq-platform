@@ -1207,10 +1207,13 @@ function getLayerInfoRequest(selectedLayer) {
             }
             $('#projectDef-spinner').hide();
 
-            // TODO move this ...
             // select the first project definition in menu dropdown list
-            var menuOption = $('#pdSelection');
-            menuOption[0].selectedIndex = 1;
+            try {
+                var menuOption = $('#pdSelection');
+                menuOption[0].selectedIndex = 1;
+            } catch (e) {
+                // continue
+            }
 
             // trigger first project definition
             setTimeout(function() {

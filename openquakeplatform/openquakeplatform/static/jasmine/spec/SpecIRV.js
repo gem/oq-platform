@@ -12,15 +12,18 @@ describe("Get all layers from GeoServer", function() {
 
     var SVIRLayerNames = [];
 
+        window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+
+
     beforeAll(function(done) {
+
+
         var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
         // Get layers from GeoServer and populate the layer selection menu
         $.ajax({
             url: url,
             //contentType: 'application/json',
             success: function(xml) {
-                console.log('xml:');
-                console.log(xml);
                 //convert XML to JSON
                 var xmlText = new XMLSerializer().serializeToString(xml);
                 var x2js = new X2JS();
@@ -45,11 +48,62 @@ describe("Get all layers from GeoServer", function() {
                     }
                 }
 
-                var layerAttributesArray = [];
+                console.log('SVIRLayerNames:');
+                console.log(SVIRLayerNames);
 
+                ////////////////////////////////
+                // Nested Ajax call begin now //
+                ////////////////////////////////
 
-                // Alert Jasmine that the AJAX call is done
-                done();
+                // Capture the number of iterations to be used in mySyncFunction
+                var totRecords = SVIRLayerNames.length;
+
+                // This function will be executed once for each layer name in SVIRLayerNames
+                // This function will execute first the getAttributeInfoRequest function
+                // and then the getLayerInfoRequest function.
+                // During each iteration it will create an object pairs of the layer attributes
+                // and the project definition.
+                // Insparation for this function:
+                // http://stackoverflow.com/questions/22978843/how-to-make-for-loop-wait-until-async-call-was-successful-before-to-continue
+                var mySyncFunction = function (counter, totRecords) {
+                    console.log('totRecords:');
+                    console.log(totRecords);
+                    console.log('counter:');
+                    console.log(counter);
+                    if(counter === undefined)
+                        counter = 0;
+                    if(counter >= totRecords) {
+                        // Alert Jasmine that the AJAX call is done
+                        done();
+                        return;
+                    }
+
+                    // Set the layer neme
+                    var layerName = SVIRLayerNames[counter];
+
+                    // Execute the getAttributeInfoRequest function and pass it the layer neme
+                    var attributeRequest = getAttributeInfoRequest(layerName);
+
+                    // we need to execute the getLayerInfoRequest function after the
+                    // getAttributeInfoRequest function is completed
+                    attributeRequest.then(function(attributeResponse) {
+                        var layerRequest = getLayerInfoRequest(layerName);
+
+                        layerRequest.then(function(layerResponse) {
+                            console.log('layerResponse:');
+                            console.log(layerResponse);
+                        });
+                        layerRequest.done(function() {
+                            // Once this (second / nested ajax call) is complete
+                            // we trigger the next iteration of this function (for each layer name)
+                            var count = counter + 1;
+                            mySyncFunction(count, totRecords);
+                        });
+                    });
+                };
+
+                mySyncFunction(0,totRecords);
+
             },
             error: function() {
                 // TOSO deal with this
@@ -57,59 +111,12 @@ describe("Get all layers from GeoServer", function() {
         });
     });
 
-
     it("an ajax call", function() {
         // The above ajax call populates a the SVIRLayerNames array with layer names
         // which are used here
-        console.log('SVIRLayerNames:');
-        console.log(SVIRLayerNames);
+        console.log('hi, Im now running the first test:');
 
-        // Capture the number of iterations to be used in mySyncFunction
-        var totRecords = SVIRLayerNames.length;
 
-        // This function will be executed once for each layer name in SVIRLayerNames
-        // This function will execute first the getAttributeInfoRequest function
-        // and then the getLayerInfoRequest function.
-        // During each iteration it will create an object pairs of the layer attributes
-        // and the project definition.
-        // Insparation for this function:
-        // http://stackoverflow.com/questions/22978843/how-to-make-for-loop-wait-until-async-call-was-successful-before-to-continue
-        var mySyncFunction = function (counter, totRecord) {
-            console.log('counter:');
-            console.log(counter);
-            if(counter === undefined)
-                counter = 0;
-            if(counter >=totRecords) return;
-
-            // Set the layer neme
-            var layerName = SVIRLayerNames[counter];
-            console.log('layerName:');
-            console.log(layerName);
-
-            // Execute the getAttributeInfoRequest function and pass it the layer neme
-            var attributeRequest = getAttributeInfoRequest(layerName);
-
-            // we need to execute the getLayerInfoRequest function after the
-            // getAttributeInfoRequest function is completed
-            attributeRequest.then(function(attributeResponse) {
-                console.log('layerName:');
-                console.log(layerName);
-                var layerRequest = getLayerInfoRequest(layerName);
-
-                layerRequest.then(function(layerResponse) {
-
-                    console.log('layerResponse:');
-                    console.log(layerResponse);
-                });
-                layerRequest.done(function() {
-                    // Once this (second / nested ajax call) is complete
-                    // we trigger the next iteration of this function (for each layer name)
-                    mySyncFunction(counter + 1, totRecords);
-                });
-            });
-        };
-
-        mySyncFunction(0,totRecords);
 
         // TODO tests go here...
     });
@@ -411,51 +418,4 @@ describe("Test Combine Indicators Function", function() {
         }));
     });
 });
-/*
-describe("Mock Post New Project Definition", function () {
-	var selectedLayer = "Layer Name";
-    var projectDefStg = {"some values" : Math.random()};
 
-    it("Should post to GeoServer", function () {
-    	// call andCallFake so that it calls the success function.
-        spyOn($, "ajax").and.callFake( function(params) {
-        	return {
-        		done: function() {
-        			return {
-        				fail: function() {}
-        			};
-        		}
-        	};
-        });
-
-        addProjectDefinition.send(selectedLayer, projectDefStg);
-
-        expect($.ajax).toHaveBeenCalledWith({
-        	method: "POST",
-        	url: "../svir/add_project_definition",
-        	data: [selectedLayer, projectDefStg]
-        });
-    });
-
-	it("does correct ajax requests", function () {
-        spyOn($, 'ajax').and.callFake(function(params) {
-
-            return {
-        		done: function() {
-        			return {
-        				fail: function() {}
-        			};
-        		}
-        	};
-        });
-
-		addProjectDefinition.send(selectedLayer, projectDefStg);
-
-		expect($.ajax).toHaveBeenCalledWith({
-        	method: "POST",
-        	url: "../svir/add_project_definition",
-        	data: [selectedLayer, projectDefStg]
-        });
-    });
-});
-*/
