@@ -6,24 +6,29 @@
 
 // Test the createRiskIndicator function
 
-describe("Get all layers from GeoServer", function() {
+describe("Get All Layers From GeoServer", function() {
     // object to house the SVIR attribute project defs pairs
-    var SVIRPairs = {};
+    var SVIRPairs = [];
 
     var SVIRLayerNames = [];
-
+        // Extend the Jasmine default
         window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+
+    var layerListAjaxCallBoolean = false;
+    var attributesAjaxCallBoolean = false;
+    var projectDefAjaxCallBoolean = false;
 
 
     beforeAll(function(done) {
-
-
         var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
         // Get layers from GeoServer and populate the layer selection menu
         $.ajax({
             url: url,
             //contentType: 'application/json',
             success: function(xml) {
+                // Used to check the status of the layer list ajax call
+                layerListAjaxCallBoolean = true;
+
                 //convert XML to JSON
                 var xmlText = new XMLSerializer().serializeToString(xml);
                 var x2js = new X2JS();
@@ -48,28 +53,18 @@ describe("Get all layers from GeoServer", function() {
                     }
                 }
 
-                console.log('SVIRLayerNames:');
-                console.log(SVIRLayerNames);
-
                 ////////////////////////////////
-                // Nested Ajax call begin now //
+                // Nested Ajax call begins now //
                 ////////////////////////////////
-
-                // Capture the number of iterations to be used in mySyncFunction
-                var totRecords = SVIRLayerNames.length;
 
                 // This function will be executed once for each layer name in SVIRLayerNames
                 // This function will execute first the getAttributeInfoRequest function
-                // and then the getLayerInfoRequest function.
+                // and then the getProjDefJSONRequest function.
                 // During each iteration it will create an object pairs of the layer attributes
                 // and the project definition.
                 // Insparation for this function:
                 // http://stackoverflow.com/questions/22978843/how-to-make-for-loop-wait-until-async-call-was-successful-before-to-continue
                 var mySyncFunction = function (counter, totRecords) {
-                    console.log('totRecords:');
-                    console.log(totRecords);
-                    console.log('counter:');
-                    console.log(counter);
                     if(counter === undefined)
                         counter = 0;
                     if(counter >= totRecords) {
@@ -84,16 +79,29 @@ describe("Get all layers from GeoServer", function() {
                     // Execute the getAttributeInfoRequest function and pass it the layer neme
                     var attributeRequest = getAttributeInfoRequest(layerName);
 
-                    // we need to execute the getLayerInfoRequest function after the
-                    // getAttributeInfoRequest function is completed
-                    attributeRequest.then(function(attributeResponse) {
-                        var layerRequest = getLayerInfoRequest(layerName);
+                    var iterationPair = {};
 
-                        layerRequest.then(function(layerResponse) {
-                            console.log('layerResponse:');
-                            console.log(layerResponse);
+                    // we need to execute the getProjDefJSONRequest function after the
+                    // getAttributeInfoRequest function is completed
+                    attributeRequest.success(function(attributeResponse) {
+                        attributesAjaxCallBoolean = true;
+
+                        // Capture the iteration attribute response
+                        iterationPair.attribute = attributeResponse;
+
+                        var JsonRequest = getProjDefJSONRequest(layerName);
+
+                        JsonRequest.success(function(layerResponse) {
+                            projectDefAjaxCallBoolean = true;
+
+                            // Capture the iteration layer response
+                            iterationPair.projDefJson = layerResponse;
+
+                            // Pass the iteration object to the pairs array
+                            SVIRPairs.push(iterationPair);
                         });
-                        layerRequest.done(function() {
+
+                        JsonRequest.done(function() {
                             // Once this (second / nested ajax call) is complete
                             // we trigger the next iteration of this function (for each layer name)
                             var count = counter + 1;
@@ -102,24 +110,31 @@ describe("Get all layers from GeoServer", function() {
                     });
                 };
 
-                mySyncFunction(0,totRecords);
+                // Capture the number of iterations to be used in mySyncFunction
+                var totRecords = SVIRLayerNames.length;
 
+                // trigger the first nested Ajax call
+                mySyncFunction(0,totRecords);
             },
             error: function() {
-                // TOSO deal with this
+                // TODO deal with this
             }
         });
     });
 
-    it("an ajax call", function() {
-        // The above ajax call populates a the SVIRLayerNames array with layer names
-        // which are used here
-        console.log('hi, Im now running the first test:');
-
-
-
-        // TODO tests go here...
+    it("The ajax request for the SVIR layers list was complete", function() {
+        expect(layerListAjaxCallBoolean).toBeTruthy();
     });
+
+    it("The ajax request for the SVIR layers list was complete", function() {
+        expect(attributesAjaxCallBoolean).toBeTruthy();
+    });
+
+    it("The ajax request for the SVIR layers list was complete", function() {
+        expect(projectDefAjaxCallBoolean).toBeTruthy();
+    });
+
+
 });
 
 
@@ -142,17 +157,17 @@ describe("Test Create Risk Indicator Function", function() {
 // Test the combineIndicators function
 describe("Test Combine Indicators Function", function() {
 
-        var themeObjRiAndSvi = '[{"region":"Argentina","test":5272.775000000001,"test2":38.4505},{"region":"Colombia","test":3586.3125,"test2":37.074831581713084},{"region":"Bolivia","test":1185.1055000000001,"test2":33.54087073042564},{"region":"Brazil","test":6048.0925,"test2":36.98401576458224},{"region":"Chile","test":7010.768,"test2":39.92127167630058},{"region":"Peru","test":2913.793,"test2":37.12098528638991},{"region":"Ecuador","test":2225.068,"test2":38.083472411981084},{"region":"Paraguay","test":1840.1505000000002,"test2":36.25426458223857},{"region":"Guyana","test":1523.7024999999999,"test2":34.9635},{"region":"Suriname","test":4371.5585,"test2":35.36794245927483},{"region":"Uruguay","test":6465.9400000000005,"test2":38.97044534944824},{"region":"Venezuela","test":5722.2125,"test2":37.495140830268}]';
-        var JSONthemesRiAndSvi = '[{"name":"test","weight":0.5,"level":"3.0","field":"TEST_1","operator":"Weighted sum","type":"Social Vulnerability Theme","children":[{"field":"ECOEACGUS","type":"Social Vulnerability Indicator","name":"ECOEACGUS","weight":0.5,"level":"4.0","depth":3,"parent":"undefined","x":193.33333333333331,"y":540,"id":5,"x0":193.33333333333331,"y0":540},{"field":"EDUEOCEYS","type":"Social Vulnerability Indicator","name":"EDUEOCEYS","weight":0.5,"level":"4.0","depth":3,"parent":"undefined","x":270.6666666666667,"y":540,"id":4,"x0":270.6666666666667,"y0":540}],"depth":2,"parent":"undefined","x":232,"y":360,"id":6,"x0":232,"y0":360},{"name":"test2","weight":0.5,"level":"3.0","field":"TEST2","operator":"Weighted sum","type":"Social Vulnerability Theme","children":[{"field":"GNIPCAP","type":"Social Vulnerability Indicator","name":"GNIPCAP","weight":0.5,"level":"4.1","depth":3,"parent":"undefined","x":425.3333333333333,"y":540,"id":2,"x0":425.3333333333333,"y0":540},{"field":"HEAHSTLEX","type":"Social Vulnerability Indicator","name":"HEAHSTLEX","weight":0.5,"level":"4.1","depth":3,"parent":"undefined","x":502.6666666666667,"y":540,"id":1,"x0":502.6666666666667,"y0":540}],"depth":2,"parent":"undefined","x":464,"y":360,"id":3,"x0":464,"y0":360}]';
-        var themeObjRiOnly = '[{"region":"Argentina","ECOEACGUS":15.754,"EDUEOCEYS":10529.796},{"region":"Colombia","ECOEACGUS":13.648,"EDUEOCEYS":7158.977},{"region":"Bolivia","ECOEACGUS":13.713,"EDUEOCEYS":2356.498},{"region":"Brazil","ECOEACGUS":13.775,"EDUEOCEYS":12082.41},{"region":"Chile","ECOEACGUS":14.698,"EDUEOCEYS":14006.838},{"region":"Peru","ECOEACGUS":12.907,"EDUEOCEYS":5814.679},{"region":"Ecuador","ECOEACGUS":13.984,"EDUEOCEYS":4436.152},{"region":"Paraguay","ECOEACGUS":12.068,"EDUEOCEYS":3668.233},{"region":"Guyana","ECOEACGUS":11.948,"EDUEOCEYS":3035.457},{"region":"Suriname","ECOEACGUS":12.606,"EDUEOCEYS":8730.511},{"region":"Uruguay","ECOEACGUS":15.51,"EDUEOCEYS":12916.37},{"region":"Venezuela","ECOEACGUS":14.187,"EDUEOCEYS":11430.238}]';
-        var JSONthemesRiOnly = '[{"field":"ECOEACGUS","type":"Risk Indicator","name":"ECOEACGUS","weight":0.5,"level":"3.0","depth":2,"parent":"undefined","x":165.7142857142857,"y":360,"id":3,"x0":165.7142857142857,"y0":360},{"field":"EDUEOCEYS","type":"Risk Indicator","name":"EDUEOCEYS","weight":0.5,"level":"3.0","depth":2,"parent":"undefined","x":331.4285714285714,"y":360,"id":2,"x0":331.4285714285714,"y0":360}]';
-        var nameLookUpRi = 'RI';
-        var nameLookUpSvi = 'SVI';
+    var themeObjRiAndSvi = '[{"region":"Argentina","test":5272.775000000001,"test2":38.4505},{"region":"Colombia","test":3586.3125,"test2":37.074831581713084},{"region":"Bolivia","test":1185.1055000000001,"test2":33.54087073042564},{"region":"Brazil","test":6048.0925,"test2":36.98401576458224},{"region":"Chile","test":7010.768,"test2":39.92127167630058},{"region":"Peru","test":2913.793,"test2":37.12098528638991},{"region":"Ecuador","test":2225.068,"test2":38.083472411981084},{"region":"Paraguay","test":1840.1505000000002,"test2":36.25426458223857},{"region":"Guyana","test":1523.7024999999999,"test2":34.9635},{"region":"Suriname","test":4371.5585,"test2":35.36794245927483},{"region":"Uruguay","test":6465.9400000000005,"test2":38.97044534944824},{"region":"Venezuela","test":5722.2125,"test2":37.495140830268}]';
+    var JSONthemesRiAndSvi = '[{"name":"test","weight":0.5,"level":"3.0","field":"TEST_1","operator":"Weighted sum","type":"Social Vulnerability Theme","children":[{"field":"ECOEACGUS","type":"Social Vulnerability Indicator","name":"ECOEACGUS","weight":0.5,"level":"4.0","depth":3,"parent":"undefined","x":193.33333333333331,"y":540,"id":5,"x0":193.33333333333331,"y0":540},{"field":"EDUEOCEYS","type":"Social Vulnerability Indicator","name":"EDUEOCEYS","weight":0.5,"level":"4.0","depth":3,"parent":"undefined","x":270.6666666666667,"y":540,"id":4,"x0":270.6666666666667,"y0":540}],"depth":2,"parent":"undefined","x":232,"y":360,"id":6,"x0":232,"y0":360},{"name":"test2","weight":0.5,"level":"3.0","field":"TEST2","operator":"Weighted sum","type":"Social Vulnerability Theme","children":[{"field":"GNIPCAP","type":"Social Vulnerability Indicator","name":"GNIPCAP","weight":0.5,"level":"4.1","depth":3,"parent":"undefined","x":425.3333333333333,"y":540,"id":2,"x0":425.3333333333333,"y0":540},{"field":"HEAHSTLEX","type":"Social Vulnerability Indicator","name":"HEAHSTLEX","weight":0.5,"level":"4.1","depth":3,"parent":"undefined","x":502.6666666666667,"y":540,"id":1,"x0":502.6666666666667,"y0":540}],"depth":2,"parent":"undefined","x":464,"y":360,"id":3,"x0":464,"y0":360}]';
+    var themeObjRiOnly = '[{"region":"Argentina","ECOEACGUS":15.754,"EDUEOCEYS":10529.796},{"region":"Colombia","ECOEACGUS":13.648,"EDUEOCEYS":7158.977},{"region":"Bolivia","ECOEACGUS":13.713,"EDUEOCEYS":2356.498},{"region":"Brazil","ECOEACGUS":13.775,"EDUEOCEYS":12082.41},{"region":"Chile","ECOEACGUS":14.698,"EDUEOCEYS":14006.838},{"region":"Peru","ECOEACGUS":12.907,"EDUEOCEYS":5814.679},{"region":"Ecuador","ECOEACGUS":13.984,"EDUEOCEYS":4436.152},{"region":"Paraguay","ECOEACGUS":12.068,"EDUEOCEYS":3668.233},{"region":"Guyana","ECOEACGUS":11.948,"EDUEOCEYS":3035.457},{"region":"Suriname","ECOEACGUS":12.606,"EDUEOCEYS":8730.511},{"region":"Uruguay","ECOEACGUS":15.51,"EDUEOCEYS":12916.37},{"region":"Venezuela","ECOEACGUS":14.187,"EDUEOCEYS":11430.238}]';
+    var JSONthemesRiOnly = '[{"field":"ECOEACGUS","type":"Risk Indicator","name":"ECOEACGUS","weight":0.5,"level":"3.0","depth":2,"parent":"undefined","x":165.7142857142857,"y":360,"id":3,"x0":165.7142857142857,"y0":360},{"field":"EDUEOCEYS","type":"Risk Indicator","name":"EDUEOCEYS","weight":0.5,"level":"3.0","depth":2,"parent":"undefined","x":331.4285714285714,"y":360,"id":2,"x0":331.4285714285714,"y0":360}]';
+    var nameLookUpRi = 'RI';
+    var nameLookUpSvi = 'SVI';
 
-        themeObjRiAndSvi = JSON.parse(themeObjRiAndSvi);
-        JSONthemesRiAndSvi = JSON.parse(JSONthemesRiAndSvi);
-        themeObjRiOnly = JSON.parse(themeObjRiOnly);
-        JSONthemesRiOnly = JSON.parse(JSONthemesRiOnly);
+    themeObjRiAndSvi = JSON.parse(themeObjRiAndSvi);
+    JSONthemesRiAndSvi = JSON.parse(JSONthemesRiAndSvi);
+    themeObjRiOnly = JSON.parse(themeObjRiOnly);
+    JSONthemesRiOnly = JSON.parse(JSONthemesRiOnly);
 
     it("The RI indicator was combined correctly using the 'Simple sum (ignore weights)' operator", function() {
         var operator = "Simple sum (ignore weights)";

@@ -1037,7 +1037,7 @@ var startApp = function() {
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
         getAttributeInfoRequest(selectedLayer);
-        getLayerInfoRequest(selectedLayer);
+        getProjDefJSONRequest(selectedLayer);
     });
 
 
@@ -1109,8 +1109,6 @@ function getAttributeInfoRequest(selectedLayer){
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-            console.log('data (success):');
-            console.log(data);
             $('#loadProjectDialog').dialog('close');
 
             // Make a global variable used by the d3-tree chart
@@ -1135,7 +1133,7 @@ function getAttributeInfoRequest(selectedLayer){
     });
 }
 
-function getLayerInfoRequest(selectedLayer) {
+function getProjDefJSONRequest(selectedLayer) {
     /*
     // This feature is removed until the proj def format is refactored
     // Get the bounding box
@@ -1171,8 +1169,6 @@ function getLayerInfoRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_project_definitions?layer_name='+ selectedLayer,
         success: function(data) {
-            console.log('getLayerInfoRequest data:');
-            console.log(data);
             tempProjectDef = data;
 
             // Check the svir plugin version
