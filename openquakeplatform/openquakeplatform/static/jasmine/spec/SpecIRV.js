@@ -144,7 +144,7 @@ describe("Get All Layers From GeoServer", function() {
                 // Test SVIR plugin version
                 var tempVertion = tempProjDefArray[j].svir_plugin_version;
                 var tempVertionMajor = tempVertion.charAt(0);
-                expect(tempVertionMajor).toEqual(1);
+                expect(tempVertionMajor).toEqual('1');
 
                 // Test description
                 var tempDescription = tempProjDefArray[j].description;
@@ -159,6 +159,14 @@ describe("Get All Layers From GeoServer", function() {
                     'CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)'
                 ];
                 expect(licenseOptions).toContain(tempLicense);
+
+                // Test the tile
+                var tempTitle = tempProjDefArray[j].title;
+                expect(tempTitle).toBeDefined();
+
+                // Test zone field
+                var tempZone = tempProjDefArray[j].zone_label_field;
+                expect(tempZone).toBeDefined();
             }
         }
     });
