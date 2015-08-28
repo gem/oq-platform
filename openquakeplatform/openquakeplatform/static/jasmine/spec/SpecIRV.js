@@ -134,7 +134,21 @@ describe("Get All Layers From GeoServer", function() {
         expect(projectDefAjaxCallBoolean).toBeTruthy();
     });
 
+    it("Check for the required elements in the attribute data", function() {
+        console.log('SVIRPairs:');
+        console.log(SVIRPairs);
+        for (var i = 0; i < SVIRPairs.length; i++) {
+            var tempProjDefArray = SVIRPairs[i].projDefJson;
+            for (var j = 0; j < tempProjDefArray.length; j++) {
+                // Test description
+                var tempDescription = tempProjDefArray[j].description;
+                expect(tempDescription).toBeDefined();
 
+                // Test license
+                
+            }
+        }
+    });
 });
 
 
