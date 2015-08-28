@@ -58,23 +58,23 @@ describe("Get all layers from GeoServer", function() {
     });
 
 
-    it("an ajax call", function() {
+    it("a real ajax call", function() {
         // The above ajax call populates a the SVIRLayerNames array with layer names
         // which are used here
         console.log('SVIRLayerNames:');
         console.log(SVIRLayerNames);
 
-        // Capture the number of iterations to be used in mySyncFunction
+        // Capture the number of iterations to be used in MySyncFunction
         var totRecords = SVIRLayerNames.length;
 
-        // This function will be executed once for each layer name in SVIRLayerNames
-        // This function will execute first the getAttributeInfoRequest function
-        // and then the getLayerInfoRequest function.
+        // This function will be executed once for each layer name in SVIRLayerNames array.
+        // This function will first execute the GetAttributeInfoRequest function
+        // and then the GetLayerInfoRequest function.
         // During each iteration it will create an object pairs of the layer attributes
         // and the project definition.
         // Insparation for this function:
         // http://stackoverflow.com/questions/22978843/how-to-make-for-loop-wait-until-async-call-was-successful-before-to-continue
-        var mySyncFunction = function (counter, totRecord) {
+        var MySyncFunction = function (counter, totRecords) {
             console.log('counter:');
             console.log(counter);
             if(counter === undefined)
@@ -86,15 +86,15 @@ describe("Get all layers from GeoServer", function() {
             console.log('layerName:');
             console.log(layerName);
 
-            // Execute the getAttributeInfoRequest function and pass it the layer neme
-            var attributeRequest = getAttributeInfoRequest(layerName);
+            // Execute the GetAttributeInfoRequest function and pass it the layer neme
+            var attributeRequest = GetAttributeInfoRequest(layerName);
 
-            // we need to execute the getLayerInfoRequest function after the
-            // getAttributeInfoRequest function is completed
+            // we need to execute the GetLayerInfoRequest function after the
+            // GetAttributeInfoRequest function is completed
             attributeRequest.then(function(attributeResponse) {
                 console.log('layerName:');
                 console.log(layerName);
-                var layerRequest = getLayerInfoRequest(layerName);
+                var layerRequest = GetLayerInfoRequest(layerName);
 
                 layerRequest.then(function(layerResponse) {
 
@@ -104,12 +104,12 @@ describe("Get all layers from GeoServer", function() {
                 layerRequest.done(function() {
                     // Once this (second / nested ajax call) is complete
                     // we trigger the next iteration of this function (for each layer name)
-                    mySyncFunction(counter + 1, totRecords);
+                    MySyncFunction(counter + 1, totRecords);
                 });
             });
         };
 
-        mySyncFunction(0,totRecords);
+        MySyncFunction(0,totRecords);
 
         // TODO tests go here...
     });

@@ -33,9 +33,9 @@
     });
 
     // Post New Project Definition
-    function addProjectDefinition() {}
+    function AddProjectDefinition() {}
 
-    addProjectDefinition.send = function(selectedLayer, projectDefStg) {
+    AddProjectDefinition.send = function(selectedLayer, projectDefStg) {
         // Hit the API endpoint and grab the very very latest version of the PD object
         $.ajax({
             method: "POST",
@@ -68,7 +68,7 @@
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
 
-    function loadPD(selectedPDef) {
+    function LoadPD(selectedPDef) {
 
         // default tab window size
         var winH = 600;
@@ -95,7 +95,7 @@
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-        function isComputable(node) {
+        function IsComputable(node) {
             if (node.name === 'IRI') {
                 if (typeof node.children === 'undefined') {
                     return false;
@@ -103,7 +103,7 @@
                 // check if both RI and SVI are computable
                 var areRiAndSviComputable = true;
                 for (var i = 0; i < node.children.length; i++) {
-                    if (!isComputable(node.children[i])) {
+                    if (!IsComputable(node.children[i])) {
                         areRiAndSviComputable = false;
                     }
                 }
@@ -120,7 +120,7 @@
                 // Check if all themes are computable
                 var areAllThemesComputable = true;
                 for (var i = 0; i < node.children.length; i++) {
-                    if (!isComputable(node.children[i])) {
+                    if (!IsComputable(node.children[i])) {
                         areAllThemesComputable = false;
                     }
                 }
@@ -140,7 +140,7 @@
             return true;
         }
 
-        function createSpinner(id, weight, name, operator, isInverted) {
+        function CreateSpinner(id, weight, name, operator, isInverted) {
             pdTempSpinnerIds.push("spinner-"+id);
             $('#projectDefWeightDialog').dialog("open");
             var content = '<p><label for="spinner'+id+'">'+name+':';
@@ -268,7 +268,7 @@
         });
 
         var nodeEnter;
-        function updateButton() {
+        function UpdateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
                 $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
@@ -310,7 +310,7 @@
 
                     // Upadte the json with new values
                     for (var ic = 0; ic < pdTempWeightsComputed.length; ic++) {
-                        updateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
+                        UpdateTreeBranch(pdData, [pdTempIds[ic]], pdTempWeightsComputed[ic], pdTempInverters[ic]);
                     }
 
                     for (var id = 0; id < pdTempSpinnerIds.length; id++) {
@@ -320,19 +320,19 @@
                         var element = $('#'+pdTempSpinnerIds[id]).attr('element');
                         tempNewWeight.push(element);
                         tempNewWeight.push(parseFloat(value));
-                        traverse(pdData, tempNewWeight);
+                        Traverse(pdData, tempNewWeight);
                     }
 
                     nodeEnter.remove("text");
 
                     processIndicators(projectLayerAttributes, projectDefUpdated);
-                    updateD3Tree(pdData);
+                    UpdateD3Tree(pdData);
                 }, 100);
             });
         }
 
         // update the JSON with new weights
-        function traverse(projectDef, tempNewWeight) {
+        function Traverse(projectDef, tempNewWeight) {
 
             projectDefUpdated = projectDef;
 
@@ -362,7 +362,7 @@
             }
         }
 
-        function getRadius(d) {
+        function GetRadius(d) {
             var radius = MIN_CIRCLE_SIZE;
             if (typeof d.weight != 'undefined') {
                 radius = Math.max(d.weight * CIRCLE_SCALE, MIN_CIRCLE_SIZE);
@@ -377,22 +377,22 @@
             return radius;
         }
 
-        function findTreeBranchInfo(pdData, pdName, pdLevel) {
+        function FindTreeBranchInfo(pdData, pdName, pdLevel) {
             // Find out how many elements are in tree branch
             if (pdLevel.some(function(currentValue) {
                 return (pdData.level == currentValue);
 
             })) {
                 pdTempIds.push(pdData.id);
-                createSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator, pdData.isInverted);
+                CreateSpinner(pdData.id, pdData.weight, pdData.name, pdData.operator, pdData.isInverted);
             }
 
             (pdData.children || []).forEach(function(currentItem) {
-                findTreeBranchInfo(currentItem, [pdName], [pdLevel]);
+                FindTreeBranchInfo(currentItem, [pdName], [pdLevel]);
             });
         }
 
-        function updateTreeBranch(pdData, id, pdWeight, pdIsInverted) {
+        function UpdateTreeBranch(pdData, id, pdWeight, pdIsInverted) {
 
             if (id.some(function(currentValue) {
                 return (pdData.id == currentValue);
@@ -402,7 +402,7 @@
             }
 
             (pdData.children || []).forEach(function(currentItem) {
-                updateTreeBranch(currentItem, id, pdWeight, pdIsInverted);
+                UpdateTreeBranch(currentItem, id, pdWeight, pdIsInverted);
             });
         }
 
@@ -420,13 +420,13 @@
             root.x0 = height / 2;
             root.y0 = 0;
 
-            updateD3Tree(root);
+            UpdateD3Tree(root);
 
         $('#project-definition-svg').hide();
 
         d3.select(self.frameElement).style("height", "800px");
 
-        function onTreeElementClick(d) {
+        function OnTreeElementClick(d) {
             pdName = d.name;
             pdData = data;
             pdWeight = d.weight;
@@ -434,11 +434,11 @@
             pdTempSpinnerIds = [];
             pdTempIds = [];
             $('#projectDefWeightDialog').empty();
-            findTreeBranchInfo(pdData, [pdName], [pdLevel]);
-            updateButton();
+            FindTreeBranchInfo(pdData, [pdName], [pdLevel]);
+            UpdateButton();
         }
 
-        function updateD3Tree(source) {
+        function UpdateD3Tree(source) {
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
@@ -464,7 +464,7 @@
                 .attr("class", (function(d) { return "level-" + d.level; }))
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
-                .attr("x", function(d) { return -(getRadius(d) + 5); })
+                .attr("x", function(d) { return -(GetRadius(d) + 5); })
                 .attr("dy", function(d) {
                     // NOTE are x and y swapped?
                     // set te text above or below the node depending on the
@@ -505,7 +505,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return getRadius(d) + 15; });
+                .attr("x", function(d) { return GetRadius(d) + 15; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -528,7 +528,7 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return getRadius(d) + 15; })
+                .attr("x", function(d) { return GetRadius(d) + 15; })
                 .attr("transform", "translate(0, 12)");
 
             // Render weight values in tree
@@ -538,9 +538,9 @@
                 .attr("x", function(d) { return "-1em"; })
                 .attr("dy", function(d) {
                     if (typeof d.parent != "undefined" && d.x > d.parent.x){
-                        return -(getRadius(d) + 5);
+                        return -(GetRadius(d) + 5);
                     } else {
-                        return getRadius(d) + 12;
+                        return GetRadius(d) + 12;
                     }})
                 .text(function(d) {
                     if (d.parent === 'undefined') {
@@ -549,7 +549,7 @@
                     return (d.weight * 100).toFixed(1) + '%';
                 })
                 .on("click", function(d) {
-                    onTreeElementClick(d);
+                    OnTreeElementClick(d);
                 });
 
             // Transition nodes to their new position.
@@ -561,10 +561,10 @@
                 .attr("r", function (d) {
                     // d.weight is expected to be between 0 and 1
                     // Nodes are displayed as circles of size between 1 and CIRCLE_SCALE
-                    return d.weight ? Math.max(getRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
+                    return d.weight ? Math.max(GetRadius(d), MIN_CIRCLE_SIZE): MIN_CIRCLE_SIZE;
                 })
                 .style("opacity", function(d) {
-                    if (isComputable(d)) {
+                    if (IsComputable(d)) {
                         return 1;
                     } else {
                         return 0.3;
@@ -578,7 +578,7 @@
                     }
                 })
                 .style("stroke-width", function(d) {
-                    return d.weight ? Math.min(getRadius(d) / 2.0, MAX_STROKE_SIZE): 4.0;
+                    return d.weight ? Math.min(GetRadius(d) / 2.0, MAX_STROKE_SIZE): 4.0;
                 })
                 .style("fill", function(d) {
                     // return d.source ? d.source.linkColor: d.linkColor;
@@ -612,7 +612,7 @@
             link.enter().insert("path", "g")
                 .attr("class", "link")
                 .style("opacity", function(d) {
-                    if (isComputable(d.source)) {
+                    if (IsComputable(d.source)) {
                         return 1;
                     } else {
                         return 0.1;

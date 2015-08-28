@@ -38,7 +38,7 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-function scaleTheData() {
+function ScaleTheData() {
     // Create a list of primary indicators that need to be scaled
     // We are not scaling any of the IR indicators
     var indicatorsToBeScaled = {};
@@ -58,7 +58,7 @@ function scaleTheData() {
     }
 
     for (var k in indicatorsToBeScaled) {
-        scale(indicatorsToBeScaled[k]);
+        Scale(indicatorsToBeScaled[k]);
     }
 
     // Put values back into the layerAttributes obj
@@ -76,10 +76,10 @@ function scaleTheData() {
         }
     }
     // Process the indicators again
-    processIndicators(layerAttributes, sessionProjectDef);
+    ProcessIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createRiskIndicator(la, index, selectedRegion) {
+function CreateRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -105,7 +105,7 @@ function createRiskIndicator(la, index, selectedRegion) {
     return indicator;
 }
 
-function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectDef) {
+function CombineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectDef) {
 
     //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
     // an empty object in order to test the function
@@ -225,7 +225,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectD
     return subIndex;
 }
 
-function processIndicators(layerAttributes, projectDef) {
+function ProcessIndicators(layerAttributes, projectDef) {
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -266,7 +266,7 @@ function processIndicators(layerAttributes, projectDef) {
     indicatorInfo = [];
     var laValuesArray = [];
 
-    function generateThemeObject(indicatorObj) {
+    function GenerateThemeObject(indicatorObj) {
         var region = indicatorObj.region;
         var theme = indicatorObj.theme;
         var value = indicatorObj.value;
@@ -478,7 +478,7 @@ function processIndicators(layerAttributes, projectDef) {
         $('.alert-unscaled-data').show();
         $('.scaleTheData').click(function() {
             // Scale the primary indicators
-            scaleTheData();
+            ScaleTheData();
         });
     }
 
@@ -486,7 +486,7 @@ function processIndicators(layerAttributes, projectDef) {
         // process the object for each record
         var indicatorObj = indicatorInfo[p5];
         indicatorObj.value = indicatorObj.value;
-        generateThemeObject(indicatorObj);
+        GenerateThemeObject(indicatorObj);
     }
 
     Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion);
@@ -501,8 +501,8 @@ function processIndicators(layerAttributes, projectDef) {
     var sviJSONthemes = svThemes;
     // SVI is an object with region and value
     if (svThemes) {
-        SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
-        scale(SVI);
+        SVI = CombineIndicators(sviNameLookUp, themeData, sviJSONthemes );
+        Scale(SVI);
     }
 
     ////////////////////////////////
@@ -512,7 +512,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Create the risk indicator only if it has children
     var RI = {};
     if (riskIndicators !== undefined) {
-        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
+        var riskIndicator = CreateRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
@@ -524,8 +524,8 @@ function processIndicators(layerAttributes, projectDef) {
         // Compute the Risk Indicator
         var nameLookUp = 'RI';
         var riJSONthemes = riskIndicators;
-        RI = combineIndicators(nameLookUp, riskIndicator, riJSONthemes);
-        scale(RI);
+        RI = CombineIndicators(nameLookUp, riskIndicator, riJSONthemes);
+        Scale(RI);
     } else {
         // If RI does not have any children the simply compute the RI
         // setup the indicator with all the regions using the layer attributes
@@ -600,7 +600,7 @@ function processIndicators(layerAttributes, projectDef) {
                 IRI[regionName] = tempVal;
             }
         }
-        scale(IRI);
+        Scale(IRI);
     }
 
 
@@ -709,10 +709,10 @@ function processIndicators(layerAttributes, projectDef) {
     }
 
     $('#thematic-map-selection').change(function() {
-        thematicMap(layerAttributes);
+        ThematicMap(layerAttributes);
     });
 
-    thematicMap(layerAttributes);
+    ThematicMap(layerAttributes);
 
     var iriPcpData = [];
 
@@ -738,9 +738,9 @@ function processIndicators(layerAttributes, projectDef) {
 
     $('#projectDef-spinner').hide();
 
-} // End processIndicators
+} // End ProcessIndicators
 
-function scale(IndicatorObj) {
+function Scale(IndicatorObj) {
     var ValueArray = [];
     var scaledValues = [];
     for (var v in IndicatorObj) {
@@ -765,7 +765,7 @@ function scale(IndicatorObj) {
     return IndicatorObj;
 }
 
-function thematicMap(layerAttributes) {
+function ThematicMap(layerAttributes) {
     // Initialize the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
@@ -832,7 +832,7 @@ function thematicMap(layerAttributes) {
     legendControl.addTo(map);
 }
 
-function watchForPdSelection() {
+function WatchForPdSelection() {
     $('#projectDef-spinner').show();
     setTimeout(function() {
         var pdSelection = $('#pdSelection').val();
@@ -840,7 +840,7 @@ function watchForPdSelection() {
             if (tempProjectDef[i].title === pdSelection) {
                 selectedRegion = tempProjectDef[i].zone_label_field;
                 sessionProjectDef = tempProjectDef[i];
-                loadPD(sessionProjectDef);
+                LoadPD(sessionProjectDef);
                 // get b-box
                 /*
                 // This feature is removed until the proj def format is refactored
@@ -861,13 +861,13 @@ function watchForPdSelection() {
                 */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
-                processIndicators(layerAttributes, sessionProjectDef);
+                ProcessIndicators(layerAttributes, sessionProjectDef);
             }
         }
     }, 100);
 }
 
-function getGeoServerLayers() {
+function GetGeoServerLayers() {
     $('#load-project-spinner').show();
     var SVIRLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
@@ -888,7 +888,7 @@ function getGeoServerLayers() {
             var stringToLookFor = 'SVIR_QGIS_Plugin';
             // Reload if the api call was incomplete
             if (featureType.length === undefined) {
-                getGeoServerLayers();
+                GetGeoServerLayers();
                 return;
             }
 
@@ -923,7 +923,7 @@ function getGeoServerLayers() {
 }
 
 
-function versionCompare(a, b) {
+function VersionCompare(a, b) {
     var i, cmp, len, re = /(\.0)+[^\.]*$/;
     a = (a + '').replace(re, '').split('.');
     b = (b + '').replace(re, '').split('.');
@@ -937,7 +937,7 @@ function versionCompare(a, b) {
     return a.length - b.length;
 }
 
-var startApp = function() {
+var StartApp = function() {
     // theme tabls behavior
     $('#themeTabs').resizable({
         minHeight: 500,
@@ -991,7 +991,7 @@ var startApp = function() {
     );
 
     $('#loadProjectdialogBtn').click(function() {
-        getGeoServerLayers();
+        GetGeoServerLayers();
         $('#loadProjectDialog').dialog('open');
     });
 
@@ -1036,8 +1036,8 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-        getAttributeInfoRequest(selectedLayer);
-        getLayerInfoRequest(selectedLayer);
+        GetAttributeInfoRequest(selectedLayer);
+        GetLayerInfoRequest(selectedLayer);
     });
 
 
@@ -1102,7 +1102,7 @@ var startApp = function() {
 };
 
 
-function getAttributeInfoRequest(selectedLayer){
+function GetAttributeInfoRequest(selectedLayer){
 
     // Get layer attributes from GeoServer
     return $.ajax({
@@ -1135,7 +1135,7 @@ function getAttributeInfoRequest(selectedLayer){
     });
 }
 
-function getLayerInfoRequest(selectedLayer) {
+function GetLayerInfoRequest(selectedLayer) {
     /*
     // This feature is removed until the proj def format is refactored
     // Get the bounding box
@@ -1171,12 +1171,12 @@ function getLayerInfoRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_project_definitions?layer_name='+ selectedLayer,
         success: function(data) {
-            console.log('getLayerInfoRequest data:');
+            console.log('GetLayerInfoRequest data:');
             console.log(data);
             tempProjectDef = data;
 
             // Check the svir plugin version
-            var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+            var versionCheck = VersionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
 
             if (versionCheck < 0) {
                 // Warn the user and stop the application
@@ -1192,7 +1192,7 @@ function getLayerInfoRequest(selectedLayer) {
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();
             }
-            $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+            $('#project-def').prepend('<select id="pdSelection" onChange="WatchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
             var pdTitles = [];
             // break the array into objects, present the user with a choice of PDs
             for (var i = 0; i < tempProjectDef.length; i++) {
@@ -1227,4 +1227,4 @@ function getLayerInfoRequest(selectedLayer) {
     });
 }
 
-app.initialize(startApp);
+app.initialize(StartApp);
