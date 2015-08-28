@@ -140,6 +140,12 @@ describe("Get All Layers From GeoServer", function() {
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempProjDefArray = SVIRPairs[i].projDefJson;
             for (var j = 0; j < tempProjDefArray.length; j++) {
+
+                // Test SVIR plugin version
+                var tempVertion = tempProjDefArray[j].svir_plugin_version;
+                var tempVertionMajor = tempVertion.charAt(0);
+                expect(tempVertionMajor).toEqual(1);
+
                 // Test description
                 var tempDescription = tempProjDefArray[j].description;
                 expect(tempDescription).toBeDefined();
@@ -147,13 +153,13 @@ describe("Get All Layers From GeoServer", function() {
                 // Test license
                 var tempLicense = tempProjDefArray[j].license;
                 var licenseOptions = [
-                    'Fragility',
-                    'Vulnerability',
-                    'Damage-to-loss',
-                    'Capacity curve'
+                    'CC0 (http://creativecommons.org/about/cc0)',
+                    'CC BY 3.0  (http://creativecommons.org/licenses/by/3.0/)',
+                    'CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/)',
+                    'CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)'
                 ];
-                expect(assessmentOptions).toContain(assessmentType);
-                }
+                expect(licenseOptions).toContain(tempLicense);
+            }
         }
     });
 });
