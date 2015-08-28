@@ -17,6 +17,7 @@ events with magnitude &gt;= 5.5, occurred between 1960 and 2009</abstract>
     <string>global</string>
     <string>component</string>
     <string>ISC</string>
+    <string>GEM-supplemental-layer</string>
   </keywords>
   <metadataLinks>
     <metadataLink>
