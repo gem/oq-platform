@@ -145,8 +145,15 @@ describe("Get All Layers From GeoServer", function() {
                 expect(tempDescription).toBeDefined();
 
                 // Test license
-                
-            }
+                var tempLicense = tempProjDefArray[j].license;
+                var licenseOptions = [
+                    'Fragility',
+                    'Vulnerability',
+                    'Damage-to-loss',
+                    'Capacity curve'
+                ];
+                expect(assessmentOptions).toContain(assessmentType);
+                }
         }
     });
 });
