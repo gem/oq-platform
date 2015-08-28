@@ -134,10 +134,11 @@ describe("Get All Layers From GeoServer", function() {
         expect(projectDefAjaxCallBoolean).toBeTruthy();
     });
 
-    it("Check for the required elements in the attribute data", function() {
+    it("Check top level required elements in the attribute data", function() {
         console.log('SVIRPairs:');
         console.log(SVIRPairs);
         for (var i = 0; i < SVIRPairs.length; i++) {
+            var tempZone;
             var tempProjDefArray = SVIRPairs[i].projDefJson;
             for (var j = 0; j < tempProjDefArray.length; j++) {
 
@@ -165,8 +166,23 @@ describe("Get All Layers From GeoServer", function() {
                 expect(tempTitle).toBeDefined();
 
                 // Test zone field
-                var tempZone = tempProjDefArray[j].zone_label_field;
+                tempZone = tempProjDefArray[j].zone_label_field;
                 expect(tempZone).toBeDefined();
+            }
+
+            var tempLayerAttribute = SVIRPairs[i].attribute;
+            for (var l = 0; l < tempLayerAttribute.length; l++) {
+                console.log('hello?:');
+                console.log('tempLayerAttribute[l]:');
+                console.log(tempLayerAttribute[l]);
+
+                // Test that the GeoServer layer contains the required zone
+                for (var m = 0; m < tempLayerAttribute[l].features.length; m++) {
+                    var attributeTempZone = tempLayerAttribute[l].features[m].properties[timeZone];
+                    console.log('attributeTempZone:');
+                    console.log(attributeTempZone);
+                }
+                
             }
         }
     });
