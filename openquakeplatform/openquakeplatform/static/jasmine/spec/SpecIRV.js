@@ -195,10 +195,46 @@ describe("Get All Layers From GeoServer", function() {
             }
         }
     });
+
+    it("The primary indicator fields are consistent between the project definition and the layer attribute", function() {
+        var primaryIndicators = [];
+
+        // Capture the project definition zones
+        for (var i = 0; i < SVIRPairs.length; i++) {
+            var tempProjDefArray = SVIRPairs[i].projDefJson;
+
+            for (var j = 0; j < tempProjDefArray.length; j++) {
+                try {
+                    var foobar  = tempProjDefArray[j].children[1].children;
+                    console.log('foobar:');
+                    console.log(foobar);
+                    for (var n = 0; n < foobar.length; n++) {
+                        console.log('foobar.field:');
+                        console.log(foobar.field);
+                        primaryIndicators.push(foobar.field);
+                    }
+                } catch (e) {
+                    // continue
+                }
+            }
+        }
+        console.log('primaryIndicators:');
+        console.log(primaryIndicators);
+
+        // Check that the layer attributes contain the project definition zone
+        for (var i = 0; i < SVIRPairs.length; i++) {
+            var tempLayerAttribute = SVIRPairs[i].attribute;
+            for(var j = 0; j < tempLayerAttribute.features.length; j++) {
+                var zone = primaryIndicators[i];
+                var layerAttributeProp = tempLayerAttribute.features[j].properties[zone];
+                expect(layerAttributeProp).toBeDefined();
+            }
+        }
+    });
 });
 
 
-describe("Test Create Risk Indicator Function", function() {
+describe("Test Risk Indicator Function", function() {
     it("The index was created", function() {
         var selectedRegion = 'COUNTRY_NA';
         var layerAttributes = '[{"type":"Feature","id":"qgis_svir_c0d75859_78e4_4dcb_bcd1_fbd9e0013aa9.1","geometry":{"type":"MultiPolygon","coordinates":[[[[-66.30249786376953,-55.01680374145508],[-66.30361175537098,-55.01680374145508],[-66.30416870117173,-55.01652908325197],[-66.3047256469726,-55.016250610351584]]]]},"geometry_name":"the_geom","properties":{"ISO":"VEN","COUNTRY_NA":"Venezuela","ECOEACGUS":14.187,"ECOIDPGIN":7.604,"EDUEOCEYS":11430.238,"HEAHSTLEX":74.402,"GNIPCAP":0.588281660535996,"GINI":0.166146645865835,"EXPYSCHOOL":0.778839072507755,"LIFEEXPEC":0.622620380739082,"SVI":-0.34141510001530717,"RI":0,"IRI":-0.17070755000765359,"LOSS_PTS":0,"SUM_field_":0,"AVG_field_":0,"SVI_1":null,"RI_1":5722.2125,"IRI_1":null}}]';
