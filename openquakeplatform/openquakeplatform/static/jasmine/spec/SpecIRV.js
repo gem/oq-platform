@@ -169,20 +169,29 @@ describe("Get All Layers From GeoServer", function() {
                 tempZone = tempProjDefArray[j].zone_label_field;
                 expect(tempZone).toBeDefined();
             }
+        }
+    });
 
+
+    it("The zone field is consistent between the project definition and the layer attribute", function() {
+        var layerAttrZone = [];
+
+        // Capture the project definition zones
+        for (var i = 0; i < SVIRPairs.length; i++) {
+            var tempProjDefArray = SVIRPairs[i].projDefJson;
+
+            for (var j = 0; j < tempProjDefArray.length; j++) {
+                layerAttrZone.push(tempProjDefArray[j].zone_label_field);
+            }
+        }
+
+        // Check that the layer attributes contain the project definition zone
+        for (var i = 0; i < SVIRPairs.length; i++) {
             var tempLayerAttribute = SVIRPairs[i].attribute;
-            for (var l = 0; l < tempLayerAttribute.length; l++) {
-                console.log('hello?:');
-                console.log('tempLayerAttribute[l]:');
-                console.log(tempLayerAttribute[l]);
-
-                // Test that the GeoServer layer contains the required zone
-                for (var m = 0; m < tempLayerAttribute[l].features.length; m++) {
-                    var attributeTempZone = tempLayerAttribute[l].features[m].properties[timeZone];
-                    console.log('attributeTempZone:');
-                    console.log(attributeTempZone);
-                }
-                
+            for(var j = 0; j < tempLayerAttribute.features.length; j++) {
+                var zone = layerAttrZone[i];
+                var layerAttributeProp = tempLayerAttribute.features[j].properties[zone];
+                expect(layerAttributeProp).toBeDefined();
             }
         }
     });
