@@ -199,19 +199,25 @@ describe("Get All Layers From GeoServer", function() {
     it("The primary indicator fields are consistent between the project definition and the layer attribute", function() {
         var primaryIndicators = [];
 
-        // Capture the project definition zones
+        // Capture the project definition primary indicators
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempProjDefArray = SVIRPairs[i].projDefJson;
 
             for (var j = 0; j < tempProjDefArray.length; j++) {
                 try {
-                    var foobar  = tempProjDefArray[j].children[1].children;
-                    console.log('foobar:');
-                    console.log(foobar);
-                    for (var n = 0; n < foobar.length; n++) {
-                        console.log('foobar.field:');
-                        console.log(foobar.field);
-                        primaryIndicators.push(foobar.field);
+                    var SVIChildren = tempProjDefArray[j].children[1].children;
+                    console.log('SVIChildren:');
+                    console.log(SVIChildren);
+
+                    for (var n = 0; n < SVIChildren.length; n++) {
+                        try {
+                            var tempPIArray = SVIChildren[n].children;
+                            for (var m = 0; m < tempPIArray.length; m++) {
+                                primaryIndicators.push(tempPIArray[m].field);
+                            }
+                        } catch (e) {
+                            // continue
+                        }
                     }
                 } catch (e) {
                     // continue
@@ -221,7 +227,7 @@ describe("Get All Layers From GeoServer", function() {
         console.log('primaryIndicators:');
         console.log(primaryIndicators);
 
-        // Check that the layer attributes contain the project definition zone
+        // Check that the layer attributes contain the project definition primary indicators
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempLayerAttribute = SVIRPairs[i].attribute;
             for(var j = 0; j < tempLayerAttribute.features.length; j++) {
