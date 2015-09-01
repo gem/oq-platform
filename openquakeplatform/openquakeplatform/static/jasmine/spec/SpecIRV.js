@@ -198,20 +198,24 @@ describe("Get All Layers From GeoServer", function() {
 
     it("The primary indicator fields are consistent between the project definition and the layer attribute", function() {
         var primaryIndicators = [];
+        var thisIterationPD;
 
-        // Capture the project definition primary indicators
+        // Iterate over each SVIRPairs pair
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempProjDefArray = SVIRPairs[i].projDefJson;
+            thisIterationPD = tempProjDefArray;
 
+            // Capture the project definition primary indicator keys
             for (var j = 0; j < tempProjDefArray.length; j++) {
+                // This is needed because not all SVI elements have children
                 try {
                     var SVIChildren = tempProjDefArray[j].children[1].children;
-                    console.log('SVIChildren:');
-                    console.log(SVIChildren);
-
+                    // Iterate over each SVI theme object
                     for (var n = 0; n < SVIChildren.length; n++) {
+                        // Not all SVI children have children
                         try {
                             var tempPIArray = SVIChildren[n].children;
+                            // Iterate over each primary indicator object
                             for (var m = 0; m < tempPIArray.length; m++) {
                                 primaryIndicators.push(tempPIArray[m].field);
                             }
@@ -223,18 +227,22 @@ describe("Get All Layers From GeoServer", function() {
                     // continue
                 }
             }
-        }
-        console.log('primaryIndicators:');
-        console.log(primaryIndicators);
 
-        // Check that the layer attributes contain the project definition primary indicators
-        for (var i = 0; i < SVIRPairs.length; i++) {
             var tempLayerAttribute = SVIRPairs[i].attribute;
-            for(var j = 0; j < tempLayerAttribute.features.length; j++) {
-                var zone = primaryIndicators[i];
-                var layerAttributeProp = tempLayerAttribute.features[j].properties[zone];
-                expect(layerAttributeProp).toBeDefined();
+            for(var p = 0; p < tempLayerAttribute.features.length; p++) {
+                // Check each recorded primary indicator
+                for (var q = 0; q < primaryIndicators.length; q++) {
+                    var layerAttributeProp = tempLayerAttribute.features[p].properties[primaryIndicators[q]];
+                    // It is acceptable for the layer attribute value for a primary indicator to be null.
+                    // Here we set a result to be an empty string, in this way the test will pass
+                    if (layerAttributes === null) {
+                        layerAttributes = "";
+                    }
+                    expect(layerAttributeProp).toBeDefined();
+                }
             }
+            // Empty the primary indicator array after each iteration
+            primaryIndicators = [];
         }
     });
 });
