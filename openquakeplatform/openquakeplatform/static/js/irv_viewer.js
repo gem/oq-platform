@@ -79,7 +79,7 @@ function scaleTheData() {
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createIndex(la, index) {
+function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -105,8 +105,16 @@ function createIndex(la, index) {
     return indicator;
 }
 
-function combineIndicators(nameLookUp, themeObj, JSONthemes) {
-    projectDef = sessionProjectDef;
+function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectDef) {
+
+    //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
+    // an empty object in order to test the function
+    if (!jQuery.isEmptyObject(sessionProjectDef)) {
+        projectDef = sessionProjectDef;
+    } else {
+        projectDef = testSessionProjectDef;
+    }
+
     var subIndex = {};
     var operator;
     var themeInversionFactor;
@@ -123,6 +131,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         var tempRegion = themeObj[t].region;
         subIndex[tempRegion] = 0;
     }
+
     // get some info about the themes
     var themeKeys = [];
     var themeWeightObj = {};
@@ -165,7 +174,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
-
             var tempElementValue = 0;
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
@@ -213,6 +221,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
+
     return subIndex;
 }
 
@@ -503,7 +512,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Create the risk indicator only if it has children
     var RI = {};
     if (riskIndicators !== undefined) {
-        var riskIndicator = createIndex(la, riskIndicators);
+        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
@@ -1026,123 +1035,11 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-
-        // Get layer attributes from GeoServer
-        $.ajax({
-            type: 'get',
-            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
-            success: function(data) {
-                $('#loadProjectDialog').dialog('close');
-
-                // Make a global variable used by the d3-tree chart
-                // when a weight is modified
-                layerAttributes = data;
-                projectLayerAttributes = layerAttributes;
-
-                // provide a dropdown menu to select the region field
-                var layerFields = [];
-                // get all the field name out of the layer attributes object
-                for (var key in layerAttributes.features[0].properties) {
-                    layerFields.push(key);
-                }
-
-                getLayerInfo();
-            },
-            error: function() {
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get information about the selected layer</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-            }
-        });
+        getAttributeInfoRequest(selectedLayer);
+        getProjDefJSONRequest(selectedLayer);
     });
 
-    function getLayerInfo() {
-        /*
-        // This feature is removed until the proj def format is refactored
-        // Get the bounding box
-        $.ajax({
-            type: 'get',
-            url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
-            success: function(layerMetadataURL) {
 
-                // ***** TEMP remove this ****
-                // Portugal-test
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
-                //SA test2
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
-
-
-                $.get( layerMetadataURL, function( layerMetadata ) {
-                    // Convert XML to JSON
-                    var xmlText = new XMLSerializer().serializeToString(layerMetadata);
-                    var x2js = new X2JS();
-                    var jsonElement = x2js.xml_str2json(xmlText);
-                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-                });
-            }
-        });
-
-
-        */
-        // Get the project definition
-        $.ajax({
-            type: 'get',
-            url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
-            success: function(data) {
-                tempProjectDef = data;
-
-                // Check the svir plugin version
-                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
-
-                if (versionCheck < 0) {
-                    // Warn the user and stop the application
-                    $('#projectDef-spinner').hide();
-                    $('#project-def').append(
-                        '<div class="alert alert-danger" role="alert">' +
-                            'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
-                        '</div>'
-                    );
-                    return
-                }
-
-                if ($('#pdSelection').length > 0) {
-                    $('#pdSelection').remove();
-                }
-                $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
-                var pdTitles = [];
-                // break the array into objects, present the user with a choice of PDs
-                for (var i = 0; i < tempProjectDef.length; i++) {
-                    // Get the PD title
-                    pdTitles.push(tempProjectDef[i].title);
-                }
-                // Provide the user with a selection dropdown of the available PDs
-                for (var ia = 0; ia < pdTitles.length; ia++) {
-                    $('#pdSelection').append(
-                        '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
-                    );
-                }
-                $('#projectDef-spinner').hide();
-
-                // select the first project definition
-                var menuOption = $('#pdSelection');
-                menuOption[0].selectedIndex = 1;
-                // trigger first project definition
-                setTimeout(function() {
-                    $('#pdSelection').trigger('change');
-                }, 100);
-            },
-            error: function() {
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get the supplemental information about the selected layer</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-            }
-        });
-    }
 
     // AJAX error dialog
     $('#ajaxErrorDialog').dialog({
@@ -1202,5 +1099,130 @@ var startApp = function() {
         'display': 'block'
     });
 };
+
+
+function getAttributeInfoRequest(selectedLayer){
+
+    // Get layer attributes from GeoServer
+    return $.ajax({
+        type: 'get',
+        url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
+        success: function(data) {
+            $('#loadProjectDialog').dialog('close');
+
+            // Make a global variable used by the d3-tree chart
+            // when a weight is modified
+            layerAttributes = data;
+            projectLayerAttributes = layerAttributes;
+
+            // provide a dropdown menu to select the region field
+            var layerFields = [];
+            // get all the field name out of the layer attributes object
+            for (var key in layerAttributes.features[0].properties) {
+                layerFields.push(key);
+            }
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                '<p>This application was not able to get information about the selected layer</p>'
+            );
+            $('#ajaxErrorDialog').dialog('open');
+        }
+    });
+}
+
+function getProjDefJSONRequest(selectedLayer) {
+    /*
+    // This feature is removed until the proj def format is refactored
+    // Get the bounding box
+    $.ajax({
+        type: 'get',
+        url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
+        success: function(layerMetadataURL) {
+
+            // ***** TEMP remove this ****
+            // Portugal-test
+            //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
+            //SA test2
+            layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
+
+
+            $.get( layerMetadataURL, function( layerMetadata ) {
+                // Convert XML to JSON
+                var xmlText = new XMLSerializer().serializeToString(layerMetadata);
+                var x2js = new X2JS();
+                var jsonElement = x2js.xml_str2json(xmlText);
+                // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
+                boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
+            });
+        }
+    });
+
+
+    */
+    // Get the project definition
+
+
+    return $.ajax({
+        type: 'get',
+        url: '/svir/get_project_definitions?layer_name='+ selectedLayer,
+        success: function(data) {
+            tempProjectDef = data;
+
+            // Check the svir plugin version
+            var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+
+            if (versionCheck < 0) {
+                // Warn the user and stop the application
+                $('#projectDef-spinner').hide();
+                $('#project-def').append(
+                    '<div class="alert alert-danger" role="alert">' +
+                        'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                    '</div>'
+                );
+                return
+            }
+
+            if ($('#pdSelection').length > 0) {
+                $('#pdSelection').remove();
+            }
+            $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+            var pdTitles = [];
+            // break the array into objects, present the user with a choice of PDs
+            for (var i = 0; i < tempProjectDef.length; i++) {
+                // Get the PD title
+                pdTitles.push(tempProjectDef[i].title);
+            }
+            // Provide the user with a selection dropdown of the available PDs
+            for (var ia = 0; ia < pdTitles.length; ia++) {
+                $('#pdSelection').append(
+                    '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                );
+            }
+            $('#projectDef-spinner').hide();
+
+            // select the first project definition in menu dropdown list
+            try {
+                var menuOption = $('#pdSelection');
+                menuOption[0].selectedIndex = 1;
+            } catch (e) {
+                // continue
+            }
+
+            // trigger first project definition
+            setTimeout(function() {
+                $('#pdSelection').trigger('change');
+            }, 100);
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+            );
+            $('#ajaxErrorDialog').dialog('open');
+        }
+    });
+}
 
 app.initialize(startApp);
