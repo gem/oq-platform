@@ -864,7 +864,11 @@ function watchForPdSelection() {
                 */
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
-                processIndicators(layerAttributes, sessionProjectDef);
+                // TODO this is required beasue watchForPdSelection is running before the
+                // ajax call are able to get a repley, need to find a better solution
+                setTimeout(function() {
+                    processIndicators(layerAttributes, sessionProjectDef);
+                }, 3000);
             }
         }
     }, 100);
