@@ -58,8 +58,8 @@ describe("Get All Layers From GeoServer", function() {
                 ////////////////////////////////
 
                 // This function will be executed once for each layer name in SVIRLayerNames
-                // This function will execute first the getAttributeInfoRequest function
-                // and then the getProjDefJSONRequest function.
+                // This function will execute first the attributeInfoRequest function
+                // and then the projDefJSONRequest function.
                 // During each iteration it will create an object pairs of the layer attributes
                 // and the project definition.
                 // Insparation for this function:
@@ -76,22 +76,24 @@ describe("Get All Layers From GeoServer", function() {
                     // Set the layer neme
                     var layerName = SVIRLayerNames[counter];
 
-                    // Execute the getAttributeInfoRequest function and pass it the layer neme
-                    var attributeRequest = getAttributeInfoRequest(layerName);
+                    // Execute the attributeInfoRequest function and pass it the layer neme
+                    var attributeRequest = attributeInfoRequest(layerName);
 
                     var iterationPair = {};
 
-                    // we need to execute the getProjDefJSONRequest function after the
-                    // getAttributeInfoRequest function is completed
+                    // we need to execute the projDefJSONRequest function after the
+                    // attributeInfoRequest function is completed
                     attributeRequest.success(function(attributeResponse) {
                         attributesAjaxCallBoolean = true;
 
                         // Capture the iteration attribute response
                         iterationPair.attribute = attributeResponse;
 
-                        var JsonRequest = getProjDefJSONRequest(layerName);
+                        var JsonRequest = projDefJSONRequest(layerName);
 
                         JsonRequest.success(function(layerResponse) {
+                            console.log('layerResponse:');
+                            console.log(layerResponse);
                             projectDefAjaxCallBoolean = true;
 
                             // Capture the iteration layer response
