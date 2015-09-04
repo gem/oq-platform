@@ -145,8 +145,6 @@ def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWOR
     init_start()
     # Import our users
     _set_auth()
-    # Initialize SQL extensions and customizations
-    _init_sql():
     # Update Django 'sites' with real hostname
     _set_sites()
 
@@ -426,10 +424,6 @@ def _add_vulnerability(db_name, db_user, db_pass):
 def _set_auth():
     local('python manage.py loaddata '
           './openquakeplatform/common/fixtures/*.json')
-
-def _init_sql():
-    local('cat ./openquakeplatform/common/fixtures/*.sql | '
-          'python manage.py dbshell')
 
 def _set_sites():
     local('python manage.py fixsitename')

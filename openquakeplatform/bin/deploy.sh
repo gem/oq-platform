@@ -624,7 +624,6 @@ oq_platform_install () {
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # Load our users. Default password must be changed
         openquakeplatform loaddata ${oqpdir}/common/fixtures/*.json
-        cat ${oqpdir}/common/fixtures/*.sql | openquakeplatform dbshell
     fi
 
     service apache2 restart
