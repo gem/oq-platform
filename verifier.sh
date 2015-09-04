@@ -246,7 +246,7 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran"
 
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
-    
+
     ssh -t  $lxc_ip "sudo sed -i \"s/\([#        ]*listen_addresses[     ]*=[    ]*\)[^#]*\(#.*\)*/listen_addresses = '*'    \2/g\" /etc/postgresql/9.1/main/postgresql.conf"
 
     ssh -t  $lxc_ip "sudo service postgresql restart"
@@ -388,6 +388,105 @@ devtest_run () {
     return $inner_ret
 }
 
+#
+#  _prodtest_innervm_run <branch_id> <lxc_ip> - part of source test performed on lxc
+#                     the following activities are performed:
+#                     - extracts dependencies from oq-{engine,hazardlib, ..} debian/control
+#                       files and install them
+#                     - builds oq-hazardlib speedups
+#                     - installs oq-engine sources on lxc
+#                     - set up postgres
+#                     - upgrade db
+#                     - runs celeryd
+#                     - runs tests
+#                     - runs coverage
+#                     - collects all tests output files from lxc
+#
+#      <branch_id>    name of the tested branch
+#      <lxc_ip>       the IP address of lxc instance
+#
+_prodtest_innervm_run () {
+    local i old_ifs pkgs_list dep branch_id="$1" lxc_ip="$2"
+
+    trap 'local LASTERR="$?" ; trap ERR ; (exit $LASTERR) ; return' ERR
+
+    ssh -t  $lxc_ip "rm -f ssh.log"
+
+    ssh -t  $lxc_ip "sudo apt-get update"
+    ssh -t  $lxc_ip "sudo apt-get -y upgrade"
+
+    ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran"
+
+    ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
+
+    ssh -t  $lxc_ip "sudo sed -i \"s/\([#        ]*listen_addresses[     ]*=[    ]*\)[^#]*\(#.*\)*/listen_addresses = '*'    \2/g\" /etc/postgresql/9.1/main/postgresql.conf"
+
+    ssh -t  $lxc_ip "sudo service postgresql restart"
+
+    repo_id="$GEM_GIT_REPO"
+    ssh -t  $lxc_ip "git clone --depth=1 -b $branch_id $repo_id/$GEM_GIT_PACKAGE"
+    ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
+rem_sig_hand() {
+    trap ERR
+    echo 'signal trapped'
+}
+trap rem_sig_hand ERR
+set -e
+if [ \$GEM_SET_DEBUG ]; then
+    set -x
+fi
+oq-platform/openquakeplatform/bin/deploy.sh --host localhost
+
+cd oq-platform/openquakeplatform/openquakeplatform/test
+export PYTHONPATH=\$(pwd)
+cp config.py.tmpl config.py
+export DISPLAY=:1
+./test_isc.py
+
+sleep 3
+cd -
+"
+
+    echo "_devtest_innervm_run: exit"
+
+    return 0
+}
+
+
+
+#
+#  devtest_run <branch_id> - main function of source test
+#      <branch_id>    name of the tested branch
+#
+prodtest_run () {
+    local deps old_ifs branch_id="$1"
+
+    sudo echo
+    sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
+    _lxc_name_and_ip_get /tmp/packager.eph.$$.log
+    rm /tmp/packager.eph.$$.log
+
+    _wait_ssh $lxc_ip
+    set +e
+    _prodtest_innervm_run "$branch_id" "$lxc_ip"
+    inner_ret=$?
+
+    # scp "${lxc_ip}:ssh.log" devtest.history || true
+    # scp "${lxc_ip}:.pip/pip.log" pip.history || true
+    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+
+    if [ $inner_ret != 0 ]; then
+        # cleanup in error case
+        :
+    fi
+
+    sudo $LXC_TERM -n $lxc_name
+
+    set -e
+
+    return $inner_ret
+}
+
 
 #
 #  MAIN
@@ -402,6 +501,10 @@ while [ $# -gt 0 ]; do
             # Sed removes 'origin/' from the branch name
             devtest_run $(echo "$2" | sed 's@.*/@@g')
             exit $?
+            break
+            ;;
+        prodtest)
+            prodtest_run $(echo "$2" | sed 's@.*/@@g')
             break
             ;;
         *)
