@@ -448,7 +448,7 @@ sleep 3
 cd -
 "
 
-    echo "_devtest_innervm_run: exit"
+    echo "_prodtest_innervm_run: exit"
 
     return 0
 }
