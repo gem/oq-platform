@@ -435,7 +435,7 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
-oq-platform/openquakeplatform/bin/deploy.sh --host localhost
+echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host localhost
 
 cd oq-platform/openquakeplatform/openquakeplatform/test
 export PYTHONPATH=\$(pwd)
