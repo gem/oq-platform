@@ -440,6 +440,7 @@ echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host local
 cd oq-platform/openquakeplatform/openquakeplatform/test
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
+sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' config.py.tmpl > config.py
 export DISPLAY=:1
 ./test_isc.py
 
