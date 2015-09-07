@@ -150,19 +150,17 @@ describe("Get All Layers From GeoServer", function() {
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempZone;
             var tempProjDefMeta = SVIRPairs[i].projDefMetaData;
-            for (var j = 0; j < tempProjDefMeta.length; j++) {
-
                 // Test SVIR plugin major version
-                var tempVertion = tempProjDefMeta[j].svir_plugin_version;
+                var tempVertion = tempProjDefMeta.svir_plugin_version;
                 var tempVertionMajor = tempVertion.charAt(0);
                 expect(tempVertionMajor).toEqual('1');
 
                 // Test abstract
-                var tempDescription = tempProjDefMeta[j].abstract;
+                var tempDescription = tempProjDefMeta.abstract;
                 expect(tempDescription).toBeDefined();
 
                 // Test license
-                var tempLicense = tempProjDefMeta[j].license;
+                var tempLicense = tempProjDefMeta.license;
                 var licenseOptions = [
                     'CC0 (http://creativecommons.org/about/cc0)',
                     'CC BY 3.0  (http://creativecommons.org/licenses/by/3.0/)',
@@ -172,48 +170,43 @@ describe("Get All Layers From GeoServer", function() {
                 expect(licenseOptions).toContain(tempLicense);
 
                 // Test the tile
-                var tempTitle = tempProjDefMeta[j].title;
+                var tempTitle = tempProjDefMeta.title;
                 expect(tempTitle).toBeDefined();
 
                 // Test zone field
-                tempZone = tempProjDefMeta[j].zone_label_field;
+                tempZone = tempProjDefMeta.zone_label_field;
                 expect(tempZone).toBeDefined();
 
                 // Test bounding box field exists
-                var boundingBox = tempProjDefMeta[j].bounding_box;
+                var boundingBox = tempProjDefMeta.bounding_box;
                 expect(boundingBox).toBeDefined();
 
                 // Test bounding box contains valid coordinates
-                minXCoordinate = tempProjDefMeta[j].bounding_box.minx;
+                minXCoordinate = tempProjDefMeta.bounding_box.minx;
                 expect(minXCoordinate >= -180 ).toBeTruthy();
                 expect(minXCoordinate <= 180 ).toBeTruthy();
 
-                maxXCoordinate = tempProjDefMeta[j].bounding_box.maxx;
+                maxXCoordinate = tempProjDefMeta.bounding_box.maxx;
                 expect(maxXCoordinate >= -180 ).toBeTruthy();
                 expect(maxXCoordinate <= 180 ).toBeTruthy();
 
-                minYCoordinate = tempProjDefMeta[j].bounding_box.miny;
+                minYCoordinate = tempProjDefMeta.bounding_box.miny;
                 expect(minYCoordinate >= -90 ).toBeTruthy();
                 expect(minYCoordinate <= 90 ).toBeTruthy();
 
-                maxYCoordinate = tempProjDefMeta[j].bounding_box.maxy;
+                maxYCoordinate = tempProjDefMeta.bounding_box.maxy;
                 expect(maxYCoordinate >= -90 ).toBeTruthy();
                 expect(maxYCoordinate <= 90 ).toBeTruthy();
-            }
         }
     });
 
-/*
     it("The zone field is consistent between the project definition and the layer attribute", function() {
         var layerAttrZone = [];
 
         // Capture the project definition zones
         for (var i = 0; i < SVIRPairs.length; i++) {
-            var tempProjDefArray = SVIRPairs[i].projDefJson;
-
-            for (var j = 0; j < tempProjDefArray.length; j++) {
-                layerAttrZone.push(tempProjDefArray[j].zone_label_field);
-            }
+            var tempProjMetaDataZone = SVIRPairs[i].projDefMetaData.zone_label_field;
+                layerAttrZone.push(tempProjMetaDataZone);
         }
 
         // Check that the layer attributes contain the project definition zone
@@ -226,7 +219,7 @@ describe("Get All Layers From GeoServer", function() {
             }
         }
     });
-*/
+
     it("The primary indicator fields are consistent between the project definition and the layer attribute", function() {
         var primaryIndicators = [];
         var thisIterationPD;
