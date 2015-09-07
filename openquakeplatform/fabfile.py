@@ -425,6 +425,5 @@ def _set_auth():
     local('python manage.py loaddata '
           './openquakeplatform/common/fixtures/*.json')
 
-
 def _set_sites():
     local('python manage.py fixsitename')
