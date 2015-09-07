@@ -89,33 +89,26 @@ describe("Get All Layers From GeoServer", function() {
                         // Capture the iteration attribute response
                         iterationPair.attribute = attributeResponse;
 
-                        var jsonRequest = projDefJSONRequest(layerName);
+                        var projectDefMetaDataRequest = projDefJSONRequest(layerName);
 
-                        jsonRequest.success(function(layerResponse) {
+                        projectDefMetaDataRequest.success(function(metaDataResponse) {
                             projectDefAjaxCallBoolean = true;
 
-                            // Capture the iteration layer response
-                            iterationPair.projDefJson = layerResponse;
+                            // Capture the project definition response
+                            iterationPair.projDefJson = metaDataResponse.project_definitions;
 
-                            var projectDefMetaDataRequest = projectDefMetaReuest(layerName);
+                             // Capture the iteration metadata response
+                            iterationPair.projDefMetaData = metaDataResponse;
 
-                            projectDefMetaDataRequest.success(function(metaDataResponse) {
-                                console.log('metaDataResponse:');
-                                console.log(metaDataResponse);
-                                 // Capture the iteration metadata response
-                                iterationPair.projDefMetaData = metaDataResponse;
+                            // Pass the metadata to the pairs array
+                            SVIRPairs.push(iterationPair);
+                        });
 
-                                // Pass the metadata to the pairs array
-                                SVIRPairs.push(iterationPair);
-                            });
-
-                            projectDefMetaDataRequest.done(function() {
-                                // Once this (third nested ajax call) is complete
-                                // we trigger the next iteration of this function (for each layer name)
-                                var count = counter + 1;
-                                mySyncFunction(count, totRecords);
-                            });
-
+                        projectDefMetaDataRequest.done(function() {
+                            // Once this (third nested ajax call) is complete
+                            // we trigger the next iteration of this function (for each layer name)
+                            var count = counter + 1;
+                            mySyncFunction(count, totRecords);
                         });
                     });
                 };
@@ -145,8 +138,6 @@ describe("Get All Layers From GeoServer", function() {
     });
 
     it("Check project definiton metadata required elements", function() {
-        console.log('SVIRPairs:');
-        console.log(SVIRPairs);
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempZone;
             var tempProjDefMeta = SVIRPairs[i].projDefMetaData;

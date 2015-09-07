@@ -28,7 +28,7 @@ var selectedLayer;
 var tempProjectDef;
 var COMPATIBILITY_VERSION = '1.4.3';
 var thematicLayer;
-//var boundingBox;
+var boundingBox = [];
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -844,24 +844,17 @@ function watchForPdSelection() {
                 selectedRegion = tempProjectDef[i].zone_label_field;
                 sessionProjectDef = tempProjectDef[i];
                 loadPD(sessionProjectDef);
+
                 // get b-box
-                /*
-                // This feature is removed until the proj def format is refactored
                 if (boundingBox != undefined) {
                     map.fitBounds (
                         L.latLngBounds (
-                            L.latLng (
-                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                            ),
-                            L.latLng (
-                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                            )
+                            L.latLng (boundingBox[0],boundingBox[1]),
+                            L.latLng (boundingBox[2], boundingBox[3])
                         )
                     );
                 }
-                */
+
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
                 // TODO this is required beasue watchForPdSelection is running before the
@@ -1044,7 +1037,6 @@ var startApp = function() {
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
         attributeInfoRequest(selectedLayer);
-        projectDefMetaReuest(selectedLayer);
         projDefJSONRequest(selectedLayer);
     });
 
@@ -1141,58 +1133,16 @@ function attributeInfoRequest(selectedLayer){
     });
 }
 
-function projectDefMetaReuest(selectedLayer) {
-        return $.ajax({
-        type: 'get',
-        url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
-        success: function(response) {
-            console.log('response:');
-            console.log(response);
-            // TODO check the version number compatibility
-        }
-    })
-}
-
 function projDefJSONRequest(selectedLayer) {
-    /*
-    // This feature is removed until the proj def format is refactored
-    // Get the bounding box
-    $.ajax({
-        type: 'get',
-        url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
-        success: function(layerMetadataURL) {
-
-            // ***** TEMP remove this ****
-            // Portugal-test
-            //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
-            //SA test2
-            layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
-
-
-            $.get( layerMetadataURL, function( layerMetadata ) {
-                // Convert XML to JSON
-                var xmlText = new XMLSerializer().serializeToString(layerMetadata);
-                var x2js = new X2JS();
-                var jsonElement = x2js.xml_str2json(xmlText);
-                // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-            });
-        }
-    });
-
-
-    */
     // Get the project definition
     return $.ajax({
         type: 'get',
-        url: '/svir/get_project_definitions?layer_name='+ selectedLayer,
+        url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
         success: function(data) {
-            console.log('data:');
-            console.log(data);
-            tempProjectDef = data;
+            tempProjectDef = data.project_definitions;
 
             // Check the svir plugin version
-            var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+            var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
 
             if (versionCheck < 0) {
                 // Warn the user and stop the application
@@ -1204,6 +1154,14 @@ function projDefJSONRequest(selectedLayer) {
                 );
                 return
             }
+
+            // Populate global bounding box array
+            boundingBox = [
+                data.bounding_box.minx,
+                data.bounding_box.maxx,
+                data.bounding_box.miny,
+                data.bounding_box.maxy
+            ];
 
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();
