@@ -133,8 +133,6 @@ describe("Get All Layers From GeoServer", function() {
     });
 
     it("The ajax request for the SVIR layers list was complete", function() {
-        console.log('SVIRPairs:');
-        console.log(SVIRPairs);
         expect(layerListAjaxCallBoolean).toBeTruthy();
     });
 
@@ -146,27 +144,25 @@ describe("Get All Layers From GeoServer", function() {
         expect(projectDefAjaxCallBoolean).toBeTruthy();
     });
 
-    // TODO refector these...
-/*
-    it("Check top level required elements in the attribute data", function() {
+    it("Check project definiton metadata required elements", function() {
         console.log('SVIRPairs:');
         console.log(SVIRPairs);
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempZone;
-            var tempProjDefArray = SVIRPairs[i].projDefJson;
-            for (var j = 0; j < tempProjDefArray.length; j++) {
+            var tempProjDefMeta = SVIRPairs[i].projDefMetaData;
+            for (var j = 0; j < tempProjDefMeta.length; j++) {
 
-                // Test SVIR plugin version
-                var tempVertion = tempProjDefArray[j].svir_plugin_version;
+                // Test SVIR plugin major version
+                var tempVertion = tempProjDefMeta[j].svir_plugin_version;
                 var tempVertionMajor = tempVertion.charAt(0);
                 expect(tempVertionMajor).toEqual('1');
 
-                // Test description
-                var tempDescription = tempProjDefArray[j].description;
+                // Test abstract
+                var tempDescription = tempProjDefMeta[j].abstract;
                 expect(tempDescription).toBeDefined();
 
                 // Test license
-                var tempLicense = tempProjDefArray[j].license;
+                var tempLicense = tempProjDefMeta[j].license;
                 var licenseOptions = [
                     'CC0 (http://creativecommons.org/about/cc0)',
                     'CC BY 3.0  (http://creativecommons.org/licenses/by/3.0/)',
@@ -176,16 +172,37 @@ describe("Get All Layers From GeoServer", function() {
                 expect(licenseOptions).toContain(tempLicense);
 
                 // Test the tile
-                var tempTitle = tempProjDefArray[j].title;
+                var tempTitle = tempProjDefMeta[j].title;
                 expect(tempTitle).toBeDefined();
 
                 // Test zone field
-                tempZone = tempProjDefArray[j].zone_label_field;
+                tempZone = tempProjDefMeta[j].zone_label_field;
                 expect(tempZone).toBeDefined();
+
+                // Test bounding box field exists
+                var boundingBox = tempProjDefMeta[j].bounding_box;
+                expect(boundingBox).toBeDefined();
+
+                // Test bounding box contains valid coordinates
+                minXCoordinate = tempProjDefMeta[j].bounding_box.minx;
+                expect(minXCoordinate >= -180 ).toBeTruthy();
+                expect(minXCoordinate <= 180 ).toBeTruthy();
+
+                maxXCoordinate = tempProjDefMeta[j].bounding_box.maxx;
+                expect(maxXCoordinate >= -180 ).toBeTruthy();
+                expect(maxXCoordinate <= 180 ).toBeTruthy();
+
+                minYCoordinate = tempProjDefMeta[j].bounding_box.miny;
+                expect(minYCoordinate >= -90 ).toBeTruthy();
+                expect(minYCoordinate <= 90 ).toBeTruthy();
+
+                maxYCoordinate = tempProjDefMeta[j].bounding_box.maxy;
+                expect(maxYCoordinate >= -90 ).toBeTruthy();
+                expect(maxYCoordinate <= 90 ).toBeTruthy();
             }
         }
     });
-*/
+
 /*
     it("The zone field is consistent between the project definition and the layer attribute", function() {
         var layerAttrZone = [];
