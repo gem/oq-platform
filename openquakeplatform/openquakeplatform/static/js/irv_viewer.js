@@ -1043,8 +1043,9 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-        getAttributeInfoRequest(selectedLayer);
-        getProjDefJSONRequest(selectedLayer);
+        attributeInfoRequest(selectedLayer);
+        projectDefMetaReuest(selectedLayer);
+        projDefJSONRequest(selectedLayer);
     });
 
 
@@ -1109,7 +1110,7 @@ var startApp = function() {
 };
 
 
-function getAttributeInfoRequest(selectedLayer){
+function attributeInfoRequest(selectedLayer){
 
     // Get layer attributes from GeoServer
     return $.ajax({
@@ -1140,7 +1141,19 @@ function getAttributeInfoRequest(selectedLayer){
     });
 }
 
-function getProjDefJSONRequest(selectedLayer) {
+function projectDefMetaReuest(selectedLayer) {
+        return $.ajax({
+        type: 'get',
+        url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
+        success: function(response) {
+            console.log('response:');
+            console.log(response);
+            // TODO check the version number compatibility
+        }
+    })
+}
+
+function projDefJSONRequest(selectedLayer) {
     /*
     // This feature is removed until the proj def format is refactored
     // Get the bounding box
@@ -1170,12 +1183,12 @@ function getProjDefJSONRequest(selectedLayer) {
 
     */
     // Get the project definition
-
-
     return $.ajax({
         type: 'get',
         url: '/svir/get_project_definitions?layer_name='+ selectedLayer,
         success: function(data) {
+            console.log('data:');
+            console.log(data);
             tempProjectDef = data;
 
             // Check the svir plugin version
