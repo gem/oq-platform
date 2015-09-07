@@ -26,7 +26,7 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
-var COMPATIBILITY_VERSION = '1.4.3';
+var COMPATIBILITY_VERSION = '1.7.0';
 var thematicLayer;
 var boundingBox = [];
 
@@ -1144,7 +1144,7 @@ function projDefJSONRequest(selectedLayer) {
             // Check the svir plugin version
             var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
 
-            if (versionCheck < 0) {
+            if (versionCheck < 0 || versionCheck == 1) {
                 // Warn the user and stop the application
                 $('#projectDef-spinner').hide();
                 $('#project-def').append(
@@ -1157,10 +1157,10 @@ function projDefJSONRequest(selectedLayer) {
 
             // Populate global bounding box array
             boundingBox = [
-                data.bounding_box.minx,
-                data.bounding_box.maxx,
                 data.bounding_box.miny,
-                data.bounding_box.maxy
+                data.bounding_box.minx,
+                data.bounding_box.maxy,
+                data.bounding_box.maxx
             ];
 
             if ($('#pdSelection').length > 0) {
