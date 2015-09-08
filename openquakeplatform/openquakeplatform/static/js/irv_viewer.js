@@ -1042,10 +1042,7 @@ var startApp = function() {
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
         attributeInfoRequest(selectedLayer);
-        projDefJSONRequest(selectedLayer);
     });
-
-
 
     // AJAX error dialog
     $('#ajaxErrorDialog').dialog({
@@ -1107,20 +1104,21 @@ var startApp = function() {
 };
 
 
-function attributeInfoRequest(selectedLayer){
+function attributeInfoRequest(selectedLayer) {
+    $('#loadProjectDialog').dialog('close');
 
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-            $('#loadProjectDialog').dialog('close');
             console.log('data:');
             console.log(data);
 
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
             layerAttributes = data;
+
             projectLayerAttributes = layerAttributes;
 
             // provide a dropdown menu to select the region field
@@ -1129,6 +1127,8 @@ function attributeInfoRequest(selectedLayer){
             for (var key in layerAttributes.features[0].properties) {
                 layerFields.push(key);
             }
+
+            projDefJSONRequest(selectedLayer);
         },
         error: function() {
             $('#ajaxErrorDialog').empty();
@@ -1176,8 +1176,11 @@ function projDefJSONRequest(selectedLayer) {
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();
             }
+
+            // Create the pd selection menu
             $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
             var pdTitles = [];
+
             // break the array into objects, present the user with a choice of PDs
             for (var i = 0; i < tempProjectDef.length; i++) {
                 // Get the PD title
@@ -1189,7 +1192,6 @@ function projDefJSONRequest(selectedLayer) {
                     '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
                 );
             }
-            $('#projectDef-spinner').hide();
 
             // select the first project definition in menu dropdown list
             try {
@@ -1199,10 +1201,8 @@ function projDefJSONRequest(selectedLayer) {
                 // continue
             }
 
-            // trigger first project definition
-            setTimeout(function() {
-                $('#pdSelection').trigger('change');
-            }, 100);
+            triggerPdSelection();
+            $('#projectDef-spinner').hide();
         },
         error: function() {
             $('#ajaxErrorDialog').empty();
@@ -1212,6 +1212,11 @@ function projDefJSONRequest(selectedLayer) {
             $('#ajaxErrorDialog').dialog('open');
         }
     });
+}
+
+// Trigger first project definition selection
+function triggerPdSelection () {
+    $('#pdSelection').trigger('change');
 }
 
 app.initialize(startApp);
