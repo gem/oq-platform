@@ -924,6 +924,10 @@ function getGeoServerLayers() {
 
 
 function versionCompare(a, b) {
+    if (a === undefined) {
+        return -1;
+    }
+
     var i, cmp, len, re = /(\.0)+[^\.]*$/;
     a = (a + '').replace(re, '').split('.');
     b = (b + '').replace(re, '').split('.');
@@ -1144,7 +1148,7 @@ function projDefJSONRequest(selectedLayer) {
             // Check the svir plugin version
             var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
 
-            if (versionCheck < 0 || versionCheck == 1) {
+            if (versionCheck < 0 || versionCheck == 1 ) {
                 // Warn the user and stop the application
                 $('#projectDef-spinner').hide();
                 $('#project-def').append(
