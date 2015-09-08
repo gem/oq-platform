@@ -1145,6 +1145,9 @@ function projDefJSONRequest(selectedLayer) {
         success: function(data) {
             tempProjectDef = data.project_definitions;
 
+            // Empty any existing alerts
+            $('#alert').empty();
+
             // Check the svir plugin version
             var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
 
@@ -1152,7 +1155,7 @@ function projDefJSONRequest(selectedLayer) {
                 // Warn the user and stop the application
                 $('#projectDef-spinner').hide();
                 $('#project-def').append(
-                    '<div class="alert alert-danger" role="alert">' +
+                    '<div id="alert" class="alert alert-danger" role="alert">' +
                         'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
                     '</div>'
                 );
