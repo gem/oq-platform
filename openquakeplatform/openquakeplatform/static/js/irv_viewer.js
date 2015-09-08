@@ -29,6 +29,7 @@ var tempProjectDef;
 var COMPATIBILITY_VERSION = '1.7.0';
 var thematicLayer;
 var boundingBox = [];
+var license;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -836,7 +837,6 @@ function thematicMap(layerAttributes) {
 }
 
 function watchForPdSelection() {
-    console.log(' hello???:');
     $('#projectDef-spinner').show();
     setTimeout(function() {
         var pdSelection = $('#pdSelection').val();
@@ -1112,8 +1112,6 @@ function attributeInfoRequest(selectedLayer) {
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-            console.log('data:');
-            console.log(data);
 
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
@@ -1146,6 +1144,7 @@ function projDefJSONRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
         success: function(data) {
+            license = data.license;
             tempProjectDef = data.project_definitions;
 
             // Remove alert div

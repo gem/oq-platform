@@ -192,8 +192,8 @@
         $('#saveBtn').click(function() {
             $('#checkboxPD').attr('checked', false);
             $('#saveState-spinner').hide();
-            var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
-            var pdLicenseURL = sessionProjectDef.license.split('(')[1];
+            var pdLicenseName = license.substring(0, license.indexOf('('));
+            var pdLicenseURL = license.split('(')[1];
             pdLicenseURL = pdLicenseURL.replace(')', '');
 
             $('#saveState-spinner').hide();
