@@ -1145,8 +1145,8 @@ function projDefJSONRequest(selectedLayer) {
         success: function(data) {
             tempProjectDef = data.project_definitions;
 
-            // Empty any existing alerts
-            $('#alert').empty();
+            // Remove alert div
+            $('#alert').remove();
 
             // Check the svir plugin version
             var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
