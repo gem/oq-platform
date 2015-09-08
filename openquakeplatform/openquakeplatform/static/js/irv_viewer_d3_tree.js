@@ -201,7 +201,7 @@
             $('#licenseName').empty();
             $('#licenseURL').empty();
             $('#inputName').empty();
-            $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
+            $('#inputName').append('<p>The current title is: '+ selectedPDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
             $('#licenseName').append(
                 '<p>This project has been created using the '+ pdLicenseName +' license ' +
                 '<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'"> Info</a><br> </p>'
@@ -229,9 +229,9 @@
                     $('#ajaxErrorDialog').dialog('open');
                     $('#saveState-spinner').hide();
                 } else {
-                    projectDef.title = inputVal;
+                    selectedPDef.title = inputVal;
 
-                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                    var projectDefStg = JSON.stringify(selectedPDef, function(key, value) {
                         //avoid circularity in JSON by removing the parent key
                         if (key == "parent") {
                             return 'undefined';
