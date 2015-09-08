@@ -836,6 +836,7 @@ function thematicMap(layerAttributes) {
 }
 
 function watchForPdSelection() {
+    console.log(' hello???:');
     $('#projectDef-spinner').show();
     setTimeout(function() {
         var pdSelection = $('#pdSelection').val();
@@ -1114,6 +1115,8 @@ function attributeInfoRequest(selectedLayer){
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
             $('#loadProjectDialog').dialog('close');
+            console.log('data:');
+            console.log(data);
 
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
