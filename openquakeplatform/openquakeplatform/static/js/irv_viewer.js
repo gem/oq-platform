@@ -107,7 +107,6 @@ function createRiskIndicator(la, index, selectedRegion) {
 }
 
 function combineIndicators(nameLookUp, themeObj, JSONthemes) {
-
     //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
     // an empty object in order to test the function
     if (arguments[3]) {
@@ -256,8 +255,10 @@ function processIndicators(layerAttributes, projectDef) {
     // Get all the primary indicators
     if (svThemes) {
         for (var i = 0; i < svThemes.length; i++) {
-            for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
-                allPrimaryIndicators.push(svThemes[i].children[e].field);
+            if (svThemes[i].children) {
+                for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
+                    allPrimaryIndicators.push(svThemes[i].children[e].field);
+                }
             }
         }
     }
@@ -308,9 +309,11 @@ function processIndicators(layerAttributes, projectDef) {
             var tempChildren = svThemes[m].children;
             var tempIndicatorChildrenKeys = [];
 
-            for (var q = 0; q < tempChildren.length; q++) {
-                // Get the indicators children keys
-                tempIndicatorChildrenKeys.push(tempChildren[q].field);
+            if (tempChildren) {
+                for (var q = 0; q < tempChildren.length; q++) {
+                    // Get the indicators children keys
+                    tempIndicatorChildrenKeys.push(tempChildren[q].field);
+                }
             }
 
             for (var o = 0; o < la.length; o++) {
@@ -660,8 +663,10 @@ function processIndicators(layerAttributes, projectDef) {
             var indicatorChildrenKey = [];
             var tempChildren = svThemes[ia].children;
             // Get the indicators children keys
-            for (var q = 0; q < tempChildren.length; q++) {
-                indicatorChildrenKey.push(tempChildren[q].field);
+            if (tempChildren) {
+                for (var q = 0; q < tempChildren.length; q++) {
+                    indicatorChildrenKey.push(tempChildren[q].field);
+                }
             }
 
             for (var ib = 0; ib < la.length; ib++) {
@@ -840,6 +845,7 @@ function watchForPdSelection() {
     $('#projectDef-spinner').show();
     setTimeout(function() {
         var pdSelection = $('#pdSelection').val();
+
         for (var i = 0; i < tempProjectDef.length; i++) {
             if (tempProjectDef[i].title === pdSelection) {
                 selectedRegion = tempProjectDef[i].zone_label_field;
@@ -1017,6 +1023,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
+        $('#pdSelection').empty();
         // set tabs to back default
         $("#themeTabs").tabs("enable", 2);
         $("#themeTabs").tabs("enable", 3);
