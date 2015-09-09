@@ -30,6 +30,7 @@ var COMPATIBILITY_VERSION = '1.7.0';
 var thematicLayer;
 var boundingBox = [];
 var license;
+var projectDefUpdated;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -848,19 +849,9 @@ function watchForPdSelection() {
 
         for (var i = 0; i < tempProjectDef.length; i++) {
             if (tempProjectDef[i].title === pdSelection) {
-                selectedRegion = tempProjectDef[i].zone_label_field;
-                sessionProjectDef = tempProjectDef[i];
+                // Deep copy the temp project definition object
+                sessionProjectDef = jQuery.extend(true, {}, tempProjectDef[i]);
                 loadPD(sessionProjectDef);
-
-                // get b-box
-                if (boundingBox != undefined) {
-                    map.fitBounds (
-                        L.latLngBounds (
-                            L.latLng (boundingBox[0],boundingBox[1]),
-                            L.latLng (boundingBox[2], boundingBox[3])
-                        )
-                    );
-                }
 
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();

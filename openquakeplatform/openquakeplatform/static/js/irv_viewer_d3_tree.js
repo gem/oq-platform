@@ -27,7 +27,6 @@
         'SVI_THEME': 'Social Vulnerability Theme',
         'SVI_INDICATOR': 'Social Vulnerability Indicator',
     };
-    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -221,7 +220,6 @@
                 $('#saveState-spinner').show();
                 var inputVal = $('#giveNamePD').val();
                 if (inputVal === '' || inputVal === null) {
-                    // TODO avoid duplicate names
                     $('#ajaxErrorDialog').empty();
                     $('#ajaxErrorDialog').append(
                         '<p>A valid name was not provided</p>'
@@ -230,6 +228,27 @@
                     $('#saveState-spinner').hide();
                 } else {
                     projectDefUpdated.title = inputVal;
+
+                    // Append projectDefUpdated to tempProjectDef
+                    // Check for existing object
+                    var duplicate = false;
+                    for (var i = 0; i < tempProjectDef.length; i++) {
+                        if (projectDefUpdated.title == tempProjectDef[i].title) {
+                            duplicate = true;
+                        }
+                    }
+
+                    if (duplicate === false) {
+                        tempProjectDef.push(projectDefUpdated);
+                    } else {
+                        $('#ajaxErrorDialog').empty();
+                        $('#ajaxErrorDialog').append(
+                            '<p>That name is already used to describe another project definition</p>'
+                        );
+                        $('#ajaxErrorDialog').dialog('open');
+                        $('#saveState-spinner').hide();
+                        return;
+                    }
 
                     var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
                         //avoid circularity in JSON by removing the parent key
