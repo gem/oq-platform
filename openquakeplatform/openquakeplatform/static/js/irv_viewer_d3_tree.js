@@ -77,6 +77,8 @@
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
+        console.log('selectedPDef:');
+        console.log(selectedPDef);
 
         // default tab window size
         var winH = 600;
@@ -201,6 +203,10 @@
             $('#licenseName').empty();
             $('#licenseURL').empty();
             $('#inputName').empty();
+            console.log('sessionProjectDef:');
+            console.log(sessionProjectDef);
+            console.log('projectDefUpdated:');
+            console.log(projectDefUpdated);
             $('#inputName').append('<p>The current title is: '+ sessionProjectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
             $('#licenseName').append(
                 '<p>This project has been created using the '+ pdLicenseName +' license ' +
@@ -240,6 +246,8 @@
                           }
                         return value;
                     });
+                    console.log('projectDefStg:');
+                    console.log(projectDefStg);
 
                     // prevent multiple AJAX calls
                     if (isSubmitting) {
@@ -247,13 +255,33 @@
                     }
                     isSubmitting = true;
 
+                    console.log('selectedLayer:');
+                    console.log(selectedLayer);
+/*
+                    $.ajax({
+                        type:'post',
+                        url: '../svir/add_project_definition',
+                        data: {layer_name: selectedLayer, project_definition: projectDefStg},
+                        success: function() {
+                            console.log('success:');
+                        },
+                        error: function() {
+                            console.log('error:');
+                        }
+                    });
+*/
+
                     // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,
                         project_definition: projectDefStg
-                        },
-                        function() {
+                    },
+                    function() {
+                        console.log('1st success:');
+                        }).always(function() {
+                            console.log('always:');
                         }).done(function() {
+                            console.log('2nd done:');
                             isSubmitting = false;
                             $('#saveStateDialog').dialog('close');
                             $('#saveState-spinner').hide();
@@ -265,6 +293,7 @@
                             // select the newest element in the dropdown menu
                             $('#pdSelection').val(lastValue);
                         }).fail(function() {
+                            console.log('fail:');
                             isSubmitting = false;
                             $('#ajaxErrorDialog').empty();
                             $('#ajaxErrorDialog').append(
