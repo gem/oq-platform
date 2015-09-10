@@ -261,18 +261,13 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         page: 1,            // show first page
         count: 9           // count per page
     }, {
-        total: $scope.subNationalData.length, // length of data
+        total: $scope.subNationalData.length,
         getData: function($defer, params) {
             var currentData = $scope.subNationalData;
             // use build-in angular filter
             var orderedData = params.sorting() ?
-                    $filter('orderBy')(currentData, params.orderBy()) :
-                    currentData;
-            orderedData = params.filter() ?
-                    $filter('filter')(orderedData, params.filter()) :
-                    orderedData;
-            params.total(orderedData.length);
-            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+            params.total(currentData.length);
+            $defer.resolve(currentData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
         }
     });
 
