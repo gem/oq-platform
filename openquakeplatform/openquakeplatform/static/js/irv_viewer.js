@@ -1123,8 +1123,8 @@ function attributeInfoRequest(selectedLayer) {
             for (var key in layerAttributes.features[0].properties) {
                 layerFields.push(key);
             }
-
             projDefJSONRequest(selectedLayer);
+
         },
         error: function() {
             $('#ajaxErrorDialog').empty();

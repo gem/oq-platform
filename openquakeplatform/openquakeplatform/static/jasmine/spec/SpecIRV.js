@@ -12,7 +12,7 @@ describe("Get All Layers From GeoServer", function() {
 
     var SVIRLayerNames = [];
         // Extend the Jasmine default
-        window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+        window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
 
     var layerListAjaxCallBoolean = false;
     var attributesAjaxCallBoolean = false;
@@ -53,9 +53,9 @@ describe("Get All Layers From GeoServer", function() {
                     }
                 }
 
-                ////////////////////////////////
+                /////////////////////////////////
                 // Nested Ajax call begins now //
-                ////////////////////////////////
+                /////////////////////////////////
 
                 // This function will be executed once for each layer name in SVIRLayerNames
                 // This function will execute first the attributeInfoRequest function
@@ -78,7 +78,6 @@ describe("Get All Layers From GeoServer", function() {
 
                     // Execute the attributeInfoRequest function and pass it the layer neme
                     var attributeRequest = attributeInfoRequest(layerName);
-
                     var iterationPair = {};
 
                     // we need to execute the projDefJSONRequest function after the
