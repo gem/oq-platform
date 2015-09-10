@@ -263,9 +263,8 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     }, {
         total: $scope.subNationalData.length,
         getData: function($defer, params) {
+            $scope.page = params.$params;
             var currentData = $scope.subNationalData;
-            // use build-in angular filter
-            var orderedData = params.sorting() ?
             params.total(currentData.length);
             $defer.resolve(currentData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
         }
@@ -374,14 +373,18 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
         downloadFractions();
     };
-});
 
-// Back button logic
-$('#subRegionListBack').button().click(function() {
-    $('#countriesListDialog').dialog('option', 'title', 'Admin Level 0 Selection Table');
-    $('#subRegionList').hide();
-    $('#countryList').show();
-});
+    // Back button logic
+    $('#subRegionListBack').button().click(function() {
+        // Reset the page number to 1 each time the user moves back to the Admin level 0 table
+        $scope.page.page = 1;
+
+        $('#countriesListDialog').dialog('option', 'title', 'Admin Level 0 Selection Table');
+        $('#subRegionList').hide();
+        $('#countryList').show();
+    });
+}); // End controller
+
 
 $('#subRegionFormBack').button().click(function() {
     $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
