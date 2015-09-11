@@ -96,12 +96,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#national-spinner').hide();
                 var currentData = $scope.nationalData;
                 // use build-in angular filter
-                var filteredData = params.filter() ?
+                var orderedData = params.filter() ?
                     $filter('filter')(currentData, params.filter()) :
                     currentData;
-                var orderedData = params.filter() ?
-                       $filter('filter')(currentData, params.filter()) :
-                       currentData;
 
                 $scope.users = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 
@@ -113,8 +110,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
     // National level building exposure download form
     function nationalForm(study) {
-	var selectedStudy=$scope.selectedRegion[0];
-        return '<form id="exposure-building-form" class="exposure_export_form"'+
+	   var selectedStudy=$scope.selectedRegion[0];
+            return '<form id="exposure-building-form" class="exposure_export_form"'+
                 '<p><b>Download Study Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+selectedStudy.study_region_id+'">Download</button></br></br>'+
                 '<b>Download Gridded Building Exposure:</b></br>'+
                 '<p><label for="id_residential_0">Building Type:</label></br>'+
@@ -127,7 +124,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 '</p>'+
                 '<input type="hidden" name="study" value="'+selectedStudy.study_region_id+'">'+
                 '<br>'+
-            '</form>';
+                '</form>';
     }
 
     var selectedRow;
@@ -251,6 +248,14 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     populateSubNationalList = function (iso) {
         var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
         $http.get(url).success(function (data) {
+            console.log('data:');
+            console.log(data);
+            // Hide the level 2 region title if there is no level 2 data
+            if (data[0].g2name === null) {
+                console.log('hi there!:');
+
+            }
+
             $('#subnational-spinner').hide();
             $scope.subNationalData = data;
             $scope.tableParams2.reload();
@@ -265,26 +270,30 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
         getData: function($defer, params) {
             $scope.page = params.$params;
             var currentData = $scope.subNationalData;
-            params.total(currentData.length);
-            $defer.resolve(currentData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+            // use build-in angular filter
+            var orderedData = params.filter() ?
+                    $filter('filter')(currentData, params.filter()) :
+                    currentData;
+            params.total(orderedData.length);
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
         }
     });
 
     // Sub-national level building exposure download form
     function subNationalForm(study) {
         return '<form id="sub-exposure-building-form" class="exposure_export_form">'+
-                '<p><b>Download Region Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
-                '<b>Download Gridded Sub-National Building Exposure:</b></br>'+
-                '<p><label for="id_residential_0">Building Type:</label></br>'+
-                '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
-                '<label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
-                '</p>'+
-                '<p><label for="id_outputType_0">Output Type:</label></br>'+
-                '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
-                '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
-                '</p>'+
-                '<input type="hidden" name="sub-study" value="'+study.study_region_id+'">'+
-                '<br>'+
+            '<p><b>Download Region Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="'+study.study_region_id+'">Download</button></br></br>'+
+            '<b>Download Gridded Sub-National Building Exposure:</b></br>'+
+            '<p><label for="id_residential_0">Building Type:</label></br>'+
+            '<label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label></br>'+
+            '<label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label></br>'+
+            '</p>'+
+            '<p><label for="id_outputType_0">Output Type:</label></br>'+
+            '<label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" checked="" value="csv" /> CSV</label></br>'+
+            '<label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label></br>'+
+            '</p>'+
+            '<input type="hidden" name="sub-study" value="'+study.study_region_id+'">'+
+            '<br>'+
             '</form>';
     }
 
