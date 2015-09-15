@@ -22,58 +22,140 @@ from django.contrib.gis.db import models
 CHMAX = 200
 
 
+class StudyManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
+class Study(models.Model):
+    name = models.CharField(max_length=CHMAX, unique=True)
+    description = models.CharField(max_length=CHMAX)
+    # author/s = models.CharField(max_length=CHMAX)
+    wiki_link = models.URLField(null=True, blank=True)
+
+    objects = StudyManager()
+
+    def natural_key(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.name
+
+
+class ZoneManager(models.Manager):
+    def get_by_natural_key(self, name, country_iso, parent_label):
+        return self.get(name=name,
+                        country_iso=country_iso,
+                        parent_label=parent_label)
+
+
+class Zone(models.Model):
+    name = models.CharField(max_length=CHMAX)
+    country_iso = models.CharField(max_length=3)
+    admin_level = models.IntegerField()
+    parent_label = models.CharField(max_length=CHMAX, null=True, blank=True)
+    variant_names = models.CharField(max_length=CHMAX, null=True, blank=True)
+    study = models.ForeignKey('Study')
+    the_geom = models.MultiPolygonField(null=True, blank=True)
+    # manytomany relationship with CustomRegion defined at the other side
+    # custom_regions = models.ManyToManyField('CustomRegion')
+
+    objects = ZoneManager()
+
+    def natural_key(self):
+        return (self.name, self.country_iso, self.parent_label)
+
+    def __unicode__(self):
+        return "%s (%s, %s)" % (self.name, self.country_iso, self.parent_label)
+
+    class Meta:
+        unique_together = ('name', 'country_iso', 'parent_label')
+
+
+class IndicatorManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+
+
 class Indicator(models.Model):
-    code = models.CharField(max_length=CHMAX, primary_key=True)
-    theme = models.ForeignKey('Theme')
-    subtheme = models.ForeignKey('Subtheme')
+    code = models.CharField(max_length=CHMAX, unique=True)
     # NOTE: Some field names were changed with respect to those written in the
     #       spreadsheet containing the socioeconomic data. The original names
     #       are added here as comments
     # ~"Variable Name"
     name = models.TextField()
-    # ~"Unit of Measurement"
-    measurement_type = models.ForeignKey('MeasurementType')
     # ~"Variable Description"
     description = models.TextField()
-    source = models.ForeignKey('Source')
-    keywords = models.ManyToManyField('Keyword', null=True, blank=True)
-    aggregation_method = models.ForeignKey('AggregationMethod')
-    internal_consistency_metric = models.ForeignKey(
-        'InternalConsistencyMetric')
-    countries = models.ManyToManyField(
-        'world.CountrySimplified1000M', through='CountryIndicator',
-        null=True, blank=True)
+    subtheme = models.ForeignKey('Subtheme')
     notes = models.TextField(null=True, blank=True)
+    keywords = models.ManyToManyField('Keyword', null=True, blank=True)
+    zones = models.ManyToManyField('Zone', through='ZoneIndicator')
+
+    objects = IndicatorManager()
 
     def __unicode__(self):
         return self.name
 
     @property
+    def theme(self):
+        return self.subtheme.theme
+
+    @property
     def keywords_str(self):
         return ', '.join([keyword.name for keyword in self.keywords.all()])
 
-    @property
-    def data_completeness(self):
-        # NOTE: It is counted with respect to the total of countries for which
-        # socioeconomic data have been collected, i.e., a custom region
-        # containing countries which population is above 200k people
-        countries_with_socioeconomic_data = CustomRegion.objects.get(
-            name='Countries with socioeconomic data')
-        return self.data_completeness_for_region(
-            countries_with_socioeconomic_data)
+    def natural_key(self):
+        return self.code
 
-    def data_completeness_for_region(self, region):
-        # count how many countries are in the specified custom region
-        num_countries_in_region = region.countries.count()
-        # count how many of these countries have a value for the indicator
-        num_countries_in_region_with_value = 0
-        for country in region.countries.all():
-            if CountryIndicator.objects.filter(
-                    country=country, indicator=self):
-                num_countries_in_region_with_value += 1
-        # divide the latter by the former
-        return (
-            1.0 * num_countries_in_region_with_value / num_countries_in_region)
+    # FIXME
+    # @property
+    # def data_completeness(self):
+    #     # NOTE: It is counted with respect to the total of countries for
+    #     # which socioeconomic data have been collected, i.e., a custom region
+    #     # containing countries which population is above 200k people
+    #     countries_with_socioeconomic_data = CustomRegion.objects.get(
+    #         name='Countries with socioeconomic data')
+    #     return self.data_completeness_for_region(
+    #         countries_with_socioeconomic_data)
+
+    # def data_completeness_for_region(self, region):
+    #     # count how many countries are in the specified custom region
+    #     num_countries_in_region = region.zones.count()
+    #     # count how many of these countries have a value for the indicator
+    #     num_countries_in_region_with_value = 0
+    #     for country in region.countries.all():
+    #         if ZoneIndicator.objects.filter(
+    #                 country=country, indicator=self):
+    #             num_countries_in_region_with_value += 1
+    #     # divide the latter by the former
+    #     return (
+    #         1.0 * num_countries_in_region_with_value /
+    #         num_countries_in_region)
+
+
+class KeywordManager(models.Manager):
+    def get_by_natural_key(self, name):
+            return self.get(name=name)
+
+
+class Keyword(models.Model):
+    class Meta:
+        ordering = ['name']
+
+    name = models.CharField(max_length=CHMAX, unique=True)
+
+    objects = KeywordManager()
+
+    def __unicode__(self):
+        return self.name
+
+    def natural_key(self):
+        return self.name
+
+
+class CustomRegionManager(models.Manager):
+    def get_by_natural_key(self, name):
+            return self.get(name=name)
 
 
 # For the svir application, we want to provide the possibility to have
@@ -85,20 +167,35 @@ class CustomRegion(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, primary_key=True)
-    countries = models.ManyToManyField('world.CountrySimplified1000M')
+    name = models.CharField(max_length=CHMAX, unique=True)
+    zones = models.ManyToManyField('Zone')
+
+    objects = CustomRegionManager()
 
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return self.name
+
+
+class ThemeManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
 class Theme(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, primary_key=True)
+    name = models.CharField(max_length=CHMAX, unique=True)
+
+    objects = ThemeManager()
 
     def __unicode__(self):
+        return self.name
+
+    def natural_key(self):
         return self.name
 
 
@@ -108,11 +205,11 @@ class SubthemeManager(models.Manager):
 
 
 class Subtheme(models.Model):
-    objects = SubthemeManager()
-
     theme = models.ForeignKey('Theme')
     name = models.CharField(max_length=CHMAX)
-    
+
+    objects = SubthemeManager()
+
     def natural_key(self):
         return (self.theme.name, self.name)
 
@@ -124,38 +221,55 @@ class Subtheme(models.Model):
         return '(%s) %s' % (self.theme.name, self.name)
 
 
+class MeasurementTypeManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class MeasurementType(models.Model):
     class Meta:
         ordering = ['name']
 
     name = models.CharField(max_length=CHMAX, primary_key=True)
 
+    objects = MeasurementTypeManager()
+
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return self.name
+
+
+class InternalConsistencyMetricManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
 class InternalConsistencyMetric(models.Model):
     name = models.CharField(max_length=CHMAX, primary_key=True)
 
-    def __unicode__(self):
-        return self.name
-
-
-class Keyword(models.Model):
-    class Meta:
-        ordering = ['name']
-
-    name = models.CharField(max_length=CHMAX, primary_key=True)
+    objects = InternalConsistencyMetricManager()
 
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return self.name
+
+
+class SourceManager(models.Manager):
+    def get_by_natural_key(self, description):
+        return self.get(description=description)
 
 
 class Source(models.Model):
-    description = models.TextField(primary_key=True)
+    description = models.TextField(unique=True)
     year_min = models.IntegerField()
     year_max = models.IntegerField()
     update_periodicity = models.ForeignKey('UpdatePeriodicity')
+
+    objects = SourceManager()
 
     @property
     def year_range(self):
@@ -166,53 +280,80 @@ class Source(models.Model):
                                  self.year_min,
                                  self.year_max)
 
+    def natural_key(self):
+        return self.description
+
+
+class UpdatePeriodicityManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class UpdatePeriodicity(models.Model):
     class Meta:
         ordering = ['name']
         verbose_name_plural = 'update periodicity'
 
-    name = models.CharField(max_length=CHMAX, primary_key=True)
+    name = models.CharField(max_length=CHMAX, unique=True)
+
+    objects = UpdatePeriodicityManager()
 
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return self.name
+
+
+class AggregationMethodManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
 class AggregationMethod(models.Model):
     class Meta:
         ordering = ['name']
 
-    name = models.CharField(max_length=CHMAX, primary_key=True)
+    name = models.CharField(max_length=CHMAX, unique=True)
+
+    objects = AggregationMethodManager()
 
     def __unicode__(self):
         return self.name
 
-
-class CountryIndicatorManager(models.Manager):
-    def get_by_natural_key(self, country, indicator):
-        return self.get(country=country, indicator=indicator)
+    def natural_key(self):
+        return self.name
 
 
-class CountryIndicator(models.Model):
-    objects = CountryIndicatorManager()
+class ZoneIndicatorManager(models.Manager):
+    def get_by_natural_key(self, zone, indicator):
+        return self.get(zone=zone, indicator=indicator)
 
-    # Using the simplified geometries instead of the original GADM ones
-    # country = models.ForeignKey('world.Country')
-    country = models.ForeignKey('world.CountrySimplified1000M')
+
+class ZoneIndicator(models.Model):
+    zone = models.ForeignKey('Zone')
     indicator = models.ForeignKey('Indicator')
     value = models.FloatField()
+    source = models.ForeignKey('Source')
+    # ~"Unit of Measurement"
+    measurement_type = models.ForeignKey('MeasurementType')
+    aggregation_method = models.ForeignKey('AggregationMethod')
+    internal_consistency_metric = models.ForeignKey(
+        'InternalConsistencyMetric')
+
+    objects = ZoneIndicatorManager()
 
     def natural_key(self):
-        return (self.country, self.indicator)
+        return (self.zone, self.indicator)
 
     def __unicode__(self):
         return "%s: %s = %s [%s]" % (
-            self.country.iso, self.indicator, self.value,
+            self.zone.name, self.indicator, self.value,
             self.indicator.measurement_type)
 
     class Meta:
         # NOTE: I am not sure, but it looks like changing the automatic name
         #       assigned to the table, it might create problems when building
         #       the "updatures"
-        # db_table = 'svir_country_indicators'
-        unique_together = ('country', 'indicator')
+        # db_table = 'svir_zone_indicators'
+        unique_together = ('zone', 'indicator')

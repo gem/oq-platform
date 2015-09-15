@@ -22,9 +22,12 @@ from models import (AggregationMethod,
                     Keyword,
                     MeasurementType,
                     Source,
+                    Study,
                     Subtheme,
                     Theme,
-                    UpdatePeriodicity,)
+                    UpdatePeriodicity,
+                    Zone,
+                    )
 
 admin.site.register(AggregationMethod)
 admin.site.register(CountryIndicator)
@@ -33,8 +36,10 @@ admin.site.register(Keyword)
 admin.site.register(MeasurementType)
 admin.site.register(Source)
 admin.site.register(Subtheme)
+admin.site.register(Study)
 admin.site.register(Theme)
 admin.site.register(UpdatePeriodicity)
+admin.site.register(Zone)
 
 
 class IndicatorAdmin(admin.ModelAdmin):
@@ -44,6 +49,6 @@ admin.site.register(Indicator, IndicatorAdmin)
 
 
 class CustomRegionAdmin(admin.ModelAdmin):
-    filter_horizontal = ('countries',)
+    filter_horizontal = ('zones',)
 
 admin.site.register(CustomRegion, CustomRegionAdmin)

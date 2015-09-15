@@ -18,7 +18,7 @@
 #    <https://www.gnu.org/licenses/agpl.html>.
 
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from openquakeplatform.svir.views import (list_themes,
                                           list_subthemes_by_theme,
                                           export_variables_info,
@@ -35,15 +35,15 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     'openquakeplatform.svir.views',
-    url(r'^list_themes', list_themes),
-    url(r'^list_subthemes_by_theme', list_subthemes_by_theme),
-    url(r'^export_variables_info', export_variables_info),
+    url(r'^list_themes$', list_themes),
+    url(r'^list_subthemes_by_theme$', list_subthemes_by_theme),
+    url(r'^export_variables_info$', export_variables_info),
     # export_variables_data_by_ids has been renamed; the following line
     # is to avoid breaking clients using the old API
-    url(r'^export_variables_data_by_ids', export_variables_data),
-    url(r'^export_variables_data', export_variables_data),
-    url(r'^export_countries_info', export_countries_info),
-    url(r'^get_layer_metadata_url', get_layer_metadata_url),
-    url(r'^add_project_definition', add_project_definition),
-    url(r'^get_project_definitions', get_project_definitions),
+    url(r'^export_variables_data_by_ids$', export_variables_data),
+    url(r'^export_variables_data$', export_variables_data),
+    url(r'^export_countries_info$', export_countries_info),
+    url(r'^get_layer_metadata_url$', get_layer_metadata_url),
+    url(r'^add_project_definition$', add_project_definition),
+    url(r'^get_project_definitions$', get_project_definitions),
 )

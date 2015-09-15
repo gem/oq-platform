@@ -34,7 +34,9 @@ from openquakeplatform.svir.models import (Theme,
                                            Keyword,
                                            Indicator,
                                            CustomRegion,
-                                           CountryIndicator,)
+                                           ZoneIndicator,
+                                           Study,
+                                           )
 
 from geonode.base.models import Link
 from geonode.layers.views import (_resolve_layer,
@@ -215,6 +217,24 @@ def add_project_definition(request):
     layer.save()
 
     return HttpResponse("The new project definition has been added")
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def list_studies(request):
+    studies = Study.objects.all()
+    if not studies:
+        return HttpResponseNotFound('No studies available in the DB')
+    response = HttpResponse()
+    first = True
+    for study in studies:
+        if first:
+            first = False
+        else:
+            response.write(',')
+        response.write('"' + study.name + '"')
+    return HttpResponse(response)
 
 
 @condition(etag_func=None)
@@ -475,8 +495,8 @@ def _stream_variables_data_as_csv(
         ind_vals = []
         for indicator in indicators:
             try:
-                val = CountryIndicator.objects.get(
-                    country=country, indicator=indicator).value
+                val = ZoneIndicator.objects.get(
+                    zone=country, indicator=indicator).value
             except:
                 val = ''
             ind_vals.append(val)
