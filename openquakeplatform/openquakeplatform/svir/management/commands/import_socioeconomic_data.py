@@ -31,7 +31,8 @@ from openquakeplatform.svir.models import (Indicator,
 
 COUNTRIES_COUNT = 197
 COUNTRIES_STARTING_IDX = 14
-REGIONS_STARTING_IDX = COUNTRIES_STARTING_IDX + COUNTRIES_COUNT + 1  # discarding data completeness
+# +1 is to discard 'data completeness'
+REGIONS_STARTING_IDX = COUNTRIES_STARTING_IDX + COUNTRIES_COUNT + 1
 
 
 class Command(BaseCommand):
@@ -45,7 +46,7 @@ class Command(BaseCommand):
 
             reader = csv.reader(f)
             # read row containing field names, country names and region names
-            first_row = reader.next()  # not used
+            reader.next()  # the first row is not used
             # read row containing the region names to which countries belong
             second_row = reader.next()
             assoc_regions = second_row[
@@ -87,14 +88,14 @@ class Command(BaseCommand):
                     sys.stdout.write(
                         'Loading data for indicator [%s]...\n' % code)
 
-                ind.code = code 
+                ind.code = code
 
-                theme = row[1].strip()
-                ind.theme, _ = Theme.objects.get_or_create(name=theme)
+                theme_name = row[1].strip()
+                theme_obj, _ = Theme.objects.get_or_create(name=theme_name)
 
                 subtheme = row[2].strip()
                 ind.subtheme, _ = Subtheme.objects.get_or_create(
-                    theme=ind.theme, name=subtheme)
+                    theme=theme_obj, name=subtheme)
 
                 ind.name = row[3].strip()
 
@@ -145,7 +146,8 @@ class Command(BaseCommand):
                 ind.save()
 
                 values = row[
-                    COUNTRIES_STARTING_IDX:COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
+                    COUNTRIES_STARTING_IDX:
+                    COUNTRIES_STARTING_IDX+COUNTRIES_COUNT]
                 float_values = [float(v) if v != '' else None for v in values]
                 iso_val_dict = dict(zip(isos, float_values))
 
@@ -160,4 +162,5 @@ class Command(BaseCommand):
 
                 # discard from csv data completeness
                 sys.stdout.write(
-                    'Indicator [%s] values for each country have been saved...\n' % ind)
+                    'Indicator [%s] values for each country'
+                    ' have been saved...\n' % ind)
