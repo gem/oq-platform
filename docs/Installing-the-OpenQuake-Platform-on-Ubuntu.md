@@ -3,7 +3,7 @@ These are the main steps to install the OpenQuake Platform on Ubuntu 12.04 LTS u
 ## Install the base dependencies
 
 ```bash
-sudo apt-get install build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran
+sudo apt-get install build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran
 ```
 
 ## Change the PostgreSQL configuration
@@ -69,3 +69,4 @@ vim local_settings.py
 ```bash
 fab start
 ```
+
