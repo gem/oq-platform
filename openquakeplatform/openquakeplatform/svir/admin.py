@@ -15,7 +15,6 @@
 
 from django.contrib import admin
 from models import (AggregationMethod,
-                    CountryIndicator,
                     CustomRegion,
                     Indicator,
                     InternalConsistencyMetric,
@@ -27,10 +26,10 @@ from models import (AggregationMethod,
                     Theme,
                     UpdatePeriodicity,
                     Zone,
+                    ZoneIndicator
                     )
 
 admin.site.register(AggregationMethod)
-admin.site.register(CountryIndicator)
 admin.site.register(InternalConsistencyMetric)
 admin.site.register(Keyword)
 admin.site.register(MeasurementType)
@@ -40,6 +39,7 @@ admin.site.register(Study)
 admin.site.register(Theme)
 admin.site.register(UpdatePeriodicity)
 admin.site.register(Zone)
+admin.site.register(ZoneIndicator)
 
 
 class IndicatorAdmin(admin.ModelAdmin):

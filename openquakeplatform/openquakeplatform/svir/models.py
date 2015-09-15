@@ -41,6 +41,9 @@ class Study(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = 'studies'
+
 
 class ZoneManager(models.Manager):
     def get_by_natural_key(self, name, country_iso, parent_label):
@@ -70,6 +73,7 @@ class Zone(models.Model):
 
     class Meta:
         unique_together = ('name', 'country_iso', 'parent_label')
+        ordering = ['name', 'country_iso', 'parent_label']
 
 
 class IndicatorManager(models.Manager):
@@ -349,7 +353,7 @@ class ZoneIndicator(models.Model):
     def __unicode__(self):
         return "%s: %s = %s [%s]" % (
             self.zone.name, self.indicator, self.value,
-            self.indicator.measurement_type)
+            self.measurement_type)
 
     class Meta:
         # NOTE: I am not sure, but it looks like changing the automatic name
