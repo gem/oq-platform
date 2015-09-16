@@ -1094,8 +1094,8 @@ var startApp = function() {
             success: function(data) {
                 tempProjectDef = data;
 
-                // Check the svir plugin version
-                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+                // Check the irmt plugin version
+                var versionCheck = versionCompare(data[0].irmt_plugin_version, COMPATIBILITY_VERSION);
 
                 if (versionCheck < 0) {
                     // Warn the user and stop the application
