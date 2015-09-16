@@ -38,7 +38,6 @@ admin.site.register(Subtheme)
 admin.site.register(Study)
 admin.site.register(Theme)
 admin.site.register(UpdatePeriodicity)
-admin.site.register(Zone)
 admin.site.register(ZoneIndicator)
 
 
@@ -52,3 +51,9 @@ class CustomRegionAdmin(admin.ModelAdmin):
     filter_horizontal = ('zones',)
 
 admin.site.register(CustomRegion, CustomRegionAdmin)
+
+
+class ZoneAdmin(admin.ModelAdmin):
+    exclude = ('the_geom',)
+
+admin.site.register(Zone, ZoneAdmin)

@@ -59,7 +59,7 @@ class Zone(models.Model):
     parent_label = models.CharField(max_length=CHMAX, null=True, blank=True)
     variant_names = models.CharField(max_length=CHMAX, null=True, blank=True)
     study = models.ForeignKey('Study')
-    the_geom = models.MultiPolygonField(null=True, blank=True)
+    the_geom = models.MultiPolygonField()
     # manytomany relationship with CustomRegion defined at the other side
     # custom_regions = models.ManyToManyField('CustomRegion')
 
