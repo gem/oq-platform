@@ -312,9 +312,6 @@ def export_variables_info(request):
             * indicator.theme
             * indicator.subtheme
             * indicator.description
-            * indicator.source (unicode which also displays
-                                year_min and year_max)
-            * indicator.aggregation_method
             * indicator.keywords
     """
     # We don't need 'Tag' anymore, but we need to show other fields
@@ -374,9 +371,6 @@ def export_variables_info(request):
                      "Theme",
                      "Subtheme",
                      "Description",
-                     "Measurement Type",
-                     "Source",
-                     "Aggregation Method",
                      "Keywords"])
     for ind in indicators:
         writer.writerow([
@@ -385,9 +379,6 @@ def export_variables_info(request):
             ind.theme.name.encode('utf-8'),
             ind.subtheme.name.encode('utf-8'),
             ind.description.encode('utf-8'),
-            ind.measurement_type.name.encode('utf-8'),
-            ind.source.__unicode__().encode('utf-8'),
-            ind.aggregation_method.name.encode('utf-8'),
             ind.keywords_str.encode('utf-8'),
         ])
     return response
