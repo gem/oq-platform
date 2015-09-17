@@ -20,6 +20,7 @@
 
 from django.conf.urls import patterns, url
 from openquakeplatform.svir.views import (list_themes,
+                                          list_studies,
                                           list_subthemes_by_theme,
                                           export_variables_info,
                                           export_variables_data,
@@ -36,6 +37,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     'openquakeplatform.svir.views',
     url(r'^list_themes$', list_themes),
+    url(r'^list_studies$', list_studies),
     url(r'^list_subthemes_by_theme$', list_subthemes_by_theme),
     url(r'^export_variables_info$', export_variables_info),
     # export_variables_data_by_ids has been renamed; the following line
