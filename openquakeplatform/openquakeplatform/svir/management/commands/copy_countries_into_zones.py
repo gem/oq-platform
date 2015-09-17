@@ -31,6 +31,4 @@ class Command(BaseCommand):
             Zone.objects.get_or_create(name=country.name_0,
                                        country_iso=country.iso,
                                        defaults={'the_geom': country.the_geom,
-                                                 'admin_level': 0,
-                                                 'parent_label': '',
-                                                 'study': study})
+                                                 'admin_level': 0})

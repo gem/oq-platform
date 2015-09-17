@@ -86,6 +86,7 @@ class Command(BaseCommand):
 
                 # each zone belongs to one and only one study
                 country.study = study
+                country.save()
 
             for row in reader:
                 code = row[0].strip()

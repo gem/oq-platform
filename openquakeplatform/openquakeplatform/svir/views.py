@@ -33,9 +33,9 @@ from openquakeplatform.svir.models import (Theme,
                                            Subtheme,
                                            Keyword,
                                            Indicator,
-                                           CustomRegion,
                                            ZoneIndicator,
                                            Study,
+                                           Zone,
                                            )
 
 from geonode.base.models import Link
@@ -399,9 +399,9 @@ def export_countries_info(request):
     writer = csv.writer(response)
     response.write(copyright)
     writer.writerow(['ISO', 'NAME'])
-    inclusive_region = CustomRegion.objects.get(
-        name='Countries with socioeconomic data')
-    for country in inclusive_region.zones.all():
+    study = Study.objects.get(
+        name='Social and Economic Vulnerability Global Indicator Database')
+    for country in Zone.objects.filter(study=study):
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
         row = [country.country_iso, country.name.encode('utf-8')]
@@ -474,9 +474,9 @@ def _stream_variables_data_as_csv(
     csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
     csvwriter.writerow(header_list)
     yield csvfile.getvalue()
-    inclusive_region = CustomRegion.objects.get(
-        name='Countries with socioeconomic data')
-    for country in inclusive_region.zones.all():
+    study = Study.objects.get(
+        name='Social and Economic Vulnerability Global Indicator Database')
+    for country in Zone.objects.filter(study=study):
         if (country_iso_codes_list
                 and country.country_iso not in country_iso_codes_list):
             continue
