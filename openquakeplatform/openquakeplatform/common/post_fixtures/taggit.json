@@ -80,6 +80,14 @@
         }
     },
     {
+        "pk": 11,
+        "model": "taggit.tag",
+        "fields": {
+            "name": "GEM-supplemental-layer",
+            "slug": "gem-supplemental-layer"
+        }
+    },
+    {
         "pk": 6,
         "model": "taggit.taggeditem",
         "fields": {
@@ -293,6 +301,30 @@
                 "map"
             ],
             "object_id": 26
+        }
+    },
+    {
+        "pk": 38,
+        "model": "taggit.taggeditem",
+        "fields": {
+            "tag": 11,
+            "content_type": [
+                "layers",
+                "layer"
+            ],
+            "object_id": 22
+        }
+    },
+    {
+        "pk": 40,
+        "model": "taggit.taggeditem",
+        "fields": {
+            "tag": 11,
+            "content_type": [
+                "layers",
+                "layer"
+            ],
+            "object_id": 21
         }
     }
 ]

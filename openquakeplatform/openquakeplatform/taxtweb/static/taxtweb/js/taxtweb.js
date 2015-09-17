@@ -182,8 +182,9 @@ function is_or_are_given(n)
 function populate_form()
 {
     try {
-        var el = window.opener.document.getElementById("id_taxonomy_text");
+        var el = window.opener.document.getElementById("id_taxonomy_text_1");
         el.value = taxonomy_form;
+        el.onchange();
     }
     catch(e) {
     }

@@ -727,7 +727,6 @@ function processIndicators(layerAttributes, projectDef) {
 
     IRI_PCP_Chart(iriPcpData);
 
-    $('#projectDef-spinner').hide();
 
 } // End processIndicators
 
@@ -860,7 +859,7 @@ function watchForPdSelection() {
 
 function getGeoServerLayers() {
     $('#load-project-spinner').show();
-    var SVIRLayerNames = [];
+    var IRMTLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
     // Get layers from GeoServer and populate the layer selection menu
     $.ajax({
@@ -875,8 +874,8 @@ function getGeoServerLayers() {
 
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
-            // Find the SVIR keywords
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            // Find the IRMT keywords
+            var stringsToLookFor = ['SVIR_QGIS_Plugin', 'IRMT_QGIS_Plugin'];
             // Reload if the api call was incomplete
             if (featureType.length === undefined) {
                 getGeoServerLayers();
@@ -884,17 +883,21 @@ function getGeoServerLayers() {
             }
 
             for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                for (var j=0; j < stringsToLookFor.length; j++) {
+                    stringToLookFor = stringsToLookFor[j];
+                    if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                        IRMTLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                        break;
+                    }
                 }
             }
 
             // Create AngularJS dropdown menu
             var mapScope = angular.element($("#layer-list")).scope();
             var mapLayerList = [];
-            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+            for (var ij = 0; ij < IRMTLayerNames.length; ij++) {
                 var tempObj = {};
-                tempObj.name = SVIRLayerNames[ij];
+                tempObj.name = IRMTLayerNames[ij];
                 mapLayerList.push(tempObj);
             }
 
@@ -1095,15 +1098,15 @@ var startApp = function() {
             success: function(data) {
                 tempProjectDef = data;
 
-                // Check the svir plugin version
-                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
+                // Check the irmt plugin version
+                var versionCheck = versionCompare(data[0].irmt_plugin_version, COMPATIBILITY_VERSION);
 
                 if (versionCheck < 0) {
                     // Warn the user and stop the application
                     $('#projectDef-spinner').hide();
                     $('#project-def').append(
                         '<div class="alert alert-danger" role="alert">' +
-                            'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                            'The project you are trying to load was created with a version of the IRMT QGIS tool kit that is not compatible with this application' +
                         '</div>'
                     );
                     return
