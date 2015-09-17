@@ -401,10 +401,10 @@ def export_countries_info(request):
     writer.writerow(['ISO', 'NAME'])
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
-    for country in inclusive_region.countries.all():
+    for country in inclusive_region.zones.all():
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
-        row = [country.iso, country.name_0.encode('utf-8')]
+        row = [country.country_iso, country.name.encode('utf-8')]
         writer.writerow(row)
     return response
 
@@ -476,13 +476,13 @@ def _stream_variables_data_as_csv(
     yield csvfile.getvalue()
     inclusive_region = CustomRegion.objects.get(
         name='Countries with socioeconomic data')
-    for country in inclusive_region.countries.all():
+    for country in inclusive_region.zones.all():
         if (country_iso_codes_list
-                and country.iso not in country_iso_codes_list):
+                and country.country_iso not in country_iso_codes_list):
             continue
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
-        row = [country.iso, country.name_0.encode('utf-8')]
+        row = [country.country_iso, country.name.encode('utf-8')]
         ind_vals = []
         for indicator in indicators:
             try:
