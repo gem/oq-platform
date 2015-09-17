@@ -1,0 +1,86 @@
+
+
+#retrofittingSelect {
+	margin-left: 30px
+}
+
+label {
+	width: 30%;
+	text-align: right;
+	padding-right: 2%;
+	margin-left: 5px;
+}
+
+.ffsForm, .vfsForm{
+	float: left;
+	margin-top: 20px;
+}
+
+.ffsTable {
+	width: 50%;
+	margin-left: 20px;
+}
+
+.vfsTable {
+	width: 65%;
+	margin-left: 3px;
+}
+
+.ffsTableDiv {
+	padding-right: 40px;
+	padding-bottom: 15%;
+}
+
+.vfsTableDiv {
+	padding-right: 40px;
+}
+
+.theTable {
+	float: right;
+	margin-top: 10px;
+}
+
+#tableOverflow {
+	height: 140px;
+    overflow: auto;
+    margin-top: 20px;
+    padding-left: 90px;
+}
+
+.ffsTitle, .vfsTitle {
+    padding-left: 10%;
+    font-size: 18px;
+}
+
+textarea {
+    height: 30px;
+}
+
+.destroyTable {
+	margin-left: 20px;
+	float: right;
+    margin-top: 10px;
+}
+
+.destroyVTable {
+	float: right;
+    margin-top: 10px;
+}
+
+#tabs {
+	border: none;
+}
+
+#textarea {
+	width: 600px;
+	height: 700px;
+}
+
+#occupantsCheckBoxes, #economicCheckBoxes {
+	margin-left: 35%;
+}
+
+#retroDiv{
+	margin-left: 30%;
+}
+
