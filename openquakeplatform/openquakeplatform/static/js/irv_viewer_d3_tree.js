@@ -27,7 +27,6 @@
         'SVI_THEME': 'Social Vulnerability Theme',
         'SVI_INDICATOR': 'Social Vulnerability Indicator',
     };
-    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -192,8 +191,8 @@
         $('#saveBtn').click(function() {
             $('#checkboxPD').attr('checked', false);
             $('#saveState-spinner').hide();
-            var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
-            var pdLicenseURL = sessionProjectDef.license.split('(')[1];
+            var pdLicenseName = license.substring(0, license.indexOf('('));
+            var pdLicenseURL = license.split('(')[1];
             pdLicenseURL = pdLicenseURL.replace(')', '');
 
             $('#saveState-spinner').hide();
@@ -201,7 +200,7 @@
             $('#licenseName').empty();
             $('#licenseURL').empty();
             $('#inputName').empty();
-            $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
+            $('#inputName').append('<p>The current title is: '+ sessionProjectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
             $('#licenseName').append(
                 '<p>This project has been created using the '+ pdLicenseName +' license ' +
                 '<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'"> Info</a><br> </p>'
@@ -221,7 +220,6 @@
                 $('#saveState-spinner').show();
                 var inputVal = $('#giveNamePD').val();
                 if (inputVal === '' || inputVal === null) {
-                    // TODO avoid duplicate names
                     $('#ajaxErrorDialog').empty();
                     $('#ajaxErrorDialog').append(
                         '<p>A valid name was not provided</p>'
@@ -229,15 +227,36 @@
                     $('#ajaxErrorDialog').dialog('open');
                     $('#saveState-spinner').hide();
                 } else {
-                    projectDef.title = inputVal;
+                    projectDefUpdated.title = inputVal;
 
-                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                    // Append projectDefUpdated to tempProjectDef
+                    // Check for existing object
+                    var duplicate = false;
+                    for (var i = 0; i < tempProjectDef.length; i++) {
+                        if (projectDefUpdated.title == tempProjectDef[i].title) {
+                            duplicate = true;
+                        }
+                    }
+
+                    if (duplicate === false) {
+                        tempProjectDef.push(projectDefUpdated);
+                    } else {
+                        $('#ajaxErrorDialog').empty();
+                        $('#ajaxErrorDialog').append(
+                            '<p>That name is already used to describe another project definition</p>'
+                        );
+                        $('#ajaxErrorDialog').dialog('open');
+                        $('#saveState-spinner').hide();
+                        return;
+                    }
+
+                    var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
                         //avoid circularity in JSON by removing the parent key
                         if (key == "parent") {
                             return 'undefined';
                           }
-                          return value;
-                        });
+                        return value;
+                    });
 
                     // prevent multiple AJAX calls
                     if (isSubmitting) {
