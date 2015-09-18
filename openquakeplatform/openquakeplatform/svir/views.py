@@ -288,15 +288,18 @@ def list_subthemes_by_theme(request):
 def export_variables_info(request):
     """
     Export a csv file containing information about the socioeconomic
-    indicators which have the specified name, keywords, theme and/or subtheme
+    indicators which have the specified name, keywords, theme and/or subtheme.
+    If also a study is provided, only indicators that are relevant to the
+    study are returned.
 
     :param request:
-        A "GET" :class:`django.http.HttpRequest` object containing at least
-        one of the following parameters:
+        A "GET" :class:`django.http.HttpRequest` object that can contain
+        the following optional parameters:
             * 'name'
             * 'keywords'
             * 'theme'
             * 'subtheme'
+            * 'study'
         If the indicator name (or part of it) is provided, the indicators
         which name contain the provided string will be included in the csv.
         If one or more keywords are provided, the csv will list the
@@ -304,6 +307,11 @@ def export_variables_info(request):
         If the theme is provided, the list will be filtered by theme, unless
         also the subtheme is provided, then the list will be filtered by
         subtheme.
+        If the study is provided, only indicators for which at least one
+        value is available for any of the zones belonging to that study
+        are provided.
+        If none of the above parameters is provided, the whole set of
+        indicators is retrieved.
 
     :return:
         a csv file in which each line contains the following data:
@@ -323,6 +331,7 @@ def export_variables_info(request):
     keywords_str = request.GET.get('keywords')
     theme_str = request.GET.get('theme')
     subtheme_str = request.GET.get('subtheme')
+    study_str = request.GET.get('study')
     copyright = copyright_csv(COPYRIGHT_HEADER)
     response.write(copyright)
     writer = csv.writer(response)
@@ -349,6 +358,12 @@ def export_variables_info(request):
         except ObjectDoesNotExist:
             return HttpResponseNotFound('Subtheme %s not found' % subtheme_str)
 
+    if study_str:
+        try:
+            study_obj = Study.objects.get(name=study_str)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound('Study %s not found' % study_str)
+
     # start with the whole set of indicators, then refine filtering
     indicators = Indicator.objects.all()
 
@@ -365,6 +380,10 @@ def export_variables_info(request):
             indicators = indicators.filter(subtheme=subtheme_obj)
     elif subtheme_obj:
         indicators = indicators.filter(subtheme=subtheme_obj)
+
+    if study_str:
+        zones_for_study = Zone.objects.filter(study=study_obj)
+        indicators = indicators.filter(zones__in=zones_for_study).distinct()
 
     writer.writerow(["Code",
                      "Name",
