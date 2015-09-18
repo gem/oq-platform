@@ -867,7 +867,7 @@ function watchForPdSelection() {
 
 function getGeoServerLayers() {
     $('#load-project-spinner').show();
-    var SVIRLayerNames = [];
+    var IRMTLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
     // Get layers from GeoServer and populate the layer selection menu
     $.ajax({
@@ -882,8 +882,8 @@ function getGeoServerLayers() {
 
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
-            // Find the SVIR keywords
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            // Find the IRMT keywords
+            var stringsToLookFor = ['SVIR_QGIS_Plugin', 'IRMT_QGIS_Plugin'];
             // Reload if the api call was incomplete
             if (featureType.length === undefined) {
                 getGeoServerLayers();
@@ -891,17 +891,21 @@ function getGeoServerLayers() {
             }
 
             for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                for (var j=0; j < stringsToLookFor.length; j++) {
+                    stringToLookFor = stringsToLookFor[j];
+                    if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                        IRMTLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                        break;
+                    }
                 }
             }
 
             // Create AngularJS dropdown menu
             var mapScope = angular.element($("#layer-list")).scope();
             var mapLayerList = [];
-            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+            for (var ij = 0; ij < IRMTLayerNames.length; ij++) {
                 var tempObj = {};
-                tempObj.name = SVIRLayerNames[ij];
+                tempObj.name = IRMTLayerNames[ij];
                 mapLayerList.push(tempObj);
             }
 
