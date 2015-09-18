@@ -369,13 +369,13 @@ $('#saveBtn').click(function() {
             costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (non_structuralInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (contentsInx > -1 ) {
             costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (businessInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="business_interruption" value="'+ data[i][businessInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
         }
 
         // Occupancies
