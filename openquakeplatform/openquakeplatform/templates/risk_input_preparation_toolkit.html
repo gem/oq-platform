@@ -51,6 +51,14 @@
             <input id="retroChbx" type="checkbox" value="retrofitting"> Retrofitting Cost
           </div>
         </div>
+          <div id="limitDiv" >
+            Limit:
+              <select id="limitSelect">
+                <option value="none">None</option>
+                <option value="absolute">Absolute</option>
+                <option value="relative">Relative</option>
+              </select><br>
+          </div>
         <label>Nonstructural Costs:</label>
         <select id="defineCostNonStruc">
           <option value="none">None</option>
@@ -78,14 +86,6 @@
           <select id="perAreaSelect">
             <option value="per_asset">Per Building</option>
             <option value="aggregated">Aggregated</option>
-          </select><br>
-        </div>
-        <div id="limit">
-          <label>Limit:</label>
-          <select id="limitSelect">
-            <option value="none">None</option>
-            <option value="absolute">Absolute</option>
-            <option value="relative">Relative</option>
           </select><br>
         </div>
         <div id="deductible">
