@@ -105,14 +105,18 @@ function createRiskIndicator(la, index, selectedRegion) {
     return indicator;
 }
 
-function combineIndicators(nameLookUp, themeObj, JSONthemes, testSessionProjectDef) {
-
+function combineIndicators(nameLookUp, themeObj, JSONthemes) {
+    projectDef = sessionProjectDef;
     //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
     // an empty object in order to test the function
-    if (!jQuery.isEmptyObject(sessionProjectDef)) {
-        projectDef = sessionProjectDef;
-    } else {
-        projectDef = testSessionProjectDef;
+    if (arguments[3]) {
+        projectDef = arguments[3];
+    }
+    else if (!jQuery.isEmptyObject(sessionProjectDef)) {
+       projectDef = sessionProjectDef;
+    }
+    else {
+       return false;
     }
 
     var subIndex = {};
