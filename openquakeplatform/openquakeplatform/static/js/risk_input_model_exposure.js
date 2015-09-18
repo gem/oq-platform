@@ -43,7 +43,7 @@ $('#defineCostStruc').change(function() {
 });
 
 $('#defineCostNonStruc').change(function() {
-    defineCost($(this).val());
+    defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostContent').change(function() {
@@ -54,24 +54,46 @@ $('#defineCostBusiness').change(function() {
     defineCost($(this).val());
 });
 
-function defineCost(selectedValue) {
+// costTrackerObj is used to keep track of any time perArea is selected
+var costTrackerObj = {
+    defineCostStruc : 'false',
+    defineCostNonStruc : 'false',
+    defineCostContent : 'false',
+    defineCostBusiness : 'false'
+};
+
+function defineCost(selectedValue, element) {
+    // Manage all define cost elements that are using perArea
     if (selectedValue == 'per_area') {
+        costTrackerObj[element] = true;
         $('#perArea').show();
         showArea = true;
     }
-}
-// End
 
-// TODO remove this
-$('#structuralChbx').change(function() {
-    if(this.checked) {
-        $('#retrofittingSelect').show();
-    } else {
-        $('#retrofittingSelect').hide();
-        // uncheck retrofitting
-        $('#retroChbx').attr('checked', false);
+    // Manage all define cost elements that are using perArea continued
+    if (selectedValue != 'per_area') {
+        costTrackerObj[element] = false;
+
+        // If costTrackerManager returnes false then we can hide the area
+        // option from the form
+        if (costTrackerManager()) {
+            return;
+        } else {
+            $('#perArea').hide();
+            showArea = false;
+        }
     }
-});
+}
+
+// Check the costTrackerObj for any accurances of true
+function costTrackerManager () {
+    for(var k in costTrackerObj) {
+        if (costTrackerObj[k] === true) {
+            return true;
+        }
+    }
+}
+// End the visibility of the perArea selection menu
 
 $('#exposureForm').change(function() {
     updateTable();
@@ -102,8 +124,8 @@ function updateTable() {
             if (checkForValueInHeader(header, argument) == -1) {
                 header.push(argument);
             }
-        // This constraint will structural, non-structural, contents and business costs
-        // to be added to the header
+        // This constraint will allow structural, non-structural, contents and business
+        // costs to be added to the header
         } else if (argument != 'none' && valueArg !== undefined) {
             if (checkForValueInHeader(header, valueArg) == -1) {
                 header.push(valueArg);
