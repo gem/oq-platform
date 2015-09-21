@@ -1153,7 +1153,7 @@ function projDefJSONRequest(selectedLayer) {
             $('#alert').remove();
 
             // Check the svir plugin version
-            // Provide some backwards compatablility for old data structure
+            // Provide some backwards compatibility for old data structure
             var thisVersion = null;
             try {
                 var version = data.svir_plugin_version
