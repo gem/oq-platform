@@ -26,6 +26,7 @@ $( document ).ready(function() {
 
 $('#retrofittingSelect').hide();
 $('#limitDiv').hide();
+$('#deductibleDiv').hide();
 
 /////////////////////////////////////////////////////////
 // Manage the visibility of the perArea selection menu //
@@ -37,13 +38,16 @@ $('#defineCostStruc').change(function() {
     if ($(this).val() != 'none') {
         $('#retrofittingSelect').show();
         $('#limitDiv').show();
+        $('#deductibleDiv').show();
     } else {
         $('#retrofittingSelect').hide();
         $('#limitDiv').hide();
+        $('#deductibleDiv').hide();
         // Uncheck retrofitting
         $('#retroChbx').attr('checked', false);
-        // Unselect the limit
+        // Unselect the limit & deductible
         $("#limitSelect").val('0');
+        $("#deductibleSelect").val('0');
     }
 });
 
@@ -342,6 +346,12 @@ $('#saveBtn').click(function() {
             limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
         }
 
+        // Retrofitted
+        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
+        if (retrofittingSelect == 'retrofitting') {
+            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
+        }
+
         // deductibleSelect
         var deductibleValue = '';
         var deductibleState = $('#deductibleSelect option:selected').val();
@@ -353,25 +363,19 @@ $('#saveBtn').click(function() {
             deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
         }
 
-        // Retrofitted
-        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
-        if (retrofittingSelect == 'retrofitting') {
-            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
-        }
-
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
             costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (non_structuralInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'" '+deductibleValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'/>\n';
         }
         if (contentsInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'" '+deductibleValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'/>\n';
         }
         if (businessInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="business_interruption" value="'+ data[i][businessInx]+'" '+deductibleValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="business_interruption" value="'+ data[i][businessInx]+'/>\n';
         }
 
         // Occupancies
