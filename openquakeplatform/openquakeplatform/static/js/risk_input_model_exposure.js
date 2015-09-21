@@ -25,6 +25,8 @@ $( document ).ready(function() {
 });
 
 $('#retrofittingSelect').hide();
+$('#limitDiv').hide();
+$('#deductibleDiv').hide();
 
 /////////////////////////////////////////////////////////
 // Manage the visibility of the perArea selection menu //
@@ -35,15 +37,22 @@ $('#defineCostStruc').change(function() {
     defineCost($(this).val());
     if ($(this).val() != 'none') {
         $('#retrofittingSelect').show();
+        $('#limitDiv').show();
+        $('#deductibleDiv').show();
     } else {
         $('#retrofittingSelect').hide();
-        // uncheck retrofitting
+        $('#limitDiv').hide();
+        $('#deductibleDiv').hide();
+        // Uncheck retrofitting
         $('#retroChbx').attr('checked', false);
+        // Unselect the limit & deductible
+        $("#limitSelect").val('0');
+        $("#deductibleSelect").val('0');
     }
 });
 
 $('#defineCostNonStruc').change(function() {
-    defineCost($(this).val());
+    defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostContent').change(function() {
@@ -54,24 +63,46 @@ $('#defineCostBusiness').change(function() {
     defineCost($(this).val());
 });
 
-function defineCost(selectedValue) {
+// costTrackerObj is used to keep track of any time perArea is selected
+var costTrackerObj = {
+    defineCostStruc : 'false',
+    defineCostNonStruc : 'false',
+    defineCostContent : 'false',
+    defineCostBusiness : 'false'
+};
+
+function defineCost(selectedValue, element) {
+    // Manage all define cost elements that are using perArea
     if (selectedValue == 'per_area') {
+        costTrackerObj[element] = true;
         $('#perArea').show();
         showArea = true;
     }
-}
-// End
 
-// TODO remove this
-$('#structuralChbx').change(function() {
-    if(this.checked) {
-        $('#retrofittingSelect').show();
-    } else {
-        $('#retrofittingSelect').hide();
-        // uncheck retrofitting
-        $('#retroChbx').attr('checked', false);
+    // Manage all define cost elements that are using perArea continued
+    if (selectedValue != 'per_area') {
+        costTrackerObj[element] = false;
+
+        // If costTrackerManager returnes false then we can hide the area
+        // option from the form
+        if (costTrackerManager()) {
+            return;
+        } else {
+            $('#perArea').hide();
+            showArea = false;
+        }
     }
-});
+}
+
+// Check the costTrackerObj for any accurances of true
+function costTrackerManager () {
+    for(var k in costTrackerObj) {
+        if (costTrackerObj[k] === true) {
+            return true;
+        }
+    }
+}
+// End the visibility of the perArea selection menu
 
 $('#exposureForm').change(function() {
     updateTable();
@@ -102,8 +133,8 @@ function updateTable() {
             if (checkForValueInHeader(header, argument) == -1) {
                 header.push(argument);
             }
-        // This constraint will structural, non-structural, contents and business costs
-        // to be added to the header
+        // This constraint will allow structural, non-structural, contents and business
+        // costs to be added to the header
         } else if (argument != 'none' && valueArg !== undefined) {
             if (checkForValueInHeader(header, valueArg) == -1) {
                 header.push(valueArg);
@@ -315,6 +346,12 @@ $('#saveBtn').click(function() {
             limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
         }
 
+        // Retrofitted
+        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
+        if (retrofittingSelect == 'retrofitting') {
+            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
+        }
+
         // deductibleSelect
         var deductibleValue = '';
         var deductibleState = $('#deductibleSelect option:selected').val();
@@ -326,34 +363,19 @@ $('#saveBtn').click(function() {
             deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
         }
 
-        // Retrofitted
-        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
-        if (retrofittingSelect == 'retrofitting') {
-            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
-        }
-
-        // limit value
-        var limitSelect = $('#limitSelect input:checked').val();
-        if (limitSelect == 'retrofitting') {
-            limit = 'insuranceLimit="'+data[i][limitInx]+'"';
-        }
-
-        // Deductible
-        if (true) {};
-
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
             costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'/>\n';
         }
         if (non_structuralInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="non_structural" value="'+ data[i][non_structuralInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'/>\n';
         }
         if (contentsInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'/>\n';
         }
         if (businessInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="business" value="'+ data[i][businessInx]+'" '+deductibleValue+' '+limitValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="business_interruption" value="'+ data[i][businessInx]+'/>\n';
         }
 
         // Occupancies
