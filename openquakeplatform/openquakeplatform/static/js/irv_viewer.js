@@ -1153,7 +1153,20 @@ function projDefJSONRequest(selectedLayer) {
             $('#alert').remove();
 
             // Check the svir plugin version
-            var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
+            // Provide some backwards compatablility for old data structure
+            var thisVersion = null;
+            try {
+                var version = data.svir_plugin_version
+                if (version != null) {
+                    thisVersion = version
+                } else {
+                    thisVersion = data.irmt_plugin_version
+                }
+            } catch (e) {
+
+            }
+
+            var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
 
             if (versionCheck < 0 || versionCheck == 1 ) {
                 // Warn the user and stop the application
