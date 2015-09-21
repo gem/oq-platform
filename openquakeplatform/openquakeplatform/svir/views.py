@@ -430,7 +430,7 @@ def export_variables_info(request):
 
     if theme_obj:
         if not subtheme_obj:
-            indicators = indicators.filter(theme=theme_obj)
+            indicators = indicators.filter(subtheme__theme=theme_obj)
         else:
             indicators = indicators.filter(subtheme=subtheme_obj)
     elif subtheme_obj:
