@@ -406,24 +406,31 @@ def export_variables_info(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def export_countries_info(request):
+def export_zones_info(request):
     """
-    Export a csv file containing iso codes and names of countries for which
+    Export a csv file containing iso codes and names of zones for which
     socioeconomic data are available
     """
+    study_name = request.GET.get('study_name')
+    if not study_name:
+        print "Missing 'study_name' parameter"
+        return HttpResponseBadRequest(
+            'Please provide the study_name parameter')
+    try:
+        study_obj = Study.objects.get(name=study_name)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Study %s not found' % study_name)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = \
-        'attachment; filename="countries_info_export.csv"'
+        'attachment; filename="zones_info_export.csv"'
     copyright = copyright_csv(COPYRIGHT_HEADER)
     writer = csv.writer(response)
     response.write(copyright)
     writer.writerow(['ISO', 'NAME'])
-    study = Study.objects.get(
-        name='Social and Economic Vulnerability Global Indicator Database')
-    for country in Zone.objects.filter(study=study):
+    for zone in Zone.objects.filter(study=study_obj):
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
-        row = [country.country_iso, country.name.encode('utf-8')]
+        row = [zone.country_iso, zone.name.encode('utf-8')]
         writer.writerow(row)
     return response
 
