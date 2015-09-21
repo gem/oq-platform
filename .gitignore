@@ -1,4 +1,7 @@
 oq-ui-client/app/static/externals/openlayers
+/openquakeplatform/openquakeplatform/build-gs-tree/
+/openquakeplatform/output/
+/openquakeplatform/uploaded/
 *~
 oq-ui-client2/build
 \#*

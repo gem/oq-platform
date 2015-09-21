@@ -1,5 +1,7 @@
--- NOTE: this migration is also executed at installation time because it isn't created
---       by Django directly.
+-- NOTE: originally deployed as migration, we realized that this sql script must
+--       be executed for every new installation (devel or production).
+--       The script is idempotent so we decided to keep the original migration script too
+
 DROP OPERATOR IF EXISTS =~@ (character varying, character varying);
 DROP FUNCTION IF EXISTS icompare_unaccent(character varying, character varying);
 DROP EXTENSION IF EXISTS unaccent;

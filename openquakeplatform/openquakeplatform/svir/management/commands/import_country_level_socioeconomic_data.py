@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
             reader = csv.reader(f)
             # read row containing field names, country names and region names
-            reader.next()  # not used
+            reader.next()  # the first row is not used
             # read row containing the region names to which countries belong
             second_row = reader.next()
             assoc_regions = second_row[
