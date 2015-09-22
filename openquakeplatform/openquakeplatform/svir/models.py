@@ -35,6 +35,11 @@ class Study(models.Model):
 
     objects = StudyManager()
 
+    @property
+    def admin_levels(self):
+        return set(
+            zone.admin_level for zone in Zone.objects.filter(study=self))
+
     def natural_key(self):
         return self.name
 
