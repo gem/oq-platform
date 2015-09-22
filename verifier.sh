@@ -269,7 +269,7 @@ if [ \$GEM_SET_DEBUG ]; then
 fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
-. platform-env/bin/activate
+source platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
@@ -304,6 +304,10 @@ else
 fi
 fab --show=everything test
 
+# download and install vulnerability development data
+wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
+python ./manage.py loaddata dev-data.json.bz2
+
 cd openquakeplatform/test
 export PYTHONPATH=\$(pwd)
 cp config.py.tmpl config.py
@@ -312,7 +316,6 @@ export DISPLAY=:1
 
 sleep 3
 cd ~/$GEM_GIT_PACKAGE
-. platform-env/bin/activate
 cd openquakeplatform
 fab stop
 "
@@ -443,7 +446,6 @@ cp config.py.tmpl config.py
 sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' config.py.tmpl > config.py
 export DISPLAY=:1
 ./test_isc.py
-
 sleep 3
 cd -
 "

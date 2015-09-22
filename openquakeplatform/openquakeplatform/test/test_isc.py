@@ -6,7 +6,7 @@ import sys
 # sys.excepthook = ultratb.FormattedTB(mode='Verbose',
 #      color_scheme='Linux', call_pdb=1)
 
-from openquake.platform_test.utils import *
+from openquakeplatform.test.utils import *
 
 try:
     from config import pla_basepath, pla_user, pla_passwd, pla_debugger
