@@ -1169,6 +1169,18 @@ function projDefJSONRequest(selectedLayer) {
                 return
             }
 
+            // Check vertices count
+            var verticesCount = data.vertices_count;
+            if (verticesCount > 2000000) {
+                $('#projectDef-spinner').hide();
+                $('#project-def').append(
+                    '<div id="alert" class="alert alert-danger" role="alert">' +
+                        'The project you are trying to load includes a geometry is too complex to run efectivly in this application. Please simplify the geometry using QGIS and upload the project again.' +
+                    '</div>'
+                );
+                return
+            }
+
             var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
 
             if (versionCheck < 0 || versionCheck == 1 ) {
