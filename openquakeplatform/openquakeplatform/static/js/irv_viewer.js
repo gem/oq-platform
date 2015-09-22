@@ -1153,17 +1153,12 @@ function projDefJSONRequest(selectedLayer) {
             $('#alert').remove();
 
             // Check the svir plugin version
-            // Provide some backwards compatibility for old data structure
+            // Provide some backwards compatibility for old naming convention
             var thisVersion = null;
-            try {
-                var version = data.svir_plugin_version
-                if (version != null) {
-                    thisVersion = version
-                } else {
-                    thisVersion = data.irmt_plugin_version
-                }
-            } catch (e) {
-
+            if (data.hasOwnProperty('svir_plugin_version')) {
+                thisVersion = data.svir_plugin_version
+            } else if (data.hasOwnProperty('irmt_plugin_version')) {
+                thisVersion = data.irmt_plugin_version
             }
 
             var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
