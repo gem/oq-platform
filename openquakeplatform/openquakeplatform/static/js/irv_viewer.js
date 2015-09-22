@@ -1159,6 +1159,14 @@ function projDefJSONRequest(selectedLayer) {
                 thisVersion = data.svir_plugin_version
             } else if (data.hasOwnProperty('irmt_plugin_version')) {
                 thisVersion = data.irmt_plugin_version
+            } else {
+                $('#projectDef-spinner').hide();
+                $('#project-def').append(
+                    '<div id="alert" class="alert alert-danger" role="alert">' +
+                        'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                    '</div>'
+                );
+                return
             }
 
             var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
