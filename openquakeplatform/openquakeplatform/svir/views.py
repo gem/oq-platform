@@ -286,8 +286,15 @@ def list_admin_levels_for_study(request):
         study_obj = Study.objects.get(name=study_name)
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Study %s not found' % study_name)
-    admin_levels = study_obj.admin_levels
-    return HttpResponse(admin_levels)
+    response = HttpResponse()
+    first = True
+    for admin_level in study_obj.admin_levels:
+        if first:
+            first = False
+        else:
+            response.write(',')
+        response.write('"' + str(admin_level) + '"')
+    return HttpResponse(response)
 
 
 @condition(etag_func=None)
