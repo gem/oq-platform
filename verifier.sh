@@ -308,11 +308,10 @@ fab --show=everything test
 wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
 python ./manage.py loaddata dev-data.json.bz2
 
-cd openquakeplatform/test
 export PYTHONPATH=\$(pwd)
-cp config.py.tmpl config.py
+cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
-./test_isc.py
+python /usr/bin/nosetests  --with-xunit --xunit-file=xunit-platform.xml  openquakeplatform/test
 
 sleep 3
 cd ~/$GEM_GIT_PACKAGE
