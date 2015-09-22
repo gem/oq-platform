@@ -277,6 +277,22 @@ def add_project_definition(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
+def list_admin_levels_for_study(request):
+    study_name = request.GET.get('study_name')
+    if not study_name:
+        return HttpResponseBadRequest(
+            'Please provide the study_name parameter')
+    try:
+        study_obj = Study.objects.get(name=study_name)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Study %s not found' % study_name)
+    admin_levels = study_obj.admin_levels
+    return HttpResponse(admin_levels)
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
 def list_studies(request):
     studies = Study.objects.all()
     if not studies:
