@@ -439,12 +439,11 @@ if [ \$GEM_SET_DEBUG ]; then
 fi
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host localhost
 
-cd oq-platform/openquakeplatform/openquakeplatform/test
+cd oq-platform/openquakeplatform
 export PYTHONPATH=\$(pwd)
-cp config.py.tmpl config.py
-sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' config.py.tmpl > config.py
+sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
-./test_isc.py
+nosetests  --with-xunit --xunit-file=xunit-platform.xml  openquakeplatform/test
 sleep 3
 cd -
 "
