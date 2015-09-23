@@ -484,10 +484,10 @@ def export_variables_info(request):
 @condition(etag_func=None)
 @allowed_methods(('GET', ))
 @sign_in_required
-def export_zones_info(request):
+def export_countries_info(request):
     """
-    Export a csv file containing iso codes and names of zones for which
-    socioeconomic data are available
+    Export a csv file containing iso codes and names of countries implied in
+    a given study
     """
     study_name = request.GET.get('study_name')
     if not study_name:
@@ -505,7 +505,10 @@ def export_zones_info(request):
     writer = csv.writer(response)
     response.write(copyright)
     writer.writerow(['ISO', 'NAME'])
-    for zone in Zone.objects.filter(study=study_obj):
+    iso_codes = [zone.country_iso
+                 for zone in Zone.objects.filter(study=study_obj)]
+    countries = Zone.objects.filter(country_iso__in=iso_codes, admin_level=0)
+    for zone in countries:
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
         row = [zone.country_iso, zone.name.encode('utf-8')]
@@ -514,9 +517,81 @@ def export_zones_info(request):
 
 
 @condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def export_countries_info_old(request):
+    """
+    Export a csv file containing iso codes and names of countries implied in
+    a given study
+    """
+    study_name = request.GET.get('study_name')
+    if not study_name:
+        print "Missing 'study_name' parameter"
+        return HttpResponseBadRequest(
+            'Please provide the study_name parameter')
+    try:
+        study_obj = Study.objects.get(name=study_name)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Study %s not found' % study_name)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = \
+        'attachment; filename="zones_info_export.csv"'
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    writer = csv.writer(response)
+    response.write(copyright)
+    writer.writerow(['ISO', 'NAME'])
+    for zone in Zone.objects.filter(study=study_obj, admin_level=0):
+        # NOTE: It depends on which country model is being used
+        # row = [country.iso, country.name_engli.encode('utf-8')]
+        row = [zone.country_iso, zone.name.encode('utf-8')]
+        writer.writerow(row)
+    return response
+
+
+@condition(etag_func=None)
+@allowed_methods(('GET', ))
+@sign_in_required
+def export_zones_info(request):
+    """
+    Export a csv file containing details of zones having the given country_iso,
+    for the selected study
+    """
+    country_iso = request.GET.get('country_iso')
+    if not country_iso:
+        print "Missing 'country_iso' parameter"
+        return HttpResponseBadRequest(
+            'Please provide the country_iso parameter')
+    study_name = request.GET.get('study_name')
+    if not study_name:
+        print "Missing 'study_name' parameter"
+        return HttpResponseBadRequest(
+            'Please provide the study_name parameter')
+    try:
+        study_obj = Study.objects.get(name=study_name)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Study %s not found' % study_name)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = \
+        'attachment; filename="zones_info_export.csv"'
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    writer = csv.writer(response)
+    response.write(copyright)
+    writer.writerow(['NAME', 'COUNTRY_ISO', 'PARENT_LABEL', 'ADMIN_LEVEL'])
+    for zone in Zone.objects.filter(study=study_obj, country_iso=country_iso):
+        # NOTE: It depends on which country model is being used
+        # row = [country.iso, country.name_engli.encode('utf-8')]
+        row = [zone.name.encode('utf-8'),
+               zone.country_iso,
+               zone.parent_label.encode('utf-8'),
+               zone.admin_level]
+        writer.writerow(row)
+    return response
+
+
+@condition(etag_func=None)
 @allowed_methods(('GET', 'POST',))
 @sign_in_required
-def export_variables_data(request):
+def export_variables_data_national(request):
     """
     Export a csv file containing data corresponding to the social vulnerability
     variables which ids are given in input
@@ -549,7 +624,7 @@ def export_variables_data(request):
     if country_iso_codes:
         country_iso_codes_list = [iso.strip()
                                   for iso in country_iso_codes.split(',')]
-    response_data = _stream_variables_data_as_csv(
+    response_data = _stream_variables_data_as_csv_national(
         sv_variables_ids, export_geometries, country_iso_codes_list)
     filename = 'sv_data_by_variables_ids_export.csv'
     content_disp = 'attachment; filename="%s"' % filename
@@ -560,7 +635,109 @@ def export_variables_data(request):
     return response
 
 
-def _stream_variables_data_as_csv(
+@condition(etag_func=None)
+@allowed_methods(('GET', 'POST',))
+@sign_in_required
+def export_variables_data_subnational(request):
+    """
+    Export a csv file containing data corresponding to the social vulnerability
+    variables which ids are given in input
+    If zone identifiers are also provided, only the corresponding data will
+    be exported
+
+    :param request:
+        A "GET" or "POST" :class:`django.http.HttpRequest` object containing
+        the following parameters:
+            * 'sv_variables_ids': a string of comma-separated ids of social
+                                  vulnerability variables
+            * 'zone_ids': a string of pipe-separated tuples
+                          (name, country_iso, parent_label)
+            * 'export_geometries': 'True' or 'False', indicating if also the
+                                   geometries of countries have to be exported
+                                   (optional - default: 'False')
+    """
+    req_dict = request.GET if request.method == 'GET' else request.POST
+    if not req_dict.get('sv_variables_ids'):
+        msg = ('Please specify the sv_variables_ids parameter: a list of'
+               ' comma-separated codes of social vulnerability variables.')
+        response = HttpResponse(msg, status="400")
+        return response
+    if not req_dict.get('zone_ids'):
+        msg = ('Please specify the zone_ids parameter: a list of'
+               ' comma-separated tuples (name, country_iso, parent_label)')
+        response = HttpResponse(msg, status="400")
+        return response
+    sv_variables_ids = req_dict['sv_variables_ids']
+    zone_ids = req_dict.get('zone_ids')
+    export_geometries = (req_dict.get('export_geometries') == 'True')
+    zone_ids_list = []
+    if zone_ids:
+        for zone_id in zone_ids.split('|'):
+            # the zone_id string is formatted as
+            # 'name (country_iso: parent_label)'
+            name = zone_id.split('(')[0].strip()
+            country_iso = zone_id.split('(')[1].split(':')[0].strip()
+            parent_label = zone_id.split(':')[1].split(')')[0].strip()
+            zone_ids_list.append(dict(name=name,
+                                      country_iso=country_iso,
+                                      parent_label=parent_label))
+    response_data = _stream_variables_data_as_csv_subnational(
+        sv_variables_ids, export_geometries, zone_ids_list)
+    filename = 'sv_data_by_variables_ids_export.csv'
+    content_disp = 'attachment; filename="%s"' % filename
+    mimetype = 'text/csv'
+    response = HttpResponse(response_data, mimetype=mimetype)
+    response['Content-Disposition'] = content_disp
+    # response['content-length'] = len(response.content)
+    return response
+
+
+def _stream_variables_data_as_csv_subnational(
+        sv_variables_ids, export_geometries, zone_ids_list):
+    copyright = copyright_csv(COPYRIGHT_HEADER)
+    yield copyright
+    sv_variables_ids_list = [var_id.strip()
+                             for var_id in sv_variables_ids.split(",")]
+    # build the header, appending sv_variables_ids properly
+    header_list = ["ZONE_NAME", "COUNTRY_ISO", "PARENT_LABEL"]
+    indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
+    # NOTE: unavailable indicators will be ignored
+    for indicator in indicators:
+        header_list.append(indicator.code)
+    if export_geometries:
+        header_list.append("GEOMETRY")
+    csvfile = StringIO()
+    csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
+    csvwriter.writerow(header_list)
+    yield csvfile.getvalue()
+    for zone_id in zone_ids_list:
+        zone = Zone.objects.get(name=zone_id['name'],
+                                country_iso=zone_id['country_iso'],
+                                parent_label=zone_id['parent_label'])
+        # NOTE: It depends on which country model is being used
+        # row = [country.iso, country.name_engli.encode('utf-8')]
+        row = [zone.name.encode('utf-8'),
+               zone.country_iso,
+               zone.parent_label.encode('utf-8')]
+        ind_vals = []
+        for indicator in indicators:
+            try:
+                val = ZoneIndicator.objects.get(
+                    zone=zone, indicator=indicator).value
+            except:
+                val = ''
+            ind_vals.append(val)
+        row.extend(ind_vals)
+        if export_geometries:
+            row.append(zone.the_geom)
+        # redefine csvfile and csvwriter to avoid yielding again previous stuff
+        csvfile = StringIO()
+        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
+        csvwriter.writerow(row)
+        yield csvfile.getvalue()
+
+
+def _stream_variables_data_as_csv_national(
         sv_variables_ids, export_geometries, country_iso_codes_list):
     copyright = copyright_csv(COPYRIGHT_HEADER)
     yield copyright
@@ -580,24 +757,24 @@ def _stream_variables_data_as_csv(
     yield csvfile.getvalue()
     study = Study.objects.get(
         name='Social and Economic Vulnerability Global Indicator Database')
-    for country in Zone.objects.filter(study=study):
-        if (country_iso_codes_list
-                and country.country_iso not in country_iso_codes_list):
+    for zone in Zone.objects.filter(study=study):
+        if (zone.admin_level > 0 or country_iso_codes_list
+                and zone.country_iso not in country_iso_codes_list):
             continue
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
-        row = [country.country_iso, country.name.encode('utf-8')]
+        row = [zone.country_iso, zone.name.encode('utf-8')]
         ind_vals = []
         for indicator in indicators:
             try:
                 val = ZoneIndicator.objects.get(
-                    zone=country, indicator=indicator).value
+                    zone=zone, indicator=indicator).value
             except:
                 val = ''
             ind_vals.append(val)
         row.extend(ind_vals)
         if export_geometries:
-            row.append(country.the_geom)
+            row.append(zone.the_geom)
         # redefine csvfile and csvwriter to avoid yielding again previous stuff
         csvfile = StringIO()
         csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"')
