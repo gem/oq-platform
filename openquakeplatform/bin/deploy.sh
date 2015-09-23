@@ -649,9 +649,6 @@ oq_platform_install () {
                 "${app}_postlayers" "$oqpdir" "$gem_db_name"
             fi
         done
-        # updatelayers must be run again after the fixtures have been pushed
-        # to allow synchronization of keywords and metadata from GN to GS
-        openquakeplatform updatelayers
     fi
 
     chown -R www-data.www-data /var/www/openquake
@@ -660,6 +657,17 @@ oq_platform_install () {
         mkdir -p "$MIGRATIONS_HISTORY"
     fi
     find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
+
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        # updatelayers must be run again after the fixtures have been pushed
+        # to allow synchronization of keywords and metadata from GN to GS
+        openquakeplatform updatelayers
+    else
+        # the updatelayers is very expensive during upgrades due the number of layers
+        # that could be hosted in the platform. Let the user run it in a convinient way for him,
+        # i.e. in background, avoiding a long downtime.
+        echo "WARNING: please run 'sudo openquakeplatform updatelayers' to complete the upgrade."
+    fi
 
 }
 
