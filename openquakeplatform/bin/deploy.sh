@@ -33,7 +33,6 @@ set -e
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="gn2-prod-install"
 
 export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
