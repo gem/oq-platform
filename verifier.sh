@@ -313,29 +313,10 @@ cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
 python /usr/bin/nosetests  --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
-"
-
-scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-
-    ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
-rem_sig_hand() {
-    trap ERR
-    echo 'signal trapped'
-    cd ~/$GEM_GIT_PACKAGE
-    . platform-env/bin/activate
-    cd openquakeplatform
-    fab stop
-}
-trap rem_sig_hand ERR
-set -e
-if [ \$GEM_SET_DEBUG ]; then
-    set -x
-fi
-cd ~/$GEM_GIT_PACKAGE
-source platform-env/bin/activate
-cd openquakeplatform
 fab stop
 "
+
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
 
     echo "_devtest_innervm_run: exit"
 
