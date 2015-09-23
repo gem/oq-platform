@@ -311,10 +311,28 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd)
 cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
-python /usr/bin/nosetests  --with-xunit --xunit-file=xunit-platform.xml  openquakeplatform/test
-
+python /usr/bin/nosetests  --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
+"
+
+scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+
+    ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
+rem_sig_hand() {
+    trap ERR
+    echo 'signal trapped'
+    cd ~/$GEM_GIT_PACKAGE
+    . platform-env/bin/activate
+    cd openquakeplatform
+    fab stop
+}
+trap rem_sig_hand ERR
+set -e
+if [ \$GEM_SET_DEBUG ]; then
+    set -x
+fi
 cd ~/$GEM_GIT_PACKAGE
+source platform-env/bin/activate
 cd openquakeplatform
 fab stop
 "
@@ -364,6 +382,10 @@ _lxc_name_and_ip_get()
 #
 devtest_run () {
     local deps old_ifs branch_id="$1"
+
+    if [ ! -d "out" ]; then
+        mkdir "out"
+    fi
 
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
@@ -443,10 +465,12 @@ cd oq-platform/openquakeplatform
 export PYTHONPATH=\$(pwd)
 sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
-nosetests  --with-xunit --xunit-file=xunit-platform.xml  openquakeplatform/test
+nosetests  --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
 cd -
 "
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+
 
     echo "_prodtest_innervm_run: exit"
 
@@ -461,6 +485,10 @@ cd -
 #
 prodtest_run () {
     local deps old_ifs branch_id="$1"
+
+    if [ ! -d "out" ]; then
+        mkdir "out"
+    fi
 
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
