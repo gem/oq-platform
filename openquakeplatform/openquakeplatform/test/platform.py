@@ -99,10 +99,27 @@ class Platform(object):
         dest_button.click()
         self.wait_new_page(dest_button, '/%s/' % dest)
 
-    def xpath_finduniq(self, xpath_str):
-        field = self.driver.find_elements(By.XPATH, xpath_str)
-        if len(field) != 1:
-            raise ValueError
+    def xpath_finduniq(self, xpath_str, times=1, delta=0.1):
+        for t in range(0, times):
+            field = self.driver.find_elements(By.XPATH, xpath_str)
+            if len(field) > 0:
+                break
+            if times > 1:
+                time.sleep(delta)
+        else:
+            if times > 1:
+                raise TimeoutError(
+                    "Timeout waiting '{}' for {} seconds.".format(xpath_str, times * deltas)
+                    )
+            else:
+                raise ValueError(
+                    "Search path '{}' not matches.".format(xpath_str)
+                    )
+
+        if len(field) > 1:
+            raise NotUniqError(
+                "Waiting for '{}' returned {} matches.".format(xpath_str, len(field))
+                )
 
         return field[0]
 

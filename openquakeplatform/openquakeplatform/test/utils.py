@@ -11,6 +11,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.common.exceptions import StaleElementReferenceException
 
+class TimeoutError(Exception):
+    pass
+
+class NotUniqError(Exception):
+    pass
+
+
 def wait_for(condition_function):
     start_time = time.time()
     while time.time() < start_time + 3:
@@ -18,7 +25,7 @@ def wait_for(condition_function):
             return True
         else:
             time.sleep(0.1)
-    raise Exception(
+    raise TimeoutException(
         'Timeout waiting for {}'.format(condition_function.__name__)
     )
 
