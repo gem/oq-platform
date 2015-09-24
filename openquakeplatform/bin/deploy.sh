@@ -599,6 +599,8 @@ oq_platform_install () {
 
         #
         #  database population (fixtures)
+        #  FIXME this must be run also on NEW applications (if any exists) during upgrades;
+        #        OLD applications that changed should use migrations and must be skipped here
         for app in "${GEM_APP_LIST[@]}"; do
             if function_exists "${app}_fixtureupdate"; then
                 "${app}_fixtureupdate" "$oqpdir"
@@ -623,6 +625,8 @@ oq_platform_install () {
 
         #
         #  database population (external datasets)
+        #  FIXME this must be run also on NEW applications (if any exists) during upgrades;
+        #        OLD applications that changed should use migrations and must be skipped here
         for app in "${GEM_APP_LIST[@]}"; do
             if function_exists "${app}_dataloader"; then
                 "${app}_dataloader" "$oqpdir" "$gem_db_name"
@@ -643,6 +647,8 @@ oq_platform_install () {
 
         #
         #  post layers creation apps customizations
+        #  FIXME this must be run also on NEW applications (if any exists) during upgrades;
+        #        OLD applications that changed should use migrations and must be skipped here
         for app in "${GEM_APP_LIST[@]}"; do
             if function_exists "${app}_postlayers"; then
                 "${app}_postlayers" "$oqpdir" "$gem_db_name"
