@@ -41,7 +41,7 @@ var downloadFractions = function() {
         $.ajax({
             type: 'get',
             url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
-            success: function(data, textStatus, jqXHR) {
+            success: function(data, textStatus, jqXHR) {;
                 if (navigator.appName != 'Microsoft Internet Explorer') {
                     window.open('data:text/csv;charset=utf-8,' + escape(data));
                 } else {
@@ -72,13 +72,16 @@ var showErrorDialog = function(message, options) {
 };
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
-
-    // modal stuff
-    $scope.modalShown = false;
-    $scope.toggleModal = function() {
-        console.log('hello??:');
-        $scope.modalShown = !$scope.modalShown;
-    };
+/*
+    $scope.templates = [{
+        name: 'bob',
+        url: "../static/foo.html"},
+    {
+        name: 'bob2',
+        url: '../static/foobar.html'
+    }];
+    $scope.template = $scope.templates[0];
+*/
 
 
     myService.getAllStudies().then(function(data) {
@@ -235,34 +238,40 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             $('#countryList').hide();
             $('#countrySelectionForm').empty();
 
-            $scope.templates = [{
-                name: 'template1.html',
-                url: 'template1.html'},
-            {
-                name: 'template2.html',
-                url: 'template2.html'
-            }];
 
-                //$scope.showView = function() {
-                    console.log('hi view:');
-                    $scope.template = $scope.templates[0];
-                //};
-                /*
-            // The user has selected a sub-national study
-            $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
-            $('#subRegionListBack').show();
-            $('#subRegionList').show();
-            $('#ragionTable h3').empty();
-            $('#countryList').hide();
-            $('#countryList').insertAfter('#subRegionList');
-            $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
-            $('#countrySelectionForm').empty();
-            // Populate the table
-            populateSubNationalList(study.iso);
-            //createRegionList(study);
-            // Show html elements for the table
-            $("#ragionTable").show();
-            */
+            // Set the template to be used
+            /*
+            console.log('$scope.selectedRegion[0]:');
+            console.log($scope.selectedRegion[0]);
+            if ($scope.selectedRegion[0].g2name == null) {
+                $scope.template = $scope.templates[1];
+            } else {
+                $scope.template = $scope.templates[0];
+            }
+            console.log('$scope.selectedRegion[0]:');
+            console.log($scope.selectedRegion[0]);
+*/
+
+
+            console.log('$scope:');
+            console.log($scope);
+
+  
+                // The user has selected a sub-national study
+                $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
+                $('#subRegionListBack').show();
+                $('#subRegionList').show();
+                $('#ragionTable h3').empty();
+                $('#countryList').hide();
+                $('#countryList').insertAfter('#subRegionList');
+                $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
+                $('#countrySelectionForm').empty();
+                // Populate the table
+                populateSubNationalList(study.iso);
+                //createRegionList(study);
+                // Show html elements for the table
+                $("#ragionTable").show();
+
         }
     }; // end changeSelection
 });
@@ -275,17 +284,30 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     populateSubNationalList = function (iso) {
         var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
         $http.get(url).success(function (data) {
-            console.log('data:');
+            console.log('subNationalData data:');
             console.log(data);
-            // Hide the level 2 region title if there is no level 2 data
-            if (data[0].g2name === null) {
-                console.log('hi there!:');
-
-            }
-
             $('#subnational-spinner').hide();
             $scope.subNationalData = data;
-            $scope.tableParams2.reload();
+
+
+            $scope.templates = [{
+                name: 'bob',
+                url: "../static/foo.html"},
+            {
+                name: 'bob2',
+                url: '../static/foobar.html'
+            }];
+            if (data[0].g2name === null) {
+                $scope.template = $scope.templates[1];
+            } else {
+                $scope.template = $scope.templates[0];
+            }
+
+            setTimeout(function() {
+                $scope.tableParams2.reload();
+            }, 3000);
+            
+
         });
     };
 
@@ -295,7 +317,10 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     }, {
         total: $scope.subNationalData.length,
         getData: function($defer, params) {
+            console.log('hi2:');
             $scope.page = params.$params;
+            console.log('$scope.page:');
+            console.log($scope.page);
             var currentData = $scope.subNationalData;
             // use build-in angular filter
             var orderedData = params.filter() ?

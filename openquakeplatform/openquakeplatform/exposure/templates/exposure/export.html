@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 
-{% extends "data_viewer_base.html" %}
+{% extends "foobar.html" %}
 
 {% block title %}
 Exposure Export {{ block.super }}
@@ -37,12 +37,13 @@ Exposure Export {{ block.super }}
 {% verbatim %}
 <div ng-app="exposureApp" >
 
+
   <div id="countriesListDialog" title="Admin Level 0 Selection Table">
   <div ng-controller="ExposureCountryList">
     <div id="countryList">
-{% endverbatim %}
+    {% endverbatim %}
     <div id="national-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
-{% verbatim %}
+    {% verbatim %}
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                 ng-class="{'active': record.$selected}">
@@ -53,13 +54,19 @@ Exposure Export {{ block.super }}
         </tr>
       </table>
     </div>
-    tepmlate: {{template.url}}
-    <div ng-include="'foo.html'"></div>
-</div>
-      
 
-    <!--
-    <div id="subRegionList" ng-controller="ExposureRegionList">
+   <!--
+   <div ng-include="template.url"></div>
+    <div ng-include="'../static/foo.html'"></div>
+    -->
+  </div>
+
+
+
+
+  <div id="subRegionList" ng-controller="ExposureRegionList">
+      <div ng-include="template.url"></div>
+        <!--
       <div id="ragionTable">
 {% endverbatim %}
       <div id="subnational-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
@@ -73,8 +80,9 @@ Exposure Export {{ block.super }}
         </table>
       </div>
       <input type="button" id="subRegionListBack" value="< Back">
+          -->
     </div>
-    -->
+
     <div id="selectionForm">
       <div id="countrySelectionForm"></div>
       <input type="button" id="selectionFormBack" value="< Back">
