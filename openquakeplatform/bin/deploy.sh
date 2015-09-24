@@ -669,9 +669,11 @@ oq_platform_install () {
         openquakeplatform updatelayers
     else
         # the updatelayers is very expensive during upgrades due the number of layers
-        # that could be hosted in the platform. Let the user run it in a convinient way for him,
+        # that could be hosted in the Platform. Let the user run it in a convinient way for him,
         # i.e. in background, avoiding a long downtime.
         echo "WARNING: please run 'sudo openquakeplatform updatelayers' to complete the upgrade."
+        echo "         The 'updatelayers' process could be very expensive in matter of time, IO and CPU"
+        echo "         depending on the number of layers hosted by the Platform. It can be run in background."
     fi
 
 }
