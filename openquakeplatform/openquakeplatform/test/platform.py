@@ -65,6 +65,10 @@ class Platform(object):
         submit_button = self.xpath_finduniq("//button[@type='submit' and text()='Sign in']")
         submit_button.click()
 
+    @property
+    def url(self):
+        return self.driver.current_url
+
     def fini(self):
         # return to homepage
         try:
@@ -105,6 +109,9 @@ class Platform(object):
 
         dest_button.click()
         self.wait_new_page(dest_button, '/%s/' % dest)
+
+    def get(self, url):
+        self.driver.get(self.basepath + url)
 
     def xpath_finduniq(self, xpath_str, times=1, delta=0.1):
         for t in range(0, times):

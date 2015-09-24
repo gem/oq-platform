@@ -18,9 +18,9 @@ class NotUniqError(Exception):
     pass
 
 
-def wait_for(condition_function):
+def wait_for(condition_function, timeout=3):
     start_time = time.time()
-    while time.time() < start_time + 3:
+    while time.time() < start_time + timeout:
         if condition_function():
             return True
         else:
