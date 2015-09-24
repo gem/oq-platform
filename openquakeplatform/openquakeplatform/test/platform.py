@@ -66,6 +66,13 @@ class Platform(object):
         submit_button.click()
 
     def fini(self):
+        # return to homepage
+        try:
+            self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
+        except:
+            self.driver.get(self.basepath + "")
+            print "RELOAD HOMEPAGE"
+
         #<a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #nastasi
         #<b class="caret"></b>
