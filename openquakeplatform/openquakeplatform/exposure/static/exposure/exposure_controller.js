@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2015, GEM Foundation.
+   Copyright (c) 2014, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -72,15 +72,6 @@ var showErrorDialog = function(message, options) {
 };
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
-
-    // modal stuff
-    $scope.modalShown = false;
-    $scope.toggleModal = function() {
-        console.log('hello??:');
-        $scope.modalShown = !$scope.modalShown;
-    };
-
-
     myService.getAllStudies().then(function(data) {
         // change the has_nonres flag to be more human readable
         for (var k  in data) {
@@ -231,23 +222,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 });
             });
         } else if (study.num_l1_studies > 1) {
-            $('#ragionTable h3').empty();
-            $('#countryList').hide();
-            $('#countrySelectionForm').empty();
-
-            $scope.templates = [{
-                name: 'template1.html',
-                url: 'template1.html'},
-            {
-                name: 'template2.html',
-                url: 'template2.html'
-            }];
-
-                //$scope.showView = function() {
-                    console.log('hi view:');
-                    $scope.template = $scope.templates[0];
-                //};
-                /*
             // The user has selected a sub-national study
             $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
             $('#subRegionListBack').show();
@@ -262,7 +236,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             //createRegionList(study);
             // Show html elements for the table
             $("#ragionTable").show();
-            */
         }
     }; // end changeSelection
 });

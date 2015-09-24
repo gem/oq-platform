@@ -1,18 +1,18 @@
 <!--
-   Copyright (c) 2015, GEM Foundation.
+Copyright (c) 2010-2013, GEM Foundation.
 
-      This program is free software: you can redistribute it and/or modify
-      it under the terms of the GNU Affero General Public License as
-      published by the Free Software Foundation, either version 3 of the
-      License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-      This program is distributed in the hope that it will be useful,
-      but WITHOUT ANY WARRANTY; without even the implied warranty of
-      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-      GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-      You should have received a copy of the GNU Affero General Public License
-      along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 
 {% extends "data_viewer_base.html" %}
@@ -36,10 +36,8 @@ Exposure Export {{ block.super }}
 <div id="cover" ><img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
 {% verbatim %}
 <div ng-app="exposureApp" >
-
   <div id="countriesListDialog" title="Admin Level 0 Selection Table">
-  <div ng-controller="ExposureCountryList">
-    <div id="countryList">
+    <div id="countryList" ng-controller="ExposureCountryList">
 {% endverbatim %}
     <div id="national-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
 {% verbatim %}
@@ -53,12 +51,6 @@ Exposure Export {{ block.super }}
         </tr>
       </table>
     </div>
-    tepmlate: {{template.url}}
-    <div ng-include="'foo.html'"></div>
-</div>
-      
-
-    <!--
     <div id="subRegionList" ng-controller="ExposureRegionList">
       <div id="ragionTable">
 {% endverbatim %}
@@ -74,7 +66,6 @@ Exposure Export {{ block.super }}
       </div>
       <input type="button" id="subRegionListBack" value="< Back">
     </div>
-    -->
     <div id="selectionForm">
       <div id="countrySelectionForm"></div>
       <input type="button" id="selectionFormBack" value="< Back">
@@ -95,13 +86,6 @@ Exposure Export {{ block.super }}
 
 {% block extra_script %}
     {{block.super}}
-
-    <!-- template1.html -->
-<script type="text/ng-template" id="template1.html">
-  Content of template1.html
-</script>
-
-
     <script>
     // URL params, captured and rendered to the template:
     var URL_PARAMS = {};
