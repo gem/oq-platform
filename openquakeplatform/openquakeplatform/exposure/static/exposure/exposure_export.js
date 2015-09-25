@@ -77,7 +77,21 @@ var startApp = function() {
         "UN Habitat Level 1 Building Counts" : unh1
     };
 
+    map = new L.Map('map', {
+        minZoom: 2,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+    map.addLayer(drawnItems);
+    L.control.layers(app.baseLayers, overlays).addTo(map).setPosition("topleft");
 
+    L.control.coordinates({
+        position: "bottomleft",
+        labelTemplateLat: "Latitude: {y}",
+        labelTemplateLng: "Longitude: {x}",
+        enableUserInput: false,
+    }).addTo(map);
 };
 
 app.initialize(startApp);
