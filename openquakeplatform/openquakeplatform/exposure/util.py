@@ -72,11 +72,12 @@ def _get_all_studies():
     """
     Get GED studies for all national levels
     Records will be in the format:
-    iso, num_l1_studies, study_id, country_name, study_name, has_nonres
+    iso, num_l1_studies, study_id, country_name, g2name, study_name, has_nonres
     """
     query = """\
 SELECT
   iq.iso, iq.num_l1_studies, iq.study_id, iq.g0name AS country_name,
+  iq.g2name,
   -- Construct sensible study name
   CASE WHEN s2.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
@@ -86,7 +87,7 @@ SELECT
   s2.notes LIKE '%%PAGER%%' AS has_nonres
   FROM (
         -- List of countries with number of sub-national studies
-        SELECT grg.g0name, s.id AS study_id,
+        SELECT grg.g0name, grg.g2name, s.id AS study_id,
                grg.iso, COUNT(sr.id) AS num_l1_studies
           FROM ged2.geographic_region_gadm grg
           JOIN ged2.study_region sr
