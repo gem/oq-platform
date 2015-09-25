@@ -15,7 +15,8 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 
-{% extends "foobar.html" %}
+<!-- todo put this back -->
+{% extends "data_viewer_base.html" %}
 
 {% block title %}
 Exposure Export {{ block.super }}
@@ -44,7 +45,7 @@ Exposure Export {{ block.super }}
     {% verbatim %}
       <table ng-table="tableParams" show-filter="true" class="table ng-table-rowselected">
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
-                ng-class="{'active': record.$selected}">
+            ng-class="{'active': record.$selected}">
           <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{record.country_name}}</td>
           <td data-title="'Number of Studies'">{{record.num_l1_studies}}</td>
           <td data-title="'Study'">{{record.study_name}}</td>
@@ -75,7 +76,6 @@ Exposure Export {{ block.super }}
 <!-- Placeholder div for holding/displaying error messages/dialogs -->
 <div id="error-dialog"></div>
 {% endblock body_outer %}
-
 
 {% block extra_script %}
     {{block.super}}

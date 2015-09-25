@@ -76,16 +76,14 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     // Set up the templates
     $scope.templates = [{
         name: 'template1',
-        url: "../static/foo.html"},
+        url: '../static/sub_region_adminl1.html'},
     {
         name: 'template2',
-        url: '../static/foobar.html'
+        url: '../static/sub_region_adminl2.html'
     }];
     $scope.template = $scope.templates[0];
 
     myService.getAllStudies().then(function(data) {
-        console.log('data:');
-        console.log(data);
         // change the has_nonres flag to be more human readable
         for (var k  in data) {
             if (data[k].has_nonres) {
@@ -252,9 +250,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             // Get the subnational list
             var url = 'get_studies_by_country?iso='+study.iso+'&level_filter=subnational';
             $http.get(url).success(function (data) {
-                console.log('data:');
-                console.log(data);
-
                 // Set the template
                 if (data[0].g2name === null) {
                     $scope.template = $scope.templates[1];
@@ -263,8 +258,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 }
 
                 var template = $scope.template;
-                console.log('template:');
-                console.log(template);
 
                 // Pass the data and template to the next scope
                 populateSubNationalList(data, template);
@@ -278,18 +271,15 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 });
 
 
-app.controller('ExposureRegionList', function($scope, $filter, $http, myService, ngTableParams)  {
+app.controller('ExposureRegionList', function($scope, $filter, myService, ngTableParams)  {
 
     $scope.subNationalData = [];
 
     populateSubNationalList = function (data, template) {
-
-            $scope.template = template;
-
-            $('#subnational-spinner').hide();
-            $scope.subNationalData = data;
-
-            $scope.tableParams2.reload();
+        $scope.template = template;
+        $('#subnational-spinner').hide();
+        $scope.subNationalData = data;
+        $scope.tableParams2.reload();
     };
 
     $scope.tableParams2 = new ngTableParams({
