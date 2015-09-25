@@ -23,6 +23,7 @@ class Platform(object):
         self.passwd   = pla_passwd
 
         self.driver.maximize_window()
+        time.sleep(10)
         self.homepage_login()
 
     @staticmethod
@@ -123,7 +124,7 @@ class Platform(object):
         else:
             if times > 1:
                 raise TimeoutError(
-                    "Timeout waiting '{}' for {} seconds.".format(xpath_str, times * deltas)
+                    "Timeout waiting '{}' for {} seconds.".format(xpath_str, times * delta)
                     )
             else:
                 raise ValueError(
