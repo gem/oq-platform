@@ -78,7 +78,7 @@ def _get_all_studies():
     query = """\
 SELECT
   iq.iso, iq.num_l1_studies, iq.study_id, iq.g0name AS country_name,
-  iq.g1name, iq.g2name, iq.g3name
+  iq.g1name, iq.g2name, iq.g3name,
   -- Construct sensible study name
   CASE WHEN s2.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
