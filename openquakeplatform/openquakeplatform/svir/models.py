@@ -24,7 +24,6 @@ CHMAX = 200
 
 class Indicator(models.Model):
     code = models.CharField(max_length=CHMAX, primary_key=True)
-    theme = models.ForeignKey('Theme')
     subtheme = models.ForeignKey('Subtheme')
     # NOTE: Some field names were changed with respect to those written in the
     #       spreadsheet containing the socioeconomic data. The original names
@@ -47,6 +46,10 @@ class Indicator(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def theme(self):
+        return self.subtheme.theme
 
     @property
     def keywords_str(self):
@@ -112,7 +115,7 @@ class Subtheme(models.Model):
 
     theme = models.ForeignKey('Theme')
     name = models.CharField(max_length=CHMAX)
-    
+
     def natural_key(self):
         return (self.theme.name, self.name)
 

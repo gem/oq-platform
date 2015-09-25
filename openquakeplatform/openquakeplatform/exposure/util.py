@@ -76,7 +76,8 @@ def _get_all_studies():
     """
     query = """\
 SELECT
-  iq.iso, iq.num_l1_studies, iq.study_id, iq.g0name AS country_name,
+  iq.iso, iq.num_l1_studies, iq.num_l2_studies,
+  iq.study_id, iq.g0name AS country_name,
   -- Construct sensible study name
   CASE WHEN s2.notes LIKE '%%PAGER%%'
         THEN 'PAGER national study'
@@ -87,7 +88,8 @@ SELECT
   FROM (
         -- List of countries with number of sub-national studies
         SELECT grg.g0name, s.id AS study_id,
-               grg.iso, COUNT(sr.id) AS num_l1_studies
+               grg.iso, COUNT(sr.id) AS num_l1_studies,
+               COUNT(grg.g2name) AS num_l2_studies
           FROM ged2.geographic_region_gadm grg
           JOIN ged2.study_region sr
             ON sr.geographic_region_id=grg.region_id

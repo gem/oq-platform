@@ -26,9 +26,11 @@ var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
-var COMPATIBILITY_VERSION = '1.4.3';
+var COMPATIBILITY_VERSION = '1.7.0';
 var thematicLayer;
-//var boundingBox;
+var boundingBox = [];
+var license;
+var projectDefUpdated;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -79,7 +81,7 @@ function scaleTheData() {
     processIndicators(layerAttributes, sessionProjectDef);
 }
 
-function createIndex(la, index) {
+function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var ia = 0; ia < la.length; ia++) {
@@ -106,7 +108,18 @@ function createIndex(la, index) {
 }
 
 function combineIndicators(nameLookUp, themeObj, JSONthemes) {
-    projectDef = sessionProjectDef;
+    //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
+    // an empty object in order to test the function
+    if (arguments[3]) {
+        projectDef = arguments[3];
+    }
+    else if (!jQuery.isEmptyObject(sessionProjectDef)) {
+       projectDef = sessionProjectDef;
+    }
+    else {
+       return false;
+    }
+
     var subIndex = {};
     var operator;
     var themeInversionFactor;
@@ -123,6 +136,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         var tempRegion = themeObj[t].region;
         subIndex[tempRegion] = 0;
     }
+
     // get some info about the themes
     var themeKeys = [];
     var themeWeightObj = {};
@@ -165,7 +179,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         }
     } else if (operator == 'Average (ignore weights)') {
         for (var v2 = 0; v2 < themeObj.length; v2++) {
-
             var tempElementValue = 0;
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
@@ -213,6 +226,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
+
     return subIndex;
 }
 
@@ -242,8 +256,10 @@ function processIndicators(layerAttributes, projectDef) {
     // Get all the primary indicators
     if (svThemes) {
         for (var i = 0; i < svThemes.length; i++) {
-            for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
-                allPrimaryIndicators.push(svThemes[i].children[e].field);
+            if (svThemes[i].children) {
+                for (var e = 0 ; e < svThemes[i].children.length; e++ ) {
+                    allPrimaryIndicators.push(svThemes[i].children[e].field);
+                }
             }
         }
     }
@@ -294,9 +310,11 @@ function processIndicators(layerAttributes, projectDef) {
             var tempChildren = svThemes[m].children;
             var tempIndicatorChildrenKeys = [];
 
-            for (var q = 0; q < tempChildren.length; q++) {
-                // Get the indicators children keys
-                tempIndicatorChildrenKeys.push(tempChildren[q].field);
+            if (tempChildren) {
+                for (var q = 0; q < tempChildren.length; q++) {
+                    // Get the indicators children keys
+                    tempIndicatorChildrenKeys.push(tempChildren[q].field);
+                }
             }
 
             for (var o = 0; o < la.length; o++) {
@@ -503,7 +521,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Create the risk indicator only if it has children
     var RI = {};
     if (riskIndicators !== undefined) {
-        var riskIndicator = createIndex(la, riskIndicators);
+        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
@@ -646,8 +664,10 @@ function processIndicators(layerAttributes, projectDef) {
             var indicatorChildrenKey = [];
             var tempChildren = svThemes[ia].children;
             // Get the indicators children keys
-            for (var q = 0; q < tempChildren.length; q++) {
-                indicatorChildrenKey.push(tempChildren[q].field);
+            if (tempChildren) {
+                for (var q = 0; q < tempChildren.length; q++) {
+                    indicatorChildrenKey.push(tempChildren[q].field);
+                }
             }
 
             for (var ib = 0; ib < la.length; ib++) {
@@ -826,32 +846,20 @@ function watchForPdSelection() {
     $('#projectDef-spinner').show();
     setTimeout(function() {
         var pdSelection = $('#pdSelection').val();
+
         for (var i = 0; i < tempProjectDef.length; i++) {
             if (tempProjectDef[i].title === pdSelection) {
-                selectedRegion = tempProjectDef[i].zone_label_field;
-                sessionProjectDef = tempProjectDef[i];
+                // Deep copy the temp project definition object
+                sessionProjectDef = jQuery.extend(true, {}, tempProjectDef[i]);
                 loadPD(sessionProjectDef);
-                // get b-box
-                /*
-                // This feature is removed until the proj def format is refactored
-                if (boundingBox != undefined) {
-                    map.fitBounds (
-                        L.latLngBounds (
-                            L.latLng (
-                                parseFloat(boundingBox.northBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.eastBoundLongitude.Decimal.__text)
-                            ),
-                            L.latLng (
-                                parseFloat(boundingBox.southBoundLatitude.Decimal.__text),
-                                parseFloat(boundingBox.westBoundLongitude.Decimal.__text)
-                            )
-                        )
-                    );
-                }
-                */
+
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
-                processIndicators(layerAttributes, sessionProjectDef);
+                // TODO this is required beasue watchForPdSelection is running before the
+                // ajax call are able to get a repley, need to find a better solution
+                setTimeout(function() {
+                    processIndicators(layerAttributes, sessionProjectDef);
+                }, 3000);
             }
         }
     }, 100);
@@ -859,7 +867,7 @@ function watchForPdSelection() {
 
 function getGeoServerLayers() {
     $('#load-project-spinner').show();
-    var SVIRLayerNames = [];
+    var IRMTLayerNames = [];
     var url = "/geoserver/ows?service=WFS&version=1.0.0&REQUEST=GetCapabilities&SRSNAME=EPSG:4326&outputFormat=json&format_options=callback:getJson";
     // Get layers from GeoServer and populate the layer selection menu
     $.ajax({
@@ -874,8 +882,8 @@ function getGeoServerLayers() {
 
             var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
-            // Find the SVIR keywords
-            var stringToLookFor = 'SVIR_QGIS_Plugin';
+            // Find the IRMT keywords
+            var stringsToLookFor = ['SVIR_QGIS_Plugin', 'IRMT_QGIS_Plugin'];
             // Reload if the api call was incomplete
             if (featureType.length === undefined) {
                 getGeoServerLayers();
@@ -883,17 +891,21 @@ function getGeoServerLayers() {
             }
 
             for (var i = 0; i < featureType.length; i++) {
-                if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                    SVIRLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                for (var j=0; j < stringsToLookFor.length; j++) {
+                    stringToLookFor = stringsToLookFor[j];
+                    if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                        IRMTLayerNames.push(featureType[i].Title + " (" + featureType[i].Name + ")");
+                        break;
+                    }
                 }
             }
 
             // Create AngularJS dropdown menu
             var mapScope = angular.element($("#layer-list")).scope();
             var mapLayerList = [];
-            for (var ij = 0; ij < SVIRLayerNames.length; ij++) {
+            for (var ij = 0; ij < IRMTLayerNames.length; ij++) {
                 var tempObj = {};
-                tempObj.name = SVIRLayerNames[ij];
+                tempObj.name = IRMTLayerNames[ij];
                 mapLayerList.push(tempObj);
             }
 
@@ -914,6 +926,10 @@ function getGeoServerLayers() {
 
 
 function versionCompare(a, b) {
+    if (a === undefined) {
+        return -1;
+    }
+
     var i, cmp, len, re = /(\.0)+[^\.]*$/;
     a = (a + '').replace(re, '').split('.');
     b = (b + '').replace(re, '').split('.');
@@ -1002,6 +1018,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
+        $('#pdSelection').empty();
         // set tabs to back default
         $("#themeTabs").tabs("enable", 2);
         $("#themeTabs").tabs("enable", 3);
@@ -1026,123 +1043,8 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-
-        // Get layer attributes from GeoServer
-        $.ajax({
-            type: 'get',
-            url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
-            success: function(data) {
-                $('#loadProjectDialog').dialog('close');
-
-                // Make a global variable used by the d3-tree chart
-                // when a weight is modified
-                layerAttributes = data;
-                projectLayerAttributes = layerAttributes;
-
-                // provide a dropdown menu to select the region field
-                var layerFields = [];
-                // get all the field name out of the layer attributes object
-                for (var key in layerAttributes.features[0].properties) {
-                    layerFields.push(key);
-                }
-
-                getLayerInfo();
-            },
-            error: function() {
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get information about the selected layer</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-            }
-        });
+        attributeInfoRequest(selectedLayer);
     });
-
-    function getLayerInfo() {
-        /*
-        // This feature is removed until the proj def format is refactored
-        // Get the bounding box
-        $.ajax({
-            type: 'get',
-            url: '../svir/get_layer_metadata_url?layer_name='+ selectedLayer,
-            success: function(layerMetadataURL) {
-
-                // ***** TEMP remove this ****
-                // Portugal-test
-                //layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=871f5f50-f23a-11e4-90e9-0800278c33b4";
-                //SA test2
-                layerMetadataURL = "/catalogue/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&service=CSW&request=GetRecordById&version=2.0.2&elementsetname=full&id=4c6d0c2a-fd6d-11e4-b9e1-0800278c33b4";
-
-
-                $.get( layerMetadataURL, function( layerMetadata ) {
-                    // Convert XML to JSON
-                    var xmlText = new XMLSerializer().serializeToString(layerMetadata);
-                    var x2js = new X2JS();
-                    var jsonElement = x2js.xml_str2json(xmlText);
-                    // Check if the PD is an object (native to QGIS) or an array (modified by the web app)
-                    boundingBox = jsonElement.GetRecordByIdResponse.MD_Metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement.EX_GeographicBoundingBox;
-                });
-            }
-        });
-
-
-        */
-        // Get the project definition
-        $.ajax({
-            type: 'get',
-            url: '../svir/get_project_definitions?layer_name='+ selectedLayer,
-            success: function(data) {
-                tempProjectDef = data;
-
-                // Check the svir plugin version
-                var versionCheck = versionCompare(data[0].svir_plugin_version, COMPATIBILITY_VERSION);
-
-                if (versionCheck < 0) {
-                    // Warn the user and stop the application
-                    $('#projectDef-spinner').hide();
-                    $('#project-def').append(
-                        '<div class="alert alert-danger" role="alert">' +
-                            'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
-                        '</div>'
-                    );
-                    return
-                }
-
-                if ($('#pdSelection').length > 0) {
-                    $('#pdSelection').remove();
-                }
-                $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
-                var pdTitles = [];
-                // break the array into objects, present the user with a choice of PDs
-                for (var i = 0; i < tempProjectDef.length; i++) {
-                    // Get the PD title
-                    pdTitles.push(tempProjectDef[i].title);
-                }
-                // Provide the user with a selection dropdown of the available PDs
-                for (var ia = 0; ia < pdTitles.length; ia++) {
-                    $('#pdSelection').append(
-                        '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
-                    );
-                }
-                $('#projectDef-spinner').hide();
-
-                // select the first project definition
-                var menuOption = $('#pdSelection');
-                menuOption[0].selectedIndex = 1;
-                // trigger first project definition
-                setTimeout(function() {
-                    $('#pdSelection').trigger('change');
-                }, 100);
-            },
-            error: function() {
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to get the supplemental information about the selected layer</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-            }
-        });
-    }
 
     // AJAX error dialog
     $('#ajaxErrorDialog').dialog({
@@ -1202,5 +1104,136 @@ var startApp = function() {
         'display': 'block'
     });
 };
+
+
+function attributeInfoRequest(selectedLayer) {
+    $('#loadProjectDialog').dialog('close');
+
+    // Get layer attributes from GeoServer
+    return $.ajax({
+        type: 'get',
+        url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
+        success: function(data) {
+
+            // Make a global variable used by the d3-tree chart
+            // when a weight is modified
+            layerAttributes = data;
+
+            projectLayerAttributes = layerAttributes;
+
+            // provide a dropdown menu to select the region field
+            var layerFields = [];
+            // get all the field name out of the layer attributes object
+            for (var key in layerAttributes.features[0].properties) {
+                layerFields.push(key);
+            }
+            projDefJSONRequest(selectedLayer);
+
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                '<p>This application was not able to get information about the selected layer</p>'
+            );
+            $('#ajaxErrorDialog').dialog('open');
+        }
+    });
+}
+
+function projDefJSONRequest(selectedLayer) {
+    // Get the project definition
+    return $.ajax({
+        type: 'get',
+        url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
+        success: function(data) {
+            license = data.license;
+            tempProjectDef = data.project_definitions;
+
+            // Remove alert div
+            $('#alert').remove();
+
+            // Check the svir plugin version
+            // Provide some backwards compatibility for old naming convention
+            var thisVersion = null;
+            if (data.hasOwnProperty('svir_plugin_version')) {
+                thisVersion = data.svir_plugin_version
+            } else if (data.hasOwnProperty('irmt_plugin_version')) {
+                thisVersion = data.irmt_plugin_version
+            } else {
+                $('#projectDef-spinner').hide();
+                $('#project-def').append(
+                    '<div id="alert" class="alert alert-danger" role="alert">' +
+                        'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                    '</div>'
+                );
+                return
+            }
+
+            var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
+
+            if (versionCheck < 0 || versionCheck == 1 ) {
+                // Warn the user and stop the application
+                $('#projectDef-spinner').hide();
+                $('#project-def').append(
+                    '<div id="alert" class="alert alert-danger" role="alert">' +
+                        'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                    '</div>'
+                );
+                return
+            }
+
+            // Populate global bounding box array
+            boundingBox = [
+                data.bounding_box.miny,
+                data.bounding_box.minx,
+                data.bounding_box.maxy,
+                data.bounding_box.maxx
+            ];
+
+            if ($('#pdSelection').length > 0) {
+                $('#pdSelection').remove();
+            }
+
+            // Create the pd selection menu
+            $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+            var pdTitles = [];
+
+            // break the array into objects, present the user with a choice of PDs
+            for (var i = 0; i < tempProjectDef.length; i++) {
+                // Get the PD title
+                pdTitles.push(tempProjectDef[i].title);
+            }
+            // Provide the user with a selection dropdown of the available PDs
+            for (var ia = 0; ia < pdTitles.length; ia++) {
+                $('#pdSelection').append(
+                    '<option value="'+ pdTitles[ia] +'">'+ pdTitles[ia] +'</option>'
+                );
+            }
+
+            // select the first project definition in menu dropdown list
+            try {
+                var menuOption = $('#pdSelection');
+                menuOption[0].selectedIndex = 1;
+            } catch (e) {
+                // continue
+            }
+
+            triggerPdSelection();
+            $('#projectDef-spinner').hide();
+        },
+        error: function() {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+            );
+            $('#ajaxErrorDialog').dialog('open');
+        }
+    });
+}
+
+// Trigger first project definition selection
+function triggerPdSelection () {
+    $('#pdSelection').trigger('change');
+}
 
 app.initialize(startApp);

@@ -27,7 +27,6 @@
         'SVI_THEME': 'Social Vulnerability Theme',
         'SVI_INDICATOR': 'Social Vulnerability Indicator',
     };
-    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -39,6 +38,37 @@
             modal: true
         });
     });
+
+    // Post New Project Definition
+    function addProjectDefinition() {}
+
+    addProjectDefinition.send = function(selectedLayer, projectDefStg) {
+        // Hit the API endpoint and grab the very very latest version of the PD object
+        $.ajax({
+            method: "POST",
+            url: "../svir/add_project_definition",
+            data: [selectedLayer, projectDefStg]
+        }).done(function() {
+                isSubmitting = false;
+                $('#saveStateDialog').dialog('close');
+                $('#saveState-spinner').hide();
+                $('#saveBtn').prop('disabled', true);
+                // append the new element into the dropdown menu
+                $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
+                // access the last or newest element in the dropdown menu
+                var lastValue = $('#pdSelection option:last-child').val();
+                // select the newest element in the dropdown menu
+                $("#pdSelection").val(lastValue);
+            }).fail(function() {
+                isSubmitting = false;
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>This application was not able to write the project definition to the database</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#submitPD').attr('disabled',true);
+        });
+    };
 
 
     ////////////////////////////////////////////
@@ -161,8 +191,8 @@
         $('#saveBtn').click(function() {
             $('#checkboxPD').attr('checked', false);
             $('#saveState-spinner').hide();
-            var pdLicenseName = sessionProjectDef.license.substring(0, sessionProjectDef.license.indexOf('('));
-            var pdLicenseURL = sessionProjectDef.license.split('(')[1];
+            var pdLicenseName = license.substring(0, license.indexOf('('));
+            var pdLicenseURL = license.split('(')[1];
             pdLicenseURL = pdLicenseURL.replace(')', '');
 
             $('#saveState-spinner').hide();
@@ -170,7 +200,7 @@
             $('#licenseName').empty();
             $('#licenseURL').empty();
             $('#inputName').empty();
-            $('#inputName').append('<p>The current title is: '+ projectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
+            $('#inputName').append('<p>The current title is: '+ sessionProjectDef.title +'</p><p> <input id="giveNamePD" type="text" name="pd-name"></p><br><br>');
             $('#licenseName').append(
                 '<p>This project has been created using the '+ pdLicenseName +' license ' +
                 '<a class="btn btn-blue btn-xs" target="_blank" href="'+ pdLicenseURL +'"> Info</a><br> </p>'
@@ -190,7 +220,6 @@
                 $('#saveState-spinner').show();
                 var inputVal = $('#giveNamePD').val();
                 if (inputVal === '' || inputVal === null) {
-                    // TODO avoid duplicate names
                     $('#ajaxErrorDialog').empty();
                     $('#ajaxErrorDialog').append(
                         '<p>A valid name was not provided</p>'
@@ -198,21 +227,43 @@
                     $('#ajaxErrorDialog').dialog('open');
                     $('#saveState-spinner').hide();
                 } else {
-                    projectDef.title = inputVal;
+                    projectDefUpdated.title = inputVal;
 
-                    var projectDefStg = JSON.stringify(projectDef, function(key, value) {
+                    // Append projectDefUpdated to tempProjectDef
+                    // Check for existing object
+                    var duplicate = false;
+                    for (var i = 0; i < tempProjectDef.length; i++) {
+                        if (projectDefUpdated.title == tempProjectDef[i].title) {
+                            duplicate = true;
+                        }
+                    }
+
+                    if (duplicate === false) {
+                        tempProjectDef.push(projectDefUpdated);
+                    } else {
+                        $('#ajaxErrorDialog').empty();
+                        $('#ajaxErrorDialog').append(
+                            '<p>That name is already used to describe another project definition</p>'
+                        );
+                        $('#ajaxErrorDialog').dialog('open');
+                        $('#saveState-spinner').hide();
+                        return;
+                    }
+
+                    var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
                         //avoid circularity in JSON by removing the parent key
                         if (key == "parent") {
                             return 'undefined';
                           }
-                          return value;
-                        });
+                        return value;
+                    });
 
                     // prevent multiple AJAX calls
                     if (isSubmitting) {
                         return;
                     }
                     isSubmitting = true;
+
                     // Hit the API endpoint and grab the very very latest version of the PD object
                     $.post( "../svir/add_project_definition", {
                         layer_name: selectedLayer,
