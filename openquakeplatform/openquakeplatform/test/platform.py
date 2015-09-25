@@ -2,6 +2,7 @@ import time
 from utils import *
 
 class Platform(object):
+    DT = 0.1
     def __init__(self):
         self.driver   = None
         self.basepath = None
@@ -23,7 +24,6 @@ class Platform(object):
         self.passwd   = pla_passwd
 
         self.driver.maximize_window()
-        time.sleep(10)
         self.homepage_login()
 
     @staticmethod
@@ -114,17 +114,17 @@ class Platform(object):
     def get(self, url):
         self.driver.get(self.basepath + url)
 
-    def xpath_finduniq(self, xpath_str, times=1, delta=0.1):
+    def xpath_finduniq(self, xpath_str, times=1, postfind=0.2):
         for t in range(0, times):
             field = self.driver.find_elements(By.XPATH, xpath_str)
             if len(field) > 0:
                 break
             if times > 1:
-                time.sleep(delta)
+                time.sleep(self.DT)
         else:
             if times > 1:
                 raise TimeoutError(
-                    "Timeout waiting '{}' for {} seconds.".format(xpath_str, times * delta)
+                    "Timeout waiting '{}' for {} seconds.".format(xpath_str, times * self.DT)
                     )
             else:
                 raise ValueError(
@@ -136,6 +136,9 @@ class Platform(object):
                 "Waiting for '{}' returned {} matches.".format(xpath_str, len(field))
                 )
 
+
+        if postfind > 0:
+            time.sleep(postfind)
         return field[0]
 
 
