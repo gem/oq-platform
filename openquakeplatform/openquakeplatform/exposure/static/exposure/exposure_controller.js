@@ -317,10 +317,7 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
     }, {
         total: $scope.subNationalData.length,
         getData: function($defer, params) {
-            console.log('hi2:');
             $scope.page = params.$params;
-            console.log('$scope.page:');
-            console.log($scope.page);
             var currentData = $scope.subNationalData;
             // use build-in angular filter
             var orderedData = params.filter() ?

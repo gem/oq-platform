@@ -2,7 +2,7 @@
       <div id="ragionTable">
       <div id="subnational-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
         <table ng-table="tableParams2" show-filter="true" class="table ng-table-rowselected">
-          <tr ng-repeat="record in $subNationalData" ng-click="record.$selected = !record.$selected; changeSelection(record)"
+          <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
                   ng-class="{'active': record.$selected}">
             <td data-title="'Region Level 1'" filter="{ 'g1name': 'text' }">{{record.g1name}}</td>
           </tr>
