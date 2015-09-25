@@ -432,7 +432,12 @@ def get_all_studies(request):
     :return: json object containing, for each study, a dictionary with the
              following keys:
              iso: ISO code of the country
-             num_l1_studies: number of level 1 studies
+             num_studies: number of studies
+             num_l1_names: number of level 1 names
+             (NOTE: when level 2 studies are present, num_l1_names is
+                    not the number of level 1 studies)
+             num_l2_names: number of level 2 names
+             (NOTE: it corresponds to the number of level 2 studies)
              country_name: name of the country
              study_name: name of the study
              has_nonres: boolean that indicates if the study has
@@ -441,7 +446,7 @@ def get_all_studies(request):
     studies = []
     StudyRecord = namedtuple(
         'StudyRecord',
-        'iso num_l1_studies num_l2_studies study_id'
+        'iso num_studies num_l1_names num_l2_names study_id'
         ' country_name study_name has_nonres')
     for sr in map(StudyRecord._make, util._get_all_studies()):
         studies.append(dict(sr._asdict()))
