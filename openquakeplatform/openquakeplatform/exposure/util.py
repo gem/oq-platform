@@ -88,7 +88,7 @@ SELECT
   FROM (
         -- List of countries with number of sub-national studies
         SELECT grg.g0name, s.id AS study_id,
-               grg.iso, COUNT(sr.id) AS num_l1_studies
+               grg.iso, COUNT(sr.id) AS num_l1_studies,
                COUNT(grg.g2name) AS num_l2_studies
           FROM ged2.geographic_region_gadm grg
           JOIN ged2.study_region sr
