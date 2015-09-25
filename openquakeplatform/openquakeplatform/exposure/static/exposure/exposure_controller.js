@@ -71,18 +71,17 @@ var showErrorDialog = function(message, options) {
     $("#error-dialog").dialog(options);
 };
 
-app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams) {
-/*
+app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http) {
+
+    // Set up the templates
     $scope.templates = [{
-        name: 'bob',
+        name: 'template1',
         url: "../static/foo.html"},
     {
-        name: 'bob2',
+        name: 'template2',
         url: '../static/foobar.html'
     }];
     $scope.template = $scope.templates[0];
-*/
-
 
     myService.getAllStudies().then(function(data) {
         console.log('data:');
@@ -240,37 +239,39 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             $('#countryList').hide();
             $('#countrySelectionForm').empty();
 
+            // The user has selected a sub-national study
+            $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
+            $('#subRegionListBack').show();
+            $('#subRegionList').show();
+            $('#ragionTable h3').empty();
+            $('#countryList').hide();
+            $('#countryList').insertAfter('#subRegionList');
+            $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
+            $('#countrySelectionForm').empty();
 
-            // Set the template to be used
-            /*
-            console.log('$scope.selectedRegion[0]:');
-            console.log($scope.selectedRegion[0]);
-            if ($scope.selectedRegion[0].g2name == null) {
-                $scope.template = $scope.templates[1];
-            } else {
-                $scope.template = $scope.templates[0];
-            }
-            console.log('$scope.selectedRegion[0]:');
-            console.log($scope.selectedRegion[0]);
-*/
+            // Get the subnational list
+            var url = 'get_studies_by_country?iso='+study.iso+'&level_filter=subnational';
+            $http.get(url).success(function (data) {
+                console.log('data:');
+                console.log(data);
 
+                // Set the template
+                if (data[0].g2name === null) {
+                    $scope.template = $scope.templates[1];
+                } else {
+                    $scope.template = $scope.templates[0];
+                }
 
+                var template = $scope.template;
+                console.log('template:');
+                console.log(template);
 
-  
-                // The user has selected a sub-national study
-                $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
-                $('#subRegionListBack').show();
-                $('#subRegionList').show();
-                $('#ragionTable h3').empty();
-                $('#countryList').hide();
-                $('#countryList').insertAfter('#subRegionList');
-                $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
-                $('#countrySelectionForm').empty();
-                // Populate the table
-                populateSubNationalList(study.iso);
-                //createRegionList(study);
+                // Pass the data and template to the next scope
+                populateSubNationalList(data, template);
+
                 // Show html elements for the table
                 $("#ragionTable").show();
+            });
 
         }
     }; // end changeSelection
@@ -281,34 +282,14 @@ app.controller('ExposureRegionList', function($scope, $filter, $http, myService,
 
     $scope.subNationalData = [];
 
-    populateSubNationalList = function (iso) {
-        var url = 'get_studies_by_country?iso='+iso+'&level_filter=subnational';
-        $http.get(url).success(function (data) {
-            console.log('subNationalData data:');
-            console.log(data);
+    populateSubNationalList = function (data, template) {
+
+            $scope.template = template;
+
             $('#subnational-spinner').hide();
             $scope.subNationalData = data;
 
-
-            $scope.templates = [{
-                name: 'bob',
-                url: "../static/foo.html"},
-            {
-                name: 'bob2',
-                url: '../static/foobar.html'
-            }];
-            if (data[0].g2name === null) {
-                $scope.template = $scope.templates[1];
-            } else {
-                $scope.template = $scope.templates[0];
-            }
-
-            setTimeout(function() {
-                $scope.tableParams2.reload();
-            }, 3000);
-            
-
-        });
+            $scope.tableParams2.reload();
     };
 
     $scope.tableParams2 = new ngTableParams({
