@@ -442,7 +442,7 @@ def get_all_studies(request):
     StudyRecord = namedtuple(
         'StudyRecord',
         'iso num_l1_studies study_id country_name'
-        ' g2name study_name has_nonres')
+        ' g1name g2name g3name study_name has_nonres')
     for sr in map(StudyRecord._make, util._get_all_studies()):
         studies.append(dict(sr._asdict()))
     response_data = json.dumps(studies)

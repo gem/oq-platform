@@ -72,7 +72,8 @@ def _get_all_studies():
     """
     Get GED studies for all national levels
     Records will be in the format:
-    iso, num_l1_studies, study_id, country_name, g2name, study_name, has_nonres
+    iso, num_l1_studies, study_id, country_name, g1name, g2name, g3name,
+    study_name, has_nonres
     """
     query = """\
 SELECT
@@ -87,15 +88,17 @@ SELECT
   s2.notes LIKE '%%PAGER%%' AS has_nonres
   FROM (
         -- List of countries with number of sub-national studies
-        SELECT grg.g0name, grg.g2name, s.id AS study_id,
-               grg.iso, COUNT(sr.id) AS num_l1_studies
+        SELECT grg.g0name, grg.g1name, grg.g2name, grg.g3name,
+               s.id AS study_id, grg.iso, COUNT(sr.id) AS num_l1_studies
           FROM ged2.geographic_region_gadm grg
           JOIN ged2.study_region sr
             ON sr.geographic_region_id=grg.region_id
           JOIN ged2.study s ON s.id=sr.study_id
          -- Filter out a couple of studies that will likely be removed
          WHERE s.id NOT IN (447,449)
-         GROUP BY grg.g0name, grg.g2name, s.id, grg.iso ORDER BY g0name
+         GROUP BY grg.g0name, grg.g1name, grg.g2name, grg.g3name, s.id,
+               grg.iso
+         ORDER BY g0name
    ) iq  -- inner query
    JOIN ged2.study s2 ON s2.id=iq.study_id
 """
