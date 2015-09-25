@@ -95,7 +95,7 @@ SELECT
           JOIN ged2.study s ON s.id=sr.study_id
          -- Filter out a couple of studies that will likely be removed
          WHERE s.id NOT IN (447,449)
-         GROUP BY grg.g0name, s.id, grg.iso ORDER BY g0name
+         GROUP BY grg.g0name, grg.g2name, s.id, grg.iso ORDER BY g0name
    ) iq  -- inner query
    JOIN ged2.study s2 ON s2.id=iq.study_id
 """
