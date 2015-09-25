@@ -85,6 +85,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
 
     myService.getAllStudies().then(function(data) {
+        console.log('data:');
+        console.log(data);
         // change the has_nonres flag to be more human readable
         for (var k  in data) {
             if (data[k].has_nonres) {
@@ -253,8 +255,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 */
 
 
-            console.log('$scope:');
-            console.log($scope);
 
   
                 // The user has selected a sub-national study
