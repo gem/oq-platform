@@ -1153,7 +1153,23 @@ function projDefJSONRequest(selectedLayer) {
             $('#alert').remove();
 
             // Check the svir plugin version
-            var versionCheck = versionCompare(data.svir_plugin_version, COMPATIBILITY_VERSION);
+            // Provide some backwards compatibility for old naming convention
+            var thisVersion = null;
+            if (data.hasOwnProperty('svir_plugin_version')) {
+                thisVersion = data.svir_plugin_version
+            } else if (data.hasOwnProperty('irmt_plugin_version')) {
+                thisVersion = data.irmt_plugin_version
+            } else {
+                $('#projectDef-spinner').hide();
+                $('#project-def').append(
+                    '<div id="alert" class="alert alert-danger" role="alert">' +
+                        'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
+                    '</div>'
+                );
+                return
+            }
+
+            var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
 
             if (versionCheck < 0 || versionCheck == 1 ) {
                 // Warn the user and stop the application

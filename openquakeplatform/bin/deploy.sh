@@ -33,7 +33,6 @@ set -e
 # version managements - use "master" or tagname to move to other versions
 
 export GEM_OQ_PLATF_GIT_REPO=git://github.com/gem/oq-platform.git
-export GEM_OQ_PLATF_GIT_VERS="gn2-prod-install"
 
 export GEM_OQ_PLATF_SUBMODS="openquakeplatform/openquakeplatform/static/Leaflet
 openquakeplatform/openquakeplatform/static/Leaflet.draw
@@ -591,27 +590,26 @@ oq_platform_install () {
     chmod a+x "/usr/sbin/openquakeplatform"
     mkdir -p /etc/openquake/platform/media
 
+    service apache2 restart
+
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         db_user_create "$gem_db_user" "$gem_db_pass"
         db_base_create "$gem_db_name" "$gem_db_user"
         db_gis_create  "$gem_db_name"
-    fi
 
-    #
-    #  database population (fixtures)
-    for app in "${GEM_APP_LIST[@]}"; do
-        if function_exists "${app}_fixtureupdate"; then
-            "${app}_fixtureupdate" "$oqpdir"
-        fi
-    done
-
-    if [ "$GEM_IS_INSTALL" != "y" ]; then
-        echo "WARNING: this operation could be destructive for the current version of oqplatform database schema, do proper backup before proceeding."
-        read -p "Open a new terminal, migrate the application database schema manually and then press <enter> to continue: " qvest
-    fi
-    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        #
+        #  database population (fixtures)
+        #  FIXME this must be run also on NEW applications (if any exists) during upgrades;
+        #        OLD applications that changed should use migrations and must be skipped here
+        for app in "${GEM_APP_LIST[@]}"; do
+            if function_exists "${app}_fixtureupdate"; then
+                "${app}_fixtureupdate" "$oqpdir"
+            fi
+        done
         openquakeplatform syncdb --all --noinput
     else
+        echo "WARNING: this operation could be destructive for the current version of oqplatform database schema, do proper backup before proceeding."
+        read -p "Open a new terminal, migrate the application database schema manually and then press <enter> to continue: " qvest
         openquakeplatform syncdb --noinput
     fi
 
@@ -624,17 +622,17 @@ oq_platform_install () {
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # Load our users. Default password must be changed
         openquakeplatform loaddata ${oqpdir}/common/fixtures/*.json
+
+        #
+        #  database population (external datasets)
+        #  FIXME this must be run also on NEW applications (if any exists) during upgrades;
+        #        OLD applications that changed should use migrations and must be skipped here
+        for app in "${GEM_APP_LIST[@]}"; do
+            if function_exists "${app}_dataloader"; then
+                "${app}_dataloader" "$oqpdir" "$gem_db_name"
+            fi
+        done
     fi
-
-    service apache2 restart
-
-    #
-    #  database population (external datasets)
-    for app in "${GEM_APP_LIST[@]}"; do
-        if function_exists "${app}_dataloader"; then
-            "${app}_dataloader" "$oqpdir" "$gem_db_name"
-        fi
-    done
 
     #
     #  geoserver structure population
@@ -644,25 +642,39 @@ oq_platform_install () {
     fi
     ${oqpdir}/bin/oq-gs-builder.sh populate "$oqpdir" "$oqpdir" "${oqpdir}/bin" "$GEM_GS_WS_NAME" "$GEM_GS_DS_NAME" "$gem_db_name" "$gem_db_user" "$gem_db_pass" "${GEM_GS_DATADIR}" "${GEM_APP_LIST[@]}"
 
-    openquakeplatform updatelayers
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        openquakeplatform updatelayers
 
-    #
-    #  post layers creation apps customizations
-    for app in "${GEM_APP_LIST[@]}"; do
-        if function_exists "${app}_postlayers"; then
-            "${app}_postlayers" "$oqpdir" "$gem_db_name"
-        fi
-    done
+        #
+        #  post layers creation apps customizations
+        #  FIXME this must be run also on NEW applications (if any exists) during upgrades;
+        #        OLD applications that changed should use migrations and must be skipped here
+        for app in "${GEM_APP_LIST[@]}"; do
+            if function_exists "${app}_postlayers"; then
+                "${app}_postlayers" "$oqpdir" "$gem_db_name"
+            fi
+        done
+    fi
 
-    # updatelayers must be run again after the fixtures have been pushed
-    # to allow synchronization of keywords and metadata from GN to GS
-    openquakeplatform updatelayers
     chown -R www-data.www-data /var/www/openquake
 
     if [ ! -d "$MIGRATIONS_HISTORY" ]; then
         mkdir -p "$MIGRATIONS_HISTORY"
     fi
     find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
+
+    if [ "$GEM_IS_INSTALL" == "y" ]; then
+        # updatelayers must be run again after the fixtures have been pushed
+        # to allow synchronization of keywords and metadata from GN to GS
+        openquakeplatform updatelayers
+    else
+        # the updatelayers is very expensive during upgrades due the number of layers
+        # that could be hosted in the Platform. Let the user run it in a convinient way for him,
+        # i.e. in background, avoiding a long downtime.
+        echo "WARNING: please run 'sudo openquakeplatform updatelayers' to complete the upgrade."
+        echo "         The 'updatelayers' process could be very expensive in matter of time, IO and CPU"
+        echo "         depending on the number of layers hosted by the Platform. It can be run in background."
+    fi
 
 }
 
