@@ -268,7 +268,7 @@ if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
 cd ~/$GEM_GIT_PACKAGE
-virtualenv --system-site-packages platform-env
+virtualenv platform-env
 source platform-env/bin/activate
 pip install -e openquakeplatform
 cd openquakeplatform
@@ -311,12 +311,8 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd)
 cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
-# FIXME: just for test
-set +e
 python /usr/bin/nosetests -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
-# sleep 3
-# FIXME: just for test
-sleep 300000
+sleep 3
 fab stop
 "
 
