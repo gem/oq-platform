@@ -76,7 +76,7 @@ def _get_all_studies():
     """
     query = """\
 SELECT
-  iq.iso, iq.num_l1_studies, iq.num_l2_studies,
+  iq.iso, iq.num_studies, iq.num_l1_names, iq.num_l2_names,
   iq.study_id, iq.g0name AS country_name,
   -- Construct sensible study name
   CASE WHEN s2.notes LIKE '%%PAGER%%'
@@ -86,19 +86,31 @@ SELECT
   -- Only PAGER studies have non residential data
   s2.notes LIKE '%%PAGER%%' AS has_nonres
   FROM (
-        -- List of countries with number of sub-national studies
-        SELECT grg.g0name, s.id AS study_id,
-               grg.iso, COUNT(sr.id) AS num_l1_studies,
-               COUNT(grg.g2name) AS num_l2_studies
-          FROM ged2.geographic_region_gadm grg
-          JOIN ged2.study_region sr
-            ON sr.geographic_region_id=grg.region_id
-          JOIN ged2.study s ON s.id=sr.study_id
-         -- Filter out a couple of studies that will likely be removed
-         WHERE s.id NOT IN (447,449)
-         GROUP BY grg.g0name, s.id, grg.iso ORDER BY g0name
-   ) iq  -- inner query
-   JOIN ged2.study s2 ON s2.id=iq.study_id
+     SELECT
+            grg.g0name,
+            s.id AS study_id,
+            grg.iso,
+            COUNT(sr.id) AS num_studies,
+            -- Number of Distinct Admin 1 names != NOT necessarily studies,
+            -- if Admin 2 studies are present
+
+            COUNT(DISTINCT(grg.g1name)) AS num_l1_names,
+
+            -- Number of Admin 2 names - need to include Parent to hand
+            -- Use || rather than , since NULL,NULL is not NULL and
+            -- so count > 0
+            COUNT(grg.g1name||grg.g2name) AS num_l2_names
+
+       FROM ged2.geographic_region_gadm grg
+       JOIN ged2.study_region sr
+         ON sr.geographic_region_id=grg.region_id
+       JOIN ged2.study s ON s.id=sr.study_id
+      -- Filter out a couple of studies that will likely be removed
+      WHERE s.id NOT IN (447,449,257)
+      GROUP BY grg.g0name, s.id, grg.iso
+      ORDER BY g0name
+  ) iq  -- inner query
+  JOIN ged2.study s2 ON s2.id=iq.study_id
 """
     cursor = connections['geddb'].cursor()
     cursor.execute(query)
