@@ -270,6 +270,7 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv platform-env
 source platform-env/bin/activate
+pip install numpy==1.6.1
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
