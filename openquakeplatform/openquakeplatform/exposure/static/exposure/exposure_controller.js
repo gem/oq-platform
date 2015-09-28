@@ -76,16 +76,16 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     // Set up the templates
     $scope.templates = [{
         name: 'template1',
-        url: '../static/sub_region_adminl1.html'},
-    {
+        url: '/static/exposure/sub_region_adminl1.html'
+    },{
         name: 'template2',
-        url: '../static/sub_region_adminl2.html'
+        url: '/static/exposure/sub_region_adminl2.html'
     }];
     $scope.template = $scope.templates[0];
 
     myService.getAllStudies().then(function(data) {
         // change the has_nonres flag to be more human readable
-        for (var k  in data) {
+        for (var k in data) {
             if (data[k].has_nonres) {
                 data[k].has_nonres = 'yes';
             } else {
@@ -252,9 +252,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             $http.get(url).success(function (data) {
                 // Set the template
                 if (data[0].g2name === null) {
-                    $scope.template = $scope.templates[1];
-                } else {
                     $scope.template = $scope.templates[0];
+                } else {
+                    $scope.template = $scope.templates[1];
                 }
 
                 var template = $scope.template;
@@ -265,7 +265,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 // Show html elements for the table
                 $("#ragionTable").show();
             });
-
         }
     }; // end changeSelection
 });
@@ -277,7 +276,6 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
 
     populateSubNationalList = function (data, template) {
         $scope.template = template;
-        $('#subnational-spinner').hide();
         $scope.subNationalData = data;
         $scope.tableParams2.reload();
     };
