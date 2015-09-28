@@ -321,6 +321,7 @@ fab stop
 "
 
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/latest_page.png" "out/latest_page_dev.png" || true
 
     echo "_devtest_innervm_run: exit"
 
@@ -455,6 +456,7 @@ sleep 3
 cd -
 "
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/latest_page.png" "out/latest_page_prod.png" || true
 
 
     echo "_prodtest_innervm_run: exit"

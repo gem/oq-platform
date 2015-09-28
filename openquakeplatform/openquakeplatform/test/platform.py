@@ -156,6 +156,9 @@ class Platform(object):
                     raise ValueError
         wait_for(link_has_gone_stale)
 
+    def screenshot(self, filename):
+        self.driver.get_screenshot_as_file(filename)
+
     def add_click_event(self):
         self.driver.execute_script('''
 

@@ -10,4 +10,5 @@ def setup_package():
     pla.init()
 
 def teardown_package():
+    pla.screenshot('latest_page.png')
     pla.fini()
