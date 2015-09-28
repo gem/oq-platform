@@ -47,7 +47,7 @@ Exposure Export {{ block.super }}
         <tr ng-repeat="record in $data" ng-click="record.$selected = !record.$selected; changeSelection(record)"
             ng-class="{'active': record.$selected}">
           <td data-title="'Name'" filter="{ 'country_name': 'text' }">{{record.country_name}}</td>
-          <td data-title="'Number of Studies'">{{record.num_l1_studies}}</td>
+          <td data-title="'Number of Studies'">{{record.num_studies}}</td>
           <td data-title="'Study'">{{record.study_name}}</td>
           <td data-title="'Has Non-Residential'">{{record.has_nonres}}</td>
         </tr>

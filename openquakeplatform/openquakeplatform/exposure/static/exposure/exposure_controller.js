@@ -159,7 +159,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             // continue
         }
 
-        if (study.num_l1_studies <= 1) {
+        if (study.num_studies <= 1) {
             // The user has selected a national study
             // Call API to get selected region grid count & b-box
             myService.getNationalGridCount(study.iso, study.study_id).then(function(data) {
@@ -232,7 +232,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     exposureExport(url);
                 });
             });
-        } else if (study.num_l1_studies > 1) {
+        } else if (study.num_studies > 1) {
             $('#ragionTable h3').empty();
             $('#countryList').hide();
             $('#countrySelectionForm').empty();
