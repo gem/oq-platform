@@ -434,10 +434,11 @@ def get_all_studies(request):
              iso: ISO code of the country
              num_studies: number of studies
              num_l1_names: number of level 1 names
-             (NOTE: when level 2 studies are present, num_l1_names is
-                    not the number of level 1 studies)
+             (NOTE: it corresponds to the number of level 1 studies,
+                    unless higher admin level studies are present)
              num_l2_names: number of level 2 names
-             (NOTE: it corresponds to the number of level 2 studies)
+             (NOTE: it corresponds to the number of level 2 studies,
+                    unless higher admin level studies are present)
              country_name: name of the country
              study_name: name of the study
              has_nonres: boolean that indicates if the study has
