@@ -11,4 +11,6 @@ def setup_package():
 
 def teardown_package():
     pla.screenshot('latest_page.png')
+    # FIXME just for test
+    time.sleep(30000)
     pla.fini()
