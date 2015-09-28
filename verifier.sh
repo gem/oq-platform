@@ -311,8 +311,12 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd)
 cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
+# TODO: just for test
+set +e
 python /usr/bin/nosetests -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
-sleep 3
+# sleep 3
+# TODO: just for test
+sleep 300000
 fab stop
 "
 
