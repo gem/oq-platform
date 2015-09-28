@@ -74,12 +74,16 @@ var showErrorDialog = function(message, options) {
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http) {
 
     // Set up the templates
-    $scope.templates = [{
+    $scope.templates = [
+    {
         name: 'template1',
         url: '/static/exposure/sub_region_adminl1.html'
     },{
         name: 'template2',
         url: '/static/exposure/sub_region_adminl2.html'
+    },{
+        name: 'empty template',
+        url: '/static/exposure/sub_region_empty.html'
     }];
     $scope.template = $scope.templates[0];
 
@@ -267,6 +271,15 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
             });
         }
     }; // end changeSelection
+
+    $scope.emptySubRegionTable = function() {
+        // Empty the sub region table each time user navigates away from the sub region table
+        data = [{
+            g1name: "",
+            g2name: ""
+        }];
+        populateSubNationalList(data, $scope.template);
+    };
 });
 
 
