@@ -268,9 +268,9 @@ if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
 cd ~/$GEM_GIT_PACKAGE
-virtualenv platform-env
+virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
-pip install numpy==1.6.1
+pip install simplejson==2.0.9
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
