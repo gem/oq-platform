@@ -60,7 +60,7 @@ IRV - {{block.super}}
       Filter the project list:<br><input type="text" ng-model="search">
       <br><br>
       <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
-        <option></option>
+        <option style="display:none" value="">select a type</option>
       </select>
       <br>
       <input type="button" id="loadProjectBtn" class="btn btn-blue" disabled="disabled" value="Load Selection">
