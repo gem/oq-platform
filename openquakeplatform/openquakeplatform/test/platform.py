@@ -16,7 +16,7 @@ class Platform(object):
         except ImportError:
             print "ERROR: config.py not found. Copy config.py.tmpl in config.py and modify it properly."
             sys.exit(1)
-            
+
         self.debugger = pla_debugger
         self.driver   = self.driver_create("firefox", self.debugger)
         self.basepath = pla_basepath
@@ -34,15 +34,15 @@ class Platform(object):
                 fp.add_extension(extension=debugger)
                 fp.native_events_enabled = False
                 fp.set_preference("browser.tabs.warnOnClose", False)
-                fp.set_preference("extensions.firebug.allPagesActivation", "on") 
-                fp.set_preference("extensions.firebug.console.enableSites", True) 
-                fp.set_preference("extensions.firebug.defaultPanelName", "console") 
+                fp.set_preference("extensions.firebug.allPagesActivation", "on")
+                fp.set_preference("extensions.firebug.console.enableSites", True)
+                fp.set_preference("extensions.firebug.defaultPanelName", "console")
             driver = webdriver.Firefox(firefox_profile=fp)
         else:
             driver = None
 
         return driver
-        
+
     def homepage_login(self):
         # "" is the (empty) path for the page required for login
         self.driver.get(self.basepath + "")
@@ -146,7 +146,7 @@ class Platform(object):
         def link_has_gone_stale():
             try:
                 # poll the link with an arbitrary call
-                element.find_elements_by_id('doesnt-matter') 
+                element.find_elements_by_id('doesnt-matter')
                 return False
             except StaleElementReferenceException:
                 if (self.driver.current_url == url or
