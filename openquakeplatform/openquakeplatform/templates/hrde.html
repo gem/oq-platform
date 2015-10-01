@@ -55,7 +55,7 @@ HRDE - {{block.super}}
         Filter <input type="text" ng-model="search">
         <br>
         <select id="input-list" size="5" ng-model="selected_input" ng-options="input.name for input in inputs | filter:search | orderBy:'name'">
-          <option value="0"></option>
+          <option style="display:none" value="">select a type</option>
         </select>
         <br>
         <input type="button" id="addTileInput" value="Add Layer">
@@ -68,13 +68,13 @@ HRDE - {{block.super}}
         Filter <input type="text" ng-model="search">
         <br>
         <select size="5" id="layer-list" ng-model="selected_map" ng-options="map.name for map in maps | filter:search | orderBy:'name'">
-          <option></option>
+          <option style="display:none" value="">select a type</option>
         </select>
         <br>
         <input type="button" id="addTileLayer" value="Add Layer">
         <div id="opacity-labels">
-        <p> 
-          <label class="opacity-label" for="amount">Layer opacity:</label> 
+        <p>
+          <label class="opacity-label" for="amount">Layer opacity:</label>
           <input type="text" id="amount" readonly style="width:30px">
         </p>
       </div>
@@ -87,7 +87,9 @@ HRDE - {{block.super}}
         <br>Hazard Curves:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="curve-list" size="5" ng-model="selected_curve" ng-options="curve.name for curve in curves | filter:search | orderBy:'name'"></select>
+        <select id="curve-list" size="5" ng-model="selected_curve" ng-options="curve.name for curve in curves | filter:search | orderBy:'name'">
+          <option style="display:none" value="">select a type</option>
+        </select>
         <br>
         <input type="button" id="addTileCurve" value="Add Layer">
         <br>
@@ -99,7 +101,9 @@ HRDE - {{block.super}}
         <br>Uniform Hazard Spectra:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="uhs-list" size="5" ng-model="selected_uhs" ng-options="uhs.name for uhs in uhss | filter:search | orderBy:'name'"></select>
+        <select id="uhs-list" size="5" ng-model="selected_uhs" ng-options="uhs.name for uhs in uhss | filter:search | orderBy:'name'">
+          <option style="display:none" value="">select a type</option>
+        </select>
         <br>
         <input type="button" id="addTileUhs" value="Add Layer">
         <br>
@@ -111,7 +115,9 @@ HRDE - {{block.super}}
         <br>Hazard Spectrum Code:<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="spectrum-list" size="5" ng-model="selected_spectrum" ng-options="spectrum.name for spectrum in spectrums | filter:search | orderBy:'name'"></select>
+        <select id="spectrum-list" size="5" ng-model="selected_spectrum" ng-options="spectrum.name for spectrum in spectrums | filter:search | orderBy:'name'">
+          <option style="display:none" value="">select a type</option>
+        </select>
         <br>
         <input type="button" id="addTileSpectrum" value="Add Layer">
         <br>
@@ -128,7 +134,9 @@ HRDE - {{block.super}}
         <br>Loss Curves<br>
         Filter <input type="text" ng-model="search">
         <br>
-        <select id="loss-list" size="5" ng-model="selected_loss" ng-options="loss.name for loss in losses | filter:search | orderBy:'name'"></select>
+        <select id="loss-list" size="5" ng-model="selected_loss" ng-options="loss.name for loss in losses | filter:search | orderBy:'name'">
+          <option style="display:none" value="">select a type</option>
+        </select>
         <br>
         <input type="button" id="addTileLoss" value="Add Layer">
         <br>
