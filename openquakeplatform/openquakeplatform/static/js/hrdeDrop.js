@@ -25,9 +25,15 @@ function HazardMapDropdown($scope) {
 }
 
 function HazardInputDropdown($scope) {
-    $scope.inputs=[
-        {}
-    ];
+    $scope.inputs = [{}];
+    $scope.orderedInputs = [];
+
+    $scope.$watch(function () {
+        $scope.orderedInputs = $scope.$eval("inputs | filter:search | orderBy:'name'");
+        if ($scope.orderedInputs.indexOf($scope.selected_input) == -1) {
+            $scope.selected_input = $scope.orderedInputs[0];
+        }
+    });
 }
 
 function HazardCurveDropdown($scope) {
