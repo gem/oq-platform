@@ -1,10 +1,24 @@
 
 
+.menuItems{
+	left: 0px;
+    top: 0px;
+    width: 420px;
+    text-align: right;
+    padding-left: 12%;
+}
+
+.menuItems label {
+    float: left;
+    margin: 1px;
+}
+
 label {
-	width: 30%;
-	text-align: right;
-	padding-right: 2%;
-	margin-left: 5px;
+	font-weight: bold;
+}
+
+select, input, textarea {
+	width: 200px;
 }
 
 .ffsForm, .vfsForm{
