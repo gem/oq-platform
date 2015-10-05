@@ -339,14 +339,13 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
 
         $('#subNationalExposureBldgDownload').button().click(function() {
             // Gather the selected options into global vars
-            sr_id = $('[name="sub-study"]').val();
             outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
             residential = $('input[name="sub-residential"]:checked', '#sub-exposure-building-form').val();
 
             var url =
                 '/exposure/export_exposure?'+
                 'output_type='+outputType+
-                '&sr_id='+sr_id+
+                '&sr_id='+$scope.selectedSubStudy+
                 '&occupancy_filter='+residential;
             exposureExport(url);
         });
