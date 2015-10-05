@@ -62,8 +62,52 @@ Exposure Export {{ block.super }}
 
 
     <div id="selectionForm">
-      <div id="countrySelectionForm"></div>
-      <input type="button" id="selectionFormBack" value="< Back">
+      <div id="countrySelectionForm">
+        <div id="nationalForm" >
+          <form id="exposure-building-form" class="exposure_export_form">
+            <p><b>Download Study Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="{{selectedStudy}}">Download</button><br><br>
+            <b>Download Gridded Building Exposure:</b><br>
+            <p><label for="id_residential_0">Building Type:</label><br>
+            <label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" checked="" value="residential" /> Residential</label><br>
+            <label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="residential" type="radio" value="non-residential" /> Non-Residential</label><br>
+            </p>
+            <p><label for="id_outputType_0">Output Type:</label><br>
+            <label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="outputType" type="radio" checked="" value="csv" /> CSV</label><br>
+            <label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="outputType" type="radio" value="nrml" /> NRML</label><br>
+            </p>
+            <input type="hidden" name="study" value="{{selectedStudy}}">
+            <br>
+          </form>
+          <div id="drawBoundingMsg">
+            <p>The selected study region is too large to be downloaded in it&#39s entirety. To proceed you will need to draw a bounding box over the map to make a sub-selection of the region</p>
+            <button id="selectBbox" type="button">Proceed</button>
+            <br><br>
+          </div>
+          <input type="button" id="selectionFormBack" value="< Back">
+        </div>
+        <div id="showSubNationalForm">
+          <form id="sub-exposure-building-form" class="exposure_export_form">
+            <p><b>Download Region Wide Building/Dwelling Fractions:</b></p><button id="dwellingFractionsDownload" type="button" value="{{selectedSubStudy}}">Download</button><br><br>
+            <b>Download Gridded Sub-National Building Exposure:</b><br>
+            <p><label for="id_residential_0">Building Type:</label><br>
+            <label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label><br>
+            <label id="id_residential_1_text" for="id_residential_1"><input class="exposure_export_widget" id="id_residential_1" name="sub-residential" type="radio" value="non-residential" /> Non-Residential</label><br>
+            </p>
+            <p><label for="id_outputType_0">Output Type:</label><br>
+            <label for="id_outputType_0"><input class="exposure_export_widget" id="id_outputType_0" name="sub-outputType" type="radio" checked="" value="csv" /> CSV</label><br>
+            <label for="id_outputType_1"><input class="exposure_export_widget" id="id_outputType_1" name="sub-outputType" type="radio" value="nrml" /> NRML</label><br>
+            </p>
+            <input type="hidden" name="sub-study" value="{{study_region_id}}">
+            <br>
+            <button id="subNationalExposureBldgDownload" type="button">Download</button>
+            <div id="sub-exposure-building-form">
+              <p>The selected study region is too large to be downloaded in it&#39s entirety. To proceed you will need to draw a bounding box over the map to make a sub-selection of the region</p>
+                <button id="subSelectBbox" type="button">Proceed</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
     </div>
     <div id="subRegionForm">
       <input type="button" id="subRegionFormBack" value="< Back">
