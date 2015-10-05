@@ -1156,9 +1156,9 @@ function projDefJSONRequest(selectedLayer) {
             // Provide some backwards compatibility for old naming convention
             var thisVersion = null;
             if (data.hasOwnProperty('svir_plugin_version')) {
-                thisVersion = data.svir_plugin_version
+                thisVersion = data.svir_plugin_version;
             } else if (data.hasOwnProperty('irmt_plugin_version')) {
-                thisVersion = data.irmt_plugin_version
+                thisVersion = data.irmt_plugin_version;
             } else {
                 $('#projectDef-spinner').hide();
                 $('#project-def').append(
