@@ -153,14 +153,11 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#nationalExposureBldgDownload').hide();
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.study_name+'');
                 $('#ragionTable').hide();
-                $('#countrySelectionForm').insertAfter('#countryList');
                 $('#countryList').hide();
-                $('#countrySelectionForm').show();
                 $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
                 $scope.selectedStudy = $scope.selectedRegion[0];
-                //$('#countrySelectionForm').append(nationalForm(study));
                 $('#nationalForm').show();
 
                 // deactivate residential option as needed
@@ -171,9 +168,13 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
                 // Check the grid count
                 if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
+                    $('#exposure-building-form').show();
                     $('#nationalExposureBldgDownload').show();
+                    $('#drawBoundingMsg').hide();
                 } else {
                     $('#drawBoundingMsg').show();
+                    $('#nationalExposureBldgDownload').hide();
+                    $('#exposure-building-form').show();
                 }
 
                 downloadFractions();
@@ -214,9 +215,9 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 });
             });
         } else if (study.num_studies > 1) {
+            $('exposure-building-form').hide();
             $('#ragionTable h3').empty();
             $('#countryList').hide();
-            $('#countrySelectionForm').hide();
 
             // The user has selected a sub-national study
             $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
@@ -310,14 +311,12 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
         }
 
         $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.g1name+' '+study.study_name);
-        //$('#sub-exposure-building-form').empty();
         $('#subRegionFormBack').show();
-        $('#subRegionList').insertAfter('#showSubNationalForm');
+        $('#subRegionList').insertAfter('#subNationalForm');
         $('#subRegionList').hide();
 
         $scope.selectedSubStudy = study.study_region_id;
-        $('#countrySelectionForm').show();
-        $('#showSubNationalForm').show();
+        $('#subNationalForm').show();
 
         // deactivate residential option as needed
         if (study.has_nonres != true) {
@@ -329,6 +328,10 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
         if (study.tot_grid_count < 300000) {
             $('#subNationalExposureBldgDownload').show();
             $('#subNationalRegionTooLarge').hide();
+            $('#drawBoundingMsg').hide();
+            $('exposure-building-form').hide();
+            $('#sub-exposure-building-form').show();
+            $('#sub-exposure-building-form-too-large').hide();
         } else {
             $('#subNationalExposureBldgDownload').hide();
             $('#subNationalRegionTooLarge').show();
@@ -384,20 +387,22 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
 
 $('#subRegionFormBack').button().click(function() {
     $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
-    $('#showSubNationalForm').hide();
+    $('#subNationalForm').hide();
     $('#subRegionList').show();
     $('#subRegionFormBack').hide();
     $('#nationalForm').hide();
+    $('#exposure-building-form').hide();
 });
 
 $('#selectionFormBack').button().click(function() {
+    $('#drawBoundingMsg').hide();
+    $('#exposure-building-form').hide();
     $('#countriesListDialog').dialog('option', 'title', 'Admin Level 0 Selection Table');
-    $('#countrySelectionForm').hide();
     $('#countryList').show();
     $('#selectionFormBack').hide();
 });
 
-$('#showSubNationalForm').hide();
+$('#subNationalForm').hide();
 $('#subRegionListBack').hide();
 $('#subRegionFormBack').hide();
 $('#selectionFormBack').hide();
