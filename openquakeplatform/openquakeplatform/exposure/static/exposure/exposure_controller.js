@@ -151,10 +151,10 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 $('#countriesListDialog').dialog('option', 'title', 'Study: '+study.study_name+'');
                 $('#ragionTable').hide();
                 $('#countryList').hide();
-                $('#selectionFormBack').show();
                 $('#subRegionListBack').hide();
                 $('#subRegionFormBack').hide();
                 $scope.selectedStudy = $scope.selectedRegion[0];
+                $('#selectionFormBack').show();
                 $('#nationalForm').show();
 
                 // deactivate residential option as needed
@@ -170,8 +170,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     $('#drawBoundingMsg').hide();
                 } else {
                     $('#drawBoundingMsg').show();
-                    $('#nationalExposureBldgDownload').hide();
                     $('#exposure-building-form').show();
+                    $('#nationalExposureBldgDownload').hide();
                 }
 
                 $('#dwellingFractionsDownload').button().click(function() {
@@ -214,16 +214,14 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 });
             });
         } else if (study.num_studies > 1) {
-            $('exposure-building-form').hide();
-            $('#ragionTable h3').empty();
             $('#countryList').hide();
 
             // The user has selected a sub-national study
             $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
-            $('#subRegionListBack').show();
-            $('#subRegionList').show();
             $('#ragionTable h3').empty();
             $('#countryList').hide();
+            $('#subRegionListBack').show();
+            $('#subRegionList').show();
             $('#countryList').insertAfter('#subRegionList');
             $('#ragionTable').prepend('<h3>Study: '+study.country_name+' '+study.study_name+'</h3>');
 
@@ -325,12 +323,11 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
 
         // check the grid count
         if (study.tot_grid_count < 300000) {
-            $('#subNationalExposureBldgDownload').show();
             $('#subNationalRegionTooLarge').hide();
             $('#drawBoundingMsg').hide();
-            $('exposure-building-form').hide();
-            $('#sub-exposure-building-form').show();
             $('#sub-exposure-building-form-too-large').hide();
+            $('#subNationalExposureBldgDownload').show();
+            $('#sub-exposure-building-form').show();
         } else {
             $('#subNationalExposureBldgDownload').hide();
             $('#subNationalRegionTooLarge').show();
@@ -389,18 +386,18 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
 $('#subRegionFormBack').button().click(function() {
     $('#countriesListDialog').dialog('option', 'title', 'Admin Level 1 Selection Table');
     $('#subNationalForm').hide();
-    $('#subRegionList').show();
     $('#subRegionFormBack').hide();
     $('#nationalForm').hide();
     $('#exposure-building-form').hide();
+    $('#subRegionList').show();
 });
 
 $('#selectionFormBack').button().click(function() {
     $('#drawBoundingMsg').hide();
     $('#exposure-building-form').hide();
     $('#countriesListDialog').dialog('option', 'title', 'Admin Level 0 Selection Table');
-    $('#countryList').show();
     $('#selectionFormBack').hide();
+    $('#countryList').show();
 });
 
 $('#subNationalForm').hide();
