@@ -35,24 +35,6 @@ var activateDrawTool = function() {
     activateDrawFunction();
 };
 
-var downloadFractions = function() {
-    $('#dwellingFractionsDownload').button().click(function() {
-        var sr_id = $('#dwellingFractionsDownload').val();
-        $.ajax({
-            type: 'get',
-            url: 'export_fractions_by_study_region_id?sr_id='+sr_id,
-            success: function(data, textStatus, jqXHR) {
-                if (navigator.appName != 'Microsoft Internet Explorer') {
-                    window.open('data:text/csv;charset=utf-8,' + escape(data));
-                } else {
-                    var popup = window.open('','csv','');
-                    popup.document.body.innerHTML = '<pre>' + data + '</pre>';
-                }
-            }
-        });
-    });
-};
-
 // Generic jquery error dialog, which renders to the '#error-dialog' div
 var showErrorDialog = function(message, options) {
     // Options are optional
@@ -72,6 +54,23 @@ var showErrorDialog = function(message, options) {
 };
 
 app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http) {
+
+    var downloadFractions = function() {
+        $('#dwellingFractionsDownload').button().click(function() {
+            $.ajax({
+                type: 'get',
+                url: 'export_fractions_by_study_region_id?sr_id='+$scope.selectedStudy.study_region_id,
+                success: function(data, textStatus, jqXHR) {
+                    if (navigator.appName != 'Microsoft Internet Explorer') {
+                        window.open('data:text/csv;charset=utf-8,' + escape(data));
+                    } else {
+                        var popup = window.open('','csv','');
+                        popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+                    }
+                }
+            });
+        });
+    };
 
     // Set up the templates
     $scope.templates = [
@@ -350,7 +349,7 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
             exposureExport(url);
         });
 
-        $('#subSelectBbox').button().click(function() {
+        $('#subSelectBox').button().click(function() {
             // Focus the map on the selected region
             map.fitBounds(L.latLngBounds(L.latLng($scope.selectedSubRegion.ymax, $scope.selectedSubRegion.xmax), L.latLng($scope.selectedSubRegion.ymin, $scope.selectedSubRegion.xmin)));
             // Gather the selected options into global vars
