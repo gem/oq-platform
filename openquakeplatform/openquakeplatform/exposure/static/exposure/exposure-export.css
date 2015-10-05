@@ -17,6 +17,10 @@
 	width: 30%;
 }
 
+#drawBoundingMsg {
+    padding-left: 50px;
+}
+
 .ng-table {
     border: 1px solid #000;
 }
