@@ -53,24 +53,22 @@ var showErrorDialog = function(message, options) {
     $("#error-dialog").dialog(options);
 };
 
-app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http) {
+var downloadFractions = function(srId) {
+    $.ajax({
+        type: 'get',
+        url: 'export_fractions_by_study_region_id?sr_id='+srId,
+        success: function(data, textStatus, jqXHR) {
+            if (navigator.appName != 'Microsoft Internet Explorer') {
+                window.open('data:text/csv;charset=utf-8,' + escape(data));
+            } else {
+                var popup = window.open('','csv','');
+                popup.document.body.innerHTML = '<pre>' + data + '</pre>';
+            }
+        }
+    });
+};
 
-    var downloadFractions = function() {
-        $('#dwellingFractionsDownload').button().click(function() {
-            $.ajax({
-                type: 'get',
-                url: 'export_fractions_by_study_region_id?sr_id='+$scope.selectedStudy.study_region_id,
-                success: function(data, textStatus, jqXHR) {
-                    if (navigator.appName != 'Microsoft Internet Explorer') {
-                        window.open('data:text/csv;charset=utf-8,' + escape(data));
-                    } else {
-                        var popup = window.open('','csv','');
-                        popup.document.body.innerHTML = '<pre>' + data + '</pre>';
-                    }
-                }
-            });
-        });
-    };
+app.controller('ExposureCountryList', function($scope, $filter, myService, ngTableParams, $http) {
 
     // Set up the templates
     $scope.templates = [
@@ -176,14 +174,16 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                     $('#exposure-building-form').show();
                 }
 
-                downloadFractions();
+                $('#dwellingFractionsDownload').button().click(function() {
+                    downloadFractions($scope.selectedStudy.study_region_id);
+                });
 
                 $('#selectBbox').button().click(function() {
                     // Focus the map on the selected region
                     map.fitBounds(L.latLngBounds(L.latLng($scope.selectedRegion[0].ymax, $scope.selectedRegion[0].xmax), L.latLng($scope.selectedRegion[0].ymin, $scope.selectedRegion[0].xmin)));
 
                     // Gather the selected options into global vars
-                    sr_id = $('[name="study"]').val();
+                    sr_id = $scope.selectedStudy.study_region_id;
                     outputType = $('input[name="outputType"]:checked', '#exposure-building-form').val();
                     residential = $('input[name="residential"]:checked', '#exposure-building-form').val();
 
@@ -201,7 +201,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
 
                 $('#nationalExposureBldgDownload').button().click(function() {
                     // Gather the selected options into global vars
-                    sr_id = $('[name="study"]').val();
+                    sr_id = $scope.selectedStudy.study_region_id;
                     outputType = $('input[name="outputType"]:checked', '#exposure-building-form').val();
                     residential = $('input[name="residential"]:checked', '#exposure-building-form').val();
 
@@ -266,6 +266,7 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
     populateSubNationalList = function (data, template) {
         $scope.template = template;
         $scope.subNationalData = data;
+
         $scope.tableParams2.reload();
     };
 
@@ -289,7 +290,6 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
     var selectedRow;
 
     $scope.changeSelection = function(study) {
-
         $scope.selectedSubRegion = study;
 
         if (selectedRow) {
@@ -353,7 +353,7 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
             // Focus the map on the selected region
             map.fitBounds(L.latLngBounds(L.latLng($scope.selectedSubRegion.ymax, $scope.selectedSubRegion.xmax), L.latLng($scope.selectedSubRegion.ymin, $scope.selectedSubRegion.xmin)));
             // Gather the selected options into global vars
-            sr_id = $('[name="sub-study"]').val();
+            sr_id = $scope.selectedSubStudy;
             outputType = $('input[name="sub-outputType"]:checked', '#sub-exposure-building-form').val();
             residential = $('input[name="sub-residential"]:checked', '#sub-exposure-building-form').val();
             // Check that the form has been filled in
@@ -368,7 +368,10 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
             }
         });
 
-        downloadFractions();
+        $('#subDwellingFractionsDownload').button().click(function() {
+            downloadFractions(study.study_region_id);
+        });
+
     };
 
     // Back button logic

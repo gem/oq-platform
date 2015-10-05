@@ -66,7 +66,7 @@ Exposure Export {{ block.super }}
         <div id="nationalForm" >
           <form id="exposure-building-form" class="exposure_export_form">
             <p><b>Download Study Wide Building/Dwelling Fractions:</b></p>
-            <button id="dwellingFractionsDownload"  type="button" value="{{selectedStudy}}">Download</button><br><br>
+            <button id="dwellingFractionsDownload" type="button" value="{{selectedStudy}}">Download</button><br><br>
             <b>Download Gridded Building Exposure:</b><br>
             <p><label for="id_residential_0">Building Type:</label><br>
             <label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="residential" type="radio" checked="" value="residential" /> Residential</label><br>
@@ -89,7 +89,11 @@ Exposure Export {{ block.super }}
         </div>
         <div id="subNationalForm">
           <form id="sub-exposure-building-form" class="exposure_export_form">
-            <p><b>Download Region Wide Building/Dwelling Fractions:</b></p><button id="subDwellingFractionsDownload" type="button" value="{{selectedSubStudy}}">Download</button><br><br>
+            <p><b>Download Region Wide Building/Dwelling Fractions:</b></p>
+
+            <button id="subDwellingFractionsDownload" type="button" value="{{selectedSubStudy}}">Download</button>
+
+            <br><br>
             <b>Download Gridded Sub-National Building Exposure:</b><br>
             <p><label for="id_residential_0">Building Type:</label><br>
             <label for="id_residential_0"><input class="exposure_export_widget" id="id_residential_0" name="sub-residential" type="radio" checked="" value="residential" /> Residential</label><br>
