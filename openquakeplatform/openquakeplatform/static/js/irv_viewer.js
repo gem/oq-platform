@@ -31,6 +31,7 @@ var thematicLayer;
 var boundingBox = [];
 var license;
 var projectDefUpdated;
+var webGl;
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -723,7 +724,16 @@ function processIndicators(layerAttributes, projectDef) {
         thematicMap(layerAttributes);
     });
 
-    thematicMap(layerAttributes);
+    // If the browser does not support web-gl, then use traditional (limited) vector data.
+    // If the browser does support web-gl, then use Mapbox-gl.
+    if (webGl === true) {
+        console.log('layerAttributes:');
+        console.log(layerAttributes);
+        mapBoxThematicMap(layerAttributes);
+    } else {
+        thematicMap(layerAttributes);
+    }
+    
 
     var iriPcpData = [];
 
@@ -775,7 +785,75 @@ function scale(IndicatorObj) {
     return IndicatorObj;
 }
 
+// Mapbox-gl stuff
+function mapBoxThematicMap(layerAttributes) {
+    console.log('layerAttributes:');
+    console.log(layerAttributes);
+
+    // Temp color, TODO remove once filters are in place
+    var colorsPalRed = ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'];
+    var colorsPalBlue = ['#f1eef6', '#bdc9e1', '#74a9cf', '#2b8cbe', '#045a8d'];
+    var colorsPalGreen = ['#edf8fb', '#b2e2e2', '#66c2a4', '#2ca25f', '#006d2c'];
+    var colorsPalBrown = ['#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'];
+    var colorsPal = colorsPalRed;
+
+
+    // Create mapbox map element
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
+
+    map = new mapboxgl.Map({
+        container: 'map',
+        // Load default mapbox basemap
+        style: 'mapbox://styles/mapbox/streets-v8',
+
+        // Load the mapbox basemap + ecuador proto buf
+        //style: "../data/source.json",
+
+        center: [0, 0],
+        zoom: 3,
+    })
+
+    map.on('style.load', function() {
+        // Populate the mapbox source with GeoJson from Geoserver
+        map.addSource("test", {
+            'type': 'geojson',
+            'data': layerAttributes,
+            //"data": '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:qgis_irmt_1bb6cbfb_5747_4876_85fc_c768feaeb4df&outputFormat=json',
+        });
+
+        // Create a new mapbox layer
+        map.addLayer({
+            'id': 'foobar',
+            'type': 'fill',
+            'source': 'test',
+            "source-layer": "eq-simple",
+            'interactive': true,
+            //'text-field': '{DPA_DESPAR}',
+            'paint': {
+                'fill-color': colorsPal[0],
+                //'fill-opacity': 0.8,
+                //'fill-outline-color': '#CCCCFF'
+            }
+            // TODO add filter
+        });
+
+    });
+    console.log('map:');
+    console.log(map);
+}
+
+
+
 function thematicMap(layerAttributes) {
+
+    map = new L.Map('map', {
+        minZoom: 2,
+        scrollWheelZoom: false,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+
     // Initialize the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
@@ -960,7 +1038,12 @@ function versionCompare(a, b) {
 }
 
 var startApp = function() {
-    // theme tabls behavior
+
+    // TODO Check for web GL
+    // Assume that we have web-gl
+    webGl = true;
+
+    // Theme tabls behavior
     $('#themeTabs').resizable({
         minHeight: 500,
         minWidth: 640
@@ -979,6 +1062,7 @@ var startApp = function() {
     $('#primary_indicator').hide();
     $('#saveBtn').prop('disabled', true);
     $('#saveBtn').addClass('btn-disabled');
+    /*
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -986,6 +1070,19 @@ var startApp = function() {
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+    */
+
+    // MapBox gl stuff
+        /*
+    var token = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
+
+
+    // TODO remove this, it is used to test that mapbox gl
+    var gl = L.mapboxGL({
+        accessToken: token,
+        style: 'mapbox://styles/mapbox/streets-v8'
+    }).addTo(map);
+    */
 
     // Slider
     $(function() {
@@ -1035,7 +1132,7 @@ var startApp = function() {
 
     $('#loadProjectBtn').click(function() {
         $('#pdSelection').empty();
-        // set tabs to back default
+        // set tabs back default
         $("#themeTabs").tabs("enable", 2);
         $("#themeTabs").tabs("enable", 3);
 
@@ -1086,6 +1183,7 @@ var startApp = function() {
         closeOnEscape: true
     });
 
+    // TODO move all of the style stuff into the css file
     $('#map-tools').css({
         'padding': '6px',
         'position': 'absolute',
@@ -1125,11 +1223,16 @@ var startApp = function() {
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
 
+    console.log('selectedLayer:');
+    console.log(selectedLayer);
+
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
+            console.log('data:');
+            console.log(data);
 
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
