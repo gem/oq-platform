@@ -797,6 +797,17 @@ function mapBoxThematicMap(layerAttributes) {
     var colorsPalBrown = ['#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'];
     var colorsPal = colorsPalRed;
 
+    function getColor(d) {
+        return d > 1000 ? '#800026' :
+           d > 500  ? '#BD0026' :
+           d > 200  ? '#E31A1C' :
+           d > 100  ? '#FC4E2A' :
+           d > 50   ? '#FD8D3C' :
+           d > 20   ? '#FEB24C' :
+           d > 10   ? '#FED976' :
+                      '#FFEDA0';
+    }
+
 
     // Create mapbox map element
     mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
@@ -805,36 +816,32 @@ function mapBoxThematicMap(layerAttributes) {
         container: 'map',
         // Load default mapbox basemap
         style: 'mapbox://styles/mapbox/streets-v8',
-
-        // Load the mapbox basemap + ecuador proto buf
-        //style: "../data/source.json",
-
         center: [0, 0],
         zoom: 3,
     })
 
     map.on('style.load', function() {
         // Populate the mapbox source with GeoJson from Geoserver
-        map.addSource("test", {
+        map.addSource("projectSource", {
             'type': 'geojson',
             'data': layerAttributes,
-            //"data": '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=oqplatform:qgis_irmt_1bb6cbfb_5747_4876_85fc_c768feaeb4df&outputFormat=json',
         });
 
         // Create a new mapbox layer
         map.addLayer({
-            'id': 'foobar',
+            'id': 'svirLayer',
             'type': 'fill',
-            'source': 'test',
+            'source': 'projectSource',
             "source-layer": "eq-simple",
             'interactive': true,
-            //'text-field': '{DPA_DESPAR}',
+            'text-field': '{Parroquia}',
             'paint': {
                 'fill-color': colorsPal[0],
                 //'fill-opacity': 0.8,
-                //'fill-outline-color': '#CCCCFF'
-            }
+                'fill-outline-color': '#CCCCFF'
+            },
             // TODO add filter
+            //'filter': ['all',['>', selAttribute, 1.139], ['<=', selAttribute, 1.46]]
         });
 
     });
