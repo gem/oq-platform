@@ -95,7 +95,7 @@ class Platform(object):
         # try to find logout button (in the header)
         try:
             self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
-        except:
+        except (TimeoutError, ValueError, NotUniqError):
             # if not found return to homepage
             self.driver.get(self.basepath + "")
             print "RELOAD HOMEPAGE"
