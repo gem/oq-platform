@@ -86,10 +86,11 @@ class Platform(object):
         return self.driver.current_url
 
     def fini(self):
-        # return to homepage
+        # try to find logout button (in the header)
         try:
             self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
         except:
+            # if not found return to homepage
             self.driver.get(self.basepath + "")
             print "RELOAD HOMEPAGE"
 
