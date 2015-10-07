@@ -1,27 +1,33 @@
 import time
 from utils import *
 
+
 class Platform(object):
     DT = 0.1
+
     def __init__(self):
-        self.driver   = None
+
+        self.driver = None
         self.basepath = None
-        self.user     = None
-        self.passwd   = None
+        self.user = None
+        self.passwd = None
         self.debugger = None
 
     def init(self):
         try:
-            from openquakeplatform.test.config import pla_basepath, pla_user, pla_passwd, pla_debugger
+            from openquakeplatform.test.config import (
+                pla_basepath, pla_user, pla_passwd, pla_debugger)
         except ImportError:
-            print "ERROR: config.py not found. Copy config.py.tmpl in config.py and modify it properly."
+            print (
+                "ERROR: config.py not found. Copy config.py.tmpl in config.py "
+                " and modify it properly.")
             sys.exit(1)
 
         self.debugger = pla_debugger
-        self.driver   = self.driver_create("firefox", self.debugger)
+        self.driver = self.driver_create("firefox", self.debugger)
         self.basepath = pla_basepath
-        self.user     = pla_user
-        self.passwd   = pla_passwd
+        self.user = pla_user
+        self.passwd = pla_passwd
 
         self.driver.maximize_window()
         self.homepage_login()
@@ -34,9 +40,12 @@ class Platform(object):
                 fp.add_extension(extension=debugger)
                 fp.native_events_enabled = False
                 fp.set_preference("browser.tabs.warnOnClose", False)
-                fp.set_preference("extensions.firebug.allPagesActivation", "on")
-                fp.set_preference("extensions.firebug.console.enableSites", True)
-                fp.set_preference("extensions.firebug.defaultPanelName", "console")
+                fp.set_preference("extensions.firebug.allPagesActivation",
+                                  "on")
+                fp.set_preference("extensions.firebug.console.enableSites",
+                                  True)
+                fp.set_preference("extensions.firebug.defaultPanelName",
+                                  "console")
             driver = webdriver.Firefox(firefox_profile=fp)
         else:
             driver = None
@@ -46,7 +55,8 @@ class Platform(object):
     def homepage_login(self):
         # "" is the (empty) path for the page required for login
         self.driver.get(self.basepath + "")
-        # <a class="dropdown-toggle" data-toggle="dropdown" href="#">Sign in</a>
+        # <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        #Sign in</a>
         inputs = self.driver.find_elements(By.XPATH, "//a[text()='Sign in']")
         if len(inputs) != 1:
             return False
@@ -56,14 +66,19 @@ class Platform(object):
         #<label for="id_password">Password:</label>
         #<input id="id_password" type="password" name="password">
         #<label class="checkbox">
-        user_field = self.xpath_finduniq("//input[@id='id_username' and @type='text' and @name='username']")
+        user_field = self.xpath_finduniq(
+            "//input[@id='id_username' and @type='text' "
+            "and @name='username']")
         user_field.send_keys(self.user)
 
-        passwd_field = self.xpath_finduniq("//input[@id='id_password' and @type='password' and @name='password']")
+        passwd_field = self.xpath_finduniq(
+            "//input[@id='id_password' and @type='password' "
+            "and @name='password']")
         passwd_field.send_keys(self.passwd)
 
         #<button class="btn pull-right" type="submit">Sign in</button>
-        submit_button = self.xpath_finduniq("//button[@type='submit' and text()='Sign in']")
+        submit_button = self.xpath_finduniq(
+            "//button[@type='submit' and text()='Sign in']")
         submit_button.click()
 
     @property
@@ -82,21 +97,26 @@ class Platform(object):
         #nastasi
         #<b class="caret"></b>
         #</a>
-        user_button = self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
+        user_button = self.xpath_finduniq(
+            "//a[@href='#' and b[@class='caret']]")
         user_button.click()
 
         #<a href="/account/logout/">
         #<i class="icon-off"></i>
         #Log out
         #</a>
-        logout_button = self.xpath_finduniq("//a[@href='/account/logout/' and normalize-space(text()) = 'Log out']")
+        logout_button = self.xpath_finduniq(
+            "//a[@href='/account/logout/' and normalize-space(text())"
+            " = 'Log out']")
         logout_button.click()
 
         #check new url
         self.wait_new_page(logout_button, '/account/logout/')
 
         #<button class="btn btn-primary" type="submit">Log out</button>
-        logout_button = self.xpath_finduniq("//button[@type='submit' and normalize-space(text()) = 'Log out']")
+        logout_button = self.xpath_finduniq(
+            "//button[@type='submit' and normalize-space("
+            "text()) = 'Log out']")
         logout_button.click()
 
         self.driver.quit()
@@ -124,7 +144,8 @@ class Platform(object):
         else:
             if times > 1:
                 raise TimeoutError(
-                    "Timeout waiting '{}' for {} seconds.".format(xpath_str, times * self.DT)
+                    "Timeout waiting '{}' for {} seconds.".format(
+                        xpath_str, times * self.DT)
                     )
             else:
                 raise ValueError(
@@ -133,14 +154,13 @@ class Platform(object):
 
         if len(field) > 1:
             raise NotUniqError(
-                "Waiting for '{}' returned {} matches.".format(xpath_str, len(field))
+                "Waiting for '{}' returned {} matches.".format(xpath_str,
+                                                               len(field))
                 )
-
 
         if postfind > 0:
             time.sleep(postfind)
         return field[0]
-
 
     def wait_new_page(self, element, url):
         def link_has_gone_stale():
@@ -149,8 +169,8 @@ class Platform(object):
                 element.find_elements_by_id('doesnt-matter')
                 return False
             except StaleElementReferenceException:
-                if (self.driver.current_url == url or
-                    self.driver.current_url == (self.basepath + url)):
+                if (self.driver.current_url == url
+                        or self.driver.current_url == (self.basepath + url)):
                     return True
                 else:
                     raise ValueError
@@ -207,7 +227,7 @@ class Platform(object):
     };
 
     '''
-    )
+                                   )
 
     def click_at(self, x, y):
         self.driver.execute_script('pla_click(%d, %d);' % (x, y))

@@ -11,8 +11,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.common.exceptions import StaleElementReferenceException
 
+
 class TimeoutError(Exception):
     pass
+
 
 class NotUniqError(Exception):
     pass
@@ -28,6 +30,3 @@ def wait_for(condition_function, timeout=3):
     raise TimeoutException(
         'Timeout waiting for {}'.format(condition_function.__name__)
     )
-
-
-
