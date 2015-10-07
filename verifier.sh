@@ -270,7 +270,11 @@ fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
 source platform-env/bin/activate
-pip install simplejson==2.0.9
+# if host machine includes python-simplejson package it must overrided with
+# a proper version that don't conflict with Django requirements
+if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep '^ii ' >/dev/null 2>&1 ; then
+    pip install simplejson==2.0.9
+fi
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
