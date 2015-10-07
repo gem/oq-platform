@@ -60,8 +60,7 @@ class Platform(object):
         return driver
 
     def homepage_login(self):
-        # "" is the (empty) path for the page required for login
-        self.driver.get(self.basepath + "")
+        self.driver.get(self.basepath)
         # <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #Sign in</a>
         inputs = self.driver.find_elements(By.XPATH, "//a[text()='Sign in']")
