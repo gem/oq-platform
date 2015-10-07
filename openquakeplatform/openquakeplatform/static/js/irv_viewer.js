@@ -28,7 +28,8 @@ var selectedLayer;
 var tempProjectDef;
 var COMPATIBILITY_VERSION = '1.7.0';
 var thematicLayer;
-var boundingBox = [];
+var leafletBoundingBox = [];
+var mapboxBoundingBox = [];
 var license;
 var projectDefUpdated;
 var webGl;
@@ -684,52 +685,20 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    // Add main indicators to selection menu
-    $('#thematic-map-selection').empty();
-    $('#thematic-map-selection').append(
-        '<optgroup label="Indicators">'+
-        '<option>IRI</option>'+
-        '<option>SVI</option>'+
-        '<option>IR</option>'
-    );
-
-    // Add SVI themes to selection menu
-    $('#thematic-map-selection').append('<optgroup label="SVI Indicators">');
-    for (var id = 0; id < allSVIThemes.length; id++) {
-        $('#thematic-map-selection').append('<option>'+allSVIThemes[id]+'</option>');
-    }
-
-    if (riskIndicators !== undefined) {
-        // Add IR themes to selection menu
-        $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
-        for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-            $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
-        }
-    }
-
-    // Add all primary indicators to selection menu
-    $('#thematic-map-selection').append('<optgroup label="Composite Indicators">');
-    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
-        $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
-    }
-
-    // set the map selection menu to IRI or previously selected indicator value
-    if (selectedIndicator == undefined) {
-        $('#thematic-map-selection').val('IRI');
-    } else {
-        $('#thematic-map-selection').val(selectedIndicator);
-    }
-
-    $('#thematic-map-selection').change(function() {
-        thematicMap(layerAttributes);
-    });
 
     // If the browser does not support web-gl, then use traditional (limited) vector data.
     // If the browser does support web-gl, then use Mapbox-gl.
     if (webGl === true) {
-        mapBoxThematicMap(layerAttributes);
+        console.log('IRI:');
+        console.log(IRI);
+        console.log('svThemes:');
+        console.log(svThemes);
+        console.log('riskIndicators:');
+        console.log(riskIndicators);
+        mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
     } else {
-        thematicMap(layerAttributes);
+        setupLeafletMap();
+        thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
     }
 
     var iriPcpData = [];
@@ -783,29 +752,103 @@ function scale(IndicatorObj) {
 }
 
 // Mapbox-gl stuff
-function mapBoxThematicMap(layerAttributes) {
+function setupMapboxGlMap() {
+
+    // Create mapbox map element
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
+
+    map = new mapboxgl.Map({
+        container: 'map',
+        // Load default mapbox basemap
+        style: 'mapbox://styles/mapbox/streets-v8',
+        center: [0, 20],
+        zoom: 2,
+    })
+}
+
+function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators) {
+
+    $('#webGlThematicSelection').empty();
+
+    // TODO add IRI SVI and RI to the menu
+
+    // Add IR children themes to selection menu
+    if (allRiskIndicators.length > 0) {
+        $('#webGlThematicSelection').append('<optgroup label="RI Indicators">');
+        for (var i = 0; i < allRiskIndicators.length; i++) {
+            $('#webGlThematicSelection').append('<option>'+allRiskIndicators[i]+'</option>');
+        }
+    }
+
+    // Add SVI children themes to selection menu
+    if (allSVIThemes.length > 0) {
+        $('#webGlThematicSelection').append('<optgroup label="SVI">');
+        for (var i = 0; i < allSVIThemes.length; i++) {
+            $('#webGlThematicSelection').append('<option>'+allSVIThemes[i]+'</option>');
+        }
+    }
+
+    // Add primary indicators to selection menu
+    if (allPrimaryIndicators.length > 0) {
+        $('#webGlThematicSelection').append('<optgroup label="Primary Indicators">');
+        for (var i = 0; i < allPrimaryIndicators.length; i++) {
+            $('#webGlThematicSelection').append('<option>'+allPrimaryIndicators[i]+'</option>');
+        }
+    }
+
+    $('#webGlThematicSelection').show();
+
+    // Manage the thematic map selection menu
+    // Set the map selection menu to the first multi group dropdown option
+
+    setTimeout(function() { // TODO make  sure thi is needed
+        if (selectedIndicator === undefined) {
+            // TODO fix this to use optgroup:first
+            $('#webGlThematicSelection option').eq(3).attr("selected", "selected");
+            mapboxGlLayerCreation();
+        } else {
+            $('#webGlThematicSelection').val(selectedIndicator);
+        }
+    }, 3000);
+
+    $('#webGlThematicSelection').change(function() {
+        mapboxGlLayerCreation();
+    });
+
+}
+
+function mapboxGlLayerCreation() {
+    //thematicMap(layerAttributes);
 
     console.log('layerAttributes:');
     console.log(layerAttributes);
 
+
+    selectedIndicator = $('#webGlThematicSelection').val();
+
+
     // Find the values to create categorized color ramp
     // First find the min and max vales
-
-    // TODO put selectedIndicator back
-    // TODO if the defalt selected indicator does not exist in the newProperties set it to an exisitng element
-    //selectedIndicator = $('#thematic-map-selection').val();
-    selectedIndicator = 'HEAHSTBRC';
-
-    console.log('selectedIndicator:');
-    console.log(selectedIndicator);
     var minMaxArray = [];
     for (var i = 0; i < layerAttributes.features.length; i++) {
+        var match = false;
         for (var k in layerAttributes.features[i].newProperties) {
             if (k == selectedIndicator) {
+                match = true;
                 minMaxArray.push(layerAttributes.features[i].newProperties[k]);
+                break
+            }
+            else {
+                match = false;
             }
         }
+        if (match === false) {
+            return;
+        }
     }
+
+    // Focus map on layer
+    map.fitBounds(mapboxBoundingBox);
 
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
@@ -813,10 +856,9 @@ function mapBoxThematicMap(layerAttributes) {
     max = parseFloat(max);
 
     // Temp color, TODO remove once filters are in place
+    // TODO allow the user to change the colors
     var colorsPalRed = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
-    var colorsPalBlue = ['#f1eef6', '#bdc9e1', '#74a9cf', '#2b8cbe', '#045a8d'];
-    var colorsPalGreen = ['#edf8fb', '#b2e2e2', '#66c2a4', '#2ca25f', '#006d2c'];
-    var colorsPalBrown = ['#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'];
+    var colorsPalBlue = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
     var colorsPal = colorsPalRed;
     var breaks = [];
 
@@ -833,49 +875,92 @@ function mapBoxThematicMap(layerAttributes) {
 
     getColor();
 
-
-    // Create mapbox map element
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
-
-    map = new mapboxgl.Map({
-        container: 'map',
-        // Load default mapbox basemap
-        style: 'mapbox://styles/mapbox/streets-v8',
-        center: [0, 0],
-        zoom: 3,
-    })
-
-    map.on('style.load', function() {
-        // Populate the mapbox source with GeoJson from Geoserver
-        map.addSource("projectSource", {
-            'type': 'geojson',
-            'data': layerAttributes,
-        });
-
-        // Create a new mapbox layers
+    // Try to remove any existing layers
+    try {
         for (var i = 0; i < 6; i++) {
-            map.addLayer({
-                'id': i,
-                'type': 'fill',
-                'source': 'projectSource',
-                "source-layer": "eq-simple",
-                'interactive': true,
-                'text-field': '{Parroquia}',
-                'paint': {
-                    'fill-color': colorsPal[i],
-                    'fill-opacity': 0.8,
-                    //'fill-outline-color': '#CCCCFF'
-                },
-                // TODO add filter
-                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
-            });
-        }
+            map.removeLayer(i);
+        };
+    } catch (e) {
+        // continue
+    }
+
+    // Try to remove any existing source
+    try {
+        map.removeSource('projectSource');
+    } catch (e) {
+        // continue
+    }
+
+    // Populate the mapbox source with GeoJson from Geoserver
+    map.addSource('projectSource', {
+        'type': 'geojson',
+        'data': layerAttributes,
     });
+
+    // Create a new mapbox layers
+    for (var i = 0; i < 6; i++) {
+        map.addLayer({
+            'id': i,
+            'type': 'fill',
+            'source': 'projectSource',
+            "source-layer": "eq-simple",
+            'interactive': true,
+            'text-field': '{Parroquia}',
+            'paint': {
+                'fill-color': colorsPal[i],
+                'fill-opacity': 0.8,
+                //'fill-outline-color': '#CCCCFF'
+            },
+            'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+        });
+    }
+    console.log('layer created!:');
 }
 
 
-function thematicMap(layerAttributes) {
+function setupLeafletMap() {
 
+    // Add main indicators to selection menu
+    $('#leafletThematicSelection').empty();
+    $('#leafletThematicSelection').append(
+        '<optgroup label="Indicators">'+
+        '<option>IRI</option>'+
+        '<option>SVI</option>'+
+        '<option>IR</option>'
+    );
+
+    // Add SVI themes to selection menu
+    $('#leafletThematicSelection').append('<optgroup label="SVI Indicators">');
+    for (var id = 0; id < allSVIThemes.length; id++) {
+        $('#leafletThematicSelection').append('<option>'+allSVIThemes[id]+'</option>');
+    }
+
+    if (riskIndicators !== undefined) {
+        // Add IR themes to selection menu
+        $('#leafletThematicSelection').append('<optgroup label="IR Indicators">');
+        for (var ie = 0; ie < allRiskIndicators.length; ie++) {
+            $('#leafletThematicSelection').append('<option>'+allRiskIndicators[ie]+'</option>');
+        }
+    }
+
+    // Add all primary indicators to selection menu
+    $('#leafletThematicSelection').append('<optgroup label="Composite Indicators">');
+    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
+        $('#leafletThematicSelection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
+    }
+
+    // set the map selection menu to IRI or previously selected indicator value
+    if (selectedIndicator == undefined) {
+        $('#leafletThematicSelection').val('IRI');
+    } else {
+        $('#leafletThematicSelection').val(selectedIndicator);
+    }
+
+    $('#leafletThematicSelection').change(function() {
+        thematicMap(layerAttributes);
+    });
+
+    // TODO move this into a seperate functiont at is only called once per session
     map = new L.Map('map', {
         minZoom: 2,
         scrollWheelZoom: false,
@@ -883,13 +968,17 @@ function thematicMap(layerAttributes) {
         maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
     });
     map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+}
 
+
+function thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators) {
+    $('#leafletThematicSelection').show();
     // Initialize the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
 
     // find the indicator that has been selected
-    selectedIndicator = $('#thematic-map-selection').val();
+    selectedIndicator = $('#leafletThematicSelection').val();
 
     var displayElement = 'newProperties.'+selectedIndicator;
     var la = layerAttributes.features;
@@ -1133,11 +1222,27 @@ var startApp = function() {
         '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
 
-     $('#map-tools').append(
-        '<select id="thematic-map-selection">'+
-            '<option>Select Indicator</option>'+
-        '</select>'
-    );
+    if (webGl === false) {
+        $('#map-tools').append(
+            '<select id="leafletThematicSelection">'+
+                '<option>Select Indicator</option>'+
+            '</select>'
+        );
+
+        $('#leafletThematicSelection').hide();
+
+        setupLeafletMap();
+    } else {
+        $('#map-tools').append(
+            '<select id="webGlThematicSelection">'+
+                '<option>Select Indicator</option>'+
+            '</select>'
+        );
+
+        $('#webGlThematicSelection').hide();
+
+        setupMapboxGlMap();
+    }
 
     $('#loadProjectdialogBtn').click(function() {
         getGeoServerLayers();
@@ -1148,11 +1253,7 @@ var startApp = function() {
     $('#region-selection-list').hide();
     $('#svir-project-list').hide();
 
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
-
-    $('#thematic-map-selection').hide();
-
     $('#loadProjectBtn').prop('disabled', true);
 
     // Enable the load project button once a project has been selected
@@ -1167,7 +1268,6 @@ var startApp = function() {
         $("#themeTabs").tabs("enable", 3);
 
         $('#themeTabs').tabs('option', 'active', 0);
-        $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
         $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
         $('#projectDef-spinner').show();
@@ -1242,10 +1342,16 @@ var startApp = function() {
         'left': '390px'
     });
 
-    $('#thematic-map-selection').css({
+    $('#leafletThematicSelection').css({
         'position': 'fixed',
         'left': '160px',
-        'display': 'block'
+        'margin-bottom' : 0
+    });
+
+    $('#webGlThematicSelection').css({
+        'position': 'fixed',
+        'left': '160px',
+        'margin-bottom' : 0
     });
 };
 
@@ -1327,12 +1433,20 @@ function projDefJSONRequest(selectedLayer) {
             }
 
             // Populate global bounding box array
-            boundingBox = [
+            leafletBoundingBox = [
                 data.bounding_box.miny,
                 data.bounding_box.minx,
                 data.bounding_box.maxy,
                 data.bounding_box.maxx
             ];
+
+            mapboxBoundingBox = [[
+                data.bounding_box.minx,
+                data.bounding_box.miny
+            ], [
+                data.bounding_box.maxx,
+                data.bounding_box.maxy
+            ]];
 
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();
