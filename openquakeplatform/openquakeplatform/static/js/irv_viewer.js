@@ -727,13 +727,10 @@ function processIndicators(layerAttributes, projectDef) {
     // If the browser does not support web-gl, then use traditional (limited) vector data.
     // If the browser does support web-gl, then use Mapbox-gl.
     if (webGl === true) {
-        console.log('layerAttributes:');
-        console.log(layerAttributes);
         mapBoxThematicMap(layerAttributes);
     } else {
         thematicMap(layerAttributes);
     }
-    
 
     var iriPcpData = [];
 
@@ -787,26 +784,54 @@ function scale(IndicatorObj) {
 
 // Mapbox-gl stuff
 function mapBoxThematicMap(layerAttributes) {
+
     console.log('layerAttributes:');
     console.log(layerAttributes);
 
+    // Find the values to create categorized color ramp
+    // First find the min and max vales
+
+    // TODO put selectedIndicator back
+    // TODO if the defalt selected indicator does not exist in the newProperties set it to an exisitng element
+    //selectedIndicator = $('#thematic-map-selection').val();
+    selectedIndicator = 'HEAHSTBRC';
+
+    console.log('selectedIndicator:');
+    console.log(selectedIndicator);
+    var minMaxArray = [];
+    for (var i = 0; i < layerAttributes.features.length; i++) {
+        for (var k in layerAttributes.features[i].newProperties) {
+            if (k == selectedIndicator) {
+                minMaxArray.push(layerAttributes.features[i].newProperties[k]);
+            }
+        }
+    }
+
+    var min = Math.min.apply(null, minMaxArray).toFixed(2);
+    var max = Math.max.apply(null, minMaxArray).toFixed(2);
+    min = parseFloat(min);
+    max = parseFloat(max);
+
     // Temp color, TODO remove once filters are in place
-    var colorsPalRed = ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'];
+    var colorsPalRed = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
     var colorsPalBlue = ['#f1eef6', '#bdc9e1', '#74a9cf', '#2b8cbe', '#045a8d'];
     var colorsPalGreen = ['#edf8fb', '#b2e2e2', '#66c2a4', '#2ca25f', '#006d2c'];
     var colorsPalBrown = ['#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'];
     var colorsPal = colorsPalRed;
+    var breaks = [];
 
-    function getColor(d) {
-        return d > 1000 ? '#800026' :
-           d > 500  ? '#BD0026' :
-           d > 200  ? '#E31A1C' :
-           d > 100  ? '#FC4E2A' :
-           d > 50   ? '#FD8D3C' :
-           d > 20   ? '#FEB24C' :
-           d > 10   ? '#FED976' :
-                      '#FFEDA0';
+    function getColor() {
+        var interval = (max - min) / 6;
+        var tempStep = min;
+        for (var i = 0; i < 5; i++) {
+            tempStep += interval
+            breaks.push(tempStep);
+        }
+        breaks.unshift(min);
+        breaks.push(max);
     }
+
+    getColor();
 
 
     // Create mapbox map element
@@ -827,28 +852,26 @@ function mapBoxThematicMap(layerAttributes) {
             'data': layerAttributes,
         });
 
-        // Create a new mapbox layer
-        map.addLayer({
-            'id': 'svirLayer',
-            'type': 'fill',
-            'source': 'projectSource',
-            "source-layer": "eq-simple",
-            'interactive': true,
-            'text-field': '{Parroquia}',
-            'paint': {
-                'fill-color': colorsPal[0],
-                //'fill-opacity': 0.8,
-                'fill-outline-color': '#CCCCFF'
-            },
-            // TODO add filter
-            //'filter': ['all',['>', selAttribute, 1.139], ['<=', selAttribute, 1.46]]
-        });
-
+        // Create a new mapbox layers
+        for (var i = 0; i < 6; i++) {
+            map.addLayer({
+                'id': i,
+                'type': 'fill',
+                'source': 'projectSource',
+                "source-layer": "eq-simple",
+                'interactive': true,
+                'text-field': '{Parroquia}',
+                'paint': {
+                    'fill-color': colorsPal[i],
+                    'fill-opacity': 0.8,
+                    //'fill-outline-color': '#CCCCFF'
+                },
+                // TODO add filter
+                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+            });
+        }
     });
-    console.log('map:');
-    console.log(map);
 }
-
 
 
 function thematicMap(layerAttributes) {
@@ -1230,16 +1253,11 @@ var startApp = function() {
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
 
-    console.log('selectedLayer:');
-    console.log(selectedLayer);
-
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-            console.log('data:');
-            console.log(data);
 
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
