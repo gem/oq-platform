@@ -14,6 +14,8 @@ class Platform(object):
         self.debugger = None
 
     def init(self):
+        # we import configuration variables here to keep highest
+        # level of isolation without creating unnecessary globals
         try:
             from openquakeplatform.test.config import (
                 pla_basepath, pla_user, pla_passwd, pla_debugger)
