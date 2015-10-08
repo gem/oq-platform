@@ -693,11 +693,6 @@ function processIndicators(layerAttributes, projectDef) {
     // If the browser does not support web-gl, then use traditional (limited) vector data.
     // If the browser does support web-gl, then use Mapbox-gl.
     if (webGl === true) {
-
-        console.log('layerAttributes:');
-        console.log(layerAttributes);
-        console.log('la:');
-        console.log(la);
         console.log('IRI:');
         console.log(IRI);
         console.log('svThemes:');
@@ -705,8 +700,6 @@ function processIndicators(layerAttributes, projectDef) {
         console.log('riskIndicators:');
         console.log(riskIndicators);
 
-        console.log('check for map source:');
-        console.log(map);
 /*
         if (map.style.sources.projectSource === undefined) {
             // If a map source has not yet been created, proceed with mapBoxThematicMap creation
@@ -823,15 +816,14 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     // Set the map selection menu to the first multi group dropdown option
     console.log('selectedIndicator:');
     console.log(selectedIndicator);
-    setTimeout(function() { // TODO make  sure thi is needed
-        if (selectedIndicator === undefined) {
-            // TODO fix this to use optgroup:first
-            $('#webGlThematicSelection option').eq(3).attr("selected", "selected");
-            mapboxGlLayerCreation();
-        } else {
-            $('#webGlThematicSelection').val(selectedIndicator);
-        }
-    }, 3000);
+
+    if (selectedIndicator === undefined) {
+        // TODO fix this to use optgroup:first
+        $('#webGlThematicSelection option').eq(3).attr("selected", "selected");
+        mapboxGlLayerCreation();
+    } else {
+        $('#webGlThematicSelection').val(selectedIndicator);
+    }
 
     // Execute the mapboxGlLayerCreation when there has been a wieght change
     if (wieghtChange === true) {
@@ -923,19 +915,31 @@ function mapboxGlLayerCreation() {
 
     getColor();
 
-    // Case 2, 3 and 4, try to remove any existing layers
-    try {
-        for (var i = 0; i < 6; i++) {
-            map.removeLayer(i);
-        };
-    } catch (e) {
-        // continue
-    }
+    // Case 2, and 4, try to remove any existing layers
+    // TEMP also case 3
+    //if (wieghtChange === false) {
+        try {
+            for (var i = 0; i < 6; i++) {
+                map.removeLayer(i);
+            };
+        } catch (e) {
+            // continue
+        }
+    //}
+
+    console.log('wieghtChange:');
+    console.log(wieghtChange);
+    console.log('projectChange:');
+    console.log(projectChange);
 
     // Case 3 update the source
-    if(wieghtChange) {
+    if (wieghtChange) {
         console.log('Update the source:');
         map.update(true);
+
+        // FIXME would really prefer to update the map source here
+        //console.log('Destroying the source:');
+        //map.removeSource('projectSource');
     }
 
     // Case 4 destory the source
@@ -948,14 +952,15 @@ function mapboxGlLayerCreation() {
     // Populate the mapbox source with GeoJson from Geoserver
     // Only create a new source when the project has been changed
     if (map.style.sources.projectSource === undefined || projectChange) {
+        console.log('new source created!:');
         map.addSource('projectSource', {
             'type': 'geojson',
             'data': layerAttributes,
         });
     }
 
-    // Cases 1, 2 and 4
-    if(wieghtChange === false) {
+    // Cases 1, 2, 3, and 4
+    //if (wieghtChange === false) {
         // Create a new mapbox layers
         for (var i = 0; i < 6; i++) {
             map.addLayer({
@@ -973,8 +978,8 @@ function mapboxGlLayerCreation() {
                 'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
             });
         }
-        console.log('layer created!:');
-    }
+        console.log('new layers created!:');
+    //}
 }
 
 
