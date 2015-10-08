@@ -316,7 +316,6 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd)
 cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
-pip install selenium
 python openquakeplatform/test/nose_runner.py --failurecatcher -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
 fab stop
@@ -454,7 +453,6 @@ cd oq-platform/openquakeplatform
 export PYTHONPATH=\$(pwd)
 sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
-pip install selenium
 python openquakeplatform/test/nose_runner.py --failurecatcher -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
 cd -
