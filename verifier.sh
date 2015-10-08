@@ -451,7 +451,7 @@ echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host local
 
 cd oq-platform/openquakeplatform
 export PYTHONPATH=\$(pwd)
-sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
+sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 # Just for investigation
 sleep 172800
 export DISPLAY=:1
