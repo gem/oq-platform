@@ -233,6 +233,10 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
+    var wieghtChange = false;
+    if (arguments[2]) {
+        wieghtChange = true;
+    }
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -689,13 +693,31 @@ function processIndicators(layerAttributes, projectDef) {
     // If the browser does not support web-gl, then use traditional (limited) vector data.
     // If the browser does support web-gl, then use Mapbox-gl.
     if (webGl === true) {
+
+        console.log('layerAttributes:');
+        console.log(layerAttributes);
+        console.log('la:');
+        console.log(la);
         console.log('IRI:');
         console.log(IRI);
         console.log('svThemes:');
         console.log(svThemes);
         console.log('riskIndicators:');
         console.log(riskIndicators);
-        mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
+
+        console.log('check for map source:');
+        console.log(map);
+/*
+        if (map.style.sources.projectSource === undefined) {
+            // If a map source has not yet been created, proceed with mapBoxThematicMap creation
+            mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
+        } else {
+            // If a map source has been created, then simply update the map source and styles
+            // TODO remove map source when project is changed
+            console.log('map.style.sources.projectSource === Defined:');
+        }
+*/
+        mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange);
     } else {
         setupLeafletMap();
         thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
@@ -766,8 +788,7 @@ function setupMapboxGlMap() {
     })
 }
 
-function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators) {
-
+function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange) {
     $('#webGlThematicSelection').empty();
 
     // TODO add IRI SVI and RI to the menu
@@ -800,7 +821,8 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
-
+    console.log('selectedIndicator:');
+    console.log(selectedIndicator);
     setTimeout(function() { // TODO make  sure thi is needed
         if (selectedIndicator === undefined) {
             // TODO fix this to use optgroup:first
@@ -811,6 +833,11 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
         }
     }, 3000);
 
+    // Execute the mapboxGlLayerCreation when there has been a wieght change
+    if (wieghtChange === true) {
+        mapboxGlLayerCreation(wieghtChange);
+    }
+
     $('#webGlThematicSelection').change(function() {
         mapboxGlLayerCreation();
     });
@@ -818,13 +845,34 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 }
 
 function mapboxGlLayerCreation() {
-    //thematicMap(layerAttributes);
+    // There are 4 cases for managing the state of the map:
+    // 1. The user has created a map for the first time
+    // 2. The user changes the map theme
+    // 3. The user changes the wieghts
+    // 4. The user changes the project
+
+    // Case 2:
+    // The data used for thematic map has not changed, so we
+    // keep the map source, destory and recreate the map layers
+
+    // Case 3:
+    // The wiehgt change will alter the underlying data, so we
+    // update the map style and source
+
+    // Case 4:
+    // A new project has been loaded into the application
+
+    var wieghtChange = false;
+    var projectChange = false;
+
+    if (arguments[0]) {
+        wieghtChange = true;
+    }
+
+    selectedIndicator = $('#webGlThematicSelection').val();
 
     console.log('layerAttributes:');
     console.log(layerAttributes);
-
-
-    selectedIndicator = $('#webGlThematicSelection').val();
 
 
     // Find the values to create categorized color ramp
@@ -875,7 +923,7 @@ function mapboxGlLayerCreation() {
 
     getColor();
 
-    // Try to remove any existing layers
+    // Case 2, 3 and 4, try to remove any existing layers
     try {
         for (var i = 0; i < 6; i++) {
             map.removeLayer(i);
@@ -884,37 +932,49 @@ function mapboxGlLayerCreation() {
         // continue
     }
 
-    // Try to remove any existing source
-    try {
-        map.removeSource('projectSource');
-    } catch (e) {
-        // continue
+    // Case 3 update the source
+    if(wieghtChange) {
+        console.log('Update the source:');
+        map.update(true);
     }
 
-    // Populate the mapbox source with GeoJson from Geoserver
-    map.addSource('projectSource', {
-        'type': 'geojson',
-        'data': layerAttributes,
-    });
+    // Case 4 destory the source
+    if (projectChange) {
+        console.log('Destroying the source:');
+        map.removeSource('projectSource');
+    }
 
-    // Create a new mapbox layers
-    for (var i = 0; i < 6; i++) {
-        map.addLayer({
-            'id': i,
-            'type': 'fill',
-            'source': 'projectSource',
-            "source-layer": "eq-simple",
-            'interactive': true,
-            'text-field': '{Parroquia}',
-            'paint': {
-                'fill-color': colorsPal[i],
-                'fill-opacity': 0.8,
-                //'fill-outline-color': '#CCCCFF'
-            },
-            'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+    // Case 1 and 4
+    // Populate the mapbox source with GeoJson from Geoserver
+    // Only create a new source when the project has been changed
+    if (map.style.sources.projectSource === undefined || projectChange) {
+        map.addSource('projectSource', {
+            'type': 'geojson',
+            'data': layerAttributes,
         });
     }
-    console.log('layer created!:');
+
+    // Cases 1, 2 and 4
+    if(wieghtChange === false) {
+        // Create a new mapbox layers
+        for (var i = 0; i < 6; i++) {
+            map.addLayer({
+                'id': i,
+                'type': 'fill',
+                'source': 'projectSource',
+                "source-layer": "eq-simple",
+                'interactive': true,
+                'text-field': '{Parroquia}',
+                'paint': {
+                    'fill-color': colorsPal[i],
+                    'fill-opacity': 0.8,
+                    //'fill-outline-color': '#CCCCFF'
+                },
+                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+            });
+        }
+        console.log('layer created!:');
+    }
 }
 
 

@@ -352,7 +352,9 @@
 
                     nodeEnter.remove("text");
 
-                    processIndicators(projectLayerAttributes, projectDefUpdated);
+                    var wieghtChange = true;
+
+                    processIndicators(projectLayerAttributes, projectDefUpdated, wieghtChange);
                     updateD3Tree(pdData);
                 }, 100);
             });
