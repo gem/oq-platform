@@ -23,7 +23,7 @@ $(document).ready(function() {
 var layerAttributes;
 var sessionProjectDef = [];
 // FIXME there is no selected region in the PD
-var selectedRegion = "COUNTRY_NA";
+var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
@@ -34,6 +34,7 @@ var mapboxBoundingBox = [];
 var license;
 var projectDefUpdated;
 var webGl;
+var projectChange = false;
 
 var mappingLayerAttributes = {};
 
@@ -798,6 +799,7 @@ function setupMapboxGlMap() {
 }
 
 function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange) {
+    console.log('hi there mapBoxThematicMap:');
     $('#webGlThematicSelection').empty();
 
     // Add IRI SVI and RI options to the webGlThematicSelection menu
@@ -841,8 +843,11 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
+    console.log('selectedIndicator:');
+    console.log(selectedIndicator);
     if (selectedIndicator === undefined) {
         // TODO fix this to use optgroup:first
+        console.log('selectedIndicator === undefined:');
         $('#webGlThematicSelection option').eq(3).attr("selected", "selected");
         mapboxGlLayerCreation();
     } else {
@@ -879,7 +884,8 @@ function mapboxGlLayerCreation() {
     // A new project has been loaded into the application
 
     var wieghtChange = false;
-    var projectChange = false;
+    console.log('projectChange:');
+    console.log(projectChange);
 
     if (arguments[0]) {
         wieghtChange = true;
@@ -958,7 +964,11 @@ function mapboxGlLayerCreation() {
 
     // Case 4 destory the source
     if (projectChange) {
-        map.removeSource('projectSource');
+        try {
+            map.removeSource('projectSource');
+        } catch (e) {
+            // continue
+        }
     }
 
     // Case 1 and 4
@@ -970,6 +980,7 @@ function mapboxGlLayerCreation() {
             'type': 'geojson',
             'data': mappingLayerAttributes,
         });
+        projectChange = false;
     }
 
     console.log('mappingLayerAttributes:');
@@ -989,13 +1000,15 @@ function mapboxGlLayerCreation() {
                 'paint': {
                     'fill-color': colorsPal[i],
                     'fill-opacity': 0.8,
-                    'fill-outline-color': '#CCCCFF'
+                    //'fill-outline-color': '#CCCCFF'
                 },
                 'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
             });
         }
         console.log('new layers created!:');
     //}
+
+    $('#map').show();
 }
 
 
@@ -1439,13 +1452,13 @@ var startApp = function() {
 
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
-
+    $('#map').hide();
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-
+            projectChange = true;
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
             layerAttributes = data;
@@ -1480,6 +1493,8 @@ function projDefJSONRequest(selectedLayer) {
             console.log(data);
             license = data.license;
             tempProjectDef = data.project_definitions;
+            selectedRegion = data.zone_label_field;
+            selectedIndicator = undefined;
 
             // Remove alert div
             $('#alert').remove();
