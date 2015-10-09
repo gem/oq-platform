@@ -302,7 +302,7 @@
                 $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
                 setTimeout(function() {
                     $('#saveBtn').prop('disabled', false);
-
+                    var weightChangeLevel;
                     pdTempWeights = [];
                     pdTempWeightsComputed = [];
                     pdTempInverters = [];
@@ -348,14 +348,12 @@
                         var element = $('#'+pdTempSpinnerIds[id]).attr('element');
                         tempNewWeight.push(element);
                         tempNewWeight.push(parseFloat(value));
-                        traverse(pdData, tempNewWeight);
+                        weightChangeLevel = traverse(pdData, tempNewWeight);
                     }
 
                     nodeEnter.remove("text");
 
-                    var wieghtChange = true;
-
-                    processIndicators(projectLayerAttributes, projectDefUpdated, wieghtChange);
+                    processIndicators(projectLayerAttributes, projectDefUpdated, weightChangeLevel);
                     updateD3Tree(pdData);
                 }, 100);
             });
@@ -365,24 +363,29 @@
         function traverse(projectDef, tempNewWeight) {
 
             projectDefUpdated = projectDef;
+            var weightChangeLevel = 0;
 
             // Check each level of the project definition and update the weight if a match is found
             if (projectDef.name == tempNewWeight[0]) {
                 projectDefUpdated.weight = tempNewWeight[1];
+                weightChangeLevel = 1; // IRI
             }
 
             for (var i = 0; i < projectDef.children.length; i++) {
                 if (projectDef.children[i].name == tempNewWeight[0]) {
                     projectDefUpdated.children[i].weight = tempNewWeight[1];
+                    weightChangeLevel = 2; // SVI or RI
                 }
                 if (projectDef.children[i].children !== undefined) {
                     for (var j = 0; j < projectDef.children[i].children.length; j++) {
                         if (projectDef.children[i].children[j].name == tempNewWeight[0]) {
+                            weightChangeLevel = 3; // SVI or RI theme
                             projectDefUpdated.children[i].children[j].weight = tempNewWeight[1];
                         }
                         if (projectDef.children[i].children[j].children !== undefined) {
                             for (var g = 0; g < projectDef.children[i].children[j].children.length; g++) {
                                 if (projectDef.children[i].children[j].children[g].name == tempNewWeight[0]) {
+                                    weightChangeLevel = 4; // Primary indicator
                                     projectDef.children[i].children[j].children[g].weight = tempNewWeight[1];
                                 }
                             }
@@ -390,6 +393,9 @@
                     }
                 }
             }
+            console.log('weightChangeLevel:');
+            console.log(weightChangeLevel);
+            return weightChangeLevel;
         }
 
         function getRadius(d) {

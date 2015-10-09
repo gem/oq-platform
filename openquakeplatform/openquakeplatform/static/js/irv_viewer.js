@@ -237,9 +237,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
-    var wieghtChange = false;
     if (arguments[2]) {
-        wieghtChange = true;
     }
     regions = [];
     var allSVIThemes = [];
@@ -855,7 +853,6 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     }
 
     // Execute the mapboxGlLayerCreation when there has been a wieght change
-    if (wieghtChange === true) {
         mapboxGlLayerCreation(wieghtChange);
     }
 
@@ -869,26 +866,27 @@ function mapboxGlLayerCreation() {
     // There are 4 cases for managing the state of the map:
     // 1. The user has created a map for the first time
     // 2. The user changes the map theme
-    // 3. The user changes the wieghts
+    // 3. The user changes the weights
     // 4. The user changes the project
 
     // Case 2:
     // The data used for thematic map has not changed, so we
-    // keep the map source, destory and recreate the map layers
+    // keep the map source, destroy and recreate the map layers
 
     // Case 3:
-    // The wiehgt change will alter the underlying data, so we
+    // The weight change will alter the underlying data, so we
     // update the map style and source
+
+    // Case 3.1
+    // Only reload the map for the appropriate weight change level
 
     // Case 4:
     // A new project has been loaded into the application
 
-    var wieghtChange = false;
     console.log('projectChange:');
     console.log(projectChange);
 
     if (arguments[0]) {
-        wieghtChange = true;
     }
 
     selectedIndicator = $('#webGlThematicSelection').val();
