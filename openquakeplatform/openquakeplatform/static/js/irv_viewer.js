@@ -22,7 +22,8 @@ $(document).ready(function() {
 
 var layerAttributes;
 var sessionProjectDef = [];
-var selectedRegion;
+// FIXME there is no selected region in the PD
+var selectedRegion = "COUNTRY_NA";
 var selectedIndicator;
 var selectedLayer;
 var tempProjectDef;
@@ -33,6 +34,8 @@ var mapboxBoundingBox = [];
 var license;
 var projectDefUpdated;
 var webGl;
+
+var mappingLayerAttributes = {};
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -700,16 +703,33 @@ function processIndicators(layerAttributes, projectDef) {
         console.log('riskIndicators:');
         console.log(riskIndicators);
 
-/*
-        if (map.style.sources.projectSource === undefined) {
-            // If a map source has not yet been created, proceed with mapBoxThematicMap creation
-            mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
-        } else {
-            // If a map source has been created, then simply update the map source and styles
-            // TODO remove map source when project is changed
-            console.log('map.style.sources.projectSource === Defined:');
+
+        ////////////////////////////////////////
+        // DEEP copy the layer attributes obj //
+        ////////////////////////////////////////
+
+        // This application modifies the layer attributes based on changes to the indicator weights.
+        // The app also need to keep track of the original layer attributes values.
+        // Thus, the layerAttributes obj contains "properties" and "newProperties".
+        // This presents an issue when using the object as a data source in Mapbox-GL, because
+        // it is hard coded to use properties. In order to get around this issue, we need to
+        // deep copy the layerAttributes, and replace "properties" with newProperties
+
+        mappingLayerAttributes = JSON.parse(JSON.stringify(layerAttributes))
+
+        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+            delete mappingLayerAttributes.features[i].properties;
         }
-*/
+
+        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[i].newProperties))
+            mappingLayerAttributes.features[i].properties = tempProperties;
+        }
+
+        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+            delete mappingLayerAttributes.features[i].newProperties;
+        }
+
         mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange);
     } else {
         setupLeafletMap();
@@ -837,6 +857,12 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 }
 
 function mapboxGlLayerCreation() {
+
+
+    console.log('layerAttributes:');
+    console.log(layerAttributes);
+
+
     // There are 4 cases for managing the state of the map:
     // 1. The user has created a map for the first time
     // 2. The user changes the map theme
@@ -863,19 +889,19 @@ function mapboxGlLayerCreation() {
 
     selectedIndicator = $('#webGlThematicSelection').val();
 
-    console.log('layerAttributes:');
-    console.log(layerAttributes);
+    console.log('selectedIndicator:');
+    console.log(selectedIndicator);
 
 
     // Find the values to create categorized color ramp
     // First find the min and max vales
     var minMaxArray = [];
-    for (var i = 0; i < layerAttributes.features.length; i++) {
+    for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
         var match = false;
-        for (var k in layerAttributes.features[i].newProperties) {
+        for (var k in mappingLayerAttributes.features[i].properties) {
             if (k == selectedIndicator) {
                 match = true;
-                minMaxArray.push(layerAttributes.features[i].newProperties[k]);
+                minMaxArray.push(mappingLayerAttributes.features[i].properties[k]);
                 break
             }
             else {
@@ -895,7 +921,6 @@ function mapboxGlLayerCreation() {
     min = parseFloat(min);
     max = parseFloat(max);
 
-    // Temp color, TODO remove once filters are in place
     // TODO allow the user to change the colors
     var colorsPalRed = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
     var colorsPalBlue = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
@@ -927,19 +952,14 @@ function mapboxGlLayerCreation() {
         }
     //}
 
-    console.log('wieghtChange:');
-    console.log(wieghtChange);
-    console.log('projectChange:');
-    console.log(projectChange);
-
     // Case 3 update the source
     if (wieghtChange) {
-        console.log('Update the source:');
-        map.update(true);
+        //console.log('Update the source:');
+        //map.update(true);
 
         // FIXME would really prefer to update the map source here
-        //console.log('Destroying the source:');
-        //map.removeSource('projectSource');
+        console.log('Destroying the source:');
+        map.removeSource('projectSource');
     }
 
     // Case 4 destory the source
@@ -949,13 +969,14 @@ function mapboxGlLayerCreation() {
     }
 
     // Case 1 and 4
+    // **TEMP** also case 3
     // Populate the mapbox source with GeoJson from Geoserver
     // Only create a new source when the project has been changed
-    if (map.style.sources.projectSource === undefined || projectChange) {
+    if (map.style.sources.projectSource === undefined || projectChange || wieghtChange) {
         console.log('new source created!:');
         map.addSource('projectSource', {
             'type': 'geojson',
-            'data': layerAttributes,
+            'data': mappingLayerAttributes,
         });
     }
 
@@ -968,8 +989,8 @@ function mapboxGlLayerCreation() {
                 'type': 'fill',
                 'source': 'projectSource',
                 "source-layer": "eq-simple",
-                'interactive': true,
-                'text-field': '{Parroquia}',
+                //'interactive': true,
+                //'text-field': '{Parroquia}',
                 'paint': {
                     'fill-color': colorsPal[i],
                     'fill-opacity': 0.8,
@@ -1461,6 +1482,8 @@ function projDefJSONRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
         success: function(data) {
+            console.log('data:');
+            console.log(data);
             license = data.license;
             tempProjectDef = data.project_definitions;
 
