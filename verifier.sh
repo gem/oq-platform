@@ -316,14 +316,13 @@ python ./manage.py loaddata dev-data.json.bz2
 export PYTHONPATH=\$(pwd)
 cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
-python openquakeplatform/test/nose_runner.py --failurecatcher -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
+python openquakeplatform/test/nose_runner.py --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
 fab stop
 "
 
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/*.png" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/latest_page.png" "out/latest_page_dev.png" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
 
     echo "_devtest_innervm_run: exit"
 
@@ -455,14 +454,12 @@ sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://local
 # Just for investigation
 sleep 172800
 export DISPLAY=:1
-python openquakeplatform/test/nose_runner.py --failurecatcher -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
+python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
 cd -
 "
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/*.png" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/latest_page.png" "out/latest_page_prod.png" || true
-
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
 
     echo "_prodtest_innervm_run: exit"
 
