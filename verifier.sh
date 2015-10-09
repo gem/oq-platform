@@ -243,7 +243,7 @@ _devtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran"
+    ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev"
 
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
 
@@ -269,7 +269,12 @@ if [ \$GEM_SET_DEBUG ]; then
 fi
 cd ~/$GEM_GIT_PACKAGE
 virtualenv --system-site-packages platform-env
-. platform-env/bin/activate
+source platform-env/bin/activate
+# if host machine includes python-simplejson package it must overrided with
+# a proper version that don't conflict with Django requirements
+if dpkg -l python-simplejson 2>/dev/null | tail -n +6 | grep -q '^ii '; then
+    pip install simplejson==2.0.9
+fi
 pip install -e openquakeplatform
 cd openquakeplatform
 if [ 1 -eq 1 ]; then
@@ -304,18 +309,20 @@ else
 fi
 fab --show=everything test
 
-cd openquakeplatform/test
-export PYTHONPATH=\$(pwd)
-cp config.py.tmpl config.py
-export DISPLAY=:1
-./test_isc.py
+# download and install vulnerability development data
+wget http://ftp.openquake.org/oq-platform/vulnerability/dev-data.json.bz2
+python ./manage.py loaddata dev-data.json.bz2
 
+export PYTHONPATH=\$(pwd)
+cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
+export DISPLAY=:1
+python openquakeplatform/test/nose_runner.py --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
 sleep 3
-cd ~/$GEM_GIT_PACKAGE
-. platform-env/bin/activate
-cd openquakeplatform
 fab stop
 "
+
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
 
     echo "_devtest_innervm_run: exit"
 
@@ -362,6 +369,10 @@ _lxc_name_and_ip_get()
 #
 devtest_run () {
     local deps old_ifs branch_id="$1"
+
+    if [ ! -d "out" ]; then
+        mkdir "out"
+    fi
 
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
@@ -415,7 +426,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "sudo apt-get update"
     ssh -t  $lxc_ip "sudo apt-get -y upgrade"
 
-    ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran"
+    ssh -t  $lxc_ip "sudo apt-get install -y build-essential python-dev python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev"
 
     ssh -t  $lxc_ip "sudo sed -i '1 s@^@local   all             all                                     trust\nhost    all             all             $lxc_ip/32          md5\n@g' /etc/postgresql/9.1/main/pg_hba.conf"
 
@@ -437,16 +448,16 @@ if [ \$GEM_SET_DEBUG ]; then
 fi
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host localhost
 
-cd oq-platform/openquakeplatform/openquakeplatform/test
+cd oq-platform/openquakeplatform
 export PYTHONPATH=\$(pwd)
-cp config.py.tmpl config.py
-sed 's@^pla_basepath=\"http://localhost:8000\"@pla_basepath=\"http://localhost\"@g' config.py.tmpl > config.py
+sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
-./test_isc.py
-
+python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
 cd -
 "
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
 
     echo "_prodtest_innervm_run: exit"
 
@@ -461,6 +472,10 @@ cd -
 #
 prodtest_run () {
     local deps old_ifs branch_id="$1"
+
+    if [ ! -d "out" ]; then
+        mkdir "out"
+    fi
 
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
