@@ -237,7 +237,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
+    var weightChange = 0;
     if (arguments[2]) {
+        weightChange = arguments[2];
     }
     regions = [];
     var allSVIThemes = [];
@@ -725,7 +727,7 @@ function processIndicators(layerAttributes, projectDef) {
             delete mappingLayerAttributes.features[i].newProperties;
         }
 
-        mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange);
+        mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     } else {
         setupLeafletMap();
         thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
@@ -796,7 +798,7 @@ function setupMapboxGlMap() {
     })
 }
 
-function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange) {
+function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
     console.log('hi there mapBoxThematicMap:');
     $('#webGlThematicSelection').empty();
 
@@ -853,7 +855,8 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     }
 
     // Execute the mapboxGlLayerCreation when there has been a wieght change
-        mapboxGlLayerCreation(wieghtChange);
+    if (weightChange > 0) {
+        mapboxGlLayerCreation(weightChange);
     }
 
     $('#webGlThematicSelection').change(function() {
@@ -883,13 +886,23 @@ function mapboxGlLayerCreation() {
     // Case 4:
     // A new project has been loaded into the application
 
+    var weightChange = 0;
     console.log('projectChange:');
     console.log(projectChange);
 
     if (arguments[0]) {
+        weightChange = arguments[0];
     }
+    console.log('weightChange:');
+    console.log(weightChange);
 
     selectedIndicator = $('#webGlThematicSelection').val();
+
+    //TODO FIXME //LEFT OFF HERE
+    //selectedIndicatorLabel = $('#webGlThematicSelection :selected').closest('optgroup').attr('label')
+    console.log('selectedIndicatorLabel:');
+    console.log(selectedIndicatorLabel);
+
 
     // Find the values to create categorized color ramp
     // First find the min and max vales
@@ -941,7 +954,7 @@ function mapboxGlLayerCreation() {
 
     // Case 2, and 4, try to remove any existing layers
     // TEMP also case 3
-    //if (wieghtChange === false) {
+    //if (weightChange === false) {
         try {
             for (var i = 0; i < 6; i++) {
                 map.removeLayer(i);
@@ -952,7 +965,7 @@ function mapboxGlLayerCreation() {
     //}
 
     // Case 3 update the source
-    if (wieghtChange) {
+    if (weightChange) {
         //console.log('Update the source:');
         //map.update(true);
 
@@ -973,7 +986,7 @@ function mapboxGlLayerCreation() {
     // **TEMP** also case 3
     // Populate the mapbox source with GeoJson from Geoserver
     // Only create a new source when the project has been changed
-    if (map.style.sources.projectSource === undefined || projectChange || wieghtChange) {
+    if (map.style.sources.projectSource === undefined || projectChange || weightChange) {
         map.addSource('projectSource', {
             'type': 'geojson',
             'data': mappingLayerAttributes,
@@ -985,7 +998,7 @@ function mapboxGlLayerCreation() {
     console.log(mappingLayerAttributes);
 
     // Cases 1, 2, 3, and 4
-    //if (wieghtChange === false) {
+    //if (weightChange === false) {
         // Create a new mapbox layers
         for (var i = 0; i < 6; i++) {
             map.addLayer({
