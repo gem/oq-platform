@@ -1,11 +1,4 @@
 import time
-
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
 from utils import TimeoutError, NotUniqError, wait_for
 
 
@@ -41,6 +34,7 @@ class Platform(object):
 
     @staticmethod
     def driver_create(name, debugger):
+        from selenium import webdriver
         if name == "firefox":
             fp = webdriver.FirefoxProfile()
             if debugger != "":
@@ -60,6 +54,7 @@ class Platform(object):
         return driver
 
     def homepage_login(self):
+        from selenium.webdriver.common.by import By
         self.driver.get(self.basepath)
         # <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #Sign in</a>
@@ -96,9 +91,7 @@ class Platform(object):
         try:
             self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
         except (TimeoutError, ValueError, NotUniqError):
-            # if not found return to homepage
-            self.driver.get(self.basepath + "")
-            print "RELOAD HOMEPAGE"
+            self.driver.get(self.basepath)
 
         #<a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #nastasi
@@ -142,6 +135,7 @@ class Platform(object):
         self.driver.get(self.basepath + url)
 
     def xpath_finduniq(self, xpath_str, times=1, postfind=0.2):
+        from selenium.webdriver.common.by import By
         for t in range(0, times):
             field = self.driver.find_elements(By.XPATH, xpath_str)
             if len(field) > 0:
@@ -170,6 +164,7 @@ class Platform(object):
         return field[0]
 
     def wait_new_page(self, element, url):
+        from selenium.common.exceptions import StaleElementReferenceException
         def link_has_gone_stale():
             try:
                 # poll the link with an arbitrary call
