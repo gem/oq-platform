@@ -631,13 +631,15 @@ function processIndicators(layerAttributes, projectDef) {
         la[ix].newProperties = {};
         for (var key in IRI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
+                var tempValue = (IRI[key]).toFixed(5);
+                la[ix].newProperties.IRI = parseFloat(tempValue);
             }
         }
         if (svThemes) {
             for (var key in SVI) {
                 if (key == la[ix].properties[selectedRegion]) {
-                    la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
+                    var tempValue = (SVI[key]).toFixed(5);
+                    la[ix].newProperties.SVI = parseFloat(tempValue);
                 }
             }
         }
@@ -645,7 +647,8 @@ function processIndicators(layerAttributes, projectDef) {
         if (riskIndicators !== undefined) {
             for (var key in RI) {
                 if (key == la[ix].properties[selectedRegion]) {
-                    la[ix].newProperties['RI'] = (RI[key]).toFixed(5);
+                    var tempValue = (RI[key]).toFixed(5);
+                    la[ix].newProperties.RI = parseFloat(tempValue);
                 }
             }
 
@@ -705,7 +708,7 @@ function processIndicators(layerAttributes, projectDef) {
 
 
         ////////////////////////////////////////
-        // DEEP copy the layer attributes obj //
+        // Deep copy the layer attributes obj //
         ////////////////////////////////////////
 
         // This application modifies the layer attributes based on changes to the indicator weights.
@@ -919,7 +922,8 @@ function mapboxGlLayerCreation() {
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
     min = parseFloat(min);
-    max = parseFloat(max);
+    // Round up the max
+    max = Math.ceil(max * 10) / 10;
 
     // TODO allow the user to change the colors
     var colorsPalRed = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
@@ -994,7 +998,7 @@ function mapboxGlLayerCreation() {
                 'paint': {
                     'fill-color': colorsPal[i],
                     'fill-opacity': 0.8,
-                    //'fill-outline-color': '#CCCCFF'
+                    'fill-outline-color': '#CCCCFF'
                 },
                 'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
             });
@@ -1454,7 +1458,6 @@ function attributeInfoRequest(selectedLayer) {
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
             layerAttributes = data;
-
             projectLayerAttributes = layerAttributes;
 
             // provide a dropdown menu to select the region field
