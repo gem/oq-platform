@@ -699,13 +699,6 @@ function processIndicators(layerAttributes, projectDef) {
     // If the browser does not support web-gl, then use traditional (limited) vector data.
     // If the browser does support web-gl, then use Mapbox-gl.
     if (webGl === true) {
-        console.log('IRI:');
-        console.log(IRI);
-        console.log('svThemes:');
-        console.log(svThemes);
-        console.log('riskIndicators:');
-        console.log(riskIndicators);
-
 
         ////////////////////////////////////////
         // Deep copy the layer attributes obj //
@@ -807,11 +800,22 @@ function setupMapboxGlMap() {
 function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, wieghtChange) {
     $('#webGlThematicSelection').empty();
 
-    // TODO add IRI SVI and RI to the menu
+    // Add IRI SVI and RI options to the webGlThematicSelection menu
+    if (mappingLayerAttributes.features[0].properties.IRI !== undefined) {
+        $('#webGlThematicSelection').append('<option>IRI</option>');
+    }
+
+    if (mappingLayerAttributes.features[0].properties.SVI !== undefined) {
+        $('#webGlThematicSelection').append('<option>SVI</option>');
+    }
+
+    if (mappingLayerAttributes.features[0].properties.RI !== undefined) {
+        $('#webGlThematicSelection').append('<option>RI</option>');
+    }
 
     // Add IR children themes to selection menu
     if (allRiskIndicators.length > 0) {
-        $('#webGlThematicSelection').append('<optgroup label="RI Indicators">');
+        $('#webGlThematicSelection').append('<optgroup label="RI Themes">');
         for (var i = 0; i < allRiskIndicators.length; i++) {
             $('#webGlThematicSelection').append('<option>'+allRiskIndicators[i]+'</option>');
         }
@@ -819,7 +823,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 
     // Add SVI children themes to selection menu
     if (allSVIThemes.length > 0) {
-        $('#webGlThematicSelection').append('<optgroup label="SVI">');
+        $('#webGlThematicSelection').append('<optgroup label="SVI Themes">');
         for (var i = 0; i < allSVIThemes.length; i++) {
             $('#webGlThematicSelection').append('<option>'+allSVIThemes[i]+'</option>');
         }
@@ -837,9 +841,6 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
-    console.log('selectedIndicator:');
-    console.log(selectedIndicator);
-
     if (selectedIndicator === undefined) {
         // TODO fix this to use optgroup:first
         $('#webGlThematicSelection option').eq(3).attr("selected", "selected");
@@ -860,12 +861,6 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 }
 
 function mapboxGlLayerCreation() {
-
-
-    console.log('layerAttributes:');
-    console.log(layerAttributes);
-
-
     // There are 4 cases for managing the state of the map:
     // 1. The user has created a map for the first time
     // 2. The user changes the map theme
@@ -892,10 +887,6 @@ function mapboxGlLayerCreation() {
 
     selectedIndicator = $('#webGlThematicSelection').val();
 
-    console.log('selectedIndicator:');
-    console.log(selectedIndicator);
-
-
     // Find the values to create categorized color ramp
     // First find the min and max vales
     var minMaxArray = [];
@@ -921,7 +912,7 @@ function mapboxGlLayerCreation() {
 
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
-    min = parseFloat(min);
+    min = (parseFloat(min) - 0.1);
     // Round up the max
     max = Math.ceil(max * 10) / 10;
 
@@ -962,13 +953,11 @@ function mapboxGlLayerCreation() {
         //map.update(true);
 
         // FIXME would really prefer to update the map source here
-        console.log('Destroying the source:');
         map.removeSource('projectSource');
     }
 
     // Case 4 destory the source
     if (projectChange) {
-        console.log('Destroying the source:');
         map.removeSource('projectSource');
     }
 
@@ -977,12 +966,14 @@ function mapboxGlLayerCreation() {
     // Populate the mapbox source with GeoJson from Geoserver
     // Only create a new source when the project has been changed
     if (map.style.sources.projectSource === undefined || projectChange || wieghtChange) {
-        console.log('new source created!:');
         map.addSource('projectSource', {
             'type': 'geojson',
             'data': mappingLayerAttributes,
         });
     }
+
+    console.log('mappingLayerAttributes:');
+    console.log(mappingLayerAttributes);
 
     // Cases 1, 2, 3, and 4
     //if (wieghtChange === false) {
