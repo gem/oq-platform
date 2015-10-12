@@ -1006,12 +1006,12 @@ function mapboxGlLayerCreation() {
     // Create the map legend
     $('#map-tools').append(
         '<div id="mapLegend" class="my-legend">'+
-            '<div class="legend-title">The Title of Map</div>'+
+            '<div class="legend-title">'+selectedIndicator+'</div>'+
             '<div class="legend-scale">'+
                 '<ul id="legendLables" class="legend-labels">'+
                 '</ul>'+
             '</div>'+
-        '</div>'+
+        '</div>'
     );
 
     // Cases 1, 2, 3, and 4
@@ -1030,10 +1030,10 @@ function mapboxGlLayerCreation() {
                     'fill-opacity': 0.8,
                     //'fill-outline-color': '#CCCCFF'
                 },
-                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i]]]
+                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
             });
             // Create legend elements
-            $('#legendLables').append('<li><span style="background:'+colorsPal[i]'+;"></span>'+breaks[i]+' - '+breaks[i]+'</li>');
+            $('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
         }
     //}
 

@@ -1,16 +1,23 @@
- .my-legend .legend-title {
+
+
+#mapLegend {
+    position: fixed;
+    left: 400px;
+}
+
+.my-legend .legend-title {
     text-align: left;
     margin-bottom: 8px;
     font-weight: bold;
     font-size: 90%;
     }
-  .my-legend .legend-scale ul {
+.my-legend .legend-scale ul {
     margin: 0;
     padding: 0;
     float: left;
     list-style: none;
     }
-  .my-legend .legend-scale ul li {
+.my-legend .legend-scale ul li {
     display: block;
     float: left;
     width: 50px;
@@ -19,17 +26,17 @@
     font-size: 80%;
     list-style: none;
     }
-  .my-legend ul.legend-labels li span {
+.my-legend ul.legend-labels li span {
     display: block;
     float: left;
     height: 15px;
     width: 50px;
     }
-  .my-legend .legend-source {
+.my-legend .legend-source {
     font-size: 70%;
     color: #999;
     clear: both;
     }
-  .my-legend a {
+.my-legend a {
     color: #777;
     }
