@@ -804,22 +804,22 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 
     // Add IRI SVI and RI options to the webGlThematicSelection menu
     if (mappingLayerAttributes.features[0].properties.IRI !== undefined) {
-        $('#webGlThematicSelection').append('<option>IRI</option>');
+        $('#webGlThematicSelection').append('<option class="2">IRI</option>');
     }
 
     if (mappingLayerAttributes.features[0].properties.SVI !== undefined) {
-        $('#webGlThematicSelection').append('<option>SVI</option>');
+        $('#webGlThematicSelection').append('<option class="2">SVI</option>');
     }
 
     if (mappingLayerAttributes.features[0].properties.RI !== undefined) {
-        $('#webGlThematicSelection').append('<option>RI</option>');
+        $('#webGlThematicSelection').append('<option class="2">RI</option>');
     }
 
     // Add IR children themes to selection menu
     if (allRiskIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="RI Themes">');
         for (var i = 0; i < allRiskIndicators.length; i++) {
-            $('#webGlThematicSelection').append('<option>'+allRiskIndicators[i]+'</option>');
+            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[i]+'</option>');
         }
     }
 
@@ -827,7 +827,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     if (allSVIThemes.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="SVI Themes">');
         for (var i = 0; i < allSVIThemes.length; i++) {
-            $('#webGlThematicSelection').append('<option>'+allSVIThemes[i]+'</option>');
+            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[i]+'</option>');
         }
     }
 
@@ -835,7 +835,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     if (allPrimaryIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="Primary Indicators">');
         for (var i = 0; i < allPrimaryIndicators.length; i++) {
-            $('#webGlThematicSelection').append('<option>'+allPrimaryIndicators[i]+'</option>');
+            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[i]+'</option>');
         }
     }
 
@@ -854,7 +854,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
         $('#webGlThematicSelection').val(selectedIndicator);
     }
 
-    // Execute the mapboxGlLayerCreation when there has been a wieght change
+    // Execute the mapboxGlLayerCreation when there has been a weight change
     if (weightChange > 0) {
         mapboxGlLayerCreation(weightChange);
     }
@@ -887,22 +887,31 @@ function mapboxGlLayerCreation() {
     // A new project has been loaded into the application
 
     var weightChange = 0;
-    console.log('projectChange:');
-    console.log(projectChange);
 
     if (arguments[0]) {
         weightChange = arguments[0];
     }
-    console.log('weightChange:');
-    console.log(weightChange);
 
     selectedIndicator = $('#webGlThematicSelection').val();
 
-    //TODO FIXME //LEFT OFF HERE
-    //selectedIndicatorLabel = $('#webGlThematicSelection :selected').closest('optgroup').attr('label')
-    console.log('selectedIndicatorLabel:');
-    console.log(selectedIndicatorLabel);
+    // Avoid unnessiaraly redrawing the map.
+    // Only redraw the map when:
+        // 1) the level of the weight changes is lower than the level of the thematic map menu.
+            // Example 1: if the user is viewing the SVI thematic map, and then changes any theme, or
+            // primary indicator weight, the map must be refreshed.
+            // Example 2: If the user is viewing a theme thematic map (e.g. Economy), and then changes
+            // the SVI weight, the map should not be redrawn.
+        // 2) the thematic map menu has been changes
+        // 3) a new project is loaded into the map (case: weightChange = 0)
+    var selectedIndicatorLabel = $('#webGlThematicSelection option:selected').attr('class');
 
+    if (weightChange < parseInt(selectedIndicatorLabel || selectedIndicatorLabel !== '4')) {
+        if (weightChange !== 0) {
+            console.log('STOP:');
+            $('#map').show();
+            return;
+        }
+    }
 
     // Find the values to create categorized color ramp
     // First find the min and max vales
