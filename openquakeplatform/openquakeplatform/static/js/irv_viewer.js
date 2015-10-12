@@ -1048,11 +1048,11 @@ function mapboxGlLayerCreation() {
     map.on('click', function(e) {
         console.log('hi there?:');
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
-            console.log('features:');
-            console.log(features);
             if (err) throw err;
             $('#mapInfo').empty();
-            $('#mapInfo').append('District: ' + features[0].properties.region);
+            for(var k in features[0].properties) {
+                $('#mapInfo').append(k+': '+features[0].properties[k]+'</br>');
+            }
         });
     });
 }
