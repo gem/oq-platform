@@ -5,6 +5,11 @@
     left: 400px;
 }
 
+#mapInfo {
+    position: fixed;
+    left: 500px;
+}
+
 .my-legend .legend-title {
     text-align: left;
     margin-bottom: 8px;

@@ -1023,7 +1023,7 @@ function mapboxGlLayerCreation() {
                 'type': 'fill',
                 'source': 'projectSource',
                 "source-layer": "eq-simple",
-                //'interactive': true,
+                'interactive': true,
                 //'text-field': '{Parroquia}',
                 'paint': {
                     'fill-color': colorsPal[i],
@@ -1038,6 +1038,23 @@ function mapboxGlLayerCreation() {
     //}
 
     $('#map').show();
+
+    // Map interactivity
+    //$('#mapInfo').remove();
+    $('#map-tools').append(
+        '<div id="mapInfo"></div>'
+    );
+
+    map.on('click', function(e) {
+        console.log('hi there?:');
+        map.featuresAt(e.point, { radius : 6}, function(err, features) {
+            console.log('features:');
+            console.log(features);
+            if (err) throw err;
+            $('#mapInfo').empty();
+            $('#mapInfo').append('District: ' + features[0].properties.region);
+        });
+    });
 }
 
 
