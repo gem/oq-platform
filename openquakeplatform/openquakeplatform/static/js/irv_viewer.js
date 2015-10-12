@@ -729,8 +729,7 @@ function processIndicators(layerAttributes, projectDef) {
 
         mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     } else {
-        setupLeafletMap();
-        thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
+        leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
     }
 
     var iriPcpData = [];
@@ -1057,8 +1056,18 @@ function mapboxGlLayerCreation() {
     });
 }
 
-
 function setupLeafletMap() {
+    map = new L.Map('map', {
+        minZoom: 2,
+        scrollWheelZoom: false,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+}
+
+
+function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators) {
 
     // Add main indicators to selection menu
     $('#leafletThematicSelection').empty();
@@ -1075,12 +1084,16 @@ function setupLeafletMap() {
         $('#leafletThematicSelection').append('<option>'+allSVIThemes[id]+'</option>');
     }
 
-    if (riskIndicators !== undefined) {
-        // Add IR themes to selection menu
-        $('#leafletThematicSelection').append('<optgroup label="IR Indicators">');
-        for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-            $('#leafletThematicSelection').append('<option>'+allRiskIndicators[ie]+'</option>');
+    try {
+        if (riskIndicators !== undefined) {
+            // Add IR themes to selection menu
+            $('#leafletThematicSelection').append('<optgroup label="IR Indicators">');
+            for (var ie = 0; ie < allRiskIndicators.length; ie++) {
+                $('#leafletThematicSelection').append('<option>'+allRiskIndicators[ie]+'</option>');
+            }
         }
+    } catch (e) {
+        // continue
     }
 
     // Add all primary indicators to selection menu
@@ -1099,15 +1112,6 @@ function setupLeafletMap() {
     $('#leafletThematicSelection').change(function() {
         thematicMap(layerAttributes);
     });
-
-    // TODO move this into a seperate functiont at is only called once per session
-    map = new L.Map('map', {
-        minZoom: 2,
-        scrollWheelZoom: false,
-        attributionControl: false,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
-    });
-    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 }
 
 
@@ -1177,6 +1181,7 @@ function thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRis
 
     legendControl = new L.Control.Legend();
     legendControl.addTo(map);
+    $('#map').show();
 }
 
 function watchForPdSelection() {
@@ -1300,7 +1305,7 @@ var startApp = function() {
 
     // TODO Check for web GL
     // Assume that we have web-gl
-    webGl = true;
+    webGl = false;
 
     // Theme tabls behavior
     $('#themeTabs').resizable({
