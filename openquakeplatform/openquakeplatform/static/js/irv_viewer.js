@@ -799,7 +799,6 @@ function setupMapboxGlMap() {
 }
 
 function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
-    console.log('hi there mapBoxThematicMap:');
     $('#webGlThematicSelection').empty();
 
     // Add IRI SVI and RI options to the webGlThematicSelection menu
@@ -843,8 +842,6 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
-    console.log('selectedIndicator:');
-    console.log(selectedIndicator);
     if (selectedIndicator === undefined) {
         // TODO fix this to use optgroup:first
         console.log('selectedIndicator === undefined:');
@@ -894,7 +891,7 @@ function mapboxGlLayerCreation() {
 
     selectedIndicator = $('#webGlThematicSelection').val();
 
-    // Avoid unnessiaraly redrawing the map.
+    // Avoid unnecessarily redrawing the map.
     // Only redraw the map when:
         // 1) the level of the weight changes is lower than the level of the thematic map menu.
             // Example 1: if the user is viewing the SVI thematic map, and then changes any theme, or
@@ -907,7 +904,6 @@ function mapboxGlLayerCreation() {
 
     if (weightChange < parseInt(selectedIndicatorLabel || selectedIndicatorLabel !== '4')) {
         if (weightChange !== 0) {
-            console.log('STOP:');
             $('#map').show();
             return;
         }
@@ -1006,6 +1002,18 @@ function mapboxGlLayerCreation() {
     console.log('mappingLayerAttributes:');
     console.log(mappingLayerAttributes);
 
+    $('#mapLegend').remove();
+    // Create the map legend
+    $('#map-tools').append(
+        '<div id="mapLegend" class="my-legend">'+
+            '<div class="legend-title">The Title of Map</div>'+
+            '<div class="legend-scale">'+
+                '<ul id="legendLables" class="legend-labels">'+
+                '</ul>'+
+            '</div>'+
+        '</div>'+
+    );
+
     // Cases 1, 2, 3, and 4
     //if (weightChange === false) {
         // Create a new mapbox layers
@@ -1022,10 +1030,11 @@ function mapboxGlLayerCreation() {
                     'fill-opacity': 0.8,
                     //'fill-outline-color': '#CCCCFF'
                 },
-                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i]]]
             });
+            // Create legend elements
+            $('#legendLables').append('<li><span style="background:'+colorsPal[i]'+;"></span>'+breaks[i]+' - '+breaks[i]+'</li>');
         }
-        console.log('new layers created!:');
     //}
 
     $('#map').show();
