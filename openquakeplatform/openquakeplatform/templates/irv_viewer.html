@@ -32,6 +32,7 @@ IRV - {{block.super}}
 {{block.super}}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/irv_viewer.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/irv_legend.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
 <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.1/mapbox-gl.css' rel='stylesheet' />
 {% endblock %}
 
@@ -40,6 +41,7 @@ IRV - {{block.super}}
 {{block.super}}
 
 <div id="cover"></div>
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>
 <div ng-app="irvApp">
   <div id="ajaxErrorDialog" title="Error" style="overflow: hidden;"></div>
   <div id="saveStateDialog" title="Save Project Definition" style="overflow: hidden;">
@@ -65,7 +67,7 @@ IRV - {{block.super}}
         <option style="display:none" value="">select a type</option>
       </select>
       <br>
-      <input type="button" id="loadProjectBtn" class="btn btn-blue" disabled="disabled" value="Load Selection">
+      <input type="button" id="loadProjectBtn" style="display:none" class="btn btn-blue" disabled="disabled" value="Load Selection">
   </div>
 
   <!-- Theme tags-->

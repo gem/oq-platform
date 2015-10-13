@@ -18,6 +18,8 @@
 $(document).ready(function() {
     $('#cover').remove();
     $('.alert-unscaled-data').hide();
+    $('#absoluteSpinner').hide();
+    $('#loadProjectBtn').show();
 });
 
 var layerAttributes;
@@ -727,6 +729,9 @@ function processIndicators(layerAttributes, projectDef) {
             delete mappingLayerAttributes.features[i].newProperties;
         }
 
+        // Emptry any existing interactivity
+        $('#mapInfo').empty();
+
         mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     } else {
         leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
@@ -842,9 +847,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
     if (selectedIndicator === undefined) {
-        // TODO fix this to use optgroup:first
-        console.log('selectedIndicator === undefined:');
-        $('#webGlThematicSelection option').eq(3).attr("selected", "selected");
+        $("#webGlThematicSelection").val($("#webGlThematicSelection option:first").val());
         mapboxGlLayerCreation();
     } else {
         $('#webGlThematicSelection').val(selectedIndicator);
@@ -903,7 +906,7 @@ function mapboxGlLayerCreation() {
 
     if (weightChange < parseInt(selectedIndicatorLabel || selectedIndicatorLabel !== '4')) {
         if (weightChange !== 0) {
-            $('#map').show();
+            $('#absoluteSpinner').hide();
             return;
         }
     }
@@ -1033,10 +1036,9 @@ function mapboxGlLayerCreation() {
         }
     //}
 
-    $('#map').show();
+    $('#absoluteSpinner').hide();
 
     // Map interactivity
-    //$('#mapInfo').remove();
     $('#map-tools').append(
         '<div id="mapInfo"></div>'
     );
@@ -1187,7 +1189,7 @@ function thematicMapCreation() {
 
     legendControl = new L.Control.Legend();
     legendControl.addTo(map);
-    $('#map').show();
+    $('#absoluteSpinner').hide();
 }
 
 function watchForPdSelection() {
@@ -1517,7 +1519,7 @@ var startApp = function() {
 
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
-    $('#map').hide();
+    $('#absoluteSpinner').show();
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
