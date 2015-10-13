@@ -1309,9 +1309,39 @@ function versionCompare(a, b) {
 
 var startApp = function() {
 
-    // TODO Check for web GL
-    // Assume that we have web-gl
-    webGl = false;
+    // Check the browser for webGL support
+
+    function webglDetect(return_context) {
+        if (!!window.WebGLRenderingContext) {
+            var canvas = document.createElement("canvas"),
+                names = ["webgl", "experimental-webgl", "moz-webgl", "webkit-3d"],
+                context = false;
+
+            for(var i=0;i<4;i++) {
+                try {
+                    context = canvas.getContext(names[i]);
+                    if (context && typeof context.getParameter == "function") {
+                        // WebGL is enabled
+                        if (return_context) {
+                            // Return WebGL object if the function's argument is present
+                            return {name:names[i], gl:context};
+                        }
+                        // Else, return just true
+                        return true;
+                    }
+                } catch(e) {}
+            }
+
+            // WebGL is supported, but disabled
+            return false;
+        }
+
+        // WebGL not supported
+        return false;
+    }
+
+
+    webGl = webglDetect();
 
     // Theme tabls behavior
     $('#themeTabs').resizable({
@@ -1332,27 +1362,6 @@ var startApp = function() {
     $('#primary_indicator').hide();
     $('#saveBtn').prop('disabled', true);
     $('#saveBtn').addClass('btn-disabled');
-    /*
-    map = new L.Map('map', {
-        minZoom: 2,
-        scrollWheelZoom: false,
-        attributionControl: false,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
-    });
-    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
-    */
-
-    // MapBox gl stuff
-        /*
-    var token = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
-
-
-    // TODO remove this, it is used to test that mapbox gl
-    var gl = L.mapboxGL({
-        accessToken: token,
-        style: 'mapbox://styles/mapbox/streets-v8'
-    }).addTo(map);
-    */
 
     // Slider
     $(function() {
@@ -1464,7 +1473,6 @@ var startApp = function() {
         closeOnEscape: true
     });
 
-    // TODO move all of the style stuff into the css file
     $('#map-tools').css({
         'padding': '6px',
         'position': 'absolute',
@@ -1546,8 +1554,6 @@ function projDefJSONRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
         success: function(data) {
-            console.log('data:');
-            console.log(data);
             license = data.license;
             tempProjectDef = data.project_definitions;
             selectedRegion = data.zone_label_field;
