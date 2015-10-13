@@ -1357,10 +1357,10 @@ var startApp = function() {
         return;
     }
 
-    // Theme tabls behavior
+    // Theme tabs behavior
     $('#themeTabs').resizable({
-        //minHeight: 500,
-        //minWidth: 640
+        minHeight: 220,
+        minWidth: 220
     });
     $('#themeTabs').draggable();
 
