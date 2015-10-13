@@ -37,6 +37,8 @@ var license;
 var projectDefUpdated;
 var webGl;
 var projectChange = false;
+var verticesCount = 0;
+var VERTICES_THRESHOLD = 500000;
 
 var mappingLayerAttributes = {};
 
@@ -1312,7 +1314,6 @@ function versionCompare(a, b) {
 var startApp = function() {
 
     // Check the browser for webGL support
-
     function webglDetect(return_context) {
         if (!!window.WebGLRenderingContext) {
             var canvas = document.createElement("canvas"),
@@ -1344,6 +1345,17 @@ var startApp = function() {
 
 
     webGl = webglDetect();
+
+    // Stop the application and provide an error if webGL is not supported
+    // and the vertices count is greater then the vertices threshold
+    if (webGl === false && verticesCount > VERTICES_THRESHOLD) {
+        $('#ajaxErrorDialog').empty();
+        $('#ajaxErrorDialog').append(
+            '<p>The project geometry is too complex for your browser to manage. Please try using a browser that has WebGL support</p>'
+        );
+        $('#ajaxErrorDialog').dialog('open');
+        return;
+    }
 
     // Theme tabls behavior
     $('#themeTabs').resizable({
@@ -1560,6 +1572,7 @@ function projDefJSONRequest(selectedLayer) {
             tempProjectDef = data.project_definitions;
             selectedRegion = data.zone_label_field;
             selectedIndicator = undefined;
+            verticesCount = data.verticesCount;
 
             // Remove alert div
             $('#alert').remove();
