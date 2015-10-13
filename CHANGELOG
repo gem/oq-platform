@@ -1,0 +1,3 @@
+  [Ben Wyss]
+  * Added the Mapbox-Gl Javascript library in order to render vector tiles into the IRV application.
+  
