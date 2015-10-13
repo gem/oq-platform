@@ -945,7 +945,7 @@ function mapboxGlLayerCreation() {
     // TODO allow the user to change the colors
     var colorsPalRed = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
     var colorsPalBlue = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
-    var colorsPal = colorsPalRed;
+    var colorsPal = colorsPalBlue;
     var breaks = [];
 
     function getColor() {
