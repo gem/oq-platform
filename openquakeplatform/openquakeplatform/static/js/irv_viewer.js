@@ -729,7 +729,7 @@ function processIndicators(layerAttributes, projectDef) {
 
         mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     } else {
-        leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators);
+        leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     }
 
     var iriPcpData = [];
@@ -998,9 +998,6 @@ function mapboxGlLayerCreation() {
         projectChange = false;
     }
 
-    console.log('mappingLayerAttributes:');
-    console.log(mappingLayerAttributes);
-
     $('#mapLegend').remove();
     // Create the map legend
     $('#map-tools').append(
@@ -1045,7 +1042,6 @@ function mapboxGlLayerCreation() {
     );
 
     map.on('click', function(e) {
-        console.log('hi there?:');
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
@@ -1067,7 +1063,7 @@ function setupLeafletMap() {
 }
 
 
-function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators) {
+function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
 
     // Add main indicators to selection menu
     $('#leafletThematicSelection').empty();
@@ -1104,18 +1100,26 @@ function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators,
 
     // set the map selection menu to IRI or previously selected indicator value
     if (selectedIndicator == undefined) {
-        $('#leafletThematicSelection').val('IRI');
+        // TODO fix this to use optgroup:first
+        //$('#leafletThematicSelection').val('IRI');
+        $('#leafletThematicSelection option').eq(3).attr("selected", "selected");
+        thematicMapCreation();
     } else {
         $('#leafletThematicSelection').val(selectedIndicator);
     }
 
+    // Execute the thematicMapCreation when there has been a weight change
+    if (weightChange > 0) {
+        thematicMapCreation();
+    }
+
     $('#leafletThematicSelection').change(function() {
-        thematicMap(layerAttributes);
+        thematicMapCreation();
     });
 }
 
 
-function thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators) {
+function thematicMapCreation() {
     $('#leafletThematicSelection').show();
     // Initialize the legend
     var legendControl = new L.Control.Legend();
@@ -1136,6 +1140,8 @@ function thematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRis
             }
         }
     }
+
+    map.fitBounds(leafletBoundingBox);
 
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
@@ -1582,19 +1588,14 @@ function projDefJSONRequest(selectedLayer) {
 
             // Populate global bounding box array
             leafletBoundingBox = [
-                data.bounding_box.miny,
-                data.bounding_box.minx,
-                data.bounding_box.maxy,
-                data.bounding_box.maxx
+                [data.bounding_box.miny, data.bounding_box.minx],
+                [data.bounding_box.maxy, data.bounding_box.maxx]
             ];
 
-            mapboxBoundingBox = [[
-                data.bounding_box.minx,
-                data.bounding_box.miny
-            ], [
-                data.bounding_box.maxx,
-                data.bounding_box.maxy
-            ]];
+            mapboxBoundingBox = [
+                [data.bounding_box.minx,data.bounding_box.miny],
+                [data.bounding_box.maxx, data.bounding_box.maxy]
+            ];
 
             if ($('#pdSelection').length > 0) {
                 $('#pdSelection').remove();
