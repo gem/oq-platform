@@ -1359,8 +1359,8 @@ var startApp = function() {
 
     // Theme tabls behavior
     $('#themeTabs').resizable({
-        minHeight: 500,
-        minWidth: 640
+        //minHeight: 500,
+        //minWidth: 640
     });
     $('#themeTabs').draggable();
 
