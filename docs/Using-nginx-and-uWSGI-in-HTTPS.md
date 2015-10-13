@@ -21,6 +21,9 @@ server {
         ssl on;
         ssl_certificate     /etc/ssl/mycert/mycert-bundle.crt;
         ssl_certificate_key /etc/ssl/mycert/mycert.key;
+        
+        # Increase the limit for bigger POSTS
+        client_max_body_size 200m;
 
         location / {
                 include     uwsgi_params;
