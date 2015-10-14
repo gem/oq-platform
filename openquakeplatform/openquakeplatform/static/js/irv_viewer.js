@@ -24,7 +24,6 @@ $(document).ready(function() {
 
 var layerAttributes;
 var sessionProjectDef = [];
-// FIXME there is no selected region in the PD
 var selectedRegion;
 var selectedIndicator;
 var selectedLayer;
