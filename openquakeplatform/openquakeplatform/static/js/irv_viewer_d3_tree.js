@@ -298,7 +298,7 @@
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
-                $('#map').hide();
+                $('#absoluteSpinner').show();
                 $('#projectDefWeightDialog').append('<div id="projectDefWeight-spinner" >Loading ...<img src="/static/img/ajax-loader.gif" /></div>');
                 setTimeout(function() {
                     $('#saveBtn').prop('disabled', false);

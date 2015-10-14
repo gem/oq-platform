@@ -934,7 +934,9 @@ function mapboxGlLayerCreation() {
     }
 
     // Focus map on layer
-    map.fitBounds(mapboxBoundingBox);
+    if (projectChange) {
+        map.fitBounds(mapboxBoundingBox);
+    }
 
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
