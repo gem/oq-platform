@@ -393,8 +393,7 @@
                     }
                 }
             }
-            console.log('weightChangeLevel:');
-            console.log(weightChangeLevel);
+
             return weightChangeLevel;
         }
 
