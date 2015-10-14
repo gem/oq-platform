@@ -1347,16 +1347,6 @@ var startApp = function() {
 
     webGl = webglDetect();
 
-    // Stop the application and provide an error if webGL is not supported
-    // and the vertices count is greater then the vertices threshold
-    if (webGl === false && verticesCount > VERTICES_THRESHOLD) {
-        $('#ajaxErrorDialog').empty();
-        $('#ajaxErrorDialog').append(
-            '<p>The project geometry is too complex for your browser to manage. Please try using a browser that has WebGL support</p>'
-        );
-        $('#ajaxErrorDialog').dialog('open');
-        return;
-    }
 
     // Theme tabs behavior
     $('#themeTabs').resizable({
@@ -1569,11 +1559,24 @@ function projDefJSONRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
         success: function(data) {
+            // Stop the application and provide an error if webGL is not supported
+            // and the vertices count is greater then the vertices threshold
+            verticesCount = data.vertices_count;
+            if (webGl === false && verticesCount > VERTICES_THRESHOLD) {
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>The project geometry is too complex for your browser to manage. Please try using a browser that has WebGL support</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#absoluteSpinner').hide();
+                $('#projectDef-spinner').hide();
+                return;
+            }
+
             license = data.license;
             tempProjectDef = data.project_definitions;
             selectedRegion = data.zone_label_field;
             selectedIndicator = undefined;
-            verticesCount = data.verticesCount;
 
             // Remove alert div
             $('#alert').remove();
