@@ -420,6 +420,8 @@ def _add_vulnerability(db_name, db_user, db_pass):
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
 
+def _add_svir(db_name, db_user, db_pass):
+    local('./openquakeplatform/bin/simqgis-layer-up.sh');
 
 def _set_auth():
     local('python manage.py loaddata '
