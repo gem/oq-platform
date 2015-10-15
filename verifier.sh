@@ -102,6 +102,11 @@ sig_hand () {
         scp "${lxc_ip}:ssh.log" ssh.history || true
         scp "${lxc_ip}:.pip/pip.log" pip.history || true
         scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
+        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
         if [ -f "${upper}.dsk" ]; then
@@ -323,6 +328,7 @@ fab stop
 
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
 
     echo "_devtest_innervm_run: exit"
 
