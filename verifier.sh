@@ -263,7 +263,9 @@ rem_sig_hand() {
     trap ERR
     echo 'signal trapped'
     cd ~/$GEM_GIT_PACKAGE
-    . platform-env/bin/activate
+    if [ -z \"\$VIRTUAL_ENV\" ]; then
+        . platform-env/bin/activate
+    fi
     cd openquakeplatform
     fab stop
 }
