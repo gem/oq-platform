@@ -98,7 +98,10 @@ def bootstrap(db_name=None, db_user=None,
             oq_secret_key=oq_secret_key, oq_bing_key=oq_bing_key,
             mediaroot=mediaroot, staticroot=staticroot)
 
-    # fix it in a proper way
+    # populate static APPS_LIST list with all openquakeplatform.<apps> applications
+    # (without 'openquakeplatform.' prefix
+    apps_list_populate()
+
     apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot)
 
     # Install the libs needs to `test` and `test_with_xunit`:
@@ -148,23 +151,33 @@ def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWOR
     # Update Django 'sites' with real hostname
     _set_sites()
 
-APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
-             'econd', 'weblib', 'gemecdwebsite', 'vulnerability',
-             'icebox']
+
+APPS_LIST = []
+
+def apps_list_populate():
+    global APPS_LIST
+
+    from openquakeplatform.local_settings import INSTALLED_APPS
+    for i in INSTALLED_APPS:
+        if i.startswith("openquakeplatform."):
+             APPS_LIST.append(i[18:])
 
 
 def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     globs = globals()
+    for sfx in range(1, 20):
+        # Add the apps
+        for app in APPS_LIST:
+            try:
+                add_fn = globs["_add_" + app + "_" + str(sfx)]
+            except KeyError:
+                pass
+            else:
+                add_fn(db_name, db_user, db_pass)
+
     apps_list = ""
-    # Add the apps
     for app in APPS_LIST:
         apps_list += " '"+app+"'"
-        try:
-            add_fn = globs["_add_" + app]
-        except KeyError:
-            pass
-        else:
-            add_fn(db_name, db_user, db_pass)
 
     # reset .json files to original version
     local("for i in $(find -name '*.json.orig'); do mv \"$i\" \"$(echo $i | sed 's/\.orig//g')\" ; done")
@@ -179,6 +192,17 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     # updatelayers must be run again after the fixtures have been pushed
     # to allow synchronization of keywords and metadata from GN to GS
     local('python manage.py updatelayers')
+
+    for sfx in range(80, 100):
+        # Add the apps
+        for app in APPS_LIST:
+            try:
+                add_fn = globs["_add_" + app + "_" + str(sfx)]
+            except KeyError:
+                pass
+            else:
+                add_fn(db_name, db_user, db_pass)
+
 
 
 def clean(db_name=None, db_user=None):
@@ -376,51 +400,51 @@ def _maybe_install_postgis(db_name):
         return False
 
 
-def _add_isc_viewer(db_name, db_user, db_pass):
+def _add_isc_viewer_1(db_name, db_user, db_pass):
     local('python manage.py import_isccsv ./openquakeplatform/isc_viewer/dev_data/isc_data.csv'
           ' ./openquakeplatform/isc_viewer/dev_data/isc_data_app.csv')
 
 
-def _add_icebox(db_name, db_user, db_pass):
+def _add_icebox_1(db_name, db_user, db_pass):
     pass
 
 
-def _add_faulted_earth(db_name, db_user, db_pass):
+def _add_faulted_earth_1(db_name, db_user, db_pass):
     pass
 
 
-def _add_ghec_viewer(db_name, db_user, db_pass):
+def _add_ghec_viewer_1(db_name, db_user, db_pass):
     local('python manage.py import_gheccsv ./openquakeplatform/ghec_viewer/dev_data/ghec_data.csv')
 
 
-def _add_gaf_viewer(db_name, db_user, db_pass):
+def _add_gaf_viewer_1(db_name, db_user, db_pass):
     local('python manage.py import_gaf_fs_csv '
           './openquakeplatform/gaf_viewer/dev_data/gaf_data_fs.csv')
     local('python manage.py import_gaf_ft_csv '
           './openquakeplatform/gaf_viewer/dev_data/gaf_data_ft.csv')
 
 
-def _add_econd(db_name, db_user, db_pass):
+def _add_econd_1(db_name, db_user, db_pass):
     local('cat openquakeplatform/econd/sql.d/*.sql | sudo -u postgres psql -e -U ' + db_user + ' ' +  db_name)
     local('openquakeplatform/econd/bin/photo_synt.sh openquakeplatform/econd/data/photo_synt_list.csv openquakeplatform/econd/data/placeholder.png uploaded')
 
 
-def _add_weblib(db_name, db_user, db_pass):
+def _add_weblib_1(db_name, db_user, db_pass):
     pass
 
 
-def _add_gemecdwebsite(db_name, db_user, db_pass):
+def _add_gemecdwebsite_1(db_name, db_user, db_pass):
     pass
 
 
-def _add_vulnerability(db_name, db_user, db_pass):
+def _add_vulnerability_1(db_name, db_user, db_pass):
     local('python manage.py loaddata '
           './openquakeplatform/vulnerability/post_fixtures/initial_data.json')
     local('python manage.py import_vuln_geo_applicability_csv '
           './openquakeplatform/vulnerability/dev_data/vuln_geo_applicability_data.csv')
     local('python manage.py vuln_groups_create')
 
-def _add_svir(db_name, db_user, db_pass):
+def _add_svir_99(db_name, db_user, db_pass):
     local('./openquakeplatform/bin/simqgis-layer-up.sh');
 
 def _set_auth():
