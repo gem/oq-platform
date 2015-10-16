@@ -328,9 +328,9 @@ sleep 3
 fab stop
 "
 
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
+    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
+    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
 
     echo "_devtest_innervm_run: exit"
 
@@ -392,13 +392,11 @@ devtest_run () {
     _devtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    scp "${lxc_ip}:ssh.log" devtest.history || true
-    scp "${lxc_ip}:.pip/pip.log" pip.history || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+    scp "${lxc_ip}:ssh.log" out/devtest.history || true
+    scp "${lxc_ip}:.pip/pip.log" out/devpip.history || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" out/devbootstrap.history || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
 
     if [ $inner_ret != 0 ]; then
