@@ -460,6 +460,10 @@ fi
 echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host localhost
 
 cd oq-platform/openquakeplatform
+
+# add a simulated qgis uploaded layer
+./openquakeplatform/bin/simqgis-layer-up.sh
+
 export PYTHONPATH=\$(pwd)
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
