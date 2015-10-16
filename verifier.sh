@@ -398,6 +398,7 @@ devtest_run () {
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/geoserver/data/logs/geoserver.log*" "out/" || true
 
     if [ $inner_ret != 0 ]; then
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
@@ -471,8 +472,8 @@ python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xun
 sleep 3
 cd -
 "
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
+    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
 
     echo "_prodtest_innervm_run: exit"
 
@@ -502,9 +503,10 @@ prodtest_run () {
     _prodtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    # scp "${lxc_ip}:ssh.log" devtest.history || true
-    # scp "${lxc_ip}:.pip/pip.log" pip.history || true
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+    scp "${lxc_ip}:ssh.log" out/prodtest.history || true
+    scp "${lxc_ip}:.pip/pip.log" out/prodpip.history || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
 
     if [ $inner_ret != 0 ]; then
         # cleanup in error case
