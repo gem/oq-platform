@@ -7,8 +7,8 @@ from openquakeplatform.test import pla
 from openquakeplatform.test.utils import *
 
 
-class VulnerabilityTest(unittest.TestCase):
-    def vulnerability_test(self):
+class IrvTest(unittest.TestCase):
+    def irv_test(self):
         # go to test page
         pla.get('/static/jasmine/IRVTests.html')
 
@@ -21,4 +21,4 @@ class VulnerabilityTest(unittest.TestCase):
         # check the result of tests
         result = pla.xpath_finduniq(
             "//span[@class='bar passed' and contains"
-            "(normalize-space(text()), '0 failuresxxx')]")
+            "(normalize-space(text()), '0 failures')]")
