@@ -458,12 +458,12 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
-echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host localhost
+echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host oq-platform.loc.lan
 
 cd oq-platform/openquakeplatform
 
 # add a simulated qgis uploaded layer
-./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform"
+./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.loc.lan"
 
 export PYTHONPATH=\$(pwd)
 sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
