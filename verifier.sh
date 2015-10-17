@@ -466,7 +466,7 @@ cd oq-platform/openquakeplatform
 ./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.loc.lan"
 
 export PYTHONPATH=\$(pwd)
-sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
+sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.loc.lan\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
