@@ -328,10 +328,6 @@ sleep 3
 fab stop
 "
 
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
-
     echo "_devtest_innervm_run: exit"
 
     return 0
@@ -472,8 +468,6 @@ python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xun
 sleep 3
 cd -
 "
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
 
     echo "_prodtest_innervm_run: exit"
 
