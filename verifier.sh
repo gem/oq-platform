@@ -92,15 +92,15 @@ TB="	"
 #
 #  functions
 copy_common () {
-    scp "${lxc_ip}:ssh.log" "out/ssh_history_${1}.log" || true
-    scp "${lxc_ip}:.pip/pip.log" "out/pip_history_${1}.log" || true
+    scp "${lxc_ip}:ssh.log" "out/${1}_ssh_history.log" || true
+    scp "${lxc_ip}:.pip/pip.log" "out/${1}_pip_history.log" || true
 }
 
 copy_dev () {
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" "out/bootstrap_history.log" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" "out/dev_bootstrap.log" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/dev_runserver.log" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/geoserver/data/logs/geoserver.log*" "out/" || true
 }
 
