@@ -903,9 +903,14 @@ function mapboxGlLayerCreation() {
             // the SVI weight, the map should not be redrawn.
         // 2) the thematic map menu has been changes
         // 3) a new project is loaded into the map (case: weightChange = 0)
+
+    // weightChange can be a interger value form 0 to 4, 0 being no change been made to the tree chart
+    // weightChange 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 = is a primary indicator.
+    // selectedIndicatorLabel is a value from 1 - 4, where 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 is a primary indicator.
+    // The selectedIndicatorLabel determines the thematic map layer to be rendered.
     var selectedIndicatorLabel = $('#webGlThematicSelection option:selected').attr('class');
 
-    if (weightChange < parseInt(selectedIndicatorLabel || selectedIndicatorLabel !== '4')) {
+    if (weightChange < parseInt(selectedIndicatorLabel) || parseInt(selectedIndicatorLabel) == 4) {
         if (weightChange !== 0) {
             $('#absoluteSpinner').hide();
             return;
