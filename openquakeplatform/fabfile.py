@@ -99,7 +99,7 @@ def bootstrap(db_name=None, db_user=None,
             mediaroot=mediaroot, staticroot=staticroot)
 
     # fix it in a proper way
-    apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot)
+    apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot, oq_bing_key)
 
     # Install the libs needs to `test` and `test_with_xunit`:
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
@@ -153,7 +153,7 @@ APPS_LIST = ['isc_viewer', 'faulted_earth', 'ghec_viewer', 'gaf_viewer',
              'icebox']
 
 
-def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
+def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot, bing_key):
     globs = globals()
     apps_list = ""
     # Add the apps
@@ -179,6 +179,13 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     # updatelayers must be run again after the fixtures have been pushed
     # to allow synchronization of keywords and metadata from GN to GS
     local('python manage.py updatelayers')
+
+    if bing_key:
+        local("echo \"UPDATE maps_maplayer SET source_params = regexp_replace(source_params, '\\\"ptype\\\": \\\"gxp_bingsource\\\"',
+    '\\\"apiKey\\\": \\\"%s\\\", \\\"ptype\\\": \\\"gxp_bingsource\\\"')
+    WHERE  name = 'AerialWithLabels' AND source_params NOT LIKE '%%\\\"apiKey\\\":%%';\" | sudo -u postgres psql -e -U %s %s" % (bing_key, db_user, db_name)
+    else:
+        local("echo \"DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';\" |  sudo -u postgres psql -e -U " + db_user + ' ' +  db_name)
 
 
 def clean(db_name=None, db_user=None):

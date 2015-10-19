@@ -490,9 +490,13 @@ oq_platform_install () {
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         gem_db_pass="$(passwd_create)"
         gem_secr_key="$(python -c "import string, random ; print ''.join(random.choice(string.ascii_letters + string.digits + '%$&()=+-|#@?') for _ in range(50))")"
+
     else
         gem_db_pass="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print DATABASES['default']['PASSWORD']" )" ;
         gem_secr_key="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print SECRET_KEY" )" ;
+        if [ -z "$gem_oq_bing_key" ]; then
+            gem_oq_bing_key="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print BING_KEY['bing_key']" )" ;
+        fi
     fi
 
     # reset and install disabled
