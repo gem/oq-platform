@@ -181,11 +181,11 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot, bin
     local('python manage.py updatelayers')
 
     if bing_key:
-        local("echo \"UPDATE maps_maplayer SET source_params = regexp_replace(source_params, '\\\"ptype\\\": \\\"gxp_bingsource\\\"',
-    '\\\"apiKey\\\": \\\"%s\\\", \\\"ptype\\\": \\\"gxp_bingsource\\\"')
-    WHERE  name = 'AerialWithLabels' AND source_params NOT LIKE '%%\\\"apiKey\\\":%%';\" | sudo -u postgres psql -e -U %s %s" % (bing_key, db_user, db_name)
+        local("echo \"UPDATE maps_maplayer SET source_params = regexp_replace(source_params, '\\\"ptype\\\": \\\"gxp_bingsource\\\"',\
+    '\\\"apiKey\\\": \\\"%s\\\", \\\"ptype\\\": \\\"gxp_bingsource\\\"')\
+    WHERE  name = 'AerialWithLabels' AND source_params NOT LIKE '%%\\\"apiKey\\\":%%';\" | sudo -u postgres psql -e -U %s %s" % (bing_key, db_user, db_name))
     else:
-        local("echo \"DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';\" |  sudo -u postgres psql -e -U " + db_user + ' ' +  db_name)
+        local("echo \"DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';\" |  sudo -u postgres psql -e -U %s %s" % (db_user, db_name))
 
 
 def clean(db_name=None, db_user=None):
