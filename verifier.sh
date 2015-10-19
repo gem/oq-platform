@@ -83,12 +83,34 @@ else
     LXC_KILL="lxc-stop -k"
 fi
 
+ACTION="none"
+
 NL="
 "
 TB="	"
 
 #
 #  functions
+copy_common () {
+    scp "${lxc_ip}:ssh.log" "out/ssh_history_${1}.log" || true
+    scp "${lxc_ip}:.pip/pip.log" "out/pip_history_${1}.log" || true
+}
+
+copy_dev () {
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" "out/bootstrap_history.log" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/geoserver/data/logs/geoserver.log*" "out/" || true
+}
+
+copy_prod () {
+    scp "${lxc_ip}:/var/log/apache2/access.log" "out/prod_apache2_access.log" || true
+    scp "${lxc_ip}:/var/log/apache2/error.log" "out/prod_apache2_error.log" || true
+    scp "${lxc_ip}:/var/log/tomcat7/catalina.out" "out/prod_tomcat7_catalina.log" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
+}
 
 #
 #  sig_hand - manages cleanup if the build is aborted
@@ -99,14 +121,11 @@ sig_hand () {
     if [ "$lxc_name" != "" ]; then
         set +e
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
-        scp "${lxc_ip}:ssh.log" ssh.history || true
-        scp "${lxc_ip}:.pip/pip.log" pip.history || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
+
+        copy_common "$ACTION"
+        copy_dev
+        copy_prod
+
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
         if [ -f "${upper}.dsk" ]; then
@@ -374,10 +393,6 @@ _lxc_name_and_ip_get()
 devtest_run () {
     local deps old_ifs branch_id="$1"
 
-    if [ ! -d "out" ]; then
-        mkdir "out"
-    fi
-
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
@@ -388,13 +403,8 @@ devtest_run () {
     _devtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    scp "${lxc_ip}:ssh.log" out/devtest.history || true
-    scp "${lxc_ip}:.pip/pip.log" out/devpip.history || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" out/devbootstrap.history || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/geoserver/data/logs/geoserver.log*" "out/" || true
+    copy_common dev
+    copy_dev
 
     if [ $inner_ret != 0 ]; then
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
@@ -483,10 +493,6 @@ cd -
 prodtest_run () {
     local deps old_ifs branch_id="$1"
 
-    if [ ! -d "out" ]; then
-        mkdir "out"
-    fi
-
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
@@ -497,10 +503,8 @@ prodtest_run () {
     _prodtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    scp "${lxc_ip}:ssh.log" out/prodtest.history || true
-    scp "${lxc_ip}:.pip/pip.log" out/prodpip.history || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
+    copy_common prod
+    copy_prod
 
     if [ $inner_ret != 0 ]; then
         # cleanup in error case
@@ -521,16 +525,24 @@ prodtest_run () {
 BUILD_FLAGS=""
 
 trap sig_hand SIGINT SIGTERM
+
+# create folder to save logs
+if [ ! -d "out" ]; then
+    mkdir "out"
+fi
+
 #  args management
 while [ $# -gt 0 ]; do
     case $1 in
         devtest)
+            ACTION="$1"
             # Sed removes 'origin/' from the branch name
             devtest_run $(echo "$2" | sed 's@.*/@@g')
             exit $?
             break
             ;;
         prodtest)
+            ACTION="$1"
             prodtest_run $(echo "$2" | sed 's@.*/@@g')
             break
             ;;
