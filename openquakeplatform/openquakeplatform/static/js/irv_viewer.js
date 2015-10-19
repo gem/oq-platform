@@ -984,6 +984,12 @@ function mapboxGlLayerCreation() {
     }
 
     // Case 4 destory the source
+    // Here we use a try catch to manage 2 cases:
+    // 1. When a project is loaded for the first time. In this case there is no existing map source or layer,
+    // so we try to remove them, but as they do not exist, the app moves on and builds a new source and layer.
+    // 2 When a project is loaded for the 2nd, 3rd, nth time. In this case we find that there is a map source
+    // and layer that need to be removed, after being removed, the new map source and layers are created.
+    // The same logic applies to removeing layers.
     if (projectChange) {
         try {
             map.removeSource('projectSource');
