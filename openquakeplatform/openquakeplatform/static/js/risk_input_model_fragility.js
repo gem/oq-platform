@@ -204,6 +204,7 @@ $('#saveBtnFF').click(function() {
 
     var functionId = $('#functionId').val();
     var assetCategory = $('#assetCategory').val();
+    var lossCategory = $('#lossCategory').val();
     var functionDescription = $('#functionDescription').val();
 
     /////////////////////////////
@@ -263,7 +264,7 @@ $('#saveBtnFF').click(function() {
     var NRML =
         '<?xml version="1.0" encoding="UTF-8"?> \n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.5"> \n' +
-            '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'"> \n' +
+            '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'" lossCategory="'+lossCategory+'"> \n' +
                 '\t\t<description>'+functionDescription+'</description> \n' +
                 limitStatesXML +
                 fragilityFunction +
