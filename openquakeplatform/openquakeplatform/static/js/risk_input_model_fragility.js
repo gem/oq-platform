@@ -250,9 +250,9 @@ $('#saveBtnFF').click(function() {
         for (var i = 0; i < dataFF[k].length; i++) {
             // Dynamic ffs tag(s)
             if (fFormatObj[k] == 'discrete') {
-                ffs += '\t\t\t<poes ls="'+limitStates[i]+'">'+dataFF[k][i][1]+'</poes>\n';
+                ffs += '\t\t\t<poes ls="'+limitStates[i].replace(/ /g,'')+'">'+dataFF[k][i][1]+'</poes>\n';
             } else if (fFormatObj[k] == 'continuous') {
-                ffs += '\t\t\t<params ls="'+limitStates[i]+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
+                ffs += '\t\t\t<params ls="'+limitStates[i].replace(/ /g,'')+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
             }
         }
         // Closing ffs tags
