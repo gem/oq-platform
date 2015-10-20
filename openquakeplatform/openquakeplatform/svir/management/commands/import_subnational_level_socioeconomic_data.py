@@ -44,6 +44,7 @@ class Command(BaseCommand):
 
     def handle(self, indicators_file, values_file, country_iso, admin_level,
                *args, **options):
+        UNKNOWN_STR = 'Unknown'
         admin_level = int(admin_level)
         country = Zone.objects.get(country_iso=country_iso, admin_level=0)
         sys.stdout.write('Loading subnational socioeconomic data for %s...\n'
@@ -68,14 +69,22 @@ class Command(BaseCommand):
                 sys.stdout.write('Indicator name: %s\n' % name)
                 description = row[9].strip().decode('utf8')
                 theme_str = row[0].strip().decode('utf8')
-                theme, _ = Theme.objects.get_or_create(name__iexact=theme_str)
+                theme, _ = Theme.objects.get_or_create(
+                    name__iexact=theme_str,
+                    defaults={'name': theme_str})
                 subtheme_str = row[2].strip().decode('utf8')
                 subtheme, _ = Subtheme.objects.get_or_create(
-                    theme=theme, name__iexact=subtheme_str)
+                    theme=theme,
+                    name__iexact=subtheme_str,
+                    defaults={'theme': theme,
+                              'name': subtheme_str})
                 keywords_set = set()
                 for keyword_str in row[10].split(','):
+                    keyword_str_clean = \
+                        keyword_str.strip().decode('utf8').lower()
                     keyword, _ = Keyword.objects.get_or_create(
-                        name__iexact=keyword_str.strip().decode('utf8'))
+                        name__iexact=keyword_str_clean,
+                        defaults={'name': keyword_str_clean})
                     keyword.save()
                     keywords_set.add(keyword)
                 try:
@@ -112,16 +121,19 @@ class Command(BaseCommand):
                 # ZoneIndicator
                 measurement_type_str = row[6].strip().decode('utf8')
                 measurement_type, _ = MeasurementType.objects.get_or_create(
-                    name__iexact=measurement_type_str)
+                    name__iexact=measurement_type_str,
+                    defaults={'name': measurement_type_str})
                 aggregation_method_str = row[7].strip().decode('utf8')
                 if aggregation_method_str:
                     aggregation_method, _ = \
                         AggregationMethod.objects.get_or_create(
-                            name__iexact=aggregation_method_str)
+                            name__iexact=aggregation_method_str,
+                            defaults={'name': aggregation_method_str})
                 else:
                     aggregation_method, _ = \
                         AggregationMethod.objects.get_or_create(
-                            name__iexact='Unknown')
+                            name__iexact=UNKNOWN_STR,
+                            defaults={'name': UNKNOWN_STR})
                 source_description = row[11].strip().decode('utf8')
                 source_year_min = row[12].strip().decode('utf8')
                 source_year_max = row[13].strip().decode('utf8')
@@ -129,16 +141,22 @@ class Command(BaseCommand):
                 if source_update_periodicity_str:
                     source_update_periodicity, _ = \
                         UpdatePeriodicity.objects.get_or_create(
-                            name__iexact=source_update_periodicity_str)
+                            name__iexact=source_update_periodicity_str,
+                            defaults={'name': source_update_periodicity_str})
                 else:
                     source_update_periodicity, _ = \
                         UpdatePeriodicity.objects.get_or_create(
-                            name__iexact='Unknown')
+                            name__iexact=UNKNOWN_STR,
+                            defaults={'name': UNKNOWN_STR})
                 source, _ = Source.objects.get_or_create(
                     description__iexact=source_description,
-                    year_min__iexact=source_year_min,
-                    year_max__iexact=source_year_max,
-                    defaults={'update_periodicity': source_update_periodicity})
+                    year_min=source_year_min,
+                    year_max=source_year_max,
+                    defaults={
+                        'description': source_description,
+                        'year_min': source_year_min,
+                        'year_max': source_year_max,
+                        'update_periodicity': source_update_periodicity})
                 additional_info[code] = dict(
                     measurement_type=measurement_type,
                     aggregation_method=aggregation_method,
@@ -147,9 +165,11 @@ class Command(BaseCommand):
         # read a file containing in each row the values of all the indicators
         # for one single zone
         with open(values_file, 'rb') as f:
+            name_south_america_study = 'South America Risk Assessment (SARA)'
             study, _ = Study.objects.get_or_create(
-                name__iexact=('South America Risk Assessment (SARA)'),
-                defaults={'description': 'FIXME',
+                name__iexact=name_south_america_study,
+                defaults={'name': name_south_america_study,
+                          'description': 'FIXME',
                           'wiki_link': 'FIXME'})
             reader = csv.reader(f)
             # the first row contains redundant information that we will not
@@ -173,9 +193,16 @@ class Command(BaseCommand):
                     name__iexact=zone_name,
                     code__iexact=zone_code,
                     country_iso__iexact=country_iso,
-                    admin_level__iexact=admin_level,
+                    admin_level=admin_level,
                     parent_label__iexact=zone_parent_label,
-                    defaults={'the_geom': country.the_geom, 'study': study})
+                    defaults={
+                        'name': zone_name,
+                        'code': zone_code,
+                        'country_iso': country_iso,
+                        'admin_level': admin_level,
+                        'parent_label': zone_parent_label,
+                        'the_geom': country.the_geom,
+                        'study': study})
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
                 column = admin_level + 1
@@ -208,11 +235,14 @@ class Command(BaseCommand):
                     # FIXME: get internal_consistency_metric from the csv
                     internal_consistency_metric, _ = \
                         InternalConsistencyMetric.objects.get_or_create(
-                            name__iexact='Unknown')
+                            name__iexact=UNKNOWN_STR,
+                            defaults={'name': UNKNOWN_STR})
                     zone_indicator, _ = ZoneIndicator.objects.get_or_create(
                         zone=zone,
                         indicator=indicator,
                         defaults={
+                            'zone': zone,
+                            'indicator': indicator,
                             'value': value,
                             'measurement_type': measurement_type,
                             'aggregation_method': aggregation_method,

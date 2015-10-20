@@ -22,14 +22,18 @@ class Command(BaseCommand):
     help = 'Copy GADM simplified countries into the zones table'
 
     def handle(self, *args, **options):
+        study_name = \
+            'Social and Economic Vulnerability Global Indicator Database'
         study, _ = Study.objects.get_or_create(
-            name__iexact=
-            'Social and Economic Vulnerability Global Indicator Database',
-            defaults={'description': 'FIXME',
+            name__iexact=study_name,
+            defaults={'name': study_name,
+                      'description': 'FIXME',
                       'wiki_link': 'FIXME'})
         for country in Country.objects.all():
             print "Copying %s..." % country.name_0
             Zone.objects.get_or_create(name__iexact=country.name_0,
                                        country_iso__iexact=country.iso,
-                                       defaults={'the_geom': country.the_geom,
+                                       defaults={'name': country.name_0,
+                                                 'country_iso': country.iso,
+                                                 'the_geom': country.the_geom,
                                                  'admin_level': 0})

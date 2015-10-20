@@ -45,10 +45,12 @@ class Command(BaseCommand):
 
         with open(filename, 'rb') as f:
             sys.stdout.write('Loading country-level socioeconomic data...\n')
+            study_name = \
+                'Social and Economic Vulnerability Global Indicator Database'
             study, _ = Study.objects.get_or_create(
-                name__iexact=('Social and Economic Vulnerability'
-                              ' Global Indicator Database'),
-                defaults={'description': 'FIXME',
+                name__iexact=study_name,
+                defaults={'name': study_name,
+                          'description': 'FIXME',
                           'wiki_link': 'FIXME'})
 
             reader = csv.reader(f)
@@ -72,15 +74,18 @@ class Command(BaseCommand):
             # It will be used to quantify general data completeness, which
             # would be meaningless if we calculate it with respect of the whole
             # set of countries in GADM
+            custom_region_name = 'Countries with socioeconomic data'
             countries_with_socioeconomic_data, _ = \
                 CustomRegion.objects.get_or_create(
-                    name__iexact='Countries with socioeconomic data')
+                    name__iexact=custom_region_name,
+                    defaults={'name': custom_region_name})
 
             iso_reg_dict = dict(zip(isos, assoc_regions))
             for iso in iso_reg_dict:
                 country = Zone.objects.get(country_iso=iso)
                 region, _ = CustomRegion.objects.get_or_create(
-                    name__iexact=iso_reg_dict[iso])
+                    name__iexact=iso_reg_dict[iso],
+                    defaults={'name': iso_reg_dict[iso]})
                 region.zones.add(country)
                 countries_with_socioeconomic_data.zones.add(country)
 
@@ -102,11 +107,16 @@ class Command(BaseCommand):
                 ind.code = code
 
                 theme_name = row[1].strip()
-                theme, _ = Theme.objects.get_or_create(name__iexact=theme_name)
+                theme, _ = Theme.objects.get_or_create(
+                    name__iexact=theme_name,
+                    defaults={'name': theme_name})
 
                 subtheme_name = row[2].strip()
                 ind.subtheme, _ = Subtheme.objects.get_or_create(
-                    theme=theme, name__iexact=subtheme_name)
+                    theme=theme,
+                    name__iexact=subtheme_name,
+                    defaults={'theme': theme,
+                              'name': subtheme_name})
 
                 ind.name = row[3].strip()
 
@@ -114,13 +124,15 @@ class Command(BaseCommand):
                 # to be inserted into ZoneIndicator
                 measurement_type, _ = \
                     MeasurementType.objects.get_or_create(
-                        name__iexact=measurement_type_name)
+                        name__iexact=measurement_type_name,
+                        defaults={'name': measurement_type_name})
 
                 ind.description = row[5].strip()
 
                 update_periodicity = row[11].strip()
                 period, _ = UpdatePeriodicity.objects.get_or_create(
-                    name__iexact=update_periodicity)
+                    name__iexact=update_periodicity,
+                    defaults={'name': update_periodicity})
 
                 source_description = row[6].strip()
                 year_min = row[8].strip()
@@ -128,7 +140,8 @@ class Command(BaseCommand):
                 # to be inserted into ZoneIndicator
                 source, _ = Source.objects.get_or_create(
                     description__iexact=source_description,
-                    defaults={'year_min': year_min,
+                    defaults={'description': source_description,
+                              'year_min': year_min,
                               'year_max': year_max,
                               'update_periodicity': period})
 
@@ -138,13 +151,15 @@ class Command(BaseCommand):
                 # to be inserted into ZoneIndicator
                 aggregation_method, _ = \
                     AggregationMethod.objects.get_or_create(
-                        name__iexact=aggregation_method_name)
+                        name__iexact=aggregation_method_name,
+                        defaults={'name': aggregation_method_name})
 
                 internal_consistency_metric_name = row[13].strip()
                 # to be inserted into ZoneIndicator
                 internal_consistency_metric, _ = \
                     InternalConsistencyMetric.objects.get_or_create(
-                        name__iexact=internal_consistency_metric_name)
+                        name__iexact=internal_consistency_metric_name,
+                        defaults={'name': internal_consistency_metric_name})
 
                 notes = row[-1].strip() if row[-1] != "None" else None
                 ind.notes = notes
@@ -155,7 +170,8 @@ class Command(BaseCommand):
                                  for keyword in row[7].split(',')]
                 for keyword_name in keyword_names:
                     keyword, _ = Keyword.objects.get_or_create(
-                        name__iexact=keyword_name)
+                        name__iexact=keyword_name,
+                        defaults={'name': keyword_name})
                     ind.keywords.add(keyword)
 
                 ind.save()
@@ -174,6 +190,8 @@ class Command(BaseCommand):
                             zone=country,
                             indicator=ind,
                             defaults={
+                                'zone': country,
+                                'indicator': ind,
                                 'value': value,
                                 'source': source,
                                 'aggregation_method': aggregation_method,
