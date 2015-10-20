@@ -68,14 +68,14 @@ class Command(BaseCommand):
                 sys.stdout.write('Indicator name: %s\n' % name)
                 description = row[9].strip().decode('utf8')
                 theme_str = row[0].strip().decode('utf8')
-                theme, _ = Theme.objects.get_or_create(name=theme_str)
+                theme, _ = Theme.objects.get_or_create(name__iexact=theme_str)
                 subtheme_str = row[2].strip().decode('utf8')
                 subtheme, _ = Subtheme.objects.get_or_create(
-                    theme=theme, name=subtheme_str)
+                    theme=theme, name__iexact=subtheme_str)
                 keywords_set = set()
                 for keyword_str in row[10].split(','):
                     keyword, _ = Keyword.objects.get_or_create(
-                        name=keyword_str.strip().decode('utf8'))
+                        name__iexact=keyword_str.strip().decode('utf8'))
                     keyword.save()
                     keywords_set.add(keyword)
                 try:
@@ -112,16 +112,16 @@ class Command(BaseCommand):
                 # ZoneIndicator
                 measurement_type_str = row[6].strip().decode('utf8')
                 measurement_type, _ = MeasurementType.objects.get_or_create(
-                    name=measurement_type_str)
+                    name__iexact=measurement_type_str)
                 aggregation_method_str = row[7].strip().decode('utf8')
                 if aggregation_method_str:
                     aggregation_method, _ = \
                         AggregationMethod.objects.get_or_create(
-                            name=aggregation_method_str)
+                            name__iexact=aggregation_method_str)
                 else:
                     aggregation_method, _ = \
                         AggregationMethod.objects.get_or_create(
-                            name='Unknown')
+                            name__iexact='Unknown')
                 source_description = row[11].strip().decode('utf8')
                 source_year_min = row[12].strip().decode('utf8')
                 source_year_max = row[13].strip().decode('utf8')
@@ -129,15 +129,15 @@ class Command(BaseCommand):
                 if source_update_periodicity_str:
                     source_update_periodicity, _ = \
                         UpdatePeriodicity.objects.get_or_create(
-                            name=source_update_periodicity_str)
+                            name__iexact=source_update_periodicity_str)
                 else:
                     source_update_periodicity, _ = \
                         UpdatePeriodicity.objects.get_or_create(
-                            name='Unknown')
+                            name__iexact='Unknown')
                 source, _ = Source.objects.get_or_create(
-                    description=source_description,
-                    year_min=source_year_min,
-                    year_max=source_year_max,
+                    description__iexact=source_description,
+                    year_min__iexact=source_year_min,
+                    year_max__iexact=source_year_max,
                     defaults={'update_periodicity': source_update_periodicity})
                 additional_info[code] = dict(
                     measurement_type=measurement_type,
@@ -148,9 +148,9 @@ class Command(BaseCommand):
         # for one single zone
         with open(values_file, 'rb') as f:
             study, _ = Study.objects.get_or_create(
-                name=('South America Risk Assessment (SARA)'),
-                description='FIXME',
-                wiki_link='FIXME')
+                name__iexact=('South America Risk Assessment (SARA)'),
+                defaults={'description': 'FIXME',
+                          'wiki_link': 'FIXME'})
             reader = csv.reader(f)
             # the first row contains redundant information that we will not
             # store into the DB (e.g. the indicators' names)
@@ -164,16 +164,17 @@ class Command(BaseCommand):
                 # read zone localization and values
                 zone_name = row[admin_level - 1].strip().decode('utf8')
                 zone_code = row[admin_level].strip()
-                decoded_row = [x.decode('utf8') for x in row[:admin_level - 2]]
+                decoded_row = [x.decode('utf8') for x in row[:admin_level - 1]]
                 zone_parent_label = ", ".join(decoded_row)
                 # FIXME: load the actual geometry instead of copying the
                 # geometry of the country for all the subnational zones
                 # FIXME: load also the variant names, if available
                 zone, _ = Zone.objects.get_or_create(
-                    name=zone_name, code=zone_code,
-                    country_iso=country_iso,
-                    admin_level=admin_level,
-                    parent_label=zone_parent_label,
+                    name__iexact=zone_name,
+                    code__iexact=zone_code,
+                    country_iso__iexact=country_iso,
+                    admin_level__iexact=admin_level,
+                    parent_label__iexact=zone_parent_label,
                     defaults={'the_geom': country.the_geom, 'study': study})
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
@@ -207,7 +208,7 @@ class Command(BaseCommand):
                     # FIXME: get internal_consistency_metric from the csv
                     internal_consistency_metric, _ = \
                         InternalConsistencyMetric.objects.get_or_create(
-                            name='Unknown')
+                            name__iexact='Unknown')
                     zone_indicator, _ = ZoneIndicator.objects.get_or_create(
                         zone=zone,
                         indicator=indicator,
