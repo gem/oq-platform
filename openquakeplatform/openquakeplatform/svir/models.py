@@ -275,7 +275,7 @@ class SourceManager(models.Manager):
 
 
 class Source(models.Model):
-    description = models.TextField(unique=True)
+    description = models.TextField()
     year_min = models.IntegerField()
     year_max = models.IntegerField()
     update_periodicity = models.ForeignKey('UpdatePeriodicity')
@@ -292,7 +292,10 @@ class Source(models.Model):
                                  self.year_max)
 
     def natural_key(self):
-        return self.description
+        return (self.description, self.year_min, self.year_max)
+
+    class Meta:
+        unique_together = ('description', 'year_min', 'year_max')
 
 
 class UpdatePeriodicityManager(models.Manager):
@@ -350,7 +353,7 @@ class ZoneIndicator(models.Model):
     measurement_type = models.ForeignKey('MeasurementType')
     aggregation_method = models.ForeignKey('AggregationMethod')
     internal_consistency_metric = models.ForeignKey(
-        'InternalConsistencyMetric')
+        'InternalConsistencyMetric', null=True, blank=True)
 
     objects = ZoneIndicatorManager()
 
