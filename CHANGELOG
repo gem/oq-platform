@@ -1,0 +1,8 @@
+  [Michele Simionato]
+  * vulnerability: add constraint to limit to the same distribution type
+    for fragility functions
+
+  * vulnerability: replace limit states lowercased names with itself where
+    all [^a-z0-9] chars are substituted with '_' and contiguous '_' are
+    collapsed into one
+
