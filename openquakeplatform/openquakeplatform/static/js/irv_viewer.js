@@ -117,6 +117,8 @@ function createRiskIndicator(la, index, selectedRegion) {
 }
 
 function combineIndicators(nameLookUp, themeObj, JSONthemes) {
+    console.log('themeObj:');
+    console.log(themeObj);
     //  Set the projectDef equal to testSessionProjectDef if sessionProjectDef is
     // an empty object in order to test the function
     if (arguments[3]) {
@@ -182,8 +184,14 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             for (var w1 = 0; w1 < themeKeys.length; w1++) {
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
+                console.log('themeObj[v1][tempThemeName] + " * " + themeWeightVal + " * " + themeInversionFactor');
+                console.log(themeObj[v1][tempThemeName] + " * " + themeWeightVal + " * " + themeInversionFactor);
+
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+                //tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal);
             }
+            console.log('tempElementValue:');
+            console.log(tempElementValue);
             subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Average (ignore weights)') {
@@ -235,6 +243,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
+
+    console.log('subIndex:');
+    console.log(subIndex);
 
     return subIndex;
 }
@@ -300,6 +311,8 @@ function processIndicators(layerAttributes, projectDef) {
 
     // setup themeData with all the regions
     var la = layerAttributes.features;
+    console.log('la:');
+    console.log(la);
     for (var s = 0; s < la.length; s++) {
         var temp = {};
         temp.region = la[s].properties[selectedRegion];
@@ -524,7 +537,7 @@ function processIndicators(layerAttributes, projectDef) {
     // SVI is an object with region and value
     if (svThemes) {
         SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
-        scale(SVI);
+        //scale(SVI);
     }
 
     ////////////////////////////////
@@ -908,6 +921,7 @@ function mapboxGlLayerCreation() {
     // weightChange 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 = is a primary indicator.
     // selectedIndicatorLabel is a value from 1 - 4, where 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 is a primary indicator.
     // The selectedIndicatorLabel determines the thematic map layer to be rendered.
+    // For example, if the user selects a primary indicator, the html option selected attribute class will be 4.
     var selectedIndicatorLabel = $('#webGlThematicSelection option:selected').attr('class');
 
     if (weightChange < parseInt(selectedIndicatorLabel) || parseInt(selectedIndicatorLabel) == 4) {
