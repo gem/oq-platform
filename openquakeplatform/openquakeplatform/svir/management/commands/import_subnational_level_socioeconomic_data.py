@@ -187,7 +187,8 @@ class Command(BaseCommand):
                 decoded_row = [x.decode('utf8') for x in row[:admin_level - 1]]
                 zone_parent_label = ", ".join(decoded_row)
                 # FIXME: load the actual geometry instead of copying the
-                # geometry of the country for all the subnational zones
+                # geometry of San Marino for all the subnational zones
+                san_marino = Zone.objects.get(country_iso='SMR')
                 # FIXME: load also the variant names, if available
                 zone, _ = Zone.objects.get_or_create(
                     name__iexact=zone_name,
@@ -201,7 +202,7 @@ class Command(BaseCommand):
                         'country_iso': country_iso,
                         'admin_level': admin_level,
                         'parent_label': zone_parent_label,
-                        'the_geom': country.the_geom,
+                        'the_geom': san_marino.the_geom,
                         'study': study})
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
