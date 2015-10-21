@@ -1,0 +1,3 @@
+  [Matteo Nastasi]
+  * Integrated irv tests into nose/selenium infrastructure
+  * Import of syntetic qgis 'irmt' layer to test irv application
