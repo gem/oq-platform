@@ -926,6 +926,7 @@ function getGeoServerLayers() {
 
 
 function versionCompare(a, b) {
+    // This version check ignores the patch numbers
     if (a === undefined) {
         return -1;
     }
@@ -934,13 +935,28 @@ function versionCompare(a, b) {
     a = (a + '').replace(re, '').split('.');
     b = (b + '').replace(re, '').split('.');
     len = Math.min(a.length, b.length);
-    for( i = 0; i < len; i++ ) {
-        cmp = parseInt(a[i], 10) - parseInt(b[i], 10);
-        if( cmp !== 0 ) {
-            return cmp;
+
+    // Check for a match between major release numbers
+    if (a[0] !== b[0]) {
+        return -1
+    }
+    // Check for a match between minor release numbers
+    else {
+        // eg. '1.7' vrs '1.6.7'
+        if (a[1] > b[1]) {
+            return -1;
+        }
+
+        // eg. '1.7' vrs '1.8.7'
+        if (a[1] < b[1]) {
+            return -1;
+        }
+
+        // eg. '1.7' vrs '1.7.1', '1.7' vrs '1.7.5', '1.7' vrs '1.7.9'
+        if (a[1] == b[1]) {
+            return 1
         }
     }
-    return a.length - b.length;
 }
 
 var startApp = function() {
@@ -1156,9 +1172,9 @@ function projDefJSONRequest(selectedLayer) {
             // Provide some backwards compatibility for old naming convention
             var thisVersion = null;
             if (data.hasOwnProperty('svir_plugin_version')) {
-                thisVersion = data.svir_plugin_version
+                thisVersion = data.svir_plugin_version;
             } else if (data.hasOwnProperty('irmt_plugin_version')) {
-                thisVersion = data.irmt_plugin_version
+                thisVersion = data.irmt_plugin_version;
             } else {
                 $('#projectDef-spinner').hide();
                 $('#project-def').append(
@@ -1169,9 +1185,9 @@ function projDefJSONRequest(selectedLayer) {
                 return
             }
 
-            var versionCheck = versionCompare(thisVersion, COMPATIBILITY_VERSION);
+            var versionCheck = versionCompare(COMPATIBILITY_VERSION, thisVersion);
 
-            if (versionCheck < 0 || versionCheck == 1 ) {
+            if (versionCheck < 0) {
                 // Warn the user and stop the application
                 $('#projectDef-spinner').hide();
                 $('#project-def').append(

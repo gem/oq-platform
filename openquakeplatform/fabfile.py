@@ -36,7 +36,7 @@ POSTGIS_FILES = [os.path.join(POSTGIS_DIR, f) for f in
 
 DB_PASSWORD = 'openquake'
 
-PYTHON_TEST_LIBS = ['mock', 'nose', 'coverage']
+PYTHON_TEST_LIBS = ['mock==0.7.2', 'nose==1.1.2', 'coverage==3.4']
 
 #: External parametric values
 GEM_GEONODE_PORT = os.getenv('GEM_GEONODE_PORT', '8000')

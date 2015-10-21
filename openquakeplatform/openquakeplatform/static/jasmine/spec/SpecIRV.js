@@ -38,7 +38,9 @@ describe("Get All Layers From GeoServer", function() {
                 var featureType = jsonElement.WFS_Capabilities.FeatureTypeList.FeatureType;
 
                 // Find the SVIR keywords
-                var stringToLookFor = 'SVIR_QGIS_Plugin';
+                //var stringToLookFor = 'SVIR_QGIS_Plugin';
+
+                var stringsToLookFor = ['SVIR_QGIS_Plugin', 'IRMT_QGIS_Plugin'];
 
                 // TODO probably remove this
                 // Reload if the api call was incomplete
@@ -48,8 +50,11 @@ describe("Get All Layers From GeoServer", function() {
                 }
 
                 for (var i = 0; i < featureType.length; i++) {
-                    if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
-                        SVIRLayerNames.push(featureType[i].Name);
+                    for (var j = 0; j < stringsToLookFor.length; j++) {
+                        stringToLookFor = stringsToLookFor[j];
+                        if (featureType[i].Keywords.indexOf(stringToLookFor) > -1) {
+                            SVIRLayerNames.push(featureType[i].Name);
+                        }
                     }
                 }
 
@@ -140,8 +145,15 @@ describe("Get All Layers From GeoServer", function() {
         for (var i = 0; i < SVIRPairs.length; i++) {
             var tempZone;
             var tempProjDefMeta = SVIRPairs[i].projDefMetaData;
+
                 // Test SVIR plugin major version
-                var tempVertion = tempProjDefMeta.svir_plugin_version;
+                var tempVertion = null;
+                if (tempProjDefMeta.hasOwnProperty('svir_plugin_version')) {
+                    tempVertion = tempProjDefMeta.svir_plugin_version;
+                } else if (tempProjDefMeta.hasOwnProperty('irmt_plugin_version')) {
+                    tempVertion = tempProjDefMeta.irmt_plugin_version;
+                }
+
                 var tempVertionMajor = tempVertion.charAt(0);
                 expect(tempVertionMajor).toEqual('1');
 
