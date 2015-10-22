@@ -259,7 +259,8 @@ class Command(BaseCommand):
                         value = float(value)
                     except ValueError:
                         sys.stdout.write(
-                            'Ignoring value %s for indicator %s and zone %s\n'
+                            "Ignoring value '%s' for indicator %s"
+                            " and zone %s\n"
                             % (value, indicator, zone))
                         break
                     measurement_type = additional_info[
