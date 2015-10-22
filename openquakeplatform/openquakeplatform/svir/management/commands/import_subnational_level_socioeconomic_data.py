@@ -109,6 +109,8 @@ class Command(BaseCommand):
                 else:  # if the indicator already existed
                     # check that the data for the indicator is consistent with
                     # what we already had
+                    # In any case, re-use the existing version
+                    # (not the newly imported one)
                     error_fmt = ("\tInconsistency in field '%s':\n"
                                  "\t\t(existing) %s\n"
                                  "\t\t(   new  ) %s\n")
@@ -133,18 +135,18 @@ class Command(BaseCommand):
                             error_fmt % ('theme',
                                          indicator.theme,
                                          theme))
-                    if indicator.notes != notes:
+                    if notes and indicator.notes != notes:
                         inconsistencies.append(
                             error_fmt % ('notes',
                                          indicator.notes,
                                          notes))
                     if inconsistencies:
-                        sys.stdout.write("WARNING! Inconsistency found."
-                                         " Re-using the existing version.\n")
+                        sys.stdout.write("WARNING! Inconsistency found!\n")
                         for inconsistency in inconsistencies:
                             sys.stdout.write(inconsistency)
                     else:
-                        sys.stdout.write('OK\n')
+                        sys.stdout.write('OK')
+                    sys.stdout.write(" (re-using the existing version)\n")
                     # merge the keywords
                     for keyword in keywords_set:
                         indicator.keywords.add(keyword)
@@ -239,10 +241,9 @@ class Command(BaseCommand):
                         'study': study})
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
-                column = admin_level + 1
+                ind_code_idx = 0
                 for value in row[admin_level + 1:]:
-                    # NOTE: Ignoring all non-numeric values
-                    ind_code = ind_codes[column]
+                    ind_code = ind_codes[ind_code_idx]
                     if len(ind_code) < 9:
                         sys.stdout.write(
                             'Indicator code %s seems to be incomplete!\n'
@@ -284,4 +285,4 @@ class Command(BaseCommand):
                             internal_consistency_metric,
                             'source': source})
                     zone_indicator.save()
-                    column += 1
+                    ind_code_idx += 1
