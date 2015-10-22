@@ -118,8 +118,6 @@ function updateFfsTable (fFormat) {
 
     // Populate the table with limit states
     if (fFormat == 'continuous') {
-        console.log('limitStates:');
-        console.log(limitStates);
         for (var i = 0; i < limitStates.length; i++) {
         fragilityTable.setDataAtCell(i, 0, limitStates[i]);
         }
@@ -176,10 +174,6 @@ $('#saveBtnFF').click(function() {
             // Get all the imls values
             var imlsObj = {};
             $(".imls").each(function() {
-                console.log('this.id:');
-                console.log(this.id);
-                console.log('$(this).val():');
-                console.log($(this).val());
                 imlsObj[this.id] = ($(this).val());
             });
         } else if (fFormatObj[k] == 'continuous') {
