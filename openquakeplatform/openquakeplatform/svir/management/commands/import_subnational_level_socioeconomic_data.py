@@ -65,8 +65,12 @@ class Command(BaseCommand):
             # read the actual information for each indicator
             for row in reader:
                 code = row[8].strip().decode('utf8')
+                if len(code) < 9:
+                    sys.stdout.write(
+                        'WARNING! Indicator code %s seems to be incomplete!\n'
+                        % code)
                 name = row[4].strip().decode('utf8')
-                sys.stdout.write('Indicator name: %s\n' % name)
+                sys.stdout.write("Indicator: '%s'..." % code)
                 description = row[9].strip().decode('utf8')
                 theme_str = row[0].strip().decode('utf8')
                 theme, _ = Theme.objects.get_or_create(
@@ -101,36 +105,41 @@ class Command(BaseCommand):
                     for keyword in keywords_set:
                         indicator.keywords.add(keyword)
                     indicator.save()
+                    sys.stdout.write("OK (created as new)\n")
                 else:  # if the indicator already existed
                     # check that the data for the indicator is consistent with
                     # what we already had
-                    error_fmt = ("Inconsistency found for indicator '%s':\n"
-                                 "(existing) %s\n(   new  ) %s\n")
+                    error_fmt = ("\tInconsistency in field '%s':\n"
+                                 "\t\t(existing) %s\n"
+                                 "\t\t(   new  ) %s\n")
                     inconsistencies = []
                     if indicator.name != name:
                         inconsistencies.append(
-                            error_fmt % (indicator.code,
+                            error_fmt % ('name',
                                          indicator.name,
                                          name))
                     if indicator.description != description:
                         inconsistencies.append(
-                            error_fmt % (indicator.code,
+                            error_fmt % ('description',
                                          indicator.description,
                                          description))
                     if indicator.subtheme != subtheme:
                         inconsistencies.append(
-                            error_fmt % (indicator.code,
+                            error_fmt % ('subtheme',
                                          indicator.subtheme,
                                          subtheme))
                     if indicator.theme != theme:
                         inconsistencies.append(
-                            error_fmt % (indicator.code,
+                            error_fmt % ('theme',
                                          indicator.theme,
                                          theme))
-                    for inconsistency in inconsistencies:
-                        sys.stderr.write(inconsistency)
-                        sys.stderr.write(
-                            "(Using the existing data for the indicator)\n")
+                    if inconsistencies:
+                        sys.stdout.write("WARNING! Inconsistency found."
+                                         " Re-using the existing version.\n")
+                        for inconsistency in inconsistencies:
+                            sys.stdout.write(inconsistency)
+                    else:
+                        sys.stdout.write('OK\n')
                     # merge the keywords
                     for keyword in keywords_set:
                         indicator.keywords.add(keyword)
@@ -181,6 +190,7 @@ class Command(BaseCommand):
                     aggregation_method=aggregation_method,
                     source=source)
 
+        import pdb; pdb.set_trace()
         # read a file containing in each row the values of all the indicators
         # for one single zone
         with open(values_file, 'rb') as f:
@@ -230,14 +240,14 @@ class Command(BaseCommand):
                     # NOTE: Ignoring all non-numeric values
                     ind_code = ind_codes[column]
                     if len(ind_code) < 9:
-                        sys.stderr.write(
+                        sys.stdout.write(
                             'Indicator code %s seems to be incomplete!\n'
                             % ind_code)
                         break
                     try:
                         indicator = Indicator.objects.get(code=ind_code)
                     except ObjectDoesNotExist:
-                        sys.stderr.write(
+                        sys.stdout.write(
                             'Indicator %s does not exist\n' % ind_code)
                         break
                     try:
