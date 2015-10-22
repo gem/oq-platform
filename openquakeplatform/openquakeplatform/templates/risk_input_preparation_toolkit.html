@@ -150,14 +150,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </div>
       <div>
         <label>Loss Category:</label>
-        <input id="lossCategory" type="text" placeholder="economic">
+        <select id="lossCategory">
+          <option value="structural">Structural</option>
+          <option value="nonstructural">Non-Structural</option>
+          <option value="contents">Contents</option>
+          <option value="business_interruption">Business Interruption</option>
+          <option value="occupants">Occupants</option>
+        </select>
       </div>
       <div>
         <label>Description:</label>
         <textarea id="functionDescription" rows="4" cols="10"></textarea>
       </div>
       <div>
-        <label>Limit States (Comma Seperated):</label>
+        <label>Damage States</label><br>
+        <label>(Comma Separated):</label>
         <textarea id="limitStates" rows="4" cols="10">slight, moderate, collapse</textarea>
       </div>
     </div>
@@ -193,7 +200,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </div>
       <div>
         <label>Loss Category:</label>
-        <input id="vLossCategory" type="text" placeholder="economic">
+        <select id="vlossCategory">
+          <option value="structural">Structural</option>
+          <option value="nonstructural">Non-Structural</option>
+          <option value="contents">Contents</option>
+          <option value="business_interruption">Business Interruption</option>
+          <option value="occupants">Occupants</option>
+        </select>
       </div>
       <div>
         <label>Description:</label>
