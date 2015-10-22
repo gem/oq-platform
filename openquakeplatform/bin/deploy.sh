@@ -594,7 +594,11 @@ oq_platform_install () {
     chmod a+x "/usr/sbin/openquakeplatform"
     mkdir -p /etc/openquake/platform/media
 
-    service apache2 restart
+    if (kill -0 $(cat /var/run/apache2/apache2.pid)) >/dev/null 2>&1; then
+        service apache2 restart
+    elif (kill -0 $(cat /var/run/apache2/gunicorn.pid)) >/dev/null 2>&1; then
+        service gunicorn restart
+    fi
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         db_user_create "$gem_db_user" "$gem_db_pass"
