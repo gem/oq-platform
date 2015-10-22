@@ -53,8 +53,6 @@ class Command(BaseCommand):
         # types, aggregation methods, and sources
         with open(indicators_file, 'rb') as f:
             reader = csv.reader(f)
-            # discard title line
-            reader.next()
             # discard header containing column names
             reader.next()
             # for each indicator code, save in a dictionary those fields that
@@ -82,6 +80,7 @@ class Command(BaseCommand):
                     name__iexact=subtheme_str,
                     defaults={'theme': theme,
                               'name': subtheme_str})
+                notes = row[15].strip().decode('utf8')
                 keywords_set = set()
                 for keyword_str in row[10].split(','):
                     keyword_str_clean = \
@@ -100,6 +99,7 @@ class Command(BaseCommand):
                                           name=name,
                                           description=description,
                                           subtheme=subtheme,
+                                          notes=notes,
                                           )
                     indicator.save()
                     for keyword in keywords_set:
@@ -133,6 +133,11 @@ class Command(BaseCommand):
                             error_fmt % ('theme',
                                          indicator.theme,
                                          theme))
+                    if indicator.notes != notes:
+                        inconsistencies.append(
+                            error_fmt % ('notes',
+                                         indicator.notes,
+                                         notes))
                     if inconsistencies:
                         sys.stdout.write("WARNING! Inconsistency found."
                                          " Re-using the existing version.\n")
@@ -190,7 +195,6 @@ class Command(BaseCommand):
                     aggregation_method=aggregation_method,
                     source=source)
 
-        import pdb; pdb.set_trace()
         # read a file containing in each row the values of all the indicators
         # for one single zone
         with open(values_file, 'rb') as f:
@@ -206,7 +210,7 @@ class Command(BaseCommand):
             reader.next()  # row discarded
             # read row containing the indicators' codes
             second_row = reader.next()
-            ind_codes = [code.decode('utf-8')
+            ind_codes = [code.decode('utf8')
                          for code in second_row[admin_level + 1:]]
             sys.stdout.write('Indicator codes: %s\n' % ', '.join(ind_codes))
             for row in reader:
