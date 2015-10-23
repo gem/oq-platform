@@ -156,7 +156,7 @@ coverage_manage ()
     fname="tmp/workspaces/${ws_name}/coveragestores/${cs_name}/coverages-list.get.xml"
     web_get "$fname" "$co_list_url" 200
 
-    co_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverages/coverage" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+    co_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverages/coverage" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")" || true
 
     for co_line in $co_urls; do
         co_name="$(echo "$co_line" | cut -d '|' -f 1)"
@@ -188,7 +188,7 @@ coveragestore_manage () {
     fname="tmp/workspaces/${ws_name}/coveragestores-list.get.xml"
     web_get "$fname" "$cs_list_url" 200
 
-    cs_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStores/coverageStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+    cs_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStores/coverageStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")" || true
 
     for cs_line in $cs_urls; do
         cs_name="$(echo "$cs_line" | cut -d '|' -f 1)"
@@ -199,7 +199,7 @@ coveragestore_manage () {
         fname="workspaces/${ws_name}/coveragestores/${cs_name}.xml"
         web_get "$fname" "$cs_url" 200
 
-        co_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStore/coverages" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        co_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStore/coverages" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g" )" || true
 
         coverage_manage "$is_drop" "$ws_name" "$cs_name" "$co_list_url"
 
@@ -246,7 +246,7 @@ styles_manage () {
     for st_list_url in $st_list_urls; do
         web_get "$fname" "$st_list_url" 200
 
-        st_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/styles/style" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        st_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/styles/style" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g" )" || true
 
         for st_line in $st_urls; do
             st_name="$(echo "$st_line" | cut -d '|' -f 1)"
@@ -310,11 +310,11 @@ featuretypes_manage () {
     for fts_list_url in $fts_list_urls; do
         web_get "$fname" "$fts_list_url" 200
 
-        ft_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/featureTypes/featureType" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        ft_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/featureTypes/featureType" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname})" || true
 
         for ft_line in $ft_urls; do
             ft_name="$(echo "$ft_line" | cut -d '|' -f 1)"
-            ft_url="$(echo "$ft_line" | cut -d '|' -f 2)"
+            ft_url="$(echo "$ft_line" | cut -d '|' -f 2 | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")"
             # echo "  FT_NAME: $ft_name"
             # echo "  FT_URL: $ft_url"
 
@@ -343,18 +343,18 @@ datastore_manage () {
     fname="tmp/workspaces/${ws_name}/datastores-list.get.xml"
     web_get "$fname" "$ds_list_url" 200
 
-    ds_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStores/dataStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+    ds_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStores/dataStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname})" || true
 
     for ds_line in $ds_urls; do
         ds_name="$(echo "$ds_line" | cut -d '|' -f 1)"
-        ds_url="$(echo "$ds_line" | cut -d '|' -f 2)"
+        ds_url="$(echo "$ds_line" | cut -d '|' -f 2 | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")"
         # echo "  DS_NAME: $ds_name"
         # echo "  DS_URL: $ds_url"
 
         fname="workspaces/${ws_name}/datastores/${ds_name}.xml"
         web_get "$fname" "$ds_url" 200
 
-        ft_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStore/featureTypes" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        ft_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStore/featureTypes" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g" )" || true
 
         featuretypes_manage "$is_drop" "$ws_name" "$ds_name" "$ft_list_url"
 
