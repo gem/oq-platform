@@ -671,6 +671,14 @@ oq_platform_install () {
     fi
     find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
 
+    if [ "$gem_oq_bing_key" != "" ]; then
+        echo "UPDATE maps_maplayer SET source_params = regexp_replace(source_params, '\"ptype\": \"gxp_bingsource\"',
+     '\"apiKey\": \"$gem_oq_bing_key\", \"ptype\": \"gxp_bingsource\"')
+     WHERE  name = 'AerialWithLabels' AND source_params NOT LIKE '%\"apiKey\":%'; " | sudo -u postgres psql -e "$gem_db_name"
+    else
+        echo "DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';" | sudo -u postgres psql -e "$gem_db_name"
+    fi
+
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # updatelayers must be run again after the fixtures have been pushed
         # to allow synchronization of keywords and metadata from GN to GS
