@@ -22,6 +22,7 @@ var showArea = false;
 $( document ).ready(function() {
     updateTable();
     $('#outputDiv').css('display', 'none');
+    $('#absoluteSpinner').hide();
 });
 
 $('#retrofittingSelect').hide();

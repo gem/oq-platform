@@ -27,6 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link href="{{ STATIC_URL }}css/handsontable.full.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/risk_input_model.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}css/jQuery-UI-Bootstrap-0.2.5.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
 {% endblock extra_head %}
 
 
@@ -44,6 +45,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
         {% endblock oq_body_heading %}
       </div>
       <div id="oq-body-content">
+
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>
 
 <div id="tabs">
   <ul>
