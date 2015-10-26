@@ -210,7 +210,7 @@ $('#saveBtnFF').click(function() {
 
     var functionId = $('#functionId').val();
     var assetCategory = $('#assetCategory').val();
-    var lossCategory = $('#lossCategory').val();
+    var lossCategory = $('#lossCategory').find(":selected").val();
     var functionDescription = $('#functionDescription').val();
 
     /////////////////////////////
