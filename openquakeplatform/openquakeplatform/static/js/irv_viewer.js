@@ -869,8 +869,10 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
 // Color options for GL map
 var colorsPalRedSingle = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
 var colorsPalBlueSingle = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
-var colorsPalRedMulti = ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'];
+var colorsPalGreenSingle = ['#edf8e9', '#c7e9c0', '#a1d99b', '#74c476', '#31a354', '#006d2c'];
+var colorsPalRedMulti = ['#fef0d9', '#fdd49e', '#fdbb84', '#fc8d59', '#e34a33', '#b30000'];
 var colorsPalBlueMulti = ['#f1eef6', '#d0d1e6', '#a6bddb', '#74a9cf', '#2b8cbe', '#045a8d'];
+var colorsPalGreenMulti = ['#edf8fb', '#ccece6', '#99d8c9', '#66c2a4', '#2ca25f', '#006d2c'];
 // Default color
 var colorsPal = colorsPalRedSingle;
 
@@ -889,6 +891,12 @@ function colorPicker () {
         }
         if (colorSelection == 'Blue Multi Hue') {
             colorsPal = colorsPalBlueMulti;
+        }
+        if (colorSelection == 'Green Single Hue') {
+            colorsPal = colorsPalGreenMulti;
+        }
+        if (colorSelection == 'Green Multi Hue') {
+            colorsPal = colorsPalGreenMulti;
         }
         colorChange = true;
         mapboxGlLayerCreation();
@@ -1451,6 +1459,8 @@ var startApp = function() {
                 '<option>Red Multi Hue</option>'+
                 '<option>Blue Single Hue</option>'+
                 '<option>Blue Multi Hue</option>'+
+                '<option>Green Single Hue</option>'+
+                '<option>Green Multi Hue</option>'+
             '</select>'
         );
 
