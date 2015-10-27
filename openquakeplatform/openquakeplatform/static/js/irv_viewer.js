@@ -36,6 +36,7 @@ var license;
 var projectDefUpdated;
 var webGl;
 var projectChange = false;
+var colorChange = false;
 var verticesCount = 0;
 var VERTICES_THRESHOLD = 500000;
 
@@ -844,6 +845,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     }
 
     $('#webGlThematicSelection').show();
+    $('#webGlColorPicker').show();
 
     // Manage the thematic map selection menu
     // Set the map selection menu to the first multi group dropdown option
@@ -862,15 +864,42 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     $('#webGlThematicSelection').change(function() {
         mapboxGlLayerCreation();
     });
+}
 
+// Color options for GL map
+var colorsPalRedSingle = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
+var colorsPalBlueSingle = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
+var colorsPalRedMulti = ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'];
+var colorsPalBlueMulti = ['#f1eef6', '#d0d1e6', '#a6bddb', '#74a9cf', '#2b8cbe', '#045a8d'];
+// Default color
+var colorsPal = colorsPalRedSingle;
+
+function colorPicker () {
+    $('#webGlColorPicker').change(function() {
+        //var colorsPal = colorsPalRedSingle;
+        var colorSelection = $(this).val();
+        if (colorSelection == 'Red Single Hue') {
+            colorsPal = colorsPalRedSingle;
+        }
+        if (colorSelection == 'Red Multi Hue') {
+            colorsPal = colorsPalRedMulti;
+        }
+        if (colorSelection == 'Blue Single Hue') {
+            colorsPal = colorsPalBlueSingle;
+        }
+        if (colorSelection == 'Blue Multi Hue') {
+            colorsPal = colorsPalBlueMulti;
+        }
+        colorChange = true;
+        mapboxGlLayerCreation();
+    });
 }
 
 function mapboxGlLayerCreation() {
-    // There are 4 cases for managing the state of the map:
-    // 1. The user has created a map for the first time
-    // 2. The user changes the map theme
-    // 3. The user changes the weights
-    // 4. The user changes the project
+    // There are 5 cases for managing the state of the map:
+
+    // Case 1:
+    // The map is created for the first time
 
     // Case 2:
     // The data used for thematic map has not changed, so we
@@ -885,6 +914,9 @@ function mapboxGlLayerCreation() {
 
     // Case 4:
     // A new project has been loaded into the application
+
+    // Case 5:
+    // A new color scheme has been selected
 
     var weightChange = 0;
 
@@ -903,6 +935,7 @@ function mapboxGlLayerCreation() {
             // the SVI weight, the map should not be redrawn.
         // 2) the thematic map menu has been changes
         // 3) a new project is loaded into the map (case: weightChange = 0)
+        // 5) (partial reload) a new color scheme has been selected, only recreate the layers, NOT the data source
 
     // weightChange can be a interger value form 0 to 4, 0 being no change been made to the tree chart
     // weightChange 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 = is a primary indicator.
@@ -948,10 +981,6 @@ function mapboxGlLayerCreation() {
     // Round up the max
     max = Math.ceil(max * 10) / 10;
 
-    // TODO allow the user to change the colors
-    var colorsPalRed = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
-    var colorsPalBlue = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
-    var colorsPal = colorsPalBlue;
     var breaks = [];
 
     function getColor() {
@@ -1027,7 +1056,7 @@ function mapboxGlLayerCreation() {
         '</div>'
     );
 
-    // Cases 1, 2, 3, and 4
+    // Cases 1, 2, 3, 4, and 5
     //if (weightChange === false) {
         // Create a new mapbox layers
         for (var i = 0; i < 6; i++) {
@@ -1066,6 +1095,7 @@ function mapboxGlLayerCreation() {
             }
         });
     });
+    colorPicker();
 }
 
 function setupLeafletMap() {
@@ -1415,7 +1445,17 @@ var startApp = function() {
             '</select>'
         );
 
+        $('#map-tools').append(
+            '<select id="webGlColorPicker">'+
+                '<option>Red Single Hue</option>'+
+                '<option>Red Multi Hue</option>'+
+                '<option>Blue Single Hue</option>'+
+                '<option>Blue Multi Hue</option>'+
+            '</select>'
+        );
+
         $('#webGlThematicSelection').hide();
+        $('#webGlColorPicker').hide();
 
         setupMapboxGlMap();
     }
@@ -1527,6 +1567,13 @@ var startApp = function() {
         'position': 'fixed',
         'left': '160px',
         'margin-bottom' : 0
+    });
+
+    $('#webGlColorPicker').css({
+        'position': 'fixed',
+        'left': '160px',
+        'margin-bottom' : 0,
+        'margin-top': '31px'
     });
 };
 
