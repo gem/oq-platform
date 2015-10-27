@@ -19,11 +19,6 @@ label {
     margin: 4px 0 15px;
 }
 
-select, input, textarea {
-	width: 200px;
-}
-
-
 .ffsForm, .vfsForm{
     float: left;
     margin-top: 20px;
