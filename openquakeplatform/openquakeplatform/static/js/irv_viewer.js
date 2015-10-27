@@ -36,7 +36,6 @@ var license;
 var projectDefUpdated;
 var webGl;
 var projectChange = false;
-var colorChange = false;
 var verticesCount = 0;
 var VERTICES_THRESHOLD = 500000;
 
@@ -898,7 +897,6 @@ function colorPicker () {
         if (colorSelection == 'Green Multi Hue') {
             colorsPal = colorsPalGreenMulti;
         }
-        colorChange = true;
         mapboxGlLayerCreation();
     });
 }
