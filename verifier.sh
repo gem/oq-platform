@@ -439,6 +439,7 @@ _prodtest_innervm_run () {
 
     trap 'local LASTERR="$?" ; trap ERR ; (exit $LASTERR) ; return' ERR
 
+    ssh -t  $lxc_ip "getent hosts oq-platform.localdomain"
     ssh -t  $lxc_ip "rm -f ssh.log"
 
     ssh -t  $lxc_ip "sudo apt-get update"
