@@ -1103,19 +1103,17 @@ var startApp = function() {
         'display': 'block'
     });
 
-        // Check the URL for layer parameter
-    var urlLayerParameter = location.search;
-    urlLayerParameter = urlLayerParameter.substring(urlLayerParameter.indexOf("?")+1);
+    // Check the URL for layer parameter
+    var urlLayerParameter = location.href;
+    urlLayerParameter = urlLayerParameter.split('irv_viewer/')[1];
+
     if (urlLayerParameter) {
-        console.log('urlLayerParameter:');
-        console.log(urlLayerParameter);
         selectedLayer = urlLayerParameter;
         loadProject();
     }
 };
 
 function loadProject() {
-    console.log('hi, loadProject:');
     $('#pdSelection').empty();
     // set tabs to back default
     $("#themeTabs").tabs("enable", 2);
@@ -1138,8 +1136,6 @@ function loadProject() {
 
 
 function attributeInfoRequest(selectedLayer) {
-    console.log('selectedLayer:');
-    console.log(selectedLayer);
     $('#loadProjectDialog').dialog('close');
 
     // Get layer attributes from GeoServer
