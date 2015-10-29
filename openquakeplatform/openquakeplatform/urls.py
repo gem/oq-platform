@@ -86,7 +86,7 @@ urlpatterns = patterns('',
         template_name="gaf_viewer.html"), name='gaf_viewer'),
     url(r'^grv_viewer/$', TemplateView.as_view(
         template_name="grv_viewer.html"), name='grv_viewer'),
-    url(r'^irv_viewer/$', TemplateView.as_view(
+    url(r'^irv_viewer/.*$', TemplateView.as_view(
         template_name="irv_viewer.html"), name='irv_viewer'),
     url(r'^hazus/$', TemplateView.as_view(
         template_name="hazus.html"), name='hazus'),

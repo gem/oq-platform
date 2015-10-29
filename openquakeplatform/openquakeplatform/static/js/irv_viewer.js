@@ -15,11 +15,6 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-$(document).ready(function() {
-    $('#cover').remove();
-    $('.alert-unscaled-data').hide();
-});
-
 var layerAttributes;
 var sessionProjectDef = [];
 var selectedRegion;
@@ -39,6 +34,11 @@ var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
+
+$(document).ready(function() {
+    $('#cover').remove();
+    $('.alert-unscaled-data').hide();
+});
 
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
@@ -1034,23 +1034,6 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
-        $('#pdSelection').empty();
-        // set tabs to back default
-        $("#themeTabs").tabs("enable", 2);
-        $("#themeTabs").tabs("enable", 3);
-
-        $('#themeTabs').tabs('option', 'active', 0);
-        $('#thematic-map-selection').show();
-        $('#projectDef-spinner').text('Loading ...');
-        $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
-        $('#projectDef-spinner').show();
-        $('#iri-spinner').show();
-        $('#regionSelectionDialog').empty();
-        $('#projectDef-tree').empty();
-        $('#iri-chart').empty();
-        $('#cat-chart').empty();
-        $('#primary-chart').empty();
-
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
         var scope = angular.element($("#layer-list")).scope();
@@ -1059,7 +1042,7 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-        attributeInfoRequest(selectedLayer);
+        loadProject();
     });
 
     // AJAX error dialog
@@ -1119,10 +1102,44 @@ var startApp = function() {
         'left': '160px',
         'display': 'block'
     });
+
+        // Check the URL for layer parameter
+    var urlLayerParameter = location.search;
+    urlLayerParameter = urlLayerParameter.substring(urlLayerParameter.indexOf("?")+1);
+    if (urlLayerParameter) {
+        console.log('urlLayerParameter:');
+        console.log(urlLayerParameter);
+        selectedLayer = urlLayerParameter;
+        loadProject();
+    }
 };
+
+function loadProject() {
+    console.log('hi, loadProject:');
+    $('#pdSelection').empty();
+    // set tabs to back default
+    $("#themeTabs").tabs("enable", 2);
+    $("#themeTabs").tabs("enable", 3);
+
+    $('#themeTabs').tabs('option', 'active', 0);
+    $('#thematic-map-selection').show();
+    $('#projectDef-spinner').text('Loading ...');
+    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
+    $('#projectDef-spinner').show();
+    $('#iri-spinner').show();
+    $('#regionSelectionDialog').empty();
+    $('#projectDef-tree').empty();
+    $('#iri-chart').empty();
+    $('#cat-chart').empty();
+    $('#primary-chart').empty();
+
+    attributeInfoRequest(selectedLayer);
+}
 
 
 function attributeInfoRequest(selectedLayer) {
+    console.log('selectedLayer:');
+    console.log(selectedLayer);
     $('#loadProjectDialog').dialog('close');
 
     // Get layer attributes from GeoServer
