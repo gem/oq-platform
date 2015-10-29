@@ -464,15 +464,15 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
-echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host oq-platform.loc.lan
+echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host oq-platform.localdomain
 
 cd oq-platform/openquakeplatform
 
 # add a simulated qgis uploaded layer
-./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.loc.lan"
+./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.localdomain"
 
 export PYTHONPATH=\$(pwd)
-sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.loc.lan\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
+sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
