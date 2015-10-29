@@ -52,9 +52,9 @@ STATICFILES_DIRS = [
 ]
 
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg',
-    'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'tar',
-    'tgz', 'tbz', 'tar.gz', 'tar.bz2'
+    'csv', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'ods', 'pdf',
+    'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'zip',
+    'tar', 'tgz', 'tbz', 'tar.gz', 'tar.bz2'
 ]
 MAX_DOCUMENT_SIZE = 100
 
