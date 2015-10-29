@@ -1,4 +1,6 @@
   [Matteo Nastasi]
+  * vulnerability: fix elements of group of material technologies
+    ('mat_tech_grp') are wrongly assigned
   * fix bing-key management for production and development
   * vulnerability: add constraint to limit to the same distribution type
     for fragility functions
