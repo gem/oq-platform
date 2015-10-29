@@ -1134,7 +1134,6 @@ function loadProject() {
     attributeInfoRequest(selectedLayer);
 }
 
-
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
 
@@ -1143,6 +1142,16 @@ function attributeInfoRequest(selectedLayer) {
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
+            // Check that the returned data is valid, if not stop the application
+            if (data.type != 'FeatureCollection') {
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>The project you are trying to load does not apear to be valid.</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#projectDef-spinner').hide();
+                return;
+            }
 
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
@@ -1253,7 +1262,7 @@ function projDefJSONRequest(selectedLayer) {
         error: function() {
             $('#ajaxErrorDialog').empty();
             $('#ajaxErrorDialog').append(
-                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+                '<p>The project you are trying to load does not apear to be valid.</p>'
             );
             $('#ajaxErrorDialog').dialog('open');
         }
