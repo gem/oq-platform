@@ -1,11 +1,11 @@
 var mat_tech =
     { 'MAT99': [],
-      'C99': mat_tech_grp[0],
+      'C99': mat_tech_grp[1],
 
-      'CU':  mat_tech_grp[1],
+      'CU':  mat_tech_grp[0],
 
-      'CR':  mat_tech_grp[0],
-      'SRC': mat_tech_grp[0],
+      'CR':  mat_tech_grp[1],
+      'SRC': mat_tech_grp[1],
 
       'S':   mat_tech_grp[2],
 

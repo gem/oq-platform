@@ -1,7 +1,8 @@
   [Matteo Nastasi]
+  * vulnerability: fix elements of group of material technologies
+    ('mat_tech_grp') are wrongly assigned
   * vulnerability: add constraint to limit to the same distribution type
     for fragility functions
-
   * vulnerability: replace limit states lowercased names with themselves where
     all [^a-z0-9] chars are substituted with '_' and contiguous '_' are
     collapsed into one
