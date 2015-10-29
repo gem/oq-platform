@@ -102,7 +102,7 @@ def bootstrap(db_name=None, db_user=None,
     # (without 'openquakeplatform.' prefix
     apps_list_populate()
 
-    apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot)
+    apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot, oq_bing_key)
 
     # Install the libs needs to `test` and `test_with_xunit`:
     local('pip install %s' % ' '.join(PYTHON_TEST_LIBS))
@@ -163,7 +163,7 @@ def apps_list_populate():
              APPS_LIST.append(i[18:])
 
 
-def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
+def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot, bing_key):
     globs = globals()
     for sfx in range(1, 20):
         # Add the apps
@@ -193,6 +193,7 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
     # to allow synchronization of keywords and metadata from GN to GS
     local('python manage.py updatelayers')
 
+<<<<<<< HEAD
     for sfx in range(80, 100):
         # Add the apps
         for app in APPS_LIST:
@@ -203,6 +204,14 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot):
             else:
                 add_fn(db_name, db_user, db_pass)
 
+=======
+    if bing_key:
+        local("echo \"UPDATE maps_maplayer SET source_params = regexp_replace(source_params, '\\\"ptype\\\": \\\"gxp_bingsource\\\"',\
+    '\\\"apiKey\\\": \\\"%s\\\", \\\"ptype\\\": \\\"gxp_bingsource\\\"')\
+    WHERE  name = 'AerialWithLabels' AND source_params NOT LIKE '%%\\\"apiKey\\\":%%';\" | sudo -u postgres psql -e -U %s %s" % (bing_key, db_user, db_name))
+    else:
+        local("echo \"DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';\" |  sudo -u postgres psql -e -U %s %s" % (db_user, db_name))
+>>>>>>> origin/master
 
 
 def clean(db_name=None, db_user=None):
