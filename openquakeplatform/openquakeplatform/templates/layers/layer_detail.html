@@ -29,13 +29,11 @@
   </div>
   <div class="span7 action-group">
 
-    <div id="foobar">{% url 'irv_viewer'|add:layer.get_absolute_url|cut:"/layers/oqplatform:" %}</div>
-
     <div class="btn-group pull-right">
       <!-- Open layer in IRV -->
       {% if 'IRMT_QGIS_Plugin' in layer.keyword_list %}
         <div class="btn-group">
-          <a class="btn btn-large btn-primary" href="{% url 'irv_viewer' %}">
+          <a class="btn btn-large btn-primary" href="/irv_viewer/{{ layer.get_absolute_url |cut:"/layers/oqplatform:"}}">
             {% trans "Open in IRV" %}
           </a>
         </div>
