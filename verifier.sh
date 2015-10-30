@@ -102,6 +102,7 @@ copy_dev () {
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/dev_runserver.log" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/geoserver/data/logs/geoserver.log*" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/openquakeplatform/local_settings.py" "out/dev_local_settings.py" || true
 }
 
 copy_prod () {
@@ -110,6 +111,7 @@ copy_prod () {
     scp "${lxc_ip}:/var/log/tomcat7/catalina.out" "out/prod_tomcat7_catalina.log" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
     scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
+    scp "${lxc_ip}:/etc/openquake/platform/local_settings.py" "out/prod_local_settings.py" || true
 }
 
 #
@@ -479,6 +481,7 @@ python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xun
 sleep 3
 cd -
 "
+    sleep 72000 || true
 
     echo "_prodtest_innervm_run: exit"
 
