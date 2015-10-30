@@ -148,6 +148,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
     // get some info about the themes
     var themeKeys = [];
+    var themeInversionObj = {};
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
         var themeName = JSONthemes[u].name;
@@ -156,11 +157,15 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         themeWeightObj[themeName] = themeWeight;
         // identify if the node has been inverted
         if (JSONthemes[u].isInverted === true) {
-            themeInversionFactor = -1;
+            themeInversionObj[themeName] = -1;
         } else {
-            themeInversionFactor = 1;
+            themeInversionObj[themeName] = 1;
         }
     }
+    console.log('themeKeys:');
+    console.log(themeKeys);
+    console.log('themeInversionObj:');
+    console.log(themeInversionObj);
 
     // compute the subIndex values based on operator
     if (operator == 'Simple sum (ignore weights)') {
@@ -210,14 +215,26 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Weighted multiplication') {
+        var ct = 0;
         for (var v4 = 0; v4 < themeObj.length; v4++) {
             var tempElementValue = 1;
             var themeObjRegion = themeObj[v4].region;
             // compute the themes
-            for (var w4 = 0; w4 < themeKeys.length; w4++) {
+
+            for (var w4 = 0; w4 < themeKeys.length; w4++, ct++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w4]];
+                console.log('themeInversionFactor:');
+                console.log(themeInversionFactor);
+
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal * themeInversionFactor);
+                if (themeWeightVal > 0) {
+
+                    console.log('(tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor):');
+                    console.log((tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor));
+                    tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor);
+                }
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -305,10 +322,24 @@ function processIndicators(layerAttributes, projectDef) {
         temp.region = la[s].properties[selectedRegion];
         themeData.push(temp);
     }
+    console.log('la:');
+    console.log(la);
 
     // Find the theme information
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
+            // TODO maybe remove this...
+            var themeInversionFactor;
+            /*
+            if (svThemes[m].isInverted === true) {
+                themeInversionFactor = -1;
+            } else {
+                themeInversionFactor = 1;
+            }
+            */
+            themeInversionFactor = 1
+
+
             var operator = svThemes[m].operator;
             var weight = svThemes[m].weight;
             var name = svThemes[m].name;
@@ -347,7 +378,7 @@ function processIndicators(layerAttributes, projectDef) {
                     }
                     // Grab the average
                     var average = tempValue / tempIndicatorChildrenKeys.length;
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average * themeInversionFactor});
                 } else if ( operator == "Simple sum (ignore weights)") {
                     for (var p1 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -364,7 +395,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
                 } else if ( operator == "Weighted sum") {
                     for (var p2 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -384,7 +415,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
                 } else if ( operator == "Simple multiplication (ignore weights)") {
                     tempValue = 1;
                     for (var p3 in la[o].properties) {
@@ -402,7 +433,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
                 } else if ( operator == "Weighted multiplication") {
                     tempValue = 1;
                     for (var p4 in la[o].properties) {
@@ -421,7 +452,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
                 } else if ( operator == "Geometric mean (ignore weights)") {
                     tempValue = 1;
                     var power = 1 / tempIndicatorChildrenKeys.length;
@@ -441,7 +472,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                     tempValue = Math.pow(tempValue, power);
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
                 }
             }
         }
@@ -511,13 +542,16 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the SVI ////
     /////////////////////////
 
+    console.log('themeData:');
+    console.log(themeData);
+
     var SVI = {};
     var sviNameLookUp = 'SVI';
     var sviJSONthemes = svThemes;
     // SVI is an object with region and value
     if (svThemes) {
         SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
-        scale(SVI);
+        //scale(SVI);
     }
 
     ////////////////////////////////
@@ -624,6 +658,10 @@ function processIndicators(layerAttributes, projectDef) {
     ////////////////////////////////////
 
     // Pass indicators into a 'newProperties' element
+                console.log('svThemes:');
+            console.log(svThemes);
+            console.log('SVI:');
+            console.log(SVI);
     for (var ix = 0; ix < la.length; ix++) {
         la[ix].newProperties = {};
         for (var key in IRI) {
