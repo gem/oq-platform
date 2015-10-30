@@ -310,12 +310,6 @@ function processIndicators(layerAttributes, projectDef) {
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
             var themeInversionFactor;
-            if (svThemes[m].isInverted === true) {
-                themeInversionFactor = -1;
-            } else {
-                themeInversionFactor = 1;
-            }
-
             var operator = svThemes[m].operator;
             var weight = svThemes[m].weight;
             var name = svThemes[m].name;
