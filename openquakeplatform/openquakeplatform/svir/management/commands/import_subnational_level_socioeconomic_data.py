@@ -15,6 +15,7 @@
 
 import sys
 import csv
+import os
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from openquakeplatform.svir.models import (AggregationMethod,
@@ -31,27 +32,23 @@ from openquakeplatform.svir.models import (AggregationMethod,
                                            InternalConsistencyMetric,
                                            )
 
-COUNTRIES_COUNT = 197
-COUNTRIES_STARTING_IDX = 14
-REGIONS_STARTING_IDX = (COUNTRIES_STARTING_IDX
-                        + COUNTRIES_COUNT + 1)  # discarding data completeness
-
 
 class Command(BaseCommand):
-    args = ('<csv indicators_file> <csv values_file>'
-            ' <country iso> <admin level>')
-    help = 'Import csv files of subnational-level socioeconomic indicators'
+    args = ('<csv indicators_filename> <csv values_filename>')
+    help = ('Import csv files of subnational-level socioeconomic indicators.\n'
+            'File naming convention: XXX_N_indicators.csv XXX_N_values.csv\n'
+            '(XXX = country iso code, N = administration level)')
 
-    def handle(self, indicators_file, values_file, country_iso, admin_level,
-               *args, **options):
+    def handle(self, indicators_filename, values_filename, *args, **options):
         UNKNOWN_STR = 'Unknown'
-        admin_level = int(admin_level)
+        country_iso = os.path.basename(indicators_filename)[:3]
+        admin_level = int(os.path.basename(indicators_filename)[4])
         country = Zone.objects.get(country_iso=country_iso, admin_level=0)
         sys.stdout.write('Loading subnational socioeconomic data for %s...\n'
                          % country)
         # read a file containing information about indicators, measurement
         # types, aggregation methods, and sources
-        with open(indicators_file, 'rb') as f:
+        with open(indicators_filename, 'rb') as f:
             reader = csv.reader(f)
             # discard header containing column names
             reader.next()
@@ -199,7 +196,7 @@ class Command(BaseCommand):
 
         # read a file containing in each row the values of all the indicators
         # for one single zone
-        with open(values_file, 'rb') as f:
+        with open(values_filename, 'rb') as f:
             name_south_america_study = 'South America Risk Assessment (SARA)'
             study, _ = Study.objects.get_or_create(
                 name__iexact=name_south_america_study,
