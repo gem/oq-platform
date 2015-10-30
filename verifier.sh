@@ -481,8 +481,6 @@ python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xun
 sleep 3
 cd -
 "
-    sleep 72000 || true
-
     echo "_prodtest_innervm_run: exit"
 
     return 0
