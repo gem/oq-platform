@@ -200,7 +200,7 @@ def apps(db_name, db_user, db_pass, geonode_port, geoserver_port, mediaroot, bin
     else:
         local("echo \"DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';\" |  sudo -u postgres psql -e -U %s %s" % (db_user, db_name))
 
-   for sfx in range(80, 100):
+    for sfx in range(80, 100):
         # Add the apps
         for app in APPS_LIST:
             try:
