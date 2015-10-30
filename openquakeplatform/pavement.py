@@ -314,7 +314,7 @@ def start_django():
     Start the GeoNode Django application
     """
     bind = options.get('bind', '')
-    sh('python manage.py runserver %s &' % bind)
+    sh('python manage.py runserver %s >>runserver.log 2>&1 &' % bind)
 
 
 @task

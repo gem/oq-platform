@@ -4,6 +4,8 @@
   * fix bing-key management for production and development
   * vulnerability: add constraint to limit to the same distribution type
     for fragility functions
+  * Integrated irv tests into nose/selenium infrastructure
+  * Import of syntetic qgis 'irmt' layer to test irv application
   * vulnerability: replace limit states lowercased names with themselves where
     all [^a-z0-9] chars are substituted with '_' and contiguous '_' are
     collapsed into one
