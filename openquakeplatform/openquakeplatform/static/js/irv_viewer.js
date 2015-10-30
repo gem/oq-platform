@@ -174,6 +174,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v].region;
             // compute the themes
             for (var w = 0; w < themeKeys.length; w++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w]];
                 var tempThemeName = themeKeys[w];
                 tempElementValue = tempElementValue + (themeObj[v][tempThemeName] * themeInversionFactor);
             }
@@ -185,6 +187,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v1].region;
             // compute the themes
             for (var w1 = 0; w1 < themeKeys.length; w1++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w1]];
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
@@ -197,6 +201,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
             for (var w2 = 0; w2 < themeKeys.length; w2++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w2]];
                 var tempThemeName = themeKeys[w2];
                 tempElementValue = tempElementValue + (themeObj[v2][tempThemeName] * themeInversionFactor);
             }
@@ -209,6 +215,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v3].region;
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w3]];
                 var tempThemeName = themeKeys[w3];
                 tempElementValue = tempElementValue * (themeObj[v3][tempThemeName] * themeInversionFactor);
             }
@@ -245,6 +253,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v5].region;
             // compute the themes
             for (var w5 = 0; w5 < themeKeys.length; w5++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w5]];
                 var tempThemeName = themeKeys[w5];
                 tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
             }
