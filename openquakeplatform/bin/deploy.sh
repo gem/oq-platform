@@ -596,7 +596,7 @@ oq_platform_install () {
 
     if (kill -0 $(cat /var/run/apache2/apache2.pid)) >/dev/null 2>&1; then
         service apache2 restart
-    elif (kill -0 $(cat /var/run/apache2/gunicorn.pid)) >/dev/null 2>&1; then
+    elif (kill -0 $(cat /var/run/gunicorn/platform-prod.pid)) >/dev/null 2>&1; then
         service gunicorn restart
     fi
 
