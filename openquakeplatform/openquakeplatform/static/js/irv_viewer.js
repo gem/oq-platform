@@ -309,7 +309,6 @@ function processIndicators(layerAttributes, projectDef) {
     // Find the theme information
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
-            var themeInversionFactor;
             var operator = svThemes[m].operator;
             var weight = svThemes[m].weight;
             var name = svThemes[m].name;
@@ -348,7 +347,7 @@ function processIndicators(layerAttributes, projectDef) {
                     }
                     // Grab the average
                     var average = tempValue / tempIndicatorChildrenKeys.length;
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average});
                 } else if ( operator == "Simple sum (ignore weights)") {
                     for (var p1 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -365,7 +364,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Weighted sum") {
                     for (var p2 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -385,7 +384,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Simple multiplication (ignore weights)") {
                     tempValue = 1;
                     for (var p3 in la[o].properties) {
@@ -403,7 +402,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Weighted multiplication") {
                     tempValue = 1;
                     for (var p4 in la[o].properties) {
@@ -422,7 +421,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Geometric mean (ignore weights)") {
                     tempValue = 1;
                     var power = 1 / tempIndicatorChildrenKeys.length;
@@ -442,7 +441,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                     tempValue = Math.pow(tempValue, power);
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 }
             }
         }
