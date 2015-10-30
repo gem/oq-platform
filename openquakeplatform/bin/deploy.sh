@@ -594,7 +594,7 @@ oq_platform_install () {
     chmod a+x "/usr/sbin/openquakeplatform"
     mkdir -p /etc/openquake/platform/media
 
-    if (kill -0 $(cat /var/run/apache2/apache2.pid)) >/dev/null 2>&1; then
+    if (kill -0 $(cat /var/run/apache2.pid)) >/dev/null 2>&1; then
         service apache2 restart
     elif (kill -0 $(cat /var/run/gunicorn/platform-prod.pid)) >/dev/null 2>&1; then
         service gunicorn restart
