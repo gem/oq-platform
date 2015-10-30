@@ -699,7 +699,7 @@ def _stream_variables_data_as_csv_subnational(
     sv_variables_ids_list = [var_id.strip()
                              for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
-    header_list = ["ZONE_NAME", "COUNTRY_ISO", "PARENT_LABEL"]
+    header_list = ["ZONE_NAME", "CNTRY_ISO", "PARENT_LAB"]
     indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
     # NOTE: unavailable indicators will be ignored
     for indicator in indicators:
@@ -744,7 +744,7 @@ def _stream_variables_data_as_csv_national(
     sv_variables_ids_list = [var_id.strip()
                              for var_id in sv_variables_ids.split(",")]
     # build the header, appending sv_variables_ids properly
-    header_list = ["ISO", "COUNTRY_NAME"]
+    header_list = ["ISO", "CNTRY_NAME"]
     indicators = Indicator.objects.filter(code__in=sv_variables_ids_list)
     # NOTE: unavailable indicators will be ignored
     for indicator in indicators:
