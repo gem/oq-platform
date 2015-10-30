@@ -191,7 +191,11 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                 var themeInversionFactor = themeInversionObj[themeKeys[w1]];
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+                if (themeWeightVal > 0) {
+                    console.log('tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor):');
+                    console.log(tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor));
+                    tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+                }
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -223,13 +227,12 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     } else if (operator == 'Weighted multiplication') {
-        var ct = 0;
         for (var v4 = 0; v4 < themeObj.length; v4++) {
             var tempElementValue = 1;
             var themeObjRegion = themeObj[v4].region;
             // compute the themes
 
-            for (var w4 = 0; w4 < themeKeys.length; w4++, ct++) {
+            for (var w4 = 0; w4 < themeKeys.length; w4++) {
                 // Get inversion factor
                 var themeInversionFactor = themeInversionObj[themeKeys[w4]];
                 console.log('themeInversionFactor:');
@@ -238,7 +241,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
                 if (themeWeightVal > 0) {
-
                     console.log('(tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor):');
                     console.log((tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor));
                     tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor);
