@@ -16,7 +16,7 @@
 */
 
 var webGl;
-var mbToken = MAPBOXGL_ACCESSTOKEN;
+
 console.log('mbToken:');
 console.log(mbToken);
 
