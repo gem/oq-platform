@@ -490,9 +490,13 @@ oq_platform_install () {
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         gem_db_pass="$(passwd_create)"
         gem_secr_key="$(python -c "import string, random ; print ''.join(random.choice(string.ascii_letters + string.digits + '%$&()=+-|#@?') for _ in range(50))")"
+
     else
         gem_db_pass="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print DATABASES['default']['PASSWORD']" )" ;
         gem_secr_key="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print SECRET_KEY" )" ;
+        if [ -z "$gem_oq_bing_key" ]; then
+            gem_oq_bing_key="$(python -c "execfile('/etc/openquake/platform/local_settings.py',globals() ,locals() ); print BING_KEY['bing_key']" )" ;
+        fi
     fi
 
     # reset and install disabled
@@ -590,7 +594,11 @@ oq_platform_install () {
     chmod a+x "/usr/sbin/openquakeplatform"
     mkdir -p /etc/openquake/platform/media
 
-    service apache2 restart
+    if (kill -0 $(cat /var/run/apache2.pid)) >/dev/null 2>&1; then
+        service apache2 restart
+    elif (kill -0 $(cat /var/run/gunicorn/platform-prod.pid)) >/dev/null 2>&1; then
+        service gunicorn restart
+    fi
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         db_user_create "$gem_db_user" "$gem_db_pass"
@@ -662,6 +670,14 @@ oq_platform_install () {
         mkdir -p "$MIGRATIONS_HISTORY"
     fi
     find oq-platform/openquakeplatform/migrations -type f \( -name "*.py" -or -name "*.sql" -or -name "*.sh" \) -exec cp "{}" "${MIGRATIONS_HISTORY}/" \;
+
+    if [ "$gem_oq_bing_key" != "" ]; then
+        echo "UPDATE maps_maplayer SET source_params = regexp_replace(source_params, '\"ptype\": \"gxp_bingsource\"',
+     '\"apiKey\": \"$gem_oq_bing_key\", \"ptype\": \"gxp_bingsource\"')
+     WHERE  name = 'AerialWithLabels' AND source_params NOT LIKE '%\"apiKey\":%'; " | sudo -u postgres psql -e "$gem_db_name"
+    else
+        echo "DELETE FROM maps_maplayer WHERE NAME = 'AerialWithLabels';" | sudo -u postgres psql -e "$gem_db_name"
+    fi
 
     if [ "$GEM_IS_INSTALL" == "y" ]; then
         # updatelayers must be run again after the fixtures have been pushed
