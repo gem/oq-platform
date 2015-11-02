@@ -38,6 +38,7 @@ def oq_context_processor(request):
     context['TILESTREAM_URL'] = settings.TILESTREAM_URL
     context['HELP_URL'] = settings.HELP_URL
     context['GOOGLE_UA'] = getattr(settings, 'GOOGLE_UA', False)
+    context['MAPBOXGL_ACCESSTOKEN'] = settings.MAPBOXGL_ACCESSTOKEN
 
     return context
 

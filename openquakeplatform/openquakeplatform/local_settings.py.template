@@ -76,6 +76,8 @@ BING_KEY = {
     ),
 }
 
+MAPBOXGL_ACCESSTOKEN = '%(oq_mapbox_key)s'
+
 # FIXME production doesn't work without 'testserver'.
 # Production must be fixed and 'testserver' removed from here.
 ALLOWED_HOSTS = ['%(host)s', 'testserver', 'localhost']
