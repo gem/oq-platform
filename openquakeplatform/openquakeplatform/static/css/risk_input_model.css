@@ -14,16 +14,19 @@
 }
 
 label {
-	font-weight: bold;
-}
-
-select, input, textarea {
-	width: 200px;
+    font-weight: bold;
+    float: left;
+    margin: 4px 0 15px;
 }
 
 .ffsForm, .vfsForm{
-	float: left;
-	margin-top: 20px;
+    float: left;
+    margin-top: 20px;
+    width: 45%;
+}
+
+.ffsForm input {
+	float: right;
 }
 
 .ffsTable {
@@ -54,11 +57,9 @@ select, input, textarea {
 	height: 140px;
     overflow: auto;
     margin-top: 20px;
-    padding-left: 90px;
 }
 
 .ffsTitle, .vfsTitle {
-    padding-left: 10%;
     font-size: 18px;
 }
 
@@ -90,6 +91,13 @@ textarea {
 	margin-left: 35%;
 }
 
-
-
+.ffsTableDiv, .vfsTableDiv {
+    padding-right: 40px;
+    padding-bottom: 15%;
+    width: 90%;
+    float: left;
+    border: 1px solid #eee;
+    margin-bottom: 1em;
+    padding: 5%;
+}
 
