@@ -9,3 +9,7 @@
   * vulnerability: replace limit states lowercased names with themselves where
     all [^a-z0-9] chars are substituted with '_' and contiguous '_' are
     collapsed into one
+
+  [Ben Wyss]
+  * Provide an 'Open in IRV' button to the default GeoNode layer preview page
+    when the layer has been created using the SVIR QGIS plugin
