@@ -30,6 +30,14 @@
   <div class="span7 action-group">
     <div class="btn-group pull-right">
       <!-- download layer -->
+      <!-- Open layer in WebGL viewer -->
+      {% if 'OQ-artifact' in layer.keyword_list %}
+        <div class="btn-group">
+          <a class="btn btn-large" href="{% url 'webgl_viewer' %}{{ layer.get_absolute_url |cut:"/layers/" }}">
+            {% trans "Open in WebGL" %}
+          </a>
+        </div>
+      {% endif %}
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Layer" %}

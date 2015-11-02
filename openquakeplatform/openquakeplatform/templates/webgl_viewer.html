@@ -22,30 +22,28 @@ IRV - {{block.super}}
 
 {% block map_tools %}
 {{block.super}}
-<div id="cover"></div>
 
-</div>
 
 {% endblock %}
 
 {% block body_outer %}
 {{block.super}}
-
+<link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.1/mapbox-gl.css' rel='stylesheet' />
 {% endblock %}
 
 
 {% block middle %}
 {{block.super}}
-
-<div id="cover"></div>
-<div ng-app="webGl_app">
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>
+<div id="map"></div>
+<div>
   <div id="errorDialog" title="Error" style="overflow: hidden;"></div>
 </div>
 
 {% endblock middle %}
 {% block extra_script %}
     {{block.super}}
-    <script src="{{ STATIC_URL }}js/webgl_viewer.js"></script>
     <script>
     var mbToken = "{{ MAPBOXGL_KEY }}";
     /*
@@ -54,4 +52,6 @@ IRV - {{block.super}}
         if(typeof help !== "undefined") { help.href+='/irv/'; }
         */
     </script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.1/mapbox-gl.js'></script>
+    <script src="{{ STATIC_URL }}js/webgl_viewer.js"></script>
 {% endblock extra_script %}

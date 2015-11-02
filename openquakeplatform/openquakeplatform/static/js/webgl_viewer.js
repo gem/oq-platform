@@ -16,11 +16,17 @@
 */
 
 var webGl;
-
-console.log('mbToken:');
-console.log(mbToken);
+var mapBoxAccessToken;
+var map;
 
 $(document).ready(function() {
+    // Calculate the height:
+    var headerHeight = $('#header').height();
+    var footerHeight = $('#footer').height();
+    var mtoolsHeight = $('#map-tools').height();
+    var ribbonHeight = $('#oq-context-ribbon').height();
+    var mapHeight = (window.innerHeight - headerHeight - footerHeight - mtoolsHeight - ribbonHeight);
+    $('#map').height(mapHeight);
 
     // Error dialog
     $('#errorDialog').dialog({
@@ -30,6 +36,22 @@ $(document).ready(function() {
         closeOnEscape: true,
         modal: true
     });
+
+    // Check to see if there is a system wide mapbox access token
+    try {
+        mapBoxAccessToken = mbToken;
+    } catch(e) {
+        mapBoxAccessToken = null;
+    }
+
+    if (!mapBoxAccessToken) {
+        $('#errorDialog').empty();
+        $('#errorDialog').append(
+            '<p>This instalation of the OpenQuake Platform does not include the correct system setting for this application be used</p>'
+        );
+        $('#errorDialog').dialog('open');
+        return;
+    }
 
     // Check the browser for webGL support
     function webglDetect(return_context) {
@@ -66,7 +88,7 @@ $(document).ready(function() {
     if (webGl === false) {
         $('#errorDialog').empty();
         $('#errorDialog').append(
-            '<p>This application requires a moder web browser that supports webGl</p>'
+            '<p>This application requires a modern web browser that supports webGl</p>'
         );
         $('#errorDialog').dialog('open');
     } else {
@@ -87,4 +109,7 @@ function setupMapboxGlMap() {
         zoom: 2,
     });
 
+    setTimeout(function() {
+        $('#absoluteSpinner').hide();
+    }, 2000);
 }
