@@ -202,8 +202,8 @@ function updateTable() {
 
     // insert new row using keyboard input
     $(document).keyup(function(e) {
-        // 17 is the 'ctr' key
-        if (e.keyCode == 17 ) {
+        // This will watch for keys Ctl + Shift + n
+        if (e.shiftKey && e.ctrlKey && e.keyCode == 78) {
             var rowIndex = $('.currentRow').parent().index();
 
             exposureTable.alter("insert_row", rowIndex);
