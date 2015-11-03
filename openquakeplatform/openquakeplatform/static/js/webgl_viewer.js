@@ -135,6 +135,24 @@ function mapboxGlLayerCreation(layerAttributes) {
     // Default color
     var colorsPal = colorsPalRedSingle;
 
+    // Find the bounding box for the new layer
+    var minMaxLng = [];
+    var minMaxLat = [];
+    for (var i = 0; i < layerAttributes.features.length; i++) {
+        minMaxLng.push(layerAttributes.features[i].geometry.coordinates[0]);
+        minMaxLat.push(layerAttributes.features[i].geometry.coordinates[1]);
+    }
+
+    // Get the min and max lat and lon in order to create a bounding box
+    var minLng = Math.min.apply(null, minMaxLng).toFixed(2);
+    var maxLng = Math.max.apply(null, minMaxLng).toFixed(2);
+    var minLat = Math.min.apply(null, minMaxLat).toFixed(2);
+    var maxLat = Math.max.apply(null, minMaxLat).toFixed(2);
+
+    // Fit the map to bounding box
+    map.fitBounds([[minLng, minLat], [maxLng, maxLat]]);
+
+
     // Find the values to create categorized color ramp
     // First find the min and max vales
     var minMaxArray = [];
@@ -144,10 +162,7 @@ function mapboxGlLayerCreation(layerAttributes) {
         }
     }
 
-    // TODO fix this
-    //map.fitBounds(mapboxBoundingBox);
-
-
+    // Get the min and max values
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
     min = (parseFloat(min) - 0.1);
@@ -160,7 +175,7 @@ function mapboxGlLayerCreation(layerAttributes) {
         var interval = (max - min) / 6;
         var tempStep = min;
         for (var i = 0; i < 5; i++) {
-            tempStep += interval
+            tempStep += interval;
             breaks.push(tempStep);
         }
         breaks.unshift(min);
@@ -169,14 +184,14 @@ function mapboxGlLayerCreation(layerAttributes) {
 
     getColor();
 
-    console.log('minMaxArray:');
-    console.log(minMaxArray);
-    console.log('breaks:');
-    console.log(breaks);
-
+    // Create new map layer source
     map.addSource('projectSource', {
         'type': 'geojson',
         'data': layerAttributes,
+        "properties": {
+            "title": "Mapbox DC",
+            "marker-symbol": "monument"
+        }
     });
 
 
