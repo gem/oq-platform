@@ -18,6 +18,10 @@
 var webGl;
 var mapBoxAccessToken;
 var map;
+var mapboxgl_heatmap = $.getScript("mapboxgl-heatmap.js");
+console.log('mapboxgl_heatmap:');
+console.log(mapboxgl_heatmap);
+var heatmap;
 
 $(document).ready(function() {
     // Calculate the height:
@@ -184,6 +188,16 @@ function mapboxGlLayerCreation(layerAttributes) {
 
     getColor();
 
+    heatmap = mapboxgl_heatmap.heatmap(map);
+
+    console.log('heatmap:');
+    console.log(heatmap);
+
+    var latlng = new mapboxgl.LngLat(-123.120738, 49.282729);
+    var point = map.project(latlng);
+    heatmap.addPoint(point.x, point.y, 25, 0.5);
+
+/*
     // Create new map layer source
     map.addSource('projectSource', {
         'type': 'geojson',
@@ -193,8 +207,27 @@ function mapboxGlLayerCreation(layerAttributes) {
             "marker-symbol": "monument"
         }
     });
-
-
+*/
+    // Create new map layers
+    // Where i < 6 becasue we have created 5 breaks
+    /*
+    //for (var i = 0; i < 6; i++) {
+        map.addLayer({
+            'id': 'foobar',
+            'type': 'point',
+            'source': 'projectSource',
+            "source-layer": "eq-simple",
+            //'interactive': true,
+            //'text-field': '{Parroquia}',
+            'paint': {
+                //"marker-symbol": "monument"
+            },
+            //'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+        });
+        // Create legend elements
+        //$('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
+    //}
+*/
 }
 
 // Get layer attributes from GeoServer
