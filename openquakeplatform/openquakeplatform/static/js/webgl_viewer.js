@@ -19,6 +19,9 @@ var webGl;
 var mapBoxAccessToken;
 var map;
 var heatmap;
+var heatmapIntensity = 45;
+var heatmapSize = 1500;
+var dataPoints = [];
 
 $(document).ready(function() {
     // Calculate the height:
@@ -27,6 +30,23 @@ $(document).ready(function() {
     var mtoolsHeight = $('#map-tools').height();
     var ribbonHeight = $('#oq-context-ribbon').height();
     var mapHeight = (window.innerHeight - headerHeight - footerHeight - mtoolsHeight - ribbonHeight);
+
+    // Create an input field for the heatmap intensity option
+    $('#map-tools').append(
+        'Heatmap intensity:'+
+        '<input id="heatmap-intensity" type="text" placeholder="'+heatmapIntensity+'">'+
+        '<button id="submit-intensity" type="button" class="btn btn-primary">Update</button>'
+    );
+
+
+    // Watch for heatmap intensity update
+    $('#submit-intensity').click(function() {
+        // Get the new intensity value
+        heatmapIntensity = $('#heatmap-intensity').val();
+        createHeatMapLayer();
+    });
+
+
     $('#map').height(mapHeight);
 
     // Error dialog
@@ -113,7 +133,7 @@ function setupLeafletMap() {
     //map = L.map('map', {layers: [baseMapUrl]});
 
     //Initialize the heatmap
-    heatmap = new L.TileLayer.WebGLHeatMap({size: 1500, autoresize: true});
+    heatmap = new L.TileLayer.WebGLHeatMap({size: heatmapSize, autoresize: true});
 
     // Check the URL for layer parameter
     var urlLayerParameter = location.href;
@@ -131,8 +151,7 @@ function setupLeafletMap() {
 function mapboxGlLayerCreation(layerAttributes) {
 
     // Format the data to be used by heatmap plugin,
-    // array of arrays like this: [[lat, lng, intensity]...]
-    var dataPoints = [];
+    // array of arrays like this: [[lat, lng, heatmapIntensity]...]
     for (var i = 0; i < layerAttributes.features.length; i++) {
         var tmpArray = [];
         tmpArray.push(
@@ -143,15 +162,6 @@ function mapboxGlLayerCreation(layerAttributes) {
         );
         dataPoints.push(tmpArray);
     }
-
-    // Creat the heatmap
-    var intensity = 45;
-    for (var i = 0, len = dataPoints.length; i < len; i++) {
-        var point = dataPoints[i];
-        heatmap.addDataPoint(point[0], point[1], intensity);
-    }
-
-    map.addLayer(heatmap);
 
     // Find the bounding box for the new layer
     var minMaxLng = [];
@@ -168,7 +178,6 @@ function mapboxGlLayerCreation(layerAttributes) {
     var maxLat = Math.max.apply(null, minMaxLat).toFixed(2);
 
     // Fit the map to bounding box
-    //map.fitBounds([[minLng, minLat], [maxLng, maxLat]]);
     map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
 
     var mapZoom = map.getZoom();
@@ -177,6 +186,33 @@ function mapboxGlLayerCreation(layerAttributes) {
     setTimeout(function() {
         map.setZoom(mapZoom - 1);
     }, 1000);
+
+    createHeatMapLayer();
+}
+
+function createHeatMapLayer() {
+    try {
+        // empty the data array
+        heatmap.data = [];
+        // Try to remove the heatmap layer
+        map.removeLayer(heatmap);
+    } catch (e) {
+        // continue
+    }
+
+    console.log('heatmapIntensity:');
+    console.log(heatmapIntensity);
+
+    // Creat the heatmap layer
+    for (var i = 0, len = dataPoints.length; i < len; i++) {
+        var point = dataPoints[i];
+        heatmap.addDataPoint(point[0], point[1], heatmapIntensity);
+    }
+    console.log('heatmap:');
+    console.log(heatmap);
+    //heatmap.options.size = 3000;
+
+    map.addLayer(heatmap);
 }
 
 // Get layer attributes from GeoServer
@@ -199,3 +235,4 @@ function attributeInfoRequest(selectedLayer) {
         }
     });
 }
+
