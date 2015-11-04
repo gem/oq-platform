@@ -18,10 +18,6 @@
 var webGl;
 var mapBoxAccessToken;
 var map;
-var mapboxgl_heatmap = $.getScript("mapboxgl-heatmap.js");
-console.log('mapboxgl_heatmap:');
-console.log(mapboxgl_heatmap);
-var heatmap;
 
 $(document).ready(function() {
     // Calculate the height:
@@ -96,11 +92,26 @@ $(document).ready(function() {
         );
         $('#errorDialog').dialog('open');
     } else {
-        setupMapboxGlMap();
+        //setupMapboxGlMap();
+        setupLeafletMap();
     }
 });
 
+function setupLeafletMap() {
+    map = L.map('map').setView([20, 0], 2);
 
+    // Add webGL support
+    var gl = L.mapboxGL({
+        accessToken: mbToken,
+        style: 'mapbox://styles/mapbox/streets-v8'
+    }).addTo(map);
+
+    setTimeout(function() {
+        $('#absoluteSpinner').hide();
+    }, 2000);
+}
+
+/*
 function setupMapboxGlMap() {
     // Create mapbox map element
     mapboxgl.accessToken = mbToken;
@@ -127,6 +138,7 @@ function setupMapboxGlMap() {
         $('#absoluteSpinner').hide();
     }, 2000);
 }
+*/
 
 function mapboxGlLayerCreation(layerAttributes) {
     // Color options for GL map
