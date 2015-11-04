@@ -18,6 +18,7 @@
 var webGl;
 var mapBoxAccessToken;
 var map;
+var heatmap;
 
 $(document).ready(function() {
     // Calculate the height:
@@ -98,6 +99,7 @@ $(document).ready(function() {
 });
 
 function setupLeafletMap() {
+    // Create a WebGl map
     map = L.map('map').setView([20, 0], 2);
 
     // Add webGL support
@@ -106,10 +108,22 @@ function setupLeafletMap() {
         style: 'mapbox://styles/mapbox/streets-v8'
     }).addTo(map);
 
+    // Create a leaflet map
+    //var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
+    //map = L.map('map', {layers: [baseMapUrl]});
+
     //Initialize the heatmap
-    var heatmap = new L.TileLayer.WebGLHeatMap({
-        size: 10
-    });
+    heatmap = new L.TileLayer.WebGLHeatMap({size: 1500, autoresize: true});
+
+    // Check the URL for layer parameter
+    var urlLayerParameter = location.href;
+    urlLayerParameter = urlLayerParameter.split('webgl_viewer/')[1];
+
+    if (urlLayerParameter) {
+        console.log('urlLayerParameter:');
+        console.log(urlLayerParameter);
+        attributeInfoRequest(urlLayerParameter);
+    }
 
     setTimeout(function() {
         $('#absoluteSpinner').hide();
@@ -146,6 +160,30 @@ function setupMapboxGlMap() {
 */
 
 function mapboxGlLayerCreation(layerAttributes) {
+
+    // Format the data to be used by heatmap plugin,
+    // array of arrays like this: [[lat, lng, intensity]...]
+    var dataPoints = [];
+    for (var i = 0; i < layerAttributes.features.length; i++) {
+        var tmpArray = [];
+        tmpArray.push(
+            layerAttributes.features[i].geometry.coordinates[1],
+            layerAttributes.features[i].geometry.coordinates[0],
+            // TODO fix the hard codded iml element
+            layerAttributes.features[i].properties.iml
+        );
+        dataPoints.push(tmpArray);
+    }
+
+    // Creat the heatmap
+    var intensity = 45;
+    for (var i = 0, len = dataPoints.length; i < len; i++) {
+        var point = dataPoints[i];
+        heatmap.addDataPoint(point[0], point[1], intensity);
+    }
+
+    map.addLayer(heatmap);
+
     // Color options for GL map
     var colorsPalRedSingle = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
     var colorsPalBlueSingle = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
@@ -171,8 +209,8 @@ function mapboxGlLayerCreation(layerAttributes) {
     var maxLat = Math.max.apply(null, minMaxLat).toFixed(2);
 
     // Fit the map to bounding box
-    map.fitBounds([[minLng, minLat], [maxLng, maxLat]]);
-
+    //map.fitBounds([[minLng, minLat], [maxLng, maxLat]]);
+    map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
 
     // Find the values to create categorized color ramp
     // First find the min and max vales
@@ -204,15 +242,6 @@ function mapboxGlLayerCreation(layerAttributes) {
     }
 
     getColor();
-
-    heatmap = mapboxgl_heatmap.heatmap(map);
-
-    console.log('heatmap:');
-    console.log(heatmap);
-
-    var latlng = new mapboxgl.LngLat(-123.120738, 49.282729);
-    var point = map.project(latlng);
-    heatmap.addPoint(point.x, point.y, 25, 0.5);
 
 /*
     // Create new map layer source
