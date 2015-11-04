@@ -106,6 +106,11 @@ function setupLeafletMap() {
         style: 'mapbox://styles/mapbox/streets-v8'
     }).addTo(map);
 
+    //Initialize the heatmap
+    var heatmap = new L.TileLayer.WebGLHeatMap({
+        size: 10
+    });
+
     setTimeout(function() {
         $('#absoluteSpinner').hide();
     }, 2000);
