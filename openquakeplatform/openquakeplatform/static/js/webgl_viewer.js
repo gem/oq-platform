@@ -19,43 +19,76 @@ var webGl;
 var mapBoxAccessToken;
 var map;
 var heatmap;
-var heatmapIntensity = 45;
-var heatmapSize = 1500;
+var heatmapIntensity = 15;
+var heatmapSize = 3080;
 var dataPoints = [];
 
 $(document).ready(function() {
-    // Calculate the height:
-    var headerHeight = $('#header').height();
-    var footerHeight = $('#footer').height();
-    var mtoolsHeight = $('#map-tools').height();
-    var ribbonHeight = $('#oq-context-ribbon').height();
-    var mapHeight = (window.innerHeight - headerHeight - footerHeight - mtoolsHeight - ribbonHeight);
-
     // Create an input field for the heatmap intensity option
+    // TODO clean up css
     $('#map-tools').append(
-        'Heatmap Intensity:'+
-        '<input id="heatmap-intensity" type="text" placeholder="'+heatmapIntensity+'">'+
-        '<button id="submit-intensity" type="button" class="btn btn-primary">Update</button>'
+        '<div id="intensity-div" style="float: left;">'+
+            '<label for="heatmap-intensity-value" style="float: left; margin-left: 10px; margin-top: 4px;">Heatmap Intensity:</label>'+
+            '<input type="text" id="heatmap-intensity-value" readonly style="border:0; color:#f6931f; font-weight:bold; width:30px;">'+
+            '<div id="heatmap-intensity" style="width:300px; margin-left: 10px;"></div><br>'+
+        '</div>'
     );
 
     // Create an input field for the heatmap size option
     $('#map-tools').append(
-        'Heatmap Size:'+
-        '<input id="heatmap-size" type="text" placeholder="'+heatmapSize+'">'+
-        '<button id="submit-size" type="button" class="btn btn-primary">Update</button>'
+        '<div id="size-div">'+
+            '<label for="heatmap-size-value" style="float: left; margin-left: 40px; margin-top: 4px;">Heatmap Size:</label>'+
+            '<input type="text" id="heatmap-size-value" readonly style="border:0; color:#f6931f; font-weight:bold; width:30px;">'+
+            '<div id="heatmap-size" style="width:300px; margin-left: 350px;"></div>'+
+        '</div>'
     );
 
+    $(function() {
+        $('#heatmap-intensity').slider({
+            range: "max",
+            min: 0,
+            max: 100,
+            value: heatmapIntensity,
+            slide: function( event, ui ) {
+                $('#heatmap-intensity-value').val( ui.value );
+            }
+        });
+        $('#heatmap-intensity-value').val($('#heatmap-intensity').slider('value') );
+    });
+
+    $(function() {
+        $('#heatmap-size').slider({
+            range: "max",
+            min: 1000,
+            max: 7000,
+            value: heatmapSize,
+            slide: function( event, ui ) {
+                $('#heatmap-size-value').val( ui.value );
+            }
+        });
+        $('#heatmap-size-value').val($('#heatmap-size').slider('value') );
+    });
+
+    // Calculate the height:
+    var mapToolsHeight = $('#map-tools').height();
+    var headerHeight = $('#header').height();
+    var footerHeight = $('#footer').height();
+    var mtoolsHeight = $('#map-tools').height();
+    var ribbonHeight = $('#oq-context-ribbon').height();
+    var mapHeight = (window.innerHeight - headerHeight - footerHeight - mtoolsHeight - ribbonHeight - mapToolsHeight);
+
+
     // Watch for heatmap intensity update
-    $('#submit-intensity').click(function() {
+    $("#heatmap-intensity").on("slidestop", function() {
         // Get the new intensity value
-        heatmapIntensity = $('#heatmap-intensity').val();
+        heatmapIntensity = $('#heatmap-intensity').slider('value');
         createHeatMapLayer();
     });
 
     // Watch for heatmap size update
-    $('#submit-size').click(function() {
+    $("#heatmap-size").on("slidestop", function() {
         // Get the new size value
-        heatmapSize = $('#heatmap-size').val();
+        heatmapSize = $('#heatmap-size').slider('value');
         heatmap.options.size = heatmapSize;
         createHeatMapLayer();
     });
@@ -146,7 +179,9 @@ function setupLeafletMap() {
     //map = L.map('map', {layers: [baseMapUrl]});
 
     //Initialize the heatmap
-    heatmap = new L.TileLayer.WebGLHeatMap({size: heatmapSize, autoresize: true});
+    heatmap = new L.TileLayer.WebGLHeatMap({
+        size: heatmapSize,
+    });
 
     // Check the URL for layer parameter
     var urlLayerParameter = location.href;
@@ -194,8 +229,6 @@ function mapboxGlLayerCreation(layerAttributes) {
     map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
 
     var mapZoom = map.getZoom();
-    console.log('mapZoom:');
-    console.log(mapZoom);
     setTimeout(function() {
         map.setZoom(mapZoom - 1);
     }, 1000);
@@ -213,16 +246,11 @@ function createHeatMapLayer() {
         // continue
     }
 
-    console.log('heatmapIntensity:');
-    console.log(heatmapIntensity);
-
     // Creat the heatmap layer
     for (var i = 0, len = dataPoints.length; i < len; i++) {
         var point = dataPoints[i];
         heatmap.addDataPoint(point[0], point[1], heatmapIntensity);
     }
-    console.log('heatmap:');
-    console.log(heatmap);
     //heatmap.options.size = 3000;
 
     map.addLayer(heatmap);
@@ -235,8 +263,6 @@ function attributeInfoRequest(selectedLayer) {
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
             layerAttributes = data;
-            console.log('layerAttributes:');
-            console.log(layerAttributes);
             mapboxGlLayerCreation(layerAttributes);
         },
         error: function() {
