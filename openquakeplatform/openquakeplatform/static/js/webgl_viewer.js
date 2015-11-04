@@ -33,11 +33,17 @@ $(document).ready(function() {
 
     // Create an input field for the heatmap intensity option
     $('#map-tools').append(
-        'Heatmap intensity:'+
+        'Heatmap Intensity:'+
         '<input id="heatmap-intensity" type="text" placeholder="'+heatmapIntensity+'">'+
         '<button id="submit-intensity" type="button" class="btn btn-primary">Update</button>'
     );
 
+    // Create an input field for the heatmap size option
+    $('#map-tools').append(
+        'Heatmap Size:'+
+        '<input id="heatmap-size" type="text" placeholder="'+heatmapSize+'">'+
+        '<button id="submit-size" type="button" class="btn btn-primary">Update</button>'
+    );
 
     // Watch for heatmap intensity update
     $('#submit-intensity').click(function() {
@@ -46,6 +52,13 @@ $(document).ready(function() {
         createHeatMapLayer();
     });
 
+    // Watch for heatmap size update
+    $('#submit-size').click(function() {
+        // Get the new size value
+        heatmapSize = $('#heatmap-size').val();
+        heatmap.options.size = heatmapSize;
+        createHeatMapLayer();
+    });
 
     $('#map').height(mapHeight);
 
