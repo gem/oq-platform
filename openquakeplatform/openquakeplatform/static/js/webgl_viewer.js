@@ -120,8 +120,6 @@ function setupLeafletMap() {
     urlLayerParameter = urlLayerParameter.split('webgl_viewer/')[1];
 
     if (urlLayerParameter) {
-        console.log('urlLayerParameter:');
-        console.log(urlLayerParameter);
         attributeInfoRequest(urlLayerParameter);
     }
 
@@ -129,35 +127,6 @@ function setupLeafletMap() {
         $('#absoluteSpinner').hide();
     }, 2000);
 }
-
-/*
-function setupMapboxGlMap() {
-    // Create mapbox map element
-    mapboxgl.accessToken = mbToken;
-
-    map = new mapboxgl.Map({
-        container: 'map',
-        // Load default mapbox basemap
-        style: 'mapbox://styles/mapbox/streets-v8',
-        center: [0, 20],
-        zoom: 2,
-    });
-
-    // Check the URL for layer parameter
-    var urlLayerParameter = location.href;
-    urlLayerParameter = urlLayerParameter.split('webgl_viewer/')[1];
-
-    if (urlLayerParameter) {
-        console.log('urlLayerParameter:');
-        console.log(urlLayerParameter);
-        attributeInfoRequest(urlLayerParameter);
-    }
-
-    setTimeout(function() {
-        $('#absoluteSpinner').hide();
-    }, 2000);
-}
-*/
 
 function mapboxGlLayerCreation(layerAttributes) {
 
@@ -184,16 +153,6 @@ function mapboxGlLayerCreation(layerAttributes) {
 
     map.addLayer(heatmap);
 
-    // Color options for GL map
-    var colorsPalRedSingle = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
-    var colorsPalBlueSingle = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
-    var colorsPalGreenSingle = ['#edf8e9', '#c7e9c0', '#a1d99b', '#74c476', '#31a354', '#006d2c'];
-    var colorsPalRedMulti = ['#fef0d9', '#fdd49e', '#fdbb84', '#fc8d59', '#e34a33', '#b30000'];
-    var colorsPalBlueMulti = ['#f1eef6', '#d0d1e6', '#a6bddb', '#74a9cf', '#2b8cbe', '#045a8d'];
-    var colorsPalGreenMulti = ['#edf8fb', '#ccece6', '#99d8c9', '#66c2a4', '#2ca25f', '#006d2c'];
-    // Default color
-    var colorsPal = colorsPalRedSingle;
-
     // Find the bounding box for the new layer
     var minMaxLng = [];
     var minMaxLat = [];
@@ -212,68 +171,12 @@ function mapboxGlLayerCreation(layerAttributes) {
     //map.fitBounds([[minLng, minLat], [maxLng, maxLat]]);
     map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
 
-    // Find the values to create categorized color ramp
-    // First find the min and max vales
-    var minMaxArray = [];
-    for (var i = 0; i < layerAttributes.features.length; i++) {
-        for (var k in layerAttributes.features[i].properties) {
-            minMaxArray.push(layerAttributes.features[i].properties[k]);
-        }
-    }
-
-    // Get the min and max values
-    var min = Math.min.apply(null, minMaxArray).toFixed(2);
-    var max = Math.max.apply(null, minMaxArray).toFixed(2);
-    min = (parseFloat(min) - 0.1);
-    // Round up the max
-    max = Math.ceil(max * 10) / 10;
-
-    var breaks = [];
-
-    function getColor() {
-        var interval = (max - min) / 6;
-        var tempStep = min;
-        for (var i = 0; i < 5; i++) {
-            tempStep += interval;
-            breaks.push(tempStep);
-        }
-        breaks.unshift(min);
-        breaks.push(max);
-    }
-
-    getColor();
-
-/*
-    // Create new map layer source
-    map.addSource('projectSource', {
-        'type': 'geojson',
-        'data': layerAttributes,
-        "properties": {
-            "title": "Mapbox DC",
-            "marker-symbol": "monument"
-        }
-    });
-*/
-    // Create new map layers
-    // Where i < 6 becasue we have created 5 breaks
-    /*
-    //for (var i = 0; i < 6; i++) {
-        map.addLayer({
-            'id': 'foobar',
-            'type': 'point',
-            'source': 'projectSource',
-            "source-layer": "eq-simple",
-            //'interactive': true,
-            //'text-field': '{Parroquia}',
-            'paint': {
-                //"marker-symbol": "monument"
-            },
-            //'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
-        });
-        // Create legend elements
-        //$('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
-    //}
-*/
+    var mapZoom = map.getZoom();
+    console.log('mapZoom:');
+    console.log(mapZoom);
+    setTimeout(function() {
+        map.setZoom(mapZoom - 1);
+    }, 1000);
 }
 
 // Get layer attributes from GeoServer
