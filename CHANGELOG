@@ -9,3 +9,9 @@
   * vulnerability: replace limit states lowercased names with themselves where
     all [^a-z0-9] chars are substituted with '_' and contiguous '_' are
     collapsed into one
+
+  [Ben Wyss]
+  * Revers the x / y axis of the fragility discrete tables.
+  * Add intensity measure as a column for the fragility discrete tables.
+  * Add intensity measure as a column for the vulnerability discrete tables.
+

@@ -22,6 +22,7 @@ var showArea = false;
 $( document ).ready(function() {
     updateTable();
     $('#outputDiv').css('display', 'none');
+    $('#absoluteSpinner').hide();
 });
 
 $('#retrofittingSelect').hide();
@@ -201,8 +202,8 @@ function updateTable() {
 
     // insert new row using keyboard input
     $(document).keyup(function(e) {
-        // 17 is the 'ctr' key
-        if (e.keyCode == 17 ) {
+        // This will watch for keys Ctl + Shift + n
+        if (e.shiftKey && e.ctrlKey && e.keyCode == 78) {
             var rowIndex = $('.currentRow').parent().index();
 
             exposureTable.alter("insert_row", rowIndex);
@@ -366,16 +367,16 @@ $('#saveBtn').click(function() {
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
-            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'/>\n';
+            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'"/>\n';
         }
         if (non_structuralInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'/>\n';
+            costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'"/>\n';
         }
         if (contentsInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'/>\n';
+            costs += '\t\t\t\t\t<cost type="contents" value="'+ data[i][contentsInx]+'"/>\n';
         }
         if (businessInx > -1 ) {
-            costs += '\t\t\t\t\t<cost type="business_interruption" value="'+ data[i][businessInx]+'/>\n';
+            costs += '\t\t\t\t\t<cost type="business_interruption" value="'+ data[i][businessInx]+'"/>\n';
         }
 
         // Occupancies
