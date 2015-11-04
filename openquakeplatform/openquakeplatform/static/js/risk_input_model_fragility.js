@@ -285,7 +285,9 @@ $('#saveBtnFF').click(function() {
                 }
 
             } else if (fFormatObj[k] == 'continuous') {
-                ffs += '\t\t\t<params ls="'+limitStates[i].replace(/ /g,'')+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
+                for (var i = 0; i < limitStates.length; i++) {
+                    ffs += '\t\t\t<params ls="'+limitStates[i].replace(/ /g,'')+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
+                }
             }
 
         // Closing ffs tags
