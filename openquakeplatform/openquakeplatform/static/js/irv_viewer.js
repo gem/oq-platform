@@ -1087,7 +1087,7 @@ function mapboxGlLayerCreation() {
                 'paint': {
                     'fill-color': colorsPal[i],
                     'fill-opacity': 0.8,
-                    'fill-outline-color': '#CCCCFF'
+                    'fill-outline-color': '#000066'
                 },
                 'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
             });
