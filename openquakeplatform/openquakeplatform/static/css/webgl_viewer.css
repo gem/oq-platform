@@ -1,0 +1,41 @@
+#mapLegend {
+    padding-top: 20px;
+}
+
+#intensity-div {
+	float: left;
+}
+
+#intensity-labels {
+	float: left;
+	margin-left: 10px;
+	margin-top: 4px;
+}
+
+#size-div {
+	float: left;
+	padding-right: 30px;
+}
+
+#size-labels {
+	float: left;
+	margin-left: 40px;
+	margin-top: 4px;
+}
+
+#heatmap-intensity-value, #heatmap-size-value {
+	border:0;
+	color:#f6931f;
+	font-weight:bold;
+	width:30px;
+}
+
+#heatmap-intensity {
+	width: 300px;
+	margin-left: 10px;
+}
+
+#heatmap-size {
+	width: 300px;
+	margin-left: 40px;
+}
