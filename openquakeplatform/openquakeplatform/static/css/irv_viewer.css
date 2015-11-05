@@ -25,9 +25,8 @@ label {
 }
 input {
   width:240px;
-  float:left;	
+  float:left;
 }
-
 
 svg {
   font: 10px sans-serif;
@@ -156,5 +155,4 @@ select#layer-list {
 .ui-dialog {
   z-index: 1000;
 }
-
 
