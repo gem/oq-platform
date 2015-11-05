@@ -1014,21 +1014,18 @@ function mapboxGlLayerCreation() {
     getColor();
 
     // Case 2, and 4, try to remove any existing layers
-    // TEMP also case 3
-    //if (weightChange === false) {
-        try {
-            for (var i = 0; i < 6; i++) {
-                map.removeLayer(i);
-            };
-        } catch (e) {
-            // continue
-        }
-    //}
+    try {
+        for (var i = 0; i < 6; i++) {
+            map.removeLayer(i);
+        };
+    } catch (e) {
+        // continue
+    }
+
 
     // Case 3 update the source
     if (weightChange) {
-        //console.log('Update the source:');
-        //map.update(true);
+        //map.update(true); // Not working for unknown reason.
 
         // FIXME would really prefer to update the map source here
         map.removeSource('projectSource');
@@ -1074,27 +1071,24 @@ function mapboxGlLayerCreation() {
     );
 
     // Cases 1, 2, 3, 4, and 5
-    //if (weightChange === false) {
-        // Create a new mapbox layers
-        for (var i = 0; i < 6; i++) {
-            map.addLayer({
-                'id': i,
-                'type': 'fill',
-                'source': 'projectSource',
-                "source-layer": "eq-simple",
-                'interactive': true,
-                //'text-field': '{Parroquia}',
-                'paint': {
-                    'fill-color': colorsPal[i],
-                    'fill-opacity': 0.8,
-                    'fill-outline-color': '#000066'
-                },
-                'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
-            });
-            // Create legend elements
-            $('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
-        }
-    //}
+    // Create a new mapbox layers
+    for (var i = 0; i < 6; i++) {
+        map.addLayer({
+            'id': i,
+            'type': 'fill',
+            'source': 'projectSource',
+            "source-layer": "eq-simple",
+            'interactive': true,
+            'paint': {
+                'fill-color': colorsPal[i],
+                'fill-opacity': 0.8,
+                'fill-outline-color': '#000066'
+            },
+            'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+        });
+        // Create legend elements
+        $('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
+    }
 
     $('#absoluteSpinner').hide();
 
