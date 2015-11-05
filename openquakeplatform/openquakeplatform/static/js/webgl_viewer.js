@@ -251,7 +251,8 @@ function createHeatMapLayer() {
         var point = dataPoints[i];
         heatmap.addDataPoint(point[0], point[1], heatmapIntensity);
     }
-    //heatmap.options.size = 3000;
+
+    // TODO create legend
 
     map.addLayer(heatmap);
 }
@@ -274,4 +275,5 @@ function attributeInfoRequest(selectedLayer) {
         }
     });
 }
+
 
