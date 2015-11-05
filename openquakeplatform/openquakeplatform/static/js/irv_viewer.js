@@ -535,7 +535,7 @@ function processIndicators(layerAttributes, projectDef) {
     // SVI is an object with region and value
     if (svThemes) {
         SVI = combineIndicators(sviNameLookUp, themeData, sviJSONthemes );
-        //scale(SVI);
+        scale(SVI);
     }
 
     ////////////////////////////////
