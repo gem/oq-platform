@@ -1,7 +1,10 @@
 
   [Ben Wyss]
+  * Check the browser for WebGL support
   * Added the Mapbox-Gl Javascript library in order to render vector
     tiles into the IRV application.
+  * Support WebGL and non-webGL mode for rendering the map
+  * Manage re-rendering of the map based on five state change cases
 
   [Matteo Nastasi]
   * vulnerability: fix elements of group of material technologies
