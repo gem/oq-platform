@@ -43,6 +43,10 @@ $(document).ready(function() {
         '</div>'
     );
 
+    $('#map-tools').append(
+        '<div id="mapLegend"></div>'
+    );
+
     $(function() {
         $('#heatmap-intensity').slider({
             range: "max",
@@ -70,9 +74,7 @@ $(document).ready(function() {
     });
 
     // Calculate the height:
-    var mapToolsHeight = $('#map-tools').height();
-    console.log('mapToolsHeight:');
-    console.log(mapToolsHeight);
+    var mapToolsHeight = 45;
     var headerHeight = $('#header').height();
     var footerHeight = $('#footer').height();
     var mtoolsHeight = $('#map-tools').height();
@@ -262,6 +264,8 @@ function createHeatMapLayer() {
         var point = dataPoints[i];
         heatmap.addDataPoint(point[0], point[1], heatmapIntensity);
     }
+    console.log('heatmap:');
+    console.log(heatmap);
 
     map.addLayer(heatmap);
 }
@@ -286,10 +290,6 @@ function attributeInfoRequest(selectedLayer) {
 }
 
 function createLegend(minMappedValue, maxMappedValue) {
-    // Create the map legend div
-    $('#map-tools').append(
-        '<div id="mapLegend"></div>'
-    );
 
     ///////////////////////
     // Create the legend //
