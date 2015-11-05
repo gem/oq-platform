@@ -174,7 +174,7 @@ function setupLeafletMap() {
     // Add webGL support
     var gl = L.mapboxGL({
         accessToken: mbToken,
-        style: 'mapbox://styles/mapbox/streets-v8'
+        style: 'mapbox://styles/mapbox/dark-v8'
     }).addTo(map);
 
     // Create a leaflet map
