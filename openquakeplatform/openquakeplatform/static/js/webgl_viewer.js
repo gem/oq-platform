@@ -51,7 +51,7 @@ $(document).ready(function() {
         $('#heatmap-intensity').slider({
             range: "max",
             min: 0,
-            max: 100,
+            max: 500,
             value: heatmapIntensity,
             slide: function( event, ui ) {
                 $('#heatmap-intensity-value').val( ui.value );
@@ -64,7 +64,7 @@ $(document).ready(function() {
         $('#heatmap-size').slider({
             range: "max",
             min: 1000,
-            max: 7000,
+            max: 20000,
             value: heatmapSize,
             slide: function( event, ui ) {
                 $('#heatmap-size-value').val( ui.value );
