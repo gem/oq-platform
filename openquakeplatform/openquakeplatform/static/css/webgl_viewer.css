@@ -2,11 +2,11 @@
     padding-top: 20px;
 }
 
-#intensity-div {
+#opacity-div {
 	float: left;
 }
 
-#intensity-labels {
+#opacity-labels {
 	float: left;
 	margin-left: 10px;
 	margin-top: 4px;
@@ -23,14 +23,14 @@
 	margin-top: 4px;
 }
 
-#heatmap-intensity-value, #heatmap-size-value {
+#heatmap-opacity-value, #heatmap-size-value {
 	border:0;
 	color:#f6931f;
 	font-weight:bold;
-	width:30px;
+	width:40px;
 }
 
-#heatmap-intensity {
+#heatmap-opacity {
 	width: 300px;
 	margin-left: 10px;
 }

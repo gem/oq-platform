@@ -19,18 +19,17 @@ var webGl;
 var mapBoxAccessToken;
 var map;
 var heatmap;
-var heatmapIntensity = 15;
-var heatmapSize = 3080;
+var heatmapOpacity = 0.6;
+var heatmapSize = 68000;
 var dataPoints = [];
 
 $(document).ready(function() {
-    // Create an input field for the heatmap intensity option
-    // TODO clean up css
+    // Create an input field for the heatmap opacity option
     $('#map-tools').append(
-        '<div id="intensity-div">'+
-            '<label id="intensity-labels" for="heatmap-intensity-value">Heatmap Intensity:</label>'+
-            '<input type="text" id="heatmap-intensity-value" readonly>'+
-            '<div id="heatmap-intensity"></div><br>'+
+        '<div id="opacity-div">'+
+            '<label id="opacity-labels" for="heatmap-opacity-value">Heatmap opacity:</label>'+
+            '<input type="text" id="heatmap-opacity-value" readonly>'+
+            '<div id="heatmap-opacity"></div><br>'+
         '</div>'
     );
 
@@ -48,23 +47,24 @@ $(document).ready(function() {
     );
 
     $(function() {
-        $('#heatmap-intensity').slider({
+        $('#heatmap-opacity').slider({
             range: "max",
             min: 0,
-            max: 500,
-            value: heatmapIntensity,
+            max: 1,
+            step: 0.1,
+            value: heatmapOpacity,
             slide: function( event, ui ) {
-                $('#heatmap-intensity-value').val( ui.value );
+                $('#heatmap-opacity-value').val( ui.value );
             }
         });
-        $('#heatmap-intensity-value').val($('#heatmap-intensity').slider('value') );
+        $('#heatmap-opacity-value').val($('#heatmap-opacity').slider('value') );
     });
 
     $(function() {
         $('#heatmap-size').slider({
             range: "max",
             min: 1000,
-            max: 20000,
+            max: 80000,
             value: heatmapSize,
             slide: function( event, ui ) {
                 $('#heatmap-size-value').val( ui.value );
@@ -81,10 +81,13 @@ $(document).ready(function() {
     var ribbonHeight = $('#oq-context-ribbon').height();
     var mapHeight = (window.innerHeight - headerHeight - footerHeight - mtoolsHeight - ribbonHeight - mapToolsHeight);
 
-    // Watch for heatmap intensity update
-    $("#heatmap-intensity").on("slidestop", function() {
-        // Get the new intensity value
-        heatmapIntensity = $('#heatmap-intensity').slider('value');
+    // Watch for heatmap opacity update
+    $("#heatmap-opacity").on("slidestop", function() {
+        // Get the new opacity value
+        heatmapOpacity = $('#heatmap-opacity').slider('value');
+        console.log('heatmapOpacity:');
+        console.log(heatmapOpacity);
+        heatmap.options.opacity = heatmapOpacity;
         createHeatMapLayer();
     });
 
@@ -262,7 +265,11 @@ function createHeatMapLayer() {
     // Creat the heatmap layer
     for (var i = 0, len = dataPoints.length; i < len; i++) {
         var point = dataPoints[i];
-        heatmap.addDataPoint(point[0], point[1], heatmapIntensity);
+
+        var value = (dataPoints[i][2] * 10);
+        console.log('value:');
+        console.log(value);
+        heatmap.addDataPoint(point[0], point[1], value);
     }
     console.log('heatmap:');
     console.log(heatmap);
@@ -277,6 +284,8 @@ function attributeInfoRequest(selectedLayer) {
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
             layerAttributes = data;
+            console.log('layerAttributes:');
+            console.log(layerAttributes);
             mapboxGlLayerCreation(layerAttributes);
         },
         error: function() {
@@ -383,6 +392,6 @@ function createLegend(minMappedValue, maxMappedValue) {
     ////////////////
 }
 
-// TODO save the state of the intensity and size parameters
-// TODO provide some kinf of 'smart guess' a initial intensity and size parameters
+// TODO save the state of the opacity and size parameters
+// TODO provide some kinf of 'smart guess' a initial size parameters
 
