@@ -211,6 +211,9 @@ function select_populate(name, items)
         }
         $('#' + name).append('<option value="' + i + '"' + dis_str + '>' + item + '</option>');
     }
+    if (items.length > 0) {
+        $('#' + name).val(0);
+    }
 }
 
 
@@ -219,7 +222,7 @@ function taxt_ValidateSystem1() // Ok
     $('#SystemCB21').empty();
 
     if ($('#SystemCB11').val() == 0 || $('#SystemCB11').val() == 1) {
-        $('SystemCB21').prop("disabled", true);
+        $('#SystemCB21').prop("disabled", true);
     }
     else {
         var SystemCB21 = [];
@@ -228,9 +231,8 @@ function taxt_ValidateSystem1() // Ok
         /* DNO   */ SystemCB21.push('Non-ductile');
         /* DBD   */ SystemCB21.push('Base isolation and/or energy dissipation devices');
         select_populate('SystemCB21', SystemCB21);
-        $('SystemCB21').prop("disabled", false);
+        $('#SystemCB21').prop("disabled", false);
     }
-    $('SystemCB21').val(0);
 }
 
 function taxt_ValidateSystem2() // Ok
@@ -238,7 +240,7 @@ function taxt_ValidateSystem2() // Ok
     $('#SystemCB22').empty();
 
     if ($('#SystemCB12').val() == 0 || $('#SystemCB12').val() == 1) {
-        $('SystemCB22').prop("disabled", true);
+        $('#SystemCB22').prop("disabled", true);
     }
     else {
         var SystemCB22 = [];
@@ -247,9 +249,8 @@ function taxt_ValidateSystem2() // Ok
         /* same */ SystemCB22.push('Non-ductile');
         /* same */ SystemCB22.push('Base isolation and/or energy dissipation devices');
         select_populate('SystemCB22', SystemCB22);
-        $('SystemCB22').prop("disabled", false);
+        $('#SystemCB22').prop("disabled", false);
     }
-    $('SystemCB22').val(0);
 }
 
 function taxt_ValidateMaterial1() // Ok
@@ -258,7 +259,6 @@ function taxt_ValidateMaterial1() // Ok
     $('#MaterialCB31').empty();
     $('#MaterialCB41').empty();
     $('#SystemCB11').empty();
-
 
     if ($('#MaterialCB11').val() == 0) {
         $('#MaterialCB21').prop("disabled", true);
@@ -390,10 +390,6 @@ function taxt_ValidateMaterial1() // Ok
     else {
         $('#MaterialCB31').prop("disabled", true);
     }
-
-    $('#MaterialCB21').val(0);
-    $('#MaterialCB31').val(0);
-    $('#MaterialCB41').val(0);
 
     if ($('#MaterialCB11').val() > 10 && $('#MaterialCB11').val() < 14) {
         var SystemCB11 = [];
@@ -575,10 +571,6 @@ function taxt_ValidateMaterial2() // Ok
     else {
         $('#MaterialCB32').prop("disabled", true);
     }
-
-    $('#MaterialCB22').val(0);
-    $('#MaterialCB32').val(0);
-    $('#MaterialCB42').val(0);
 
     if ($('#MaterialCB12').val() > 10 && $('#MaterialCB12').val() < 14) {
         var SystemCB12 = [];
@@ -845,7 +837,6 @@ function taxt_ValidateOccupancy() // Ok
         $('#OccupancyCB2').prop("disabled", true);
     }
 
-    $('#OccupancyCB2').val(0);
 }
 
 function taxt_ValidateRegularity()
@@ -881,6 +872,7 @@ function taxt_ValidateRegularity()
         /* IRVP:IRVO */ RegularityCB3.push('Other vertical irregularity');
         $('#RegularityCB3').prop("disabled", false);
         select_populate('RegularityCB3', RegularityCB3, disabled_cb3);
+        $('#RegularityCB3').val(default_cb3);
 
         if ($('#RegularityCB3').val() == 0) {
             disabled_cb2.push('No irregularity');
@@ -893,13 +885,10 @@ function taxt_ValidateRegularity()
         /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
         $('#RegularityCB2').prop("disabled", false);
         select_populate('RegularityCB2', RegularityCB2, disabled_cb2);
+        $('#RegularityCB2').val(default_cb2);
     }
-    $('#RegularityCB2').val(default_cb2);
-    $('#RegularityCB3').val(default_cb3);
     taxt_RegularityCB2Select(null);
     taxt_RegularityCB3Select(null);
-    $('#RegularityCB4').val(0);
-    $('#RegularityCB5').val(0);
 }
 
 function taxt_ValidateRegularityCross23(who)
@@ -938,7 +927,6 @@ function taxt_ValidateRegularity2()
         select_populate('RegularityCB4', RegularityCB4);
         $('#RegularityCB4').prop("disabled", false);
     }
-    $('#RegularityCB4').val(0);
     taxt_ValidateRegularityCross23("2");
 }
 
@@ -964,7 +952,6 @@ function taxt_ValidateRegularity3()
         select_populate('RegularityCB5', RegularityCB5);
         $('#RegularityCB5').prop("disabled", false);
     }
-    $('#RegularityCB5').val(0);
     taxt_ValidateRegularityCross23("3");
 }
 
@@ -1028,7 +1015,6 @@ function taxt_ValidateRoof()
         select_populate('RoofCB4', RoofCB4);
         $('#RoofCB4').prop("disabled", false);
     }
-    $('#RoofCB4').val(0);
 }
 
 function taxt_ValidateFloor()
@@ -1081,7 +1067,6 @@ function taxt_ValidateFloor()
         select_populate('FloorCB2', FloorCB2);
         $('#FloorCB2').prop("disabled", false);
     }
-    $('#FloorCB2').val(0);
 }
 
 function taxt_BreakDirection2(obj) // Ok
@@ -3641,7 +3626,6 @@ function taxt_Initiate() {
     /* IRRE */ RegularityCB1.push('Regular structure');
     /* IRIR */ RegularityCB1.push('Irregular structure');
     select_populate('RegularityCB1', RegularityCB1);
-    $('#RegularityCB1').val(0);
     $('#RegularityCB1').on('change', taxt_RegularityCB1Select);
     $('#RegularityCB2').on('change', taxt_RegularityCB2Select);
     $('#RegularityCB3').on('change', taxt_RegularityCB3Select);
@@ -3757,7 +3741,6 @@ function taxt_Initiate() {
     select_populate('FloorCB3', FloorCB3);
     $('#FloorCB3').val(0);
     $('#FloorCB3').on('change', taxt_FloorCB3Select);
-
 
     // TAIL
     taxt_ValidateMaterial1();
@@ -3879,6 +3862,8 @@ function populate(s, ret_s) {
     var i;
     var sar, subar, dirx, diry, el;
     var mat;
+
+    taxt_Initiate();
 
     sar = s.split('/');
     $('#DirectionCB').prop('checked', false);
@@ -4314,7 +4299,7 @@ function populate(s, ret_s) {
     //
     var stir, stir_items, stir_label, stir_id, stir_vals, stir_atom;
     var plir_id = "", plse_id = "", veir_id = "", vese_id = "";
-    var ir_values = [ 0, 0, 0, 0, 0 ];
+    var ir_values = [ -1, -1, -1, -1, -1 ];
 
     stir = sar[11].split('+');
     stir_label = stir[0];
@@ -4410,15 +4395,20 @@ function populate(s, ret_s) {
 
     // all data are retrieved before the population phase to avoid unrequired reset of values permformed
     // by hierarchical ancestors
-    $('#RegularityCB1').val(ir_values[0]);
+    if (ir_values[0] > -1)
+        $('#RegularityCB1').val(ir_values[0]);
     taxt_RegularityCB1Select(null);
-    $('#RegularityCB2').val(ir_values[1]);
+    if (ir_values[1] > -1)
+        $('#RegularityCB2').val(ir_values[1]);
     taxt_RegularityCB2Select(null);
-    $('#RegularityCB3').val(ir_values[2]);
+    if (ir_values[2] > -1)
+        $('#RegularityCB3').val(ir_values[2]);
     taxt_RegularityCB3Select(null);
-    $('#RegularityCB4').val(ir_values[3]);
+    if (ir_values[3] > -1)
+        $('#RegularityCB4').val(ir_values[3]);
     taxt_RegularityCB4Select(null);
-    $('#RegularityCB5').val(ir_values[4]);
+    if (ir_values[4] > -1)
+        $('#RegularityCB5').val(ir_values[4]);
     taxt_RegularityCB5Select(null);
 
     //
