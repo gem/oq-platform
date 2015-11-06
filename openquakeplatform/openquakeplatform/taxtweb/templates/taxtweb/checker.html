@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>checker</title>
+      <link href='{{ STATIC_URL }}taxtweb/font/lato_font.css' rel='stylesheet' type='text/css' />
+<style>
+
+.gem_field_alert {
+    border-color: #ff0000;
+    background-color: #ffa0a0;
+}
+
+body {
+    font-family: 'Lato',sans-serif;
+    font-size: 13px;
+    color: #555555;
+    line-height: 18px;
+    margin: 0px;
+}
+
+div.grand_parent
+{
+    margin: auto;
+    width: 800px;
+    border: 1px solid #1B75A7;
+}
+
+h4 {
+    margin: 4px 8px 4px 8px;
+    color: #1B75A7;
+    font-weight: bold;
+}
+
+div.data-group {
+    border:1px solid gray;
+    margin: 8px;
+}
+
+table.doubletable {
+    border-collapse: collapse;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+}
+
+table.doubletable tr td {
+    padding: 0px; margin: 0px;
+}
+
+table.doubletable tr td div table {
+    border-collapse: collapse;
+    padding: 0px;
+    margin: 4px;
+}
+
+table.doubletable tr td div table tr td {
+    padding: 0px; margin: 0px;
+}
+
+ul.tab
+{
+    margin:0;
+    height: 30px;
+    padding-left: 20px;
+    list-style-type:none;
+    background-image: url('{{ STATIC_URL }}taxtweb/img/OQ_header_bg.png');
+    background-position: left bottom;
+    border-bottom: 1px solid #1b75a7;
+}
+
+li.tab {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    cursor: pointer;
+    color: #1B75A7;
+}
+
+li.tab_selected {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    color: black;
+    background-color: #f8f8f8;
+    border: 1px solid #1b75a7;
+    border-bottom: 1px solid #f8f8f8;
+}
+
+ul.tab li span {
+    white-space:nowrap;
+    border: 0px solid green;
+    height: 29px;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0px 8px 0px 8px;
+}
+
+
+/* SUBTAB */
+
+ul.subtab
+{
+    margin:0;
+    height: 30px;
+    list-style-type:none;
+    /* background-image: url('{{ STATIC_URL }}taxtweb/img/OQ_header_bg.png'); */
+    background-color: #f8f8f8;
+    background-position: left bottom;
+    border-bottom: 1px solid #1b75a7;
+}
+
+li.subtab {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    cursor: pointer;
+    color: #1B75A7;
+}
+
+li.subtab_selected {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    color: black;
+    background-color: #f0f0f0;
+    border: 1px solid #1b75a7;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+ul.subtab li span {
+    white-space:nowrap;
+    border: 0px solid green;
+    height: 29px;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0px 8px 0px 8px;
+}
+
+div.main_content {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1b75a7;
+}
+
+div.main_content div {
+    padding-bottom: 8px;
+}
+
+a.tab:hover {
+    text-decoration:underline;
+}
+
+table.dir_spec {
+    margin: auto;
+    width: 90%;
+}
+
+table.dir_spec td {
+    text-align: center;
+    width: 50%;
+}
+</style>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/simdom.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxtweb_maps.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxtweb.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxonomy_map.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxonomy.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/simdom_post.js"></script>
+
+<!-- <script type="text/javascript"><\!-- -->
+<!-- var taxt_prefix = '{{ taxt_prefix }}'; -->
+<!-- window.onload = function () { -->
+<!--     var tab_cur = {{ tab_id }}; -->
+<!--     var subtab_cur = {{ subtab_id }}; -->
+<!--     var error_msg = "{{ error_msg | safe }}".replace(/&quot;/g,"\""); -->
+
+<!--     tab_set(tab_cur, subtab_cur); -->
+<!--     /* -->
+<!--     var    demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH2+RMT1+RE+RE1+RWCP/FW+FW3+FWCN/FOSDN"; -->
+<!--     */ -->
+<!--     var taxonomy_in = '{{ taxonomy }}'; -->
+
+<!--     if (error_msg != "") { -->
+<!--         alert(error_msg); -->
+<!--     } -->
+
+<!--     var ret_s = { s: "" }; -->
+
+<!--     if (taxonomy_in != '') { -->
+<!--         if (populate(taxonomy_in, ret_s) == false) { -->
+<!--             alert("Load of taxonomy failed\n" + ret_s.s); -->
+<!--         } -->
+<!--     } -->
+
+<!-- } -->
+<!-- //-\-> -->
+<!-- </script> -->
+<script type="text/javascript"><!--
+
+var taxt_prefix = '{{ taxt_prefix }}';
+var gem$ = {{ jquery }};
+
+function run_check()
+{
+    var ret_s = { s: "" };
+    taxonomy = $('#id_taxonomy').val();
+
+    if (taxonomy != '') {
+        ret = taxonomy_short2full(taxonomy);
+    }
+    if (ret.err_s) {
+        alert(ret.err_s);
+        taxonomy = '';
+    }
+    else {
+        taxonomy = ret.result;
+    }
+
+    if (taxonomy != '') {
+        if (populate(taxonomy, ret_s) == false) {
+            alert("Load of taxonomy failed\n" + ret_s.s);
+        }
+        else {
+            console.log("taxonomy: " + simDOM.resultE);
+            $('#resultE').val(simDOM.resultE);
+        }
+    }
+    return false;
+}
+
+window.onload = function () {
+    var ret;
+    /*
+    var    demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH2+RMT1+RE+RE1+RWCP/FW+FW3+FWCN/FOSDN";
+    */
+    var taxonomy = '{{ taxonomy }}';
+    if (taxonomy != '') {
+        ret = taxonomy_short2full(taxonomy);
+    }
+    if (ret.err_s) {
+        alert(ret.err_s);
+        taxonomy = '';
+    }
+    else {
+        taxonomy = ret.result;
+    }
+
+    console.log("taxonomy: " + taxonomy);
+    var ret_s = { s: "" };
+
+    if (taxonomy != '') {
+        if (populate(taxonomy, ret_s) == false) {
+            alert("Load of taxonomy failed\n" + ret_s.s);
+        }
+    }
+    $('#resultE').val(simDOM.resultE);
+    $('#id_taxonomy').on('change', run_check);
+}
+
+//-->
+</script>
+</head>
+
+<body>
+  <div class="grand_parent" style="width: 1024px;">
+    <form onSubmit="return false;">
+      <input style="width: 1000px;" class="id_taxonomy" id="id_taxonomy" type="text" size="80" maxlength="200" value="{{ taxonomy }}"></input><br>
+      <input style="width: 1000px;" id="resultE" type="text" size="80" readonly="true" maxlength="200"></input><br>
+      <input type="submit" value="Check" onclick="run_check(this)"></input>
+    </form>
+  </div>
+</body>
+</html>
