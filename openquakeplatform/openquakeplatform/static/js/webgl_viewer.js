@@ -20,8 +20,10 @@ var mapBoxAccessToken;
 var map;
 var heatmap;
 var heatmapOpacity = 0.6;
-var heatmapIntensity = 68000;
+var heatmapIntensity = 65000;
 var dataPoints = [];
+var maxMappedValue;
+var minMappedValue;
 
 $(document).ready(function() {
     // Create an input field for the heatmap opacity option
@@ -98,7 +100,7 @@ $(document).ready(function() {
     $("#heatmap-intensity").on("slidestop", function() {
         // Get the new intensity value
         heatmapIntensity = $('#heatmap-intensity').slider('value');
-        heatmap.options.intensity = heatmapIntensity;
+        heatmap.options.size = heatmapIntensity;
 
         // FIXME, same as above...
         createHeatMapLayer();
@@ -241,8 +243,8 @@ function mapboxGlLayerCreation(layerAttributes) {
     var maxLat = Math.max.apply(null, minMaxLat).toFixed(2);
 
     // Get the max mapped value
-    var maxMappedValue = Math.max.apply(null, allValuesArray).toFixed(2);
-    var minMappedValue = Math.min.apply(null, allValuesArray).toFixed(2);
+    maxMappedValue = Math.max.apply(null, allValuesArray).toFixed(2);
+    minMappedValue = Math.min.apply(null, allValuesArray).toFixed(2);
 
     // Fit the map to bounding box
     map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
@@ -254,12 +256,6 @@ function mapboxGlLayerCreation(layerAttributes) {
         map.setZoom(mapZoom - 1);
         map.setZoom(mapZoom + 1);
     }, 1000);
-
-    console.log('minMappedValue:');
-    console.log(minMappedValue);
-
-    console.log('maxMappedValue:');
-    console.log(maxMappedValue);
 
     createHeatMapLayer();
 
@@ -287,6 +283,13 @@ function createHeatMapLayer() {
     console.log(heatmap);
 
     map.addLayer(heatmap);
+
+    // Dynamic scale
+    var zoom = map.getZoom();
+    // Get the intensiy for this layer
+    heatmapIntensity = 200000 / (zoom * maxMappedValue) ;
+    console.log('heatmapIntensity:');
+    console.log(heatmapIntensity);
 }
 
 // Get layer attributes from GeoServer
