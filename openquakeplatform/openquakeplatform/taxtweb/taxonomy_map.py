@@ -140,4 +140,5 @@ taxonomy_map = { # Direction spec
              'FOSN': 15,
              'FOSDL': 15,
              'FOSDN': 15,
-             'FOSO': 15 }
+             'FOSO': 15
+}

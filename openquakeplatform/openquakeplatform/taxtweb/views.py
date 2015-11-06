@@ -95,12 +95,7 @@ def index(request, **kwargs):
 
 
 def checker(request, **kwargs):
-    taxonomy_in = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
-
-    print "TAXO: ", taxonomy_in
-
-    (taxonomy, error_msg) = taxonomy_short2full(taxonomy_in)
-
+    taxonomy = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
 
     if 'HTTP_HOST' in request.META:
         proto = (request.META['HTTP_X_FORWARDED_PROTO'] if
@@ -120,9 +115,7 @@ def checker(request, **kwargs):
     sub1tab_content = ""
 
     return render_to_response("taxtweb/checker.html",
-                              dict(input_taxonomy=taxonomy_in,
-                                   taxonomy=taxonomy,
-                                   error_msg=("" if error_msg == None else error_msg),
+                              dict(taxonomy=taxonomy,
                                    is_popup=is_popup,
                                    tab_id=tab_id,
                                    subtab_id=subtab_id,
