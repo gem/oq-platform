@@ -20,7 +20,7 @@ var mapBoxAccessToken;
 var map;
 var heatmap;
 var heatmapOpacity = 0.6;
-var heatmapSize = 68000;
+var heatmapIntensity = 68000;
 var dataPoints = [];
 
 $(document).ready(function() {
@@ -33,12 +33,12 @@ $(document).ready(function() {
         '</div>'
     );
 
-    // Create an input field for the heatmap size option
+    // Create an input field for the heatmap intensity option
     $('#map-tools').append(
-        '<div id="size-div">'+
-            '<label id="size-labels" for="heatmap-size-value">Heatmap Size:</label>'+
-            '<input type="text" id="heatmap-size-value" readonly>'+
-            '<div id="heatmap-size"></div>'+
+        '<div id="intensity-div">'+
+            '<label id="intensity-labels" for="heatmap-intensity-value">Heatmap intensity:</label>'+
+            '<input type="text" id="heatmap-intensity-value" readonly>'+
+            '<div id="heatmap-intensity"></div>'+
         '</div>'
     );
 
@@ -61,16 +61,16 @@ $(document).ready(function() {
     });
 
     $(function() {
-        $('#heatmap-size').slider({
+        $('#heatmap-intensity').slider({
             range: "max",
             min: 1000,
             max: 80000,
-            value: heatmapSize,
+            value: heatmapIntensity,
             slide: function( event, ui ) {
-                $('#heatmap-size-value').val( ui.value );
+                $('#heatmap-intensity-value').val( ui.value );
             }
         });
-        $('#heatmap-size-value').val($('#heatmap-size').slider('value') );
+        $('#heatmap-intensity-value').val($('#heatmap-intensity').slider('value') );
     });
 
     // Calculate the height:
@@ -85,17 +85,22 @@ $(document).ready(function() {
     $("#heatmap-opacity").on("slidestop", function() {
         // Get the new opacity value
         heatmapOpacity = $('#heatmap-opacity').slider('value');
-        console.log('heatmapOpacity:');
-        console.log(heatmapOpacity);
         heatmap.options.opacity = heatmapOpacity;
+        // FIXME this should be a lauyer redraw, but that method does not
+        // seem to be available in the heatmap plugin, I opend an issue for this here:
+        // https://github.com/ursudio/webgl-heatmap-leaflet/issues/11
+        // heatmap.redraw();
+        // Because the above method is not working, we need to recreate the layer...
         createHeatMapLayer();
     });
 
-    // Watch for heatmap size update
-    $("#heatmap-size").on("slidestop", function() {
-        // Get the new size value
-        heatmapSize = $('#heatmap-size').slider('value');
-        heatmap.options.size = heatmapSize;
+    // Watch for heatmap intensity update
+    $("#heatmap-intensity").on("slidestop", function() {
+        // Get the new intensity value
+        heatmapIntensity = $('#heatmap-intensity').slider('value');
+        heatmap.options.intensity = heatmapIntensity;
+
+        // FIXME, same as above...
         createHeatMapLayer();
     });
 
@@ -186,7 +191,7 @@ function setupLeafletMap() {
 
     //Initialize the heatmap
     heatmap = new L.TileLayer.WebGLHeatMap({
-        size: heatmapSize,
+        size: heatmapIntensity,
     });
 
     // Check the URL for layer parameter
@@ -243,9 +248,18 @@ function mapboxGlLayerCreation(layerAttributes) {
     map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
 
     var mapZoom = map.getZoom();
+    // FIXME the layer does not correctly fit the map without adjusting the map view
+    // this might be resolved with 'heatmap.redraw()', but that method is not wroking
     setTimeout(function() {
         map.setZoom(mapZoom - 1);
+        map.setZoom(mapZoom + 1);
     }, 1000);
+
+    console.log('minMappedValue:');
+    console.log(minMappedValue);
+
+    console.log('maxMappedValue:');
+    console.log(maxMappedValue);
 
     createHeatMapLayer();
 
@@ -267,8 +281,6 @@ function createHeatMapLayer() {
         var point = dataPoints[i];
 
         var value = (dataPoints[i][2] * 10);
-        console.log('value:');
-        console.log(value);
         heatmap.addDataPoint(point[0], point[1], value);
     }
     console.log('heatmap:');
@@ -392,6 +404,6 @@ function createLegend(minMappedValue, maxMappedValue) {
     ////////////////
 }
 
-// TODO save the state of the opacity and size parameters
-// TODO provide some kinf of 'smart guess' a initial size parameters
+// TODO save the state of the opacity and intensity parameters
+// TODO provide some kinf of 'smart guess' a initial intensity parameters
 
