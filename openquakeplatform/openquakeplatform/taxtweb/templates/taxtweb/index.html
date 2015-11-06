@@ -167,6 +167,7 @@ table.dir_spec td {
 <script src="{{ STATIC_URL }}taxtweb/js/taxtweb.js"></script>
 <script type="text/javascript"><!--
 var taxt_prefix = '{{ taxt_prefix }}';
+var gem$ = {{ jquery }};
 window.onload = function () {
     var tab_cur = {{ tab_id }};
     var subtab_cur = {{ subtab_id }};
@@ -189,7 +190,6 @@ window.onload = function () {
             alert("Load of taxonomy failed\n" + ret_s.s);
         }
     }
-
 }
 //-->
 </script>

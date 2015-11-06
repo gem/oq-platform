@@ -209,20 +209,20 @@ function select_populate(name, items)
         else {
             dis_str = "";
         }
-        $('#' + name).append('<option value="' + i + '"' + dis_str + '>' + item + '</option>');
+        gem$('#' + name).append('<option value="' + i + '"' + dis_str + '>' + item + '</option>');
     }
     if (items.length > 0) {
-        $('#' + name).val(0);
+        gem$('#' + name).val(0);
     }
 }
 
 
 function taxt_ValidateSystem1() // Ok
 {
-    $('#SystemCB21').empty();
+    gem$('#SystemCB21').empty();
 
-    if ($('#SystemCB11').val() == 0 || $('#SystemCB11').val() == 1) {
-        $('#SystemCB21').prop("disabled", true);
+    if (gem$('#SystemCB11').val() == 0 || gem$('#SystemCB11').val() == 1) {
+        gem$('#SystemCB21').prop("disabled", true);
     }
     else {
         var SystemCB21 = [];
@@ -231,16 +231,16 @@ function taxt_ValidateSystem1() // Ok
         /* DNO   */ SystemCB21.push('Non-ductile');
         /* DBD   */ SystemCB21.push('Base isolation and/or energy dissipation devices');
         select_populate('SystemCB21', SystemCB21);
-        $('#SystemCB21').prop("disabled", false);
+        gem$('#SystemCB21').prop("disabled", false);
     }
 }
 
 function taxt_ValidateSystem2() // Ok
 {
-    $('#SystemCB22').empty();
+    gem$('#SystemCB22').empty();
 
-    if ($('#SystemCB12').val() == 0 || $('#SystemCB12').val() == 1) {
-        $('#SystemCB22').prop("disabled", true);
+    if (gem$('#SystemCB12').val() == 0 || gem$('#SystemCB12').val() == 1) {
+        gem$('#SystemCB22').prop("disabled", true);
     }
     else {
         var SystemCB22 = [];
@@ -249,31 +249,31 @@ function taxt_ValidateSystem2() // Ok
         /* same */ SystemCB22.push('Non-ductile');
         /* same */ SystemCB22.push('Base isolation and/or energy dissipation devices');
         select_populate('SystemCB22', SystemCB22);
-        $('#SystemCB22').prop("disabled", false);
+        gem$('#SystemCB22').prop("disabled", false);
     }
 }
 
 function taxt_ValidateMaterial1() // Ok
 {
-    $('#MaterialCB21').empty();
-    $('#MaterialCB31').empty();
-    $('#MaterialCB41').empty();
-    $('#SystemCB11').empty();
+    gem$('#MaterialCB21').empty();
+    gem$('#MaterialCB31').empty();
+    gem$('#MaterialCB41').empty();
+    gem$('#SystemCB11').empty();
 
-    if ($('#MaterialCB11').val() == 0) {
-        $('#MaterialCB21').prop("disabled", true);
-        $('#MaterialCB31').prop("disabled", true);
-        $('#MaterialCB41').prop("disabled", true);
+    if (gem$('#MaterialCB11').val() == 0) {
+        gem$('#MaterialCB21').prop("disabled", true);
+        gem$('#MaterialCB31').prop("disabled", true);
+        gem$('#MaterialCB41').prop("disabled", true);
     }
-    else if ($('#MaterialCB11').val() == 2) {
+    else if (gem$('#MaterialCB11').val() == 2) {
         var MaterialCB21 = [];
         /* CT99 */ MaterialCB21.push('Unknown concrete technology');
         /* CIP  */ MaterialCB21.push('Cast-in-place concrete');
         /* PC   */ MaterialCB21.push('Precast concrete');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
     }
-    else if ($('#MaterialCB11').val() == 1 ||  $('#MaterialCB11').val() == 3 || $('#MaterialCB11').val() == 4) {
+    else if (gem$('#MaterialCB11').val() == 1 ||  gem$('#MaterialCB11').val() == 3 || gem$('#MaterialCB11').val() == 4) {
         var MaterialCB21 = [];
         /* CT99 */ MaterialCB21.push('Unknown concrete technology');
         /* CIP  */ MaterialCB21.push('Cast-in-place concrete');
@@ -281,27 +281,27 @@ function taxt_ValidateMaterial1() // Ok
         /* CIPPS*/ MaterialCB21.push('Cast-in-place prestressed concrete');
         /* PCPS */ MaterialCB21.push('Precast prestressed concrete');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
     }
-    else if ($('#MaterialCB11').val() == 5) {
+    else if (gem$('#MaterialCB11').val() == 5) {
         var MaterialCB21 = [];
         /*  S99 */ MaterialCB21.push('Steel, unknown ');
         /*  SL  */ MaterialCB21.push('Cold-formed steel members');
         /*  SR  */ MaterialCB21.push('Hot-rolled steel members');
         /*  SO  */ MaterialCB21.push('Steel, other ');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
     }
-    else if ($('#MaterialCB11').val() == 6) {
+    else if (gem$('#MaterialCB11').val() == 6) {
         var MaterialCB21 = [];
         /* ME99 */ MaterialCB21.push('Metal, unknown ');
         /* MEIR */ MaterialCB21.push('Iron');
         /* MEO  */ MaterialCB21.push('Metal, other ');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
     }
-    else if ($('#MaterialCB11').val() > 6 &&
-             $('#MaterialCB11').val() < 11) {
+    else if (gem$('#MaterialCB11').val() > 6 &&
+             gem$('#MaterialCB11').val() < 11) {
         var MaterialCB21 = [];
         /* MUN99*/ MaterialCB21.push('Masonry unit, unknown');
         /* ADO  */ MaterialCB21.push('Adobe blocks');
@@ -317,9 +317,9 @@ function taxt_ValidateMaterial1() // Ok
         /* CBH  */ MaterialCB21.push('Concrete blocks, hollow');
         /* MO   */ MaterialCB21.push('Masonry unit, other');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
 
-        if ($('#MaterialCB11').val() == 10) {
+        if (gem$('#MaterialCB11').val() == 10) {
             var MaterialCB41 = [];
             /* MR99  */  MaterialCB41.push('Unknown reinforcement');
             /* RS    */  MaterialCB41.push('Steel-reinforced');
@@ -328,19 +328,19 @@ function taxt_ValidateMaterial1() // Ok
             /* RCM   */  MaterialCB41.push('Fibre reinforcing mesh');
             /* RCB   */  MaterialCB41.push('Reinforced concrete bands');
             select_populate('MaterialCB41', MaterialCB41);
-            $('#MaterialCB41').prop("disabled", false);
+            gem$('#MaterialCB41').prop("disabled", false);
         }
     }
-    else if ($('#MaterialCB11').val() > 10 && $('#MaterialCB11').val() < 14) {
+    else if (gem$('#MaterialCB11').val() > 10 && gem$('#MaterialCB11').val() < 14) {
         var MaterialCB21 = [];
         /* ET99 */ MaterialCB21.push('Unknown earth technology');
         /* ETR  */ MaterialCB21.push('Rammed earth');
         /* ETC  */ MaterialCB21.push('Cob or wet construction');
         /* ETO  */ MaterialCB21.push('Earth technology, other');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
     }
-    else if ($('#MaterialCB11').val() == 14) {
+    else if (gem$('#MaterialCB11').val() == 14) {
         var MaterialCB21 = [];
         /* W99  */ MaterialCB21.push('Wood, unknown');
         /* WHE  */ MaterialCB21.push('Heavy wood');
@@ -350,25 +350,25 @@ function taxt_ValidateMaterial1() // Ok
         /* WBB  */ MaterialCB21.push('Bamboo');
         /* WO   */ MaterialCB21.push('Wood, other');
         select_populate('MaterialCB21', MaterialCB21);
-        $('#MaterialCB21').prop("disabled", false);
+        gem$('#MaterialCB21').prop("disabled", false);
     }
     else {
-        $('#MaterialCB21').prop("disabled", true);
-        $('#MaterialCB31').prop("disabled", true);
-        $('#MaterialCB41').prop("disabled", true);
+        gem$('#MaterialCB21').prop("disabled", true);
+        gem$('#MaterialCB31').prop("disabled", true);
+        gem$('#MaterialCB41').prop("disabled", true);
     }
 
-    if ($('#MaterialCB11').val() == 5) {
+    if (gem$('#MaterialCB11').val() == 5) {
         var MaterialCB31 = [];
         /* SC99  */ MaterialCB31.push('Unknown connection');
         /* WEL   */ MaterialCB31.push('Welded connections');
         /* RIV   */ MaterialCB31.push('Riveted connections');
         /* BOL   */ MaterialCB31.push('Bolted connections');
         select_populate('MaterialCB31', MaterialCB31);
-        $('#MaterialCB31').prop("disabled", false);
+        gem$('#MaterialCB31').prop("disabled", false);
     }
-    else if ($('#MaterialCB11').val() > 6 &&
-             $('#MaterialCB11').val() < 11) {
+    else if (gem$('#MaterialCB11').val() > 6 &&
+             gem$('#MaterialCB11').val() < 11) {
         var MaterialCB31 = [];
         /* MO99  */ MaterialCB31.push('Mortar type, unknown');
         /* MON   */ MaterialCB31.push('No mortar');
@@ -385,13 +385,13 @@ function taxt_ValidateMaterial1() // Ok
         /* SPBA  */ MaterialCB31.push('Basalt');
         /* SPO   */ MaterialCB31.push('Stone, other type');
         select_populate('MaterialCB31', MaterialCB31);
-        $('#MaterialCB31').prop("disabled", false);
+        gem$('#MaterialCB31').prop("disabled", false);
     }
     else {
-        $('#MaterialCB31').prop("disabled", true);
+        gem$('#MaterialCB31').prop("disabled", true);
     }
 
-    if ($('#MaterialCB11').val() > 10 && $('#MaterialCB11').val() < 14) {
+    if (gem$('#MaterialCB11').val() > 10 && gem$('#MaterialCB11').val() < 14) {
         var SystemCB11 = [];
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
         /* LN   */ SystemCB11.push('No lateral load-resisting system');
@@ -400,8 +400,8 @@ function taxt_ValidateMaterial1() // Ok
         /* LO   */ SystemCB11.push('Other lateral load-resisting system');
         select_populate('SystemCB11', SystemCB11);
     }
-    else if (($('#MaterialCB11').val() > 6 && $('#MaterialCB11').val() < 11) ||
-             $('#MaterialCB11').val() == 14) {
+    else if ((gem$('#MaterialCB11').val() > 6 && gem$('#MaterialCB11').val() < 11) ||
+             gem$('#MaterialCB11').val() == 14) {
         var SystemCB11 = [];
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
         /* LN   */ SystemCB11.push('No lateral load-resisting system');
@@ -429,32 +429,32 @@ function taxt_ValidateMaterial1() // Ok
         select_populate('SystemCB11', SystemCB11);
     }
 
-    $('#SystemCB11').val(0);
+    gem$('#SystemCB11').val(0);
     taxt_ValidateSystem1();
 }
 
 function taxt_ValidateMaterial2() // Ok
 {
-    $('#MaterialCB22').empty();
-    $('#MaterialCB32').empty();
-    $('#MaterialCB42').empty();
-    $('#SystemCB12').empty();
+    gem$('#MaterialCB22').empty();
+    gem$('#MaterialCB32').empty();
+    gem$('#MaterialCB42').empty();
+    gem$('#SystemCB12').empty();
 
 
-    if ($('#MaterialCB12').val() == 0) {
-        $('#MaterialCB22').prop("disabled", true);
-        $('#MaterialCB32').prop("disabled", true);
-        $('#MaterialCB42').prop("disabled", true);
+    if (gem$('#MaterialCB12').val() == 0) {
+        gem$('#MaterialCB22').prop("disabled", true);
+        gem$('#MaterialCB32').prop("disabled", true);
+        gem$('#MaterialCB42').prop("disabled", true);
     }
-    else if ($('#MaterialCB12').val() == 2) {
+    else if (gem$('#MaterialCB12').val() == 2) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Unknown concrete technology');
         /* same */ MaterialCB22.push('Cast-in-place concrete');
         /* same */ MaterialCB22.push('Precast concrete');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
     }
-    else if ($('#MaterialCB12').val() == 1 ||  $('#MaterialCB12').val() == 3 || $('#MaterialCB12').val() == 4) {
+    else if (gem$('#MaterialCB12').val() == 1 ||  gem$('#MaterialCB12').val() == 3 || gem$('#MaterialCB12').val() == 4) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Unknown concrete technology');
         /* same */ MaterialCB22.push('Cast-in-place concrete');
@@ -462,27 +462,27 @@ function taxt_ValidateMaterial2() // Ok
         /* same */ MaterialCB22.push('Cast-in-place prestressed concrete');
         /* same */ MaterialCB22.push('Precast prestressed concrete');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
     }
-    else if ($('#MaterialCB12').val() == 5) {
+    else if (gem$('#MaterialCB12').val() == 5) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Steel, unknown ');
         /* same */ MaterialCB22.push('Cold-formed steel members');
         /* same */ MaterialCB22.push('Hot-rolled steel members');
         /* same */ MaterialCB22.push('Steel, other ');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
     }
-    else if ($('#MaterialCB12').val() == 6) {
+    else if (gem$('#MaterialCB12').val() == 6) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Metal, unknown ');
         /* same */ MaterialCB22.push('Iron');
         /* same */ MaterialCB22.push('Metal, other ');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
     }
-    else if ($('#MaterialCB12').val() > 6 &&
-             $('#MaterialCB12').val() < 11) {
+    else if (gem$('#MaterialCB12').val() > 6 &&
+             gem$('#MaterialCB12').val() < 11) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Masonry unit, unknown');
         /* same */ MaterialCB22.push('Adobe blocks');
@@ -498,9 +498,9 @@ function taxt_ValidateMaterial2() // Ok
         /* same */ MaterialCB22.push('Concrete blocks, hollow');
         /* same */ MaterialCB22.push('Masonry unit, other');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
 
-        if ($('#MaterialCB12').val() == 10) {
+        if (gem$('#MaterialCB12').val() == 10) {
             var MaterialCB42 = [];
             /* same */ MaterialCB42.push('Unknown reinforcement');
             /* same */ MaterialCB42.push('Steel-reinforced');
@@ -509,19 +509,19 @@ function taxt_ValidateMaterial2() // Ok
             /* same */ MaterialCB42.push('Fibre reinforcing mesh');
             /* same */ MaterialCB42.push('Reinforced concrete bands');
             select_populate('MaterialCB42', MaterialCB42);
-            $('#MaterialCB42').prop("disabled", false);
+            gem$('#MaterialCB42').prop("disabled", false);
         }
     }
-    else if ($('#MaterialCB12').val() > 10 && $('#MaterialCB12').val() < 14) {
+    else if (gem$('#MaterialCB12').val() > 10 && gem$('#MaterialCB12').val() < 14) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Unknown earth technology');
         /* same */ MaterialCB22.push('Rammed earth');
         /* same */ MaterialCB22.push('Cob or wet construction');
         /* same */ MaterialCB22.push('Earth technology, other');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
     }
-    else if ($('#MaterialCB12').val() == 14) {
+    else if (gem$('#MaterialCB12').val() == 14) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Wood, unknown');
         /* same */ MaterialCB22.push('Heavy wood');
@@ -531,25 +531,25 @@ function taxt_ValidateMaterial2() // Ok
         /* same */ MaterialCB22.push('Bamboo');
         /* same */ MaterialCB22.push('Wood, other');
         select_populate('MaterialCB22', MaterialCB22);
-        $('#MaterialCB22').prop("disabled", false);
+        gem$('#MaterialCB22').prop("disabled", false);
     }
     else {
-        $('#MaterialCB22').prop("disabled", true);
-        $('#MaterialCB32').prop("disabled", true);
-        $('#MaterialCB42').prop("disabled", true);
+        gem$('#MaterialCB22').prop("disabled", true);
+        gem$('#MaterialCB32').prop("disabled", true);
+        gem$('#MaterialCB42').prop("disabled", true);
     }
 
-    if ($('#MaterialCB12').val() == 5) {
+    if (gem$('#MaterialCB12').val() == 5) {
         var MaterialCB32 = [];
         /* same */ MaterialCB32.push('Unknown connection');
         /* same */ MaterialCB32.push('Welded connections');
         /* same */ MaterialCB32.push('Riveted connections');
         /* same */ MaterialCB32.push('Bolted connections');
         select_populate('MaterialCB32', MaterialCB32);
-        $('#MaterialCB32').prop("disabled", false);
+        gem$('#MaterialCB32').prop("disabled", false);
     }
-    else if ($('#MaterialCB12').val() > 6 &&
-             $('#MaterialCB12').val() < 11) {
+    else if (gem$('#MaterialCB12').val() > 6 &&
+             gem$('#MaterialCB12').val() < 11) {
         var MaterialCB32 = [];
         /* same */ MaterialCB32.push('Mortar type, unknown');
         /* same */ MaterialCB32.push('No mortar');
@@ -566,13 +566,13 @@ function taxt_ValidateMaterial2() // Ok
         /* same */ MaterialCB32.push('Basalt');
         /* same */ MaterialCB32.push('Stone, other type');
         select_populate('MaterialCB32', MaterialCB32);
-        $('#MaterialCB32').prop("disabled", false);
+        gem$('#MaterialCB32').prop("disabled", false);
     }
     else {
-        $('#MaterialCB32').prop("disabled", true);
+        gem$('#MaterialCB32').prop("disabled", true);
     }
 
-    if ($('#MaterialCB12').val() > 10 && $('#MaterialCB12').val() < 14) {
+    if (gem$('#MaterialCB12').val() > 10 && gem$('#MaterialCB12').val() < 14) {
         var SystemCB12 = [];
         /* same */ SystemCB12.push('Unknown lateral load-resisting system');
         /* same */ SystemCB12.push('No lateral load-resisting system');
@@ -581,8 +581,8 @@ function taxt_ValidateMaterial2() // Ok
         /* same */ SystemCB12.push('Other lateral load-resisting system');
         select_populate('SystemCB12', SystemCB12);
     }
-    else if (($('#MaterialCB12').val() > 6 && $('#MaterialCB12').val() < 11) ||
-             $('#MaterialCB12').val() == 14) {
+    else if ((gem$('#MaterialCB12').val() > 6 && gem$('#MaterialCB12').val() < 11) ||
+             gem$('#MaterialCB12').val() == 14) {
         var SystemCB12 = [];
         /* same */ SystemCB12.push('Unknown lateral load-resisting system');
         /* same */ SystemCB12.push('No lateral load-resisting system');
@@ -610,138 +610,138 @@ function taxt_ValidateMaterial2() // Ok
         select_populate('SystemCB12', SystemCB12);
     }
 
-    $('#SystemCB12').val(0);
+    gem$('#SystemCB12').val(0);
     taxt_ValidateSystem2();
 }
 
 function taxt_ValidateHeight() // Ok
 {
-    $('#HeightCB2').prop("disabled", true);
-    $('#HeightCB3').prop("disabled", true);
-    $('#HeightCB4').prop("disabled", true);
-    $('#noStoreysE11').prop("disabled", true);
-    $('#noStoreysE11').removeClass('gem_field_alert');
-    $('#noStoreysE12').prop("disabled", true);
-    $('#noStoreysE12').removeClass('gem_field_alert');
+    gem$('#HeightCB2').prop("disabled", true);
+    gem$('#HeightCB3').prop("disabled", true);
+    gem$('#HeightCB4').prop("disabled", true);
+    gem$('#noStoreysE11').prop("disabled", true);
+    gem$('#noStoreysE11').removeClass('gem_field_alert');
+    gem$('#noStoreysE12').prop("disabled", true);
+    gem$('#noStoreysE12').removeClass('gem_field_alert');
 
-    $('#noStoreysE21').prop("disabled", true);
-    $('#noStoreysE21').removeClass('gem_field_alert');
-    $('#noStoreysE22').prop("disabled", true);
-    $('#noStoreysE22').removeClass('gem_field_alert');
+    gem$('#noStoreysE21').prop("disabled", true);
+    gem$('#noStoreysE21').removeClass('gem_field_alert');
+    gem$('#noStoreysE22').prop("disabled", true);
+    gem$('#noStoreysE22').removeClass('gem_field_alert');
 
-    $('#noStoreysE31').prop("disabled", true);
-    $('#noStoreysE31').removeClass('gem_field_alert');
-    $('#noStoreysE32').prop("disabled", true);
-    $('#noStoreysE32').removeClass('gem_field_alert');
-    $('#noStoreysE41').prop("disabled", true);
-    $('#noStoreysE41').removeClass('gem_field_alert');
+    gem$('#noStoreysE31').prop("disabled", true);
+    gem$('#noStoreysE31').removeClass('gem_field_alert');
+    gem$('#noStoreysE32').prop("disabled", true);
+    gem$('#noStoreysE32').removeClass('gem_field_alert');
+    gem$('#noStoreysE41').prop("disabled", true);
+    gem$('#noStoreysE41').removeClass('gem_field_alert');
 
-    if ($('#HeightCB1').val() > 0) {
-        $('#HeightCB2').prop("disabled", false);
-        $('#HeightCB3').prop("disabled", false);
-        $('#HeightCB4').prop("disabled", false);
-        $('#noStoreysE11').prop("disabled", false);
-        $('#noStoreysE12').prop("disabled", false);
+    if (gem$('#HeightCB1').val() > 0) {
+        gem$('#HeightCB2').prop("disabled", false);
+        gem$('#HeightCB3').prop("disabled", false);
+        gem$('#HeightCB4').prop("disabled", false);
+        gem$('#noStoreysE11').prop("disabled", false);
+        gem$('#noStoreysE12').prop("disabled", false);
 
-        if ($('#HeightCB1').val() == 1) {
-            $('#noStoreysE11').css('width', '45%');
-            $('#noStoreysE11').prop("disabled", false);
-            $('#noStoreysE12').css('display', 'inline');
-            $('#noStoreysE12').prop("disabled", false);
+        if (gem$('#HeightCB1').val() == 1) {
+            gem$('#noStoreysE11').css('width', '45%');
+            gem$('#noStoreysE11').prop("disabled", false);
+            gem$('#noStoreysE12').css('display', 'inline');
+            gem$('#noStoreysE12').prop("disabled", false);
         }
         else {
-            $('#noStoreysE11').css('width', '90%');
-            $('#noStoreysE11').prop("disabled", false);
-            $('#noStoreysE12').css('display', 'none');
-            $('#noStoreysE12').prop("disabled", true);
+            gem$('#noStoreysE11').css('width', '90%');
+            gem$('#noStoreysE11').prop("disabled", false);
+            gem$('#noStoreysE12').css('display', 'none');
+            gem$('#noStoreysE12').prop("disabled", true);
         }
 
-        if ($('#HeightCB2').val() == 0) {
-            $('#noStoreysE21').css('width', '90%');
-            $('#noStoreysE21').prop("disabled", true);
-            $('#noStoreysE22').css('display', 'none');
-            $('#noStoreysE22').prop("disabled", true);
+        if (gem$('#HeightCB2').val() == 0) {
+            gem$('#noStoreysE21').css('width', '90%');
+            gem$('#noStoreysE21').prop("disabled", true);
+            gem$('#noStoreysE22').css('display', 'none');
+            gem$('#noStoreysE22').prop("disabled", true);
         }
-        else if ($('#HeightCB2').val() == 1) {
-            $('#noStoreysE21').css('width', '45%');
-            $('#noStoreysE21').prop("disabled", false);
-            $('#noStoreysE22').css('display', 'inline');
-            $('#noStoreysE22').prop("disabled", false);
+        else if (gem$('#HeightCB2').val() == 1) {
+            gem$('#noStoreysE21').css('width', '45%');
+            gem$('#noStoreysE21').prop("disabled", false);
+            gem$('#noStoreysE22').css('display', 'inline');
+            gem$('#noStoreysE22').prop("disabled", false);
         }
         else {
-            $('#noStoreysE21').css('width', '90%');
-            $('#noStoreysE21').prop("disabled", false);
-            $('#noStoreysE22').css('display', 'none');
-            $('#noStoreysE22').prop("disabled", true);
+            gem$('#noStoreysE21').css('width', '90%');
+            gem$('#noStoreysE21').prop("disabled", false);
+            gem$('#noStoreysE22').css('display', 'none');
+            gem$('#noStoreysE22').prop("disabled", true);
         }
 
-        if ($('#HeightCB3').val() == 0) {
-            $('#noStoreysE31').css('width', '90%');
-            $('#noStoreysE31').prop("disabled", true);
-            $('#noStoreysE32').css('display', 'none');
-            $('#noStoreysE32').prop("disabled", true);
+        if (gem$('#HeightCB3').val() == 0) {
+            gem$('#noStoreysE31').css('width', '90%');
+            gem$('#noStoreysE31').prop("disabled", true);
+            gem$('#noStoreysE32').css('display', 'none');
+            gem$('#noStoreysE32').prop("disabled", true);
         }
-        else if ($('#HeightCB3').val() == 1) {
-            $('#noStoreysE31').css('width', '45%');
-            $('#noStoreysE31').prop("disabled", false);
-            $('#noStoreysE32').css('display', 'inline');
-            $('#noStoreysE32').prop("disabled", false);
+        else if (gem$('#HeightCB3').val() == 1) {
+            gem$('#noStoreysE31').css('width', '45%');
+            gem$('#noStoreysE31').prop("disabled", false);
+            gem$('#noStoreysE32').css('display', 'inline');
+            gem$('#noStoreysE32').prop("disabled", false);
         }
         else {
-            $('#noStoreysE31').css('width', '90%');
-            $('#noStoreysE31').prop("disabled", false);
-            $('#noStoreysE32').css('display', 'none');
-            $('#noStoreysE32').prop("disabled", true);
+            gem$('#noStoreysE31').css('width', '90%');
+            gem$('#noStoreysE31').prop("disabled", false);
+            gem$('#noStoreysE32').css('display', 'none');
+            gem$('#noStoreysE32').prop("disabled", true);
         }
 
-        if ($('#HeightCB4').val() == 0) {
-            $('#noStoreysE41').prop("disabled", true);
+        if (gem$('#HeightCB4').val() == 0) {
+            gem$('#noStoreysE41').prop("disabled", true);
         }
         else {
-            $('#noStoreysE41').prop("disabled", false);
+            gem$('#noStoreysE41').prop("disabled", false);
         }
     }
     else {
-        $('#noStoreysE11').css('width', '90%');
-        $('#noStoreysE11').prop("disabled", true);
-        $('#noStoreysE12').css('display', 'none');
-        $('#noStoreysE12').prop("disabled", true);
+        gem$('#noStoreysE11').css('width', '90%');
+        gem$('#noStoreysE11').prop("disabled", true);
+        gem$('#noStoreysE12').css('display', 'none');
+        gem$('#noStoreysE12').prop("disabled", true);
     }
 }
 
 function taxt_ValidateDate() // Ok
 {
-    $('#DateE1').removeClass('gem_field_alert');
-    $('#DateE2').removeClass('gem_field_alert');
+    gem$('#DateE1').removeClass('gem_field_alert');
+    gem$('#DateE2').removeClass('gem_field_alert');
 
-    if ($('#DateCB1').val() == 0) {
-        $('#DateE1').css('width', '90%');
-        $('#DateE1').prop("disabled", true);
-        $('#DateE2').prop("disabled", true);
+    if (gem$('#DateCB1').val() == 0) {
+        gem$('#DateE1').css('width', '90%');
+        gem$('#DateE1').prop("disabled", true);
+        gem$('#DateE2').prop("disabled", true);
     }
-    else if ($('#DateCB1').val() == 2) {
-        $('#DateE1').css('width', '45%');
-        $('#DateE1').prop("disabled", false);
-        $('#DateE2').css('display', 'inline');
-        $('#DateE2').prop("disabled", false);
+    else if (gem$('#DateCB1').val() == 2) {
+        gem$('#DateE1').css('width', '45%');
+        gem$('#DateE1').prop("disabled", false);
+        gem$('#DateE2').css('display', 'inline');
+        gem$('#DateE2').prop("disabled", false);
     }
     else {
-        $('#DateE1').css('width', '90%');
-        $('#DateE1').prop("disabled", false);
-        $('#DateE2').css('display', 'none');
-        $('#DateE2').prop("disabled", true);
+        gem$('#DateE1').css('width', '90%');
+        gem$('#DateE1').prop("disabled", false);
+        gem$('#DateE2').css('display', 'none');
+        gem$('#DateE2').prop("disabled", true);
     }
 }
 
 function taxt_ValidateOccupancy() // Ok
 {
 
-    $('#OccupancyCB2').empty();
+    gem$('#OccupancyCB2').empty();
 
-    if ($('#OccupancyCB1').val() == 0) {
-        $('#OccupancyCB2').prop("disabled", true);
+    if (gem$('#OccupancyCB1').val() == 0) {
+        gem$('#OccupancyCB2').prop("disabled", true);
     }
-    else if ($('#OccupancyCB1').val() == 1) {
+    else if (gem$('#OccupancyCB1').val() == 1) {
         var OccupancyCB2 = [];
         /* RES99  */ OccupancyCB2.push('Residential, unknown type');
         /* RES1   */ OccupancyCB2.push('Single dwelling');
@@ -757,9 +757,9 @@ function taxt_ValidateOccupancy() // Ok
         /* RES5   */ OccupancyCB2.push('Mobile home');
         /* RES6   */ OccupancyCB2.push('Informal housing');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 2) {
+    else if (gem$('#OccupancyCB1').val() == 2) {
         var OccupancyCB2 = [];
         /* COM99  */ OccupancyCB2.push('Commercial and public, unknown type');
         /* COM1   */ OccupancyCB2.push('Retail trade');
@@ -774,9 +774,9 @@ function taxt_ValidateOccupancy() // Ok
         /* COM10  */ OccupancyCB2.push('Airport');
         /* COM11  */ OccupancyCB2.push('Recreation and leisure');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 3) {
+    else if (gem$('#OccupancyCB1').val() == 3) {
         var OccupancyCB2 = [];
         /* MIX99  */ OccupancyCB2.push('Mixed, unknown type');
         /* MIX1   */ OccupancyCB2.push('Mostly residential and commercial');
@@ -786,26 +786,26 @@ function taxt_ValidateOccupancy() // Ok
         /* MIX5   */ OccupancyCB2.push('Mostly industrial and commercial');
         /* MIX6   */ OccupancyCB2.push('Mostly industrial and residential');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 4) {
+    else if (gem$('#OccupancyCB1').val() == 4) {
         var OccupancyCB2 = [];
         /* IND99  */ OccupancyCB2.push('Industrial, unknown type');
         /* IND1   */ OccupancyCB2.push('Heavy industrial');
         /* IND2   */ OccupancyCB2.push('Light industrial');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 5) {
+    else if (gem$('#OccupancyCB1').val() == 5) {
         var OccupancyCB2 = [];
         /* AGR99  */ OccupancyCB2.push('Agriculture, unknown type');
         /* AGR1   */ OccupancyCB2.push('Produce storage');
         /* AGR2   */ OccupancyCB2.push('Animal shelter');
         /* AGR3   */ OccupancyCB2.push('Agricultural processing');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 6) {
+    else if (gem$('#OccupancyCB1').val() == 6) {
         var OccupancyCB2 = [];
         /* ASS99  */ OccupancyCB2.push('Assembly, unknown type');
         /* ASS1   */ OccupancyCB2.push('Religious gathering');
@@ -813,17 +813,17 @@ function taxt_ValidateOccupancy() // Ok
         /* ASS3   */ OccupancyCB2.push('Cinema or concert hall');
         /* ASS4   */ OccupancyCB2.push('Other gatherings');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 7) {
+    else if (gem$('#OccupancyCB1').val() == 7) {
         var OccupancyCB2 = [];
         /* GOV99  */ OccupancyCB2.push('Government, unknown type');
         /* GOV1   */ OccupancyCB2.push('Government, general services');
         /* GOV2   */ OccupancyCB2.push('Government, emergency response');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
-    else if ($('#OccupancyCB1').val() == 8) {
+    else if (gem$('#OccupancyCB1').val() == 8) {
         var OccupancyCB2 = [];
         /* EDU99  */ OccupancyCB2.push('Education, unknown type');
         /* EDU1   */ OccupancyCB2.push('Pre-school facility');
@@ -831,33 +831,33 @@ function taxt_ValidateOccupancy() // Ok
         /* EDU3   */ OccupancyCB2.push('College/university, offices and/or classrooms');
         /* EDU4   */ OccupancyCB2.push('College/university, research facilities and/or labs');
         select_populate('OccupancyCB2', OccupancyCB2);
-        $('#OccupancyCB2').prop("disabled", false);
+        gem$('#OccupancyCB2').prop("disabled", false);
     }
     else {
-        $('#OccupancyCB2').prop("disabled", true);
+        gem$('#OccupancyCB2').prop("disabled", true);
     }
 
 }
 
 function taxt_ValidateRegularity()
 {
-    $('#RegularityCB2').empty();
-    $('#RegularityCB3').empty();
-    $('#RegularityCB4').empty();
-    $('#RegularityCB5').empty();
+    gem$('#RegularityCB2').empty();
+    gem$('#RegularityCB3').empty();
+    gem$('#RegularityCB4').empty();
+    gem$('#RegularityCB5').empty();
 
     var disabled_cb2 = [], default_cb2 = 0;
     var disabled_cb3 = [], default_cb3 = 0;
 
-    if ($('#RegularityCB1').val() == 0 ||
-        $('#RegularityCB1').val() == 1) {
-        $('#RegularityCB2').prop("disabled", true);
-        $('#RegularityCB3').prop("disabled", true);
-        $('#RegularityCB4').prop("disabled", true);
-        $('#RegularityCB5').prop("disabled", true);
+    if (gem$('#RegularityCB1').val() == 0 ||
+        gem$('#RegularityCB1').val() == 1) {
+        gem$('#RegularityCB2').prop("disabled", true);
+        gem$('#RegularityCB3').prop("disabled", true);
+        gem$('#RegularityCB4').prop("disabled", true);
+        gem$('#RegularityCB5').prop("disabled", true);
     }
-    else if ($('#RegularityCB1').val() == 2) {
-        if ($('#RegularityCB2').val() == 0) {
+    else if (gem$('#RegularityCB1').val() == 2) {
+        if (gem$('#RegularityCB2').val() == 0) {
             disabled_cb3.push('No irregularity');
             default_cb3 = 1;
         }
@@ -870,11 +870,11 @@ function taxt_ValidateRegularity()
         /* IRVP:SET  */ RegularityCB3.push('Setback');
         /* IRVP:CHV  */ RegularityCB3.push('Change in vertical structure');
         /* IRVP:IRVO */ RegularityCB3.push('Other vertical irregularity');
-        $('#RegularityCB3').prop("disabled", false);
+        gem$('#RegularityCB3').prop("disabled", false);
         select_populate('RegularityCB3', RegularityCB3, disabled_cb3);
-        $('#RegularityCB3').val(default_cb3);
+        gem$('#RegularityCB3').val(default_cb3);
 
-        if ($('#RegularityCB3').val() == 0) {
+        if (gem$('#RegularityCB3').val() == 0) {
             disabled_cb2.push('No irregularity');
             default_cb2 = 1;
         }
@@ -883,9 +883,9 @@ function taxt_ValidateRegularity()
         /* IRPP:TOR */ RegularityCB2.push('Torsion eccentricity');
         /* IRPP:REC */ RegularityCB2.push('Re-entrant corner');
         /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
-        $('#RegularityCB2').prop("disabled", false);
+        gem$('#RegularityCB2').prop("disabled", false);
         select_populate('RegularityCB2', RegularityCB2, disabled_cb2);
-        $('#RegularityCB2').val(default_cb2);
+        gem$('#RegularityCB2').val(default_cb2);
     }
     taxt_RegularityCB2Select(null);
     taxt_RegularityCB3Select(null);
@@ -894,29 +894,29 @@ function taxt_ValidateRegularity()
 function taxt_ValidateRegularityCross23(who)
 {
     if (who == "2") {
-        if ($('#RegularityCB2').val() != 0) {
-            $('#RegularityCB3 option:eq(0)').prop("disabled", false);
+        if (gem$('#RegularityCB2').val() != 0) {
+            gem$('#RegularityCB3 option:eq(0)').prop("disabled", false);
         }
         else {
-            $('#RegularityCB3 option:eq(0)').prop("disabled", true);
+            gem$('#RegularityCB3 option:eq(0)').prop("disabled", true);
         }
     }
     if (who == "3") {
-        if ($('#RegularityCB3').val() != 0) {
-            $('#RegularityCB2 option:eq(0)').prop("disabled", false);
+        if (gem$('#RegularityCB3').val() != 0) {
+            gem$('#RegularityCB2 option:eq(0)').prop("disabled", false);
         }
         else {
-            $('#RegularityCB2 option:eq(0)').prop("disabled", true);
+            gem$('#RegularityCB2 option:eq(0)').prop("disabled", true);
         }
     }
 }
 
 function taxt_ValidateRegularity2()
 {
-    $('#RegularityCB4').empty();
+    gem$('#RegularityCB4').empty();
 
-    if ($('#RegularityCB1').val() < 2 || $('#RegularityCB2').val() == 0 || $('#RegularityCB2').val() == null) {
-        $('#RegularityCB4').prop("disabled", true);
+    if (gem$('#RegularityCB1').val() < 2 || gem$('#RegularityCB2').val() == 0 || gem$('#RegularityCB2').val() == null) {
+        gem$('#RegularityCB4').prop("disabled", true);
     }
     else {
         var RegularityCB4 = [];
@@ -925,7 +925,7 @@ function taxt_ValidateRegularity2()
         /* IRPS:REC  */ RegularityCB4.push('Re-entrant corner');
         /* IRPS:IRHO */ RegularityCB4.push('Other plan irregularity');
         select_populate('RegularityCB4', RegularityCB4);
-        $('#RegularityCB4').prop("disabled", false);
+        gem$('#RegularityCB4').prop("disabled", false);
     }
     taxt_ValidateRegularityCross23("2");
 }
@@ -933,10 +933,10 @@ function taxt_ValidateRegularity2()
 
 function taxt_ValidateRegularity3()
 {
-    $('#RegularityCB5').empty();
+    gem$('#RegularityCB5').empty();
 
-    if ($('#RegularityCB1').val() < 2 || $('#RegularityCB3').val() == 0 || $('#RegularityCB3').val() == null) {
-        $('#RegularityCB5').prop("disabled", true);
+    if (gem$('#RegularityCB1').val() < 2 || gem$('#RegularityCB3').val() == 0 || gem$('#RegularityCB3').val() == null) {
+        gem$('#RegularityCB5').prop("disabled", true);
     }
     else {
         var RegularityCB5 = [];
@@ -950,7 +950,7 @@ function taxt_ValidateRegularity3()
         /* IRVS:CHV  */ RegularityCB5.push('Change in vertical structure');
         /* IRVS:IRVO */ RegularityCB5.push('Other vertical irregularity');
         select_populate('RegularityCB5', RegularityCB5);
-        $('#RegularityCB5').prop("disabled", false);
+        gem$('#RegularityCB5').prop("disabled", false);
     }
     taxt_ValidateRegularityCross23("3");
 }
@@ -958,27 +958,27 @@ function taxt_ValidateRegularity3()
 function taxt_ValidateRoof()
 {
 
-    $('#RoofCB4').empty();
-    if ($('#RoofCB3').val() == 0 || $('#RoofCB3').val() == 7) {
-        $('#RoofCB4').prop("disabled", true);
+    gem$('#RoofCB4').empty();
+    if (gem$('#RoofCB3').val() == 0 || gem$('#RoofCB3').val() == 7) {
+        gem$('#RoofCB4').prop("disabled", true);
     }
-    else if ($('#RoofCB3').val() == 1) {
+    else if (gem$('#RoofCB3').val() == 1) {
         var RoofCB4 = [];
         /* RM99 */ RoofCB4.push('Masonry roof, unknown');
         /* RM1  */ RoofCB4.push('Vaulted masonry roof');
         /* RM2  */ RoofCB4.push('Shallow-arched masonry roof');
         /* RM3  */ RoofCB4.push('Composite masonry and concrete roof system');
         select_populate('RoofCB4', RoofCB4);
-        $('#RoofCB4').prop("disabled", false);
+        gem$('#RoofCB4').prop("disabled", false);
     }
-    else if ($('#RoofCB3').val() == 2) {
+    else if (gem$('#RoofCB3').val() == 2) {
         var RoofCB4 = [];
         /* RE99 */ RoofCB4.push('Earthen roof, unknown');
         /* RE1  */ RoofCB4.push('Vaulted earthen roofs');
         select_populate('RoofCB4', RoofCB4);
-        $('#RoofCB4').prop("disabled", false);
+        gem$('#RoofCB4').prop("disabled", false);
     }
-    else if ($('#RoofCB3').val() == 3) {
+    else if (gem$('#RoofCB3').val() == 3) {
         var RoofCB4 = [];
         /* RC99 */ RoofCB4.push('Concrete roof, unknown');
         /* RC1  */ RoofCB4.push('Cast-in-place beamless RC roof');
@@ -986,18 +986,18 @@ function taxt_ValidateRoof()
         /* RC3  */ RoofCB4.push('Precast concrete roof with RC topping');
         /* RC4  */ RoofCB4.push('Precast concrete roof without RC topping');
         select_populate('RoofCB4', RoofCB4);
-        $('#RoofCB4').prop("disabled", false);
+        gem$('#RoofCB4').prop("disabled", false);
     }
-    else if ($('#RoofCB3').val() == 4) {
+    else if (gem$('#RoofCB3').val() == 4) {
         var RoofCB4 = [];
         /* RME99 */ RoofCB4.push('Metal roof, unknown');
         /* RME1  */ RoofCB4.push('Metal beams or trusses supporting light roofing');
         /* RME2  */ RoofCB4.push('Metal roof beams supporting precast concrete slabs');
         /* RME3  */ RoofCB4.push('Composite steel roof deck and concrete slab');
         select_populate('RoofCB4', RoofCB4);
-        $('#RoofCB4').prop("disabled", false);
+        gem$('#RoofCB4').prop("disabled", false);
     }
-    else if ($('#RoofCB3').val() == 5) {
+    else if (gem$('#RoofCB3').val() == 5) {
         var RoofCB4 = [];
         /* RWO99 */ RoofCB4.push('Wooden roof, unknown');
         /* RWO1  */ RoofCB4.push('Wooden structure with light roof covering');
@@ -1006,39 +1006,39 @@ function taxt_ValidateRoof()
         /* RWO4  */ RoofCB4.push('Plywood panels or other light-weigth panels for roof');
         /* RWO5  */ RoofCB4.push('Bamboo, straw or thatch roof');
         select_populate('RoofCB4', RoofCB4);
-        $('#RoofCB4').prop("disabled", false);
+        gem$('#RoofCB4').prop("disabled", false);
     }
-    else if ($('#RoofCB3').val() == 6) {
+    else if (gem$('#RoofCB3').val() == 6) {
         var RoofCB4 = [];
         /* RFA1 */ RoofCB4.push('Inflatable or tensile membrane roof');
         /* RFAO */ RoofCB4.push('Fabric roof, other');
         select_populate('RoofCB4', RoofCB4);
-        $('#RoofCB4').prop("disabled", false);
+        gem$('#RoofCB4').prop("disabled", false);
     }
 }
 
 function taxt_ValidateFloor()
 {
-    $('#FloorCB2').empty();
+    gem$('#FloorCB2').empty();
 
-    if ($('#FloorCB1').val() == 0 || $('#FloorCB1').val() == 1 || $('#FloorCB1').val() == 7)
-        $('#FloorCB2').prop("disabled", true);
-    else if ($('#FloorCB1').val() == 2) {
+    if (gem$('#FloorCB1').val() == 0 || gem$('#FloorCB1').val() == 1 || gem$('#FloorCB1').val() == 7)
+        gem$('#FloorCB2').prop("disabled", true);
+    else if (gem$('#FloorCB1').val() == 2) {
         var FloorCB2 = [];
         /* FM99 */ FloorCB2.push('Masonry floor, unknown');
         /* FM1  */ FloorCB2.push('Vaulted masonry floor');
         /* FM2  */ FloorCB2.push('Shallow-arched masonry floor');
         /* FM3  */ FloorCB2.push('Composite cast-in place RC and masonry floor');
         select_populate('FloorCB2', FloorCB2);
-        $('#FloorCB2').prop("disabled", false);
+        gem$('#FloorCB2').prop("disabled", false);
     }
-    else if ($('#FloorCB1').val() == 3) {
+    else if (gem$('#FloorCB1').val() == 3) {
         var FloorCB2 = [];
         /* FE99 */ FloorCB2.push('Earthen floor, unknown');
         select_populate('FloorCB2', FloorCB2);
-        $('#FloorCB2').prop("disabled", false);
+        gem$('#FloorCB2').prop("disabled", false);
     }
-    else if ($('#FloorCB1').val() == 4)  {
+    else if (gem$('#FloorCB1').val() == 4)  {
         var FloorCB2 = [];
         /* FC99 */ FloorCB2.push('Concrete floor, unknown');
         /* FC1  */ FloorCB2.push('Cast-in-place beamless RC floor');
@@ -1046,18 +1046,18 @@ function taxt_ValidateFloor()
         /* FC3  */ FloorCB2.push('Precast concrete floor with RC topping');
         /* FC4  */ FloorCB2.push('Precast concrete floor without RC topping');
         select_populate('FloorCB2', FloorCB2);
-        $('#FloorCB2').prop("disabled", false);
+        gem$('#FloorCB2').prop("disabled", false);
     }
-    else if ($('#FloorCB1').val() == 5) {
+    else if (gem$('#FloorCB1').val() == 5) {
         var FloorCB2 = [];
         /* FME99 */ FloorCB2.push('Metal floor, unknown');
         /* FME1  */ FloorCB2.push('Metal beams, trusses or joists supporting light flooring');
         /* FME2  */ FloorCB2.push('Metal floor beams supporting precast concrete slabs');
         /* FME3  */ FloorCB2.push('Composite steel deck and concrete slab');
         select_populate('FloorCB2', FloorCB2);
-        $('#FloorCB2').prop("disabled", false);
+        gem$('#FloorCB2').prop("disabled", false);
     }
-    else if ($('#FloorCB1').val() == 6) {
+    else if (gem$('#FloorCB1').val() == 6) {
         var FloorCB2 = [];
         /* FW99 */ FloorCB2.push('Wooden floor, unknown');
         /* FW1  */ FloorCB2.push('Wood beams/trusses & joists supporting light flooring');
@@ -1065,7 +1065,7 @@ function taxt_ValidateFloor()
         /* FW3  */ FloorCB2.push('Wood-based sheets on joists or beams');
         /* FW4  */ FloorCB2.push('Plywood panels or other light-weigth panels for floor');
         select_populate('FloorCB2', FloorCB2);
-        $('#FloorCB2').prop("disabled", false);
+        gem$('#FloorCB2').prop("disabled", false);
     }
 }
 
@@ -1076,32 +1076,32 @@ function taxt_BreakDirection2(obj) // Ok
     if (typeof(obj) == 'undefined') {
         return;
     }
-    if ($('#DirectionCB').prop('checked')) {
-        if ($('#MaterialCB12').val() != $('#MaterialCB11').val() ||
-            $('#MaterialCB22').val() != $('#MaterialCB21').val() ||
-            $('#MaterialCB32').val() != $('#MaterialCB31').val() ||
-            $('#MaterialCB42').val() != $('#MaterialCB41').val() ||
-            $('#SystemCB12').val() != $('#SystemCB11').val() ||
-            $('#SystemCB22').val() != $('#SystemCB21').val()) {
-            $('#DirectionCB').prop('checked', false);
+    if (gem$('#DirectionCB').prop('checked')) {
+        if (gem$('#MaterialCB12').val() != gem$('#MaterialCB11').val() ||
+            gem$('#MaterialCB22').val() != gem$('#MaterialCB21').val() ||
+            gem$('#MaterialCB32').val() != gem$('#MaterialCB31').val() ||
+            gem$('#MaterialCB42').val() != gem$('#MaterialCB41').val() ||
+            gem$('#SystemCB12').val() != gem$('#SystemCB11').val() ||
+            gem$('#SystemCB22').val() != gem$('#SystemCB21').val()) {
+            gem$('#DirectionCB').prop('checked', false);
         }
     }
 }
 
 function taxt_SetDirection2(obj) // Ok
 {
-    if ($('#DirectionCB').prop('checked')) {
-        $('#MaterialCB12').val($('#MaterialCB11').val());
+    if (gem$('#DirectionCB').prop('checked')) {
+        gem$('#MaterialCB12').val(gem$('#MaterialCB11').val());
         taxt_MaterialCB12Select();
-        $('#MaterialCB22').val($('#MaterialCB21').val());
+        gem$('#MaterialCB22').val(gem$('#MaterialCB21').val());
         taxt_MaterialCB22Select();
-        $('#MaterialCB32').val($('#MaterialCB31').val());
+        gem$('#MaterialCB32').val(gem$('#MaterialCB31').val());
         taxt_MaterialCB32Select();
-        $('#MaterialCB42').val($('#MaterialCB41').val());
+        gem$('#MaterialCB42').val(gem$('#MaterialCB41').val());
         taxt_MaterialCB42Select();
-        $('#SystemCB12').val($('#SystemCB11').val());
+        gem$('#SystemCB12').val(gem$('#SystemCB11').val());
         taxt_SystemCB12Select();
-        $('#SystemCB22').val($('#SystemCB21').val());
+        gem$('#SystemCB22').val(gem$('#SystemCB21').val());
         taxt_SystemCB22Select();
     }
 }
@@ -1110,7 +1110,7 @@ function taxt_MaterialCB11Select(obj) // Ok
 {
     taxt_ValidateMaterial1();
     taxt_SetDirection2();
-    if ($('#DirectionCB').prop('checked')) {
+    if (gem$('#DirectionCB').prop('checked')) {
         taxt_ValidateMaterial2();
     }
     taxt_BuildTaxonomy();
@@ -1164,7 +1164,7 @@ function taxt_SystemCB11Select(obj) // Ok
 {
     taxt_SetDirection2();
     taxt_ValidateSystem1();
-    if ($('#DirectionCB').prop('checked')) {
+    if (gem$('#DirectionCB').prop('checked')) {
         taxt_ValidateSystem2();
     }
     taxt_BuildTaxonomy();
@@ -1360,22 +1360,22 @@ function taxt_FloorCB3Select(obj)
 
 function taxt_Direction1RB1Click(obj) // Ok
 {
-    $("#Direction2RB1").prop("checked", true);
+    gem$("#Direction2RB1").prop("checked", true);
     taxt_BuildTaxonomy();
 }
 function taxt_Direction1RB2Click(obj) // Ok
 {
-    $("#Direction2RB3").prop("checked", true);
+    gem$("#Direction2RB3").prop("checked", true);
     taxt_BuildTaxonomy();
 }
 function taxt_Direction2RB1Click(obj) // Ok
 {
-    $("#Direction1RB1").prop("checked", true);
+    gem$("#Direction1RB1").prop("checked", true);
     taxt_BuildTaxonomy();
 }
 function taxt_Direction2RB3Click(obj) // Ok
 {
-    $("#Direction1RB2").prop("checked", true);
+    gem$("#Direction1RB2").prop("checked", true);
     taxt_BuildTaxonomy();
 }
 
@@ -1394,242 +1394,242 @@ function BuildTaxonomyString(out_type)
         Taxonomy[i] = "";
     /* Structural System: Direction X */
 
-    if ( $('#MaterialCB11').val() == 0 && (out_type == 0) )
+    if ( gem$('#MaterialCB11').val() == 0 && (out_type == 0) )
         Taxonomy[0] = 'MAT99';
-    if ($('#MaterialCB11').val() == 1)
+    if (gem$('#MaterialCB11').val() == 1)
         Taxonomy[0] = 'C99';
-    if ($('#MaterialCB11').val() == 2)
+    if (gem$('#MaterialCB11').val() == 2)
         Taxonomy[0] = 'CU';
-    if ($('#MaterialCB11').val() == 3)
+    if (gem$('#MaterialCB11').val() == 3)
         Taxonomy[0] = 'CR';
-    if ($('#MaterialCB11').val() == 4)
+    if (gem$('#MaterialCB11').val() == 4)
         Taxonomy[0] = 'SRC';
 
-    if ( ($('#MaterialCB11').val() > 0) && ($('#MaterialCB11').val() < 5) ) {
-        if ( ($('#MaterialCB21').val() == 0) && (out_type == 0) )
+    if ( (gem$('#MaterialCB11').val() > 0) && (gem$('#MaterialCB11').val() < 5) ) {
+        if ( (gem$('#MaterialCB21').val() == 0) && (out_type == 0) )
             Taxonomy[1] = '+CT99';
-        if ($('#MaterialCB21').val() == 1)
+        if (gem$('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+CIP';
-        if ($('#MaterialCB21').val() == 2)
+        if (gem$('#MaterialCB21').val() == 2)
             Taxonomy[1] = '+PC';
-        if ($('#MaterialCB21').val() == 3)
+        if (gem$('#MaterialCB21').val() == 3)
             Taxonomy[1] = '+CIPPS';
-        if ($('#MaterialCB21').val() == 4)
+        if (gem$('#MaterialCB21').val() == 4)
             Taxonomy[1] = '+PCPS';
     }
-    if ($('#MaterialCB11').val() == 5) {
+    if (gem$('#MaterialCB11').val() == 5) {
         Taxonomy[0] = 'S';
-        if ( $('#MaterialCB21').val() == 0 && (out_type == 0) )
+        if ( gem$('#MaterialCB21').val() == 0 && (out_type == 0) )
             Taxonomy[1] = '+S99';
-        if ( $('#MaterialCB21').val() == 1 )
+        if ( gem$('#MaterialCB21').val() == 1 )
             Taxonomy[1] = '+SL';
-        if ( $('#MaterialCB21').val() == 2 )
+        if ( gem$('#MaterialCB21').val() == 2 )
             Taxonomy[1] = '+SR';
-        if ( $('#MaterialCB21').val() == 3 )
+        if ( gem$('#MaterialCB21').val() == 3 )
             Taxonomy[1] = '+SO';
     }
 
-    if ($('#MaterialCB11').val() == 6) {
+    if (gem$('#MaterialCB11').val() == 6) {
         Taxonomy[0] = 'ME';
-        if ( $('#MaterialCB21').val() == 0 && (out_type == 0) )
+        if ( gem$('#MaterialCB21').val() == 0 && (out_type == 0) )
             Taxonomy[1] = '+ME99';
-        if ($('#MaterialCB21').val() == 1)
+        if (gem$('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+MEIR';
-        if ($('#MaterialCB21').val() == 2)
+        if (gem$('#MaterialCB21').val() == 2)
             Taxonomy[1] = '+MEO';
     }
 
-    if ($('#MaterialCB11').val() == 5) {
-        if ( $('#MaterialCB31').val() == 0 && (out_type == 0) )
+    if (gem$('#MaterialCB11').val() == 5) {
+        if ( gem$('#MaterialCB31').val() == 0 && (out_type == 0) )
             Taxonomy[2] = '+SC99';
-        if ($('#MaterialCB31').val() == 1)
+        if (gem$('#MaterialCB31').val() == 1)
             Taxonomy[2] = '+WEL';
-        if ($('#MaterialCB31').val() == 2)
+        if (gem$('#MaterialCB31').val() == 2)
             Taxonomy[2] = '+RIV';
-        if ($('#MaterialCB31').val() == 3)
+        if (gem$('#MaterialCB31').val() == 3)
             Taxonomy[2] = '+BOL';
     }
 
-    if ($('#MaterialCB11').val() > 6 && $('#MaterialCB11').val() < 11) {
-        if ($('#MaterialCB11').val() == 7)
+    if (gem$('#MaterialCB11').val() > 6 && gem$('#MaterialCB11').val() < 11) {
+        if (gem$('#MaterialCB11').val() == 7)
             Taxonomy[0] = 'M99';
-        if ($('#MaterialCB11').val() == 8)
+        if (gem$('#MaterialCB11').val() == 8)
             Taxonomy[0] = 'MUR';
-        if ($('#MaterialCB11').val() == 9)
+        if (gem$('#MaterialCB11').val() == 9)
             Taxonomy[0] = 'MCF';
 
-        if ( $('#MaterialCB21').val() == 0 && (out_type == 0) )
+        if ( gem$('#MaterialCB21').val() == 0 && (out_type == 0) )
             Taxonomy[1] = '+MUN99';
-        if ($('#MaterialCB21').val() == 1)
+        if (gem$('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+ADO';
-        if ($('#MaterialCB21').val() == 2)
+        if (gem$('#MaterialCB21').val() == 2)
             Taxonomy[1] = '+ST99';
-        if ($('#MaterialCB21').val() == 3)
+        if (gem$('#MaterialCB21').val() == 3)
             Taxonomy[1] = '+STRUB';
-        if ($('#MaterialCB21').val() == 4)
+        if (gem$('#MaterialCB21').val() == 4)
             Taxonomy[1] = '+STDRE';
-        if ($('#MaterialCB21').val() == 5)
+        if (gem$('#MaterialCB21').val() == 5)
             Taxonomy[1] = '+CL99';
-        if ($('#MaterialCB21').val() == 6)
+        if (gem$('#MaterialCB21').val() == 6)
             Taxonomy[1] = '+CLBRS';
-        if ($('#MaterialCB21').val() == 7)
+        if (gem$('#MaterialCB21').val() == 7)
             Taxonomy[1] = '+CLBRH';
-        if ($('#MaterialCB21').val() == 8)
+        if (gem$('#MaterialCB21').val() == 8)
             Taxonomy[1] = '+CLBLH';
-        if ($('#MaterialCB21').val() == 9)
+        if (gem$('#MaterialCB21').val() == 9)
             Taxonomy[1] = '+CB99';
-        if ($('#MaterialCB21').val() == 10)
+        if (gem$('#MaterialCB21').val() == 10)
             Taxonomy[1] = '+CBS';
-        if ($('#MaterialCB21').val() == 11)
+        if (gem$('#MaterialCB21').val() == 11)
             Taxonomy[1] = '+CBH';
-        if ($('#MaterialCB21').val() == 12)
+        if (gem$('#MaterialCB21').val() == 12)
             Taxonomy[1] = '+MO';
 
-        if ($('#MaterialCB11').val() == 10) {
+        if (gem$('#MaterialCB11').val() == 10) {
             Taxonomy[0] = 'MR';
-            if ( ($('#MaterialCB41').val() == 0) && (out_type == 0) )
+            if ( (gem$('#MaterialCB41').val() == 0) && (out_type == 0) )
                 Taxonomy[34] = '+MR99';
-            if ($('#MaterialCB41').val() == 1)
+            if (gem$('#MaterialCB41').val() == 1)
                 Taxonomy[34] = '+RS';
-            if ($('#MaterialCB41').val() == 2)
+            if (gem$('#MaterialCB41').val() == 2)
                 Taxonomy[34] = '+RW';
-            if ($('#MaterialCB41').val() == 3)
+            if (gem$('#MaterialCB41').val() == 3)
                 Taxonomy[34] = '+RB';
-            if ($('#MaterialCB41').val() == 4)
+            if (gem$('#MaterialCB41').val() == 4)
                 Taxonomy[34] = '+RCM';
-            if ($('#MaterialCB41').val() == 5)
+            if (gem$('#MaterialCB41').val() == 5)
                 Taxonomy[34] = '+RCB';
         }
 
-        if (($('#MaterialCB31').val() == 0) && (out_type == 0) )
+        if ((gem$('#MaterialCB31').val() == 0) && (out_type == 0) )
             Taxonomy[2] = '+MO99';
-        if ($('#MaterialCB31').val() == 1)
+        if (gem$('#MaterialCB31').val() == 1)
             Taxonomy[2] = '+MON';
-        if ($('#MaterialCB31').val() == 2)
+        if (gem$('#MaterialCB31').val() == 2)
             Taxonomy[2] = '+MOM';
-        if ($('#MaterialCB31').val() == 3)
+        if (gem$('#MaterialCB31').val() == 3)
             Taxonomy[2] = '+MOL';
-        if ($('#MaterialCB31').val() == 4)
+        if (gem$('#MaterialCB31').val() == 4)
             Taxonomy[2] = '+MOC';
-        if ($('#MaterialCB31').val() == 5)
+        if (gem$('#MaterialCB31').val() == 5)
             Taxonomy[2] = '+MOCL';
-        if ($('#MaterialCB31').val() == 6)
+        if (gem$('#MaterialCB31').val() == 6)
             Taxonomy[2] = '+SP99';
-        if ($('#MaterialCB31').val() == 7)
+        if (gem$('#MaterialCB31').val() == 7)
             Taxonomy[2] = '+SPLI';
-        if ($('#MaterialCB31').val() == 8)
+        if (gem$('#MaterialCB31').val() == 8)
             Taxonomy[2] = '+SPSA';
-        if ($('#MaterialCB31').val() == 9)
+        if (gem$('#MaterialCB31').val() == 9)
             Taxonomy[2] = '+SPTU';
-        if ($('#MaterialCB31').val() == 10)
+        if (gem$('#MaterialCB31').val() == 10)
             Taxonomy[2] = '+SPSL';
-        if ($('#MaterialCB31').val() == 11)
+        if (gem$('#MaterialCB31').val() == 11)
             Taxonomy[2] = '+SPGR';
-        if ($('#MaterialCB31').val() == 12)
+        if (gem$('#MaterialCB31').val() == 12)
             Taxonomy[2] = '+SPBA';
-        if ($('#MaterialCB31').val() == 13)
+        if (gem$('#MaterialCB31').val() == 13)
             Taxonomy[2] = '+SPO';
     }
 
-    if ( ($('#MaterialCB11').val()>10) && ($('#MaterialCB11').val()<14) ) {
-        if ($('#MaterialCB11').val() == 11)
+    if ( (gem$('#MaterialCB11').val()>10) && (gem$('#MaterialCB11').val()<14) ) {
+        if (gem$('#MaterialCB11').val() == 11)
             Taxonomy[0] = 'E99';
-        if ($('#MaterialCB11').val() == 12)
+        if (gem$('#MaterialCB11').val() == 12)
             Taxonomy[0] = 'EU';
-        if ($('#MaterialCB11').val() == 13)
+        if (gem$('#MaterialCB11').val() == 13)
             Taxonomy[0] = 'ER';
 
-        if ( ($('#MaterialCB21').val() == 0) && (out_type == 0) )
+        if ( (gem$('#MaterialCB21').val() == 0) && (out_type == 0) )
             Taxonomy[1] = '+ET99';
-        if ($('#MaterialCB21').val() == 1)
+        if (gem$('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+ETR';
-        if ($('#MaterialCB21').val() == 2)
+        if (gem$('#MaterialCB21').val() == 2)
             Taxonomy[1] = '+ETC';
-        if ($('#MaterialCB21').val() == 3)
+        if (gem$('#MaterialCB21').val() == 3)
             Taxonomy[1] = '+ETO';
     }
 
-    if ($('#MaterialCB11').val() == 14) {
+    if (gem$('#MaterialCB11').val() == 14) {
         Taxonomy[0] = 'W';
-        if (($('#MaterialCB21').val() == 0) && (out_type == 0))
+        if ((gem$('#MaterialCB21').val() == 0) && (out_type == 0))
             Taxonomy[1] = '+W99';
-        if ($('#MaterialCB21').val() == 1)
+        if (gem$('#MaterialCB21').val() == 1)
             Taxonomy[1] = '+WHE';
-        if ($('#MaterialCB21').val() == 2)
+        if (gem$('#MaterialCB21').val() == 2)
             Taxonomy[1] = '+WLI';
-        if ($('#MaterialCB21').val() == 3)
+        if (gem$('#MaterialCB21').val() == 3)
             Taxonomy[1] = '+WS';
-        if ($('#MaterialCB21').val() == 4)
+        if (gem$('#MaterialCB21').val() == 4)
             Taxonomy[1] = '+WWD';
-        if ($('#MaterialCB21').val() == 5)
+        if (gem$('#MaterialCB21').val() == 5)
             Taxonomy[1] = '+WBB';
-        if ($('#MaterialCB21').val() == 6)
+        if (gem$('#MaterialCB21').val() == 6)
             Taxonomy[1] = '+WO';
     }
 
-    if ($('#MaterialCB11').val() == 15)
+    if (gem$('#MaterialCB11').val() == 15)
         Taxonomy[0] = 'MATO';
 
-    if (($('#SystemCB11').val() == 0) && (out_type == 0))
+    if ((gem$('#SystemCB11').val() == 0) && (out_type == 0))
         Taxonomy[3] = 'L99';
 
-    if ( ($('#MaterialCB11').val()>10) && ($('#MaterialCB11').val()<14) ) {
-        if ($('#SystemCB11').val() == 1)
+    if ( (gem$('#MaterialCB11').val()>10) && (gem$('#MaterialCB11').val()<14) ) {
+        if (gem$('#SystemCB11').val() == 1)
             Taxonomy[3] = 'LN';
-        if ($('#SystemCB11').val() == 2)
+        if (gem$('#SystemCB11').val() == 2)
             Taxonomy[3] = 'LWAL';
-        if ($('#SystemCB11').val() == 3)
+        if (gem$('#SystemCB11').val() == 3)
             Taxonomy[3] = 'LH';
-        if ($('#SystemCB11').val() == 4)
+        if (gem$('#SystemCB11').val() == 4)
             Taxonomy[3] = 'LO';
     }
-    else if ( (($('#MaterialCB11').val()>6) && ($('#MaterialCB11').val()<11)) || ($('#MaterialCB11').val() == 14)) {
-        if ($('#SystemCB11').val() == 1)
+    else if ( ((gem$('#MaterialCB11').val()>6) && (gem$('#MaterialCB11').val()<11)) || (gem$('#MaterialCB11').val() == 14)) {
+        if (gem$('#SystemCB11').val() == 1)
             Taxonomy[3] = 'LN';
-        if ($('#SystemCB11').val() == 2)
+        if (gem$('#SystemCB11').val() == 2)
             Taxonomy[3] = 'LFM';;
-        if ($('#SystemCB11').val() == 3)
+        if (gem$('#SystemCB11').val() == 3)
             Taxonomy[3] = 'LPB';
-        if ($('#SystemCB11').val() == 4)
+        if (gem$('#SystemCB11').val() == 4)
             Taxonomy[3] = 'LWAL';
-        if ($('#SystemCB11').val() == 5)
+        if (gem$('#SystemCB11').val() == 5)
             Taxonomy[3] = 'LH';
-        if ($('#SystemCB11').val() == 6)
+        if (gem$('#SystemCB11').val() == 6)
             Taxonomy[3] = 'LO';
     }
     else {
-        if ($('#SystemCB11').val() == 1)
+        if (gem$('#SystemCB11').val() == 1)
             Taxonomy[3] = 'LN';
-        if ($('#SystemCB11').val() == 2)
+        if (gem$('#SystemCB11').val() == 2)
             Taxonomy[3] = 'LFM';
-        if ($('#SystemCB11').val() == 3)
+        if (gem$('#SystemCB11').val() == 3)
             Taxonomy[3] = 'LFINF';
-        if ($('#SystemCB11').val() == 4)
+        if (gem$('#SystemCB11').val() == 4)
             Taxonomy[3] = 'LFBR';
-        if ($('#SystemCB11').val() == 5)
+        if (gem$('#SystemCB11').val() == 5)
             Taxonomy[3] = 'LPB';
-        if ($('#SystemCB11').val() == 6)
+        if (gem$('#SystemCB11').val() == 6)
             Taxonomy[3] = 'LWAL';
-        if ($('#SystemCB11').val() == 7)
+        if (gem$('#SystemCB11').val() == 7)
             Taxonomy[3] = 'LDUAL';
-        if ($('#SystemCB11').val() == 8)
+        if (gem$('#SystemCB11').val() == 8)
             Taxonomy[3] = 'LFLS';
-        if ($('#SystemCB11').val() == 9)
+        if (gem$('#SystemCB11').val() == 9)
             Taxonomy[3] = 'LFLSINF';
-        if ($('#SystemCB11').val() == 10)
+        if (gem$('#SystemCB11').val() == 10)
             Taxonomy[3] = 'LH';
-        if ($('#SystemCB11').val() == 11)
+        if (gem$('#SystemCB11').val() == 11)
             Taxonomy[3] = 'LO';
     }
 
-    if ($('#SystemCB11').val() > 0) {
-        if (($('#SystemCB21').val() == 0) && (out_type == 0))
+    if (gem$('#SystemCB11').val() > 0) {
+        if ((gem$('#SystemCB21').val() == 0) && (out_type == 0))
             Taxonomy[4] = '+DU99';
-        if ($('#SystemCB21').val() == 1)
+        if (gem$('#SystemCB21').val() == 1)
             Taxonomy[4] = '+DUC';
-        if ($('#SystemCB21').val() == 2)
+        if (gem$('#SystemCB21').val() == 2)
             Taxonomy[4] = '+DNO';
-        if ($('#SystemCB21').val() == 3)
+        if (gem$('#SystemCB21').val() == 3)
             Taxonomy[4] = '+DBD';
     }
 
@@ -1641,795 +1641,795 @@ function BuildTaxonomyString(out_type)
 
 
 
-    if ( $('#MaterialCB12').val() == 0 && (out_type == 0) )
+    if ( gem$('#MaterialCB12').val() == 0 && (out_type == 0) )
         Taxonomy[5] = 'MAT99';
-    if ($('#MaterialCB12').val() == 1)
+    if (gem$('#MaterialCB12').val() == 1)
         Taxonomy[5] = 'C99';
-    if ($('#MaterialCB12').val() == 2)
+    if (gem$('#MaterialCB12').val() == 2)
         Taxonomy[5] = 'CU';
-    if ($('#MaterialCB12').val() == 3)
+    if (gem$('#MaterialCB12').val() == 3)
         Taxonomy[5] = 'CR';
-    if ($('#MaterialCB12').val() == 4)
+    if (gem$('#MaterialCB12').val() == 4)
         Taxonomy[5] = 'SRC';
 
-    if ( ($('#MaterialCB12').val() > 0) && ($('#MaterialCB12').val() < 5) ) {
-        if ( ($('#MaterialCB22').val() == 0) && (out_type == 0) )
+    if ( (gem$('#MaterialCB12').val() > 0) && (gem$('#MaterialCB12').val() < 5) ) {
+        if ( (gem$('#MaterialCB22').val() == 0) && (out_type == 0) )
             Taxonomy[6] = '+CT99';
-        if ($('#MaterialCB22').val() == 1)
+        if (gem$('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+CIP';
-        if ($('#MaterialCB22').val() == 2)
+        if (gem$('#MaterialCB22').val() == 2)
             Taxonomy[6] = '+PC';
-        if ($('#MaterialCB22').val() == 3)
+        if (gem$('#MaterialCB22').val() == 3)
             Taxonomy[6] = '+CIPPS';
-        if ($('#MaterialCB22').val() == 4)
+        if (gem$('#MaterialCB22').val() == 4)
             Taxonomy[6] = '+PCPS';
     }
-    if ($('#MaterialCB12').val() == 5) {
+    if (gem$('#MaterialCB12').val() == 5) {
         Taxonomy[5] = 'S';
-        if ( $('#MaterialCB22').val() == 0 && (out_type == 0) )
+        if ( gem$('#MaterialCB22').val() == 0 && (out_type == 0) )
             Taxonomy[6] = '+S99';
-        if ( $('#MaterialCB22').val() == 1 )
+        if ( gem$('#MaterialCB22').val() == 1 )
             Taxonomy[6] = '+SL';
-        if ( $('#MaterialCB22').val() == 2 )
+        if ( gem$('#MaterialCB22').val() == 2 )
             Taxonomy[6] = '+SR';
-        if ( $('#MaterialCB22').val() == 3 )
+        if ( gem$('#MaterialCB22').val() == 3 )
             Taxonomy[6] = '+SO';
     }
 
-    if ($('#MaterialCB12').val() == 6) {
+    if (gem$('#MaterialCB12').val() == 6) {
         Taxonomy[5] = 'ME';
-        if ( $('#MaterialCB22').val() == 0 && (out_type == 0) )
+        if ( gem$('#MaterialCB22').val() == 0 && (out_type == 0) )
             Taxonomy[6] = '+ME99';
-        if ($('#MaterialCB22').val() == 1)
+        if (gem$('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+MEIR';
-        if ($('#MaterialCB22').val() == 2)
+        if (gem$('#MaterialCB22').val() == 2)
             Taxonomy[6] = '+MEO';
     }
 
-    if ($('#MaterialCB12').val() == 5) {
-        if ( $('#MaterialCB32').val() == 0 && (out_type == 0) )
+    if (gem$('#MaterialCB12').val() == 5) {
+        if ( gem$('#MaterialCB32').val() == 0 && (out_type == 0) )
             Taxonomy[7] = '+SC99';
-        if ($('#MaterialCB32').val() == 1)
+        if (gem$('#MaterialCB32').val() == 1)
             Taxonomy[7] = '+WEL';
-        if ($('#MaterialCB32').val() == 2)
+        if (gem$('#MaterialCB32').val() == 2)
             Taxonomy[7] = '+RIV';
-        if ($('#MaterialCB32').val() == 3)
+        if (gem$('#MaterialCB32').val() == 3)
             Taxonomy[7] = '+BOL';
     }
 
-    if ($('#MaterialCB12').val() > 6 && $('#MaterialCB12').val() < 11) {
-        if ($('#MaterialCB12').val() == 7)
+    if (gem$('#MaterialCB12').val() > 6 && gem$('#MaterialCB12').val() < 11) {
+        if (gem$('#MaterialCB12').val() == 7)
             Taxonomy[5] = 'M99';
-        if ($('#MaterialCB12').val() == 8)
+        if (gem$('#MaterialCB12').val() == 8)
             Taxonomy[5] = 'MUR';
-        if ($('#MaterialCB12').val() == 9)
+        if (gem$('#MaterialCB12').val() == 9)
             Taxonomy[5] = 'MCF';
 
-        if ( $('#MaterialCB22').val() == 0 && (out_type == 0) )
+        if ( gem$('#MaterialCB22').val() == 0 && (out_type == 0) )
             Taxonomy[6] = '+MUN99';
-        if ($('#MaterialCB22').val() == 1)
+        if (gem$('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+ADO';
-        if ($('#MaterialCB22').val() == 2)
+        if (gem$('#MaterialCB22').val() == 2)
             Taxonomy[6] = '+ST99';
-        if ($('#MaterialCB22').val() == 3)
+        if (gem$('#MaterialCB22').val() == 3)
             Taxonomy[6] = '+STRUB';
-        if ($('#MaterialCB22').val() == 4)
+        if (gem$('#MaterialCB22').val() == 4)
             Taxonomy[6] = '+STDRE';
-        if ($('#MaterialCB22').val() == 5)
+        if (gem$('#MaterialCB22').val() == 5)
             Taxonomy[6] = '+CL99';
-        if ($('#MaterialCB22').val() == 6)
+        if (gem$('#MaterialCB22').val() == 6)
             Taxonomy[6] = '+CLBRS';
-        if ($('#MaterialCB22').val() == 7)
+        if (gem$('#MaterialCB22').val() == 7)
             Taxonomy[6] = '+CLBRH';
-        if ($('#MaterialCB22').val() == 8)
+        if (gem$('#MaterialCB22').val() == 8)
             Taxonomy[6] = '+CLBLH';
-        if ($('#MaterialCB22').val() == 9)
+        if (gem$('#MaterialCB22').val() == 9)
             Taxonomy[6] = '+CB99';
-        if ($('#MaterialCB22').val() == 10)
+        if (gem$('#MaterialCB22').val() == 10)
             Taxonomy[6] = '+CBS';
-        if ($('#MaterialCB22').val() == 11)
+        if (gem$('#MaterialCB22').val() == 11)
             Taxonomy[6] = '+CBH';
-        if ($('#MaterialCB22').val() == 12)
+        if (gem$('#MaterialCB22').val() == 12)
             Taxonomy[6] = '+MO';
 
-        if ($('#MaterialCB12').val() == 10) {
+        if (gem$('#MaterialCB12').val() == 10) {
             Taxonomy[5] = 'MR';
-            if ( ($('#MaterialCB42').val() == 0) && (out_type == 0) )
+            if ( (gem$('#MaterialCB42').val() == 0) && (out_type == 0) )
                 Taxonomy[35] = '+MR99';
-            if ($('#MaterialCB42').val() == 1)
+            if (gem$('#MaterialCB42').val() == 1)
                 Taxonomy[35] = '+RS';
-            if ($('#MaterialCB42').val() == 2)
+            if (gem$('#MaterialCB42').val() == 2)
                 Taxonomy[35] = '+RW';
-            if ($('#MaterialCB42').val() == 3)
+            if (gem$('#MaterialCB42').val() == 3)
                 Taxonomy[35] = '+RB';
-            if ($('#MaterialCB42').val() == 4)
+            if (gem$('#MaterialCB42').val() == 4)
                 Taxonomy[35] = '+RCM';
-            if ($('#MaterialCB42').val() == 5)
+            if (gem$('#MaterialCB42').val() == 5)
                 Taxonomy[35] = '+RCB';
         }
 
-        if (($('#MaterialCB32').val() == 0) && (out_type == 0) )
+        if ((gem$('#MaterialCB32').val() == 0) && (out_type == 0) )
             Taxonomy[7] = '+MO99';
-        if ($('#MaterialCB32').val() == 1)
+        if (gem$('#MaterialCB32').val() == 1)
             Taxonomy[7] = '+MON';
-        if ($('#MaterialCB32').val() == 2)
+        if (gem$('#MaterialCB32').val() == 2)
             Taxonomy[7] = '+MOM';
-        if ($('#MaterialCB32').val() == 3)
+        if (gem$('#MaterialCB32').val() == 3)
             Taxonomy[7] = '+MOL';
-        if ($('#MaterialCB32').val() == 4)
+        if (gem$('#MaterialCB32').val() == 4)
             Taxonomy[7] = '+MOC';
-        if ($('#MaterialCB32').val() == 5)
+        if (gem$('#MaterialCB32').val() == 5)
             Taxonomy[7] = '+MOCL';
-        if ($('#MaterialCB32').val() == 6)
+        if (gem$('#MaterialCB32').val() == 6)
             Taxonomy[7] = '+SP99';
-        if ($('#MaterialCB32').val() == 7)
+        if (gem$('#MaterialCB32').val() == 7)
             Taxonomy[7] = '+SPLI';
-        if ($('#MaterialCB32').val() == 8)
+        if (gem$('#MaterialCB32').val() == 8)
             Taxonomy[7] = '+SPSA';
-        if ($('#MaterialCB32').val() == 9)
+        if (gem$('#MaterialCB32').val() == 9)
             Taxonomy[7] = '+SPTU';
-        if ($('#MaterialCB32').val() == 10)
+        if (gem$('#MaterialCB32').val() == 10)
             Taxonomy[7] = '+SPSL';
-        if ($('#MaterialCB32').val() == 11)
+        if (gem$('#MaterialCB32').val() == 11)
             Taxonomy[7] = '+SPGR';
-        if ($('#MaterialCB32').val() == 12)
+        if (gem$('#MaterialCB32').val() == 12)
             Taxonomy[7] = '+SPBA';
-        if ($('#MaterialCB32').val() == 13)
+        if (gem$('#MaterialCB32').val() == 13)
             Taxonomy[7] = '+SPO';
     }
 
-    if ( ($('#MaterialCB12').val()>10) && ($('#MaterialCB12').val()<14) ) {
-        if ($('#MaterialCB12').val() == 11)
+    if ( (gem$('#MaterialCB12').val()>10) && (gem$('#MaterialCB12').val()<14) ) {
+        if (gem$('#MaterialCB12').val() == 11)
             Taxonomy[5] = 'E99';
-        if ($('#MaterialCB12').val() == 12)
+        if (gem$('#MaterialCB12').val() == 12)
             Taxonomy[5] = 'EU';
-        if ($('#MaterialCB12').val() == 13)
+        if (gem$('#MaterialCB12').val() == 13)
             Taxonomy[5] = 'ER';
 
-        if ( ($('#MaterialCB22').val() == 0) && (out_type == 0) )
+        if ( (gem$('#MaterialCB22').val() == 0) && (out_type == 0) )
             Taxonomy[6] = '+ET99';
-        if ($('#MaterialCB22').val() == 1)
+        if (gem$('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+ETR';
-        if ($('#MaterialCB22').val() == 2)
+        if (gem$('#MaterialCB22').val() == 2)
             Taxonomy[6] = '+ETC';
-        if ($('#MaterialCB22').val() == 3)
+        if (gem$('#MaterialCB22').val() == 3)
             Taxonomy[6] = '+ETO';
     }
 
-    if ($('#MaterialCB12').val() == 14) {
+    if (gem$('#MaterialCB12').val() == 14) {
         Taxonomy[5] = 'W';
-        if (($('#MaterialCB22').val() == 0) && (out_type == 0))
+        if ((gem$('#MaterialCB22').val() == 0) && (out_type == 0))
             Taxonomy[6] = '+W99';
-        if ($('#MaterialCB22').val() == 1)
+        if (gem$('#MaterialCB22').val() == 1)
             Taxonomy[6] = '+WHE';
-        if ($('#MaterialCB22').val() == 2)
+        if (gem$('#MaterialCB22').val() == 2)
             Taxonomy[6] = '+WLI';
-        if ($('#MaterialCB22').val() == 3)
+        if (gem$('#MaterialCB22').val() == 3)
             Taxonomy[6] = '+WS';
-        if ($('#MaterialCB22').val() == 4)
+        if (gem$('#MaterialCB22').val() == 4)
             Taxonomy[6] = '+WWD';
-        if ($('#MaterialCB22').val() == 5)
+        if (gem$('#MaterialCB22').val() == 5)
             Taxonomy[6] = '+WBB';
-        if ($('#MaterialCB22').val() == 6)
+        if (gem$('#MaterialCB22').val() == 6)
             Taxonomy[6] = '+WO';
     }
 
-    if ($('#MaterialCB12').val() == 15)
+    if (gem$('#MaterialCB12').val() == 15)
         Taxonomy[5] = 'MATO';
 
-    if (($('#SystemCB12').val() == 0) && (out_type == 0))
+    if ((gem$('#SystemCB12').val() == 0) && (out_type == 0))
         Taxonomy[8] = 'L99';
 
-    if ( ($('#MaterialCB12').val()>10) && ($('#MaterialCB12').val()<14) ) {
-        if ($('#SystemCB12').val() == 1)
+    if ( (gem$('#MaterialCB12').val()>10) && (gem$('#MaterialCB12').val()<14) ) {
+        if (gem$('#SystemCB12').val() == 1)
             Taxonomy[8] = 'LN';
-        if ($('#SystemCB12').val() == 2)
+        if (gem$('#SystemCB12').val() == 2)
             Taxonomy[8] = 'LWAL';
-        if ($('#SystemCB12').val() == 3)
+        if (gem$('#SystemCB12').val() == 3)
             Taxonomy[8] = 'LH';
-        if ($('#SystemCB12').val() == 4)
+        if (gem$('#SystemCB12').val() == 4)
             Taxonomy[8] = 'LO';
     }
-    else if ( (($('#MaterialCB12').val()>6) && ($('#MaterialCB12').val()<11)) || ($('#MaterialCB12').val() == 14)) {
-        if ($('#SystemCB12').val() == 1)
+    else if ( ((gem$('#MaterialCB12').val()>6) && (gem$('#MaterialCB12').val()<11)) || (gem$('#MaterialCB12').val() == 14)) {
+        if (gem$('#SystemCB12').val() == 1)
             Taxonomy[8] = 'LN';
-        if ($('#SystemCB12').val() == 2)
+        if (gem$('#SystemCB12').val() == 2)
             Taxonomy[8] = 'LFM';;
-        if ($('#SystemCB12').val() == 3)
+        if (gem$('#SystemCB12').val() == 3)
             Taxonomy[8] = 'LPB';
-        if ($('#SystemCB12').val() == 4)
+        if (gem$('#SystemCB12').val() == 4)
             Taxonomy[8] = 'LWAL';
-        if ($('#SystemCB12').val() == 5)
+        if (gem$('#SystemCB12').val() == 5)
             Taxonomy[8] = 'LH';
-        if ($('#SystemCB12').val() == 6)
+        if (gem$('#SystemCB12').val() == 6)
             Taxonomy[8] = 'LO';
     }
     else {
-        if ($('#SystemCB12').val() == 1)
+        if (gem$('#SystemCB12').val() == 1)
             Taxonomy[8] = 'LN';
-        if ($('#SystemCB12').val() == 2)
+        if (gem$('#SystemCB12').val() == 2)
             Taxonomy[8] = 'LFM';
-        if ($('#SystemCB12').val() == 3)
+        if (gem$('#SystemCB12').val() == 3)
             Taxonomy[8] = 'LFINF';
-        if ($('#SystemCB12').val() == 4)
+        if (gem$('#SystemCB12').val() == 4)
             Taxonomy[8] = 'LFBR';
-        if ($('#SystemCB12').val() == 5)
+        if (gem$('#SystemCB12').val() == 5)
             Taxonomy[8] = 'LPB';
-        if ($('#SystemCB12').val() == 6)
+        if (gem$('#SystemCB12').val() == 6)
             Taxonomy[8] = 'LWAL';
-        if ($('#SystemCB12').val() == 7)
+        if (gem$('#SystemCB12').val() == 7)
             Taxonomy[8] = 'LDUAL';
-        if ($('#SystemCB12').val() == 8)
+        if (gem$('#SystemCB12').val() == 8)
             Taxonomy[8] = 'LFLS';
-        if ($('#SystemCB12').val() == 9)
+        if (gem$('#SystemCB12').val() == 9)
             Taxonomy[8] = 'LFLSINF';
-        if ($('#SystemCB12').val() == 10)
+        if (gem$('#SystemCB12').val() == 10)
             Taxonomy[8] = 'LH';
-        if ($('#SystemCB12').val() == 11)
+        if (gem$('#SystemCB12').val() == 11)
             Taxonomy[8] = 'LO';
     }
 
-    if ($('#SystemCB12').val() > 0) {
-        if (($('#SystemCB22').val() == 0) && (out_type == 0))
+    if (gem$('#SystemCB12').val() > 0) {
+        if ((gem$('#SystemCB22').val() == 0) && (out_type == 0))
             Taxonomy[9] = '+DU99';
-        if ($('#SystemCB22').val() == 1)
+        if (gem$('#SystemCB22').val() == 1)
             Taxonomy[9] = '+DUC';
-        if ($('#SystemCB22').val() == 2)
+        if (gem$('#SystemCB22').val() == 2)
             Taxonomy[9] = '+DNO';
-        if ($('#SystemCB22').val() == 3)
+        if (gem$('#SystemCB22').val() == 3)
             Taxonomy[9] = '+DBD';
     }
 
-    if ($('#DateCB1').val() == 0  && (out_type == 0))
+    if (gem$('#DateCB1').val() == 0  && (out_type == 0))
         Taxonomy[10] = 'Y99';
-    if ($('#DateCB1').val() == 1)
-        Taxonomy[10] = 'YEX:' + $('#DateE1').val();
-    else if ($('#DateCB1').val() == 2)
-        Taxonomy[10] = 'YBET:' + $('#DateE1').val() + "," + $('#DateE2').val();
-    else if ($('#DateCB1').val() == 3)
-        Taxonomy[10] = 'YPRE:' + $('#DateE1').val();
-    else if ($('#DateCB1').val() == 4)
-        Taxonomy[10] = 'YAPP:' + $('#DateE1').val();
+    if (gem$('#DateCB1').val() == 1)
+        Taxonomy[10] = 'YEX:' + gem$('#DateE1').val();
+    else if (gem$('#DateCB1').val() == 2)
+        Taxonomy[10] = 'YBET:' + gem$('#DateE1').val() + "," + gem$('#DateE2').val();
+    else if (gem$('#DateCB1').val() == 3)
+        Taxonomy[10] = 'YPRE:' + gem$('#DateE1').val();
+    else if (gem$('#DateCB1').val() == 4)
+        Taxonomy[10] = 'YAPP:' + gem$('#DateE1').val();
 
-    if ($('#HeightCB1').val() == 0) {
+    if (gem$('#HeightCB1').val() == 0) {
         if ((out_type == 0))
             Taxonomy[11] ='H99';
     }
     else {
-        if ($('#HeightCB1').val() == 1)
-            Taxonomy[11] = 'HBET:' + $('#noStoreysE11').val() + ',' + $('#noStoreysE12').val();
-        if ($('#HeightCB1').val() == 2)
-            Taxonomy[11] = 'HEX:' + $('#noStoreysE11').val();
-        if ($('#HeightCB1').val() == 3)
-            Taxonomy[11] = 'HAPP:' + $('#noStoreysE11').val();
+        if (gem$('#HeightCB1').val() == 1)
+            Taxonomy[11] = 'HBET:' + gem$('#noStoreysE11').val() + ',' + gem$('#noStoreysE12').val();
+        if (gem$('#HeightCB1').val() == 2)
+            Taxonomy[11] = 'HEX:' + gem$('#noStoreysE11').val();
+        if (gem$('#HeightCB1').val() == 3)
+            Taxonomy[11] = 'HAPP:' + gem$('#noStoreysE11').val();
 
-        if ($('#HeightCB2').val() == 0 && (out_type == 0))
+        if (gem$('#HeightCB2').val() == 0 && (out_type == 0))
             Taxonomy[12] = '+HB99';
-        if ($('#HeightCB2').val() == 1)
-            Taxonomy[12] = '+HBBET:' + $('#noStoreysE21').val() + ',' + $('#noStoreysE22').val();
-        if ($('#HeightCB2').val() == 2)
-            Taxonomy[12] = '+HBEX:' + $('#noStoreysE21').val();
-        if ($('#HeightCB2').val() == 3)
-            Taxonomy[12] = '+HBAPP:' + $('#noStoreysE21').val();
+        if (gem$('#HeightCB2').val() == 1)
+            Taxonomy[12] = '+HBBET:' + gem$('#noStoreysE21').val() + ',' + gem$('#noStoreysE22').val();
+        if (gem$('#HeightCB2').val() == 2)
+            Taxonomy[12] = '+HBEX:' + gem$('#noStoreysE21').val();
+        if (gem$('#HeightCB2').val() == 3)
+            Taxonomy[12] = '+HBAPP:' + gem$('#noStoreysE21').val();
 
-        if ($('#HeightCB3').val() == 0 && (out_type == 0))
+        if (gem$('#HeightCB3').val() == 0 && (out_type == 0))
             Taxonomy[13] = '+HF99';
-        if ($('#HeightCB3').val() == 1)
-            Taxonomy[13] = '+HFBET:' + $('#noStoreysE31').val() + ',' + $('#noStoreysE32').val();
-        if ($('#HeightCB3').val() == 2)
-            Taxonomy[13] = '+HFEX:' + $('#noStoreysE31').val();
-        if ($('#HeightCB3').val() == 3)
-            Taxonomy[13] = '+HFAPP:' + $('#noStoreysE31').val();
+        if (gem$('#HeightCB3').val() == 1)
+            Taxonomy[13] = '+HFBET:' + gem$('#noStoreysE31').val() + ',' + gem$('#noStoreysE32').val();
+        if (gem$('#HeightCB3').val() == 2)
+            Taxonomy[13] = '+HFEX:' + gem$('#noStoreysE31').val();
+        if (gem$('#HeightCB3').val() == 3)
+            Taxonomy[13] = '+HFAPP:' + gem$('#noStoreysE31').val();
 
-        if ($('#HeightCB4').val() == 0 && (out_type == 0))
+        if (gem$('#HeightCB4').val() == 0 && (out_type == 0))
             Taxonomy[14] = '+HD99';
-        if ($('#HeightCB4').val() == 1)
-            Taxonomy[14] = '+HD:' + $('#noStoreysE41').val();
+        if (gem$('#HeightCB4').val() == 1)
+            Taxonomy[14] = '+HD:' + gem$('#noStoreysE41').val();
     }
 
-    if ($('#OccupancyCB1').val() == 0) {
+    if (gem$('#OccupancyCB1').val() == 0) {
         if ((out_type == 0))
             Taxonomy[15] = 'OC99';
     }
-    else if ($('#OccupancyCB1').val() == 1) {
+    else if (gem$('#OccupancyCB1').val() == 1) {
         Taxonomy[15] = 'RES';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+RES99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+RES1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+RES2';
-        if ($('#OccupancyCB2').val() == 3)
+        if (gem$('#OccupancyCB2').val() == 3)
             Taxonomy[16] = '+RES2A';
-        if ($('#OccupancyCB2').val() == 4)
+        if (gem$('#OccupancyCB2').val() == 4)
             Taxonomy[16] = '+RES2B';
-        if ($('#OccupancyCB2').val() == 5)
+        if (gem$('#OccupancyCB2').val() == 5)
             Taxonomy[16] = '+RES2C';
-        if ($('#OccupancyCB2').val() == 6)
+        if (gem$('#OccupancyCB2').val() == 6)
             Taxonomy[16] = '+RES2D';
-        if ($('#OccupancyCB2').val() == 7)
+        if (gem$('#OccupancyCB2').val() == 7)
             Taxonomy[16] = '+RES2E';
-        if ($('#OccupancyCB2').val() == 8)
+        if (gem$('#OccupancyCB2').val() == 8)
             Taxonomy[16] = '+RES2F';
-        if ($('#OccupancyCB2').val() == 9)
+        if (gem$('#OccupancyCB2').val() == 9)
             Taxonomy[16] = '+RES3';
-        if ($('#OccupancyCB2').val() == 10)
+        if (gem$('#OccupancyCB2').val() == 10)
             Taxonomy[16] = '+RES4';
-        if ($('#OccupancyCB2').val() == 11)
+        if (gem$('#OccupancyCB2').val() == 11)
             Taxonomy[16] = '+RES5';
-        if ($('#OccupancyCB2').val() == 12)
+        if (gem$('#OccupancyCB2').val() == 12)
             Taxonomy[16] = '+RES6';
     }
-    else if ($('#OccupancyCB1').val() == 2) {
+    else if (gem$('#OccupancyCB1').val() == 2) {
         Taxonomy[15] = 'COM';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+COM99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+COM1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+COM2';
-        if ($('#OccupancyCB2').val() == 3)
+        if (gem$('#OccupancyCB2').val() == 3)
             Taxonomy[16] = '+COM3';
-        if ($('#OccupancyCB2').val() == 4)
+        if (gem$('#OccupancyCB2').val() == 4)
             Taxonomy[16] = '+COM4';
-        if ($('#OccupancyCB2').val() == 5)
+        if (gem$('#OccupancyCB2').val() == 5)
             Taxonomy[16] = '+COM5';
-        if ($('#OccupancyCB2').val() == 6)
+        if (gem$('#OccupancyCB2').val() == 6)
             Taxonomy[16] = '+COM6';
-        if ($('#OccupancyCB2').val() == 7)
+        if (gem$('#OccupancyCB2').val() == 7)
             Taxonomy[16] = '+COM7';
-        if ($('#OccupancyCB2').val() == 8)
+        if (gem$('#OccupancyCB2').val() == 8)
             Taxonomy[16] = '+COM8';
-        if ($('#OccupancyCB2').val() == 9)
+        if (gem$('#OccupancyCB2').val() == 9)
             Taxonomy[16] = '+COM9';
-        if ($('#OccupancyCB2').val() == 10)
+        if (gem$('#OccupancyCB2').val() == 10)
             Taxonomy[16] = '+COM10';
-        if ($('#OccupancyCB2').val() == 11)
+        if (gem$('#OccupancyCB2').val() == 11)
             Taxonomy[16] = '+COM11';
     }
-    else if ($('#OccupancyCB1').val() == 3) {
+    else if (gem$('#OccupancyCB1').val() == 3) {
         Taxonomy[15] = 'MIX';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+MIX99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+MIX1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+MIX2';
-        if ($('#OccupancyCB2').val() == 3)
+        if (gem$('#OccupancyCB2').val() == 3)
             Taxonomy[16] = '+MIX3';
-        if ($('#OccupancyCB2').val() == 4)
+        if (gem$('#OccupancyCB2').val() == 4)
             Taxonomy[16] = '+MIX4';
-        if ($('#OccupancyCB2').val() == 5)
+        if (gem$('#OccupancyCB2').val() == 5)
             Taxonomy[16] = '+MIX5';
-        if ($('#OccupancyCB2').val() == 6)
+        if (gem$('#OccupancyCB2').val() == 6)
             Taxonomy[16] = '+MIX6';
     }
-    else if ($('#OccupancyCB1').val() == 4) {
+    else if (gem$('#OccupancyCB1').val() == 4) {
         Taxonomy[15] = 'IND';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+IND99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+IND1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+IND2';
     }
-    else if ($('#OccupancyCB1').val() == 5) {
+    else if (gem$('#OccupancyCB1').val() == 5) {
         Taxonomy[15] = 'AGR';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+AGR99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+AGR1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+AGR2';
-        if ($('#OccupancyCB2').val() == 3)
+        if (gem$('#OccupancyCB2').val() == 3)
             Taxonomy[16] = '+AGR3';
     }
-    else if ($('#OccupancyCB1').val() == 6) {
+    else if (gem$('#OccupancyCB1').val() == 6) {
         Taxonomy[15] = 'ASS';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+ASS99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+ASS1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+ASS2';
-        if ($('#OccupancyCB2').val() == 3)
+        if (gem$('#OccupancyCB2').val() == 3)
             Taxonomy[16] = '+ASS3';
-        if ($('#OccupancyCB2').val() == 4)
+        if (gem$('#OccupancyCB2').val() == 4)
             Taxonomy[16] = '+ASS4';
     }
-    else if ($('#OccupancyCB1').val() == 7) {
+    else if (gem$('#OccupancyCB1').val() == 7) {
         Taxonomy[15] = 'GOV';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+GOV99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+GOV1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+GOV2';
     }
-    else if ($('#OccupancyCB1').val() == 8) {
+    else if (gem$('#OccupancyCB1').val() == 8) {
         Taxonomy[15] = 'EDU';
-        if ($('#OccupancyCB2').val() == 0 && (out_type == 0))
+        if (gem$('#OccupancyCB2').val() == 0 && (out_type == 0))
             Taxonomy[16] = '+EDU99';
-        if ($('#OccupancyCB2').val() == 1)
+        if (gem$('#OccupancyCB2').val() == 1)
             Taxonomy[16] = '+EDU1';
-        if ($('#OccupancyCB2').val() == 2)
+        if (gem$('#OccupancyCB2').val() == 2)
             Taxonomy[16] = '+EDU2';
-        if ($('#OccupancyCB2').val() == 3)
+        if (gem$('#OccupancyCB2').val() == 3)
             Taxonomy[16] = '+EDU3';
-        if ($('#OccupancyCB2').val() == 4)
+        if (gem$('#OccupancyCB2').val() == 4)
             Taxonomy[16] = '+EDU4';
     }
-    else if ($('#OccupancyCB1').val() == 9) {
+    else if (gem$('#OccupancyCB1').val() == 9) {
         Taxonomy[15] = 'OCO';
     }
 
-    if ($('#PositionCB').val() == 0 && (out_type == 0))
+    if (gem$('#PositionCB').val() == 0 && (out_type == 0))
         Taxonomy[17] = 'BP99';
-    else if ($('#PositionCB').val() == 1)
+    else if (gem$('#PositionCB').val() == 1)
         Taxonomy[17] = 'BPD';
-    else if ($('#PositionCB').val() == 2)
+    else if (gem$('#PositionCB').val() == 2)
         Taxonomy[17] = 'BP1';
-    else if ($('#PositionCB').val() == 3)
+    else if (gem$('#PositionCB').val() == 3)
         Taxonomy[17] = 'BP2';
-    else if ($('#PositionCB').val() == 4)
+    else if (gem$('#PositionCB').val() == 4)
         Taxonomy[17] = 'BP3';
-    else if ($('#PositionCB').val() == 5)
+    else if (gem$('#PositionCB').val() == 5)
         Taxonomy[17] = 'BPI';
 
-    if ($('#PlanShapeCB').val() == 0 && (out_type == 0))
+    if (gem$('#PlanShapeCB').val() == 0 && (out_type == 0))
         Taxonomy[18] = 'PLF99';
-    else if ($('#PlanShapeCB').val() == 1)
+    else if (gem$('#PlanShapeCB').val() == 1)
         Taxonomy[18] = 'PLFSQ';
-    else if ($('#PlanShapeCB').val() == 2)
+    else if (gem$('#PlanShapeCB').val() == 2)
         Taxonomy[18] = 'PLFSQO';
-    else if ($('#PlanShapeCB').val() == 3)
+    else if (gem$('#PlanShapeCB').val() == 3)
         Taxonomy[18] = 'PLFR';
-    else if ($('#PlanShapeCB').val() == 4)
+    else if (gem$('#PlanShapeCB').val() == 4)
         Taxonomy[18] = 'PLFRO';
-    else if ($('#PlanShapeCB').val() == 5)
+    else if (gem$('#PlanShapeCB').val() == 5)
         Taxonomy[18] = 'PLFL';
-    else if ($('#PlanShapeCB').val() == 6)
+    else if (gem$('#PlanShapeCB').val() == 6)
         Taxonomy[18] = 'PLFC';
-    else if ($('#PlanShapeCB').val() == 7)
+    else if (gem$('#PlanShapeCB').val() == 7)
         Taxonomy[18] = 'PLFCO';
-    else if ($('#PlanShapeCB').val() == 8)
+    else if (gem$('#PlanShapeCB').val() == 8)
         Taxonomy[18] = 'PLFD';
-    else if ($('#PlanShapeCB').val() == 9)
+    else if (gem$('#PlanShapeCB').val() == 9)
         Taxonomy[18] = 'PLFDO';
-    else if ($('#PlanShapeCB').val() == 10)
+    else if (gem$('#PlanShapeCB').val() == 10)
         Taxonomy[18] = 'PLFE';
-    else if ($('#PlanShapeCB').val() == 11)
+    else if (gem$('#PlanShapeCB').val() == 11)
         Taxonomy[18] = 'PLFH';
-    else if ($('#PlanShapeCB').val() == 12)
+    else if (gem$('#PlanShapeCB').val() == 12)
         Taxonomy[18] = 'PLFS';
-    else if ($('#PlanShapeCB').val() == 13)
+    else if (gem$('#PlanShapeCB').val() == 13)
         Taxonomy[18] = 'PLFT';
-    else if ($('#PlanShapeCB').val() == 14)
+    else if (gem$('#PlanShapeCB').val() == 14)
         Taxonomy[18] = 'PLFU';
-    else if ($('#PlanShapeCB').val() == 15)
+    else if (gem$('#PlanShapeCB').val() == 15)
         Taxonomy[18] = 'PLFX';
-    else if ($('#PlanShapeCB').val() == 16)
+    else if (gem$('#PlanShapeCB').val() == 16)
         Taxonomy[18] = 'PLFY';
-    else if ($('#PlanShapeCB').val() == 17)
+    else if (gem$('#PlanShapeCB').val() == 17)
         Taxonomy[18] = 'PLFP';
-    else if ($('#PlanShapeCB').val() == 18)
+    else if (gem$('#PlanShapeCB').val() == 18)
         Taxonomy[18] = 'PLFPO';
-    else if ($('#PlanShapeCB').val() == 19)
+    else if (gem$('#PlanShapeCB').val() == 19)
         Taxonomy[18] = 'PLFI';
 
-    if ($('#RegularityCB1').val() == 0) {
+    if (gem$('#RegularityCB1').val() == 0) {
         if ((out_type == 0))
             Taxonomy[19] = 'IR99';
     }
     else {
-        if ($('#RegularityCB1').val() == 1)
+        if (gem$('#RegularityCB1').val() == 1)
             Taxonomy[19] = 'IRRE';
-        if ($('#RegularityCB1').val() == 2) {
+        if (gem$('#RegularityCB1').val() == 2) {
             Taxonomy[19] = 'IRIR';
-            if ($('#RegularityCB2').val() == 0 && (out_type == 0))
+            if (gem$('#RegularityCB2').val() == 0 && (out_type == 0))
                 Taxonomy[20] = '+IRPP:IRN';
-            if ($('#RegularityCB2').val() == 1)
+            if (gem$('#RegularityCB2').val() == 1)
                 Taxonomy[20] = '+IRPP:TOR';
-            if ($('#RegularityCB2').val() == 2)
+            if (gem$('#RegularityCB2').val() == 2)
                 Taxonomy[20] = '+IRPP:REC';
-            if ($('#RegularityCB2').val() == 3)
+            if (gem$('#RegularityCB2').val() == 3)
                 Taxonomy[20] = '+IRPP:IRHO';
 
-            if ($('#RegularityCB3').val() == 0 && (out_type == 0))
+            if (gem$('#RegularityCB3').val() == 0 && (out_type == 0))
                 Taxonomy[21] = '+IRVP:IRN';
-            if ($('#RegularityCB3').val() == 1)
+            if (gem$('#RegularityCB3').val() == 1)
                 Taxonomy[21] = '+IRVP:SOS';
-            if ($('#RegularityCB3').val() == 2)
+            if (gem$('#RegularityCB3').val() == 2)
                 Taxonomy[21] = '+IRVP:CRW';
-            if ($('#RegularityCB3').val() == 3)
+            if (gem$('#RegularityCB3').val() == 3)
                 Taxonomy[21] = '+IRVP:SHC';
-            if ($('#RegularityCB3').val() == 4)
+            if (gem$('#RegularityCB3').val() == 4)
                 Taxonomy[21] = '+IRVP:POP';
-            if ($('#RegularityCB3').val() == 5)
+            if (gem$('#RegularityCB3').val() == 5)
                 Taxonomy[21] = '+IRVP:SET';
-            if ($('#RegularityCB3').val() == 6)
+            if (gem$('#RegularityCB3').val() == 6)
                 Taxonomy[21] = '+IRVP:CHV';
-            if ($('#RegularityCB3').val() == 7)
+            if (gem$('#RegularityCB3').val() == 7)
                 Taxonomy[21] = '+IRVP:IRVO';
 
-            if ($('#RegularityCB2').val() > 0) {
-                if ($('#RegularityCB4').val() == 0)
+            if (gem$('#RegularityCB2').val() > 0) {
+                if (gem$('#RegularityCB4').val() == 0)
                     Taxonomy[22] = '+IRPS:IRN';
-                if ($('#RegularityCB4').val() == 1)
+                if (gem$('#RegularityCB4').val() == 1)
                     Taxonomy[22] = '+IRPS:TOR';
-                if ($('#RegularityCB4').val() == 2)
+                if (gem$('#RegularityCB4').val() == 2)
                     Taxonomy[22] = '+IRPS:REC';
-                if ($('#RegularityCB4').val() == 3)
+                if (gem$('#RegularityCB4').val() == 3)
                     Taxonomy[22] = '+IRPS:IRHO';
             }
-            if ($('#RegularityCB3').val() > 0) {
-                if ($('#RegularityCB5').val() == 0)
+            if (gem$('#RegularityCB3').val() > 0) {
+                if (gem$('#RegularityCB5').val() == 0)
                     Taxonomy[23] = '+IRVS:IRN';
-                if ($('#RegularityCB5').val() == 1)
+                if (gem$('#RegularityCB5').val() == 1)
                     Taxonomy[23] = '+IRVS:SOS';
-                if ($('#RegularityCB5').val() == 2)
+                if (gem$('#RegularityCB5').val() == 2)
                     Taxonomy[23] = '+IRVS:CRW';
-                if ($('#RegularityCB5').val() == 3)
+                if (gem$('#RegularityCB5').val() == 3)
                     Taxonomy[23] = '+IRVS:SHC';
-                if ($('#RegularityCB5').val() == 4)
+                if (gem$('#RegularityCB5').val() == 4)
                     Taxonomy[23] = '+IRVS:POP';
-                if ($('#RegularityCB5').val() == 5)
+                if (gem$('#RegularityCB5').val() == 5)
                     Taxonomy[23] = '+IRVS:SET';
-                if ($('#RegularityCB5').val() == 6)
+                if (gem$('#RegularityCB5').val() == 6)
                     Taxonomy[23] = '+IRVS:CHV';
-                if ($('#RegularityCB5').val() == 7)
+                if (gem$('#RegularityCB5').val() == 7)
                     Taxonomy[23] = '+IRVS:IRVO';
             }
         }
     }
 
-    if ($('#WallsCB').val() == 0 && (out_type == 0))
+    if (gem$('#WallsCB').val() == 0 && (out_type == 0))
         Taxonomy[24] = 'EW99';
-    if ($('#WallsCB').val() == 1)
+    if (gem$('#WallsCB').val() == 1)
         Taxonomy[24] = 'EWC';
-    if ($('#WallsCB').val() == 2)
+    if (gem$('#WallsCB').val() == 2)
         Taxonomy[24] = 'EWG';
-    if ($('#WallsCB').val() == 3)
+    if (gem$('#WallsCB').val() == 3)
         Taxonomy[24] = 'EWE';
-    if ($('#WallsCB').val() == 4)
+    if (gem$('#WallsCB').val() == 4)
         Taxonomy[24] = 'EWMA';
-    if ($('#WallsCB').val() == 5)
+    if (gem$('#WallsCB').val() == 5)
         Taxonomy[24] = 'EWME';
-    if ($('#WallsCB').val() == 6)
+    if (gem$('#WallsCB').val() == 6)
         Taxonomy[24] = 'EWV';
-    if ($('#WallsCB').val() == 7)
+    if (gem$('#WallsCB').val() == 7)
         Taxonomy[24] = 'EWW';
-    if ($('#WallsCB').val() == 8)
+    if (gem$('#WallsCB').val() == 8)
         Taxonomy[24] = 'EWSL';
-    if ($('#WallsCB').val() == 9)
+    if (gem$('#WallsCB').val() == 9)
         Taxonomy[24] = 'EWPL';
-    if ($('#WallsCB').val() == 10)
+    if (gem$('#WallsCB').val() == 10)
         Taxonomy[24] = 'EWCB';
-    if ($('#WallsCB').val() == 11)
+    if (gem$('#WallsCB').val() == 11)
         Taxonomy[24] = 'EWO';
 
-    if ($('#RoofCB1').val() == 0 && (out_type == 0))
+    if (gem$('#RoofCB1').val() == 0 && (out_type == 0))
         Taxonomy[25] = 'RSH99';
-    if ($('#RoofCB1').val() == 1)
+    if (gem$('#RoofCB1').val() == 1)
         Taxonomy[25] = 'RSH1';
-    if ($('#RoofCB1').val() == 2)
+    if (gem$('#RoofCB1').val() == 2)
         Taxonomy[25] = 'RSH2';
-    if ($('#RoofCB1').val() == 3)
+    if (gem$('#RoofCB1').val() == 3)
         Taxonomy[25] = 'RSH3';
-    if ($('#RoofCB1').val() == 4)
+    if (gem$('#RoofCB1').val() == 4)
         Taxonomy[25] = 'RSH4';
-    if ($('#RoofCB1').val() == 5)
+    if (gem$('#RoofCB1').val() == 5)
         Taxonomy[25] = 'RSH5';
-    if ($('#RoofCB1').val() == 6)
+    if (gem$('#RoofCB1').val() == 6)
         Taxonomy[25] = 'RSH6';
-    if ($('#RoofCB1').val() == 7)
+    if (gem$('#RoofCB1').val() == 7)
         Taxonomy[25] = 'RSH7';
-    if ($('#RoofCB1').val() == 8)
+    if (gem$('#RoofCB1').val() == 8)
         Taxonomy[25] = 'RSH8';
-    if ($('#RoofCB1').val() == 9)
+    if (gem$('#RoofCB1').val() == 9)
         Taxonomy[25] = 'RSH9';
-    if ($('#RoofCB1').val() == 10)
+    if (gem$('#RoofCB1').val() == 10)
         Taxonomy[25] = 'RSHO';
 
-    if ($('#RoofCB2').val() == 0 && (out_type == 0))
+    if (gem$('#RoofCB2').val() == 0 && (out_type == 0))
         Taxonomy[26] = '+RMT99';
-    if ($('#RoofCB2').val() == 1)
+    if (gem$('#RoofCB2').val() == 1)
         Taxonomy[26] = '+RMN';
-    if ($('#RoofCB2').val() == 2)
+    if (gem$('#RoofCB2').val() == 2)
         Taxonomy[26] = '+RMT1';
-    if ($('#RoofCB2').val() == 3)
+    if (gem$('#RoofCB2').val() == 3)
         Taxonomy[26] = '+RMT2';
-    if ($('#RoofCB2').val() == 4)
+    if (gem$('#RoofCB2').val() == 4)
         Taxonomy[26] = '+RMT3';
-    if ($('#RoofCB2').val() == 5)
+    if (gem$('#RoofCB2').val() == 5)
         Taxonomy[26] = '+RMT4';
-    if ($('#RoofCB2').val() == 6)
+    if (gem$('#RoofCB2').val() == 6)
         Taxonomy[26] = '+RMT5';
-    if ($('#RoofCB2').val() == 7)
+    if (gem$('#RoofCB2').val() == 7)
         Taxonomy[26] = '+RMT6';
-    if ($('#RoofCB2').val() == 8)
+    if (gem$('#RoofCB2').val() == 8)
         Taxonomy[26] = '+RMT7';
-    if ($('#RoofCB2').val() == 9)
+    if (gem$('#RoofCB2').val() == 9)
         Taxonomy[26] = '+RMT8';
-    if ($('#RoofCB2').val() == 10)
+    if (gem$('#RoofCB2').val() == 10)
         Taxonomy[26] = '+RMT9';
-    if ($('#RoofCB2').val() == 11)
+    if (gem$('#RoofCB2').val() == 11)
         Taxonomy[26] = '+RMT10';
-    if ($('#RoofCB2').val() == 12)
+    if (gem$('#RoofCB2').val() == 12)
         Taxonomy[26] = '+RMT11';
-    if ($('#RoofCB2').val() == 13)
+    if (gem$('#RoofCB2').val() == 13)
         Taxonomy[26] = '+RMTO';
 
-    if ($('#RoofCB3').val() == 0) {
+    if (gem$('#RoofCB3').val() == 0) {
         if ((out_type == 0))
             Taxonomy[27] = '+R99';
     }
     else {
-        if ($('#RoofCB3').val() == 1) {
+        if (gem$('#RoofCB3').val() == 1) {
             Taxonomy[27] = '+RM';
-            if ($('#RoofCB4').val() == 0 && (out_type == 0))
+            if (gem$('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RM99';
-            if ($('#RoofCB4').val() == 1)
+            if (gem$('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RM1';
-            if ($('#RoofCB4').val() == 2)
+            if (gem$('#RoofCB4').val() == 2)
                 Taxonomy[28] = '+RM2';
-            if ($('#RoofCB4').val() == 3)
+            if (gem$('#RoofCB4').val() == 3)
                 Taxonomy[28] = '+RM3';
         }
-        else if ($('#RoofCB3').val() == 2) {
+        else if (gem$('#RoofCB3').val() == 2) {
             Taxonomy[27] = '+RE';
-            if ($('#RoofCB4').val() == 0 && (out_type == 0))
+            if (gem$('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RE99';
-            if ($('#RoofCB4').val() == 1)
+            if (gem$('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RE1';
         }
-        else if ($('#RoofCB3').val() == 3) {
+        else if (gem$('#RoofCB3').val() == 3) {
             Taxonomy[27] = '+RC';
-            if ($('#RoofCB4').val() == 0 && (out_type == 0))
+            if (gem$('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RC99';
-            if ($('#RoofCB4').val() == 1)
+            if (gem$('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RC1';
-            if ($('#RoofCB4').val() == 2)
+            if (gem$('#RoofCB4').val() == 2)
                 Taxonomy[28] = '+RC2';
-            if ($('#RoofCB4').val() == 3)
+            if (gem$('#RoofCB4').val() == 3)
                 Taxonomy[28] = '+RC3';
-            if ($('#RoofCB4').val() == 4)
+            if (gem$('#RoofCB4').val() == 4)
                 Taxonomy[28] = '+RC4';
         }
-        else if ($('#RoofCB3').val() == 4) {
+        else if (gem$('#RoofCB3').val() == 4) {
             Taxonomy[27] = '+RME';
-            if ($('#RoofCB4').val() == 0 && (out_type == 0))
+            if (gem$('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RME99';
-            if ($('#RoofCB4').val() == 1)
+            if (gem$('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RME1';
-            if ($('#RoofCB4').val() == 2)
+            if (gem$('#RoofCB4').val() == 2)
                 Taxonomy[28] = '+RME2';
-            if ($('#RoofCB4').val() == 3)
+            if (gem$('#RoofCB4').val() == 3)
                 Taxonomy[28] = '+RME3';
         }
-        else if ($('#RoofCB3').val() == 5) {
+        else if (gem$('#RoofCB3').val() == 5) {
             Taxonomy[27] = '+RWO';
-            if ($('#RoofCB4').val() == 0 && (out_type == 0))
+            if (gem$('#RoofCB4').val() == 0 && (out_type == 0))
                 Taxonomy[28] = '+RWO99';
-            if ($('#RoofCB4').val() == 1)
+            if (gem$('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RWO1';
-            if ($('#RoofCB4').val() == 2)
+            if (gem$('#RoofCB4').val() == 2)
                 Taxonomy[28] = '+RWO2';
-            if ($('#RoofCB4').val() == 3)
+            if (gem$('#RoofCB4').val() == 3)
                 Taxonomy[28] = '+RWO3';
-            if ($('#RoofCB4').val() == 4)
+            if (gem$('#RoofCB4').val() == 4)
                 Taxonomy[28] = '+RWO4';
-            if ($('#RoofCB4').val() == 5)
+            if (gem$('#RoofCB4').val() == 5)
                 Taxonomy[28] = '+RWO5';
         }
-        else if ($('#RoofCB3').val() == 6) {
+        else if (gem$('#RoofCB3').val() == 6) {
             Taxonomy[27] = '+RFA';
-            if ($('#RoofCB4').val() == 0)
+            if (gem$('#RoofCB4').val() == 0)
                 Taxonomy[28] = '+RFA1';
-            if ($('#RoofCB4').val() == 1)
+            if (gem$('#RoofCB4').val() == 1)
                 Taxonomy[28] = '+RFAO';
         }
-        else if ($('#RoofCB3').val() == 7) {
+        else if (gem$('#RoofCB3').val() == 7) {
             Taxonomy[27] = '+RO';
         }
     }
 
-    if ($('#RoofCB5').val() == 0 && (out_type == 0))
+    if (gem$('#RoofCB5').val() == 0 && (out_type == 0))
         Taxonomy[29] = '+RWC99';
-    if ($('#RoofCB5').val() == 1)
+    if (gem$('#RoofCB5').val() == 1)
         Taxonomy[29] = '+RWCN';
-    if ($('#RoofCB5').val() == 2)
+    if (gem$('#RoofCB5').val() == 2)
         Taxonomy[29] = '+RWCP';
-    if ($('#RoofCB5').val() == 3)
+    if (gem$('#RoofCB5').val() == 3)
         Taxonomy[29] = '+RTD99';
-    if ($('#RoofCB5').val() == 4)
+    if (gem$('#RoofCB5').val() == 4)
         Taxonomy[29] = '+RTDN';
-    if ($('#RoofCB5').val() == 5)
+    if (gem$('#RoofCB5').val() == 5)
         Taxonomy[29] = '+RTDP';
 
-    if ($('#FloorCB1').val() == 0) {
+    if (gem$('#FloorCB1').val() == 0) {
         if ((out_type == 0))
             Taxonomy[30] = 'F99';
     }
-    else if ($('#FloorCB1').val() == 1) {
+    else if (gem$('#FloorCB1').val() == 1) {
         Taxonomy[30] = 'FN';
     }
     else {
-        if ($('#FloorCB1').val() == 2) {
+        if (gem$('#FloorCB1').val() == 2) {
             Taxonomy[30] = 'FM';
-            if ($('#FloorCB2').val() == 0 && (out_type == 0))
+            if (gem$('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FM99';
-            if ($('#FloorCB2').val() == 1)
+            if (gem$('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FM1';
-            if ($('#FloorCB2').val() == 2)
+            if (gem$('#FloorCB2').val() == 2)
                 Taxonomy[31] = '+FM2';
-            if ($('#FloorCB2').val() == 3)
+            if (gem$('#FloorCB2').val() == 3)
                 Taxonomy[31] = '+FM3';
         }
-        else if ($('#FloorCB1').val() == 3) {
+        else if (gem$('#FloorCB1').val() == 3) {
             Taxonomy[30] = 'FE';
-            if ($('#FloorCB2').val() == 0 && (out_type == 0))
+            if (gem$('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FE99';
         }
-        else if ($('#FloorCB1').val() == 4) {
+        else if (gem$('#FloorCB1').val() == 4) {
             Taxonomy[30] = 'FC';
-            if ($('#FloorCB2').val() == 0 && (out_type == 0))
+            if (gem$('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FC99';
-            if ($('#FloorCB2').val() == 1)
+            if (gem$('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FC1';
-            if ($('#FloorCB2').val() == 2)
+            if (gem$('#FloorCB2').val() == 2)
                 Taxonomy[31] = '+FC2';
-            if ($('#FloorCB2').val() == 3)
+            if (gem$('#FloorCB2').val() == 3)
                 Taxonomy[31] = '+FC3';
-            if ($('#FloorCB2').val() == 4)
+            if (gem$('#FloorCB2').val() == 4)
                 Taxonomy[31] = '+FC4';
         }
-        else if ($('#FloorCB1').val() == 5) {
+        else if (gem$('#FloorCB1').val() == 5) {
             Taxonomy[30] = 'FME';
-            if ($('#FloorCB2').val() == 0 && (out_type == 0))
+            if (gem$('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FME99';
-            if ($('#FloorCB2').val() == 1)
+            if (gem$('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FME1';
-            if ($('#FloorCB2').val() == 2)
+            if (gem$('#FloorCB2').val() == 2)
                 Taxonomy[31] = '+FME2';
-            if ($('#FloorCB2').val() == 3)
+            if (gem$('#FloorCB2').val() == 3)
                 Taxonomy[31] = '+FME3';
         }
-        else if ($('#FloorCB1').val() == 6) {
+        else if (gem$('#FloorCB1').val() == 6) {
             Taxonomy[30] = 'FW';
-            if ($('#FloorCB2').val() == 0 && (out_type == 0))
+            if (gem$('#FloorCB2').val() == 0 && (out_type == 0))
                 Taxonomy[31] = '+FW99';
-            if ($('#FloorCB2').val() == 1)
+            if (gem$('#FloorCB2').val() == 1)
                 Taxonomy[31] = '+FW1';
-            if ($('#FloorCB2').val() == 2)
+            if (gem$('#FloorCB2').val() == 2)
                 Taxonomy[31] = '+FW2';
-            if ($('#FloorCB2').val() == 3)
+            if (gem$('#FloorCB2').val() == 3)
                 Taxonomy[31] = '+FW3';
-            if ($('#FloorCB2').val() == 4)
+            if (gem$('#FloorCB2').val() == 4)
                 Taxonomy[31] = '+FW4';
         }
-        else if ($('#FloorCB1').val() == 7) {
+        else if (gem$('#FloorCB1').val() == 7) {
             Taxonomy[30] = 'FO';
         }
     }
-    if ($('#FloorCB3').val() == 0 && (out_type == 0))
+    if (gem$('#FloorCB3').val() == 0 && (out_type == 0))
         Taxonomy[32] = '+FWC99';
-    if ($('#FloorCB3').val() == 1)
+    if (gem$('#FloorCB3').val() == 1)
         Taxonomy[32] = '+FWCN';
-    if ($('#FloorCB3').val() == 2)
+    if (gem$('#FloorCB3').val() == 2)
         Taxonomy[32] = '+FWCP';
 
-    if ($('#FoundationsCB').val() == 0 && (out_type == 0))
+    if (gem$('#FoundationsCB').val() == 0 && (out_type == 0))
         Taxonomy[33] = 'FOS99';
-    if ($('#FoundationsCB').val() == 1)
+    if (gem$('#FoundationsCB').val() == 1)
         Taxonomy[33] = 'FOSSL';
-    if ($('#FoundationsCB').val() == 2)
+    if (gem$('#FoundationsCB').val() == 2)
         Taxonomy[33] = 'FOSN';
-    if ($('#FoundationsCB').val() == 3)
+    if (gem$('#FoundationsCB').val() == 3)
         Taxonomy[33] = 'FOSDL';
-    if ($('#FoundationsCB').val() == 4)
+    if (gem$('#FoundationsCB').val() == 4)
         Taxonomy[33] = 'FOSDN';
-    if ($('#FoundationsCB').val() == 5)
+    if (gem$('#FoundationsCB').val() == 5)
         Taxonomy[33] = 'FOSO';
 
 
@@ -2437,11 +2437,11 @@ function BuildTaxonomyString(out_type)
     direction1 = 'DX';
     direction2 = 'DY';
 
-    if ($('#Direction1RB1').prop('checked')  && (out_type == 0)) {
+    if (gem$('#Direction1RB1').prop('checked')  && (out_type == 0)) {
         direction1 = direction1 + '+D99';
         direction2 = direction2 + '+D99';
         }
-    else if ($('#Direction1RB2').prop('checked')) {
+    else if (gem$('#Direction1RB2').prop('checked')) {
         direction1 = direction1 + '+PF';
         direction2 = direction2 + '+OF';
     }
@@ -2516,7 +2516,7 @@ function BuildTaxonomyString(out_type)
         if (ResAtoms[1] == ResAtoms[4] && ResAtoms[2] == ResAtoms[5]) {
             // same params case
             ResAtoms[3] = ResAtoms[4] = ResAtoms[5] = "";
-            if ($('#Direction1RB1').prop('checked')) {
+            if (gem$('#Direction1RB1').prop('checked')) {
                 ResAtoms[0] = "";
             }
             else {
@@ -2524,7 +2524,7 @@ function BuildTaxonomyString(out_type)
             }
         }
         else {
-            if ($('#Direction1RB1').prop('checked')) {
+            if (gem$('#Direction1RB1').prop('checked')) {
                 ResAtoms[0] = "DX";
                 ResAtoms[3] = "DY";
             }
@@ -2552,186 +2552,186 @@ function BuildTaxonomyString(out_type)
 function taxt_BuildTaxonomy()
 {
     var ResTax, ResTaxFull = BuildTaxonomyString(0);
-    var out_type = $('#OutTypeCB').val();
+    var out_type = gem$('#OutTypeCB').val();
 
     /* validation part: '#HeightCBx' are dropdown menus with it's current selected item */
 
-    var height1 = $('#HeightCB1').val();
-    var height2 = $('#HeightCB2').val();
-    var height3 = $('#HeightCB3').val();
-    var height4 = $('#HeightCB4').val();
-    var date1 = $('#DateCB1').val();
+    var height1 = gem$('#HeightCB1').val();
+    var height2 = gem$('#HeightCB2').val();
+    var height3 = gem$('#HeightCB3').val();
+    var height4 = gem$('#HeightCB4').val();
+    var date1 = gem$('#DateCB1').val();
     var validated = false;
     var validate_msg = "";
     var h11 = true, h12 = true, h21 = true, h22 = true, h31 = true, h32 = true;
     var d1 = true, d2 = true;
 
     if (height1 > 0) {
-        if (!is_not_negative_int($('#noStoreysE11').val())) {
+        if (!is_not_negative_int(gem$('#noStoreysE11').val())) {
             if (height1 == 1) {
                 validate_msg += "Number of storey above ground: lower limit not positive integer. ";
             }
             else {
                 validate_msg += "Number of storey above ground: not positive integer. ";
             }
-            $('#noStoreysE11').addClass('gem_field_alert');
+            gem$('#noStoreysE11').addClass('gem_field_alert');
             h11 = false;
         }
         else {
-            $('#noStoreysE11').removeClass('gem_field_alert');
+            gem$('#noStoreysE11').removeClass('gem_field_alert');
         }
     }
     if (height1 == 1) {
-        if (!is_not_negative_int($('#noStoreysE12').val())) {
+        if (!is_not_negative_int(gem$('#noStoreysE12').val())) {
             validate_msg += "Number of storey above ground: upper limit not positive integer. ";
-            $('#noStoreysE12').addClass('gem_field_alert');
+            gem$('#noStoreysE12').addClass('gem_field_alert');
             h12 = false;
         }
-        else if (parseInt($('#noStoreysE11').val()) == parseInt($('#noStoreysE12').val())) {
+        else if (parseInt(gem$('#noStoreysE11').val()) == parseInt(gem$('#noStoreysE12').val())) {
             validate_msg += "Number of storey above ground: invalid range.";
-            $('#noStoreysE12').addClass('gem_field_alert');
+            gem$('#noStoreysE12').addClass('gem_field_alert');
             h12 = false;
         }
         else {
-            $('#noStoreysE12').removeClass('gem_field_alert');
+            gem$('#noStoreysE12').removeClass('gem_field_alert');
         }
 
         // swap items if wrong order
         if (h11 && h12) {
-            if (parseInt($('#noStoreysE11').val()) > parseInt($('#noStoreysE12').val())) {
-                var swap = $('#noStoreysE11').val();
-                $('#noStoreysE11').val($('#noStoreysE12').val());
-                $('#noStoreysE12').val(swap);
+            if (parseInt(gem$('#noStoreysE11').val()) > parseInt(gem$('#noStoreysE12').val())) {
+                var swap = gem$('#noStoreysE11').val();
+                gem$('#noStoreysE11').val(gem$('#noStoreysE12').val());
+                gem$('#noStoreysE12').val(swap);
             }
         }
     }
 
     if (height2 > 0) {
-        if (!is_not_negative_int($('#noStoreysE21').val())) {
+        if (!is_not_negative_int(gem$('#noStoreysE21').val())) {
             if (height2 == 1) {
                 validate_msg += "Number of storey above ground: lower limit not positive integer. ";
             }
             else {
                 validate_msg += "Number of storey above ground: not positive integer. ";
             }
-            $('#noStoreysE21').addClass('gem_field_alert');
+            gem$('#noStoreysE21').addClass('gem_field_alert');
             h21 = false;
         }
         else {
-            $('#noStoreysE21').removeClass('gem_field_alert');
+            gem$('#noStoreysE21').removeClass('gem_field_alert');
         }
     }
 
     if (height2 == 1) {
-        if (!is_not_negative_int($('#noStoreysE22').val())) {
+        if (!is_not_negative_int(gem$('#noStoreysE22').val())) {
             validate_msg += "Number of storey above ground: upper limit not positive integer. ";
-            $('#noStoreysE22').addClass('gem_field_alert');
+            gem$('#noStoreysE22').addClass('gem_field_alert');
             h22 = false;
         }
-        else if (parseInt($('#noStoreysE21').val()) == parseInt($('#noStoreysE22').val())) {
+        else if (parseInt(gem$('#noStoreysE21').val()) == parseInt(gem$('#noStoreysE22').val())) {
             validate_msg += "Number of storey above ground: invalid range.";
-            $('#noStoreysE22').addClass('gem_field_alert');
+            gem$('#noStoreysE22').addClass('gem_field_alert');
             h22 = false;
         }
         else {
-            $('#noStoreysE22').removeClass('gem_field_alert');
+            gem$('#noStoreysE22').removeClass('gem_field_alert');
         }
 
         // swap items if wrong order
         if (h21 && h22) {
-            if (parseInt($('#noStoreysE21').val()) > parseInt($('#noStoreysE22').val())) {
-                var swap = $('#noStoreysE21').val();
-                $('#noStoreysE21').val($('#noStoreysE22').val());
-                $('#noStoreysE22').val(swap);
+            if (parseInt(gem$('#noStoreysE21').val()) > parseInt(gem$('#noStoreysE22').val())) {
+                var swap = gem$('#noStoreysE21').val();
+                gem$('#noStoreysE21').val(gem$('#noStoreysE22').val());
+                gem$('#noStoreysE22').val(swap);
             }
         }
     }
 
     if (height3 > 0) {
-        if (!is_not_negative_float($('#noStoreysE31').val())) {
+        if (!is_not_negative_float(gem$('#noStoreysE31').val())) {
             if (height3 == 1) {
                 validate_msg += "Height of ground floor level: lower limit not positive real";
             }
             else {
                 validate_msg += "Height of ground floor level: not positive real. ";
             }
-            $('#noStoreysE31').addClass('gem_field_alert');
+            gem$('#noStoreysE31').addClass('gem_field_alert');
             h31 = false;
         }
         else {
-            $('#noStoreysE31').removeClass('gem_field_alert');
+            gem$('#noStoreysE31').removeClass('gem_field_alert');
         }
     }
     if (height3 == 1) {
-        if (!is_not_negative_float($('#noStoreysE32').val())) {
+        if (!is_not_negative_float(gem$('#noStoreysE32').val())) {
             validate_msg += "Height of ground floor level: upper limit not positive real. ";
-            $('#noStoreysE32').addClass('gem_field_alert');
+            gem$('#noStoreysE32').addClass('gem_field_alert');
             h32 = false;
         }
-        else if (parseInt($('#noStoreysE31').val()) == parseInt($('#noStoreysE32').val())) {
+        else if (parseInt(gem$('#noStoreysE31').val()) == parseInt(gem$('#noStoreysE32').val())) {
             validate_msg += "Height of ground floor level: invalid range.";
-            $('#noStoreysE32').addClass('gem_field_alert');
+            gem$('#noStoreysE32').addClass('gem_field_alert');
             h32 = false;
         }
         else {
-            $('#noStoreysE32').removeClass('gem_field_alert');
+            gem$('#noStoreysE32').removeClass('gem_field_alert');
         }
 
         // swap items if wrong order
         if (h31 && h32) {
-            if (parseFloat($('#noStoreysE31').val()) > parseFloat($('#noStoreysE32').val())) {
-                var swap = $('#noStoreysE31').val();
-                $('#noStoreysE31').val($('#noStoreysE32').val());
-                $('#noStoreysE32').val(swap);
+            if (parseFloat(gem$('#noStoreysE31').val()) > parseFloat(gem$('#noStoreysE32').val())) {
+                var swap = gem$('#noStoreysE31').val();
+                gem$('#noStoreysE31').val(gem$('#noStoreysE32').val());
+                gem$('#noStoreysE32').val(swap);
             }
         }
     }
 
     if (height4 > 0) {
-        if (!is_in_rect_angle_float($('#noStoreysE41').val())) {
+        if (!is_in_rect_angle_float(gem$('#noStoreysE41').val())) {
             validate_msg += "Slope of the ground: it is not positive real between 0 and 90. ";
-            $('#noStoreysE41').addClass('gem_field_alert');
+            gem$('#noStoreysE41').addClass('gem_field_alert');
         }
         else {
-            $('#noStoreysE41').removeClass('gem_field_alert');
+            gem$('#noStoreysE41').removeClass('gem_field_alert');
         }
     }
 
     if (date1 > 0) {
-        if (!is_not_negative_int($('#DateE1').val()) || $('#DateE1').val().length > 4) {
+        if (!is_not_negative_int(gem$('#DateE1').val()) || gem$('#DateE1').val().length > 4) {
             if (date1 == 2) {
                 validate_msg += "Date of construction or retrofit: lower limit is not a valid date. ";
             }
             else {
                 validate_msg += "Date of construction or retrofit: it is not a valid date. ";
             }
-            $('#DateE1').addClass('gem_field_alert');
+            gem$('#DateE1').addClass('gem_field_alert');
             d1 = false;
         }
         else {
-            $('#DateE1').removeClass('gem_field_alert');
+            gem$('#DateE1').removeClass('gem_field_alert');
         }
     }
     if (date1 == 2) {
-        if (!is_not_negative_int($('#DateE2').val()) || $('#DateE2').val().length > 4) {
+        if (!is_not_negative_int(gem$('#DateE2').val()) || gem$('#DateE2').val().length > 4) {
             validate_msg += "Date of construction or retrofit: upper limit is not a valid date. ";
-            $('#DateE2').addClass('gem_field_alert');
+            gem$('#DateE2').addClass('gem_field_alert');
             d2 = false;
         }
-        else if (parseInt($('#DateE1').val()) == parseInt($('#DateE2').val())) {
+        else if (parseInt(gem$('#DateE1').val()) == parseInt(gem$('#DateE2').val())) {
             ret_s.s = "Date of construction or retrofit: invalid range.";
             return (false);
         }
         else {
-            $('#DateE2').removeClass('gem_field_alert');
+            gem$('#DateE2').removeClass('gem_field_alert');
         }
 
         // swap items if wrong order
         if (d1 && d2) {
-            if (parseInt($('#DateE1').val()) > parseInt($('#DateE2').val())) {
-                var swap = $('#DateE1').val();
-                $('#DateE1').val($('#DateE2').val());
-                $('#DateE2').val(swap);
+            if (parseInt(gem$('#DateE1').val()) > parseInt(gem$('#DateE2').val())) {
+                var swap = gem$('#DateE1').val();
+                gem$('#DateE1').val(gem$('#DateE2').val());
+                gem$('#DateE2').val(swap);
             }
         }
     }
@@ -2748,13 +2748,13 @@ function taxt_BuildTaxonomy()
         }
         taxonomy_form = ResTaxFull;
 
-        $('#resultE').val(ResTax);
-        $('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
+        gem$('#resultE').val(ResTax);
+        gem$('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
     }
     else {
         taxonomy_form = "";
-        $('#resultE').val(validate_msg);
-        $('#permalink').attr("href", taxt_prefix);
+        gem$('#resultE').val(validate_msg);
+        gem$('#permalink').attr("href", taxt_prefix);
     }
 }
 
@@ -3461,10 +3461,10 @@ function taxt_Initiate() {
     OutTypeCB.push('Omit Unknown');
     OutTypeCB.push('Short');
     select_populate('OutTypeCB', OutTypeCB);
-    $('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
+    gem$('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
 
-    $('#DirectionCB').prop('checked', true);
-    $('#DirectionCB').on('change', taxt_SetDirection2);
+    gem$('#DirectionCB').prop('checked', true);
+    gem$('#DirectionCB').on('change', taxt_SetDirection2);
 
     // FIXME: t0 only, load a preview saved taxonomy must be done
     var MaterialCB11 = [];
@@ -3485,12 +3485,12 @@ function taxt_Initiate() {
     /* W     */ MaterialCB11.push('Wood');
     /* MATO  */ MaterialCB11.push('Other material');
     select_populate('MaterialCB11', MaterialCB11);
-    $('#MaterialCB11').on('change', taxt_MaterialCB11Select);
-    $('#MaterialCB21').on('change', taxt_MaterialCB21Select);
-    $('#MaterialCB31').on('change', taxt_MaterialCB31Select);
-    $('#MaterialCB41').on('change', taxt_MaterialCB41Select);
-    $('#SystemCB11').on('change', taxt_SystemCB11Select);
-    $('#SystemCB21').on('change', taxt_SystemCB21Select);
+    gem$('#MaterialCB11').on('change', taxt_MaterialCB11Select);
+    gem$('#MaterialCB21').on('change', taxt_MaterialCB21Select);
+    gem$('#MaterialCB31').on('change', taxt_MaterialCB31Select);
+    gem$('#MaterialCB41').on('change', taxt_MaterialCB41Select);
+    gem$('#SystemCB11').on('change', taxt_SystemCB11Select);
+    gem$('#SystemCB21').on('change', taxt_SystemCB21Select);
 
     var MaterialCB12 = [];
     /* same */ MaterialCB12.push('Unknown Material');
@@ -3510,12 +3510,12 @@ function taxt_Initiate() {
     /* same */ MaterialCB12.push('Wood');
     /* same */ MaterialCB12.push('Other material');
     select_populate('MaterialCB12', MaterialCB12);
-    $('#MaterialCB12').on('change', taxt_MaterialCB12Select);
-    $('#MaterialCB22').on('change', taxt_MaterialCB22Select);
-    $('#MaterialCB32').on('change', taxt_MaterialCB32Select);
-    $('#MaterialCB42').on('change', taxt_MaterialCB42Select);
-    $('#SystemCB12').on('change', taxt_SystemCB12Select);
-    $('#SystemCB22').on('change', taxt_SystemCB22Select);
+    gem$('#MaterialCB12').on('change', taxt_MaterialCB12Select);
+    gem$('#MaterialCB22').on('change', taxt_MaterialCB22Select);
+    gem$('#MaterialCB32').on('change', taxt_MaterialCB32Select);
+    gem$('#MaterialCB42').on('change', taxt_MaterialCB42Select);
+    gem$('#SystemCB12').on('change', taxt_SystemCB12Select);
+    gem$('#SystemCB22').on('change', taxt_SystemCB22Select);
 
     var HeightCB1 = [];
     /* H99  */ HeightCB1.push('Unknown number of storeys');
@@ -3523,10 +3523,10 @@ function taxt_Initiate() {
     /* HEX  */ HeightCB1.push('Exact number of storeys');
     /* HAPP */ HeightCB1.push('Approximate number of storeys');
     select_populate('HeightCB1', HeightCB1);
-    $('#HeightCB1').val(0);
-    $('#HeightCB1').on('change', taxt_HeightCB1Select);
-    $('#noStoreysE11').on('change', taxt_HeightCB1Select);
-    $('#noStoreysE12').on('change', taxt_HeightCB1Select);
+    gem$('#HeightCB1').val(0);
+    gem$('#HeightCB1').on('change', taxt_HeightCB1Select);
+    gem$('#noStoreysE11').on('change', taxt_HeightCB1Select);
+    gem$('#noStoreysE12').on('change', taxt_HeightCB1Select);
 
     var HeightCB2 = [];
     /* HB99  */ HeightCB2.push('Unknown number of storeys');
@@ -3534,10 +3534,10 @@ function taxt_Initiate() {
     /* HBEX  */ HeightCB2.push('Exact number of storeys');
     /* HBAPP */ HeightCB2.push('Approximate number of storeys');
     select_populate('HeightCB2', HeightCB2);
-    $('#HeightCB2').val(0);
-    $('#HeightCB2').on('change', taxt_HeightCB2Select);
-    $('#noStoreysE21').on('change', taxt_HeightCB2Select);
-    $('#noStoreysE22').on('change', taxt_HeightCB2Select);
+    gem$('#HeightCB2').val(0);
+    gem$('#HeightCB2').on('change', taxt_HeightCB2Select);
+    gem$('#noStoreysE21').on('change', taxt_HeightCB2Select);
+    gem$('#noStoreysE22').on('change', taxt_HeightCB2Select);
 
     var HeightCB3 = [];
     /* HF99  */ HeightCB3.push('Height above grade unknown');
@@ -3545,18 +3545,18 @@ function taxt_Initiate() {
     /* HFEX  */ HeightCB3.push('Exact height above grade');
     /* HFAPP */ HeightCB3.push('Approximate height above grade');
     select_populate('HeightCB3', HeightCB3);
-    $('#HeightCB3').val(0);
-    $('#HeightCB3').on('change', taxt_HeightCB3Select);
-    $('#noStoreysE31').on('change', taxt_HeightCB3Select);
-    $('#noStoreysE32').on('change', taxt_HeightCB3Select);
+    gem$('#HeightCB3').val(0);
+    gem$('#HeightCB3').on('change', taxt_HeightCB3Select);
+    gem$('#noStoreysE31').on('change', taxt_HeightCB3Select);
+    gem$('#noStoreysE32').on('change', taxt_HeightCB3Select);
 
     var HeightCB4 = [];
     /* HD99  */ HeightCB4.push('Unknown slope');
     /* HD    */ HeightCB4.push('Slope of the ground');
     select_populate('HeightCB4', HeightCB4);
-    $('#HeightCB4').val(0);
-    $('#HeightCB4').on('change', taxt_HeightCB4Select);
-    $('#noStoreysE41').on('change', taxt_HeightCB4Select);
+    gem$('#HeightCB4').val(0);
+    gem$('#HeightCB4').on('change', taxt_HeightCB4Select);
+    gem$('#noStoreysE41').on('change', taxt_HeightCB4Select);
 
     var DateCB1 = [];
     /* Y99  */ DateCB1.push('Year unknown');
@@ -3565,10 +3565,10 @@ function taxt_Initiate() {
     /* YPRE */ DateCB1.push('Latest possible date of construction or retrofit');
     /* YAPP */ DateCB1.push('Approximate date of construction or retrofit');
     select_populate('DateCB1', DateCB1);
-    $('#DateCB1').val(0);
-    $('#DateCB1').on('change', taxt_DateCB1Select);
-    $('#DateE1').on('change', taxt_DateE1Change);
-    $('#DateE2').on('change', taxt_DateE2Change);
+    gem$('#DateCB1').val(0);
+    gem$('#DateCB1').on('change', taxt_DateCB1Select);
+    gem$('#DateE1').on('change', taxt_DateE1Change);
+    gem$('#DateE2').on('change', taxt_DateE2Change);
 
     var OccupancyCB1 = [];
     /* OC99  */ OccupancyCB1.push('Unknown occupancy type');
@@ -3582,9 +3582,9 @@ function taxt_Initiate() {
     /* EDU   */ OccupancyCB1.push('Education');
     /* OCO   */ OccupancyCB1.push('Other occupancy type');
     select_populate('OccupancyCB1', OccupancyCB1);
-    $('#OccupancyCB1').val(0);
-    $('#OccupancyCB1').on('change', taxt_OccupancyCB1Select);
-    $('#OccupancyCB2').on('change', taxt_OccupancyCB2Select);
+    gem$('#OccupancyCB1').val(0);
+    gem$('#OccupancyCB1').on('change', taxt_OccupancyCB1Select);
+    gem$('#OccupancyCB2').on('change', taxt_OccupancyCB2Select);
 
     var PositionCB = [];
     /* BP99 */ PositionCB.push('Unknown building position');
@@ -3593,8 +3593,8 @@ function taxt_Initiate() {
     /* BP2  */ PositionCB.push('Adjoining building(s) on two sides');
     /* BP3  */ PositionCB.push('Adjoining building(s) on three sides');
     select_populate('PositionCB', PositionCB);
-    $('#PositionCB').val(0);
-    $('#PositionCB').on('change', taxt_PositionCBSelect);
+    gem$('#PositionCB').val(0);
+    gem$('#PositionCB').on('change', taxt_PositionCBSelect);
 
     var PlanShapeCB = [];
     /* PLF99  */ PlanShapeCB.push('Unknown plan shape');
@@ -3618,19 +3618,19 @@ function taxt_Initiate() {
     /* PLFPO  */ PlanShapeCB.push('Polygonal, with an opening in plan');
     /* PLFI   */ PlanShapeCB.push('Irregular plan shape');
     select_populate('PlanShapeCB', PlanShapeCB);
-    $('#PlanShapeCB').val(0);
-    $('#PlanShapeCB').on('change', taxt_PlanShapeCBSelect);
+    gem$('#PlanShapeCB').val(0);
+    gem$('#PlanShapeCB').on('change', taxt_PlanShapeCBSelect);
 
     var RegularityCB1 = [];
     /* IR99 */ RegularityCB1.push('Unknown structural irregularity');
     /* IRRE */ RegularityCB1.push('Regular structure');
     /* IRIR */ RegularityCB1.push('Irregular structure');
     select_populate('RegularityCB1', RegularityCB1);
-    $('#RegularityCB1').on('change', taxt_RegularityCB1Select);
-    $('#RegularityCB2').on('change', taxt_RegularityCB2Select);
-    $('#RegularityCB3').on('change', taxt_RegularityCB3Select);
-    $('#RegularityCB4').on('change', taxt_RegularityCB4Select);
-    $('#RegularityCB5').on('change', taxt_RegularityCB5Select);
+    gem$('#RegularityCB1').on('change', taxt_RegularityCB1Select);
+    gem$('#RegularityCB2').on('change', taxt_RegularityCB2Select);
+    gem$('#RegularityCB3').on('change', taxt_RegularityCB3Select);
+    gem$('#RegularityCB4').on('change', taxt_RegularityCB4Select);
+    gem$('#RegularityCB5').on('change', taxt_RegularityCB5Select);
 
     var WallsCB = [];
     /* EW99 */  WallsCB.push('Unknown material of exterior walls');
@@ -3646,8 +3646,8 @@ function taxt_Initiate() {
     /* EWCB */  WallsCB.push('Cement-based boards for exterior walls');
     /* EWO  */  WallsCB.push('Material of exterior walls, other');
     select_populate('WallsCB', WallsCB);
-    $('#WallsCB').val(0);
-    $('#WallsCB').on('change', taxt_WallsCBSelect);
+    gem$('#WallsCB').val(0);
+    gem$('#WallsCB').on('change', taxt_WallsCBSelect);
 
     var RoofCB1 = [];
     /* RSH99  */ RoofCB1.push('Unknown roof shape');
@@ -3662,8 +3662,8 @@ function taxt_Initiate() {
     /* RSH9   */ RoofCB1.push('Complex irregular');
     /* RSHO   */ RoofCB1.push('Roof shape, other');
     select_populate('RoofCB1', RoofCB1);
-    $('#RoofCB1').val(0);
-    $('#RoofCB1').on('change', taxt_RoofCB1Select);
+    gem$('#RoofCB1').val(0);
+    gem$('#RoofCB1').on('change', taxt_RoofCB1Select);
 
     var RoofCB2 = [];
     /* RMT99 */ RoofCB2.push('Unknown roof covering');
@@ -3681,8 +3681,8 @@ function taxt_Initiate() {
     /* RMT11 */ RoofCB2.push('Tensile membrane or fabric roof');
     /* RMTO  */ RoofCB2.push('Roof covering, other');
     select_populate('RoofCB2', RoofCB2);
-    $('#RoofCB2').val(0);
-    $('#RoofCB2').on('change', taxt_RoofCB2Select);
+    gem$('#RoofCB2').val(0);
+    gem$('#RoofCB2').on('change', taxt_RoofCB2Select);
 
     var RoofCB3 = [];
     /* R99 */ RoofCB3.push('Roof material, unknown');
@@ -3694,9 +3694,9 @@ function taxt_Initiate() {
     /* RFA */ RoofCB3.push('Fabric roof');
     /* RO  */RoofCB3.push('Roof material,other');
     select_populate('RoofCB3', RoofCB3);
-    $('#RoofCB3').val(0);
-    $('#RoofCB3').on('change', taxt_RoofCB3Select);
-    $('#RoofCB4').on('change', taxt_RoofCB4Select);
+    gem$('#RoofCB3').val(0);
+    gem$('#RoofCB3').on('change', taxt_RoofCB3Select);
+    gem$('#RoofCB4').on('change', taxt_RoofCB4Select);
 
     var RoofCB5 = [];
     /* RWC99 */ RoofCB5.push('Roof-wall diaphragm connection unknown');
@@ -3706,8 +3706,8 @@ function taxt_Initiate() {
     /* RTDN  */ RoofCB5.push('Roof tie-down not provided');
     /* RTDP  */ RoofCB5.push('Roof tie-down present');
     select_populate('RoofCB5', RoofCB5);
-    $('#RoofCB5').val(0);
-    $('#RoofCB5').on('change', taxt_RoofCB5Select);
+    gem$('#RoofCB5').val(0);
+    gem$('#RoofCB5').on('change', taxt_RoofCB5Select);
 
     var FoundationsCB = [];
     /* FOS99  */ FoundationsCB.push('Unknown foundation system');
@@ -3717,8 +3717,8 @@ function taxt_Initiate() {
     /* FOSDN  */ FoundationsCB.push('Deep foundation, with no lateral capacity');
     /* FOSO   */ FoundationsCB.push('Foundation, other');
     select_populate('FoundationsCB', FoundationsCB);
-    $('#FoundationsCB').val(0);
-    $('#FoundationsCB').on('change', taxt_FoundationsCBSelect);
+    gem$('#FoundationsCB').val(0);
+    gem$('#FoundationsCB').on('change', taxt_FoundationsCBSelect);
 
     var FloorCB1 = [];
     /* F99 */ FloorCB1.push('Floor material, unknown');
@@ -3730,17 +3730,17 @@ function taxt_Initiate() {
     /* FW  */ FloorCB1.push('Wooden floor');
     /* FO  */ FloorCB1.push('Floor material, other');
     select_populate('FloorCB1', FloorCB1);
-    $('#FloorCB1').val(0);
-    $('#FloorCB1').on('change', taxt_FloorCB1Select);
-    $('#FloorCB2').on('change', taxt_FloorCB2Select);
+    gem$('#FloorCB1').val(0);
+    gem$('#FloorCB1').on('change', taxt_FloorCB1Select);
+    gem$('#FloorCB2').on('change', taxt_FloorCB2Select);
 
     var FloorCB3 = [];
     /* FWC99 */ FloorCB3.push('Floor-wall diaphragm connection, unknown');
     /* FWCN  */ FloorCB3.push('Floor-wall diaphragm connection not provided');
     /* FWCP  */ FloorCB3.push('Floor-wall diaphragm connection present');
     select_populate('FloorCB3', FloorCB3);
-    $('#FloorCB3').val(0);
-    $('#FloorCB3').on('change', taxt_FloorCB3Select);
+    gem$('#FloorCB3').val(0);
+    gem$('#FloorCB3').on('change', taxt_FloorCB3Select);
 
     // TAIL
     taxt_ValidateMaterial1();
@@ -3778,18 +3778,18 @@ function tab_set(id_or_obj) {
         }
     }
 
-    tab_items = $('[id|="tab_id"]');
+    tab_items = gem$('[id|="tab_id"]');
 
     for (i = 0 ; i < tab_items.length ; i++) {
         if (tab_items[i].id == id) {
-            $(tab_items[i]).removeClass("tab");
-            $(tab_items[i]).addClass("tab_selected");
-            $("#main_content-" + (i+1)).css('display', '');
+            gem$(tab_items[i]).removeClass("tab");
+            gem$(tab_items[i]).addClass("tab_selected");
+            gem$("#main_content-" + (i+1)).css('display', '');
         }
         else {
-            $(tab_items[i]).removeClass("tab_selected");
-            $(tab_items[i]).addClass("tab");
-            $("#main_content-" + (i+1)).css('display', 'none');
+            gem$(tab_items[i]).removeClass("tab_selected");
+            gem$(tab_items[i]).addClass("tab");
+            gem$("#main_content-" + (i+1)).css('display', 'none');
         }
     }
 
@@ -3810,21 +3810,21 @@ function sub1tab_set(id_or_obj) {
         subtab_cur = id_or_obj;
     }
 
-    tab_items = $('[id|="sub1tab_id"]');
+    tab_items = gem$('[id|="sub1tab_id"]');
 
 
     for (i = 0 ; i < tab_items.length ; i++) {
         if (tab_items[i].id == id) {
-            $(tab_items[i]).toggleClass("subtab_first");
-            $(tab_items[i]).removeClass("subtab");
-            $(tab_items[i]).addClass("subtab_selected");
-            $(tab_items[i]).toggleClass("subtab_first");
-            $("#sub1_content-" + (i+1)).css('display', '');
+            gem$(tab_items[i]).toggleClass("subtab_first");
+            gem$(tab_items[i]).removeClass("subtab");
+            gem$(tab_items[i]).addClass("subtab_selected");
+            gem$(tab_items[i]).toggleClass("subtab_first");
+            gem$("#sub1_content-" + (i+1)).css('display', '');
         }
         else {
-            $(tab_items[i]).removeClass("subtab_selected");
-            $(tab_items[i]).addClass("subtab");
-            $("#sub1_content-" + (i+1)).css('display', 'none');
+            gem$(tab_items[i]).removeClass("subtab_selected");
+            gem$(tab_items[i]).addClass("subtab");
+            gem$("#sub1_content-" + (i+1)).css('display', 'none');
         }
     }
 }
@@ -3866,7 +3866,7 @@ function populate(s, ret_s) {
     taxt_Initiate();
 
     sar = s.split('/');
-    $('#DirectionCB').prop('checked', false);
+    gem$('#DirectionCB').prop('checked', false);
 
     //
     //  Direction
@@ -3874,11 +3874,11 @@ function populate(s, ret_s) {
     dirx = sar[0];
     diry = sar[3];
     if (dirx == "DX+D99" && diry == "DY+D99") {
-        $("#Direction1RB1").prop("checked", true);
+        gem$("#Direction1RB1").prop("checked", true);
         taxt_Direction1RB1Click(null);
     }
     else if (dirx == "DX+PF" && diry == "DY+OF") {
-        $("#Direction1RB2").prop("checked", true);
+        gem$("#Direction1RB2").prop("checked", true);
         taxt_Direction1RB2Click(null);
     }
     else {
@@ -3919,7 +3919,7 @@ function populate(s, ret_s) {
         for (i = 0 ; i < material.length ; i++) {
             if (mat[0] == material[i].id) {
                 mat_id = mat[0];
-                $(mat_ddown[direct]).val(i);
+                gem$(mat_ddown[direct]).val(i);
                 mat_selec[direct]();
                 break;
             }
@@ -3935,7 +3935,7 @@ function populate(s, ret_s) {
             // Material technology
             for (i = 0 ; i < mat_tech[mat_id].length ;  i++) {
                 if (mat_atom == mat_tech[mat_id][i].id) {
-                    $(mat_tecn_ddown[direct]).val(i);
+                    gem$(mat_tecn_ddown[direct]).val(i);
                     mat_tecn_selec[direct]();
                     break;
                 }
@@ -3946,7 +3946,7 @@ function populate(s, ret_s) {
             // Material technology added
             for (i = 0 ; i < mat_tead[mat_id].length ;  i++) {
                 if (mat_atom == mat_tead[mat_id][i].id) {
-                    $(mat_tead_ddown[direct]).val(i);
+                    gem$(mat_tead_ddown[direct]).val(i);
                     mat_tead_selec[direct]();
                     break;
                 }
@@ -3957,7 +3957,7 @@ function populate(s, ret_s) {
             // Material properties
             for (i = 0 ; i < mat_prop[mat_id].length ;  i++) {
                 if (mat_atom == mat_prop[mat_id][i].id) {
-                    $(mat_prop_ddown[direct]).val(i);
+                    gem$(mat_prop_ddown[direct]).val(i);
                     mat_prop_selec[direct]();
                     break;
                 }
@@ -3976,7 +3976,7 @@ function populate(s, ret_s) {
             llrs_id = llrs_type[mat_id][i].id;
 
             if (llrs[0] == llrs_id) {
-                $(llrs_ddown[direct]).val(i);
+                gem$(llrs_ddown[direct]).val(i);
                 llrs_selec[direct]();
                 break;
             }
@@ -3993,7 +3993,7 @@ function populate(s, ret_s) {
             // Ductility
             for (i = 0 ; i < llrs_duct[llrs_id].length ;  i++) {
                 if (llrs_atom == llrs_duct[llrs_id][i].id) {
-                    $(llrs_duct_ddown[direct]).val(i);
+                    gem$(llrs_duct_ddown[direct]).val(i);
                     llrs_duct_selec[direct]();
                     break;
                 }
@@ -4008,12 +4008,12 @@ function populate(s, ret_s) {
     var dir_items = [ '#MaterialCB1', '#MaterialCB2', '#MaterialCB3', '#MaterialCB4',
                       '#SystemCB1', '#SystemCB2' ];
     for (i = 0 ; i < dir_items.length ; i++) {
-        if ($(dir_items[i]+'1').val() != $(dir_items[i]+'2').val()) {
+        if (gem$(dir_items[i]+'1').val() != gem$(dir_items[i]+'2').val()) {
             break;
         }
     }
     if (i == dir_items.length) {
-        $('#DirectionCB').prop('checked', true);
+        gem$('#DirectionCB').prop('checked', true);
     }
 
     //
@@ -4102,13 +4102,13 @@ function populate(s, ret_s) {
                     h_vals[1] = h_vals[0];
                     h_vals[0] = swap;
                 }
-                $('#noStoreysE' + h_cbid[h_grp] + '2').val(h_vals[1]);
+                gem$('#noStoreysE' + h_cbid[h_grp] + '2').val(h_vals[1]);
             }
 
             // set value (in the case of 'HD' the real index must be (h_type - 1))
-            $('#HeightCB' + h_cbid[h_grp]).val(h_map[h_id] == 'HD' ? h_type - 1 : h_type);
+            gem$('#HeightCB' + h_cbid[h_grp]).val(h_map[h_id] == 'HD' ? h_type - 1 : h_type);
 
-            $('#noStoreysE' + h_cbid[h_grp] + '1').val(h_vals[0]);
+            gem$('#noStoreysE' + h_cbid[h_grp] + '1').val(h_vals[0]);
 
             h_cbfun[h_grp](null);
         }
@@ -4186,11 +4186,11 @@ function populate(s, ret_s) {
                 date_vals[1] = date_vals[0];
                 date_vals[0] = swap;
             }
-            $('#DateE2').val(date_vals[1]);
+            gem$('#DateE2').val(date_vals[1]);
         }
-        $('#DateCB1').val(date_index);
+        gem$('#DateCB1').val(date_index);
         taxt_DateCB1Select(null);
-        $('#DateE1').val(date_vals[0]);
+        gem$('#DateE1').val(date_vals[0]);
 
         taxt_ValidateDate();
     }
@@ -4212,7 +4212,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < occu_type.length ; i++) {
         if (occu_label == occu_type[i].id) {
             occu_id = occu_label;
-            $('#OccupancyCB1').val(i);
+            gem$('#OccupancyCB1').val(i);
             taxt_OccupancyCB1Select(null);
             break;
         }
@@ -4234,7 +4234,7 @@ function populate(s, ret_s) {
 
         for (i = 0 ; i < occu_spec[occu_id].length ;  i++) {
             if (occu_atom == occu_spec[occu_id][i].id) {
-                $('#OccupancyCB2').val(i);
+                gem$('#OccupancyCB2').val(i);
                 taxt_OccupancyCB2Select(null);
                 break;
             }
@@ -4259,7 +4259,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < bupo_type.length ; i++) {
         if (bupo_label == bupo_type[i].id) {
             bupo_id = bupo_label;
-            $('#PositionCB').val(i);
+            gem$('#PositionCB').val(i);
             taxt_PositionCBSelect(null);
             break;
         }
@@ -4284,7 +4284,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < plsh_type.length ; i++) {
         if (plsh_label == plsh_type[i].id) {
             plsh_id = plsh_label;
-            $('#PlanShapeCB').val(i);
+            gem$('#PlanShapeCB').val(i);
             taxt_PlanShapeCBSelect(null);
             break;
         }
@@ -4396,19 +4396,19 @@ function populate(s, ret_s) {
     // all data are retrieved before the population phase to avoid unrequired reset of values permformed
     // by hierarchical ancestors
     if (ir_values[0] > -1)
-        $('#RegularityCB1').val(ir_values[0]);
+        gem$('#RegularityCB1').val(ir_values[0]);
     taxt_RegularityCB1Select(null);
     if (ir_values[1] > -1)
-        $('#RegularityCB2').val(ir_values[1]);
+        gem$('#RegularityCB2').val(ir_values[1]);
     taxt_RegularityCB2Select(null);
     if (ir_values[2] > -1)
-        $('#RegularityCB3').val(ir_values[2]);
+        gem$('#RegularityCB3').val(ir_values[2]);
     taxt_RegularityCB3Select(null);
     if (ir_values[3] > -1)
-        $('#RegularityCB4').val(ir_values[3]);
+        gem$('#RegularityCB4').val(ir_values[3]);
     taxt_RegularityCB4Select(null);
     if (ir_values[4] > -1)
-        $('#RegularityCB5').val(ir_values[4]);
+        gem$('#RegularityCB5').val(ir_values[4]);
     taxt_RegularityCB5Select(null);
 
     //
@@ -4425,7 +4425,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < wall_type.length ; i++) {
         if (wall_label == wall_type[i].id) {
             wall_id = wall_label;
-            $('#WallsCB').val(i);
+            gem$('#WallsCB').val(i);
             taxt_WallsCBSelect(null);
             break;
         }
@@ -4448,7 +4448,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < roof_shap.length ; i++) {
         if (rosh_label == roof_shap[i].id) {
             rosh_id = rosh_label;
-            $('#RoofCB1').val(i);
+            gem$('#RoofCB1').val(i);
             taxt_RoofCB1Select(null);
             break;
         }
@@ -4464,7 +4464,7 @@ function populate(s, ret_s) {
         // roof covering
         for (i = 0 ; i < roof_cove.length ; i++) {
             if (rosh_atom == roof_cove[i].id) {
-                $('#RoofCB2').val(i);
+                gem$('#RoofCB2').val(i);
                 taxt_RoofCB2Select(null);
                 break;
             }
@@ -4478,7 +4478,7 @@ function populate(s, ret_s) {
                 roof_system_set = true;
                 roof_system_val = rosh_atom;
 
-                $('#RoofCB3').val(i);
+                gem$('#RoofCB3').val(i);
                 taxt_RoofCB3Select(null);
                 break;
             }
@@ -4489,7 +4489,7 @@ function populate(s, ret_s) {
         // roof connections
         for (i = 0 ; i < roof_conn.length ; i++) {
             if (rosh_atom == roof_conn[i].id) {
-                $('#RoofCB5').val(i);
+                gem$('#RoofCB5').val(i);
                 taxt_RoofCB5Select(null);
                 break;
             }
@@ -4501,7 +4501,7 @@ function populate(s, ret_s) {
             // roof connections
             for (i = 0 ; i < roof_sys[roof_system_val].length ; i++) {
                 if (rosh_atom == roof_sys[roof_system_val][i].id) {
-                    $('#RoofCB4').val(i);
+                    gem$('#RoofCB4').val(i);
                     taxt_RoofCB4Select(null);
                     break;
                 }
@@ -4525,7 +4525,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < floo_syma.length ; i++) {
         if (flma_label == floo_syma[i].id) {
             flma_id = flma_label;
-            $('#FloorCB1').val(i);
+            gem$('#FloorCB1').val(i);
             taxt_FloorCB1Select(null);
             break;
         }
@@ -4542,7 +4542,7 @@ function populate(s, ret_s) {
         for (i = 0 ; i < floo_conn[flma_id].length ; i++) {
 
             if (flma_atom == floo_conn[flma_id][i].id) {
-                $('#FloorCB2').val(i);
+                gem$('#FloorCB2').val(i);
                 taxt_FloorCB2Select(null);
                 break;
             }
@@ -4553,7 +4553,7 @@ function populate(s, ret_s) {
         // floor system type
         for (i = 0 ; i < floo_syty.length ; i++) {
             if (flma_atom == floo_syty[i].id) {
-                $('#FloorCB3').val(i);
+                gem$('#FloorCB3').val(i);
                 taxt_FloorCB3Select(null);
                 break;
             }
@@ -4579,7 +4579,7 @@ function populate(s, ret_s) {
     for (i = 0 ; i < foun_type.length ; i++) {
         if (foun_label == foun_type[i].id) {
             foun_id = foun_label;
-            $('#FoundationsCB').val(i);
+            gem$('#FoundationsCB').val(i);
             taxt_FoundationsCBSelect(null);
             break;
         }
