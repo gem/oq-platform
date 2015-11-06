@@ -19,6 +19,10 @@
     collapsed into one
 
   [Ben Wyss]
-  * Revers the x / y axis of the fragility discrete tables.
-  * Add intensity measure as a column for the fragility discrete tables.
-  * Add intensity measure as a column for the vulnerability discrete tables.
+  * Provide an 'Open in IRV' button to the default GeoNode layer preview page
+    when the layer has been created using the SVIR QGIS plugin
+
+  [Ben Wyss]
+  * Revers the x / y axis of the fragility discrete tables
+  * Add intensity measure as a column for the fragility discrete tables
+  * Add intensity measure as a column for the vulnerability discrete tables

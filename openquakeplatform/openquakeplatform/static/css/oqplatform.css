@@ -365,3 +365,13 @@ footer.footer div.container {
 #site_wide_announcements {
     margin-left: -20px;
 }
+
+.action-group .btn-group {
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-group:last-child {
+    margin-right: 10px !important;
+}

@@ -49,6 +49,11 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
+$(document).ready(function() {
+    $('#cover').remove();
+    $('.alert-unscaled-data').hide();
+});
+
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
     // We are not scaling any of the IR indicators
@@ -1515,7 +1520,7 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-        attributeInfoRequest(selectedLayer);
+        loadProject();
     });
 
     // AJAX error dialog
@@ -1588,8 +1593,37 @@ var startApp = function() {
         'margin-bottom' : 0,
         'margin-top': '31px'
     });
+
+    // Check the URL for layer parameter
+    var urlLayerParameter = location.href;
+    urlLayerParameter = urlLayerParameter.split('irv_viewer/')[1];
+
+    if (urlLayerParameter) {
+        selectedLayer = urlLayerParameter;
+        loadProject();
+    }
 };
 
+function loadProject() {
+    $('#pdSelection').empty();
+    // set tabs to back default
+    $("#themeTabs").tabs("enable", 2);
+    $("#themeTabs").tabs("enable", 3);
+
+    $('#themeTabs').tabs('option', 'active', 0);
+    $('#thematic-map-selection').show();
+    $('#projectDef-spinner').text('Loading ...');
+    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
+    $('#projectDef-spinner').show();
+    $('#iri-spinner').show();
+    $('#regionSelectionDialog').empty();
+    $('#projectDef-tree').empty();
+    $('#iri-chart').empty();
+    $('#cat-chart').empty();
+    $('#primary-chart').empty();
+
+    attributeInfoRequest(selectedLayer);
+}
 
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
@@ -1727,7 +1761,7 @@ function projDefJSONRequest(selectedLayer) {
         error: function() {
             $('#ajaxErrorDialog').empty();
             $('#ajaxErrorDialog').append(
-                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+                '<p>The project you are trying to load does not apear to be valid.</p>'
             );
             $('#ajaxErrorDialog').dialog('open');
         }
