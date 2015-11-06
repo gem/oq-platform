@@ -28,7 +28,6 @@ from django.views.generic.detail import BaseDetailView
 from django.utils.cache import add_never_cache_headers
 from django.utils.text import slugify
 from django.contrib.messages.api import get_messages
-from openquakeplatform.taxtweb.taxonomy import taxonomy_short2full
 
 def index(request, **kwargs):
     try:
@@ -76,13 +75,10 @@ def index(request, **kwargs):
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
-    taxonomy_in = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
-
-    (taxonomy, error_msg) = taxonomy_short2full(taxonomy_in)
+    taxonomy = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
 
     return render_to_response("taxtweb/index.html",
                               dict(taxonomy=taxonomy,
-                                   error_msg=("" if error_msg == None else error_msg),
                                    is_popup=is_popup,
                                    tab_id=tab_id,
                                    subtab_id=subtab_id,

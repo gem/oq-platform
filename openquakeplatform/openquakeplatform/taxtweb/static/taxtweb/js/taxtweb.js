@@ -3460,6 +3460,7 @@ function taxt_Initiate() {
     OutTypeCB.push('Full');
     OutTypeCB.push('Omit Unknown');
     OutTypeCB.push('Short');
+    console.log('populate outtype');
     select_populate('OutTypeCB', OutTypeCB);
     gem$('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
 
@@ -3862,8 +3863,6 @@ function populate(s, ret_s) {
     var i;
     var sar, subar, dirx, diry, el;
     var mat;
-
-    taxt_Initiate();
 
     sar = s.split('/');
     gem$('#DirectionCB').prop('checked', false);

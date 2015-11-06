@@ -43,7 +43,7 @@ taxt_simdom.prototype = {
     FloorCB1: [],
     FloorCB2: [],
     FloorCB3: [],
-    FoundationsCB: ['hurry'],
+    FoundationsCB: [],
     OutTypeCB: [],
     DirectionCB: null,
     Direction1RB1: null,
@@ -169,7 +169,6 @@ sim_dollar_cls.prototype = {
                     }
                     if (is_found == false) {
                         simdom_log("Option not found " + name + " val: " + value + " FIRST: " + simDOM[name]);
-                        throw 123;
                         return false;
                     }
                     simDOM[name + "_cur"] = value;
