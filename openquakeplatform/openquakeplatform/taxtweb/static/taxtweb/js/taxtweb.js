@@ -3460,7 +3460,6 @@ function taxt_Initiate() {
     OutTypeCB.push('Full');
     OutTypeCB.push('Omit Unknown');
     OutTypeCB.push('Short');
-    console.log('populate outtype');
     select_populate('OutTypeCB', OutTypeCB);
     gem$('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
 
