@@ -35,7 +35,7 @@ simDOM.__onchange =  {
     OccupancyCB1: null,
     OccupancyCB2: null,
 //    OutTypeCB: taxt_OutTypeCBSelect,
-    OutTypeCB: null,
+    OutTypeCB: [],
     PlanShapeCB: taxt_PlanShapeCBSelect,
     PositionCB: null,
     RegularityCB1: taxt_RegularityCB1Select,
