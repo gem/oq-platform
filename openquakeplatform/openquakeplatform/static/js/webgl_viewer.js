@@ -24,6 +24,7 @@ var heatmapIntensity = 4000;
 var dataPoints = [];
 var maxMappedValue;
 var minMappedValue;
+var gl;
 
 $(document).ready(function() {
     // Create an input field for the heatmap opacity option
@@ -182,7 +183,7 @@ function setupLeafletMap() {
     map = L.map('map').setView([20, 0], 2);
 
     // Add webGL support
-    var gl = L.mapboxGL({
+    gl = L.mapboxGL({
         accessToken: mbToken,
         style: 'mapbox://styles/mapbox/dark-v8'
     }).addTo(map);
@@ -269,7 +270,7 @@ function mapboxGlLayerCreation(layerAttributes) {
     ////////////////////////////
     // Create the WebGL layer //
     ////////////////////////////
-
+/*
     var geojsonMarkerOptions = {
         radius: 14,
         fillColor: "#ff7800",
@@ -285,16 +286,16 @@ function mapboxGlLayerCreation(layerAttributes) {
             return L.circleMarker(latlng, geojsonMarkerOptions);
         },
         onEachFeature: function (feature, layer) {
-            var foo = feature.properties.iml;
-            foo = foo.toString();
-            layer.bindPopup(foo);
+            var thisFeature = feature.properties.iml;
+            thisFeature = thisFeature.toString();
+            layer.bindPopup(thisFeature);
         }
     }).addTo(map);
 
-
+*/
 
     // Create the map source
-/*
+
     console.log('gl:');
     console.log(gl);
 
@@ -306,16 +307,29 @@ function mapboxGlLayerCreation(layerAttributes) {
     // Create the map layer
     gl._glMap.addLayer({
         'id': 'transparentLayer',
-        'type': 'circle',
+        "type": "circle",
+        //'type': 'symbol',
         'source': 'projectSource',
         'source-layer': 'eq-simple',
-        'interactive': true
+        'interactive': true,
+        'paint': {
+            'circle-radius': 14,
+            'circle-color': 'orange',
+            'circle-opacity': 0.2
+        }
+        //"layout": {
+          //"icon-image": "{marker-symbol}-12",
+          //"text-field": "{Village}",
+          //"text-font": "Open Sans Semibold, Arial Unicode MS Bold",
+          //"text-offset": [0, 0.6],
+          //"text-anchor": "top"
+        //},
     });
 
     gl._glMap.on('click', function(e) {
         console.log('e:');
         console.log(e);
-        gl._glMap.featuresAt(e.point, { radius : 60}, function(err, features) {
+        gl._glMap.featuresAt(e.point, { radius : 6}, function(err, features) {
             console.log('features:');
             console.log(features);
             if (err) throw err;
@@ -325,7 +339,7 @@ function mapboxGlLayerCreation(layerAttributes) {
             }
         });
     });
-*/
+
 }
 
 function createHeatMapLayer() {
