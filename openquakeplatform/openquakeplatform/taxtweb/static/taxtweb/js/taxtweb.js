@@ -145,7 +145,8 @@ var floo_conn =
       'FO':  []
     };
 
-var taxonomy_form = "";
+var gem_taxonomy_form = "";
+var gem_taxonomy_form_full = "";
 
 function is_not_negative_float(s)
 {
@@ -183,7 +184,7 @@ function populate_form()
 {
     try {
         var el = window.opener.document.getElementById("id_taxonomy_text_1");
-        el.value = taxonomy_form;
+        el.value = gem_taxonomy_form;
         el.onchange();
     }
     catch(e) {
@@ -2746,13 +2747,15 @@ function taxt_BuildTaxonomy()
         else {
             ResTax = ResTaxFull;
         }
-        taxonomy_form = ResTaxFull;
+        gem_taxonomy_form = ResTax;
+        gem_taxonomy_form_full = ResTaxFull;
 
         gem$('#resultE').val(ResTax);
         gem$('#permalink').attr("href", taxt_prefix + "/" +  ResTaxFull);
     }
     else {
-        taxonomy_form = "";
+        gem_taxonomy_form = "";
+        gem_taxonomy_form_full = "";
         gem$('#resultE').val(validate_msg);
         gem$('#permalink').attr("href", taxt_prefix);
     }
@@ -3462,6 +3465,7 @@ function taxt_Initiate() {
     OutTypeCB.push('Short');
     select_populate('OutTypeCB', OutTypeCB);
     gem$('#OutTypeCB').on('change', taxt_OutTypeCBSelect);
+    gem$('#OutTypeCB').val(2);
 
     gem$('#DirectionCB').prop('checked', true);
     gem$('#DirectionCB').on('change', taxt_SetDirection2);
