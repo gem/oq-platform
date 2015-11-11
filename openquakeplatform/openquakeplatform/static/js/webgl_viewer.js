@@ -20,7 +20,7 @@ var mapBoxAccessToken;
 var map;
 var heatmap;
 var heatmapOpacity = 0.6;
-var heatmapIntensity = 65000;
+var heatmapIntensity = 4000;
 var dataPoints = [];
 var maxMappedValue;
 var minMappedValue;
@@ -210,6 +210,9 @@ function setupLeafletMap() {
 }
 
 function mapboxGlLayerCreation(layerAttributes) {
+    //////////////////////////////
+    // Create the webGl heatmap //
+    //////////////////////////////
 
     var allValuesArray = [];
 
@@ -247,6 +250,8 @@ function mapboxGlLayerCreation(layerAttributes) {
     minMappedValue = Math.min.apply(null, allValuesArray).toFixed(2);
 
     // Fit the map to bounding box
+    console.log('[[minLat, minLng], [maxLat, maxLng]]:');
+    console.log([[minLat, minLng], [maxLat, maxLng]]);
     map.fitBounds([[minLat, minLng], [maxLat, maxLng]]);
 
     var mapZoom = map.getZoom();
@@ -260,6 +265,67 @@ function mapboxGlLayerCreation(layerAttributes) {
     createHeatMapLayer();
 
     createLegend(minMappedValue, maxMappedValue);
+
+    ////////////////////////////
+    // Create the WebGL layer //
+    ////////////////////////////
+
+    var geojsonMarkerOptions = {
+        radius: 14,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 0.3,
+        fillOpacity: 0.2
+    };
+
+    // Create geojson layer
+    L.geoJson(layerAttributes, {
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
+        onEachFeature: function (feature, layer) {
+            var foo = feature.properties.iml;
+            foo = foo.toString();
+            layer.bindPopup(foo);
+        }
+    }).addTo(map);
+
+
+
+    // Create the map source
+/*
+    console.log('gl:');
+    console.log(gl);
+
+    gl._glMap.addSource('projectSource', {
+        'type': 'geojson',
+        'data': layerAttributes,
+    });
+
+    // Create the map layer
+    gl._glMap.addLayer({
+        'id': 'transparentLayer',
+        'type': 'circle',
+        'source': 'projectSource',
+        'source-layer': 'eq-simple',
+        'interactive': true
+    });
+
+    gl._glMap.on('click', function(e) {
+        console.log('e:');
+        console.log(e);
+        gl._glMap.featuresAt(e.point, { radius : 60}, function(err, features) {
+            console.log('features:');
+            console.log(features);
+            if (err) throw err;
+            $('#mapLegend').empty();
+            for(var k in features[0].properties) {
+                $('#mapLegend').append(k+': '+features[0].properties[k]+'</br>');
+            }
+        });
+    });
+*/
 }
 
 function createHeatMapLayer() {
@@ -282,14 +348,19 @@ function createHeatMapLayer() {
     console.log('heatmap:');
     console.log(heatmap);
 
-    map.addLayer(heatmap);
 
     // Dynamic scale
     var zoom = map.getZoom();
+    if (zoom <= 14 ) {
+        zoom = zoom * 2;
+    }
     // Get the intensiy for this layer
-    heatmapIntensity = 200000 / (zoom * maxMappedValue) ;
-    console.log('heatmapIntensity:');
-    console.log(heatmapIntensity);
+    //heatmapIntensity = 200000 / (zoom * maxMappedValue) ;
+    //console.log('heatmapIntensity:');
+    //console.log(heatmapIntensity);
+    //heatmap.options.size = heatmapIntensity;
+
+    map.addLayer(heatmap);
 }
 
 // Get layer attributes from GeoServer
