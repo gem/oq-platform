@@ -54,7 +54,7 @@ label {
 }
 
 #tableOverflow {
-	height: 140px;
+	height: 100px;
     overflow: auto;
     margin-top: 20px;
 }
