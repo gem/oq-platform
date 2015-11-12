@@ -205,7 +205,7 @@ window.onload = function () {
 <body>
 <div class="grand_parent">
     <ul class="tab">
-        {{ tab_content|safe }}{% if is_popup %}<li style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
+        {{ tab_content|safe }}{% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
     </ul>
     <div id="main_content_parent" style="border-top-width: 0; border-color: #F8F8F8 #1B75A7 #1B75A7; position: relative; width: 800px; height: 600px; /* background-color: #ccccff; blue */">
         <div id="main_content-1" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; margin: 0px;/* background-color: #ffcccc; /*red */">
