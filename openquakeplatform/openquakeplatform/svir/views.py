@@ -20,6 +20,7 @@
 from cStringIO import StringIO
 import csv
 import json
+import unicodedata
 from django.http import (HttpResponse,
                          HttpResponseBadRequest,
                          HttpResponseNotFound,
@@ -714,11 +715,18 @@ def _stream_variables_data_as_csv_subnational(
         zone = Zone.objects.get(name=zone_id['name'],
                                 country_iso=zone_id['country_iso'],
                                 parent_label=zone_id['parent_label'])
+        if zone.sanitized_name:
+            sanitized_name = zone.sanitized_name.encode('utf-8')
+        else:
+            sanitized_name = unicodedata.normalize(
+                'NFKD', zone.name).encode('ascii', 'ignore')
+        sanitized_parent_label = unicodedata.normalize(
+            'NFKD', zone.parent_label).encode('ascii', 'ignore')
         # NOTE: It depends on which country model is being used
         # row = [country.iso, country.name_engli.encode('utf-8')]
-        row = [zone.name.encode('utf-8'),
+        row = [sanitized_name,
                zone.country_iso,
-               zone.parent_label.encode('utf-8')]
+               sanitized_parent_label]
         ind_vals = []
         for indicator in indicators:
             try:

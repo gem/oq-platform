@@ -225,11 +225,24 @@ class Command(BaseCommand):
                          for code in second_row[admin_level + 1:]]
             sys.stdout.write('Indicator codes: %s\n' % ', '.join(ind_codes))
             for row in reader:
-                # read zone localization and values
-                zone_name = row[admin_level - 1].strip().decode('utf8')
+                # read zone identifiers and values
+                raw_zone_name = row[admin_level - 1].strip()
+                zone_name = raw_zone_name.decode('utf8')
+                try:
+                    unicode(raw_zone_name)
+                except UnicodeDecodeError:
+                    sanitized_name = unicodedata.normalize(
+                        'NFKD', zone_name).encode('ascii', 'ignore')
+                    sys.stdout.write(
+                        "Name '%s' incompatible with shapefiles. "
+                        "Proposed sanitization: %s\n"
+                        % (zone_name, sanitized_name))
+                else:
+                    sanitized_name = None
                 zone_code = row[admin_level].strip()
-                decoded_row = [x.decode('utf8') for x in row[:admin_level - 1]]
-                zone_parent_label = ", ".join(decoded_row)
+                decoded_strs = [x.decode('utf8')
+                                for x in row[:admin_level - 1]]
+                zone_parent_label = ", ".join(decoded_strs)
                 # FIXME: load the actual geometry instead of copying the
                 # geometry of San Marino for all the subnational zones
                 san_marino = Zone.objects.get(country_iso='SMR')
@@ -242,12 +255,16 @@ class Command(BaseCommand):
                     parent_label__iexact=zone_parent_label,
                     defaults={
                         'name': zone_name,
+                        'sanitized_name': sanitized_name,
                         'code': zone_code,
                         'country_iso': country_iso,
                         'admin_level': admin_level,
                         'parent_label': zone_parent_label,
                         'the_geom': san_marino.the_geom,
                         'study': study})
+                if zone.sanitized_name != sanitized_name:
+                    zone.sanitized_name = sanitized_name
+                    zone.save()
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
                 ind_code_idx = 0

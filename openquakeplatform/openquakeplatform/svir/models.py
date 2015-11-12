@@ -59,6 +59,7 @@ class ZoneManager(models.Manager):
 
 class Zone(models.Model):
     name = models.CharField(max_length=CHMAX)
+    sanitized_name = models.CharField(max_length=CHMAX, null=True, blank=True)
     # for countries, code is None and country_iso becomes the identifier
     # NOTE: code is not the key or part of a composite key
     code = models.CharField(max_length=CHMAX, null=True, blank=True)
