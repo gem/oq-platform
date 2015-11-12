@@ -1,3 +1,7 @@
+  [Matteo Nastasi]
+  * vulnerability: fix css bug for log out dropdown menu in 'add new curve' page
+  * vulnerability: gem_taxonomy check and multiple type of views in
+    'add new curve' page
 
   [Ben Wyss]
   * Check the browser for WebGL support
