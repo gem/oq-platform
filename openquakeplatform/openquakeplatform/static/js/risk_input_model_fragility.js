@@ -36,25 +36,31 @@ $('#addFfsContinuous').click(function() {
 
 var count = 0;
 function updateFfsTable (fFormat) {
+
+    // Get info from the form and build the table header
+    limitStates = $('#limitStates').val();
+    limitStates = limitStates.split(',');
+    var limitStatesHeader = [];
+    for (var i = 0; i < limitStates.length; i++) {
+        limitStatesHeader.push(limitStates[i]);
+    }
+
+    limitStatesHeader.unshift('intensity measure');
+    var limitStateLength = limitStates.length;
+
     var colWidth;
     // disable the fragility function form
     $('#limitStates').prop('disabled', true);
 
     // Setup the header
     if (fFormat == 'discrete') {
-        header = ['damage state', 'poes'];
-        colWidth = 150;
+        header = limitStatesHeader;
     } else if (fFormat == 'continuous') {
         header = ['damage state', 'mean', 'stddev'];
         colWidth = 100;
     }
 
     var headerLength = header.length;
-
-    // Get info from the form and build the table header
-    limitStates = $('#limitStates').val();
-    limitStates = limitStates.split(',');
-    var limitStateLength = limitStates.length;
 
     // Create the table containers, as many as the user wants
     count += 1;
@@ -63,9 +69,7 @@ function updateFfsTable (fFormat) {
     // Imls value needs to be an array for discrete functions,
     // and minIML & maxIML for continuous
     if (fFormat == 'discrete') {
-        imls =
-            '<label>IML: </label>' +
-            '<input id="'+count+'" class="imls ffsTable" placeholder="imls array" type="text">';
+        imls = '';
     } else if (fFormat == 'continuous') {
         imls =
             '<label> MinIML: </label>' +
@@ -113,8 +117,10 @@ function updateFfsTable (fFormat) {
     });
 
     // Populate the table with limit states
-    for (var i = 0; i < limitStates.length; i++) {
+    if (fFormat == 'continuous') {
+        for (var i = 0; i < limitStates.length; i++) {
         fragilityTable.setDataAtCell(i, 0, limitStates[i]);
+        }
     }
 
     activeTablesObj[count] = fragilityTable;
@@ -239,22 +245,51 @@ $('#saveBtnFF').click(function() {
         // Create the imls tag
         var imlsTag;
         if (fFormatObj[k] == 'discrete') {
-            imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'">'+imlsObj[k]+'</imls>\n';
+            // Opening IML tag
+            imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'">';
+
+            for (var i = 0; i < dataFF[k].length; i++) {
+                // IML values
+                if (i !== (dataFF[k].length - 1)) {
+                    imlsTag += dataFF[k][i][0]+' ';
+                } else {
+                    // Avoid trailing whitespace
+                    imlsTag += dataFF[k][i][0];
+                }
+            }
+            // Closing IML tag
+            imlsTag += '</imls>\n';
         } else if (fFormatObj[k] == 'continuous') {
             imlsTag = '\t\t\t<imls imt="'+imtObj[k]+'" noDamageLimit="'+noDamageLimitObj[k]+'" minIML="'+minImlObj[k]+'" maxIML="'+maxImlObj[k]+'"/>\n';
         }
         // Dynamic imls tag
         ffs += imlsTag;
 
-        // Loop through the table rows and create the poes tags
-        for (var i = 0; i < dataFF[k].length; i++) {
             // Dynamic ffs tag(s)
             if (fFormatObj[k] == 'discrete') {
-                ffs += '\t\t\t<poes ls="'+limitStates[i].replace(/ /g,'')+'">'+dataFF[k][i][1]+'</poes>\n';
+                for (var i = 0; i < limitStates.length; i++) {
+                    // Opening poes tag
+                    ffs += '\t\t\t<poes ls="'+limitStates[i].replace(/ /g,'')+'">';
+                    for (var j = 0; j < dataFF[k].length; j++) {
+                        if (j !== (dataFF[k].length - 1)) {
+                            // The intensity measure is the first column in the table,
+                            // so we need to shift one column to the right ( i + 1 )
+                            ffs += dataFF[k][j][i + 1]+' ';
+                        } else {
+                            // Avoid trailing whitespace
+                            ffs += dataFF[k][j][i + 1];
+                        }
+                    }
+                    // Closing poes tag
+                    ffs += '</poes>\n';
+                }
+
             } else if (fFormatObj[k] == 'continuous') {
-                ffs += '\t\t\t<params ls="'+limitStates[i].replace(/ /g,'')+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
+                for (var i = 0; i < limitStates.length; i++) {
+                    ffs += '\t\t\t<params ls="'+limitStates[i].replace(/ /g,'')+'" mean="'+dataFF[k][i][1]+'" stddev="'+dataFF[k][i][2]+'"/>\n';
+                }
             }
-        }
+
         // Closing ffs tags
         ffs += '\t\t</fragilityFunction>\n';
         fragilityFunction += ffs;

@@ -18,6 +18,8 @@
 $(document).ready(function() {
     $('#cover').remove();
     $('.alert-unscaled-data').hide();
+    $('#absoluteSpinner').hide();
+    $('#loadProjectBtn').show();
 });
 
 var layerAttributes;
@@ -28,9 +30,16 @@ var selectedLayer;
 var tempProjectDef;
 var COMPATIBILITY_VERSION = '1.7.0';
 var thematicLayer;
-var boundingBox = [];
+var leafletBoundingBox = [];
+var mapboxBoundingBox = [];
 var license;
 var projectDefUpdated;
+var webGl;
+var projectChange = false;
+var verticesCount = 0;
+var VERTICES_THRESHOLD = 500000;
+
+var mappingLayerAttributes = {};
 
 // sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
@@ -39,6 +48,11 @@ var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
+
+$(document).ready(function() {
+    $('#cover').remove();
+    $('.alert-unscaled-data').hide();
+});
 
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
@@ -139,6 +153,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
     // get some info about the themes
     var themeKeys = [];
+    var themeInversionObj = {};
     var themeWeightObj = {};
     for (var u = 0; u < JSONthemes.length; u++) {
         var themeName = JSONthemes[u].name;
@@ -147,9 +162,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         themeWeightObj[themeName] = themeWeight;
         // identify if the node has been inverted
         if (JSONthemes[u].isInverted === true) {
-            themeInversionFactor = -1;
+            themeInversionObj[themeName] = -1;
         } else {
-            themeInversionFactor = 1;
+            themeInversionObj[themeName] = 1;
         }
     }
 
@@ -160,6 +175,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v].region;
             // compute the themes
             for (var w = 0; w < themeKeys.length; w++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w]];
                 var tempThemeName = themeKeys[w];
                 tempElementValue = tempElementValue + (themeObj[v][tempThemeName] * themeInversionFactor);
             }
@@ -171,9 +188,13 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v1].region;
             // compute the themes
             for (var w1 = 0; w1 < themeKeys.length; w1++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w1]];
                 var tempThemeName = themeKeys[w1];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+                if (themeWeightVal > 0) {
+                    tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+                }
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -183,6 +204,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v2].region;
             // compute the themes
             for (var w2 = 0; w2 < themeKeys.length; w2++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w2]];
                 var tempThemeName = themeKeys[w2];
                 tempElementValue = tempElementValue + (themeObj[v2][tempThemeName] * themeInversionFactor);
             }
@@ -195,6 +218,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v3].region;
             // compute the themes
             for (var w3 = 0; w3 < themeKeys.length; w3++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w3]];
                 var tempThemeName = themeKeys[w3];
                 tempElementValue = tempElementValue * (themeObj[v3][tempThemeName] * themeInversionFactor);
             }
@@ -205,10 +230,15 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var tempElementValue = 1;
             var themeObjRegion = themeObj[v4].region;
             // compute the themes
+
             for (var w4 = 0; w4 < themeKeys.length; w4++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w4]];
                 var tempThemeName = themeKeys[w4];
                 var themeWeightVal = themeWeightObj[tempThemeName];
-                tempElementValue = tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal * themeInversionFactor);
+                if (themeWeightVal > 0) {
+                    tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor);
+                }
             }
             subIndex[themeObjRegion] = tempElementValue;
         }
@@ -219,6 +249,8 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeObjRegion = themeObj[v5].region;
             // compute the themes
             for (var w5 = 0; w5 < themeKeys.length; w5++) {
+                // Get inversion factor
+                var themeInversionFactor = themeInversionObj[themeKeys[w5]];
                 var tempThemeName = themeKeys[w5];
                 tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
             }
@@ -231,6 +263,10 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 }
 
 function processIndicators(layerAttributes, projectDef) {
+    var weightChange = 0;
+    if (arguments[2]) {
+        weightChange = arguments[2];
+    }
     regions = [];
     var allSVIThemes = [];
     var allPrimaryIndicators = [];
@@ -296,13 +332,6 @@ function processIndicators(layerAttributes, projectDef) {
     // Find the theme information
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
-            var themeInversionFactor;
-            if (svThemes[m].isInverted === true) {
-                themeInversionFactor = -1;
-            } else {
-                themeInversionFactor = 1;
-            }
-
             var operator = svThemes[m].operator;
             var weight = svThemes[m].weight;
             var name = svThemes[m].name;
@@ -341,7 +370,7 @@ function processIndicators(layerAttributes, projectDef) {
                     }
                     // Grab the average
                     var average = tempValue / tempIndicatorChildrenKeys.length;
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average});
                 } else if ( operator == "Simple sum (ignore weights)") {
                     for (var p1 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -358,7 +387,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Weighted sum") {
                     for (var p2 in la[o].properties) {
                         // iterate over the indicator child keys
@@ -378,7 +407,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Simple multiplication (ignore weights)") {
                     tempValue = 1;
                     for (var p3 in la[o].properties) {
@@ -396,7 +425,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Weighted multiplication") {
                     tempValue = 1;
                     for (var p4 in la[o].properties) {
@@ -415,7 +444,7 @@ function processIndicators(layerAttributes, projectDef) {
                             }
                         }
                     }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 } else if ( operator == "Geometric mean (ignore weights)") {
                     tempValue = 1;
                     var power = 1 / tempIndicatorChildrenKeys.length;
@@ -435,7 +464,7 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                     tempValue = Math.pow(tempValue, power);
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue * themeInversionFactor});
+                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
                 }
             }
         }
@@ -622,13 +651,15 @@ function processIndicators(layerAttributes, projectDef) {
         la[ix].newProperties = {};
         for (var key in IRI) {
             if (key == la[ix].properties[selectedRegion]) {
-                la[ix].newProperties['IRI'] = (IRI[key]).toFixed(5);
+                var tempValue = (IRI[key]).toFixed(5);
+                la[ix].newProperties.IRI = parseFloat(tempValue);
             }
         }
         if (svThemes) {
             for (var key in SVI) {
                 if (key == la[ix].properties[selectedRegion]) {
-                    la[ix].newProperties['SVI'] = (SVI[key]).toFixed(5);
+                    var tempValue = (SVI[key]).toFixed(5);
+                    la[ix].newProperties.SVI = parseFloat(tempValue);
                 }
             }
         }
@@ -636,7 +667,8 @@ function processIndicators(layerAttributes, projectDef) {
         if (riskIndicators !== undefined) {
             for (var key in RI) {
                 if (key == la[ix].properties[selectedRegion]) {
-                    la[ix].newProperties['RI'] = (RI[key]).toFixed(5);
+                    var tempValue = (RI[key]).toFixed(5);
+                    la[ix].newProperties.RI = parseFloat(tempValue);
                 }
             }
 
@@ -683,47 +715,44 @@ function processIndicators(layerAttributes, projectDef) {
         }
     }
 
-    // Add main indicators to selection menu
-    $('#thematic-map-selection').empty();
-    $('#thematic-map-selection').append(
-        '<optgroup label="Indicators">'+
-        '<option>IRI</option>'+
-        '<option>SVI</option>'+
-        '<option>IR</option>'
-    );
 
-    // Add SVI themes to selection menu
-    $('#thematic-map-selection').append('<optgroup label="SVI Indicators">');
-    for (var id = 0; id < allSVIThemes.length; id++) {
-        $('#thematic-map-selection').append('<option>'+allSVIThemes[id]+'</option>');
-    }
+    // If the browser does not support web-gl, then use traditional (limited) vector data.
+    // If the browser does support web-gl, then use Mapbox-gl.
+    if (webGl === true) {
 
-    if (riskIndicators !== undefined) {
-        // Add IR themes to selection menu
-        $('#thematic-map-selection').append('<optgroup label="IR Indicators">');
-        for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-            $('#thematic-map-selection').append('<option>'+allRiskIndicators[ie]+'</option>');
+        ////////////////////////////////////////
+        // Deep copy the layer attributes obj //
+        ////////////////////////////////////////
+
+        // This application modifies the layer attributes based on changes to the indicator weights.
+        // The app also need to keep track of the original layer attributes values.
+        // Thus, the layerAttributes obj contains "properties" and "newProperties".
+        // This presents an issue when using the object as a data source in Mapbox-GL, because
+        // it is hard coded to use properties. In order to get around this issue, we need to
+        // deep copy the layerAttributes, and replace "properties" with newProperties
+
+        mappingLayerAttributes = JSON.parse(JSON.stringify(layerAttributes))
+
+        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+            delete mappingLayerAttributes.features[i].properties;
         }
-    }
 
-    // Add all primary indicators to selection menu
-    $('#thematic-map-selection').append('<optgroup label="Composite Indicators">');
-    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
-        $('#thematic-map-selection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
-    }
+        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[i].newProperties))
+            mappingLayerAttributes.features[i].properties = tempProperties;
+        }
 
-    // set the map selection menu to IRI or previously selected indicator value
-    if (selectedIndicator == undefined) {
-        $('#thematic-map-selection').val('IRI');
+        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+            delete mappingLayerAttributes.features[i].newProperties;
+        }
+
+        // Emptry any existing interactivity
+        $('#mapInfo').empty();
+
+        mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     } else {
-        $('#thematic-map-selection').val(selectedIndicator);
+        leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange);
     }
-
-    $('#thematic-map-selection').change(function() {
-        thematicMap(layerAttributes);
-    });
-
-    thematicMap(layerAttributes);
 
     var iriPcpData = [];
 
@@ -775,13 +804,391 @@ function scale(IndicatorObj) {
     return IndicatorObj;
 }
 
-function thematicMap(layerAttributes) {
+// Mapbox-gl stuff
+function setupMapboxGlMap() {
+
+    // Create mapbox map element
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuamFtaW4td3lzcyIsImEiOiJVcm5FdEw4In0.S8HRIEq8NqdtFVz2-BwQog';
+
+    map = new mapboxgl.Map({
+        container: 'map',
+        // Load default mapbox basemap
+        style: 'mapbox://styles/mapbox/streets-v8',
+        center: [0, 20],
+        zoom: 2,
+    })
+}
+
+function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
+    $('#webGlThematicSelection').empty();
+
+    // Add IRI SVI and RI options to the webGlThematicSelection menu
+    if (mappingLayerAttributes.features[0].properties.IRI !== undefined) {
+        $('#webGlThematicSelection').append('<option class="2">IRI</option>');
+    }
+
+    if (mappingLayerAttributes.features[0].properties.SVI !== undefined) {
+        $('#webGlThematicSelection').append('<option class="2">SVI</option>');
+    }
+
+    if (mappingLayerAttributes.features[0].properties.RI !== undefined) {
+        $('#webGlThematicSelection').append('<option class="2">RI</option>');
+    }
+
+    // Add IR children themes to selection menu
+    if (allRiskIndicators.length > 0) {
+        $('#webGlThematicSelection').append('<optgroup label="RI Themes">');
+        for (var i = 0; i < allRiskIndicators.length; i++) {
+            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[i]+'</option>');
+        }
+    }
+
+    // Add SVI children themes to selection menu
+    if (allSVIThemes.length > 0) {
+        $('#webGlThematicSelection').append('<optgroup label="SVI Themes">');
+        for (var i = 0; i < allSVIThemes.length; i++) {
+            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[i]+'</option>');
+        }
+    }
+
+    // Add primary indicators to selection menu
+    if (allPrimaryIndicators.length > 0) {
+        $('#webGlThematicSelection').append('<optgroup label="Primary Indicators">');
+        for (var i = 0; i < allPrimaryIndicators.length; i++) {
+            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[i]+'</option>');
+        }
+    }
+
+    $('#webGlThematicSelection').show();
+    $('#webGlColorPicker').show();
+
+    // Manage the thematic map selection menu
+    // Set the map selection menu to the first multi group dropdown option
+    if (selectedIndicator === undefined) {
+        $("#webGlThematicSelection").val($("#webGlThematicSelection option:first").val());
+        mapboxGlLayerCreation();
+    } else {
+        $('#webGlThematicSelection').val(selectedIndicator);
+    }
+
+    // Execute the mapboxGlLayerCreation when there has been a weight change
+    if (weightChange > 0) {
+        mapboxGlLayerCreation(weightChange);
+    }
+
+    $('#webGlThematicSelection').change(function() {
+        mapboxGlLayerCreation();
+    });
+}
+
+// Color options for GL map
+var colorsPalRedSingle = ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'];
+var colorsPalBlueSingle = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
+var colorsPalGreenSingle = ['#edf8e9', '#c7e9c0', '#a1d99b', '#74c476', '#31a354', '#006d2c'];
+var colorsPalRedMulti = ['#fef0d9', '#fdd49e', '#fdbb84', '#fc8d59', '#e34a33', '#b30000'];
+var colorsPalBlueMulti = ['#f1eef6', '#d0d1e6', '#a6bddb', '#74a9cf', '#2b8cbe', '#045a8d'];
+var colorsPalGreenMulti = ['#edf8fb', '#ccece6', '#99d8c9', '#66c2a4', '#2ca25f', '#006d2c'];
+// Default color
+var colorsPal = colorsPalRedSingle;
+
+function colorPicker () {
+    $('#webGlColorPicker').change(function() {
+        //var colorsPal = colorsPalRedSingle;
+        var colorSelection = $(this).val();
+        if (colorSelection == 'Red Single Hue') {
+            colorsPal = colorsPalRedSingle;
+        }
+        if (colorSelection == 'Red Multi Hue') {
+            colorsPal = colorsPalRedMulti;
+        }
+        if (colorSelection == 'Blue Single Hue') {
+            colorsPal = colorsPalBlueSingle;
+        }
+        if (colorSelection == 'Blue Multi Hue') {
+            colorsPal = colorsPalBlueMulti;
+        }
+        if (colorSelection == 'Green Single Hue') {
+            colorsPal = colorsPalGreenMulti;
+        }
+        if (colorSelection == 'Green Multi Hue') {
+            colorsPal = colorsPalGreenMulti;
+        }
+        mapboxGlLayerCreation();
+    });
+}
+
+function mapboxGlLayerCreation() {
+    // There are 5 cases for managing the state of the map:
+
+    // Case 1:
+    // The map is created for the first time
+
+    // Case 2:
+    // The data used for thematic map has not changed, so we
+    // keep the map source, destroy and recreate the map layers
+
+    // Case 3:
+    // The weight change will alter the underlying data, so we
+    // update the map style and source
+
+    // Case 3.1
+    // Only reload the map for the appropriate weight change level
+
+    // Case 4:
+    // A new project has been loaded into the application
+
+    // Case 5:
+    // A new color scheme has been selected
+
+    var weightChange = 0;
+
+    if (arguments[0]) {
+        weightChange = arguments[0];
+    }
+
+    selectedIndicator = $('#webGlThematicSelection').val();
+
+    // Avoid unnecessarily redrawing the map.
+    // Only redraw the map when:
+        // 1) the level of the weight changes is lower than the level of the thematic map menu.
+            // Example 1: if the user is viewing the SVI thematic map, and then changes any theme, or
+            // primary indicator weight, the map must be refreshed.
+            // Example 2: If the user is viewing a theme thematic map (e.g. Economy), and then changes
+            // the SVI weight, the map should not be redrawn.
+        // 2) the thematic map menu has been changes
+        // 3) a new project is loaded into the map (case: weightChange = 0)
+        // 5) (partial reload) a new color scheme has been selected, only recreate the layers, NOT the data source
+
+    // weightChange can be a interger value form 0 to 4, 0 being no change been made to the tree chart
+    // weightChange 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 = is a primary indicator.
+    // selectedIndicatorLabel is a value from 1 - 4, where 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 is a primary indicator.
+    // The selectedIndicatorLabel determines the thematic map layer to be rendered.
+    var selectedIndicatorLabel = $('#webGlThematicSelection option:selected').attr('class');
+
+    if (weightChange < parseInt(selectedIndicatorLabel) || parseInt(selectedIndicatorLabel) == 4) {
+        if (weightChange !== 0) {
+            $('#absoluteSpinner').hide();
+            return;
+        }
+    }
+
+    // Find the values to create categorized color ramp
+    // First find the min and max vales
+    var minMaxArray = [];
+    for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
+        var match = false;
+        for (var k in mappingLayerAttributes.features[i].properties) {
+            if (k == selectedIndicator) {
+                match = true;
+                minMaxArray.push(mappingLayerAttributes.features[i].properties[k]);
+                break
+            }
+            else {
+                match = false;
+            }
+        }
+        if (match === false) {
+            return;
+        }
+    }
+
+    // Focus map on layer
+    if (projectChange) {
+        map.fitBounds(mapboxBoundingBox);
+    }
+
+    var min = Math.min.apply(null, minMaxArray).toFixed(2);
+    var max = Math.max.apply(null, minMaxArray).toFixed(2);
+    min = (parseFloat(min) - 0.1);
+    // Round up the max
+    max = Math.ceil(max * 10) / 10;
+
+    var breaks = [];
+
+    function getColor() {
+        var interval = (max - min) / 6;
+        var tempStep = min;
+        for (var i = 0; i < 5; i++) {
+            tempStep += interval
+            breaks.push(tempStep);
+        }
+        breaks.unshift(min);
+        breaks.push(max);
+    }
+
+    getColor();
+
+    // Case 2, and 4, try to remove any existing layers
+    try {
+        for (var i = 0; i < 6; i++) {
+            map.removeLayer(i);
+        };
+    } catch (e) {
+        // continue
+    }
+
+
+    // Case 3 update the source
+    if (weightChange) {
+        //map.update(true); // Not working for unknown reason.
+
+        // FIXME would really prefer to update the map source here
+        map.removeSource('projectSource');
+    }
+
+    // Case 4 destory the source
+    // Here we use a try catch to manage 2 cases:
+    // 1. When a project is loaded for the first time. In this case there is no existing map source or layer,
+    // so we try to remove them, but as they do not exist, the app moves on and builds a new source and layer.
+    // 2 When a project is loaded for the 2nd, 3rd, nth time. In this case we find that there is a map source
+    // and layer that need to be removed, after being removed, the new map source and layers are created.
+    // The same logic applies to removeing layers.
+    if (projectChange) {
+        try {
+            map.removeSource('projectSource');
+        } catch (e) {
+            // continue
+        }
+    }
+
+    // Case 1 and 4
+    // **TEMP** also case 3
+    // Populate the mapbox source with GeoJson from Geoserver
+    // Only create a new source when the project has been changed
+    if (map.style.sources.projectSource === undefined || projectChange || weightChange) {
+        map.addSource('projectSource', {
+            'type': 'geojson',
+            'data': mappingLayerAttributes,
+        });
+        projectChange = false;
+    }
+
+    $('#mapLegend').remove();
+    // Create the map legend
+    $('#map-tools').append(
+        '<div id="mapLegend" class="my-legend">'+
+            '<div class="legend-title">'+selectedIndicator+'</div>'+
+            '<div class="legend-scale">'+
+                '<ul id="legendLables" class="legend-labels">'+
+                '</ul>'+
+            '</div>'+
+        '</div>'
+    );
+
+    // Cases 1, 2, 3, 4, and 5
+    // Create a new mapbox layers
+    for (var i = 0; i < 6; i++) {
+        map.addLayer({
+            'id': i,
+            'type': 'fill',
+            'source': 'projectSource',
+            "source-layer": "eq-simple",
+            'interactive': true,
+            'paint': {
+                'fill-color': colorsPal[i],
+                'fill-opacity': 0.8,
+                'fill-outline-color': '#000066'
+            },
+            'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+        });
+        // Create legend elements
+        $('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
+    }
+
+    $('#absoluteSpinner').hide();
+
+    // Map interactivity
+    $('#map-tools').append(
+        '<div id="mapInfo"></div>'
+    );
+
+    map.on('click', function(e) {
+        map.featuresAt(e.point, { radius : 6}, function(err, features) {
+            if (err) throw err;
+            $('#mapInfo').empty();
+            for(var k in features[0].properties) {
+                $('#mapInfo').append(k+': '+features[0].properties[k]+'</br>');
+            }
+        });
+    });
+    colorPicker();
+}
+
+function setupLeafletMap() {
+    map = new L.Map('map', {
+        minZoom: 2,
+        scrollWheelZoom: false,
+        attributionControl: false,
+        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
+    });
+    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
+}
+
+
+function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
+
+    // Add main indicators to selection menu
+    $('#leafletThematicSelection').empty();
+    $('#leafletThematicSelection').append(
+        '<optgroup label="Indicators">'+
+        '<option>IRI</option>'+
+        '<option>SVI</option>'+
+        '<option>IR</option>'
+    );
+
+    // Add SVI themes to selection menu
+    $('#leafletThematicSelection').append('<optgroup label="SVI Indicators">');
+    for (var id = 0; id < allSVIThemes.length; id++) {
+        $('#leafletThematicSelection').append('<option>'+allSVIThemes[id]+'</option>');
+    }
+
+    try {
+        if (riskIndicators !== undefined) {
+            // Add IR themes to selection menu
+            $('#leafletThematicSelection').append('<optgroup label="IR Indicators">');
+            for (var ie = 0; ie < allRiskIndicators.length; ie++) {
+                $('#leafletThematicSelection').append('<option>'+allRiskIndicators[ie]+'</option>');
+            }
+        }
+    } catch (e) {
+        // continue
+    }
+
+    // Add all primary indicators to selection menu
+    $('#leafletThematicSelection').append('<optgroup label="Composite Indicators">');
+    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
+        $('#leafletThematicSelection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
+    }
+
+    // set the map selection menu to IRI or previously selected indicator value
+    if (selectedIndicator == undefined) {
+        // TODO fix this to use optgroup:first
+        //$('#leafletThematicSelection').val('IRI');
+        $('#leafletThematicSelection option').eq(3).attr("selected", "selected");
+        thematicMapCreation();
+    } else {
+        $('#leafletThematicSelection').val(selectedIndicator);
+    }
+
+    // Execute the thematicMapCreation when there has been a weight change
+    if (weightChange > 0) {
+        thematicMapCreation();
+    }
+
+    $('#leafletThematicSelection').change(function() {
+        thematicMapCreation();
+    });
+}
+
+
+function thematicMapCreation() {
+    $('#leafletThematicSelection').show();
     // Initialize the legend
     var legendControl = new L.Control.Legend();
     legendControl.addTo(map);
 
     // find the indicator that has been selected
-    selectedIndicator = $('#thematic-map-selection').val();
+    selectedIndicator = $('#leafletThematicSelection').val();
 
     var displayElement = 'newProperties.'+selectedIndicator;
     var la = layerAttributes.features;
@@ -795,6 +1202,8 @@ function thematicMap(layerAttributes) {
             }
         }
     }
+
+    map.fitBounds(leafletBoundingBox);
 
     var min = Math.min.apply(null, minMaxArray).toFixed(2);
     var max = Math.max.apply(null, minMaxArray).toFixed(2);
@@ -840,6 +1249,7 @@ function thematicMap(layerAttributes) {
 
     legendControl = new L.Control.Legend();
     legendControl.addTo(map);
+    $('#absoluteSpinner').hide();
 }
 
 function watchForPdSelection() {
@@ -960,10 +1370,45 @@ function versionCompare(a, b) {
 }
 
 var startApp = function() {
-    // theme tabls behavior
+
+    // Check the browser for webGL support
+    function webglDetect(return_context) {
+        if (!!window.WebGLRenderingContext) {
+            var canvas = document.createElement("canvas"),
+                names = ["webgl", "experimental-webgl", "moz-webgl", "webkit-3d"],
+                context = false;
+
+            for(var i=0;i<4;i++) {
+                try {
+                    context = canvas.getContext(names[i]);
+                    if (context && typeof context.getParameter == "function") {
+                        // WebGL is enabled
+                        if (return_context) {
+                            // Return WebGL object if the function's argument is present
+                            return {name:names[i], gl:context};
+                        }
+                        // Else, return just true
+                        return true;
+                    }
+                } catch(e) {}
+            }
+
+            // WebGL is supported, but disabled
+            return false;
+        }
+
+        // WebGL not supported
+        return false;
+    }
+
+
+    webGl = webglDetect();
+
+
+    // Theme tabs behavior
     $('#themeTabs').resizable({
-        minHeight: 500,
-        minWidth: 640
+        minHeight: 220,
+        minWidth: 220
     });
     $('#themeTabs').draggable();
 
@@ -979,13 +1424,6 @@ var startApp = function() {
     $('#primary_indicator').hide();
     $('#saveBtn').prop('disabled', true);
     $('#saveBtn').addClass('btn-disabled');
-    map = new L.Map('map', {
-        minZoom: 2,
-        scrollWheelZoom: false,
-        attributionControl: false,
-        maxBounds: new L.LatLngBounds(new L.LatLng(-90, -180), new L.LatLng(90, 180)),
-    });
-    map.setView(new L.LatLng(10, -10), 2).addLayer(baseMapUrl);
 
     // Slider
     $(function() {
@@ -1006,11 +1444,39 @@ var startApp = function() {
         '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
 
-     $('#map-tools').append(
-        '<select id="thematic-map-selection">'+
-            '<option>Select Indicator</option>'+
-        '</select>'
-    );
+    if (webGl === false) {
+        $('#map-tools').append(
+            '<select id="leafletThematicSelection">'+
+                '<option>Select Indicator</option>'+
+            '</select>'
+        );
+
+        $('#leafletThematicSelection').hide();
+
+        setupLeafletMap();
+    } else {
+        $('#map-tools').append(
+            '<select id="webGlThematicSelection">'+
+                '<option>Select Indicator</option>'+
+            '</select>'
+        );
+
+        $('#map-tools').append(
+            '<select id="webGlColorPicker">'+
+                '<option>Red Single Hue</option>'+
+                '<option>Red Multi Hue</option>'+
+                '<option>Blue Single Hue</option>'+
+                '<option>Blue Multi Hue</option>'+
+                '<option>Green Single Hue</option>'+
+                '<option>Green Multi Hue</option>'+
+            '</select>'
+        );
+
+        $('#webGlThematicSelection').hide();
+        $('#webGlColorPicker').hide();
+
+        setupMapboxGlMap();
+    }
 
     $('#loadProjectdialogBtn').click(function() {
         getGeoServerLayers();
@@ -1021,11 +1487,7 @@ var startApp = function() {
     $('#region-selection-list').hide();
     $('#svir-project-list').hide();
 
-    $('#thematic-map-selection').css({ 'margin-bottom' : 0 });
     $('#svir-project-list').css({ 'margin-bottom' : 0 });
-
-    $('#thematic-map-selection').hide();
-
     $('#loadProjectBtn').prop('disabled', true);
 
     // Enable the load project button once a project has been selected
@@ -1035,12 +1497,11 @@ var startApp = function() {
 
     $('#loadProjectBtn').click(function() {
         $('#pdSelection').empty();
-        // set tabs to back default
+        // set tabs back default
         $("#themeTabs").tabs("enable", 2);
         $("#themeTabs").tabs("enable", 3);
 
         $('#themeTabs').tabs('option', 'active', 0);
-        $('#thematic-map-selection').show();
         $('#projectDef-spinner').text('Loading ...');
         $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
         $('#projectDef-spinner').show();
@@ -1059,7 +1520,7 @@ var startApp = function() {
         // clean the selected layer to get just the layer name
         selectedLayer = selectedLayer.substring(selectedLayer.indexOf("(") + 1);
         selectedLayer = selectedLayer.replace(/[)]/g, '');
-        attributeInfoRequest(selectedLayer);
+        loadProject();
     });
 
     // AJAX error dialog
@@ -1114,27 +1575,68 @@ var startApp = function() {
         'left': '390px'
     });
 
-    $('#thematic-map-selection').css({
+    $('#leafletThematicSelection').css({
         'position': 'fixed',
         'left': '160px',
-        'display': 'block'
+        'margin-bottom' : 0
     });
+
+    $('#webGlThematicSelection').css({
+        'position': 'fixed',
+        'left': '160px',
+        'margin-bottom' : 0
+    });
+
+    $('#webGlColorPicker').css({
+        'position': 'fixed',
+        'left': '160px',
+        'margin-bottom' : 0,
+        'margin-top': '31px'
+    });
+
+    // Check the URL for layer parameter
+    var urlLayerParameter = location.href;
+    urlLayerParameter = urlLayerParameter.split('irv_viewer/')[1];
+
+    if (urlLayerParameter) {
+        selectedLayer = urlLayerParameter;
+        loadProject();
+    }
 };
 
+function loadProject() {
+    $('#pdSelection').empty();
+    // set tabs to back default
+    $("#themeTabs").tabs("enable", 2);
+    $("#themeTabs").tabs("enable", 3);
+
+    $('#themeTabs').tabs('option', 'active', 0);
+    $('#thematic-map-selection').show();
+    $('#projectDef-spinner').text('Loading ...');
+    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
+    $('#projectDef-spinner').show();
+    $('#iri-spinner').show();
+    $('#regionSelectionDialog').empty();
+    $('#projectDef-tree').empty();
+    $('#iri-chart').empty();
+    $('#cat-chart').empty();
+    $('#primary-chart').empty();
+
+    attributeInfoRequest(selectedLayer);
+}
 
 function attributeInfoRequest(selectedLayer) {
     $('#loadProjectDialog').dialog('close');
-
+    $('#absoluteSpinner').show();
     // Get layer attributes from GeoServer
     return $.ajax({
         type: 'get',
         url: '/geoserver/oqplatform/ows?service=WFS&version=1.0.0&request=GetFeature&typeName='+ selectedLayer +'&outputFormat=json',
         success: function(data) {
-
+            projectChange = true;
             // Make a global variable used by the d3-tree chart
             // when a weight is modified
             layerAttributes = data;
-
             projectLayerAttributes = layerAttributes;
 
             // provide a dropdown menu to select the region field
@@ -1162,8 +1664,24 @@ function projDefJSONRequest(selectedLayer) {
         type: 'get',
         url: '/svir/get_supplemental_information?layer_name='+ selectedLayer,
         success: function(data) {
+            // Stop the application and provide an error if webGL is not supported
+            // and the vertices count is greater then the vertices threshold
+            verticesCount = data.vertices_count;
+            if (webGl === false && verticesCount > VERTICES_THRESHOLD) {
+                $('#ajaxErrorDialog').empty();
+                $('#ajaxErrorDialog').append(
+                    '<p>The project geometry is too complex for your browser to manage. Please try using a browser that has WebGL support</p>'
+                );
+                $('#ajaxErrorDialog').dialog('open');
+                $('#absoluteSpinner').hide();
+                $('#projectDef-spinner').hide();
+                return;
+            }
+
             license = data.license;
             tempProjectDef = data.project_definitions;
+            selectedRegion = data.zone_label_field;
+            selectedIndicator = undefined;
 
             // Remove alert div
             $('#alert').remove();
@@ -1199,11 +1717,14 @@ function projDefJSONRequest(selectedLayer) {
             }
 
             // Populate global bounding box array
-            boundingBox = [
-                data.bounding_box.miny,
-                data.bounding_box.minx,
-                data.bounding_box.maxy,
-                data.bounding_box.maxx
+            leafletBoundingBox = [
+                [data.bounding_box.miny, data.bounding_box.minx],
+                [data.bounding_box.maxy, data.bounding_box.maxx]
+            ];
+
+            mapboxBoundingBox = [
+                [data.bounding_box.minx,data.bounding_box.miny],
+                [data.bounding_box.maxx, data.bounding_box.maxy]
             ];
 
             if ($('#pdSelection').length > 0) {
@@ -1240,7 +1761,7 @@ function projDefJSONRequest(selectedLayer) {
         error: function() {
             $('#ajaxErrorDialog').empty();
             $('#ajaxErrorDialog').append(
-                '<p>This application was not able to get the supplemental information about the selected layer</p>'
+                '<p>The project you are trying to load does not apear to be valid.</p>'
             );
             $('#ajaxErrorDialog').dialog('open');
         }

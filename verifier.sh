@@ -83,12 +83,36 @@ else
     LXC_KILL="lxc-stop -k"
 fi
 
+ACTION="none"
+
 NL="
 "
 TB="	"
 
 #
 #  functions
+copy_common () {
+    scp "${lxc_ip}:ssh.log" "out/${1}_ssh_history.log" || true
+    scp "${lxc_ip}:.pip/pip.log" "out/${1}_pip_history.log" || true
+}
+
+copy_dev () {
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" "out/dev_bootstrap.log" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/runserver.log" "out/dev_runserver.log" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/geoserver/data/logs/geoserver.log*" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/openquakeplatform/local_settings.py" "out/dev_local_settings.py" || true
+}
+
+copy_prod () {
+    scp "${lxc_ip}:/var/log/apache2/access.log" "out/prod_apache2_access.log" || true
+    scp "${lxc_ip}:/var/log/apache2/error.log" "out/prod_apache2_error.log" || true
+    scp "${lxc_ip}:/var/log/tomcat7/catalina.out" "out/prod_tomcat7_catalina.log" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
+    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
+    scp "${lxc_ip}:/etc/openquake/platform/local_settings.py" "out/prod_local_settings.py" || true
+}
 
 #
 #  sig_hand - manages cleanup if the build is aborted
@@ -99,9 +123,11 @@ sig_hand () {
     if [ "$lxc_name" != "" ]; then
         set +e
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
-        scp "${lxc_ip}:ssh.log" ssh.history || true
-        scp "${lxc_ip}:.pip/pip.log" pip.history || true
-        scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+
+        copy_common "$ACTION"
+        copy_dev
+        copy_prod
+
         echo "Destroying [$lxc_name] lxc"
         upper="$(mount | grep "${lxc_name}.*upperdir" | sed 's@.*upperdir=@@g;s@,.*@@g')"
         if [ -f "${upper}.dsk" ]; then
@@ -258,7 +284,9 @@ rem_sig_hand() {
     trap ERR
     echo 'signal trapped'
     cd ~/$GEM_GIT_PACKAGE
-    . platform-env/bin/activate
+    if [ -z \"\$VIRTUAL_ENV\" ]; then
+        . platform-env/bin/activate
+    fi
     cd openquakeplatform
     fab stop
 }
@@ -321,9 +349,6 @@ sleep 3
 fab stop
 "
 
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-dev.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/dev_*.png" "out/" || true
-
     echo "_devtest_innervm_run: exit"
 
     return 0
@@ -370,10 +395,6 @@ _lxc_name_and_ip_get()
 devtest_run () {
     local deps old_ifs branch_id="$1"
 
-    if [ ! -d "out" ]; then
-        mkdir "out"
-    fi
-
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
@@ -384,9 +405,8 @@ devtest_run () {
     _devtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    scp "${lxc_ip}:ssh.log" devtest.history || true
-    scp "${lxc_ip}:.pip/pip.log" pip.history || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+    copy_common dev
+    copy_dev
 
     if [ $inner_ret != 0 ]; then
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
@@ -421,6 +441,7 @@ _prodtest_innervm_run () {
 
     trap 'local LASTERR="$?" ; trap ERR ; (exit $LASTERR) ; return' ERR
 
+    ssh -t  $lxc_ip "getent hosts oq-platform.localdomain"
     ssh -t  $lxc_ip "rm -f ssh.log"
 
     ssh -t  $lxc_ip "sudo apt-get update"
@@ -446,19 +467,20 @@ set -e
 if [ \$GEM_SET_DEBUG ]; then
     set -x
 fi
-echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host localhost
+echo -e \"y\ny\ny\n\" | oq-platform/openquakeplatform/bin/deploy.sh --host oq-platform.localdomain
 
 cd oq-platform/openquakeplatform
+
+# add a simulated qgis uploaded layer
+./openquakeplatform/bin/simqgis-layer-up.sh --sitename "http://oq-platform.localdomain"
+
 export PYTHONPATH=\$(pwd)
-sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://localhost\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
+sed 's@^pla_basepath *= *\"http://localhost:8000\"@pla_basepath = \"http://oq-platform.localdomain\"@g' openquakeplatform/test/config.py.tmpl > openquakeplatform/test/config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher prod -v --with-xunit --xunit-file=xunit-platform-prod.xml  openquakeplatform/test
 sleep 3
 cd -
 "
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/xunit-platform-prod.xml" "out/" || true
-    scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/prod_*.png" "out/" || true
-
     echo "_prodtest_innervm_run: exit"
 
     return 0
@@ -473,10 +495,6 @@ cd -
 prodtest_run () {
     local deps old_ifs branch_id="$1"
 
-    if [ ! -d "out" ]; then
-        mkdir "out"
-    fi
-
     sudo echo
     sudo ${GEM_EPHEM_CMD} -o $GEM_EPHEM_NAME -d 2>&1 | tee /tmp/packager.eph.$$.log &
     _lxc_name_and_ip_get /tmp/packager.eph.$$.log
@@ -487,9 +505,8 @@ prodtest_run () {
     _prodtest_innervm_run "$branch_id" "$lxc_ip"
     inner_ret=$?
 
-    # scp "${lxc_ip}:ssh.log" devtest.history || true
-    # scp "${lxc_ip}:.pip/pip.log" pip.history || true
-    # scp "${lxc_ip}:$GEM_GIT_PACKAGE/openquakeplatform/bootstrap.log" bootstrap.history || true
+    copy_common prod
+    copy_prod
 
     if [ $inner_ret != 0 ]; then
         # cleanup in error case
@@ -510,16 +527,24 @@ prodtest_run () {
 BUILD_FLAGS=""
 
 trap sig_hand SIGINT SIGTERM
+
+# create folder to save logs
+if [ ! -d "out" ]; then
+    mkdir "out"
+fi
+
 #  args management
 while [ $# -gt 0 ]; do
     case $1 in
         devtest)
+            ACTION="$1"
             # Sed removes 'origin/' from the branch name
             devtest_run $(echo "$2" | sed 's@.*/@@g')
             exit $?
             break
             ;;
         prodtest)
+            ACTION="$1"
             prodtest_run $(echo "$2" | sed 's@.*/@@g')
             break
             ;;

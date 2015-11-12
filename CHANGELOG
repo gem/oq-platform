@@ -1,8 +1,28 @@
+
+  [Ben Wyss]
+  * Check the browser for WebGL support
+  * Added the Mapbox-Gl Javascript library in order to render vector
+    tiles into the IRV application.
+  * Support WebGL and non-webGL mode for rendering the map
+  * Manage re-rendering of the map based on five state change cases
+
   [Matteo Nastasi]
+  * vulnerability: fix elements of group of material technologies
+    ('mat_tech_grp') are wrongly assigned
+  * fix bing-key management for production and development
   * vulnerability: add constraint to limit to the same distribution type
     for fragility functions
-
+  * Integrated irv tests into nose/selenium infrastructure
+  * Import of syntetic qgis 'irmt' layer to test irv application
   * vulnerability: replace limit states lowercased names with themselves where
     all [^a-z0-9] chars are substituted with '_' and contiguous '_' are
     collapsed into one
 
+  [Ben Wyss]
+  * Provide an 'Open in IRV' button to the default GeoNode layer preview page
+    when the layer has been created using the SVIR QGIS plugin
+
+  [Ben Wyss]
+  * Revers the x / y axis of the fragility discrete tables
+  * Add intensity measure as a column for the fragility discrete tables
+  * Add intensity measure as a column for the vulnerability discrete tables

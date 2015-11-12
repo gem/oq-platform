@@ -135,7 +135,11 @@ class Platform(object):
         if dest not in ["calc", "explore", "share"]:
             raise ValueError
 
-        dest_button = self.xpath_finduniq("//a[@href='/%s/']" % dest)
+        try:
+            dest_button = self.xpath_finduniq("//a[@href='/%s/']" % dest)
+        except (TimeoutError, ValueError, NotUniqError):
+            self.driver.get(self.basepath)
+            dest_button = self.xpath_finduniq("//a[@href='/%s/']" % dest)
 
         dest_button.click()
         self.wait_new_page(dest_button, '/%s/' % dest)

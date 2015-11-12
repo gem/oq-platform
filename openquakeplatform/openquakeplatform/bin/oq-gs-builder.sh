@@ -28,6 +28,8 @@ if [ ! "$GEM_GEOSERVER_PORT" ]; then
 fi
 GEM_PORT=":$GEM_GEOSERVER_PORT"
 
+GEM_SITE="${GEM_PROTO}://${GEM_HOST}${GEM_PORT}"
+
 GEM_EXIT_ON_ERROR=false
 #
 #  private vars
@@ -154,7 +156,7 @@ coverage_manage ()
     fname="tmp/workspaces/${ws_name}/coveragestores/${cs_name}/coverages-list.get.xml"
     web_get "$fname" "$co_list_url" 200
 
-    co_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverages/coverage" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+    co_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverages/coverage" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")" || true
 
     for co_line in $co_urls; do
         co_name="$(echo "$co_line" | cut -d '|' -f 1)"
@@ -186,7 +188,7 @@ coveragestore_manage () {
     fname="tmp/workspaces/${ws_name}/coveragestores-list.get.xml"
     web_get "$fname" "$cs_list_url" 200
 
-    cs_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStores/coverageStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+    cs_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStores/coverageStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")" || true
 
     for cs_line in $cs_urls; do
         cs_name="$(echo "$cs_line" | cut -d '|' -f 1)"
@@ -197,7 +199,7 @@ coveragestore_manage () {
         fname="workspaces/${ws_name}/coveragestores/${cs_name}.xml"
         web_get "$fname" "$cs_url" 200
 
-        co_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStore/coverages" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        co_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/coverageStore/coverages" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g" )" || true
 
         coverage_manage "$is_drop" "$ws_name" "$cs_name" "$co_list_url"
 
@@ -220,11 +222,11 @@ layer_manage() {
     local is_drop="$1" la_name="$2"
 
     fname="layers/${la_name}.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${la_name}.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/layers/${la_name}.xml" 200
 
     if [ "$is_drop" = "true" ]; then
         fname="tmp/layers/${la_name}.del.xml"
-        web_del "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${la_name}.xml" 200
+        web_del "$fname" "${GEM_SITE}/geoserver/rest/layers/${la_name}.xml" 200
 
         echo "Layer [$la_name] removed."
     else
@@ -244,7 +246,7 @@ styles_manage () {
     for st_list_url in $st_list_urls; do
         web_get "$fname" "$st_list_url" 200
 
-        st_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/styles/style" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        st_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/styles/style" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g" )" || true
 
         for st_line in $st_urls; do
             st_name="$(echo "$st_line" | cut -d '|' -f 1)"
@@ -308,11 +310,11 @@ featuretypes_manage () {
     for fts_list_url in $fts_list_urls; do
         web_get "$fname" "$fts_list_url" 200
 
-        ft_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/featureTypes/featureType" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        ft_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/featureTypes/featureType" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname})" || true
 
         for ft_line in $ft_urls; do
             ft_name="$(echo "$ft_line" | cut -d '|' -f 1)"
-            ft_url="$(echo "$ft_line" | cut -d '|' -f 2)"
+            ft_url="$(echo "$ft_line" | cut -d '|' -f 2 | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")"
             # echo "  FT_NAME: $ft_name"
             # echo "  FT_URL: $ft_url"
 
@@ -341,18 +343,18 @@ datastore_manage () {
     fname="tmp/workspaces/${ws_name}/datastores-list.get.xml"
     web_get "$fname" "$ds_list_url" 200
 
-    ds_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStores/dataStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+    ds_urls="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStores/dataStore" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname})" || true
 
     for ds_line in $ds_urls; do
         ds_name="$(echo "$ds_line" | cut -d '|' -f 1)"
-        ds_url="$(echo "$ds_line" | cut -d '|' -f 2)"
+        ds_url="$(echo "$ds_line" | cut -d '|' -f 2 | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")"
         # echo "  DS_NAME: $ds_name"
         # echo "  DS_URL: $ds_url"
 
         fname="workspaces/${ws_name}/datastores/${ds_name}.xml"
         web_get "$fname" "$ds_url" 200
 
-        ft_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStore/featureTypes" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
+        ft_list_url="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/dataStore/featureTypes" -v "concat(atom:link/@href, '$NL')" ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g" )" || true
 
         featuretypes_manage "$is_drop" "$ws_name" "$ds_name" "$ft_list_url"
 
@@ -377,7 +379,7 @@ style_manage_old () {
     local ret fname descfiles descfile ext noext already_drop
 
     fname="styles/${st_name}.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${st_name}.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/styles/${st_name}.xml" 200
 
     # retrieve description file
     descfiles="$( xmlstarlet sel -t -m "/style" -v "concat(filename, '$NL')" ${OUTDIR}${fname} )" || true
@@ -387,11 +389,11 @@ style_manage_old () {
         case $ext in
             sld)
                 fname="styles/${descfile}"
-                web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${st_name}.sld" 200
+                web_get "$fname" "${GEM_SITE}/geoserver/rest/styles/${st_name}.sld" 200
                 if [ "$is_drop" = "true" ]; then
                     noext="$(basename "$descfile" .sld)"
                     fname="tmp/styles/${noext}.del.sld"
-                    web_del "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${st_name}.sld?purge=true" 200
+                    web_del "$fname" "${GEM_SITE}/geoserver/rest/styles/${st_name}.sld?purge=true" 200
                     if [ $? -eq 0 ]; then
                         already_drop=1
                     else
@@ -414,7 +416,7 @@ style_manage_old () {
     if [ "$is_drop" = "true" ]; then
         if [ $already_drop -eq 0 ]; then
             fname="tmp/styles/${st_name}.del.xml"
-            web_del "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${st_name}.xml" 200
+            web_del "$fname" "${GEM_SITE}/geoserver/rest/styles/${st_name}.xml" 200
         fi
 
         echo "Style [$st_name] removed."
@@ -432,7 +434,7 @@ style_manage () {
     local ret fname descfiles descfile ext noext already_drop
 
     fname="workspaces/${ws_name}/styles/${st_name}.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.xml" 200
 
     # retrieve description file
     descfiles="$( xmlstarlet sel -t -m "/style" -v "concat(filename, '$NL')" ${OUTDIR}${fname} )" || true
@@ -442,12 +444,12 @@ style_manage () {
         case $ext in
             sld)
                 fname="workspaces/${ws_name}/styles/${descfile}"
-                web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.sld" 200
+                web_get "$fname" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.sld" 200
                 if [ "$is_drop" = "true" ]; then
                     noext="$(basename "$descfile" .sld)"
                     fname="tmp/styles/${noext}.del.sld"
                     fname="workspaces/${ws_name}/styles/${noext}.del.sld"
-                    web_del "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.sld?purge=true" 200
+                    web_del "$fname" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.sld?purge=true" 200
                     if [ $? -eq 0 ]; then
                         already_drop=1
                     else
@@ -470,7 +472,7 @@ style_manage () {
     if [ "$is_drop" = "true" ]; then
         if [ $already_drop -eq 0 ]; then
             fname="tmp/styles/${st_name}.del.xml"
-            web_del "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${st_name}.xml" 200
+            web_del "$fname" "${GEM_SITE}/geoserver/rest/styles/${st_name}.xml" 200
         fi
 
         echo "Style [$st_name] removed."
@@ -488,21 +490,21 @@ workspace_manage () {
     local fname cs_url ds_url
 
     fname="workspaces/${ws_name}.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}.xml" 200
 
-    cs_url="$(xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/workspace/coverageStores/atom:link" -v "concat(@href, '$NL')"  ${OUTDIR}${fname})" || true
+    cs_url="$(xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/workspace/coverageStores/atom:link" -v "concat(@href, '$NL')"  ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")" || true
     coveragestore_manage "$is_drop" "$ws_name" "$cs_url"
 
-    ds_url="$(xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/workspace/dataStores/atom:link" -v "concat(@href, '$NL')"  ${OUTDIR}${fname})" || true
+    ds_url="$(xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/workspace/dataStores/atom:link" -v "concat(@href, '$NL')"  ${OUTDIR}${fname} | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")" || true
     datastore_manage "$is_drop" "$ws_name" "$ds_url"
 
-    st_url="${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/styles.xml"
+    st_url="${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/styles.xml"
 
     styles_manage "$is_drop" "$ws_name" "$st_url"
 
     if [ "$is_drop" = "true" ]; then
         fname="tmp/workspaces/${ws_name}.del.xml"
-        web_del "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}.xml" 200
+        web_del "$fname" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}.xml" 200
 
         echo "Workspace [$ws_name] removed."
     fi
@@ -532,23 +534,23 @@ all_data_manage() {
     IFS="$NL"
 
     fname="tmp/reset.post.xml"
-    web_post "$fname" "text/xml" "" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/reset.xml" 200
+    web_post "$fname" "text/xml" "" "" "${GEM_SITE}/geoserver/rest/reset.xml" 200
     #
     # manage layergroups
     fname="tmp/layergroups-list.get.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layergroups.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/layergroups.xml" 200
     LG="$( xmlstarlet sel -N atom="http://www.w3.org/2005/Atom" -t -m "/layerGroups/layerGroup" -v "concat(name, '|', atom:link/@href, '$NL')" ${OUTDIR}${fname} )" || true
 
     for lg_line in $LG; do
         lg_name="$(echo "$lg_line" | cut -d '|' -f 1)"
-        lg_url="$(echo "$lg_line" | cut -d '|' -f 2)"
+        lg_url="$(echo "$lg_line" | cut -d '|' -f 2 | sed "s@^https\?://@@g;s@^[^/]\+/@${GEM_SITE}/@g")"
         layergroup_manage "$is_drop" "$lg_name" "$lg_url"
     done
 
     #
     # manage layers
     fname="tmp/layers-list.get.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/layers.xml" 200
 
     LA="$(xmlstarlet sel -t -m "/layers/layer" -v "concat(name, '$NL')" ${OUTDIR}${fname})" || true
 
@@ -559,10 +561,10 @@ all_data_manage() {
     #
     # manage workspaces
     fname="workspaces_default.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/default.xml" 200 || echo "no default workspace"
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/workspaces/default.xml" 200 || echo "no default workspace"
 
     fname="tmp/workspaces-list.get.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/workspaces.xml" 200
 
     WS="$(xmlstarlet sel -t -m "/workspaces/workspace" -v "concat(name, '$NL')" ${OUTDIR}${fname})" || true
 
@@ -574,7 +576,7 @@ all_data_manage() {
     #
     # delete styles
     fname="tmp/styles-list.get.xml"
-    web_get "$fname" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles.xml" 200
+    web_get "$fname" "${GEM_SITE}/geoserver/rest/styles.xml" 200
 
     ST="$(xmlstarlet sel -t -m "/styles/style" -v "concat(name, '$NL')" ${OUTDIR}${fname})" || true
 
@@ -595,7 +597,7 @@ featuretype_restore () {
     local ret ft_list ft
 
     fname="tmp/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.post.xml"
-    web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/datastores/${ds_name}/featuretypes.xml" 201
+    web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}/featuretypes/${ft_name}.xml" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/datastores/${ds_name}/featuretypes.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "    FeatureType [$ft_name] restored."
@@ -612,7 +614,7 @@ datastore_restore () {
     xmlstarlet ed -d '/dataStore/featureTypes' "${RESTDIR}/workspaces/${ws_name}/datastores/${ds_name}.xml" > ${OUTDIR}temp.ds.xml
 
     fname="tmp/workspaces/${ws_name}/datastores/${ds_name}.post.xml"
-    web_post "$fname" "text/xml" "" "${OUTDIR}temp.ds.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/datastores.xml" 201
+    web_post "$fname" "text/xml" "" "${OUTDIR}temp.ds.xml" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/datastores.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "  DataStore [$ds_name] restored."
@@ -637,7 +639,7 @@ coverage_restore () {
 
     fname="tmp/workspaces/${ws_name}/coveragestores/${cs_name}/coverages/${co_name}.post.xml"
     # set -x
-    web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/coveragestores/${cs_name}/coverages/${co_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/coveragestores/${cs_name}/coverages.xml" 201
+    web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/coveragestores/${cs_name}/coverages/${co_name}.xml" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/coveragestores/${cs_name}/coverages.xml" 201
     # set +x
     ret=$?
     if [ $ret -eq 0 ]; then
@@ -656,10 +658,10 @@ coveragestore_restore () {
 
     fname="tmp/workspaces/${ws_name}/coveragestores/${cs_name}.post.xml"
 
-    web_post "$fname" "text/xml" "<coverageStore><name>${cs_name}</name><workspace>${ws_name}</workspace></coverageStore>" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/coveragestores.xml" 201
+    web_post "$fname" "text/xml" "<coverageStore><name>${cs_name}</name><workspace>${ws_name}</workspace></coverageStore>" "" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/coveragestores.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
-        web_put "$fname" "text/xml" "" "${OUTDIR}tmp/temp.cs.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/coveragestores/${cs_name}.xml" 200
+        web_put "$fname" "text/xml" "" "${OUTDIR}tmp/temp.cs.xml" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/coveragestores/${cs_name}.xml" 200
         ret=$?
         if [ $ret -eq 0 ]; then
             echo "  CoverageStore [$cs_name] restored."
@@ -684,7 +686,7 @@ layergroup_restore () {
     local ret
 
     fname="tmp/layergroups/${lg_name}.post.xml"
-    web_post "$fname" "text/xml" "" "${RESTDIR}/layergroups/${lg_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layergroups.xml" 201
+    web_post "$fname" "text/xml" "" "${RESTDIR}/layergroups/${lg_name}.xml" "${GEM_SITE}/geoserver/rest/layergroups.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "  LayerGroup [$lg_name] restored."
@@ -698,7 +700,7 @@ style_restore_old () {
     local ret fname descfiles descfile ext noext
 
     fname="tmp/styles/${st_name}.post.xml"
-    web_post "$fname" "text/xml" "" "${RESTDIR}/styles/${st_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles.xml" 201
+    web_post "$fname" "text/xml" "" "${RESTDIR}/styles/${st_name}.xml" "${GEM_SITE}/geoserver/rest/styles.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "  Style [$st_name] restored."
@@ -713,7 +715,7 @@ style_restore_old () {
                 noext="$(basename "$descfile" .sld)"
                 fname="tmp/styles/${noext}.put.sld"
                 # set -x
-                web_put "$fname" "application/vnd.ogc.sld+xml" "@${RESTDIR}/styles/${descfile}" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${st_name}.sld" 200
+                web_put "$fname" "application/vnd.ogc.sld+xml" "@${RESTDIR}/styles/${descfile}" "" "${GEM_SITE}/geoserver/rest/styles/${st_name}.sld" 200
                 # set +x
                 echo "  Style descriptor [$descfile] restored."
                 ;;
@@ -733,7 +735,7 @@ style_restore () {
     local ret fname descfiles descfile ext noext
 
     fname="tmp/styles/${st_name}.post.xml"
-    web_post "$fname" "text/xml" "" "${RESTDIR}/styles/${st_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/${ws_name}:styles.xml" 201
+    web_post "$fname" "text/xml" "" "${RESTDIR}/styles/${st_name}.xml" "${GEM_SITE}/geoserver/rest/${ws_name}:styles.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "  Style [$st_name] restored."
@@ -748,7 +750,7 @@ style_restore () {
                 noext="$(basename "$descfile" .sld)"
                 fname="tmp/styles/${noext}.put.sld"
                 # set -x
-                web_put "$fname" "application/vnd.ogc.sld+xml" "@${RESTDIR}/styles/${descfile}" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/styles/${ws_name}:${st_name}.sld" 200
+                web_put "$fname" "application/vnd.ogc.sld+xml" "@${RESTDIR}/styles/${descfile}" "" "${GEM_SITE}/geoserver/rest/styles/${ws_name}:${st_name}.sld" 200
                 # set +x
                 echo "  Style descriptor [$descfile] restored."
                 ;;
@@ -768,7 +770,7 @@ style_ws_restore () {
     local ret fname descfiles descfile ext noext
 
     fname="tmp/workspaces/${ws_name}/styles/${st_name}.post.xml"
-    web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/styles/${st_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/styles.xml" 201
+    web_post "$fname" "text/xml" "" "${RESTDIR}/workspaces/${ws_name}/styles/${st_name}.xml" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/styles.xml" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "  Style [$st_name] restored."
@@ -783,7 +785,7 @@ style_ws_restore () {
                 noext="$(basename "$descfile" .sld)"
                 fname="tmp/workspaces/${ws_name}/styles/${noext}.put.sld"
                 # set -x
-                web_put "$fname" "application/vnd.ogc.sld+xml" "@${RESTDIR}/workspaces/${ws_name}/styles/${descfile}" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.sld" 200
+                web_put "$fname" "application/vnd.ogc.sld+xml" "@${RESTDIR}/workspaces/${ws_name}/styles/${descfile}" "" "${GEM_SITE}/geoserver/rest/workspaces/${ws_name}/styles/${st_name}.sld" 200
                 # set +x
                 echo "  Style descriptor [$descfile] restored."
                 ;;
@@ -804,7 +806,7 @@ layer_restore () {
 
     fname="tmp/layers/${la_name}.${iter}.post.xml"
     # set -x
-    web_put "$fname" "text/xml" "" "${RESTDIR}/layers/${la_name}.xml" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
+    web_put "$fname" "text/xml" "" "${RESTDIR}/layers/${la_name}.xml" "${GEM_SITE}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
     # set +x
     ret=$?
     if [ $ret -eq 0 ]; then
@@ -817,7 +819,7 @@ layer_restore () {
     stylename="$(xmlstarlet sel -t -m "/layer/defaultStyle" -v "concat(name, '')" "${RESTDIR}/layers/${la_name}.xml")"
     if [ "$stylename" != "" ]; then
         fname="tmp/layers/${la_name}/styles.post.xml"
-        web_put "$fname" "text/xml" "<layer><defaultStyle><name>$stylename</name></defaultStyle><enabled>true</enabled></layer>" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
+        web_put "$fname" "text/xml" "<layer><defaultStyle><name>$stylename</name></defaultStyle><enabled>true</enabled></layer>" "" "${GEM_SITE}/geoserver/rest/layers/${ws_name}:${la_name}.xml" 200
     fi
 
     return $ret
@@ -828,7 +830,7 @@ workspace_restore () {
     local ret ds ds_list ds_name cs cs_list cs_name lg lg_list lg_name
 
     fname="tmp/workspaces/${ws_name}.post.xml"
-    web_post "$fname" "text/xml" "<workspace><name>$ws_name</name></workspace>" "" "${GEM_PROTO}://${GEM_HOST}${GEM_PORT}/geoserver/rest/workspaces" 201
+    web_post "$fname" "text/xml" "<workspace><name>$ws_name</name></workspace>" "" "${GEM_SITE}/geoserver/rest/workspaces" 201
     ret=$?
     if [ $ret -eq 0 ]; then
         echo "Workspace [$ws_name] restored."

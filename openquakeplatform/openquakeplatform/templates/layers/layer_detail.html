@@ -28,7 +28,16 @@
     </h2>
   </div>
   <div class="span7 action-group">
+
     <div class="btn-group pull-right">
+      <!-- Open layer in IRV -->
+      {% if 'IRMT_QGIS_Plugin' in layer.keyword_list %}
+        <div class="btn-group">
+          <a class="btn btn-large" href="{% url 'irv_viewer' %}{{ layer.get_absolute_url |cut:"/layers/" }}">
+            {% trans "Open in IRV" %}
+          </a>
+        </div>
+      {% endif %}
       <!-- download layer -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
