@@ -16,6 +16,8 @@
 import sys
 import csv
 import os
+import unicodedata
+from collections import namedtuple
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from openquakeplatform.svir.models import (AggregationMethod,
@@ -46,153 +48,163 @@ class Command(BaseCommand):
         country = Zone.objects.get(country_iso=country_iso, admin_level=0)
         sys.stdout.write('Loading subnational socioeconomic data for %s...\n'
                          % country)
+        IndicatorRecord = namedtuple(
+            'IndicatorRecord',
+            'theme, theme_code, subtheme, subtheme_code, indicator_name,'
+            ' indicator_name_code, measurement_type, aggregation_method,'
+            ' indicator_code, indicator_description, keywords, source, '
+            ' year_min, year_max, update_periodicity, notes')
         # read a file containing information about indicators, measurement
         # types, aggregation methods, and sources
-        with open(indicators_filename, 'rb') as f:
-            reader = csv.reader(f)
+        first = True
+        # for each indicator code, save in a dictionary those fields that
+        # will not be directly linked to the indicator, but to the
+        # ZoneIndicator
+        additional_info = dict()
+        sys.stdout.write('Loading details about indicators...\n')
+        for ind in map(IndicatorRecord._make,
+                       csv.reader(open(indicators_filename, 'rb'))):
             # discard header containing column names
-            reader.next()
-            # for each indicator code, save in a dictionary those fields that
-            # will not be directly linked to the indicator, but to the
-            # ZoneIndicator
-            additional_info = dict()
-            sys.stdout.write('Loading details about indicators...\n')
+            if first:
+                first = False
+                continue
             # read the actual information for each indicator
-            for row in reader:
-                code = row[8].strip().decode('utf8')
-                if len(code) < 9:
-                    sys.stdout.write(
-                        'WARNING! Indicator code %s seems to be incomplete!\n'
-                        % code)
-                name = row[4].strip().decode('utf8')
-                sys.stdout.write("Indicator: '%s'..." % code)
-                description = row[9].strip().decode('utf8')
-                theme_str = row[0].strip().decode('utf8')
-                theme, _ = Theme.objects.get_or_create(
-                    name__iexact=theme_str,
-                    defaults={'name': theme_str})
-                subtheme_str = row[2].strip().decode('utf8')
-                subtheme, _ = Subtheme.objects.get_or_create(
-                    theme=theme,
-                    name__iexact=subtheme_str,
-                    defaults={'theme': theme,
-                              'name': subtheme_str})
-                notes = row[15].strip().decode('utf8')
-                keywords_set = set()
-                for keyword_str in row[10].split(','):
-                    keyword_str_clean = \
-                        keyword_str.strip().decode('utf8').lower()
-                    if keyword_str_clean:  # for cases like "population, "
-                        keyword, _ = Keyword.objects.get_or_create(
-                            name__iexact=keyword_str_clean,
-                            defaults={'name': keyword_str_clean})
-                        keyword.save()
-                        keywords_set.add(keyword)
-                try:
-                    indicator = Indicator.objects.get(code=code)
-                except ObjectDoesNotExist:
-                    # create a new indicator
-                    indicator = Indicator(code=code,
-                                          name=name,
-                                          description=description,
-                                          subtheme=subtheme,
-                                          notes=notes,
-                                          )
-                    indicator.save()
-                    for keyword in keywords_set:
-                        indicator.keywords.add(keyword)
-                    indicator.save()
-                    sys.stdout.write("OK (created as new)\n")
-                else:  # if the indicator already existed
-                    # check that the data for the indicator is consistent with
-                    # what we already had
-                    # In any case, re-use the existing version
-                    # (not the newly imported one)
-                    error_fmt = ("\tInconsistency in field '%s':\n"
-                                 "\t\t(existing) %s\n"
-                                 "\t\t(   new  ) %s\n")
-                    inconsistencies = []
-                    if indicator.name != name:
-                        inconsistencies.append(
-                            error_fmt % ('name',
-                                         indicator.name,
-                                         name))
-                    if indicator.description != description:
-                        inconsistencies.append(
-                            error_fmt % ('description',
-                                         indicator.description,
-                                         description))
-                    if indicator.subtheme != subtheme:
-                        inconsistencies.append(
-                            error_fmt % ('subtheme',
-                                         indicator.subtheme,
-                                         subtheme))
-                    if indicator.theme != theme:
-                        inconsistencies.append(
-                            error_fmt % ('theme',
-                                         indicator.theme,
-                                         theme))
-                    if notes and indicator.notes != notes:
-                        inconsistencies.append(
-                            error_fmt % ('notes',
-                                         indicator.notes,
-                                         notes))
-                    if inconsistencies:
-                        sys.stdout.write("WARNING! Inconsistency found!\n")
-                        for inconsistency in inconsistencies:
-                            sys.stdout.write(inconsistency)
-                    else:
-                        sys.stdout.write('OK')
-                    sys.stdout.write(" (re-using the existing version)\n")
-                    # merge the keywords
-                    for keyword in keywords_set:
-                        indicator.keywords.add(keyword)
-                    indicator.save()
-                # for each indicator code, save in a dictionary those fields
-                # that will not be directly linked to the indicator, but to the
-                # ZoneIndicator
-                measurement_type_str = row[6].strip().decode('utf8')
-                measurement_type, _ = MeasurementType.objects.get_or_create(
-                    name__iexact=measurement_type_str,
-                    defaults={'name': measurement_type_str})
-                aggregation_method_str = row[7].strip().decode('utf8')
-                if aggregation_method_str:
-                    aggregation_method, _ = \
-                        AggregationMethod.objects.get_or_create(
-                            name__iexact=aggregation_method_str,
-                            defaults={'name': aggregation_method_str})
+            code = ind.indicator_code.strip().decode('utf8')
+            if len(code) < 9:
+                sys.stdout.write(
+                    'WARNING! Indicator code %s seems to be incomplete!\n'
+                    % code)
+            name = ind.indicator_name.strip().decode('utf8')
+            sys.stdout.write("Indicator: '%s'..." % code)
+            description = ind.indicator_description.strip().decode('utf8')
+            theme_str = ind.theme.strip().decode('utf8')
+            theme, _ = Theme.objects.get_or_create(
+                name__iexact=theme_str,
+                defaults={'name': theme_str})
+            subtheme_str = ind.subtheme.strip().decode('utf8')
+            subtheme, _ = Subtheme.objects.get_or_create(
+                theme=theme,
+                name__iexact=subtheme_str,
+                defaults={'theme': theme,
+                          'name': subtheme_str})
+            notes = ind.notes.strip().decode('utf8')
+            keywords_set = set()
+            for keyword_str in ind.keywords.split(','):
+                keyword_str_clean = \
+                    keyword_str.strip().decode('utf8').lower()
+                if keyword_str_clean:  # for cases like "population, "
+                    keyword, _ = Keyword.objects.get_or_create(
+                        name__iexact=keyword_str_clean,
+                        defaults={'name': keyword_str_clean})
+                    keyword.save()
+                    keywords_set.add(keyword)
+            try:
+                indicator = Indicator.objects.get(code=code)
+            except ObjectDoesNotExist:
+                # create a new indicator
+                indicator = Indicator(code=code,
+                                      name=name,
+                                      description=description,
+                                      subtheme=subtheme,
+                                      notes=notes,
+                                      )
+                indicator.save()
+                for keyword in keywords_set:
+                    indicator.keywords.add(keyword)
+                indicator.save()
+                sys.stdout.write("OK (created as new)\n")
+            else:  # if the indicator already existed
+                # check that the data for the indicator is consistent with
+                # what we already had
+                # In any case, re-use the existing version
+                # (not the newly imported one)
+                error_fmt = ("\tInconsistency in field '%s':\n"
+                             "\t\t(existing) %s\n"
+                             "\t\t(   new  ) %s\n")
+                inconsistencies = []
+                if indicator.name != name:
+                    inconsistencies.append(
+                        error_fmt % ('name',
+                                     indicator.name,
+                                     name))
+                if indicator.description != description:
+                    inconsistencies.append(
+                        error_fmt % ('description',
+                                     indicator.description,
+                                     description))
+                if indicator.subtheme != subtheme:
+                    inconsistencies.append(
+                        error_fmt % ('subtheme',
+                                     indicator.subtheme,
+                                     subtheme))
+                if indicator.theme != theme:
+                    inconsistencies.append(
+                        error_fmt % ('theme',
+                                     indicator.theme,
+                                     theme))
+                if notes and indicator.notes != notes:
+                    inconsistencies.append(
+                        error_fmt % ('notes',
+                                     indicator.notes,
+                                     notes))
+                if inconsistencies:
+                    sys.stdout.write("WARNING! Inconsistency found!\n")
+                    for inconsistency in inconsistencies:
+                        sys.stdout.write(inconsistency)
                 else:
-                    aggregation_method, _ = \
-                        AggregationMethod.objects.get_or_create(
-                            name__iexact=UNKNOWN_STR,
-                            defaults={'name': UNKNOWN_STR})
-                source_description = row[11].strip().decode('utf8')
-                source_year_min = row[12].strip().decode('utf8')
-                source_year_max = row[13].strip().decode('utf8')
-                source_update_periodicity_str = row[14].strip().decode('utf8')
-                if source_update_periodicity_str:
-                    source_update_periodicity, _ = \
-                        UpdatePeriodicity.objects.get_or_create(
-                            name__iexact=source_update_periodicity_str,
-                            defaults={'name': source_update_periodicity_str})
-                else:
-                    source_update_periodicity, _ = \
-                        UpdatePeriodicity.objects.get_or_create(
-                            name__iexact=UNKNOWN_STR,
-                            defaults={'name': UNKNOWN_STR})
-                source, _ = Source.objects.get_or_create(
-                    description__iexact=source_description,
-                    year_min=source_year_min,
-                    year_max=source_year_max,
-                    defaults={
-                        'description': source_description,
-                        'year_min': source_year_min,
-                        'year_max': source_year_max,
-                        'update_periodicity': source_update_periodicity})
-                additional_info[code] = dict(
-                    measurement_type=measurement_type,
-                    aggregation_method=aggregation_method,
-                    source=source)
+                    sys.stdout.write('OK')
+                sys.stdout.write(" (re-using the existing version)\n")
+                # merge the keywords
+                for keyword in keywords_set:
+                    indicator.keywords.add(keyword)
+                indicator.save()
+            # for each indicator code, save in a dictionary those fields
+            # that will not be directly linked to the indicator, but to the
+            # ZoneIndicator
+            measurement_type_str = ind.measurement_type.strip().decode('utf8')
+            measurement_type, _ = MeasurementType.objects.get_or_create(
+                name__iexact=measurement_type_str,
+                defaults={'name': measurement_type_str})
+            aggregation_method_str = ind.aggregation_method.strip().decode(
+                'utf8')
+            if aggregation_method_str:
+                aggregation_method, _ = \
+                    AggregationMethod.objects.get_or_create(
+                        name__iexact=aggregation_method_str,
+                        defaults={'name': aggregation_method_str})
+            else:
+                aggregation_method, _ = \
+                    AggregationMethod.objects.get_or_create(
+                        name__iexact=UNKNOWN_STR,
+                        defaults={'name': UNKNOWN_STR})
+            source_description = ind.source.strip().decode('utf8')
+            source_year_min = ind.year_min.strip().decode('utf8')
+            source_year_max = ind.year_max.strip().decode('utf8')
+            source_update_periodicity_str = \
+                ind.update_periodicity.strip().decode('utf8')
+            if source_update_periodicity_str:
+                source_update_periodicity, _ = \
+                    UpdatePeriodicity.objects.get_or_create(
+                        name__iexact=source_update_periodicity_str,
+                        defaults={'name': source_update_periodicity_str})
+            else:
+                source_update_periodicity, _ = \
+                    UpdatePeriodicity.objects.get_or_create(
+                        name__iexact=UNKNOWN_STR,
+                        defaults={'name': UNKNOWN_STR})
+            source, _ = Source.objects.get_or_create(
+                description__iexact=source_description,
+                year_min=source_year_min,
+                year_max=source_year_max,
+                defaults={
+                    'description': source_description,
+                    'year_min': source_year_min,
+                    'year_max': source_year_max,
+                    'update_periodicity': source_update_periodicity})
+            additional_info[code] = dict(
+                measurement_type=measurement_type,
+                aggregation_method=aggregation_method,
+                source=source)
 
         # read a file containing in each row the values of all the indicators
         # for one single zone
