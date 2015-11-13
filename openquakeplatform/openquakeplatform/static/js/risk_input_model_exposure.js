@@ -37,7 +37,7 @@ $('#perArea').hide();
 $('#defineCostStruc').change(function() {
     // There is a bug in the handsontable lib where one can not
     // paste values into the table when the user has made a selection
-    // from a dropdown menu. The reson for this error is that the focus
+    // from a dropdown menu. The reason for this error is that the focus
     // remains on the menu.
     // The workaround for this is to un-focus the selection menu with blur()
     // More info: https://github.com/handsontable/handsontable/issues/2973
