@@ -35,6 +35,13 @@ $('#deductibleDiv').hide();
 $('#perArea').hide();
 
 $('#defineCostStruc').change(function() {
+    // There is a bug in the handsontable lib where one can not
+    // paste values into the table when the user has made a selection
+    // from a dropdown menu. The reson for this error is that the focus
+    // remains on the menu.
+    // The workaround for this is to un-focus the selection menu with blur()
+    // More info: https://github.com/handsontable/handsontable/issues/2973
+    $(this).blur();
     defineCost($(this).val());
     if ($(this).val() != 'none') {
         $('#retrofittingSelect').show();
@@ -53,14 +60,20 @@ $('#defineCostStruc').change(function() {
 });
 
 $('#defineCostNonStruc').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostContent').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     defineCost($(this).val());
 });
 
 $('#defineCostBusiness').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     defineCost($(this).val());
 });
 
@@ -106,6 +119,8 @@ function costTrackerManager () {
 // End the visibility of the perArea selection menu
 
 $('#exposureForm').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     updateTable();
     $('#outputDiv').css('display', 'none');
 });
