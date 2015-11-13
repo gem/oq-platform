@@ -459,7 +459,10 @@ $('#downloadBtn').click(function() {
 
     hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
     hiddenElement.target = '_blank';
-    hiddenElement.download = 'myFile.xml';
+
+    var exposureFileName = 'my_new_exposure_function';
+
+    hiddenElement.download = exposureFileName+'.xml';
     hiddenElement.click();
 });
 

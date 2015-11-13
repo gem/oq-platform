@@ -19,6 +19,8 @@ var fragilityTable;
 var header = [];
 var activeTablesObj = {};
 var limitStates;
+var NRML;
+var functionId;
 
 $('#outputFFDiv').hide();
 
@@ -126,7 +128,7 @@ function updateFfsTable (fFormat) {
     activeTablesObj[count] = fragilityTable;
 
     $('#outPutFF').empty();
-    $('#saveBtnFF').css('display', 'block');
+    $('#saveBtnFF').show();
 
     // Logic to remove a table
     $('.destroyTable').click(function() {
@@ -143,6 +145,8 @@ function updateFfsTable (fFormat) {
 }
 
 $('#saveBtnFF').click(function() {
+    // Expose the download button
+    $('#downloadBtnFF').show();
 
     // Get all the ffs Ids
     var ffsIds = {};
@@ -208,7 +212,7 @@ $('#saveBtnFF').click(function() {
         }
     }
 
-    var functionId = $('#functionId').val();
+    functionId = $('#functionId').val();
     var assetCategory = $('#assetCategory').val();
     var lossCategory = $('#lossCategory').find(":selected").val();
     var functionDescription = $('#functionDescription').val();
@@ -226,7 +230,7 @@ $('#saveBtnFF').click(function() {
     }
 
     // Closing limit state tag
-    limitStatesXML += '</limitStates> \n';
+    limitStatesXML += '</limitStates>\n';
 
     ////////////////
     // Create ffs //
@@ -296,14 +300,14 @@ $('#saveBtnFF').click(function() {
     }
 
     // Create a NRML element
-    var NRML =
-        '<?xml version="1.0" encoding="UTF-8"?> \n' +
-        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.5"> \n' +
-            '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'" lossCategory="'+lossCategory+'"> \n' +
-                '\t\t<description>'+functionDescription+'</description> \n' +
+    NRML =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.5">\n' +
+            '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'" lossCategory="'+lossCategory+'">\n' +
+                '\t\t<description>'+functionDescription+'</description>\n' +
                 limitStatesXML +
                 fragilityFunction +
-            '\t</fragilityModel> \n' +
+            '\t</fragilityModel>\n' +
         '</nrml>';
 
     // Provide the user with the xml output
@@ -311,6 +315,22 @@ $('#saveBtnFF').click(function() {
     $('#outPutFF').append('<textarea id="textarea">'+NRML+'</textarea>');
     $('#outputFFDiv').css('display', 'block');
     selectAllFFText();
+});
+
+$('#downloadBtnFF').click(function() {
+    var textToSave = NRML;
+
+    var hiddenElement = document.createElement('a');
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+    hiddenElement.target = '_blank';
+    // Check for user input function id
+    if (functionId === '' || functionId === undefined) {
+        // If no idea is provided, make one
+        functionId = 'my_new_fragility_function';
+    }
+    hiddenElement.download = functionId+'.xml';
+    hiddenElement.click();
 });
 
 $('#selectAllFF').click(function() {
