@@ -191,10 +191,14 @@ function updateTable() {
 
     $('#occupantsCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
+        // unfocus the selection menu, see the note at the exposure defineCostStruc change event
+        $(this).blur();
     });
 
     $('#retrofittingSelect input:checked').each(function() {
         header.push($(this).attr('value'));
+        // unfocus the selection menu, see the note at the exposure defineCostStruc change event
+        $(this).blur();
     });
 
     var headerLength = header.length;
