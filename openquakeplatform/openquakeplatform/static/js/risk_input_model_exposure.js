@@ -350,7 +350,7 @@ $('#saveBtn').click(function() {
         // Retrofitted
         var retrofittingSelect = $('#retrofittingSelect input:checked').val();
         if (retrofittingSelect == 'retrofitting') {
-            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
+            retrofitting = ' retrofitted="'+data[i][retrofittingInx]+'"';
         }
 
         // deductibleSelect
@@ -367,7 +367,7 @@ $('#saveBtn').click(function() {
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
-            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'"/>\n';
+            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"'+retrofitting+deductibleValue+limitValue+'/>\n';
         }
         if (non_structuralInx > -1 ) {
             costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'"/>\n';
