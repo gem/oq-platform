@@ -18,6 +18,7 @@
 var exposureTable;
 var header;
 var showArea = false;
+var NRML;
 
 $( document ).ready(function() {
     updateTable();
@@ -226,10 +227,14 @@ function updateTable() {
     });
 
     $('#outPut').empty();
-    $('#saveBtn').css('display', 'block');
+    $('#saveBtn').show();
+
 }
 
 $('#saveBtn').click(function() {
+    // Expose the download button
+    $('#downloadBtn').show();
+
     // Get the values from the table
     var data = exposureTable.getData();
 
@@ -287,7 +292,7 @@ $('#saveBtn').click(function() {
 
     // Create the asset
     for (var i = 0; i < data.length; i++) {
-        var costTypes = '\t\t\t<costTypes> \n';
+        var costTypes = '\t\t\t<costTypes>\n';
         var costs ='\t\t\t\t<costs>\n';
         var occupancies = '\t\t\t\t<occupancies>\n';
 
@@ -326,7 +331,7 @@ $('#saveBtn').click(function() {
         var areaType = "";
         var areaTypeSelected = $('#perAreaSelect').val();
         if (showArea == true) {
-            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" /> \n';
+            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" />\n';
         }
 
         // Cost Type
@@ -409,7 +414,7 @@ $('#saveBtn').click(function() {
         occupancies += '\t\t\t\t</occupancies>\n';
 
         asset +=
-            '\t\t\t<asset id="'+id+'" '+number+' '+area+' '+taxonomy+' > \n' +
+            '\t\t\t<asset id="'+id+'" '+number+' '+area+' '+taxonomy+' >\n' +
                 '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
                 costs +
                 occupancies +
@@ -417,23 +422,23 @@ $('#saveBtn').click(function() {
     }
 
     // Create a NRML element
-    var NRML =
-        '<?xml version="1.0" encoding="UTF-8"?> \n' +
-        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
-            '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy"> \n' +
-                '\t\t<description>exposure model</description> \n' +
-                '\t\t<conversions> \n' +
+    NRML =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4">\n' +
+            '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy">\n' +
+                '\t\t<description>exposure model</description>\n' +
+                '\t\t<conversions>\n' +
                     areaType +
-                    '\t\t\t<costTypes> \n' +
+                    '\t\t\t<costTypes>\n' +
                     costType +
-                    '\t\t\t</costTypes> \n' +
+                    '\t\t\t</costTypes>\n' +
                     insuranceLimit +
                     deductible +
-                '\t\t</conversions> \n' +
-                '\t\t<assets> \n' +
+                '\t\t</conversions>\n' +
+                '\t\t<assets>\n' +
                     asset +
-                '\t\t</assets> \n' +
-            '\t</exposureModel> \n' +
+                '\t\t</assets>\n' +
+            '\t</exposureModel>\n' +
         '</nrml>';
 
     // Provide the user with the xml output
@@ -441,6 +446,17 @@ $('#saveBtn').click(function() {
     $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
     $('#outputDiv').css('display', 'block');
     selectAllText();
+});
+
+$('#downloadBtn').click(function() {
+    var textToSave = NRML;
+
+    var hiddenElement = document.createElement('a');
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'myFile.xml';
+    hiddenElement.click();
 });
 
 $('#selectAll').click(function() {

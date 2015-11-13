@@ -54,6 +54,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <li><a href="#tabs-2">Fragility</a></li>
     <li><a href="#tabs-3">Vulnerability</a></li>
   </ul>
+  <!-- EXPOSURE -->
   <div id="tabs-1">
     <div class="alert alert-info" role="alert">1. Use this form to modify the table header.</div>
     <div id="exposureForm">
@@ -133,6 +134,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <br>
     <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>
+    <button id="downloadBtn" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+    <br>
     <div id="outputDiv">
       <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
       <button id="selectAll" type="button" class="btn btn-primary">Select</button>
@@ -140,6 +143,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <div id="outPut" style="width:500px;"></div>
     </div>
   </div>
+  <!-- FRAGILITY -->
   <div id="tabs-2">
     <div class="alert alert-info" role="alert">1. Use this form to initialize the fragility model.</div>
     <div id="fragilityForm" class="menuItems">
@@ -190,6 +194,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <div id="outPutFF" style="width:500px;"></div>
     </div>
   </div>
+  <!-- VULNERABILITY -->
   <div id="tabs-3">
     <div class="alert alert-info" role="alert">1. Use this form to initialize the vulnerability model.</div>
     <div id="vulnerabilityForm" class="menuItems">
