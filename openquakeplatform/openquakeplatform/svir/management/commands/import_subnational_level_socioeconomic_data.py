@@ -221,28 +221,87 @@ class Command(BaseCommand):
             reader.next()  # row discarded
             # read row containing the indicators' codes
             second_row = reader.next()
+            # first columns are:
+            #0  |1       |2  |3       | ...|4  |5       |6    |7
+            # P1| P1_Stzd| P2| P2_Stzd| ...| Pn| Pn_Stzd| CODE| FirstIndicator
             ind_codes = [code.decode('utf8')
-                         for code in second_row[admin_level + 1:]]
+                         for code in second_row[2 * admin_level + 1:]]
             sys.stdout.write('Indicator codes: %s\n' % ', '.join(ind_codes))
             for row in reader:
                 # read zone identifiers and values
-                raw_zone_name = row[admin_level - 1].strip()
+                raw_zone_name = row[2 * admin_level - 2].strip()
                 zone_name = raw_zone_name.decode('utf8')
-                try:
-                    unicode(raw_zone_name)
-                except UnicodeDecodeError:
-                    sanitized_name = unicodedata.normalize(
-                        'NFKD', zone_name).encode('ascii', 'ignore')
-                    sys.stdout.write(
-                        "Name '%s' incompatible with shapefiles. "
-                        "Proposed sanitization: %s\n"
-                        % (zone_name, sanitized_name))
-                else:
-                    sanitized_name = None
-                zone_code = row[admin_level].strip()
-                decoded_strs = [x.decode('utf8')
-                                for x in row[:admin_level - 1]]
-                zone_parent_label = ", ".join(decoded_strs)
+                sanitized_name = row[2 * admin_level - 1].strip()
+                sanitized_name_ok = False
+                if sanitized_name:
+                    # check that it's actually sanitized
+                    try:
+                        unicode(sanitized_name)
+                    except:
+                        sys.stdout.write(
+                            "Sanitized name '%s' is not actually sanitized.\n"
+                            % sanitized_name)
+                    else:
+                        sanitized_name_ok = True
+                # if the input file did not contain a sanitized name or the
+                # sanitized name was not actually sanitized, then we attempt
+                # to sanitize it automatically
+                if not sanitized_name_ok:
+                    try:
+                        unicode(raw_zone_name)
+                    except UnicodeDecodeError:
+                        sanitized_name = unicodedata.normalize(
+                            'NFKD', zone_name).encode('ascii', 'ignore')
+                        sys.stdout.write(
+                            "Name '%s' incompatible with shapefiles. "
+                            "Proposed sanitization: %s\n"
+                            % (zone_name, sanitized_name))
+                    else:
+                        sanitized_name = None
+                zone_code = row[2 * admin_level].strip()
+                # row[a:b:2] means only even indices will be taken
+                # i.e., the raw names and not the sanitized ones
+                raw_parent_labels = row[:2 * admin_level - 2: 2]
+                decoded_parent_labels = [x.decode('utf8').strip()
+                                         for x in raw_parent_labels]
+                zone_parent_label = ", ".join(decoded_parent_labels)
+                sanitized_parent_labels = row[1: 2 * admin_level - 1: 2]
+                sanitized_parent_labels_ok = False
+                if any([x for x in sanitized_parent_labels]):
+                    sanitized_parent_labels_ok = True
+                    for label in sanitized_parent_labels:
+                        if label:
+                            try:
+                                unicode(label)
+                            except UnicodeDecodeError:
+                                sanitized_parent_labels_ok = False
+                                sys.stdout.write(
+                                    "Sanitized label '%s' is not"
+                                    " actually sanitized.\n" % label)
+                        else:
+                            sanitized_parent_labels_ok = False
+                            sys.stdout.write(
+                                "Not all parent labels are explicitly"
+                                " sanitized. The automatic sanitization"
+                                " of %s will be used instead.\n"
+                                % zone_parent_label)
+                if sanitized_parent_labels_ok:
+                    sanitized_zone_parent_label = ", ".join(
+                        sanitized_parent_labels)
+                else:  # sanitized labels were not provided or they are not
+                       # actually sanitized
+                    try:
+                        [unicode(x) for x in raw_parent_labels]
+                    except UnicodeDecodeError:
+                        sanitized_zone_parent_label = unicodedata.normalize(
+                            'NFKD', zone_parent_label).encode('ascii',
+                                                              'ignore')
+                        sys.stdout.write(
+                            "Parent label '%s' incompatible with shapefiles. "
+                            "Proposed sanitization: %s\n"
+                            % (zone_parent_label, sanitized_zone_parent_label))
+                    else:
+                        sanitized_zone_parent_label = None
                 # FIXME: load the actual geometry instead of copying the
                 # geometry of San Marino for all the subnational zones
                 san_marino = Zone.objects.get(country_iso='SMR')
@@ -260,15 +319,19 @@ class Command(BaseCommand):
                         'country_iso': country_iso,
                         'admin_level': admin_level,
                         'parent_label': zone_parent_label,
+                        'sanitized_parent_label': sanitized_zone_parent_label,
                         'the_geom': san_marino.the_geom,
                         'study': study})
                 if zone.sanitized_name != sanitized_name:
                     zone.sanitized_name = sanitized_name
                     zone.save()
+                if zone.sanitized_parent_label != sanitized_zone_parent_label:
+                    zone.sanitized_parent_label = sanitized_zone_parent_label
+                    zone.save()
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
                 ind_code_idx = 0
-                for value in row[admin_level + 1:]:
+                for value in row[2 * admin_level + 1:]:
                     ind_code = ind_codes[ind_code_idx]
                     if len(ind_code) < 9:
                         sys.stdout.write(

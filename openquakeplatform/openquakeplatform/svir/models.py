@@ -66,6 +66,8 @@ class Zone(models.Model):
     country_iso = models.CharField(max_length=3)
     admin_level = models.IntegerField()
     parent_label = models.CharField(max_length=CHMAX, null=True, blank=True)
+    sanitized_parent_label = models.CharField(
+        max_length=CHMAX, null=True, blank=True)
     variant_names = models.CharField(max_length=CHMAX, null=True, blank=True)
     study = models.ForeignKey('Study', null=True, blank=True)
     the_geom = models.MultiPolygonField()
