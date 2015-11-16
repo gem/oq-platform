@@ -36,13 +36,26 @@ from openquakeplatform.svir.models import (AggregationMethod,
 
 
 class Command(BaseCommand):
-    args = ('<csv indicators_filename> <csv values_filename>')
+    args = ('<directory>')
     help = ('Import csv files of subnational-level socioeconomic indicators.\n'
             'File naming convention: XXX_N_indicators.csv XXX_N_values.csv\n'
             '(XXX = country iso code, N = administration level)')
 
-    def handle(self, indicators_filename, values_filename, *args, **options):
+    def handle(self, directory, *args, **options):
+        # to be able to redirect stdout to file also printing non-ascii
+        # characters
+        reload(sys).setdefaultencoding('utf8')
         UNKNOWN_STR = 'Unknown'
+        filenames = [os.path.join(directory, fn)
+                     for fn in os.listdir(directory) if fn.endswith('.csv')]
+        if not filenames:
+            sys.stdout.write("No csv files found in directory '%s'.\n"
+                             % directory)
+            sys.exit()
+        indicators_filename = [
+            filename for filename in filenames if 'indicators' in filename][0]
+        values_filename = [
+            filename for filename in filenames if 'values' in filename][0]
         country_iso = os.path.basename(indicators_filename)[:3]
         admin_level = int(os.path.basename(indicators_filename)[4])
         country = Zone.objects.get(country_iso=country_iso, admin_level=0)
