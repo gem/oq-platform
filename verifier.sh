@@ -220,7 +220,7 @@ usage () {
     echo "    $0 devtest <branch-name>"
     echo "                                                 put oq-platform sources in a lxc,"
     echo "                                                 setup environment and run development tests."
-    echo "    $0 prodtest <branche-name>"
+    echo "    $0 prodtest <branch-name>"
     echo "                                                 production installation and tests."
     echo
     exit $ret
