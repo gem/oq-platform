@@ -347,7 +347,7 @@ export PYTHONPATH=\$(pwd)
 cp openquakeplatform/test/config.py.tmpl openquakeplatform/test/config.py
 export DISPLAY=:1
 python openquakeplatform/test/nose_runner.py --failurecatcher dev -v --with-xunit --xunit-file=xunit-platform-dev.xml  openquakeplatform/test
-sleep 300000
+sleep 3
 fab stop
 "
 
