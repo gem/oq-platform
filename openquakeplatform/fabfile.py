@@ -49,11 +49,11 @@ GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
 
 def bootstrap(db_name=None, db_user=None,
-              db_pass=DB_PASSWORD, host='oq-platform',
+              db_pass=DB_PASSWORD, host='oq-platform.localdomain',
               geonode_port=None,
               geoserver_port=None,
-              hazard_calc_addr='http://oq-platform:8800',
-              risk_calc_addr='http://oq-platform:8800',
+              hazard_calc_addr='http://oq-platform.localdomain:8800',
+              risk_calc_addr='http://oq-platform.localdomain:8800',
               oq_engserv_key='oq-platform',
               oq_bing_key='',
               mediaroot=None, staticroot='/home'):
@@ -118,8 +118,8 @@ def bootstrap(db_name=None, db_user=None,
 
 def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             geonode_port=None, geoserver_port=None,
-            hazard_calc_addr='http://oq-platform:8800',
-            risk_calc_addr='http://oq-platform:8800',
+            hazard_calc_addr='http://oq-platform.localdomain:8800',
+            risk_calc_addr='http://oq-platform.localdomain:8800',
             oq_engserv_key='oq-platform',
             oq_secret_key=None, oq_bing_key='',
             mediaroot=None, staticroot='/home'):
