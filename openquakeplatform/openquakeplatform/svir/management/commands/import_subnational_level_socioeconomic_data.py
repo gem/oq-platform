@@ -335,12 +335,6 @@ class Command(BaseCommand):
                         'sanitized_parent_label': sanitized_zone_parent_label,
                         'the_geom': san_marino.the_geom,
                         'study': study})
-                if zone.sanitized_name != sanitized_name:
-                    zone.sanitized_name = sanitized_name
-                    zone.save()
-                if zone.sanitized_parent_label != sanitized_zone_parent_label:
-                    zone.sanitized_parent_label = sanitized_zone_parent_label
-                    zone.save()
                 sys.stdout.write(
                     'Importing data for zone %s...\n' % zone)
                 ind_code_idx = 0
