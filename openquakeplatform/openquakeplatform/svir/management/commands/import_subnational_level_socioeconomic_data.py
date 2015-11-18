@@ -42,14 +42,13 @@ class Command(BaseCommand):
             '(XXX = country iso code, N = administration level)')
 
     def handle(self, directory, *args, **options):
-        # to be able to redirect stdout to file also printing non-ascii
-        # characters
+        # enable writing utf8 strings to stdout and stderr
         reload(sys).setdefaultencoding('utf8')
         UNKNOWN_STR = 'Unknown'
         filenames = [os.path.join(directory, fn)
                      for fn in os.listdir(directory) if fn.endswith('.csv')]
         if not filenames:
-            sys.stdout.write("No csv files found in directory '%s'.\n"
+            sys.stderr.write("No csv files found in directory '%s'.\n"
                              % directory)
             sys.exit()
         indicators_filename = [
@@ -84,7 +83,7 @@ class Command(BaseCommand):
             # read the actual information for each indicator
             code = ind.indicator_code.strip().decode('utf8')
             if len(code) < 9:
-                sys.stdout.write(
+                sys.stderr.write(
                     'WARNING! Indicator code %s seems to be incomplete!\n'
                     % code)
             name = ind.indicator_name.strip().decode('utf8')
@@ -161,9 +160,11 @@ class Command(BaseCommand):
                                      indicator.notes,
                                      notes))
                 if inconsistencies:
-                    sys.stdout.write("WARNING! Inconsistency found!\n")
+                    sys.stderr.write(
+                        "WARNING! Inconsistency found for indicator '%s'!\n"
+                        % indicator.code)
                     for inconsistency in inconsistencies:
-                        sys.stdout.write(inconsistency)
+                        sys.stderr.write(inconsistency)
                 else:
                     sys.stdout.write('OK')
                 sys.stdout.write(" (re-using the existing version)\n")
@@ -249,9 +250,9 @@ class Command(BaseCommand):
                 if sanitized_name:
                     # check that it's actually sanitized
                     try:
-                        unicode(sanitized_name)
-                    except:
-                        sys.stdout.write(
+                        sanitized_name.decode('ascii')
+                    except UnicodeDecodeError:
+                        sys.stderr.write(
                             "Sanitized name '%s' is not actually sanitized.\n"
                             % sanitized_name)
                     else:
@@ -261,11 +262,11 @@ class Command(BaseCommand):
                 # to sanitize it automatically
                 if not sanitized_name_ok:
                     try:
-                        unicode(raw_zone_name)
+                        raw_zone_name.decode('ascii')
                     except UnicodeDecodeError:
                         sanitized_name = unicodedata.normalize(
                             'NFKD', zone_name).encode('ascii', 'ignore')
-                        sys.stdout.write(
+                        sys.stderr.write(
                             "Name '%s' incompatible with shapefiles. "
                             "Proposed sanitization: %s\n"
                             % (zone_name, sanitized_name))
@@ -285,15 +286,15 @@ class Command(BaseCommand):
                     for label in sanitized_parent_labels:
                         if label:
                             try:
-                                unicode(label)
+                                label.decode('ascii')
                             except UnicodeDecodeError:
                                 sanitized_parent_labels_ok = False
-                                sys.stdout.write(
+                                sys.stderr.write(
                                     "Sanitized label '%s' is not"
                                     " actually sanitized.\n" % label)
                         else:
                             sanitized_parent_labels_ok = False
-                            sys.stdout.write(
+                            sys.stderr.write(
                                 "Not all parent labels are explicitly"
                                 " sanitized. The automatic sanitization"
                                 " of %s will be used instead.\n"
@@ -304,12 +305,12 @@ class Command(BaseCommand):
                 else:  # sanitized labels were not provided or they are not
                        # actually sanitized
                     try:
-                        [unicode(x) for x in raw_parent_labels]
+                        [x.decode('ascii') for x in raw_parent_labels]
                     except UnicodeDecodeError:
                         sanitized_zone_parent_label = unicodedata.normalize(
                             'NFKD', zone_parent_label).encode('ascii',
                                                               'ignore')
-                        sys.stdout.write(
+                        sys.stderr.write(
                             "Parent label '%s' incompatible with shapefiles. "
                             "Proposed sanitization: %s\n"
                             % (zone_parent_label, sanitized_zone_parent_label))
@@ -341,24 +342,24 @@ class Command(BaseCommand):
                 for value in row[2 * admin_level + 1:]:
                     ind_code = ind_codes[ind_code_idx]
                     if len(ind_code) < 9:
-                        sys.stdout.write(
+                        sys.stderr.write(
                             'Indicator code %s seems to be incomplete!\n'
                             % ind_code)
-                        break
+                        continue
                     try:
                         indicator = Indicator.objects.get(code=ind_code)
                     except ObjectDoesNotExist:
-                        sys.stdout.write(
+                        sys.stderr.write(
                             'Indicator %s does not exist\n' % ind_code)
-                        break
+                        continue
                     try:
                         value = float(value)
                     except ValueError:
-                        sys.stdout.write(
+                        sys.stderr.write(
                             "Ignoring value '%s' for indicator %s"
                             " and zone %s\n"
                             % (value, indicator, zone))
-                        break
+                        continue
                     measurement_type = additional_info[
                         ind_code]['measurement_type']
                     aggregation_method = additional_info[
