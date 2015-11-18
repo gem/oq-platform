@@ -36,10 +36,10 @@ class Command(BaseCommand):
             to_launch = ("python manage.py"
                          " import_subnational_level_socioeconomic_data"
                          " %s"
-                         # " > %s_importation_log.txt"
+                         " > %s_importation_log.txt"
                          " 2> %s_importation_warnings.txt\n"
                          % (os.path.join(sara_dir, dir_name),
-                            # os.path.join(sara_dir, dir_name, dir_name),
+                            os.path.join(sara_dir, dir_name, dir_name),
                             os.path.join(sara_dir, dir_name, dir_name)))
             sys.stdout.write(to_launch)
             os.system(to_launch)
