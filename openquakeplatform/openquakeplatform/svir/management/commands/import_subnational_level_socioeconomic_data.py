@@ -39,7 +39,8 @@ class Command(BaseCommand):
     args = ('<directory>')
     help = ('Import csv files of subnational-level socioeconomic indicators.\n'
             'File naming convention: XXX_N_indicators.csv XXX_N_values.csv\n'
-            '(XXX = country iso code, N = administration level)')
+            '(XXX = country iso code, N = administration level)\n'
+            'NOTE: warnings and errors will be written to stderr.')
 
     def handle(self, directory, *args, **options):
         # enable writing utf8 strings to stdout and stderr
