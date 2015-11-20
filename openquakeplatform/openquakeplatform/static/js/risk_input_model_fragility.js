@@ -57,6 +57,7 @@ function updateFfsTable (fFormat) {
     // Setup the header
     if (fFormat == 'discrete') {
         header = limitStatesHeader;
+        limitStateLength = 1;
     } else if (fFormat == 'continuous') {
         header = ['damage state', 'mean', 'stddev'];
         colWidth = 100;
