@@ -53,4 +53,4 @@ class Command(BaseCommand):
                             log_file_name,
                             warning_file_name))
             sys.stdout.write(to_launch)
-            # os.system(to_launch)
+            os.system(to_launch)
