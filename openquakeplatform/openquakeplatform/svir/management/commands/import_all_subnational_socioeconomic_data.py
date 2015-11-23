@@ -21,9 +21,9 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     args = ('')
     help = ('Import csv files of subnational-level socioeconomic indicators,'
-            'from all available folders.\n'
+            ' from all available folders.\n'
             'NOTE: errors and warnings will be written to files inside'
-            'data input folders, like foldername.txt')
+            ' data input folders, like foldername.txt')
 
     def handle(self, *args, **options):
         sara_dir = os.path.join('openquakeplatform',
