@@ -34,7 +34,6 @@ simDOM.__onchange =  {
     noStoreysE41: null,
     OccupancyCB1: null,
     OccupancyCB2: null,
-//    OutTypeCB: taxt_OutTypeCBSelect,
     OutTypeCB: [],
     PlanShapeCB: taxt_PlanShapeCBSelect,
     PositionCB: null,
@@ -48,13 +47,9 @@ simDOM.__onchange =  {
     RoofCB3: taxt_RoofCB3Select,
     RoofCB4: taxt_RoofCB4Select,
     RoofCB5: taxt_RoofCB5Select,
-    // SystemCB11: taxt_SystemCB11Select,
     SystemCB11: null,
-    // SystemCB12: taxt_SystemCB12Select,
     SystemCB12: null,
-    // SystemCB21: taxt_SystemCB21Select,
     SystemCB21: null,
-    // SystemCB22: taxt_SystemCB22Select,
     SystemCB22: null,
     WallsCB: taxt_WallsCBSelect
 }
