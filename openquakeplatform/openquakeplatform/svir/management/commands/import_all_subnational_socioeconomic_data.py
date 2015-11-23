@@ -33,13 +33,14 @@ class Command(BaseCommand):
                                 'SARA')
 
         for dir_name in os.listdir(sara_dir):
+            output_dir_path = os.path.join(sara_dir, dir_name)
+            log_file_name = os.path.join(
+                output_dir_path, dir_name + '_importation_log.txt')
+            warning_file_name = os.path.join(
+                output_dir_path, dir_name + '_importation_warnings.txt')
             to_launch = ("python manage.py"
                          " import_subnational_level_socioeconomic_data"
-                         " %s"
-                         " > %s_importation_log.txt"
-                         " 2> %s_importation_warnings.txt\n"
-                         % (os.path.join(sara_dir, dir_name),
-                            os.path.join(sara_dir, dir_name, dir_name),
-                            os.path.join(sara_dir, dir_name, dir_name)))
+                         " %s > %s 2> %s\n"
+                         % (output_dir_path, log_file_name, warning_file_name))
             sys.stdout.write(to_launch)
             os.system(to_launch)
