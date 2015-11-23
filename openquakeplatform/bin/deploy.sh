@@ -514,7 +514,7 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:geonode/release
+    add-apt-repository -y "deb http://ftp.openquake.org/ubuntu precise main"
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
     apt-get install -y geonode python-geonode-user-accounts
