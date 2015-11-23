@@ -1,3 +1,5 @@
+  [Matteo Nastasi]
+  * Add custom repository with legacy geonode 2.0 related packages
 
   [Ben Wyss]
   * Check the browser for WebGL support
