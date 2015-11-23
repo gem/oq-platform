@@ -89,7 +89,7 @@ urlpatterns = patterns('',
     url(r'^irv_viewer/.*$', TemplateView.as_view(
         template_name="irv_viewer.html"), name='irv_viewer'),
     url(r'^hazus/$', TemplateView.as_view(
-        template_name="hazus.html"), name='hazus'),
+        template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde.html"), name='hrde'),
 
