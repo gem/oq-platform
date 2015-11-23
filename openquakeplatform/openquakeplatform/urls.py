@@ -84,8 +84,8 @@ urlpatterns = patterns('',
         template_name="geodetic.html"), name='geodetic'),
     url(r'^gaf_viewer/$', TemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^grv_viewer/$', TemplateView.as_view(
-        template_name="grv_viewer.html"), name='grv_viewer'),
+    url(r'^grv/grv_viewer/$', TemplateView.as_view(
+        template_name="grv/grv_viewer.html"), name='grv_viewer'),
     url(r'^irv_viewer/.*$', TemplateView.as_view(
         template_name="irv_viewer.html"), name='irv_viewer'),
     url(r'^hazus/$', TemplateView.as_view(

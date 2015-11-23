@@ -284,6 +284,7 @@ INSTALLED_APPS = (
     'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
+    'openquakeplatform.grv',
 
     # gemecd
     'openquakeplatform.weblib',
