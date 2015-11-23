@@ -187,7 +187,7 @@ sim_dollar_cls.prototype = {
             }
         }
         else {
-            simdom_log("NOT YET IMPLEMENTED 2 " + name);
+            simdom_log("NOT YET IMPLEMENTED " + name);
         }
     },
     empty: function()
