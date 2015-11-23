@@ -17,17 +17,12 @@
 
 'use strict';
 
-/**
- * @ngdoc overview
- * @name leafletTestApp
- * @description
- * # leafletTestApp
- *
+/*
  * Main module of the application.
  */
- 
+
 angular
-  .module('testApp', [
+  .module('hrdeApp', [
     'ngAnimate',
     'ngCookies',
     'ngResource',

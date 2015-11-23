@@ -15,7 +15,7 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var app = angular.module('testApp', []);
+var app = angular.module('hrdeApp', []);
 
 // start with empty dropdown menus
 function HazardMapDropdown($scope) {
