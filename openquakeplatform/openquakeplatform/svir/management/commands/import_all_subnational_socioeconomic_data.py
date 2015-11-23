@@ -19,28 +19,38 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    args = ('')
+    args = ('<output directory>')
     help = ('Import csv files of subnational-level socioeconomic indicators,'
             ' from all available folders.\n'
-            'NOTE: errors and warnings will be written to files inside'
-            ' data input folders, like foldername.txt')
+            'NOTE: if no output directory is specifyed, by default logs will'
+            ' be added to "./import_logs", overwriting old logs if present')
 
-    def handle(self, *args, **options):
+    def handle(self, output_dir=None, *args, **options):
         sara_dir = os.path.join('openquakeplatform',
                                 'svir',
                                 'dev_data',
                                 'subnational',
                                 'SARA')
 
-        for dir_name in os.listdir(sara_dir):
-            output_dir_path = os.path.join(sara_dir, dir_name)
+        # by default, use the directory './import_logs'
+        if not output_dir:
+            output_dir = os.path.join(os.getcwd(), 'import_logs')
+
+        # create the output directory if it doesn't exist
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        for country_dir_name in os.listdir(sara_dir):
+            country_dir_path = os.path.join(sara_dir, country_dir_name)
             log_file_name = os.path.join(
-                output_dir_path, dir_name + '_importation_log.txt')
+                output_dir, country_dir_name + '_importation_log.txt')
             warning_file_name = os.path.join(
-                output_dir_path, dir_name + '_importation_warnings.txt')
+                output_dir, country_dir_name + '_importation_warnings.txt')
             to_launch = ("python manage.py"
                          " import_subnational_level_socioeconomic_data"
                          " %s > %s 2> %s\n"
-                         % (output_dir_path, log_file_name, warning_file_name))
+                         % (country_dir_path,
+                            log_file_name,
+                            warning_file_name))
             sys.stdout.write(to_launch)
-            os.system(to_launch)
+            # os.system(to_launch)
