@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 {% block extra_head %}
     {{block.super}}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/hrde.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}hrde/hrde.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}leaflet-control-orderlayers/dist/css/leaflet.control.orderlayers.min.css">
 {% endblock extra_head %}
 
@@ -157,16 +157,16 @@ HRDE - {{block.super}}
     {{block.super}}
     <!-- Category tags-->
     <script src="{{ STATIC_URL }}leaflet-control-orderlayers/dist/leaflet.control.orderlayers.min.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde_hazard_chart_single.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde_hazard_chart_mixed.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde_input_hazard_chart.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde_loss_curve_chart.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde_spectrum_chart_mixed.js"></script>
-    <script src="{{ STATIC_URL }}js/hrde_csv_download.js"></script>
-    <script src="{{ STATIC_URL }}js/hrdeDrop.js"></script>
-    <script src="{{ STATIC_URL }}js/base_map_options.js"></script>
-    <script src="{{ STATIC_URL }}js/supplemental_layer_options.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde_hazard_chart_single.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde_hazard_chart_mixed.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde_input_hazard_chart.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde_loss_curve_chart.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde_spectrum_chart_mixed.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrde_csv_download.js"></script>
+    <script src="{{ STATIC_URL }}hrde/hrdeDrop.js"></script>
+    <script src="{{ STATIC_URL }}hrde/base_map_options.js"></script>
+    <script src="{{ STATIC_URL }}hrde/supplemental_layer_options.js"></script>
     <script>
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/hrde/'; }

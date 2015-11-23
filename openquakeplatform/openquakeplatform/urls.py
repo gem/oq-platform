@@ -91,7 +91,7 @@ urlpatterns = patterns('',
     url(r'^hazus/$', TemplateView.as_view(
         template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
-        template_name="hrde.html"), name='hrde'),
+        template_name="hrde/hrde.html"), name='hrde'),
 
 
     (r'^world/', include('openquakeplatform.world.urls')),

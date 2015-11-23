@@ -286,6 +286,7 @@ INSTALLED_APPS = (
     'openquakeplatform.svir',
     'openquakeplatform.grv',
     'openquakeplatform.hazus',
+    'openquakeplatform.hrde',
 
     # gemecd
     'openquakeplatform.weblib',
