@@ -474,7 +474,8 @@ var onRectangleDraw = function(e) {
     }
 };
 
-$("#cover").css("display", "none");
+$("#cover").hide();
+$('#absoluteSpinner').hide();
 
 var exposureExport = function(url) {
     var host = window.location.host;
