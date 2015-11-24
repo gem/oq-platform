@@ -92,6 +92,8 @@ urlpatterns = patterns('',
         template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde/hrde.html"), name='hrde'),
+    url(r'^ript/$', TemplateView.as_view(
+        template_name="ript/ript.html"), name='ript'),
 
 
     (r'^world/', include('openquakeplatform.world.urls')),
@@ -112,7 +114,6 @@ urlpatterns = patterns('',
     url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
     url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
-    url(r'^risk_input_preparation_toolkit/$', TemplateView.as_view(template_name='risk_input_preparation_toolkit.html'), name='risk_input_preparation_toolkit'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
