@@ -1,5 +1,8 @@
   [Matteo Nastasi]
   * Add custom repository with legacy geonode 2.0 related packages
+  * vulnerability: fix css bug for log out dropdown menu in 'add new curve' page
+  * vulnerability: gem_taxonomy check and multiple type of views in
+    'add new curve' page
 
   [Ben Wyss]
   * Check the browser for WebGL support
