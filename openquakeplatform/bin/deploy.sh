@@ -514,10 +514,16 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:geonode/release
+    add-apt-repository -y "deb http://ftp.openquake.org/ubuntu precise main"
+    # add Ariel Nuñez key
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  925F51BF
+
+    # add Matteo Nastasi key
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  CF62A55B
+
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
-    apt-get install -y geonode python-geonode-user-accounts
+    apt-get install -y --force-yes geonode python-geonode-user-accounts
 
     # FIXME this code will be used in the future
     ## check for oq-platform packaged dependencies
