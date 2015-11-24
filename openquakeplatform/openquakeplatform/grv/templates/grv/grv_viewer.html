@@ -22,7 +22,12 @@ GRV - {{block.super}}
 
 {% block map_tools %}
 <link rel="stylesheet" href="{{ STATIC_URL }}grv/grv_viewer.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
+
 {{block.super}}
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>`
+<div id="cover" ></div>
+
 <div id="thematicMap" title="Map Options">
   <form id="tile-form-list">
     <br>Category:<br>

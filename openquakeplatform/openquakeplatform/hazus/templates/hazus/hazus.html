@@ -20,14 +20,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 HAZUS - {{block.super}}
 {% endblock %}
 
+{% block extra_head %}
+    {{block.super}}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
+{% endblock extra_head %}
+
 
 {% block map_tools %}
 {{block.super}}
-    <select id="external-layers-menu">
-  		<option>Select layers</option>
-  		<option value="1">Hazus Level 1 Building Fractions</option>
-  		<option value="2">US Counties</option>
-  		<option value="3">PAGER Dwelling Fractions Level 0</option>
+  <div id="absoluteSpinner" class="loading">Loading&#8230;</div>
+  <select id="external-layers-menu">
+  	<option>Select layers</option>
+  	<option value="1">Hazus Level 1 Building Fractions</option>
+  	<option value="2">US Counties</option>
+  	<option value="3">PAGER Dwelling Fractions Level 0</option>
 	</select>
 {% endblock %}
 

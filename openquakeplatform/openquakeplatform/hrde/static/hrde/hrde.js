@@ -261,7 +261,8 @@ var startApp = function() {
     }
 
     $(document).ready(function() {
-        $('#cover').remove();
+        $('#cover').hide();
+        $('#absoluteSpinner').hide();
         $('#worning-no-layer').dialog({
             autoOpen: false,
             height: 100,

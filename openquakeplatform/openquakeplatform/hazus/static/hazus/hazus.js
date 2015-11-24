@@ -21,6 +21,10 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var TILESTREAM_URL = TS_URL + '/v2/';
 
+$( document ).ready(function() {
+    $('#absoluteSpinner').hide();
+});
+
 var startApp = function() {
 
     // Show hide layer controller

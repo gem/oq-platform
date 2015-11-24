@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     {{block.super}}
     <link rel="stylesheet" href="{{ STATIC_URL }}hrde/hrde.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}leaflet-control-orderlayers/dist/css/leaflet.control.orderlayers.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
 {% endblock extra_head %}
 
 {% block map_tools %}
@@ -34,6 +35,7 @@ HRDE - {{block.super}}
 
 {% block body_outer %}
 <div id="cover"></div>
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>
 <div ng-app="hrdeApp">
 <div id="worning-no-layer" title="Woops!" class="ui-helper-hidden">
     <p>This layer is not loaded in the map</p>

@@ -60,6 +60,11 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 
+$( document ).ready(function() {
+    $('#absoluteSpinner').hide();
+    $('#cover').hide();
+});
+
 var startApp = function() {
 
     $('#map').height("300px");
