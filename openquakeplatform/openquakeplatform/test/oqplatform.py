@@ -1,5 +1,7 @@
 import time
+import sys
 from utils import TimeoutError, NotUniqError, wait_for
+from selenium.webdriver.common.by import By
 
 
 class Platform(object):
@@ -30,6 +32,10 @@ class Platform(object):
         self.passwd = pla_passwd
 
         self.driver.maximize_window()
+        self.main_window = None
+        while not self.main_window:
+            self.main_window = self.driver.current_window_handle
+
         self.homepage_login()
 
     @staticmethod
@@ -54,7 +60,6 @@ class Platform(object):
         return driver
 
     def homepage_login(self):
-        from selenium.webdriver.common.by import By
         self.driver.get(self.basepath)
         # <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #Sign in</a>
@@ -87,6 +92,9 @@ class Platform(object):
         return self.driver.current_url
 
     def fini(self):
+        # return to main window
+        self.windows_reset()
+
         # try to find logout button (in the header)
         try:
             self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
@@ -108,6 +116,7 @@ class Platform(object):
         logout_button = self.xpath_finduniq(
             "//a[@href='/account/logout/' and normalize-space(text())"
             " = 'Log out']")
+
         logout_button.click()
 
         #check new url
@@ -139,7 +148,6 @@ class Platform(object):
         self.driver.get(self.basepath + url)
 
     def xpath_finduniq(self, xpath_str, times=1, postfind=0.2):
-        from selenium.webdriver.common.by import By
         for t in range(0, times):
             field = self.driver.find_elements(By.XPATH, xpath_str)
             if len(field) > 0:
@@ -169,6 +177,7 @@ class Platform(object):
 
     def wait_new_page(self, element, url):
         from selenium.common.exceptions import StaleElementReferenceException
+
         def link_has_gone_stale():
             try:
                 # poll the link with an arbitrary call
@@ -237,3 +246,35 @@ class Platform(object):
 
     def click_at(self, x, y):
         self.driver.execute_script('pla_click(%d, %d);' % (x, y))
+
+    @staticmethod
+    def select_item_set(sel_obj, name):
+        for option in sel_obj.find_elements_by_tag_name('option'):
+            if option.text == name:
+                option.click()  # select() in earlier versions of webdriver
+                break
+
+    def select_window_by_name(self, title):
+        win_cur = self.driver.current_window_handle
+        for handle in self.driver.window_handles:
+            self.driver.switch_to.window(handle)
+            if self.driver.title == title:
+                return True
+        else:
+            self.driver.switch_to.window(win_cur)
+        raise ValueError
+
+    def select_main_window(self):
+        if self.main_window:
+            self.driver.switch_to.window(self.main_window)
+
+    def windows_reset(self):
+        for handle in self.driver.window_handles:
+            if handle == self.main_window:
+                continue
+            self.driver.switch_to.window(handle)
+            self.driver.close()
+        self.driver.switch_to.window(self.driver.window_handles)
+
+    def window_close(self):
+        self.driver.close()

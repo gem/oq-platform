@@ -28,7 +28,6 @@ from django.views.generic.detail import BaseDetailView
 from django.utils.cache import add_never_cache_headers
 from django.utils.text import slugify
 from django.contrib.messages.api import get_messages
-from openquakeplatform.taxtweb.taxonomy import taxonomy_short2full
 
 def index(request, **kwargs):
     try:
@@ -76,17 +75,49 @@ def index(request, **kwargs):
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
-    (taxonomy, error_msg) = taxonomy_short2full(kwargs['taxonomy'])
+    taxonomy = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
 
     return render_to_response("taxtweb/index.html",
                               dict(taxonomy=taxonomy,
-                                   error_msg=("" if error_msg == None else error_msg),
                                    is_popup=is_popup,
                                    tab_id=tab_id,
                                    subtab_id=subtab_id,
                                    tab_content=tab_content,
                                    sub1tab_content=sub1tab_content,
                                    taxt_prefix=taxt_prefix,
+                                   jquery="$",
                                    ),
                               context_instance=RequestContext(request))
 
+
+def checker(request, **kwargs):
+    taxonomy = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
+
+    if 'HTTP_HOST' in request.META:
+        proto = (request.META['HTTP_X_FORWARDED_PROTO'] if
+                 'HTTP_X_FORWARDED_PROTO' in request.META else 'http')
+        if request.META['HTTP_HOST'].startswith('taxtweb'):
+            taxt_prefix = proto + '://' + request.META['HTTP_HOST']
+        else:
+            taxt_prefix = proto + '://' + request.META['HTTP_HOST'] + '/taxtweb'
+    else:
+        taxt_prefix = "http://taxtweb.openquake.org"
+
+
+    is_popup = ""
+    tab_id = ""
+    subtab_id = ""
+    tab_content = ""
+    sub1tab_content = ""
+
+    return render_to_response("taxtweb/checker.html",
+                              dict(taxonomy=taxonomy,
+                                   is_popup=is_popup,
+                                   tab_id=tab_id,
+                                   subtab_id=subtab_id,
+                                   tab_content=tab_content,
+                                   sub1tab_content=sub1tab_content,
+                                   taxt_prefix=taxt_prefix,
+                                   jquery="sim_dollar",
+                                   ),
+                              context_instance=RequestContext(request))
