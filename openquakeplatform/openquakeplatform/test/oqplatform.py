@@ -1,4 +1,5 @@
 import time
+import sys
 from utils import TimeoutError, NotUniqError, wait_for
 from selenium.webdriver.common.by import By
 
@@ -59,7 +60,6 @@ class Platform(object):
         return driver
 
     def homepage_login(self):
-        from selenium.webdriver.common.by import By
         self.driver.get(self.basepath)
         # <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #Sign in</a>
@@ -177,6 +177,7 @@ class Platform(object):
 
     def wait_new_page(self, element, url):
         from selenium.common.exceptions import StaleElementReferenceException
+
         def link_has_gone_stale():
             try:
                 # poll the link with an arbitrary call
@@ -246,14 +247,12 @@ class Platform(object):
     def click_at(self, x, y):
         self.driver.execute_script('pla_click(%d, %d);' % (x, y))
 
-
     @staticmethod
     def select_item_set(sel_obj, name):
         for option in sel_obj.find_elements_by_tag_name('option'):
             if option.text == name:
-                option.click() # select() in earlier versions of webdriver
+                option.click()  # select() in earlier versions of webdriver
                 break
-
 
     def select_window_by_name(self, title):
         win_cur = self.driver.current_window_handle
