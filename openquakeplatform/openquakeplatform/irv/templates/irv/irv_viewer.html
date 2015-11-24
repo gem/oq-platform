@@ -30,10 +30,10 @@ IRV - {{block.super}}
 
 {% block body_outer %}
 {{block.super}}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/irv_viewer.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/irv_legend.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}irv/irv_viewer.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}irv/irv_legend.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
-<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.1/mapbox-gl.css' rel='stylesheet' />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/mapbox-gl.0.11.1.css" />
 {% endblock %}
 
 
@@ -113,13 +113,13 @@ IRV - {{block.super}}
 {% endblock middle %}
 {% block extra_script %}
     {{block.super}}
-    <script src="{{ STATIC_URL }}js/irv_viewer.js"></script>
-    <script src="{{ STATIC_URL }}js/irv_viewer_d3_tree.js"></script>
-    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_IRI.js"></script>
-    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_theme.js"></script>
-    <script src="{{ STATIC_URL }}js/irv_viewer_PCP_primary.js"></script>
-    <script src="{{ STATIC_URL }}js/irvController.js"></script>
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.11.1/mapbox-gl.js'></script>
+    <script src="{{ STATIC_URL }}irv/irv_viewer.js"></script>
+    <script src="{{ STATIC_URL }}irv/irv_viewer_d3_tree.js"></script>
+    <script src="{{ STATIC_URL }}irv/irv_viewer_PCP_IRI.js"></script>
+    <script src="{{ STATIC_URL }}irv/irv_viewer_PCP_theme.js"></script>
+    <script src="{{ STATIC_URL }}irv/irv_viewer_PCP_primary.js"></script>
+    <script src="{{ STATIC_URL }}irv/irvController.js"></script>
+    <script src="{{ STATIC_URL }}js/mapbox-gl.min.0.11.1.js"></script>
     <script src="{{ STATIC_URL }}js/leaflet-mapbox-gl.js"></script>
     <script>
         help=document.getElementById("help_url");
