@@ -33,7 +33,7 @@
       <!-- Open layer in IRV -->
       {% if 'IRMT_QGIS_Plugin' in layer.keyword_list %}
         <div class="btn-group">
-          <a class="btn btn-large" href="{% url 'irv_viewer' %}{{ layer.get_absolute_url |cut:"/layers/" }}">
+          <a class="btn btn-large" href="{% url 'irv' %}{{ layer.get_absolute_url |cut:"/layers/" }}">
             {% trans "Open in IRV" %}
           </a>
         </div>

@@ -1596,7 +1596,7 @@ var startApp = function() {
 
     // Check the URL for layer parameter
     var urlLayerParameter = location.href;
-    urlLayerParameter = urlLayerParameter.split('irv_viewer/')[1];
+    urlLayerParameter = urlLayerParameter.split('irv/')[1];
 
     if (urlLayerParameter) {
         selectedLayer = urlLayerParameter;

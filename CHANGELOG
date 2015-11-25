@@ -1,5 +1,9 @@
 
   [Ben Wyss]
+  * Organize each JS application into individual Django apps
+  * Update older apps with the absolute css loading indicator
+
+  [Ben Wyss]
   * Check the browser for WebGL support
   * Added the Mapbox-Gl Javascript library in order to render vector
     tiles into the IRV application.
@@ -26,7 +30,3 @@
   * Revers the x / y axis of the fragility discrete tables
   * Add intensity measure as a column for the fragility discrete tables
   * Add intensity measure as a column for the vulnerability discrete tables
-
-  [Ben Wyss]
-  * Organize each JS application into individual Django apps
-  * Update older apps with the absolute css loading indicator
