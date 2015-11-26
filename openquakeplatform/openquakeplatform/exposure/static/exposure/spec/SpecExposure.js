@@ -22,6 +22,8 @@
 // Test the JSON structure and required fields
 describe("Check services", function() {
 
+    // load the service's module
+    beforeEach(module('exposureApp'));
 
 });
 
