@@ -1,20 +1,3 @@
-<!--
-Copyright (c) 2015, GEM Foundation.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
--->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,12 +32,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
   <script src="../js/xml2json.js"></script>
   <script src="../js/leaflet-dvf.js"></script>
 
-  <!-- include source files here... 
-  <script src="../../vulnerability/static/vulnerability/js/fragility_curves.js"></script>
--->
+  <!-- include source files here... {{ STATIC_URL }} -->
+
+  <script src="../../irv/static/irv/irv_viewer.js"></script>
+  <script src="../../irv/irv_viewer_d3_tree.js"></script>
+  <script src="../../irv/irv_viewer_PCP_primary.js"></script>
+  <script src="../../irv/irv_viewer_PCP_theme.js"></script>
+  <script src="../../irv/irv_viewer_PCP_IRI.js"></script>
 
   <!-- include spec files here... -->
-  <script src="spec/SpecVunerability.js"></script>
+  <script src="spec/SpecIRV.js"></script>
 
 </head>
 
