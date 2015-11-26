@@ -22,7 +22,6 @@ IRV - {{block.super}}
 
 {% block map_tools %}
 {{block.super}}
-<div id="cover"></div>
 <div id="projectDefWeightDialog" title="Project Definition">
 </div>
 
@@ -30,8 +29,8 @@ IRV - {{block.super}}
 
 {% block body_outer %}
 {{block.super}}
-<link rel="stylesheet" href="{{ STATIC_URL }}irv/irv_viewer.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}irv/irv_legend.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}irv/css/irv_viewer.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}irv/css/irv_legend.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/mapbox-gl.0.11.1.css" />
 {% endblock %}
