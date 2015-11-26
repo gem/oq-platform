@@ -1,6 +1,8 @@
 
   [Ben Wyss]
   * Organize each JS application into individual Django apps
+  * Move the Jasmine lib into static/js
+  * Move each Jasmine JS test into respective Django app directories
   * Update older apps with the absolute css loading indicator
 
   [Ben Wyss]
