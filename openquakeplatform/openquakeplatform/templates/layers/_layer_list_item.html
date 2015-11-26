@@ -27,7 +27,7 @@
           <a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-mini">{% trans "Download" %}</a>
           <a href="{% url "new_map" %}?layer={{ layer.typename }}" class="btn btn-mini">{% trans "Create a map" %}</a>
           {% if 'IRMT_QGIS_Plugin' in layer.keyword_list %}
-            <a href="{% url 'irv_viewer' %}{{ layer.get_absolute_url |cut:"/layers/" }}" class="btn btn-mini btn-primary">{% trans "Open in IRV" %}</a>
+            <a href="{% url 'irv' %}{{ layer.get_absolute_url |cut:"/layers/" }}" class="btn btn-mini btn-primary">{% trans "Open in IRV" %}</a>
           {% endif %}
         </p>
       </div>
