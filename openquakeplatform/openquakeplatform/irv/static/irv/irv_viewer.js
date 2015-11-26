@@ -484,14 +484,16 @@ function processIndicators(layerAttributes, projectDef) {
     if (laValuesArray.indexOf(null) > -1) {
         var warningMsg =
             '<div class="alert alert-danger incompleteData" role="alert">'+
-                'The application is not able to render charts for this project because the composite indicator data is incomplete.'+
+                'The application is not able to render charts or the map layer for this project because the composite indicator data is incomplete.'+
             '</div>';
 
         // Provide warning message if the composite indicator data is incomplete
-        $('#iri-chart').append(warningMsg);
-        $('#cat-chart').append(warningMsg);
-        $('#primary-tab').append(warningMsg);
+        $('#iri-chart').prepend(warningMsg);
+        $('#cat-chart').prepend(warningMsg);
+        $('#primary-tab').prepend(warningMsg);
+        $('#project-def').prepend(warningMsg);
         // Stop the function
+        $('#absoluteSpinner').hide();
         return;
     }
 
