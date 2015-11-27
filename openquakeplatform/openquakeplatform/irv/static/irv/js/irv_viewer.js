@@ -258,7 +258,6 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             subIndex[themeObjRegion] = tempElementValue;
         }
     }
-
     return subIndex;
 }
 
@@ -484,14 +483,16 @@ function processIndicators(layerAttributes, projectDef) {
     if (laValuesArray.indexOf(null) > -1) {
         var warningMsg =
             '<div class="alert alert-danger incompleteData" role="alert">'+
-                'The application is not able to render charts for this project because the composite indicator data is incomplete.'+
+                'The application is not able to render charts or the map layer for this project because the composite indicator data is incomplete.'+
             '</div>';
 
         // Provide warning message if the composite indicator data is incomplete
-        $('#iri-chart').append(warningMsg);
-        $('#cat-chart').append(warningMsg);
-        $('#primary-tab').append(warningMsg);
+        $('#iri-chart').prepend(warningMsg);
+        $('#cat-chart').prepend(warningMsg);
+        $('#primary-tab').prepend(warningMsg);
+        $('#project-def').prepend(warningMsg);
         // Stop the function
+        $('#absoluteSpinner').hide();
         return;
     }
 
@@ -576,7 +577,6 @@ function processIndicators(layerAttributes, projectDef) {
     ///////////////////////////////
     //// Compute the IRI index ////
     ///////////////////////////////
-
 
     if (svThemes === undefined || riskIndicators === undefined) {
         //return;
@@ -787,17 +787,23 @@ function scale(IndicatorObj) {
     }
     var tempMin = Math.min.apply(null, ValueArray),
         tempMax = Math.max.apply(null, ValueArray);
+
     for (var j = 0; j < ValueArray.length; j++) {
         // make sure not to divide by zero
         // 1 is an arbitrary choice to translate a flat array into an array where each element equals to 1
-        if (tempMax  == tempMin) {
-            ValueArray[j] = 1;
+        if (tempMax == tempMin) {
+            scaledValues = [1];
+            // Disable the chart tabs
+            $("#themeTabs").tabs("disable", 1);
+            $("#themeTabs").tabs("disable", 2);
+            $("#themeTabs").tabs("disable", 3);
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
     }
 
     var tempKeys = Object.keys(IndicatorObj);
+
     for (var ih = 0; ih < tempKeys.length; ih++) {
         IndicatorObj[tempKeys[ih]] = scaledValues[ih];
     }
