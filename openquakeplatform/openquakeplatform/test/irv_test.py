@@ -10,7 +10,7 @@ from openquakeplatform.test.utils import *
 class IrvTest(unittest.TestCase):
     def irv_test(self):
         # go to test page
-        pla.get('/static/jasmine/IRVTests.html')
+        pla.get('/static/irv/test/IRVTests.html')
 
         # wait DOM population via async JS
         pla.xpath_finduniq(
