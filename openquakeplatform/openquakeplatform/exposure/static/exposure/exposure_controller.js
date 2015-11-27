@@ -84,7 +84,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     }];
     $scope.template = $scope.templates[0];
 
-    myService.getAllStudies().then(function(data) {
+    myService.getAllStudies().success(function(data) {
         console.log('data:');
         console.log(data);
         // change the has_nonres flag to be more human readable
@@ -415,21 +415,19 @@ app.factory('myService', function($http, $q) {
     return {
         getAllStudies: function() {
             var deferred = $q.defer();
-            $http.get('../exposure/get_all_studies').success(function(data) {
+            return $http.get('../exposure/get_all_studies').success(function(data) {
                 deferred.resolve(data);
             }).error(function(){
                 deferred.reject();
             });
-            return deferred.promise;
         },
         getNationalGridCount: function(iso, study_id) {
             var deferred = $q.defer();
-            $http.get('get_studies_by_country?iso='+iso+'&study_filter='+study_id+'&level_filter=national').success(function(data) {
+            return $http.get('get_studies_by_country?iso='+iso+'&study_filter='+study_id+'&level_filter=national').success(function(data) {
                 deferred.resolve(data);
             }).error(function(){
                 deferred.reject();
             });
-            return deferred.promise;
         }
     };
 });

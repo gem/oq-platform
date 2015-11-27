@@ -20,10 +20,52 @@
 ////////////////////////////////////////////////
 
 // Test the JSON structure and required fields
-describe("Check services", function() {
+describe("mocking service http call", function() {
 
-    // load the service's module
+    // Load the service's module
     beforeEach(module('exposureApp'));
+
+    var ExposureCountryList, $scope;
+
+    describe('test the getAllStudies factory', function() {
+        beforeEach(inject(function($controller, $rootScope, myService) {
+            $scope = $rootScope.$new();
+
+            spyOn(myService, 'getAllStudies').and.callFake(function() {
+                return {
+                    success: function(callback) {
+                        callback({
+                            country_name: "Afghanistan",
+                            has_nonres: "yes",
+                            iso: "AFG",
+                            num_l1_names: 0,
+                            num_l2_names: 0,
+                            num_studies: 1,
+                            study_id: 1,
+                            study_name: "PAGER national study"
+                        });
+                    }
+                };
+            });
+
+            ExposureCountryList = $controller('ExposureCountryList', { $scope: $scope, myService: myService });
+        }));
+
+        it('should set $scope.nationalData to "a single national record"', function() {
+            console.log('$scope.nationalData:');
+            console.log($scope.nationalData);
+            expect($scope.nationalData).toEqual({
+                country_name: "Afghanistan",
+                has_nonres: "yes",
+                iso: "AFG",
+                num_l1_names: 0,
+                num_l2_names: 0,
+                num_studies: 1,
+                study_id: 1,
+                study_name: "PAGER national study"
+            });
+        });
+    });
 
 });
 
