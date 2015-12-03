@@ -52,9 +52,9 @@ STATICFILES_DIRS = [
 ]
 
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg',
-    'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'tar',
-    'tgz', 'tbz', 'tar.gz', 'tar.bz2'
+    'csv', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'ods', 'pdf',
+    'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt', 'zip',
+    'tar', 'tgz', 'tbz', 'tar.gz', 'tar.bz2'
 ]
 MAX_DOCUMENT_SIZE = 100
 
@@ -284,6 +284,11 @@ INSTALLED_APPS = (
     'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
+    'openquakeplatform.grv',
+    'openquakeplatform.hazus',
+    'openquakeplatform.hrde',
+    'openquakeplatform.irv',
+    'openquakeplatform.ript',
 
     # gemecd
     'openquakeplatform.weblib',
@@ -339,12 +344,6 @@ MAP_BASELAYERS = [{
     "name":"naip",
     "group":"background",
     "visibility": False
-  }, {
-    "source": {"ptype": "gxp_bingsource"},
-    "name": "AerialWithLabels",
-    "fixed": True,
-    "visibility": False,
-    "group":"background"
   },{
     "source": {"ptype": "gxp_tilestreamsource" },
     "name":"tilestream"
@@ -352,6 +351,19 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_mapboxsource"},
     "name":"mapbox"
 }]
+
+if BING_KEY['bing_key']:
+    MAP_BASELAYERS.append(
+        {
+            "source": {"ptype": "gxp_bingsource",
+                       "apiKey": BING_KEY['bing_key']
+                       },
+            "name": "AerialWithLabels",
+            "fixed": True,
+            "visibility": False,
+            "group":"background"
+            }
+        )
 
 # Add additional paths (as regular expressions) that don't require
 # authentication.
@@ -363,7 +375,8 @@ AUTH_EXEMPT_URLS = ('/$',
                     '/vulnerability/engineering_demand_csc?.*',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*',
-                    '/taxtweb/')
+                    '/taxtweb/',
+                    '/ript/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.

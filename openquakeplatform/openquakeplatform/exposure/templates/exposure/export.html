@@ -26,15 +26,17 @@ Exposure Export {{ block.super }}
     {{block.super}}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.draw.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}Leaflet.Coordinates/Leaflet.Coordinates-0.1.2.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/exposure-legend.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-legend.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/exposure-export.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}exposure/bootstrap.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
 {% endblock extra_head %}
 
 {% block body_outer %}
 {{block.super}}
 
-<div id="cover" ><img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>`
+<div id="cover" ></div>
 {% verbatim %}
 <div ng-app="exposureApp" >
   <div id="countriesListDialog" title="Admin Level 0 Selection Table">

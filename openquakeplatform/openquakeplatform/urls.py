@@ -84,14 +84,16 @@ urlpatterns = patterns('',
         template_name="geodetic.html"), name='geodetic'),
     url(r'^gaf_viewer/$', TemplateView.as_view(
         template_name="gaf_viewer.html"), name='gaf_viewer'),
-    url(r'^grv_viewer/$', TemplateView.as_view(
-        template_name="grv_viewer.html"), name='grv_viewer'),
-    url(r'^irv_viewer/$', TemplateView.as_view(
-        template_name="irv_viewer.html"), name='irv_viewer'),
+    url(r'^grv/$', TemplateView.as_view(
+        template_name="grv/grv_viewer.html"), name='grv'),
+    url(r'^irv/.*$', TemplateView.as_view(
+        template_name="irv/irv_viewer.html"), name='irv'),
     url(r'^hazus/$', TemplateView.as_view(
-        template_name="hazus.html"), name='hazus'),
+        template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
-        template_name="hrde.html"), name='hrde'),
+        template_name="hrde/hrde.html"), name='hrde'),
+    url(r'^ript/$', TemplateView.as_view(
+        template_name="ript/ript.html"), name='ript'),
 
 
     (r'^world/', include('openquakeplatform.world.urls')),
@@ -100,7 +102,7 @@ urlpatterns = patterns('',
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
-    (r'^taxtweb/', include('openquakeplatform.taxtweb.urls')),
+    (r'^taxtweb', include('openquakeplatform.taxtweb.urls')),
 
     # Static pages
     url(r'^$', 'geonode.views.index', {'template': 'index.html'}, name='home'),
@@ -112,7 +114,6 @@ urlpatterns = patterns('',
     url(r'^share/$', TemplateView.as_view(template_name='share.html'), name='share'),
     url(r'^explore/$', TemplateView.as_view(template_name='explore.html'), name='explore'),
     url(r'^calculate/$', TemplateView.as_view(template_name='calculate.html'), name='calculate'),
-    url(r'^risk_input_preparation_toolkit/$', TemplateView.as_view(template_name='risk_input_preparation_toolkit.html'), name='risk_input_preparation_toolkit'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
