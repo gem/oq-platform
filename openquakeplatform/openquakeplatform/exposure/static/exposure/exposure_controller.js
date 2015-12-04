@@ -85,8 +85,6 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
     $scope.template = $scope.templates[0];
 
     myService.getAllStudies().success(function(data) {
-        console.log('data:');
-        console.log(data);
         // change the has_nonres flag to be more human readable
         for (var k in data) {
             if (data[k].has_nonres) {
@@ -95,6 +93,8 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 data[k].has_nonres = 'no';
             }
         }
+        console.log('data:');
+        console.log(data);
         $scope.nationalData = data;
 
         // National level selection form
