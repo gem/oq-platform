@@ -25,6 +25,10 @@ label {
     width: 45%;
 }
 
+.downloadbtn {
+    color: white !important;
+}
+
 .ffsForm input {
 	float: right;
 }

@@ -450,9 +450,10 @@ $('#saveBtn').click(function() {
     $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
     $('#outputDiv').css('display', 'block');
     selectAllText();
+    downloadFile();
 });
 
-$('#downloadBtn').mousedown(function() {
+function downloadFile () {
     // Format the file to be downloaded
     var textToSave = NRML;
 
@@ -460,15 +461,11 @@ $('#downloadBtn').mousedown(function() {
 
     hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
     hiddenElement.target = '_blank';
-
-    // FIXME naming the file that is downloaded is not working
-    // do to the lack of support for multiple browsers see:
-    // http://stackoverflow.com/questions/7034754/how-to-set-a-file-name-using-window-open
     var exposureFileName = 'my_new_exposure_function';
     hiddenElement.download = exposureFileName+'.xml';
-    // Download the file
-    window.open('data:attachment/text,' + encodeURI(textToSave));
-});
+
+   $('#downloadLink').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="my_new_exposure_function">Download</a>');
+}
 
 $('#selectAll').click(function() {
     var textBox = document.getElementById("textarea");
