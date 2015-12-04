@@ -452,7 +452,8 @@ $('#saveBtn').click(function() {
     selectAllText();
 });
 
-$('#downloadBtn').click(function() {
+$('#downloadBtn').mousedown(function() {
+    // Format the file to be downloaded
     var textToSave = NRML;
 
     var hiddenElement = document.createElement('a');
@@ -460,10 +461,13 @@ $('#downloadBtn').click(function() {
     hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
     hiddenElement.target = '_blank';
 
+    // FIXME naming the file that is downloaded is not working
+    // do to the lack of support for multiple browsers see:
+    // http://stackoverflow.com/questions/7034754/how-to-set-a-file-name-using-window-open
     var exposureFileName = 'my_new_exposure_function';
-
     hiddenElement.download = exposureFileName+'.xml';
-    hiddenElement.click();
+    // Download the file
+    window.open('data:attachment/text,' + encodeURI(textToSave));
 });
 
 $('#selectAll').click(function() {

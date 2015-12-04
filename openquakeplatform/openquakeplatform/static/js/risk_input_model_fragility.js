@@ -319,6 +319,7 @@ $('#saveBtnFF').click(function() {
 });
 
 $('#downloadBtnFF').click(function() {
+    // Prep the file to be downloaded
     var textToSave = NRML;
 
     var hiddenElement = document.createElement('a');
@@ -326,12 +327,16 @@ $('#downloadBtnFF').click(function() {
     hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
     hiddenElement.target = '_blank';
     // Check for user input function id
+    // FIXME naming the file that is downloaded is not working
+    // do to the lack of support for multiple browsers see:
+    // http://stackoverflow.com/questions/7034754/how-to-set-a-file-name-using-window-open
     if (functionId === '' || functionId === undefined) {
         // If no idea is provided, make one
         functionId = 'my_new_fragility_function';
     }
     hiddenElement.download = functionId+'.xml';
-    hiddenElement.click();
+    // Download the file
+    window.open('data:attachment/text,' + encodeURI(textToSave));
 });
 
 $('#selectAllFF').click(function() {
