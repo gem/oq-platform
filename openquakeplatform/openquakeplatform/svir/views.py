@@ -362,7 +362,7 @@ def list_subthemes_by_theme(request):
 
 
 @condition(etag_func=None)
-@allowed_methods(('GET', ))
+@allowed_methods(('GET', 'POST'))
 @sign_in_required
 def export_variables_info(request):
     """
@@ -372,12 +372,14 @@ def export_variables_info(request):
     study are returned.
 
     :param request:
-        A "GET" :class:`django.http.HttpRequest` object that can contain
-        the following optional parameters:
+        A "GET" or "POST" :class:`django.http.HttpRequest` object that can
+        contain the following optional parameters:
             * 'name'
             * 'keywords'
             * 'theme'
             * 'subtheme'
+            * 'zone_ids': a string of pipe-separated tuples
+                          (name, country_iso, parent_label)
             * 'study'
         If the indicator name (or part of it) is provided, the indicators
         which name contain the provided string will be included in the csv.
@@ -386,6 +388,8 @@ def export_variables_info(request):
         If the theme is provided, the list will be filtered by theme, unless
         also the subtheme is provided, then the list will be filtered by
         subtheme.
+        If the zone_ids are provided, only indicators for which at least one
+        value is available for any of the specified zones are provided.
         If the study is provided, only indicators for which at least one
         value is available for any of the zones belonging to that study
         are provided.
@@ -403,14 +407,16 @@ def export_variables_info(request):
     """
     # We don't need 'Tag' anymore, but we need to show other fields
     # We don't display update_periodicity and internal_consistency_metric
+    req_dict = request.GET if request.method == 'GET' else request.POST
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = \
         'attachment; filename="socioeconomic_indicators_export.csv"'
-    name_str = request.GET.get('name')
-    keywords_str = request.GET.get('keywords')
-    theme_str = request.GET.get('theme')
-    subtheme_str = request.GET.get('subtheme')
-    study_str = request.GET.get('study')
+    name_str = req_dict.get('name')
+    keywords_str = req_dict.get('keywords')
+    theme_str = req_dict.get('theme')
+    subtheme_str = req_dict.get('subtheme')
+    zone_ids_str = req_dict.get('zone_ids')
+    study_str = req_dict.get('study')
     copyright = copyright_csv(COPYRIGHT_HEADER)
     response.write(copyright)
     writer = csv.writer(response)
@@ -437,7 +443,19 @@ def export_variables_info(request):
         except ObjectDoesNotExist:
             return HttpResponseNotFound('Subtheme %s not found' % subtheme_str)
 
-    if study_str:
+    zone_objs = []
+    if zone_ids_str:
+        zone_ids_list = _get_zone_ids_list(zone_ids_str)
+        for zone_id in zone_ids_list:
+            try:
+                zone = Zone.objects.get(name=zone_id['name'],
+                                        country_iso=zone_id['country_iso'],
+                                        parent_label=zone_id['parent_label'])
+            except ObjectDoesNotExist:
+                return HttpResponseNotFound('Zone %s not found' % zone_id)
+            else:
+                zone_objs.append(zone)
+    elif study_str:
         try:
             study_obj = Study.objects.get(name=study_str)
         except ObjectDoesNotExist:
@@ -460,7 +478,9 @@ def export_variables_info(request):
     elif subtheme_obj:
         indicators = indicators.filter(subtheme=subtheme_obj)
 
-    if study_str:
+    if zone_objs:
+        indicators = indicators.filter(zones__in=zone_objs).distinct()
+    elif study_str:
         zones_for_study = Zone.objects.filter(study=study_obj)
         indicators = indicators.filter(zones__in=zones_for_study).distinct()
 
@@ -665,23 +685,13 @@ def export_variables_data_subnational(request):
         return response
     if not req_dict.get('zone_ids'):
         msg = ('Please specify the zone_ids parameter: a list of'
-               ' comma-separated tuples (name, country_iso, parent_label)')
+               ' pipe-separated tuples (name, country_iso, parent_label)')
         response = HttpResponse(msg, status="400")
         return response
     sv_variables_ids = req_dict['sv_variables_ids']
-    zone_ids = req_dict.get('zone_ids')
+    zone_ids_str = req_dict.get('zone_ids')
     export_geometries = (req_dict.get('export_geometries') == 'True')
-    zone_ids_list = []
-    if zone_ids:
-        for zone_id in zone_ids.split('|'):
-            # the zone_id string is formatted as
-            # 'name (country_iso: parent_label)'
-            name = zone_id.split('(')[0].strip()
-            country_iso = zone_id.split('(')[1].split(':')[0].strip()
-            parent_label = zone_id.split(':')[1].split(')')[0].strip()
-            zone_ids_list.append(dict(name=name,
-                                      country_iso=country_iso,
-                                      parent_label=parent_label))
+    zone_ids_list = _get_zone_ids_list(zone_ids_str)
     response_data = _stream_variables_data_as_csv_subnational(
         sv_variables_ids, export_geometries, zone_ids_list)
     filename = 'sv_data_by_variables_ids_export.csv'
@@ -796,3 +806,17 @@ def copyright_csv(cr_text):
     lines = ['#%s' % line for line in lines]
     # rejoin into a single multiline string:
     return '\n'.join(lines) + "\n"
+
+
+def _get_zone_ids_list(zone_ids_str):
+    zone_ids_list = []
+    for zone_id in zone_ids_str.split('|'):
+        # the zone_id string is formatted as
+        # 'name (country_iso: parent_label)'
+        name = zone_id.split('(')[0].strip()
+        country_iso = zone_id.split('(')[1].split(':')[0].strip()
+        parent_label = zone_id.split(':')[1].split(')')[0].strip()
+        zone_ids_list.append(dict(name=name,
+                                  country_iso=country_iso,
+                                  parent_label=parent_label))
+    return zone_ids_list
