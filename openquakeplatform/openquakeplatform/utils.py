@@ -33,10 +33,20 @@ def oq_context_processor(request):
     context['SITEURL'] = settings.SITEURL
     context['OQP_VERSION'] = openquakeplatform.__version__
     context['third_party_urls'] = settings.THIRD_PARTY_URLS
+    # BING API key for their maps
     context['bing_key'] = settings.BING_KEY
+    # Experimental features
     context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
+    # TileStream server URL
     context['TILESTREAM_URL'] = settings.TILESTREAM_URL
+    # User manual base URL
     context['HELP_URL'] = settings.HELP_URL
+    # Exposure limits
+    context['EXPOSURE_MAX_EXPORT_AREA_SQ_DEG'] = \
+        settings.EXPOSURE_MAX_EXPORT_AREA_SQ_DEG
+    context['EXPOSURE_MAX_TOT_GRID_COUNT'] = \
+        settings.EXPOSURE_MAX_TOT_GRID_COUNT
+    # Google Analytics tracking code
     context['GOOGLE_UA'] = getattr(settings, 'GOOGLE_UA', False)
 
     return context
