@@ -82,13 +82,11 @@ NRML_FOOTER = """
 </nrml>
 """
 
-#: The maximum bounding box area which can be exported.
-MAX_EXPORT_AREA_SQ_DEG = settings.EXPOSURE_MAX_AREA
 MAX_TOT_GRID_COUNT = settings.EXPOSURE_MAX_COUNT
 
 
 def _export_area_valid(
-        lat1, lng1, lat2, lng2, max_area=MAX_EXPORT_AREA_SQ_DEG):
+        lat1, lng1, lat2, lng2, max_area=settings.MAX_EXPORT_AREA_SQ_DEG):
     """
     Simple validation to check the bounding box size.
 
@@ -98,7 +96,7 @@ def _export_area_valid(
     width = abs(float(lng2) - float(lng1))
     height = abs(float(lat2) - float(lat1))
     area = width * height
-    if area > MAX_EXPORT_AREA_SQ_DEG:
+    if area > settings.MAX_EXPORT_AREA_SQ_DEG:
         msg = (
             'Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
             ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'

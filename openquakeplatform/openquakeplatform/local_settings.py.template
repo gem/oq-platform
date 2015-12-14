@@ -406,7 +406,7 @@ ICEBOX_SEND_EMAIL = False
 # These limits define the maximum data that can be retreived
 # from GEM in the Exposure app
 # Max area size in degrees (i.e. 2 * 2)
-EXPOSURE_MAX_AREA = 4
+EXPOSURE_MAX_EXPORT_AREA_SQ_DEG = 4
 # Max number of rows
 EXPOSURE_MAX_COUNT = 100000
 
