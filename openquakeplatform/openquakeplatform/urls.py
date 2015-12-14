@@ -98,7 +98,6 @@ urlpatterns = patterns('',
 
     (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
-    (r'^icebox/', include('openquakeplatform.icebox.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
     (r'^svir/', include('openquakeplatform.svir.urls')),
     (r'^vulnerability/', include('openquakeplatform.vulnerability.urls')),
@@ -159,6 +158,11 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
 
+    )
+
+if 'openquakeplatform.icebox' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^icebox/', include('openquakeplatform.icebox.urls')),
     )
 
 # Example of an experimental application

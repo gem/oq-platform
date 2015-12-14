@@ -281,7 +281,7 @@ INSTALLED_APPS = (
     'openquakeplatform.geodetic',
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
-    'openquakeplatform.icebox',
+    # 'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
     'openquakeplatform.grv',
