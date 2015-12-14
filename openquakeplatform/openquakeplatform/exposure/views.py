@@ -240,7 +240,6 @@ def export_exposure(request):
             return response
     if lng1 and lat1 and lng2 and lat2:
         filter_by_bounding_box = True
-        # the default max_area would be EXPOSURE_MAX_EXPORT_AREA_SQ_DEG
         valid, error = _export_area_valid(
             lat1, lng1, lat2, lng2,
             max_area=settings.EXPOSURE_MAX_EXPORT_AREA_SQ_DEG)
