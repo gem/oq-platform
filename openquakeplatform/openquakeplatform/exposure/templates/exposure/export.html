@@ -135,6 +135,7 @@ Exposure Export {{ block.super }}
 
     <script>
     // URL params, captured and rendered to the template:
+    var EXPOSURE_MAX_COUNT = {{ EXPOSURE_MAX_COUNT }}
     var URL_PARAMS = {};
     {% for k, v in request.GET.iteritems %}
     URL_PARAMS.{{ k }} = "{{ v }}";

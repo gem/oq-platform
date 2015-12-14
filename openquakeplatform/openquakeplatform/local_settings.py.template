@@ -403,6 +403,9 @@ ICEBOX_MAX_SIZE_MB = 10
 # WARNING: untested feature
 ICEBOX_SEND_EMAIL = False
 
+EXPOSURE_MAX_AREA = 4  # 2 * 2 degrees, for example
+EXPOSURE_MAX_COUNT = 300000
+
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
 
 # Enable Google Analytics tracking code

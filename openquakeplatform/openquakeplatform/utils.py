@@ -37,6 +37,7 @@ def oq_context_processor(request):
     context['is_gem_experimental'] = settings.GEM_EXPERIMENTAL
     context['TILESTREAM_URL'] = settings.TILESTREAM_URL
     context['HELP_URL'] = settings.HELP_URL
+    context['EXPOSURE_MAX_COUNT'] = settings.EXPOSURE_MAX_COUNT
     context['GOOGLE_UA'] = getattr(settings, 'GOOGLE_UA', False)
 
     return context
