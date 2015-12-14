@@ -1,3 +1,8 @@
+python-oq-platform (1.3.1)
+
+  [Daniele Viganò]
+  * Disable the icebox application
+
 python-oq-platform (1.3.0)
 
   [Matteo Nastasi]
