@@ -84,7 +84,8 @@ NRML_FOOTER = """
 
 
 def _export_area_valid(
-        lat1, lng1, lat2, lng2, max_area=settings.MAX_EXPORT_AREA_SQ_DEG):
+        lat1, lng1, lat2, lng2,
+        max_area=settings.EXPOSURE_MAX_EXPORT_AREA_SQ_DEG):
     """
     Simple validation to check the bounding box size.
 
@@ -94,7 +95,7 @@ def _export_area_valid(
     width = abs(float(lng2) - float(lng1))
     height = abs(float(lat2) - float(lat1))
     area = width * height
-    if area > settings.MAX_EXPORT_AREA_SQ_DEG:
+    if area > settings.EXPOSURE_MAX_EXPORT_AREA_SQ_DEG:
         msg = (
             'Bounding box (lat1=%(lat1)s, lng1=%(lng1)s),'
             ' (lat2=%(lat2)s, lng2=%(lng2)s) exceeds the max allowed size.'
@@ -117,12 +118,12 @@ def _tot_grid_count_valid(sr_id):
         assert len(sr_info) == 1, ('_get_study_region_info(sr_id) returned '
                                    '%d rows. It should return one') % len(sr_info)
     sr_info = sr_info[0]
-    if sr_info['tot_grid_count'] > settings.MAX_TOT_GRID_COUNT:
+    if sr_info['tot_grid_count'] > settings.EXPOSURE_MAX_TOT_GRID_COUNT:
         msg = ('The export can not be performed because the '
                'total grid count for study region id %s exceeds the '
                'threshold (%s > %s)') % (sr_id,
                                          sr_info['tot_grid_count'],
-                                         settings.MAX_TOT_GRID_COUNT)
+                                         settings.EXPOSURE_MAX_TOT_GRID_COUNT)
         return False, msg
     return True, ''
 
@@ -239,8 +240,10 @@ def export_exposure(request):
             return response
     if lng1 and lat1 and lng2 and lat2:
         filter_by_bounding_box = True
-        # the default max_area would be MAX_EXPORT_AREA_SQ_DEG
-        valid, error = _export_area_valid(lat1, lng1, lat2, lng2, max_area=4)
+        # the default max_area would be EXPOSURE_MAX_EXPORT_AREA_SQ_DEG
+        valid, error = _export_area_valid(
+            lat1, lng1, lat2, lng2,
+            max_area=settings.EXPOSURE_MAX_EXPORT_AREA_SQ_DEG)
         if not valid:
             return HttpResponse(content=error,
                                 content_type="text/html",
