@@ -455,7 +455,7 @@ var onRectangleDraw = function(e) {
     var lonDiff = Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng);
     var LatLngBox = latDiff + lonDiff;
 
-    if (LatLngBox > 8) {
+    if (LatLngBox > EXPOSURE_MAX_AREA) {
         var msg = 'The selected area is to large.';
         showErrorDialog(msg);
     } else {
