@@ -164,7 +164,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 }
 
                 // Check the grid count
-                if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
+                if ( $scope.selectedRegion[0].tot_grid_count < EXPOSURE_MAX_COUNT ) {
                     $('#exposure-building-form').show();
                     $('#nationalExposureBldgDownload').show();
                     $('#drawBoundingMsg').hide();

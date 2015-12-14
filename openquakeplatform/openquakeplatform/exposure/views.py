@@ -20,6 +20,7 @@ import json
 import csv
 from collections import namedtuple
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.http import condition
 
@@ -82,8 +83,8 @@ NRML_FOOTER = """
 """
 
 #: The maximum bounding box area which can be exported.
-MAX_EXPORT_AREA_SQ_DEG = 4  # 2 * 2 degrees, for example
-MAX_TOT_GRID_COUNT = 100000
+MAX_EXPORT_AREA_SQ_DEG = settings.EXPOSURE_MAX_AREA
+MAX_TOT_GRID_COUNT = settings.EXPOSURE_MAX_COUNT
 
 
 def _export_area_valid(
