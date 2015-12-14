@@ -403,7 +403,11 @@ ICEBOX_MAX_SIZE_MB = 10
 # WARNING: untested feature
 ICEBOX_SEND_EMAIL = False
 
-EXPOSURE_MAX_AREA = 4  # 2 * 2 degrees, for example
+# These limits define the maximum data that can be retreived
+# from GEM in the Exposure app
+# Max area size in degrees (i.e. 2 * 2)
+EXPOSURE_MAX_AREA = 4
+# Max number of rows
 EXPOSURE_MAX_COUNT = 300000
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
