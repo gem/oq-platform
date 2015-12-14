@@ -408,7 +408,7 @@ ICEBOX_SEND_EMAIL = False
 # Max area size in degrees (i.e. 2 * 2)
 EXPOSURE_MAX_EXPORT_AREA_SQ_DEG = 4
 # Max number of rows
-EXPOSURE_MAX_COUNT = 100000
+EXPOSURE_MAX_TOT_GRID_COUNT = 100000
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
 

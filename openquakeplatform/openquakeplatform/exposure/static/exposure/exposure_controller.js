@@ -164,7 +164,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 }
 
                 // Check the grid count
-                if ( $scope.selectedRegion[0].tot_grid_count < EXPOSURE_MAX_COUNT ) {
+                if ( $scope.selectedRegion[0].tot_grid_count < EXPOSURE_MAX_TOT_GRID_COUNT ) {
                     $('#exposure-building-form').show();
                     $('#nationalExposureBldgDownload').show();
                     $('#drawBoundingMsg').hide();
@@ -322,7 +322,7 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
         }
 
         // check the grid count
-        if (study.tot_grid_count < 300000) {
+        if (study.tot_grid_count < EXPOSURE_MAX_TOT_GRID_COUNT) {
             $('#subNationalRegionTooLarge').hide();
             $('#drawBoundingMsg').hide();
             $('#sub-exposure-building-form-too-large').hide();

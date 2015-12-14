@@ -44,7 +44,8 @@ def oq_context_processor(request):
     # Exposure limits
     context['EXPOSURE_MAX_EXPORT_AREA_SQ_DEG'] = \
         settings.EXPOSURE_MAX_EXPORT_AREA_SQ_DEG
-    context['EXPOSURE_MAX_COUNT'] = settings.EXPOSURE_MAX_COUNT
+    context['EXPOSURE_MAX_TOT_GRID_COUNT'] = \ 
+        settings.EXPOSURE_MAX_TOT_GRID_COUNT
     # Google Analytics tracking code
     context['GOOGLE_UA'] = getattr(settings, 'GOOGLE_UA', False)
 

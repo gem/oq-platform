@@ -82,8 +82,6 @@ NRML_FOOTER = """
 </nrml>
 """
 
-MAX_TOT_GRID_COUNT = settings.EXPOSURE_MAX_COUNT
-
 
 def _export_area_valid(
         lat1, lng1, lat2, lng2, max_area=settings.MAX_EXPORT_AREA_SQ_DEG):
@@ -119,12 +117,12 @@ def _tot_grid_count_valid(sr_id):
         assert len(sr_info) == 1, ('_get_study_region_info(sr_id) returned '
                                    '%d rows. It should return one') % len(sr_info)
     sr_info = sr_info[0]
-    if sr_info['tot_grid_count'] > MAX_TOT_GRID_COUNT:
+    if sr_info['tot_grid_count'] > settings.MAX_TOT_GRID_COUNT:
         msg = ('The export can not be performed because the '
                'total grid count for study region id %s exceeds the '
                'threshold (%s > %s)') % (sr_id,
                                          sr_info['tot_grid_count'],
-                                         MAX_TOT_GRID_COUNT)
+                                         settings.MAX_TOT_GRID_COUNT)
         return False, msg
     return True, ''
 
