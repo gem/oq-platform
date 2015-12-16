@@ -191,29 +191,35 @@ function populate_form()
     }
 }
 
-function select_populate(name, items)
+function select_populate(id, items)
 {
-    var disabled, dis_str;
-
-    if (arguments.length > 2) {
-        disabled = arguments[2];
-    }
-    else {
-        disabled = [];
-    }
+    var preitem, item, text = null, attrs;
 
     for (var i = 0 ; i < items.length ; i++) {
-        item = items[i];
-        if (disabled.indexOf(item) > -1) {
-            dis_str = " disabled";
+        attrs = "";
+        preitem = items[i];
+
+        if (typeof(preitem) == 'string') {
+            item = { '_text': preitem };
         }
         else {
-            dis_str = "";
+            item = preitem;
         }
-        gem$('#' + name).append('<option value="' + i + '"' + dis_str + '>' + item + '</option>');
+
+        for (var k in item) {
+            if (k == '_text')
+                text = item[k];
+            else {
+                if (attrs != "")
+                    attrs += ' ';
+                attrs += k + '=' + item[k];
+            }
+        }
+
+        gem$('#' + id).append('<option value="' + i + '"' + attrs + '>' + text + '</option>');
     }
     if (items.length > 0) {
-        gem$('#' + name).val(0);
+        gem$('#' + id).val(0);
     }
 }
 
@@ -858,12 +864,14 @@ function taxt_ValidateRegularity()
         gem$('#RegularityCB5').prop("disabled", true);
     }
     else if (gem$('#RegularityCB1').val() == 2) {
+        var RegularityCB3 = [];
         if (gem$('#RegularityCB2').val() == 0) {
-            disabled_cb3.push('No irregularity');
+            RegularityCB3.push({ _name: 'No irregularity', disabled: '' });
             default_cb3 = 1;
         }
-        var RegularityCB3 = [];
-        /* IRVP:IRN  */ RegularityCB3.push('No irregularity');
+        else {
+            /* IRVP:IRN  */ RegularityCB3.push('No irregularity');
+        }
         /* IRVP:SOS  */ RegularityCB3.push('Soft storey');
         /* IRVP:CRW  */ RegularityCB3.push('Cripple wall');
         /* IRVP:SHC  */ RegularityCB3.push('Short column');
@@ -872,20 +880,22 @@ function taxt_ValidateRegularity()
         /* IRVP:CHV  */ RegularityCB3.push('Change in vertical structure');
         /* IRVP:IRVO */ RegularityCB3.push('Other vertical irregularity');
         gem$('#RegularityCB3').prop("disabled", false);
-        select_populate('RegularityCB3', RegularityCB3, disabled_cb3);
+        select_populate('RegularityCB3', RegularityCB3);
         gem$('#RegularityCB3').val(default_cb3);
 
+        var RegularityCB2 = [];
         if (gem$('#RegularityCB3').val() == 0) {
-            disabled_cb2.push('No irregularity');
+            RegularityCB2.push({ _text: 'No irregularity', disabled: '' });
             default_cb2 = 1;
         }
-        var RegularityCB2 = [];
-        /* IRPP:IRN */ RegularityCB2.push('No irregularity');
+        else {
+            /* IRPP:IRN */ RegularityCB2.push('No irregularity');
+        }
         /* IRPP:TOR */ RegularityCB2.push('Torsion eccentricity');
         /* IRPP:REC */ RegularityCB2.push('Re-entrant corner');
         /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
         gem$('#RegularityCB2').prop("disabled", false);
-        select_populate('RegularityCB2', RegularityCB2, disabled_cb2);
+        select_populate('RegularityCB2', RegularityCB2);
         gem$('#RegularityCB2').val(default_cb2);
     }
     taxt_RegularityCB2Select(null);
