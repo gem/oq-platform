@@ -171,6 +171,7 @@ table.dir_spec td {
 var taxt_prefix = '{{ taxt_prefix }}';
 var gem$ = {{ jquery }};
 window.onload = function () {
+    var ret = null;
     var tab_cur = {{ tab_id }};
     var subtab_cur = {{ subtab_id }};
     tab_set(tab_cur, subtab_cur);
@@ -181,13 +182,14 @@ window.onload = function () {
 
     if (taxonomy != '') {
         ret = taxonomy_short2full(taxonomy);
-    }
-    if (ret.err_s) {
-        alert(ret.err_s);
-        taxonomy = '';
-    }
-    else {
-        taxonomy = ret.result;
+
+        if (ret && ret.err_s) {
+            alert(ret.err_s);
+            taxonomy = '';
+        }
+        else {
+            taxonomy = ret.result;
+        }
     }
 
     var ret_s = { s: "" };
