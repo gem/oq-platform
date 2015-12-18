@@ -7,6 +7,10 @@
       <link href='{{ STATIC_URL }}taxtweb/font/lato_font.css' rel='stylesheet' type='text/css' />
 <style>
 
+h1,h2,h3,h4,h5,h6 {
+    display:inline-block;
+}
+
 .gem_field_alert {
     border-color: #ff0000;
     background-color: #ffa0a0;
@@ -160,6 +164,48 @@ table.dir_spec td {
     text-align: center;
     width: 50%;
 }
+
+.gem_help, .gem_help * { cursor: help !important; }
+
+div.info_overlay_hidden {
+    visibility: hidden;
+}
+
+div.gem_help_select {
+    border: 1px solid grey;
+    padding: 8px;
+}
+
+div.gem_help_overlay {
+    position: absolute;
+    text-align: center;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background:rgba(0,0,0,0.5);
+    visibility: visible;
+}
+
+div.gem_help_overlay iframe {
+    align: center;
+    valign: middle;
+    margin: auto;
+    width: 800px;
+    top: 5%;
+    position: relative;
+    height: 90%;
+}
+
+div.gem_help_overlay button {
+    display: block;
+}
+
+div.gem_help_highlight {
+    background:rgba(255,255,0,0.5);
+    position: absolute;
+}
+
 </style>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -200,6 +246,164 @@ window.onload = function () {
         }
     }
 }
+
+/*
+    WORKFLOW
+
+    "Click and Help"::onclick => gem_help()
+
+    addEventListener("mousedown") => gem_help_cb &&  run gem_help_highlight()
+
+*/
+var gem_help_old_body_class = "";
+
+function gem_help_highlight(rect, obj)
+{
+    var div = document.createElement('div');
+    var border = 0;
+
+    div.style.left = (rect[0] - border) + "px";
+    div.style.top =  (rect[1] - border) + "px";
+    div.style.width = (rect[2] + 2 + (border * 2)) + "px";
+    div.style.height = (rect[3] + 2 + (border * 2)) + "px";
+    div.className = "gem_help_highlight";
+    div.dataGemObj = obj;
+    obj.setAttribute('data-gem-helped', 'True');
+
+    document.body.appendChild(div);
+}
+
+
+function gem_help()
+{
+    console.log("gem_help()");
+    if (document.body.className != "gem_help") {
+        gem_help_old_body_class = document.body.className;
+        document.body.className = "gem_help";
+    }
+
+    var helps = $("[data-gem-help]");
+    var target;
+    for (var i = 0 ; i < helps.length ; i++) {
+        if (helps[i].tagName == 'OPTION') {
+            target = $(helps[i].parentNode);
+        }
+        else {
+            target = $(helps[i]);
+        }
+
+        if (target.filter("[data-gem-helped]").length > 0) {
+            continue;
+        }
+
+        var rect = [target.offset().left, target.offset().top,  target.width(), target.height()];
+        gem_help_highlight(rect, target[0]);
+    }
+
+    if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
+        document.addEventListener("mousedown", gem_help_cb, true);
+    } else if (document.attachEvent) {              // For IE 8 and earlier versions
+        document.attachEvent("onmousedown", gem_help_cb);
+    }
+}
+
+function gem_help_show(target)
+{
+    var div = document.createElement('div');
+    var iframe = document.createElement('iframe');
+    var button = document.createElement('button');
+
+    div.id = "gem_help_overlay";
+    div.className = "gem_help_overlay";
+    iframe.id = "gem_help_iframe";
+    iframe.src = '/static/taxtweb/' + target;
+    button.innerHTML = "Close";
+    button.onclick = function () { var obj = $('#gem_help_overlay')[0]; obj.parentNode.removeChild(obj); };
+
+    div.appendChild(iframe);
+    div.appendChild(button);
+
+    var prev_help = $('#gem_help_select')[0];
+
+    if (prev_help) {
+        prev_help.parentNode.removeChild(prev_help);
+    }
+
+    document.body.appendChild(div);
+}
+
+
+
+function gem_help_select(obj, event)
+{
+    console.log("dentro3");
+
+   var div = document.createElement('div');
+   div.id = 'gem_help_select';
+   div.style.position = "absolute";
+   div.style.top = event.clientY + "px";
+   div.style.left = event.clientX + "px";
+   div.style.backgroundColor = "red";
+
+   for (var i = 0 ; i < obj.length ; i++) {
+       var info = obj[i].getAttribute("data-gem-help");
+       console.log("one found " + info);
+       if (info) {
+           div.innerHTML += '<a href="#" onclick="gem_help_show(\'' + obj[i].getAttribute("data-gem-help") + '\');">' + obj[i].innerHTML + '</a><br>';
+       }
+   }
+   document.body.appendChild(div);
+}
+
+function gem_help_cleanup()
+{
+    console.log('gem_help_cleanup - begin');
+    var obj, objs;
+    objs = $('[data-gem-helped]');
+    for (var i = 0 ; i < objs.length ; i++) {
+        obj = objs[i];
+        obj.removeAttribute('data-gem-helped');
+        console.log('zigu');
+    }
+
+    objs = $('.gem_help_highlight');
+    // objs = [];
+    for (var i = 0 ; i < objs.length ; i++) {
+        obj = objs[i];
+        obj.parentNode.removeChild(obj);
+        delete obj;
+        console.log('zagu');
+    }
+    console.log('gem_help_cleanup - end');
+}
+
+
+function gem_help_cb(event)
+{
+    console.log("gem_help_cb");
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (document.removeEventListener) {
+        document.removeEventListener("mousedown", gem_help, true);
+    }
+    else if (document.detachEvent) {
+        document.detachEvent("mousedown", gem_help);
+    }
+    document.body.className = gem_help_old_body_class;
+    var obj = event.target;
+
+    if ('dataGemObj' in obj) {
+        if (obj.dataGemObj.tagName == 'SELECT') {
+            gem_help_select(obj.dataGemObj, event);
+            return;
+        }
+    }
+    else {
+    }
+    gem_help_cleanup();
+}
+
 //-->
 </script>
 </head>
@@ -207,7 +411,8 @@ window.onload = function () {
 <body>
 <div class="grand_parent">
     <ul class="tab">
-        {{ tab_content|safe }}{% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
+        {{ tab_content|safe }}<li id="id_help_form" style="float: right; background-color: lightgreen; color: black;" class="tab" onclick="gem_help();"><span title="click here and than what you are interested in">Click And Help</span></li>
+        {% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
     </ul>
     <div id="main_content_parent" style="border-top-width: 0; border-color: #F8F8F8 #1B75A7 #1B75A7; position: relative; width: 800px; height: 600px; /* background-color: #ccccff; blue */">
         <div id="main_content-1" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; margin: 0px;/* background-color: #ffcccc; /*red */">
@@ -226,7 +431,7 @@ window.onload = function () {
                 </div>
 
                 <div class="data-group">
-                    <h4>Material of lateral load-resisting system</h4>
+                    <h4 data-gem-help="glossary/cast-in-place-concrete--cip.html">Material of lateral load-resisting system</h4>
                     <table class="dir_spec"><tr>
                         <td><div>Material type:<br>
                                  <select id="MaterialCB11"></select></div></td>

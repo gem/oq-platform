@@ -212,7 +212,7 @@ function select_populate(id, items)
             else {
                 if (attrs != "")
                     attrs += ' ';
-                attrs += k + '=' + item[k];
+                attrs += k.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase() + '="' + item[k] + '"';
             }
         }
 
@@ -3482,7 +3482,7 @@ function taxt_Initiate() {
 
     // FIXME: t0 only, load a preview saved taxonomy must be done
     var MaterialCB11 = [];
-    /* MAT99 */ MaterialCB11.push('Unknown Material');
+    /* MAT99 */ MaterialCB11.push({ _text: 'Unknown Material', 'dataGemHelp': 'glossary/cast-in-place-concrete--cip.html'});
     /* C99   */ MaterialCB11.push('Concrete, unknown reinforcement');
     /* CU    */ MaterialCB11.push('Concrete, unreinforced');
     /* CR    */ MaterialCB11.push('Concrete, reinforced');
