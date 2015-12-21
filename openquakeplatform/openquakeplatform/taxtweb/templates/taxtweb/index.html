@@ -189,16 +189,17 @@ div.gem_help_overlay {
 
 div.gem_help_overlay iframe {
     align: center;
-    valign: middle;
-    margin: auto;
     width: 800px;
-    top: 5%;
     position: relative;
+    top: 4px;
     height: 90%;
+    margin: 8px;
 }
 
 div.gem_help_overlay button {
     display: block;
+    text-align: center;
+    margin: auto;
 }
 
 div.gem_help_highlight {
@@ -267,6 +268,9 @@ function gem_help_highlight(rect, obj)
     div.style.width = (rect[2] + 2 + (border * 2)) + "px";
     div.style.height = (rect[3] + 2 + (border * 2)) + "px";
     div.className = "gem_help_highlight";
+
+    console.log("HIGHLIGHT");
+    console.log(obj);
     div.dataGemObj = obj;
     obj.setAttribute('data-gem-helped', 'True');
 
@@ -385,21 +389,25 @@ function gem_help_cb(event)
     event.stopPropagation();
 
     if (document.removeEventListener) {
-        document.removeEventListener("mousedown", gem_help, true);
+        document.removeEventListener("mousedown", gem_help_cb, true);
     }
     else if (document.detachEvent) {
-        document.detachEvent("mousedown", gem_help);
+        document.detachEvent("mousedown", gem_help_cb);
     }
     document.body.className = gem_help_old_body_class;
     var obj = event.target;
 
+    console.log("OBJ.dataGemObj");
+    console.log(obj.dataGemObj);
+
     if ('dataGemObj' in obj) {
         if (obj.dataGemObj.tagName == 'SELECT') {
             gem_help_select(obj.dataGemObj, event);
-            return;
         }
-    }
-    else {
+        else {
+            console.log("SHOW HERE");
+            gem_help_show(obj.dataGemObj.getAttribute("data-gem-help"));
+        }
     }
     gem_help_cleanup();
 }
