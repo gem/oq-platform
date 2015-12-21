@@ -174,6 +174,7 @@ div.info_overlay_hidden {
 div.gem_help_select {
     border: 1px solid grey;
     padding: 8px;
+    background: #f8f8f8;
 }
 
 div.gem_help_overlay {
@@ -191,15 +192,13 @@ div.gem_help_overlay iframe {
     align: center;
     width: 800px;
     position: relative;
-    top: 4px;
     height: 90%;
-    margin: 8px;
 }
 
 div.gem_help_overlay button {
     display: block;
     text-align: center;
-    margin: auto;
+    margin: 8px auto 8px auto;
 }
 
 div.gem_help_highlight {
@@ -269,8 +268,6 @@ function gem_help_highlight(rect, obj)
     div.style.height = (rect[3] + 2 + (border * 2)) + "px";
     div.className = "gem_help_highlight";
 
-    console.log("HIGHLIGHT");
-    console.log(obj);
     div.dataGemObj = obj;
     obj.setAttribute('data-gem-helped', 'True');
 
@@ -280,7 +277,6 @@ function gem_help_highlight(rect, obj)
 
 function gem_help()
 {
-    console.log("gem_help()");
     if (document.body.className != "gem_help") {
         gem_help_old_body_class = document.body.className;
         document.body.className = "gem_help";
@@ -311,27 +307,36 @@ function gem_help()
     }
 }
 
+function gem_help_select_remove()
+{
+    var prev_help_sel = $('#gem_help_select')[0];
+    if (prev_help_sel) {
+        prev_help_sel.parentNode.removeChild(prev_help_sel);
+    }
+}
+
+
 function gem_help_show(target)
 {
     var div = document.createElement('div');
     var iframe = document.createElement('iframe');
-    var button = document.createElement('button');
+    var button_top = document.createElement('button');
+    var button_bot = document.createElement('button');
 
     div.id = "gem_help_overlay";
     div.className = "gem_help_overlay";
     iframe.id = "gem_help_iframe";
     iframe.src = '/static/taxtweb/' + target;
-    button.innerHTML = "Close";
-    button.onclick = function () { var obj = $('#gem_help_overlay')[0]; obj.parentNode.removeChild(obj); };
+    button_top.innerHTML = "Close";
+    button_top.onclick = function () { var obj = $('#gem_help_overlay')[0]; obj.parentNode.removeChild(obj); };
+    button_bot.innerHTML = "Close";
+    button_bot.onclick = function () { var obj = $('#gem_help_overlay')[0]; obj.parentNode.removeChild(obj); };
 
+    div.appendChild(button_top);
     div.appendChild(iframe);
-    div.appendChild(button);
+    div.appendChild(button_bot);
 
-    var prev_help = $('#gem_help_select')[0];
-
-    if (prev_help) {
-        prev_help.parentNode.removeChild(prev_help);
-    }
+    gem_help_select_remove();
 
     document.body.appendChild(div);
 }
@@ -340,34 +345,46 @@ function gem_help_show(target)
 
 function gem_help_select(obj, event)
 {
-    console.log("dentro3");
+    gem_help_cleanup();
 
-   var div = document.createElement('div');
-   div.id = 'gem_help_select';
-   div.style.position = "absolute";
-   div.style.top = event.clientY + "px";
-   div.style.left = event.clientX + "px";
-   div.style.backgroundColor = "red";
+    var div = document.createElement('div');
+    div.id = 'gem_help_select';
+    div.className = 'gem_help_select';
+    div.style.position = "absolute";
+    div.style.top = event.clientY + "px";
+    div.style.left = event.clientX + "px";
 
-   for (var i = 0 ; i < obj.length ; i++) {
-       var info = obj[i].getAttribute("data-gem-help");
-       console.log("one found " + info);
-       if (info) {
-           div.innerHTML += '<a href="#" onclick="gem_help_show(\'' + obj[i].getAttribute("data-gem-help") + '\');">' + obj[i].innerHTML + '</a><br>';
-       }
-   }
-   document.body.appendChild(div);
+    for (var i = 0 ; i < obj.length ; i++) {
+        var info = obj[i].getAttribute("data-gem-help");
+
+        if (info) {
+            div.innerHTML += '<span data-gem-help="' + obj[i].getAttribute("data-gem-help") + '">' +
+                            obj[i].innerHTML + '</span><br>';
+        }
+        else {
+            div.innerHTML += '<span>' + obj[i].innerHTML + '</span><br>';
+        }
+    }
+    document.body.appendChild(div);
+
+    var helps = $(div).children("span[data-gem-help]");
+
+    var target;
+    for (var i = 0 ; i < helps.length ; i++) {
+        target = $(helps[i]);
+
+        var rect = [target.offset().left, target.offset().top,  target.width(), target.height()];
+        gem_help_highlight(rect, target[0]);
+    }
 }
 
 function gem_help_cleanup()
 {
-    console.log('gem_help_cleanup - begin');
     var obj, objs;
     objs = $('[data-gem-helped]');
     for (var i = 0 ; i < objs.length ; i++) {
         obj = objs[i];
         obj.removeAttribute('data-gem-helped');
-        console.log('zigu');
     }
 
     objs = $('.gem_help_highlight');
@@ -376,18 +393,28 @@ function gem_help_cleanup()
         obj = objs[i];
         obj.parentNode.removeChild(obj);
         delete obj;
-        console.log('zagu');
     }
-    console.log('gem_help_cleanup - end');
 }
 
 
 function gem_help_cb(event)
 {
-    console.log("gem_help_cb");
     event.preventDefault();
     event.stopPropagation();
 
+    var obj = event.target;
+
+    if ('dataGemObj' in obj) {
+        if (obj.dataGemObj.tagName == 'SELECT') {
+            gem_help_select(obj.dataGemObj, event);
+            return;
+        }
+        else {
+            gem_help_show(obj.dataGemObj.getAttribute("data-gem-help"));
+        }
+    }
+    gem_help_cleanup();
+    gem_help_select_remove();
     if (document.removeEventListener) {
         document.removeEventListener("mousedown", gem_help_cb, true);
     }
@@ -395,21 +422,6 @@ function gem_help_cb(event)
         document.detachEvent("mousedown", gem_help_cb);
     }
     document.body.className = gem_help_old_body_class;
-    var obj = event.target;
-
-    console.log("OBJ.dataGemObj");
-    console.log(obj.dataGemObj);
-
-    if ('dataGemObj' in obj) {
-        if (obj.dataGemObj.tagName == 'SELECT') {
-            gem_help_select(obj.dataGemObj, event);
-        }
-        else {
-            console.log("SHOW HERE");
-            gem_help_show(obj.dataGemObj.getAttribute("data-gem-help"));
-        }
-    }
-    gem_help_cleanup();
 }
 
 //-->
