@@ -3482,10 +3482,10 @@ function taxt_Initiate() {
 
     // FIXME: t0 only, load a preview saved taxonomy must be done
     var MaterialCB11 = [];
-    /* MAT99 */ MaterialCB11.push({ _text: 'Unknown Material', 'dataGemHelp': 'glossary/cast-in-place-concrete--cip.html'});
+    /* MAT99 */ MaterialCB11.push('Unknown Material');
     /* C99   */ MaterialCB11.push('Concrete, unknown reinforcement');
     /* CU    */ MaterialCB11.push('Concrete, unreinforced');
-    /* CR    */ MaterialCB11.push('Concrete, reinforced');
+    /* CR    */ MaterialCB11.push({ _text:'Concrete, reinforced', 'dataGemHelp': 'glossary/concrete-reinforced--cr.html' });
     /* SRC   */ MaterialCB11.push('Concrete, composite with steel section');
     /* S     */ MaterialCB11.push('Steel');
     /* ME    */ MaterialCB11.push('Metal (except steel)');
