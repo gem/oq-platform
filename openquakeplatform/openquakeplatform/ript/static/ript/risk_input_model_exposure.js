@@ -421,31 +421,32 @@ $('#saveBtn').click(function() {
             '\t</exposureModel> \n' +
         '</nrml>';
 
-    // Provide the user with the xml output
-    $('#outPut').empty();
-    $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
-    $('#outputDiv').css('display', 'block');
-    selectAllText();
+
+    // Call the engine server api to check if the NRML is valid                                                                                                                                          
+    $.post(VALIDATION_URL, {xml_text: NRML}).done(function(resp){
+        // Provide the user with the xml output
+        var out_str = NRML;
+        $('#outPut').empty();
+        $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>' + out_str + '</textarea>');
+        $('#outputDiv').css('display', 'block');
+        var textBox = document.getElementById("textarea");
+        if (resp.error_line) {
+            $('#infoMsg').css('display', 'none');
+            $('#validationErrorMsg').text(resp.error_msg);
+            $('#validationErrorMsg').css('display', 'block');
+            selectTextareaLine(textBox, resp.error_line);
+        } else {
+            $('#validationErrorMsg').css('display', 'none');
+            $('#infoMsg').css('display', 'block');
+            selectAllTextareaText(textBox);
+        }
+    });
+
 });
 
 $('#selectAll').click(function() {
     var textBox = document.getElementById("textarea");
     textBox.select();
 });
-
-function selectAllText () {
-    var textBox = document.getElementById("textarea");
-    textBox.onfocus = function() {
-        textBox.select();
-
-        // Work around Chrome's little problem
-        textBox.onmouseup = function() {
-            // Prevent further mouseup intervention
-            textBox.onmouseup = null;
-            return false;
-        };
-    };
-}
-
 
 

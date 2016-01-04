@@ -134,7 +134,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>
     <div id="outputDiv">
-      <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="infoMsg" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="validationErrorMsg" class="alert alert-warning" role="alert">Error message</div>
       <button id="selectAll" type="button" class="btn btn-primary">Select</button>
       <br>
       <div id="outPut" style="width:500px;"></div>
@@ -184,7 +185,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     <br>
     <div id="outputFFDiv">
-      <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="infoMsgFF" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="validationErrorMsgFF" class="alert alert-warning" role="alert">Error message</div>
       <button id="selectAllFF" type="button" class="btn btn-primary">Select</button>
       <br>
       <div id="outPutFF" style="width:500px;"></div>
@@ -231,7 +233,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     <br>
     <div id="outputVFDiv">
-      <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="infoMsgVF" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="validationErrorMsgVF" class="alert alert-warning" role="alert">Error message</div>
       <button id="selectAllVF" type="button" class="btn btn-primary">Select</button>
       <br>
       <div id="outPutVF" style="width:500px;"></div>
@@ -248,9 +251,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/explore/'; }
         $( "#tabs" ).tabs();
+        var VALIDATION_URL = 'http://10.0.3.2:8000/v1/valid/';
     </script>
     <script src="{{ STATIC_URL }}js/handsontable.full.min.js"></script>
     <script src="{{ STATIC_URL }}ript/risk_input_model_exposure.js"></script>
     <script src="{{ STATIC_URL }}ript/risk_input_model_fragility.js"></script>
     <script src="{{ STATIC_URL }}ript/risk_input_model_vulnerability.js"></script>
+    <script src="{{ STATIC_URL }}ript/selectTextareaLine.js"></script>
+    <script src="{{ STATIC_URL }}ript/selectAllTextareaText.js"></script>
 {% endblock extra_script %}
