@@ -131,14 +131,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <div class="alert alert-info" role="alert">2. Copy and paste values from a spreadsheet into the table below. Optionally one can create new rows using Ctl + Shit + n.</div>
     <div id="table"></div>
     <br>
-    <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+    <button id="saveBtnEX" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>
-    <div id="outputDiv">
-      <div id="infoMsg" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
-      <div id="validationErrorMsg" class="alert alert-warning" role="alert">Error message</div>
-      <button id="selectAll" type="button" class="btn btn-primary">Select</button>
+    <div id="outputDivEX">
+      <div id="infoMsgEX" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="validationErrorMsgEX" class="alert alert-warning" role="alert">Error message</div>
+      <button id="selectAllEX" type="button" class="btn btn-primary">Select</button>
       <br>
-      <div id="outPut" style="width:500px;"></div>
+      <div id="outputTextEX" style="width:500px;"></div>
     </div>
   </div>
   <div id="tabs-2">
@@ -184,12 +184,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <button id="saveBtnFF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     </div>
     <br>
-    <div id="outputFFDiv">
+    <div id="outputDivFF">
       <div id="infoMsgFF" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
       <div id="validationErrorMsgFF" class="alert alert-warning" role="alert">Error message</div>
       <button id="selectAllFF" type="button" class="btn btn-primary">Select</button>
       <br>
-      <div id="outPutFF" style="width:500px;"></div>
+      <div id="outputTextFF" style="width:500px;"></div>
     </div>
   </div>
   <div id="tabs-3">
@@ -232,12 +232,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <button id="saveBtnVF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     </div>
     <br>
-    <div id="outputVFDiv">
+    <div id="outputDivVF">
       <div id="infoMsgVF" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
       <div id="validationErrorMsgVF" class="alert alert-warning" role="alert">Error message</div>
       <button id="selectAllVF" type="button" class="btn btn-primary">Select</button>
       <br>
-      <div id="outPutVF" style="width:500px;"></div>
+      <div id="outputTextVF" style="width:500px;"></div>
     </div>
   </div>
 </div>
@@ -259,4 +259,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}ript/risk_input_model_vulnerability.js"></script>
     <script src="{{ STATIC_URL }}ript/selectTextareaLine.js"></script>
     <script src="{{ STATIC_URL }}ript/selectAllTextareaText.js"></script>
+    <script src="{{ STATIC_URL }}ript/validateAndDisplayNRML.js"></script>
 {% endblock extra_script %}

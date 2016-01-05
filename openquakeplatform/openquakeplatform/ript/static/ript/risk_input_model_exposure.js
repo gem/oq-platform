@@ -21,7 +21,7 @@ var showArea = false;
 
 $( document ).ready(function() {
     updateTable();
-    $('#outputDiv').css('display', 'none');
+    $('#outputDivEX').css('display', 'none');
     $('#absoluteSpinner').hide();
 });
 
@@ -107,7 +107,7 @@ function costTrackerManager () {
 
 $('#exposureForm').change(function() {
     updateTable();
-    $('#outputDiv').css('display', 'none');
+    $('#outputDivEX').css('display', 'none');
 });
 
 function checkForValueInHeader(header, argument) {
@@ -210,11 +210,11 @@ function updateTable() {
         }
     });
 
-    $('#outPut').empty();
-    $('#saveBtn').css('display', 'block');
+    $('#outputTextEX').empty();
+    $('#saveBtnEX').css('display', 'block');
 }
 
-$('#saveBtn').click(function() {
+$('#saveBtnEX').click(function() {
     // Get the values from the table
     var data = exposureTable.getData();
 
@@ -421,43 +421,11 @@ $('#saveBtn').click(function() {
             '\t</exposureModel> \n' +
         '</nrml>';
 
-    function displayValidationError(textBox, resp){
-        $('#infoMsg').css('display', 'none');
-        $('#validationErrorMsg').text(resp.error_msg);
-        $('#validationErrorMsg').css('display', 'block');
-        selectTextareaLine(textBox, resp.error_line);
-    }
-
-    function displayInfoMessage(textBox){
-        $('#validationErrorMsg').css('display', 'none');
-        $('#infoMsg').css('display', 'block');
-        selectAllTextareaText(textBox);
-    }
-
-    // Provide the user with the xml output
-    var out_str = NRML;
-    $('#outPut').empty();
-    $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>' + out_str + '</textarea>');
-    $('#outputDiv').css('display', 'block');
-    var textBox = document.getElementById("textarea");
-
-    // Call the engine server api to check if the NRML is valid                                                                                                                                          
-    $.post(VALIDATION_URL, {xml_text: NRML})
-        .done(function(resp){
-            if (resp.error_line) {
-                displayValidationError(textBox, resp);
-            } else {
-                displayInfoMessage(textBox);
-            }
-        })
-        .fail(function(resp){
-            alert("The call to the validation API failed, due to the following reason: " + resp.statusText);
-            displayInfoMessage(textBox);
-        });
+    validateAndDisplayNRML(NRML, 'EX');
 
 });
 
-$('#selectAll').click(function() {
+$('#selectAllEX').click(function() {
     var textBox = document.getElementById("textarea");
     textBox.select();
 });
