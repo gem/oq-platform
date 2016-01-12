@@ -7,20 +7,24 @@ from selenium.webdriver.common.by import By
 class Platform(object):
     DT = 0.1
 
-    def __init__(self):
+    def __init__(self, user=None, passwd=None, email=None):
 
         self.driver = None
         self.basepath = None
-        self.user = None
-        self.passwd = None
+        self.user = user
+        self.passwd = passwd
+        self.email = email
         self.debugger = None
+        self.users = []
+        self.platforms = []
+        self.is_logged = False
 
     def init(self):
         # we import configuration variables here to keep highest
         # level of isolation without creating unnecessary globals
         try:
             from openquakeplatform.test.config import (
-                pla_basepath, pla_user, pla_passwd, pla_debugger)
+                pla_basepath, pla_user, pla_passwd, pla_email, pla_debugger)
         except ImportError:
             sys.exit("ERROR: config.py not found. Copy config.py.tmpl in "
                      "config.py and modify it properly.")
@@ -28,15 +32,21 @@ class Platform(object):
         self.debugger = pla_debugger
         self.driver = self.driver_create("firefox", self.debugger)
         self.basepath = pla_basepath
-        self.user = pla_user
-        self.passwd = pla_passwd
+        if not self.user:
+            self.user = pla_user
+        if not self.passwd:
+            self.passwd = pla_passwd
+        if not self.email:
+            self.email = pla_email
 
         self.driver.maximize_window()
         self.main_window = None
         while not self.main_window:
             self.main_window = self.driver.current_window_handle
 
-        self.homepage_login()
+        if self.homepage_login():
+            self.is_logged = True
+        time.sleep(3)
 
     @staticmethod
     def driver_create(name, debugger):
@@ -58,6 +68,15 @@ class Platform(object):
             driver = None
 
         return driver
+
+    def platform_create(self, user, passwd):
+        pl = Platform(user, passwd)
+        self.platforms.append(pl)
+        return pl
+
+    def platform_destroy(self, pl):
+        self.platforms.remove(pl)
+        pl.fini()
 
     def homepage_login(self):
         self.driver.get(self.basepath)
@@ -87,13 +106,111 @@ class Platform(object):
             "//button[@type='submit' and text()='Sign in']")
         submit_button.click()
 
+        inputs = self.driver.find_elements(By.XPATH, "//a[text()='Sign in']")
+        if len(inputs) == 1:
+            return False
+        else:
+            return True
+
     @property
     def url(self):
         return self.driver.current_url
 
+    def user_add(self, user, passwd, email):
+        self.driver.get(self.basepath + "/admin/auth/user/add/")
+        user_field = self.xpath_finduniq(
+            "//input[@id='id_username' and @type='text' "
+            "and @name='username']")
+        user_field.send_keys(user)
+
+        passwd1_field = self.xpath_finduniq(
+            "//input[@id='id_password1' and @type='password' "
+            "and @name='password1']")
+        passwd1_field.send_keys(passwd)
+
+        passwd2_field = self.xpath_finduniq(
+            "//input[@id='id_password2' and @type='password' "
+            "and @name='password2']")
+        passwd2_field.send_keys(passwd)
+
+        # <div class="submit-row">
+        # <input class="default" type="submit" name="_save" value="Save">
+        submit_button = self.xpath_finduniq(
+            "//div[@class='submit-row']"
+            "/input[@type='submit' and @name='_save' and @value='Save']")
+        submit_button.click()
+
+        # <h1>Change user</h1>
+        self.xpath_finduniq("//h1[normalize-space(text()) = 'Change user']")
+
+        # <input id="id_email" class="vTextField" type="text" name="email"
+        #     maxlength="75">
+        email_field = self.xpath_finduniq(
+            "//input[@id='id_email' and @type='text' and @name='email']")
+        email_field.send_keys(email)
+
+        # <div class="submit-row">
+        # <input class="default" type="submit" name="_save" value="Save">
+        submit_button = self.xpath_finduniq(
+            "//div[@class='submit-row']"
+            "/input[@type='submit' and @name='_save' and @value='Save']")
+        submit_button.click()
+
+        self.users.append(user)
+
+    def user_del(self, user):
+        self.driver.get(self.basepath + "/admin/auth/user/")
+
+        # <tr>
+        #   <td class="action-checkbox">
+        #     <input class="action-select" type="checkbox" value="6"
+        #         name="_selected_action">
+        #   </td>
+        #   <th>
+        #     <a href="/admin/auth/user/6/">rabado</a>
+        #   </th>
+        # </tr>
+        del_cbox = self.xpath_finduniq(
+#            "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
+#            "input[@class='action-select' and @type='checkbox']")
+
+            "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
+            "input[@class='action-select' and @type='checkbox']"
+            % user)
+
+        del_cbox.click()
+
+        # <select name="action">
+        # <option selected="selected" value="">---------</option>
+        # <option value="delete_selected">Delete selected users</option>
+        # </select>
+        action = self.xpath_finduniq("//select[@name='action']")
+        self.select_item_set(action, "Delete selected users")
+
+        # <button class="button" value="0" name="index"
+        #     title="Run the selected action" type="submit">Go</button>
+        butt = self.xpath_finduniq(
+            "//button[@name='index' and @type='submit' and text() = 'Go']")
+
+        butt.click()
+
+        # new page and confirm deletion
+        # <input type="submit" value="Yes, I'm sure">
+        butt = self.xpath_finduniq(
+            "//input[@type=\"submit\" and @value=\"Yes, I'm sure\"]")
+
+        butt.click()
+
+        self.users.remove(user)
+
     def fini(self):
         # return to main window
         self.windows_reset()
+
+        if not self.is_logged:
+            print "WARNING: Platform.fini without user (%s)" % self.user
+            self.driver.quit()
+            return
 
         # try to find logout button (in the header)
         try:
@@ -105,6 +222,8 @@ class Platform(object):
         #nastasi
         #<b class="caret"></b>
         #</a>
+        time.sleep(5)
+
         user_button = self.xpath_finduniq(
             "//a[@href='#' and b[@class='caret']]")
         user_button.click()
@@ -129,6 +248,15 @@ class Platform(object):
         logout_button.click()
 
         self.driver.quit()
+
+    def cleanup(self):
+        platforms_loop = self.platforms[:]
+        for platform in platforms_loop:
+            self.platform_destroy(platform)
+
+        users_loop = self.users[:]
+        for user in users_loop:
+            self.user_del(user)
 
     def navigate(self, dest):
         # driver, basepath, self.dest):
