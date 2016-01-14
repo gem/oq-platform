@@ -225,6 +225,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
+    'django.contrib.redirects',
 
     # Third party apps
     'photologue',
@@ -304,6 +305,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'pagination.middleware.PaginationMiddleware',
     # icebox need csrf to be disabled to work
     #'django.middleware.csrf.CsrfViewMiddleware',
