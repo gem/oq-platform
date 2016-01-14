@@ -92,7 +92,7 @@ urlpatterns = patterns('',
         template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde/hrde.html"), name='hrde'),
-    url(r'^ript/$|^risk_input_preparation_toolkit/$', TemplateView.as_view(
+    url(r'^ript/$', TemplateView.as_view(
         template_name="ript/ript.html"), name='ript'),
 
 
