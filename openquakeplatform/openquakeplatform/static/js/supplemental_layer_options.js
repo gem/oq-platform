@@ -83,12 +83,28 @@ $('#supplemental-layer-menu').mousedown(function() {
 $('#supplemental-layer-menu').change(function() {
     var supplementalLayerSelection = document.getElementById('supplemental-layer-menu').value;
 
-    var layer = L.tileLayer.wms("/geoserver/wms", {
-        layers: supplementalLayerName[supplementalLayerSelection],
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0'
+    layerNameToAdd = supplementalLayerName[supplementalLayerSelection];
+    addNewLayer = true;
+    // check if the layer has already been added
+    map.eachLayer(function (layer) {
+        try {
+            if (layer.wmsParams.layers == layerNameToAdd) {
+                addNewLayer = false;
+                // show the selected layer on top of the others
+                layer.bringToFront();
+            }
+        } catch (err) {
+            // only wms layers have wmsParams
+        }
     });
 
-    map.addLayer(layer);
+    if (addNewLayer) {
+        var supplementalLayer = L.tileLayer.wms("/geoserver/wms", {
+            layers: layerNameToAdd,
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.0'
+        });
+        map.addLayer(supplementalLayer);
+    }
 });
