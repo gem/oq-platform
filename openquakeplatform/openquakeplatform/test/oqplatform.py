@@ -214,18 +214,19 @@ class Platform(object):
 
         # try to find logout button (in the header)
         try:
-            self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
+            user_button = self.xpath_finduniq(
+                "//a[@href='#' and b[@class='caret']]")
         except (TimeoutError, ValueError, NotUniqError):
             self.driver.get(self.basepath)
+            time.sleep(3)
+            user_button = self.xpath_finduniq(
+                "//a[@href='#' and b[@class='caret']]")
 
         #<a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #nastasi
         #<b class="caret"></b>
         #</a>
-        time.sleep(5)
 
-        user_button = self.xpath_finduniq(
-            "//a[@href='#' and b[@class='caret']]")
         user_button.click()
 
         #<a href="/account/logout/">
