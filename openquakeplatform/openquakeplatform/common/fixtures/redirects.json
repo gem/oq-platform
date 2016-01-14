@@ -1,0 +1,13 @@
+None
+None
+[
+    {
+        "pk": 1, 
+        "model": "redirects.redirect", 
+        "fields": {
+            "new_path": "/ript/", 
+            "site": 1, 
+            "old_path": "/risk_input_preparation_toolkit/"
+        }
+    }
+]
