@@ -83,20 +83,29 @@ $('#supplemental-layer-menu').mousedown(function() {
 $('#supplemental-layer-menu').change(function() {
     var supplementalLayerSelection = document.getElementById('supplemental-layer-menu').value;
 
-    layerNameToAdd = supplementalLayerName[supplementalLayerSelection];
-    addNewLayer = true;
+    var layerNameToAdd = supplementalLayerName[supplementalLayerSelection];
+    var addNewLayer = true;
+
+    // Define an exception to be used to break the eachLayer loop
+    var BreakException = {};
+
     // check if the layer has already been added
-    map.eachLayer(function (layer) {
-        try {
-            if (layer.wmsParams.layers == layerNameToAdd) {
+    try {
+        map.eachLayer(function (layer) {
+            // only wms layers have wmsParams
+            if (typeof(layer.wmsParams) !== 'undefined'
+                    && layer.wmsParams.layers == layerNameToAdd) {
                 addNewLayer = false;
                 // show the selected layer on top of the others
                 layer.bringToFront();
+                // no need to continue the loop, because the layer has been already found
+                throw BreakException;
             }
-        } catch (err) {
-            // only wms layers have wmsParams
-        }
-    });
+        });
+    } catch(e) {
+        // if the eachLayer loop was intentionally stopped, do nothing
+        if (e !== BreakException) throw e;
+    }
 
     if (addNewLayer) {
         var supplementalLayer = L.tileLayer.wms("/geoserver/wms", {
