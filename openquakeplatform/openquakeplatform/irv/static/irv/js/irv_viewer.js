@@ -1416,12 +1416,15 @@ var startApp = function() {
         minHeight: 220,
         minWidth: 220
     });
-    $('#themeTabs').draggable();
 
     $('#themeTabs').tabs({
         collapsible: false,
         selected: -1,
         active: false,
+    });
+
+    $( "#themeTabs" ).draggable({
+        cancel: "#project-def"
     });
 
     $('#cover').remove();
