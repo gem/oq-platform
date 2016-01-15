@@ -15,6 +15,9 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
+var allColors = ['red', 'blue', 'green', 'orange', 'purple', 'black'];
+var colors;
+
 var dataCat = "";
 var chartCat = "";
 var utfGrid = {};
@@ -63,6 +66,12 @@ var TILESTREAM_API_URL = TS_URL + '/api/v1/Tileset/';
 $( document ).ready(function() {
     $('#absoluteSpinner').hide();
     $('#cover').hide();
+    
+    // default is 3 countries
+    colors = allColors.slice(0, 3);
+    $("#chart-var-numb").change(function(){    
+        colors = allColors.slice(0, $(this).val());
+    });
 });
 
 var startApp = function() {
@@ -451,7 +460,7 @@ var startApp = function() {
         for (var i=0; i<numberOfCountries; i++) {
             country.splice(numberOfCountries,10);
         }
-
+        
         var winH = ($(window).height() / 2);
         var winW = ($(window).width());
 
@@ -558,13 +567,18 @@ var startApp = function() {
             t.selectAll(".trait").attr("transform", function(d) { return "translate(" + x(d) + ")"; });
             t.selectAll(".foreground path").attr("d", path);
         }
+        
+        //move latr element of array to the beginning
+        lastColor = colors.pop();
+        colors.unshift(lastColor);
+        
         // Update the css for each country
-        $("."+countriesArray[0]).css('stroke', 'red');
-        $("."+countriesArray[1]).css('stroke', 'blue');
-        $("."+countriesArray[2]).css('stroke', 'green');
-        $("."+countriesArray[3]).css('stroke', 'orange');
-        $("."+countriesArray[4]).css('stroke', 'purple');
-        $("."+countriesArray[5]).css('stroke', 'black');
+        $("."+countriesArray[0]).css('stroke', colors[0]);
+        $("."+countriesArray[1]).css('stroke', colors[1]);
+        $("."+countriesArray[2]).css('stroke', colors[2]);
+        $("."+countriesArray[3]).css('stroke', colors[3]); 
+        $("."+countriesArray[4]).css('stroke', colors[4]);
+        $("."+countriesArray[5]).css('stroke', colors[5]);
         // Returns the path for a given data point.
         function path(d) {
             return line(attributes.map(function(p) { return [x(p), y[p](d[p])]; }));
