@@ -17,55 +17,11 @@
 import re
 import json
 from lxml import etree
-# from scipy import stats
-# import numpy
-# import re
-# try:
-#     from django.contrib.admin.options import force_unicode
-# except ImportError:
-#     from django.utils.encoding import force_text as force_unicode
 
-# from django.core.exceptions import ObjectDoesNotExist
-# from django.http import (HttpResponse,
-#                          HttpResponseNotFound,
-#                          Http404,
-#                          )
-# from django.shortcuts import render_to_response
-# from django.core import serializers
-# from django.core.serializers.json import DjangoJSONEncoder
-# from django.template import RequestContext
-# from django.views.generic.detail import BaseDetailView
-# from django.utils.cache import add_never_cache_headers
-# from django.utils.text import slugify
-# from django.contrib import messages
-# from django.contrib.auth.models import User
-# from django.shortcuts import redirect
-
-# from models import (GeneralInformation,
-#                     CAT, CATEGORIES,
-#                     IMT, INTENSITY_MEASURE_TYPES,
-#                     IMU,
-#                     EDP,
-#                     RVP, RESP_VAR_PAR,
-#                     RVU, RESP_VAR_UNITS,
-#                     EDU,
-#                     TA, TYPES_OF_ASSESSMENT,
-#                     FDT,
-#                     FUNC_DISTR_TYPES,  # NOTE: Never used
-#                     RV, FDS, FUNC_DISTR_SHAPES_ALL,
-#                     FUNC_DISTR_SHAPES_NRML_ALL)
-# from forms import FiltersForm
-
-# SERIALIZE_NS_MAP = {None: 'http://openquake.org/xmlns/nrml/0.4',
-#                     'gml': 'http://www.opengis.net/gml'}
-# CART_INFO_SFX = "collection of curves to export as a single NRML file"
 from django.http import (HttpResponse,
                          HttpResponseNotFound,
                          HttpResponseBadRequest,
                          )
-
-from openquake.baselib.general import groupby, writetmp
-from openquake.commonlib import nrml, readinput, valid
 
 def _make_response(error_msg, error_line, valid):
     response_data = dict(error_msg=error_msg,
@@ -92,6 +48,9 @@ def validate_nrml(request):
                         (None if no error was found or if it was not a
                         validation error)
     """
+    from openquake.baselib.general import writetmp
+    from openquake.commonlib import nrml
+
     xml_text = request.POST.get('xml_text')
     if not xml_text:
         return HttpResponseBadRequest(
