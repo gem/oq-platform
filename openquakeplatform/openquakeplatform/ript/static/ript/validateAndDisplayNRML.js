@@ -2,7 +2,8 @@ function validateAndDisplayNRML(NRML, funcType){
     // funcType can be 'EX', 'FF' or 'VF'
 
     function displayValidationError(textBox, error_msg){
-        $('#validationErrorMsg' + funcType).text(error_msg);
+        $('#validationErrorMsg' + funcType).text(
+            'Validation error: ' + error_msg);
         $('#validationErrorMsg' + funcType).css('display', 'block');
     }
 
