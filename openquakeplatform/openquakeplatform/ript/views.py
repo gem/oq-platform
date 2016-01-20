@@ -23,6 +23,16 @@ from django.http import (HttpResponse,
                          HttpResponseBadRequest,
                          )
 
+def _get_error_line(exc_msg):
+    # check if the exc_msg contains a line number indication
+    search_match = re.search(r'line \d+', exc_msg)
+    if search_match:
+        error_line = int(search_match.group(0).split()[1])
+    else:
+        error_line = None
+    return error_line
+
+
 def _make_response(error_msg, error_line, valid):
     response_data = dict(error_msg=error_msg,
                          error_line=error_line,
@@ -72,16 +82,12 @@ def validate_nrml(request):
         else:
             # if it is another kind of object, it is not obvious a priori how
             # to extract the error line from it
+            # but we can attempt anyway to extract it
+            error_line = _get_error_line(unicode(exc_msg))
             return _make_response(
-                error_msg=unicode(exc_msg), error_line=None, valid=False)
-        # if the line is not mentioned, the whole message is taken
-        error_msg = exc_msg.split(', line')[0]
-        # check if the exc_msg contains a line number indication
-        search_match = re.search(r'line \d+', exc_msg)
-        if search_match:
-            error_line = int(search_match.group(0).split()[1])
-        else:
-            error_line = None
+                error_msg=unicode(exc_msg), error_line=error_line, valid=False)
+        error_msg = exc_msg
+        error_line = _get_error_line(exc_msg)
         return _make_response(
             error_msg=error_msg, error_line=error_line, valid=False)
     else:
