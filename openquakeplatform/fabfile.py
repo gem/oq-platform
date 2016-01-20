@@ -47,6 +47,33 @@ GEM_DB_USER = os.getenv('GEM_DB_USER', 'oqplatform')
 #: Template for local_settings.py
 GEM_LOCAL_SETTINGS_TMPL = 'openquakeplatform/local_settings.py.template'
 
+def _check_risklib_nrmllib():
+    try:
+        local('python -c "from openquake.commonlib import nrml" >/dev/null 2>&1')
+    except SystemExit:
+        print """
+WARNING: 'openquake.commonlib.nrml' from 'oq-risklib' not found,
+'ript' application will not work properly; to add it you can choice one
+of these solutions:
+
+- install 'oq-hazardlib' and 'oq-risklib' as packages running:
+   sudo apt-get install python-software-properties
+   sudo add-apt-repository ppa:openquake/ppa
+   sudo apt-get update
+   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-risklib
+
+- install 'oq-hazardlib' and 'oq-risklib' packages with pip directly from git running:
+   sudo apt-get install python-software-properties
+   sudo add-apt-repository ppa:openquake/ppa
+   sudo apt-get update
+   sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
+   # (into virtualenv)
+   pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
+   pip install 'http://github.com/gem/oq-risklib/tarball/master'
+
+- download 'oq-hazardlib' and 'oq-risklib' manually from github and make available via PYTHONPATH
+  before run any python applications
+"""
 
 def bootstrap(db_name=None, db_user=None,
               db_pass=DB_PASSWORD, host='oq-platform.localdomain',
@@ -114,7 +141,7 @@ def bootstrap(db_name=None, db_user=None,
     # leave the user with superuser privs.
     # if user_created:
     #    _pgquery('ALTER USER %s WITH NOSUPERUSER' % db_user)
-
+    _check_risklib_nrmllib()
 
 def baseenv(host, db_name='oqplatform', db_user='oqplatform', db_pass=DB_PASSWORD,
             geonode_port=None, geoserver_port=None,
