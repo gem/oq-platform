@@ -1,17 +1,22 @@
 function validateAndDisplayNRML(NRML, funcType){
     // funcType can be 'EX', 'FF' or 'VF'
 
-    function displayValidationError(textBox, resp){
-        $('#infoMsg' + funcType).css('display', 'none');
-        $('#validationErrorMsg' + funcType).text(resp.error_msg);
+    function displayValidationError(textBox, error_msg){
+        $('#validationErrorMsg' + funcType).text(error_msg);
         $('#validationErrorMsg' + funcType).css('display', 'block');
-        selectTextareaLine(textBox, resp.error_line);
+    }
+
+    function hideValidationError(){
+        $('#validationErrorMsg' + funcType).css('display', 'none');
     }
 
     function displayInfoMessage(textBox){
-        $('#validationErrorMsg' + funcType).css('display', 'none');
         $('#infoMsg' + funcType).css('display', 'block');
         selectAllTextareaText(textBox);
+    }
+
+    function hideInfoMessage(){
+        $('#infoMsg' + funcType).css('display', 'none');
     }
 
     // Provide the user with the xml output
@@ -23,14 +28,20 @@ function validateAndDisplayNRML(NRML, funcType){
     // Call the engine server api to check if the NRML is valid                                                                                                                                          
     $.post(VALIDATION_URL, {xml_text: NRML})
         .done(function(resp){
-            if (resp.error_line) {
-                displayValidationError(textBox, resp);
+            if (resp.error_msg) {
+                displayValidationError(textBox, resp.error_msg);
+                if (resp.error_line) {
+                    selectTextareaLine(textBox, resp.error_line);
+                }
+                hideInfoMessage();
             } else {
                 displayInfoMessage(textBox);
+                hideValidationError()
             }
         })
         .fail(function(resp){
-            alert("The call to the validation API failed, due to the following reason: " + resp.statusText);
+            var error_msg = "The call to the validation API failed, returning following error message: " + resp.statusText;
+            displayValidationError(textBox, error_msg);
             displayInfoMessage(textBox);
         });
 
