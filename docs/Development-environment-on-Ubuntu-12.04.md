@@ -49,7 +49,7 @@ git clone http://github.com/gem/oq-platform.git
 ## Create the virtualenv
 ```bash
 cd ~/oq-platform
-virtualenv platform-env
+virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 ```
 ## Install the software local dependencies
