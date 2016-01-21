@@ -323,6 +323,10 @@ class Platform(object):
         wait_for(link_has_gone_stale)
 
     def screenshot(self, filename):
+        if not self.driver:
+            sys.stderr.write(
+                "Platform not initialized, screenshot impossible.\n")
+            return
         self.driver.get_screenshot_as_file(filename)
 
     def add_click_event(self):
