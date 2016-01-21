@@ -4,8 +4,15 @@ These are the main steps to install the OpenQuake Platform on Ubuntu 12.04 LTS u
 
 ```bash
 sudo apt-get install build-essential python-dev python-mock python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev
+```
 
-# to be able to use oq-risklib to use nrml validator from packages
+## Install optional dependencies to be able to use nrml validator from risklib package
+
+```
+#
+# ---- if your virtual environment HAS ACCESS to system-wide packages ----
+#
+
 sudo apt-get install python-software-properties
 sudo add-apt-repository ppa:openquake/ppa
 sudo apt-get update
@@ -22,6 +29,20 @@ pip install 'http://github.com/gem/oq-risklib/tarball/master'
 
 # OR download 'oq-hazardlib' and 'oq-risklib' manually from github and make available via PYTHONPATH
 # before run any python applications
+
+# ---- else if your virtual environment HASN'T ACCESS to system-wide packages ----
+
+# you can install all required packages using pip:
+pip install futures
+pip install decorator
+pip install psutil
+pip install Cython
+pip install h5py
+pip install selenium
+pip install nose
+pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
+pip install 'http://github.com/gem/oq-risklib/tarball/master'
+
 ```
 
 ## Change the PostgreSQL configuration
