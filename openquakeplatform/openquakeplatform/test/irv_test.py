@@ -19,6 +19,6 @@ class IrvTest(unittest.TestCase):
             100, 1)
 
         # check the result of tests
-        result = pla.xpath_finduniq(
+        pla.xpath_finduniq(
             "//span[@class='bar passed' and contains"
-            "(normalize-space(text()), '0 failures')]")
+            "(normalize-space(text()), ', 0 failures')]")
