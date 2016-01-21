@@ -25,9 +25,12 @@ class Platform(object):
         try:
             from openquakeplatform.test.config import (
                 pla_basepath, pla_user, pla_passwd, pla_email, pla_debugger)
-        except ImportError:
-            sys.exit("ERROR: config.py not found. Copy config.py.tmpl in "
-                     "config.py and modify it properly.")
+        except ImportError as exc:
+            sys.stderr.write(exc + "\n")
+            sys.exit("ERROR: config.py not found or incomplete. "
+                     "Copy config.py.tmpl in config.py and modify "
+                     "it properly or check if config.py.tmpl has "
+                     "any new fields.")
 
         self.debugger = pla_debugger
         self.driver = self.driver_create("firefox", self.debugger)
