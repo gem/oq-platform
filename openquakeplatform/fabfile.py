@@ -477,7 +477,8 @@ def _add_vulnerability_1(db_name, db_user, db_pass):
     local('python manage.py vuln_groups_create')
 
 def _add_svir_99(db_name, db_user, db_pass):
-    local('./openquakeplatform/bin/simqgis-layer-up.sh');
+    local('./openquakeplatform/bin/simqgis-layer-up.sh -s "http://localhost:%s"'
+          % GEM_GEONODE_PORT)
 
 def _set_auth():
     local('python manage.py loaddata '
