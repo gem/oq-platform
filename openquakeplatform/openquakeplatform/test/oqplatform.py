@@ -45,7 +45,7 @@ class Platform(object):
         self.driver.maximize_window()
         self.main_window = None
         while not self.main_window:
-            self.main_window = self.driver.current_window_handle
+            self.main_window = self.current_window_handle()
 
         if self.homepage_login():
             self.is_logged = True
@@ -390,26 +390,26 @@ class Platform(object):
                 break
 
     def select_window_by_name(self, title):
-        win_cur = self.driver.current_window_handle
+        win_cur = self.current_window_handle()
         for handle in self.driver.window_handles:
-            self.driver.switch_to.window(handle)
+            self.switch_to_window(handle)
             if self.driver.title == title:
                 return True
         else:
-            self.driver.switch_to.window(win_cur)
+            self.switch_to_window(win_cur)
         raise ValueError
 
     def select_main_window(self):
         if self.main_window:
-            self.driver.switch_to.window(self.main_window)
+            self.switch_to_window(self.main_window)
 
     def windows_reset(self):
         for handle in self.driver.window_handles:
             if handle == self.main_window:
                 continue
-            self.driver.switch_to.window(handle)
+            self.switch_to_window(handle)
             self.driver.close()
-        self.driver.switch_to.window(self.driver.window_handles)
+        self.switch_to_window(self.main_window)
 
     def window_close(self):
         self.driver.close()
