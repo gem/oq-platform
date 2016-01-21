@@ -443,9 +443,15 @@
 
         // empty any previously drawen chart
         $('#projectDef-tree').empty();
-        var svg = d3.select("#projectDef-tree").append("svg")
+        var svg = d3.select("#projectDef-tree")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
             .attr("viewBox", "-60 10 " + winW +" " + winH)
             .attr("id", "primary-svg-element")
+            .call(d3.behavior.zoom().scaleExtent([0.1, 5]).on("zoom", function () {
+                svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+            }))
             .append("svg:g")
             .attr("transform", "translate(" + margin.left + ",5)");
 

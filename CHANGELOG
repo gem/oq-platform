@@ -1,3 +1,8 @@
+  [Matteo Nastasi]
+  * Add default group and 'staff' capability for new users
+  * Improved selenium test suite with users and secondary profiles
+    management
+
 python-oq-platform (1.3.1)
 
   [Daniele Viganò]
