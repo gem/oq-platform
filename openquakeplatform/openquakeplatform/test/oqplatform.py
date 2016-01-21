@@ -16,7 +16,7 @@ class Platform(object):
         self.email = email
         self.debugger = None
         self.users = []
-        self.platforms = []
+        self.platforms = []  # secondary platforms only
         self.is_logged = False
 
     def init(self):
@@ -204,6 +204,7 @@ class Platform(object):
         self.users.remove(user)
 
     def fini(self):
+        self.cleanup()
         # return to main window
         self.windows_reset()
 
@@ -251,6 +252,7 @@ class Platform(object):
         self.driver.quit()
 
     def cleanup(self):
+        # removes secondary platforms
         platforms_loop = self.platforms[:]
         for platform in platforms_loop:
             self.platform_destroy(platform)
