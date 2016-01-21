@@ -416,3 +416,12 @@ class Platform(object):
 
     def window_close(self):
         self.driver.close()
+
+    def current_window_handle(self):
+        return self.driver.current_window_handle
+
+    def switch_to_alert(self):
+        return self.driver.switch_to_alert()
+
+    def switch_to_window(self, handle):
+        return self.driver.switch_to_window(handle)
