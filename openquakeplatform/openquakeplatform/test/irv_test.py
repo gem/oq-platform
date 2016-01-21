@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-import time
-import sys
 import unittest
 
 from openquakeplatform.test import pla
-from openquakeplatform.test.utils import *
 
 
 class IrvTest(unittest.TestCase):

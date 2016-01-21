@@ -174,9 +174,6 @@ class Platform(object):
         #   </th>
         # </tr>
         del_cbox = self.xpath_finduniq(
-#            "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
-#            "input[@class='action-select' and @type='checkbox']")
-
             "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
             "input[@class='action-select' and @type='checkbox']"
             % user)
