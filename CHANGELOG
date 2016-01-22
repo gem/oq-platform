@@ -1,4 +1,5 @@
   [Matteo Nastasi]
+  * Use oq-risklib as library to check nrml validity
   * Add default group and 'staff' capability for new users
   * Improved selenium test suite with users and secondary profiles
     management

@@ -25,9 +25,12 @@ class Platform(object):
         try:
             from openquakeplatform.test.config import (
                 pla_basepath, pla_user, pla_passwd, pla_email, pla_debugger)
-        except ImportError:
-            sys.exit("ERROR: config.py not found. Copy config.py.tmpl in "
-                     "config.py and modify it properly.")
+        except ImportError as exc:
+            sys.stderr.write(exc + "\n")
+            sys.exit("ERROR: config.py not found or incomplete. "
+                     "Copy config.py.tmpl in config.py and modify "
+                     "it properly or check if config.py.tmpl has "
+                     "any new fields.")
 
         self.debugger = pla_debugger
         self.driver = self.driver_create("firefox", self.debugger)
@@ -42,7 +45,7 @@ class Platform(object):
         self.driver.maximize_window()
         self.main_window = None
         while not self.main_window:
-            self.main_window = self.driver.current_window_handle
+            self.main_window = self.current_window_handle()
 
         if self.homepage_login():
             self.is_logged = True
@@ -171,9 +174,6 @@ class Platform(object):
         #   </th>
         # </tr>
         del_cbox = self.xpath_finduniq(
-#            "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
-#            "input[@class='action-select' and @type='checkbox']")
-
             "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
             "input[@class='action-select' and @type='checkbox']"
             % user)
@@ -390,26 +390,35 @@ class Platform(object):
                 break
 
     def select_window_by_name(self, title):
-        win_cur = self.driver.current_window_handle
+        win_cur = self.current_window_handle()
         for handle in self.driver.window_handles:
-            self.driver.switch_to.window(handle)
+            self.switch_to_window(handle)
             if self.driver.title == title:
                 return True
         else:
-            self.driver.switch_to.window(win_cur)
+            self.switch_to_window(win_cur)
         raise ValueError
 
     def select_main_window(self):
         if self.main_window:
-            self.driver.switch_to.window(self.main_window)
+            self.switch_to_window(self.main_window)
 
     def windows_reset(self):
         for handle in self.driver.window_handles:
             if handle == self.main_window:
                 continue
-            self.driver.switch_to.window(handle)
+            self.switch_to_window(handle)
             self.driver.close()
-        self.driver.switch_to.window(self.driver.window_handles)
+        self.switch_to_window(self.main_window)
 
     def window_close(self):
         self.driver.close()
+
+    def current_window_handle(self):
+        return self.driver.current_window_handle
+
+    def switch_to_alert(self):
+        return self.driver.switch_to_alert()
+
+    def switch_to_window(self, handle):
+        return self.driver.switch_to_window(handle)

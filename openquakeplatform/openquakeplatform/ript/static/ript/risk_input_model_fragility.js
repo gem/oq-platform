@@ -20,18 +20,18 @@ var header = [];
 var activeTablesObj = {};
 var limitStates;
 
-$('#outputFFDiv').hide();
+$('#outputDivFF').hide();
 
 $('#addFfsDiscrete').click(function() {
     var fFormat = 'discrete';
     updateFfsTable(fFormat);
-    $('#outputFFDiv').css('display', 'none');
+    $('#outputDivFF').css('display', 'none');
 });
 
 $('#addFfsContinuous').click(function() {
     var fFormat = 'continuous';
     updateFfsTable(fFormat);
-    $('#outputFFDiv').css('display', 'none');
+    $('#outputDivFF').css('display', 'none');
 });
 
 var count = 0;
@@ -125,7 +125,7 @@ function updateFfsTable (fFormat) {
 
     activeTablesObj[count] = fragilityTable;
 
-    $('#outPutFF').empty();
+    $('#outputTextFF').empty();
     $('#saveBtnFF').css('display', 'block');
 
     // Logic to remove a table
@@ -306,29 +306,11 @@ $('#saveBtnFF').click(function() {
             '\t</fragilityModel> \n' +
         '</nrml>';
 
-    // Provide the user with the xml output
-    $('#outPutFF').empty();
-    $('#outPutFF').append('<textarea id="textarea">'+NRML+'</textarea>');
-    $('#outputFFDiv').css('display', 'block');
-    selectAllFFText();
+    validateAndDisplayNRML(NRML, 'FF');
 });
 
 $('#selectAllFF').click(function() {
     var textBox = document.getElementById("textarea");
     textBox.select();
 });
-
-function selectAllFFText () {
-    var textBox = document.getElementById("textarea");
-    textBox.onfocus = function() {
-        textBox.select();
-
-        // Work around Chrome's little problem
-        textBox.onmouseup = function() {
-            // Prevent further mouseup intervention
-            textBox.onmouseup = null;
-            return false;
-        };
-    };
-}
 

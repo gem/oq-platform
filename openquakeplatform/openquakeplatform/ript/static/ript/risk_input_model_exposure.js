@@ -21,7 +21,7 @@ var showArea = false;
 
 $( document ).ready(function() {
     updateTable();
-    $('#outputDiv').css('display', 'none');
+    $('#outputDivEX').css('display', 'none');
     $('#absoluteSpinner').hide();
 });
 
@@ -107,7 +107,7 @@ function costTrackerManager () {
 
 $('#exposureForm').change(function() {
     updateTable();
-    $('#outputDiv').css('display', 'none');
+    $('#outputDivEX').css('display', 'none');
 });
 
 function checkForValueInHeader(header, argument) {
@@ -210,11 +210,11 @@ function updateTable() {
         }
     });
 
-    $('#outPut').empty();
-    $('#saveBtn').css('display', 'block');
+    $('#outputTextEX').empty();
+    $('#saveBtnEX').css('display', 'block');
 }
 
-$('#saveBtn').click(function() {
+$('#saveBtnEX').click(function() {
     // Get the values from the table
     var data = exposureTable.getData();
 
@@ -421,31 +421,12 @@ $('#saveBtn').click(function() {
             '\t</exposureModel> \n' +
         '</nrml>';
 
-    // Provide the user with the xml output
-    $('#outPut').empty();
-    $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
-    $('#outputDiv').css('display', 'block');
-    selectAllText();
+    validateAndDisplayNRML(NRML, 'EX');
+
 });
 
-$('#selectAll').click(function() {
+$('#selectAllEX').click(function() {
     var textBox = document.getElementById("textarea");
     textBox.select();
 });
-
-function selectAllText () {
-    var textBox = document.getElementById("textarea");
-    textBox.onfocus = function() {
-        textBox.select();
-
-        // Work around Chrome's little problem
-        textBox.onmouseup = function() {
-            // Prevent further mouseup intervention
-            textBox.onmouseup = null;
-            return false;
-        };
-    };
-}
-
-
 

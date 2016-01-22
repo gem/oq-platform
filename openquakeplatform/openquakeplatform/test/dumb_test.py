@@ -1,5 +1,3 @@
-import sys
-import nose
 import unittest
 
 
