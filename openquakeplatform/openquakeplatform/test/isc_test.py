@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import time
-import sys
 import unittest
 
 # from IPython.core import ultratb
@@ -8,7 +6,6 @@ import unittest
 #      color_scheme='Linux', call_pdb=1)
 
 from openquakeplatform.test import pla
-from openquakeplatform.test.utils import *
 
 
 class IscTest(unittest.TestCase):
@@ -48,5 +45,4 @@ class IscTest(unittest.TestCase):
                      115 + tail_ptr.location['y'])
         # raise ValueError
 
-        popup_ctx = pla.xpath_finduniq("//div[text() = '1951-03-19T04:23:00']",
-                                       50)
+        pla.xpath_finduniq("//div[text() = '1951-03-19T04:23:00']", 50)

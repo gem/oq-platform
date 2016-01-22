@@ -6,6 +6,45 @@ These are the main steps to install the OpenQuake Platform on Ubuntu 12.04 LTS u
 sudo apt-get install build-essential python-dev python-mock python-imaging python-virtualenv git postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-postgis openjdk-6-jre libxml2 libxml2-dev libxslt1-dev libxslt1.1 libblas-dev liblapack-dev curl wget xmlstarlet imagemagick gfortran python-nose libgeos-dev
 ```
 
+## Install optional dependencies to be able to use nrml validator from risklib package
+
+```
+#
+# ---- if your virtual environment HAS ACCESS to system-wide packages ----
+#
+
+sudo apt-get install python-software-properties
+sudo add-apt-repository ppa:openquake/ppa
+sudo apt-get update
+sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-risklib
+
+# OR install it from github using pip
+sudo apt-get install python-software-properties
+sudo add-apt-repository ppa:openquake/ppa
+sudo apt-get update
+sudo apt-get install python-decorator python-h5py python-psutil python-concurrent.futures
+# (into virtualenv)
+pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
+pip install 'http://github.com/gem/oq-risklib/tarball/master'
+
+# OR download 'oq-hazardlib' and 'oq-risklib' manually from github and make available via PYTHONPATH
+# before run any python applications
+
+# ---- else if your virtual environment HASN'T ACCESS to system-wide packages ----
+
+# you can install all required packages using pip:
+pip install futures
+pip install decorator
+pip install psutil
+pip install Cython
+pip install h5py
+pip install selenium
+pip install nose
+pip install 'http://github.com/gem/oq-hazardlib/tarball/master'
+pip install 'http://github.com/gem/oq-risklib/tarball/master'
+
+```
+
 ## Change the PostgreSQL configuration
 
 On top the `pg_hba.conf` add:
@@ -31,7 +70,7 @@ git clone http://github.com/gem/oq-platform.git
 ## Create the virtualenv
 ```bash
 cd ~/oq-platform
-virtualenv platform-env
+virtualenv --system-site-packages platform-env
 . platform-env/bin/activate
 ```
 ## Install the software local dependencies

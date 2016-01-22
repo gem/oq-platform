@@ -28,7 +28,6 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    # url(r'^$', views.index, name='index'),
+    url(r'^/checker(?P<taxonomy>[^?]*)', views.checker, name='checker'),
     url(r'^(?P<taxonomy>[^?]*)', views.index, name='index'),
-    url(r'^index(?P<taxonomy>[^?]*)', views.index, name='index'),
 )

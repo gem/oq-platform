@@ -1,36 +1,55 @@
 import time
+import sys
 from utils import TimeoutError, NotUniqError, wait_for
+from selenium.webdriver.common.by import By
 
 
 class Platform(object):
     DT = 0.1
 
-    def __init__(self):
+    def __init__(self, user=None, passwd=None, email=None):
 
         self.driver = None
         self.basepath = None
-        self.user = None
-        self.passwd = None
+        self.user = user
+        self.passwd = passwd
+        self.email = email
         self.debugger = None
+        self.users = []
+        self.platforms = []  # secondary platforms only
+        self.is_logged = False
 
     def init(self):
         # we import configuration variables here to keep highest
         # level of isolation without creating unnecessary globals
         try:
             from openquakeplatform.test.config import (
-                pla_basepath, pla_user, pla_passwd, pla_debugger)
-        except ImportError:
-            sys.exit("ERROR: config.py not found. Copy config.py.tmpl in "
-                     "config.py and modify it properly.")
+                pla_basepath, pla_user, pla_passwd, pla_email, pla_debugger)
+        except ImportError as exc:
+            sys.stderr.write(exc + "\n")
+            sys.exit("ERROR: config.py not found or incomplete. "
+                     "Copy config.py.tmpl in config.py and modify "
+                     "it properly or check if config.py.tmpl has "
+                     "any new fields.")
 
         self.debugger = pla_debugger
         self.driver = self.driver_create("firefox", self.debugger)
         self.basepath = pla_basepath
-        self.user = pla_user
-        self.passwd = pla_passwd
+        if not self.user:
+            self.user = pla_user
+        if not self.passwd:
+            self.passwd = pla_passwd
+        if not self.email:
+            self.email = pla_email
 
         self.driver.maximize_window()
-        self.homepage_login()
+        self.main_window = None
+        while not self.main_window:
+            self.main_window = self.current_window_handle()
+
+        if self.homepage_login():
+            self.is_logged = True
+        time.sleep(3)
 
     @staticmethod
     def driver_create(name, debugger):
@@ -53,8 +72,16 @@ class Platform(object):
 
         return driver
 
+    def platform_create(self, user, passwd):
+        pl = Platform(user, passwd)
+        self.platforms.append(pl)
+        return pl
+
+    def platform_destroy(self, pl):
+        self.platforms.remove(pl)
+        pl.fini()
+
     def homepage_login(self):
-        from selenium.webdriver.common.by import By
         self.driver.get(self.basepath)
         # <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #Sign in</a>
@@ -82,23 +109,125 @@ class Platform(object):
             "//button[@type='submit' and text()='Sign in']")
         submit_button.click()
 
+        inputs = self.driver.find_elements(By.XPATH, "//a[text()='Sign in']")
+        if len(inputs) == 1:
+            return False
+        else:
+            return True
+
     @property
     def url(self):
         return self.driver.current_url
 
+    def user_add(self, user, passwd, email):
+        self.driver.get(self.basepath + "/admin/auth/user/add/")
+        user_field = self.xpath_finduniq(
+            "//input[@id='id_username' and @type='text' "
+            "and @name='username']")
+        user_field.send_keys(user)
+
+        passwd1_field = self.xpath_finduniq(
+            "//input[@id='id_password1' and @type='password' "
+            "and @name='password1']")
+        passwd1_field.send_keys(passwd)
+
+        passwd2_field = self.xpath_finduniq(
+            "//input[@id='id_password2' and @type='password' "
+            "and @name='password2']")
+        passwd2_field.send_keys(passwd)
+
+        # <div class="submit-row">
+        # <input class="default" type="submit" name="_save" value="Save">
+        submit_button = self.xpath_finduniq(
+            "//div[@class='submit-row']"
+            "/input[@type='submit' and @name='_save' and @value='Save']")
+        submit_button.click()
+
+        # <h1>Change user</h1>
+        self.xpath_finduniq("//h1[normalize-space(text()) = 'Change user']")
+
+        # <input id="id_email" class="vTextField" type="text" name="email"
+        #     maxlength="75">
+        email_field = self.xpath_finduniq(
+            "//input[@id='id_email' and @type='text' and @name='email']")
+        email_field.send_keys(email)
+
+        # <div class="submit-row">
+        # <input class="default" type="submit" name="_save" value="Save">
+        submit_button = self.xpath_finduniq(
+            "//div[@class='submit-row']"
+            "/input[@type='submit' and @name='_save' and @value='Save']")
+        submit_button.click()
+
+        self.users.append(user)
+
+    def user_del(self, user):
+        self.driver.get(self.basepath + "/admin/auth/user/")
+
+        # <tr>
+        #   <td class="action-checkbox">
+        #     <input class="action-select" type="checkbox" value="6"
+        #         name="_selected_action">
+        #   </td>
+        #   <th>
+        #     <a href="/admin/auth/user/6/">rabado</a>
+        #   </th>
+        # </tr>
+        del_cbox = self.xpath_finduniq(
+            "//tr[th/a[text()='%s']]/td[@class='action-checkbox']/"
+            "input[@class='action-select' and @type='checkbox']"
+            % user)
+
+        del_cbox.click()
+
+        # <select name="action">
+        # <option selected="selected" value="">---------</option>
+        # <option value="delete_selected">Delete selected users</option>
+        # </select>
+        action = self.xpath_finduniq("//select[@name='action']")
+        self.select_item_set(action, "Delete selected users")
+
+        # <button class="button" value="0" name="index"
+        #     title="Run the selected action" type="submit">Go</button>
+        butt = self.xpath_finduniq(
+            "//button[@name='index' and @type='submit' and text() = 'Go']")
+
+        butt.click()
+
+        # new page and confirm deletion
+        # <input type="submit" value="Yes, I'm sure">
+        butt = self.xpath_finduniq(
+            "//input[@type=\"submit\" and @value=\"Yes, I'm sure\"]")
+
+        butt.click()
+
+        self.users.remove(user)
+
     def fini(self):
+        self.cleanup()
+        # return to main window
+        self.windows_reset()
+
+        if not self.is_logged:
+            print "WARNING: Platform.fini without user (%s)" % self.user
+            self.driver.quit()
+            return
+
         # try to find logout button (in the header)
         try:
-            self.xpath_finduniq("//a[@href='#' and b[@class='caret']]")
+            user_button = self.xpath_finduniq(
+                "//a[@href='#' and b[@class='caret']]")
         except (TimeoutError, ValueError, NotUniqError):
             self.driver.get(self.basepath)
+            time.sleep(3)
+            user_button = self.xpath_finduniq(
+                "//a[@href='#' and b[@class='caret']]")
 
         #<a class="dropdown-toggle" data-toggle="dropdown" href="#">
         #nastasi
         #<b class="caret"></b>
         #</a>
-        user_button = self.xpath_finduniq(
-            "//a[@href='#' and b[@class='caret']]")
+
         user_button.click()
 
         #<a href="/account/logout/">
@@ -108,6 +237,7 @@ class Platform(object):
         logout_button = self.xpath_finduniq(
             "//a[@href='/account/logout/' and normalize-space(text())"
             " = 'Log out']")
+
         logout_button.click()
 
         #check new url
@@ -120,6 +250,16 @@ class Platform(object):
         logout_button.click()
 
         self.driver.quit()
+
+    def cleanup(self):
+        # removes secondary platforms
+        platforms_loop = self.platforms[:]
+        for platform in platforms_loop:
+            self.platform_destroy(platform)
+
+        users_loop = self.users[:]
+        for user in users_loop:
+            self.user_del(user)
 
     def navigate(self, dest):
         # driver, basepath, self.dest):
@@ -139,7 +279,6 @@ class Platform(object):
         self.driver.get(self.basepath + url)
 
     def xpath_finduniq(self, xpath_str, times=1, postfind=0.2):
-        from selenium.webdriver.common.by import By
         for t in range(0, times):
             field = self.driver.find_elements(By.XPATH, xpath_str)
             if len(field) > 0:
@@ -169,6 +308,7 @@ class Platform(object):
 
     def wait_new_page(self, element, url):
         from selenium.common.exceptions import StaleElementReferenceException
+
         def link_has_gone_stale():
             try:
                 # poll the link with an arbitrary call
@@ -183,6 +323,10 @@ class Platform(object):
         wait_for(link_has_gone_stale)
 
     def screenshot(self, filename):
+        if not self.driver:
+            sys.stderr.write(
+                "Platform not initialized, screenshot impossible.\n")
+            return
         self.driver.get_screenshot_as_file(filename)
 
     def add_click_event(self):
@@ -237,3 +381,44 @@ class Platform(object):
 
     def click_at(self, x, y):
         self.driver.execute_script('pla_click(%d, %d);' % (x, y))
+
+    @staticmethod
+    def select_item_set(sel_obj, name):
+        for option in sel_obj.find_elements_by_tag_name('option'):
+            if option.text == name:
+                option.click()  # select() in earlier versions of webdriver
+                break
+
+    def select_window_by_name(self, title):
+        win_cur = self.current_window_handle()
+        for handle in self.driver.window_handles:
+            self.switch_to_window(handle)
+            if self.driver.title == title:
+                return True
+        else:
+            self.switch_to_window(win_cur)
+        raise ValueError
+
+    def select_main_window(self):
+        if self.main_window:
+            self.switch_to_window(self.main_window)
+
+    def windows_reset(self):
+        for handle in self.driver.window_handles:
+            if handle == self.main_window:
+                continue
+            self.switch_to_window(handle)
+            self.driver.close()
+        self.switch_to_window(self.main_window)
+
+    def window_close(self):
+        self.driver.close()
+
+    def current_window_handle(self):
+        return self.driver.current_window_handle
+
+    def switch_to_alert(self):
+        return self.driver.switch_to_alert()
+
+    def switch_to_window(self, handle):
+        return self.driver.switch_to_window(handle)

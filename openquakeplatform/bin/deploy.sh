@@ -54,7 +54,7 @@ GEM_RISK_CALC_ADDR='http://localhost:8800'
 GEM_OQ_ENGSERV_KEY='oq-platform'
 GEM_OQ_BING_KEY=''
 
-GEM_APP_LIST=('common' 'world' 'faulted_earth' 'gaf_viewer' 'ghec_viewer' 'isc_viewer' 'icebox' 'econd' 'gemecdwebsite' 'weblib' 'vulnerability' 'svir')
+GEM_APP_LIST=('common' 'world' 'isc_viewer' 'ghec_viewer' 'gaf_viewer' 'geodetic' 'exposure' 'faulted_earth' 'icebox' 'vulnerability' 'svir' 'grv' 'hazus' 'hrde' 'irv' 'ript')
 
 GEM_WEBDIR=/var/www/openquake/platform
 
@@ -514,10 +514,20 @@ oq_platform_install () {
 
     apt-get update
     apt-get install -y python-software-properties
-    add-apt-repository -y ppa:geonode/release
+    add-apt-repository -y "deb http://ftp.openquake.org/ubuntu precise main"
+    add-apt-repository -y "ppa:openquake/ppa"
+    # add Ariel Nuñez key
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  925F51BF
+
+    # add Matteo Nastasi key
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  CF62A55B
+
     add-apt-repository -y ppa:openquake/ppa
     apt-get update
-    apt-get install -y geonode python-geonode-user-accounts
+    apt-get install -y --force-yes geonode python-geonode-user-accounts
+
+    # add dependencies to use nrml validation as library
+    apt-get install -y --force-yes python-decorator python-h5py python-psutil python-concurrent.futures python-oq-hazardlib python-oq-risklib
 
     # FIXME this code will be used in the future
     ## check for oq-platform packaged dependencies
