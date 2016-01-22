@@ -48,3 +48,6 @@ class FailureCatcher(Plugin):
         from openquakeplatform.test import pla
         self.alert_manager(pla)
         pla.screenshot('%s_%s.png' % (self.prefix, test.id()))
+
+    def describeTest(self, test):
+        return "%s" % test.id()
