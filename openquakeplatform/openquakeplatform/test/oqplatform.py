@@ -293,7 +293,7 @@ class Platform(object):
                     )
             else:
                 raise ValueError(
-                    "Search path '{}' not matches.".format(xpath_str)
+                    "Search path '{}' does not match.".format(xpath_str)
                     )
 
         if len(field) > 1:
