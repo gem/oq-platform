@@ -7,6 +7,14 @@ from selenium.webdriver.common.keys import Keys
 
 class RiptTest(unittest.TestCase):
 
+    handsontable_xpath = (
+        # NOTE: in order to match the class 'ht_master' regardless if it is the
+        #       only class or the tag has many classes, we must do as follows:
+        # tag[contains(concat(' ', normalize-space(@class), ' '), 'ht_master')]
+        "//div[@id='tabs-1']/div[@id='table']/div["
+        "contains(concat(' ', normalize-space(@class), ' '),"
+        " 'ht_master')]")
+
     def _get_convert_btn(self):
         convert_btn = pla.xpath_finduniq(
             "//button[@id='saveBtnEX' and @type='button'"
@@ -34,15 +42,11 @@ class RiptTest(unittest.TestCase):
 
     def correct_input_test(self):
         pla.get('/ript')
-        handsontable_xpath = (
-            "//div[@id='tabs-1']/div[@id='table']/div["
-            "contains(concat(' ', normalize-space(@class), ' '),"
-            " 'ht_master')]")
         # at the beginning, the handsontable should not contain the column
         # "structural"
         try:
             pla.xpath_finduniq(
-                handsontable_xpath +
+                self.handsontable_xpath +
                 "//span[@class='colHeader' and text()='structural']")
         except ValueError:
             # that's fine, because the column shouldn't be there yet
@@ -54,18 +58,15 @@ class RiptTest(unittest.TestCase):
             "//div[@id='exposureForm']/div/select[@id='defineCostStruc']")
         pla.select_item_set(dom_structural_cost, 'Aggregated')
         # the selection should add to the handsontable the column "structural"
-        # NOTE: in order to match the class 'ht_master' regardless if it is the
-        #       only class or the tag has many classes, we must do as follows:
-        # tag[contains(concat(' ', normalize-space(@class), ' '), 'ht_master')]
         pla.xpath_finduniq(
-            handsontable_xpath +
+            self.handsontable_xpath +
             "//span[@class='colHeader' and text()='structural']")
         # The table should have 1 row; let's fill it with all '1'
         i = 1
         while True:
             try:
                 cell = pla.xpath_finduniq(
-                    handsontable_xpath +
+                    self.handsontable_xpath +
                     "//tbody/tr/td[%d]" % i)
                 cell.click()
                 cell.send_keys('1')
@@ -76,3 +77,27 @@ class RiptTest(unittest.TestCase):
         convert_btn = self._get_convert_btn()
         convert_btn.click()
         # TODO: We should check that it does not give any error message
+
+    def negative_value_test(self):
+        pla.get('/ript')
+        pla.xpath_finduniq(
+            self.handsontable_xpath +
+            "//span[@class='colHeader' and text()='number']")
+        # The table should have 1 row and 5 columns,
+        # with columns id, longitude, latitude, taxonomy, number
+        for i in range(1, 6):  # from 1 to 5 included
+            cell = pla.xpath_finduniq(
+                self.handsontable_xpath +
+                "//tbody/tr/td[%d]" % i)
+            cell.click()
+            # let's insert '1' in all cells except '-1' for 'number'
+            if i < 5:
+                cell.send_keys('1')
+            else:
+                cell.send_keys('-1')
+            cell.send_keys(Keys.RETURN)
+        convert_btn = self._get_convert_btn()
+        convert_btn.click()
+        pla.xpath_finduniq(
+            "//div[@id='validationErrorMsgEX' and contains"
+            "(text(), 'Validation error: Could not convert number')]")
