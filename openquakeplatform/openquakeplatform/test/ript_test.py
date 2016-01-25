@@ -76,7 +76,9 @@ class RiptTest(unittest.TestCase):
                 break
         convert_btn = self._get_convert_btn()
         convert_btn.click()
-        # TODO: We should check that it does not give any error message
+        pla.xpath_finduniq(
+            "//div[@id='validationErrorMsgEX' and not(contains"
+            " (normalize-space(text()), 'Validation error:'))]")
 
     def negative_value_test(self):
         pla.get('/ript')
@@ -100,4 +102,5 @@ class RiptTest(unittest.TestCase):
         convert_btn.click()
         pla.xpath_finduniq(
             "//div[@id='validationErrorMsgEX' and contains"
-            "(text(), 'Validation error: Could not convert number')]")
+            " (normalize-space(text()),"
+            " 'Validation error: Could not convert number')]")
