@@ -19,12 +19,14 @@
     var CIRCLE_SCALE = 30.0;
     var MAX_STROKE_SIZE = 4.0;
     var MIN_CIRCLE_SIZE = 0.001;
-    var NODE_TYPES = {'IRI': 'Integrated Risk Index',
-                      'RI': 'Risk Index',
-                      'RISK_INDICATOR': 'Risk Indicator',
-                      'SVI': 'Social Vulnerability Index',
-                      'SV_THEME': 'Social Vulnerability Theme',
-                      'SV_INDICATOR': 'Social Vulnerability Indicator'};
+    var NODE_TYPES = {
+        'IRI': 'Integrated Risk Index',
+        'RI': 'Risk Index',
+        'RISK_INDICATOR': 'Risk Indicator',
+        'SVI': 'Social Vulnerability Index',
+        'SV_THEME': 'Social Vulnerability Theme',
+        'SV_INDICATOR': 'Social Vulnerability Indicator'
+    };
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -135,8 +137,8 @@
                 }
                 // Check if all themes are computable
                 var areAllThemesComputable = true;
-                for (var i = 0; i < node.children.length; i++) {
-                    if (!isComputable(node.children[i])) {
+                for (var j = 0; j < node.children.length; j++) {
+                    if (!isComputable(node.children[j])) {
                         areAllThemesComputable = false;
                     }
                 }
@@ -303,7 +305,6 @@
             });
         });
 
-        var nodeEnter;
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
@@ -517,7 +518,8 @@
                             .style("opacity", 0.7);
                         tooltipdiv .html(info)
                             .style("left", (d3.event.pageX) + "px")
-                            .style("top", (d3.event.pageY - 100) + "px");  // FIXME what's 100?
+                            // TODO: find a better way to place the tooltip instead of hardcoding 100
+                            .style("top", (d3.event.pageY - 100) + "px");
                     }
                 })
                 .on("mouseout", function(d) {
@@ -623,7 +625,7 @@
                             return "-5em";
                         } else {
                             return "-2.7em";
-                        };
+                        }
                     } else{
                         return "-1em";
                     }
