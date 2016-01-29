@@ -234,9 +234,9 @@ function taxt_ValidateSystem1() // Ok
     else {
         var SystemCB21 = [];
         /* DU99  */ SystemCB21.push('Ductility unknown');
-        /* DUC   */ SystemCB21.push('Ductile');
-        /* DNO   */ SystemCB21.push('Non-ductile');
-        /* DBD   */ SystemCB21.push('Base isolation and/or energy dissipation devices');
+        /* DUC   */ SystemCB21.push({'_text': 'Ductile', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/ductile--duc' });;
+        /* DNO   */ SystemCB21.push({'_text': 'Non-ductile', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/non-ductile--dno' });;
+        /* DBD   */ SystemCB21.push({'_text': 'Base isolation and/or energy dissipation devices', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/equipped-with-base-isolation-and-or-energy-dissipation-devices--dbd' });;
         select_populate('SystemCB21', SystemCB21);
         gem$('#SystemCB21').prop("disabled", false);
     }
@@ -252,9 +252,9 @@ function taxt_ValidateSystem2() // Ok
     else {
         var SystemCB22 = [];
         /* same */ SystemCB22.push('Ductility unknown');
-        /* same */ SystemCB22.push('Ductile');
-        /* same */ SystemCB22.push('Non-ductile');
-        /* same */ SystemCB22.push('Base isolation and/or energy dissipation devices');
+        /* same */ SystemCB22.push({'_text': 'Ductile', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/ductile--duc' });;
+        /* same */ SystemCB22.push({'_text': 'Non-ductile', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/non-ductile--dno' });;
+        /* same */ SystemCB22.push({'_text': 'Base isolation and/or energy dissipation devices', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/equipped-with-base-isolation-and-or-energy-dissipation-devices--dbd' });;
         select_populate('SystemCB22', SystemCB22);
         gem$('#SystemCB22').prop("disabled", false);
     }
@@ -275,35 +275,35 @@ function taxt_ValidateMaterial1() // Ok
     else if (gem$('#MaterialCB11').val() == 2) {
         var MaterialCB21 = [];
         /* CT99 */ MaterialCB21.push('Unknown concrete technology');
-        /* CIP  */ MaterialCB21.push('Cast-in-place concrete');
-        /* PC   */ MaterialCB21.push('Precast concrete');
+        /* CIP  */ MaterialCB21.push({'_text': 'Cast-in-place concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cast-in-place-concrete--cip' });;
+        /* PC   */ MaterialCB21.push({'_text': 'Precast concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/precast-concrete--pc' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
     }
     else if (gem$('#MaterialCB11').val() == 1 ||  gem$('#MaterialCB11').val() == 3 || gem$('#MaterialCB11').val() == 4) {
         var MaterialCB21 = [];
         /* CT99 */ MaterialCB21.push('Unknown concrete technology');
-        /* CIP  */ MaterialCB21.push('Cast-in-place concrete');
-        /* PC   */ MaterialCB21.push('Precast concrete');
-        /* CIPPS*/ MaterialCB21.push('Cast-in-place prestressed concrete');
-        /* PCPS */ MaterialCB21.push('Precast prestressed concrete');
+        /* CIP  */ MaterialCB21.push({'_text': 'Cast-in-place concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cast-in-place-concrete--cip' });;
+        /* PC   */ MaterialCB21.push({'_text': 'Precast concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/precast-concrete--pc' });;
+        /* CIPPS*/ MaterialCB21.push({'_text': 'Cast-in-place prestressed concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cast-in-place-prestressed-concrete--cipps' });;
+        /* PCPS */ MaterialCB21.push({'_text': 'Precast prestressed concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/precast-prestressed-concrete--pcps' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
     }
     else if (gem$('#MaterialCB11').val() == 5) {
         var MaterialCB21 = [];
         /*  S99 */ MaterialCB21.push('Steel, unknown ');
-        /*  SL  */ MaterialCB21.push('Cold-formed steel members');
-        /*  SR  */ MaterialCB21.push('Hot-rolled steel members');
-        /*  SO  */ MaterialCB21.push('Steel, other ');
+        /*  SL  */ MaterialCB21.push({'_text': 'Cold-formed steel members', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cold-formed-steel-members--sl' });;
+        /*  SR  */ MaterialCB21.push({'_text': 'Hot-rolled steel members', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hot-rolled-steel-members--sr' });;
+        /*  SO  */ MaterialCB21.push({'_text': 'Steel, other ', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/steel-other--so' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
     }
     else if (gem$('#MaterialCB11').val() == 6) {
         var MaterialCB21 = [];
         /* ME99 */ MaterialCB21.push('Metal, unknown ');
-        /* MEIR */ MaterialCB21.push('Iron');
-        /* MEO  */ MaterialCB21.push('Metal, other ');
+        /* MEIR */ MaterialCB21.push({'_text': 'Iron', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/iron--meir' });;
+        /* MEO  */ MaterialCB21.push({'_text': 'Metal, other ', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal-other--meo' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
     }
@@ -311,29 +311,29 @@ function taxt_ValidateMaterial1() // Ok
              gem$('#MaterialCB11').val() < 11) {
         var MaterialCB21 = [];
         /* MUN99*/ MaterialCB21.push('Masonry unit, unknown');
-        /* ADO  */ MaterialCB21.push('Adobe blocks');
+        /* ADO  */ MaterialCB21.push({'_text': 'Adobe blocks', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/adobe-blocks--ado' });;
         /* ST99 */ MaterialCB21.push('Stone, unknown technology');
-        /* STRUB*/ MaterialCB21.push('Rubble (field stone) or semi-dressed stone');
-        /* STDRE*/ MaterialCB21.push('Dressed stone');
+        /* STRUB*/ MaterialCB21.push({'_text': 'Rubble (field stone) or semi-dressed stone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/rubble-field-stone-or-semi-dressed-stone--strub' });;
+        /* STDRE*/ MaterialCB21.push({'_text': 'Dressed stone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/dressed-stone--stdre' });;
         /* CL99 */ MaterialCB21.push('Fired clay unit, unknown type');
-        /* CLBRS*/ MaterialCB21.push('Fired clay solid bricks');
-        /* CLBRH*/ MaterialCB21.push('Fired clay hollow bricks');
-        /* CLBLH*/ MaterialCB21.push('Fired clay hollow blocks or tiles');
+        /* CLBRS*/ MaterialCB21.push({'_text': 'Fired clay solid bricks', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fired-clay-solid-bricks--clbrs' });;
+        /* CLBRH*/ MaterialCB21.push({'_text': 'Fired clay hollow bricks', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fired-clay-hollow-bricks--clbrh' });;
+        /* CLBLH*/ MaterialCB21.push({'_text': 'Fired clay hollow blocks or tiles', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fired-clay-hollow-blocks-or-tiles--clblh' });;
         /* CB99 */ MaterialCB21.push('Concrete blocks, unknown type');
-        /* CBS  */ MaterialCB21.push('Concrete blocks, solid');
-        /* CBH  */ MaterialCB21.push('Concrete blocks, hollow');
-        /* MO   */ MaterialCB21.push('Masonry unit, other');
+        /* CBS  */ MaterialCB21.push({'_text': 'Concrete blocks, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-blocks-solid--cbs' });;
+        /* CBH  */ MaterialCB21.push({'_text': 'Concrete blocks, hollow', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-blocks-hollow--cbh' });;
+        /* MO   */ MaterialCB21.push({'_text': 'Masonry unit, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-unit-other--mo' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
 
         if (gem$('#MaterialCB11').val() == 10) {
             var MaterialCB41 = [];
             /* MR99  */  MaterialCB41.push('Unknown reinforcement');
-            /* RS    */  MaterialCB41.push('Steel-reinforced');
-            /* RW    */  MaterialCB41.push('Wood-reinforced');
-            /* RB    */  MaterialCB41.push('Bamboo-, cane- or rope-reinforced');
-            /* RCM   */  MaterialCB41.push('Fibre reinforcing mesh');
-            /* RCB   */  MaterialCB41.push('Reinforced concrete bands');
+            /* RS    */  MaterialCB41.push({'_text': 'Steel-reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/steel-reinforced--rs' });;
+            /* RW    */  MaterialCB41.push({'_text': 'Wood-reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood-reinforced--rw' });;
+            /* RB    */  MaterialCB41.push({'_text': 'Bamboo-, cane- or rope-reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/bamboo-cane-or-rope-reinforced--rb' });;
+            /* RCM   */  MaterialCB41.push({'_text': 'Fibre reinforcing mesh', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fibre-reinforcing-mesh--rcm' });;
+            /* RCB   */  MaterialCB41.push({'_text': 'Reinforced concrete bands', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/reinforced-concrete-bands--rcb' });;
             select_populate('MaterialCB41', MaterialCB41);
             gem$('#MaterialCB41').prop("disabled", false);
         }
@@ -341,21 +341,21 @@ function taxt_ValidateMaterial1() // Ok
     else if (gem$('#MaterialCB11').val() > 10 && gem$('#MaterialCB11').val() < 14) {
         var MaterialCB21 = [];
         /* ET99 */ MaterialCB21.push('Unknown earth technology');
-        /* ETR  */ MaterialCB21.push('Rammed earth');
-        /* ETC  */ MaterialCB21.push('Cob or wet construction');
-        /* ETO  */ MaterialCB21.push('Earth technology, other');
+        /* ETR  */ MaterialCB21.push({'_text': 'Rammed earth', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/rammed-earth--etr' });;
+        /* ETC  */ MaterialCB21.push({'_text': 'Cob or wet construction', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cob-or-wet-construction--etc' });;
+        /* ETO  */ MaterialCB21.push({'_text': 'Earth technology, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earth-technology-other--eto' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
     }
     else if (gem$('#MaterialCB11').val() == 14) {
         var MaterialCB21 = [];
         /* W99  */ MaterialCB21.push('Wood, unknown');
-        /* WHE  */ MaterialCB21.push('Heavy wood');
-        /* WLI  */ MaterialCB21.push('Light wood members');
-        /* WS   */ MaterialCB21.push('Solid wood');
-        /* WWD  */ MaterialCB21.push('Wattle and daub');
-        /* WBB  */ MaterialCB21.push('Bamboo');
-        /* WO   */ MaterialCB21.push('Wood, other');
+        /* WHE  */ MaterialCB21.push({'_text': 'Heavy wood', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/heavy-wood--whe' });;
+        /* WLI  */ MaterialCB21.push({'_text': 'Light wood members', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/light-timber-members--wli' });;
+        /* WS   */ MaterialCB21.push({'_text': 'Solid wood', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/solid-wood--ws' });;
+        /* WWD  */ MaterialCB21.push({'_text': 'Wattle and daub', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wattle-and-daub--wwd' });;
+        /* WBB  */ MaterialCB21.push({'_text': 'Bamboo', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/bamboo--wbb' });;
+        /* WO   */ MaterialCB21.push({'_text': 'Wood, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood-other--wo' });;
         select_populate('MaterialCB21', MaterialCB21);
         gem$('#MaterialCB21').prop("disabled", false);
     }
@@ -368,9 +368,9 @@ function taxt_ValidateMaterial1() // Ok
     if (gem$('#MaterialCB11').val() == 5) {
         var MaterialCB31 = [];
         /* SC99  */ MaterialCB31.push('Unknown connection');
-        /* WEL   */ MaterialCB31.push('Welded connections');
-        /* RIV   */ MaterialCB31.push('Riveted connections');
-        /* BOL   */ MaterialCB31.push('Bolted connections');
+        /* WEL   */ MaterialCB31.push({'_text': 'Welded connections', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/welded-connections--wel' });;
+        /* RIV   */ MaterialCB31.push({'_text': 'Riveted connections', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/riveted-connections--riv' });;
+        /* BOL   */ MaterialCB31.push({'_text': 'Bolted connections', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/bolted-connections--bol' });;
         select_populate('MaterialCB31', MaterialCB31);
         gem$('#MaterialCB31').prop("disabled", false);
     }
@@ -378,19 +378,19 @@ function taxt_ValidateMaterial1() // Ok
              gem$('#MaterialCB11').val() < 11) {
         var MaterialCB31 = [];
         /* MO99  */ MaterialCB31.push('Mortar type, unknown');
-        /* MON   */ MaterialCB31.push('No mortar');
-        /* MOM   */ MaterialCB31.push('Mud mortar');
-        /* MOL   */ MaterialCB31.push('Lime mortar');
-        /* MOC   */ MaterialCB31.push('Cement mortar');
-        /* MOCL  */ MaterialCB31.push('Cement:lime mortar');
+        /* MON   */ MaterialCB31.push({'_text': 'No mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-mortar--mon' });;
+        /* MOM   */ MaterialCB31.push({'_text': 'Mud mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/mud-mortar--mom' });;
+        /* MOL   */ MaterialCB31.push({'_text': 'Lime mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lime-mortar--mol' });;
+        /* MOC   */ MaterialCB31.push({'_text': 'Cement mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cement-mortar--moc' });;
+        /* MOCL  */ MaterialCB31.push({'_text': 'Cement:lime mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lime--cement-mortar--mocl' });;
         /* SP99  */ MaterialCB31.push('Stone, unknown type');
-        /* SPLI  */ MaterialCB31.push('Limestone');
-        /* SPSA  */ MaterialCB31.push('Sandstone');
-        /* SPTU  */ MaterialCB31.push('Tuff');
-        /* SPSL  */ MaterialCB31.push('Slate');
-        /* SPGR  */ MaterialCB31.push('Granite');
-        /* SPBA  */ MaterialCB31.push('Basalt');
-        /* SPO   */ MaterialCB31.push('Stone, other type');
+        /* SPLI  */ MaterialCB31.push({'_text': 'Limestone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/limestone--spli' });;
+        /* SPSA  */ MaterialCB31.push({'_text': 'Sandstone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/sandstone--spsa' });;
+        /* SPTU  */ MaterialCB31.push({'_text': 'Tuff', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/tuff--sptu' });;
+        /* SPSL  */ MaterialCB31.push({'_text': 'Slate', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/slate--spsl' });;
+        /* SPGR  */ MaterialCB31.push({'_text': 'Granite', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/granite--spgr' });;
+        /* SPBA  */ MaterialCB31.push({'_text': 'Basalt', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/basalt--spba' });;
+        /* SPO   */ MaterialCB31.push({'_text': 'Stone, other type', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/stone-other-type--spo' });;
         select_populate('MaterialCB31', MaterialCB31);
         gem$('#MaterialCB31').prop("disabled", false);
     }
@@ -401,38 +401,38 @@ function taxt_ValidateMaterial1() // Ok
     if (gem$('#MaterialCB11').val() > 10 && gem$('#MaterialCB11').val() < 14) {
         var SystemCB11 = [];
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
-        /* LN   */ SystemCB11.push('No lateral load-resisting system');
-        /* LWAL */ SystemCB11.push('Wall');
-        /* LH   */ SystemCB11.push('Hybrid lateral load-resisting system');
-        /* LO   */ SystemCB11.push('Other lateral load-resisting system');
+        /* LN   */ SystemCB11.push({'_text': 'No lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-lateral-load-resisting-system--ln' });;
+        /* LWAL */ SystemCB11.push({'_text': 'Wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wall--lwal' });;
+        /* LH   */ SystemCB11.push({'_text': 'Hybrid lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hybrid-lateral-load-resisting-system--lh' });;
+        /* LO   */ SystemCB11.push({'_text': 'Other lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-lateral-load-resisting-system--lo' });;
         select_populate('SystemCB11', SystemCB11);
     }
     else if ((gem$('#MaterialCB11').val() > 6 && gem$('#MaterialCB11').val() < 11) ||
              gem$('#MaterialCB11').val() == 14) {
         var SystemCB11 = [];
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
-        /* LN   */ SystemCB11.push('No lateral load-resisting system');
-        /* LFM  */ SystemCB11.push('Moment frame');
-        /* LPB  */ SystemCB11.push('Post and beam');
-        /* LWAL */ SystemCB11.push('Wall');
-        /* LH   */ SystemCB11.push('Hybrid lateral load-resisting system');
-        /* LO   */ SystemCB11.push('Other lateral load-resisting system');
+        /* LN   */ SystemCB11.push({'_text': 'No lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-lateral-load-resisting-system--ln' });;
+        /* LFM  */ SystemCB11.push({'_text': 'Moment frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/moment-frame--lfm' });;
+        /* LPB  */ SystemCB11.push({'_text': 'Post and beam', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/post-and-beam--lpb' });;
+        /* LWAL */ SystemCB11.push({'_text': 'Wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wall--lwal' });;
+        /* LH   */ SystemCB11.push({'_text': 'Hybrid lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hybrid-lateral-load-resisting-system--lh' });;
+        /* LO   */ SystemCB11.push({'_text': 'Other lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-lateral-load-resisting-system--lo' });;
         select_populate('SystemCB11', SystemCB11);
     }
     else {
         var SystemCB11 = [];
         /* L99  */ SystemCB11.push('Unknown lateral load-resisting system');
-        /* LN   */ SystemCB11.push('No lateral load-resisting system');
-        /* LFM  */ SystemCB11.push('Moment frame');
-        /* LFINF */ SystemCB11.push('Infilled frame');
-        /* LFBR */ SystemCB11.push('Braced frame');
-        /* LPB  */ SystemCB11.push('Post and beam');
-        /* LWAL */ SystemCB11.push('Wall');
-        /* LDUAL */ SystemCB11.push('Dual frame-wall system');
-        /* LFLS */ SystemCB11.push('Flat slab/plate or waffle slab');
-        /* LFLSINF */ SystemCB11.push('Infilled flat slab/plate or infilled waffle slab');
-        /* LH   */ SystemCB11.push('Hybrid lateral load-resisting system');
-        /* LO   */ SystemCB11.push('Other lateral load-resisting system');
+        /* LN   */ SystemCB11.push({'_text': 'No lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-lateral-load-resisting-system--ln' });;
+        /* LFM  */ SystemCB11.push({'_text': 'Moment frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/moment-frame--lfm' });;
+        /* LFINF */ SystemCB11.push({'_text': 'Infilled frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/infilled-frame--lfinf' });;
+        /* LFBR */ SystemCB11.push({'_text': 'Braced frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/braced-frame--lfbr' });;
+        /* LPB  */ SystemCB11.push({'_text': 'Post and beam', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/post-and-beam--lpb' });;
+        /* LWAL */ SystemCB11.push({'_text': 'Wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wall--lwal' });;
+        /* LDUAL */ SystemCB11.push({'_text': 'Dual frame-wall system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/dual-frame-wall-system--ldual' });;
+        /* LFLS */ SystemCB11.push({'_text': 'Flat slab/plate or waffle slab', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/flat-slab-plate-or-waffle-slab--lfls' });;
+        /* LFLSINF */ SystemCB11.push({'_text': 'Infilled flat slab/plate or infilled waffle slab', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/infilled-flat-slab-plate-or-infilled-waffle-slab--lflsinf' });;
+        /* LH   */ SystemCB11.push({'_text': 'Hybrid lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hybrid-lateral-load-resisting-system--lh' });;
+        /* LO   */ SystemCB11.push({'_text': 'Other lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-lateral-load-resisting-system--lo' });;
         select_populate('SystemCB11', SystemCB11);
     }
 
@@ -456,35 +456,35 @@ function taxt_ValidateMaterial2() // Ok
     else if (gem$('#MaterialCB12').val() == 2) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Unknown concrete technology');
-        /* same */ MaterialCB22.push('Cast-in-place concrete');
-        /* same */ MaterialCB22.push('Precast concrete');
+        /* same */ MaterialCB22.push({'_text': 'Cast-in-place concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cast-in-place-concrete--cip' });;
+        /* same */ MaterialCB22.push({'_text': 'Precast concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/precast-concrete--pc' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
     }
     else if (gem$('#MaterialCB12').val() == 1 ||  gem$('#MaterialCB12').val() == 3 || gem$('#MaterialCB12').val() == 4) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Unknown concrete technology');
-        /* same */ MaterialCB22.push('Cast-in-place concrete');
-        /* same */ MaterialCB22.push('Precast concrete');
-        /* same */ MaterialCB22.push('Cast-in-place prestressed concrete');
-        /* same */ MaterialCB22.push('Precast prestressed concrete');
+        /* same */ MaterialCB22.push({'_text': 'Cast-in-place concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cast-in-place-concrete--cip' });;
+        /* same */ MaterialCB22.push({'_text': 'Precast concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/precast-concrete--pc' });;
+        /* same */ MaterialCB22.push({'_text': 'Cast-in-place prestressed concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cast-in-place-prestressed-concrete--cipps' });;
+        /* same */ MaterialCB22.push({'_text': 'Precast prestressed concrete', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/precast-prestressed-concrete--pcps' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
     }
     else if (gem$('#MaterialCB12').val() == 5) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Steel, unknown ');
-        /* same */ MaterialCB22.push('Cold-formed steel members');
-        /* same */ MaterialCB22.push('Hot-rolled steel members');
-        /* same */ MaterialCB22.push('Steel, other ');
+        /* same */ MaterialCB22.push({'_text': 'Cold-formed steel members', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cold-formed-steel-members--sl' });;
+        /* same */ MaterialCB22.push({'_text': 'Hot-rolled steel members', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hot-rolled-steel-members--sr' });;
+        /* same */ MaterialCB22.push({'_text': 'Steel, other ', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/steel-other--so' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
     }
     else if (gem$('#MaterialCB12').val() == 6) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Metal, unknown ');
-        /* same */ MaterialCB22.push('Iron');
-        /* same */ MaterialCB22.push('Metal, other ');
+        /* same */ MaterialCB22.push({'_text': 'Iron', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/iron--meir' });;
+        /* same */ MaterialCB22.push({'_text': 'Metal, other ', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal-other--meo' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
     }
@@ -492,29 +492,29 @@ function taxt_ValidateMaterial2() // Ok
              gem$('#MaterialCB12').val() < 11) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Masonry unit, unknown');
-        /* same */ MaterialCB22.push('Adobe blocks');
+        /* same */ MaterialCB22.push({'_text': 'Adobe blocks', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/adobe-blocks--ado' });;
         /* same */ MaterialCB22.push('Stone, unknown technology');
-        /* same */ MaterialCB22.push('Rubble (field stone) or semi-dressed stone');
-        /* same */ MaterialCB22.push('Dressed stone');
+        /* same */ MaterialCB22.push({'_text': 'Rubble (field stone) or semi-dressed stone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/rubble-field-stone-or-semi-dressed-stone--strub' });;
+        /* same */ MaterialCB22.push({'_text': 'Dressed stone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/dressed-stone--stdre' });;
         /* same */ MaterialCB22.push('Fired clay unit, unknown type');
-        /* same */ MaterialCB22.push('Fired clay solid bricks');
-        /* same */ MaterialCB22.push('Fired clay hollow bricks');
-        /* same */ MaterialCB22.push('Fired clay hollow blocks or tiles');
+        /* same */ MaterialCB22.push({'_text': 'Fired clay solid bricks', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fired-clay-solid-bricks--clbrs' });;
+        /* same */ MaterialCB22.push({'_text': 'Fired clay hollow bricks', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fired-clay-hollow-bricks--clbrh' });;
+        /* same */ MaterialCB22.push({'_text': 'Fired clay hollow blocks or tiles', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fired-clay-hollow-blocks-or-tiles--clblh' });;
         /* same */ MaterialCB22.push('Concrete blocks, unknown type');
-        /* same */ MaterialCB22.push('Concrete blocks, solid');
-        /* same */ MaterialCB22.push('Concrete blocks, hollow');
-        /* same */ MaterialCB22.push('Masonry unit, other');
+        /* same */ MaterialCB22.push({'_text': 'Concrete blocks, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-blocks-solid--cbs' });;
+        /* same */ MaterialCB22.push({'_text': 'Concrete blocks, hollow', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-blocks-hollow--cbh' });;
+        /* same */ MaterialCB22.push({'_text': 'Masonry unit, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-unit-other--mo' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
 
         if (gem$('#MaterialCB12').val() == 10) {
             var MaterialCB42 = [];
             /* same */ MaterialCB42.push('Unknown reinforcement');
-            /* same */ MaterialCB42.push('Steel-reinforced');
-            /* same */ MaterialCB42.push('Wood-reinforced');
-            /* same */ MaterialCB42.push('Bamboo-, cane- or rope-reinforced');
-            /* same */ MaterialCB42.push('Fibre reinforcing mesh');
-            /* same */ MaterialCB42.push('Reinforced concrete bands');
+            /* same */ MaterialCB42.push({'_text': 'Steel-reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/steel-reinforced--rs' });;
+            /* same */ MaterialCB42.push({'_text': 'Wood-reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood-reinforced--rw' });;
+            /* same */ MaterialCB42.push({'_text': 'Bamboo-, cane- or rope-reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/bamboo-cane-or-rope-reinforced--rb' });;
+            /* same */ MaterialCB42.push({'_text': 'Fibre reinforcing mesh', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fibre-reinforcing-mesh--rcm' });;
+            /* same */ MaterialCB42.push({'_text': 'Reinforced concrete bands', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/reinforced-concrete-bands--rcb' });;
             select_populate('MaterialCB42', MaterialCB42);
             gem$('#MaterialCB42').prop("disabled", false);
         }
@@ -522,21 +522,21 @@ function taxt_ValidateMaterial2() // Ok
     else if (gem$('#MaterialCB12').val() > 10 && gem$('#MaterialCB12').val() < 14) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Unknown earth technology');
-        /* same */ MaterialCB22.push('Rammed earth');
-        /* same */ MaterialCB22.push('Cob or wet construction');
-        /* same */ MaterialCB22.push('Earth technology, other');
+        /* same */ MaterialCB22.push({'_text': 'Rammed earth', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/rammed-earth--etr' });;
+        /* same */ MaterialCB22.push({'_text': 'Cob or wet construction', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cob-or-wet-construction--etc' });;
+        /* same */ MaterialCB22.push({'_text': 'Earth technology, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earth-technology-other--eto' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
     }
     else if (gem$('#MaterialCB12').val() == 14) {
         var MaterialCB22 = [];
         /* same */ MaterialCB22.push('Wood, unknown');
-        /* same */ MaterialCB22.push('Heavy wood');
-        /* same */ MaterialCB22.push('Light wood members');
-        /* same */ MaterialCB22.push('Solid wood');
-        /* same */ MaterialCB22.push('Wattle and daub');
-        /* same */ MaterialCB22.push('Bamboo');
-        /* same */ MaterialCB22.push('Wood, other');
+        /* same */ MaterialCB22.push({'_text': 'Heavy wood', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/heavy-wood--whe' });;
+        /* same */ MaterialCB22.push({'_text': 'Light wood members', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/light-timber-members--wli' });;
+        /* same */ MaterialCB22.push({'_text': 'Solid wood', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/solid-wood--ws' });;
+        /* same */ MaterialCB22.push({'_text': 'Wattle and daub', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wattle-and-daub--wwd' });;
+        /* same */ MaterialCB22.push({'_text': 'Bamboo', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/bamboo--wbb' });;
+        /* same */ MaterialCB22.push({'_text': 'Wood, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood-other--wo' });;
         select_populate('MaterialCB22', MaterialCB22);
         gem$('#MaterialCB22').prop("disabled", false);
     }
@@ -549,9 +549,9 @@ function taxt_ValidateMaterial2() // Ok
     if (gem$('#MaterialCB12').val() == 5) {
         var MaterialCB32 = [];
         /* same */ MaterialCB32.push('Unknown connection');
-        /* same */ MaterialCB32.push('Welded connections');
-        /* same */ MaterialCB32.push('Riveted connections');
-        /* same */ MaterialCB32.push('Bolted connections');
+        /* same */ MaterialCB32.push({'_text': 'Welded connections', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/welded-connections--wel' });;
+        /* same */ MaterialCB32.push({'_text': 'Riveted connections', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/riveted-connections--riv' });;
+        /* same */ MaterialCB32.push({'_text': 'Bolted connections', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/bolted-connections--bol' });;
         select_populate('MaterialCB32', MaterialCB32);
         gem$('#MaterialCB32').prop("disabled", false);
     }
@@ -559,19 +559,19 @@ function taxt_ValidateMaterial2() // Ok
              gem$('#MaterialCB12').val() < 11) {
         var MaterialCB32 = [];
         /* same */ MaterialCB32.push('Mortar type, unknown');
-        /* same */ MaterialCB32.push('No mortar');
-        /* same */ MaterialCB32.push('Mud mortar');
-        /* same */ MaterialCB32.push('Lime mortar');
-        /* same */ MaterialCB32.push('Cement mortar');
-        /* same */ MaterialCB32.push('Cement:lime mortar');
+        /* same */ MaterialCB32.push({'_text': 'No mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-mortar--mon' });;
+        /* same */ MaterialCB32.push({'_text': 'Mud mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/mud-mortar--mom' });;
+        /* same */ MaterialCB32.push({'_text': 'Lime mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lime-mortar--mol' });;
+        /* same */ MaterialCB32.push({'_text': 'Cement mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cement-mortar--moc' });;
+        /* same */ MaterialCB32.push({'_text': 'Cement:lime mortar', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lime--cement-mortar--mocl' });;
         /* same */ MaterialCB32.push('Stone, unknown type');
-        /* same */ MaterialCB32.push('Limestone');
-        /* same */ MaterialCB32.push('Sandstone');
-        /* same */ MaterialCB32.push('Tuff');
-        /* same */ MaterialCB32.push('Slate');
-        /* same */ MaterialCB32.push('Granite');
-        /* same */ MaterialCB32.push('Basalt');
-        /* same */ MaterialCB32.push('Stone, other type');
+        /* same */ MaterialCB32.push({'_text': 'Limestone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/limestone--spli' });;
+        /* same */ MaterialCB32.push({'_text': 'Sandstone', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/sandstone--spsa' });;
+        /* same */ MaterialCB32.push({'_text': 'Tuff', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/tuff--sptu' });;
+        /* same */ MaterialCB32.push({'_text': 'Slate', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/slate--spsl' });;
+        /* same */ MaterialCB32.push({'_text': 'Granite', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/granite--spgr' });;
+        /* same */ MaterialCB32.push({'_text': 'Basalt', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/basalt--spba' });;
+        /* same */ MaterialCB32.push({'_text': 'Stone, other type', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/stone-other-type--spo' });;
         select_populate('MaterialCB32', MaterialCB32);
         gem$('#MaterialCB32').prop("disabled", false);
     }
@@ -582,38 +582,38 @@ function taxt_ValidateMaterial2() // Ok
     if (gem$('#MaterialCB12').val() > 10 && gem$('#MaterialCB12').val() < 14) {
         var SystemCB12 = [];
         /* same */ SystemCB12.push('Unknown lateral load-resisting system');
-        /* same */ SystemCB12.push('No lateral load-resisting system');
-        /* same */ SystemCB12.push('Wall');
-        /* same */ SystemCB12.push('Hybrid lateral load-resisting system');
-        /* same */ SystemCB12.push('Other lateral load-resisting system');
+        /* same */ SystemCB12.push({'_text': 'No lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-lateral-load-resisting-system--ln' });;
+        /* same */ SystemCB12.push({'_text': 'Wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wall--lwal' });;
+        /* same */ SystemCB12.push({'_text': 'Hybrid lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hybrid-lateral-load-resisting-system--lh' });;
+        /* same */ SystemCB12.push({'_text': 'Other lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-lateral-load-resisting-system--lo' });;
         select_populate('SystemCB12', SystemCB12);
     }
     else if ((gem$('#MaterialCB12').val() > 6 && gem$('#MaterialCB12').val() < 11) ||
              gem$('#MaterialCB12').val() == 14) {
         var SystemCB12 = [];
         /* same */ SystemCB12.push('Unknown lateral load-resisting system');
-        /* same */ SystemCB12.push('No lateral load-resisting system');
-        /* same */ SystemCB12.push('Moment frame');
-        /* same */ SystemCB12.push('Post and beam');
-        /* same */ SystemCB12.push('Wall');
-        /* same */ SystemCB12.push('Hybrid lateral load-resisting system');
-        /* same */ SystemCB12.push('Other lateral load-resisting system');
+        /* same */ SystemCB12.push({'_text': 'No lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-lateral-load-resisting-system--ln' });;
+        /* same */ SystemCB12.push({'_text': 'Moment frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/moment-frame--lfm' });;
+        /* same */ SystemCB12.push({'_text': 'Post and beam', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/post-and-beam--lpb' });;
+        /* same */ SystemCB12.push({'_text': 'Wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wall--lwal' });;
+        /* same */ SystemCB12.push({'_text': 'Hybrid lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hybrid-lateral-load-resisting-system--lh' });;
+        /* same */ SystemCB12.push({'_text': 'Other lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-lateral-load-resisting-system--lo' });;
         select_populate('SystemCB12', SystemCB12);
     }
     else {
         var SystemCB12 = [];
         /* same */ SystemCB12.push('Unknown lateral load-resisting system');
-        /* same */ SystemCB12.push('No lateral load-resisting system');
-        /* same */ SystemCB12.push('Moment frame');
-        /* same */ SystemCB12.push('Infilled frame');
-        /* same */ SystemCB12.push('Braced frame');
-        /* same */ SystemCB12.push('Post and beam');
-        /* same */ SystemCB12.push('Wall');
-        /* same */ SystemCB12.push('Dual frame-wall system');
-        /* same */ SystemCB12.push('Flat slab/plate or waffle slab');
-        /* same */ SystemCB12.push('Infilled flat slab/plate or infilled waffle slab');
-        /* same */ SystemCB12.push('Hybrid lateral load-resisting system');
-        /* same */ SystemCB12.push('Other lateral load-resisting system');
+        /* same */ SystemCB12.push({'_text': 'No lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-lateral-load-resisting-system--ln' });;
+        /* same */ SystemCB12.push({'_text': 'Moment frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/moment-frame--lfm' });;
+        /* same */ SystemCB12.push({'_text': 'Infilled frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/infilled-frame--lfinf' });;
+        /* same */ SystemCB12.push({'_text': 'Braced frame', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/braced-frame--lfbr' });;
+        /* same */ SystemCB12.push({'_text': 'Post and beam', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/post-and-beam--lpb' });;
+        /* same */ SystemCB12.push({'_text': 'Wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wall--lwal' });;
+        /* same */ SystemCB12.push({'_text': 'Dual frame-wall system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/dual-frame-wall-system--ldual' });;
+        /* same */ SystemCB12.push({'_text': 'Flat slab/plate or waffle slab', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/flat-slab-plate-or-waffle-slab--lfls' });;
+        /* same */ SystemCB12.push({'_text': 'Infilled flat slab/plate or infilled waffle slab', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/infilled-flat-slab-plate-or-infilled-waffle-slab--lflsinf' });;
+        /* same */ SystemCB12.push({'_text': 'Hybrid lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/hybrid-lateral-load-resisting-system--lh' });;
+        /* same */ SystemCB12.push({'_text': 'Other lateral load-resisting system', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-lateral-load-resisting-system--lo' });;
         select_populate('SystemCB12', SystemCB12);
     }
 
@@ -870,15 +870,15 @@ function taxt_ValidateRegularity()
             default_cb3 = 1;
         }
         else {
-            /* IRVP:IRN  */ RegularityCB3.push('No irregularity');
+            /* IRVP:IRN  */ RegularityCB3.push({'_text': 'No irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-irregularity--irn' });;
         }
-        /* IRVP:SOS  */ RegularityCB3.push('Soft storey');
-        /* IRVP:CRW  */ RegularityCB3.push('Cripple wall');
-        /* IRVP:SHC  */ RegularityCB3.push('Short column');
-        /* IRVP:POP  */ RegularityCB3.push('Pounding potential');
-        /* IRVP:SET  */ RegularityCB3.push('Setback');
-        /* IRVP:CHV  */ RegularityCB3.push('Change in vertical structure');
-        /* IRVP:IRVO */ RegularityCB3.push('Other vertical irregularity');
+        /* IRVP:SOS  */ RegularityCB3.push({'_text': 'Soft storey', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/soft-storey--sos' });;
+        /* IRVP:CRW  */ RegularityCB3.push({'_text': 'Cripple wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cripple-wall--crw' });;
+        /* IRVP:SHC  */ RegularityCB3.push({'_text': 'Short column', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/short-column--shc' });;
+        /* IRVP:POP  */ RegularityCB3.push({'_text': 'Pounding potential', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/pounding-potential--pop' });;
+        /* IRVP:SET  */ RegularityCB3.push({'_text': 'Setback', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/setback--set' });;
+        /* IRVP:CHV  */ RegularityCB3.push({'_text': 'Change in vertical structure', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/change-in-vertical-structure--include-large-overhangs--chv' });;
+        /* IRVP:IRVO */ RegularityCB3.push({'_text': 'Other vertical irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-vertical-irregularity--irvo' });;
         gem$('#RegularityCB3').prop("disabled", false);
         select_populate('RegularityCB3', RegularityCB3);
         gem$('#RegularityCB3').val(default_cb3);
@@ -889,11 +889,11 @@ function taxt_ValidateRegularity()
             default_cb2 = 1;
         }
         else {
-            /* IRPP:IRN */ RegularityCB2.push('No irregularity');
+            /* IRPP:IRN */ RegularityCB2.push({'_text': 'No irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-irregularity--irn' });;
         }
-        /* IRPP:TOR */ RegularityCB2.push('Torsion eccentricity');
-        /* IRPP:REC */ RegularityCB2.push('Re-entrant corner');
-        /* IRPP:IRHO */ RegularityCB2.push('Other plan irregularity');
+        /* IRPP:TOR */ RegularityCB2.push({'_text': 'Torsion eccentricity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/torsion-eccentricity--tor' });;
+        /* IRPP:REC */ RegularityCB2.push({'_text': 'Re-entrant corner', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/re-entrant-corner--rec' });;
+        /* IRPP:IRHO */ RegularityCB2.push({'_text': 'Other plan irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-horizontal-irregularity--irho' });;
         gem$('#RegularityCB2').prop("disabled", false);
         select_populate('RegularityCB2', RegularityCB2);
         gem$('#RegularityCB2').val(default_cb2);
@@ -931,10 +931,10 @@ function taxt_ValidateRegularity2()
     }
     else {
         var RegularityCB4 = [];
-        /* IRPS:IRN  */ RegularityCB4.push('No irregularity');
-        /* IRPS:TOR  */ RegularityCB4.push('Torsion eccentricity');
-        /* IRPS:REC  */ RegularityCB4.push('Re-entrant corner');
-        /* IRPS:IRHO */ RegularityCB4.push('Other plan irregularity');
+        /* IRPS:IRN  */ RegularityCB4.push({'_text': 'No irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-irregularity--irn' });;
+        /* IRPS:TOR  */ RegularityCB4.push({'_text': 'Torsion eccentricity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/torsion-eccentricity--tor' });;
+        /* IRPS:REC  */ RegularityCB4.push({'_text': 'Re-entrant corner', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/re-entrant-corner--rec' });;
+        /* IRPS:IRHO */ RegularityCB4.push({'_text': 'Other plan irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-horizontal-irregularity--irho' });;
         select_populate('RegularityCB4', RegularityCB4);
         gem$('#RegularityCB4').prop("disabled", false);
     }
@@ -952,14 +952,14 @@ function taxt_ValidateRegularity3()
     else {
         var RegularityCB5 = [];
 
-        /* IRVS:IRN  */ RegularityCB5.push('No irregularity');
-        /* IRVS:SOS  */ RegularityCB5.push('Soft storey');
-        /* IRVS:CRW  */ RegularityCB5.push('Cripple wall');
-        /* IRVS:SHC  */ RegularityCB5.push('Short column');
-        /* IRVS:POP  */ RegularityCB5.push('Pounding potential');
-        /* IRVS:SET  */ RegularityCB5.push('Setback');
-        /* IRVS:CHV  */ RegularityCB5.push('Change in vertical structure');
-        /* IRVS:IRVO */ RegularityCB5.push('Other vertical irregularity');
+        /* IRVS:IRN  */ RegularityCB5.push({'_text': 'No irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-irregularity--irn' });;
+        /* IRVS:SOS  */ RegularityCB5.push({'_text': 'Soft storey', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/soft-storey--sos' });;
+        /* IRVS:CRW  */ RegularityCB5.push({'_text': 'Cripple wall', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cripple-wall--crw' });;
+        /* IRVS:SHC  */ RegularityCB5.push({'_text': 'Short column', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/short-column--shc' });;
+        /* IRVS:POP  */ RegularityCB5.push({'_text': 'Pounding potential', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/pounding-potential--pop' });;
+        /* IRVS:SET  */ RegularityCB5.push({'_text': 'Setback', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/setback--set' });;
+        /* IRVS:CHV  */ RegularityCB5.push({'_text': 'Change in vertical structure', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/change-in-vertical-structure--include-large-overhangs--chv' });;
+        /* IRVS:IRVO */ RegularityCB5.push({'_text': 'Other vertical irregularity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-vertical-irregularity--irvo' });;
         select_populate('RegularityCB5', RegularityCB5);
         gem$('#RegularityCB5').prop("disabled", false);
     }
@@ -1022,7 +1022,7 @@ function taxt_ValidateRoof()
     else if (gem$('#RoofCB3').val() == 6) {
         var RoofCB4 = [];
         /* RFA1 */ RoofCB4.push('Inflatable or tensile membrane roof');
-        /* RFAO */ RoofCB4.push('Fabric roof, other');
+        /* RFAO */ RoofCB4.push({'_text': 'Fabric roof, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fabric-other--rfao' });;
         select_populate('RoofCB4', RoofCB4);
         gem$('#RoofCB4').prop("disabled", false);
     }
@@ -3484,20 +3484,20 @@ function taxt_Initiate() {
     var MaterialCB11 = [];
     /* MAT99 */ MaterialCB11.push('Unknown Material');
     /* C99   */ MaterialCB11.push('Concrete, unknown reinforcement');
-    /* CU    */ MaterialCB11.push('Concrete, unreinforced');
+    /* CU    */ MaterialCB11.push({'_text': 'Concrete, unreinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-unreinforced--cu' });;
     /* CR    */ MaterialCB11.push({ _text:'Concrete, reinforced', 'dataGemHelp': 'glossary/concrete-reinforced--cr.html' });
-    /* SRC   */ MaterialCB11.push('Concrete, composite with steel section');
-    /* S     */ MaterialCB11.push('Steel');
-    /* ME    */ MaterialCB11.push('Metal (except steel)');
+    /* SRC   */ MaterialCB11.push({'_text': 'Concrete, composite with steel section', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-composite-with-steel-sections--src' });;
+    /* S     */ MaterialCB11.push({'_text': 'Steel', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/steel--s' });;
+    /* ME    */ MaterialCB11.push({'_text': 'Metal (except steel)', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal--except-steel--me' });;
     /* M99   */ MaterialCB11.push('Masonry, unknown reinforcement');
-    /* MUR   */ MaterialCB11.push('Masonry, unreinforced');
-    /* MCF   */ MaterialCB11.push('Masonry, confined');
-    /* MR    */ MaterialCB11.push('Masonry, reinforced');
+    /* MUR   */ MaterialCB11.push({'_text': 'Masonry, unreinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-unreinforced--mur' });;
+    /* MCF   */ MaterialCB11.push({'_text': 'Masonry, confined', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-confined--mcf' });;
+    /* MR    */ MaterialCB11.push({'_text': 'Masonry, reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-reinforced--mr' });;
     /* E99   */ MaterialCB11.push('Earth, unknown reinforcement');
-    /* EU    */ MaterialCB11.push('Earth, unreinforced');
-    /* ER    */ MaterialCB11.push('Earth, reinforced');
-    /* W     */ MaterialCB11.push('Wood');
-    /* MATO  */ MaterialCB11.push('Other material');
+    /* EU    */ MaterialCB11.push({'_text': 'Earth, unreinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earth-unreinforced--eu' });;
+    /* ER    */ MaterialCB11.push({'_text': 'Earth, reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earth-reinforced--er' });;
+    /* W     */ MaterialCB11.push({'_text': 'Wood', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood--w' });;
+    /* MATO  */ MaterialCB11.push({'_text': 'Other material', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-material--mato' });;
     select_populate('MaterialCB11', MaterialCB11);
     gem$('#MaterialCB11').on('change', taxt_MaterialCB11Select);
     gem$('#MaterialCB21').on('change', taxt_MaterialCB21Select);
@@ -3509,20 +3509,20 @@ function taxt_Initiate() {
     var MaterialCB12 = [];
     /* same */ MaterialCB12.push('Unknown Material');
     /* same */ MaterialCB12.push('Concrete, unknown reinforcement');
-    /* same */ MaterialCB12.push('Concrete, unreinforced');
+    /* same */ MaterialCB12.push({'_text': 'Concrete, unreinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-unreinforced--cu' });;
     /* same */ MaterialCB12.push('Concrete, reinforced');
-    /* same */ MaterialCB12.push('Concrete, composite with steel section');
-    /* same */ MaterialCB12.push('Steel');
-    /* same */ MaterialCB12.push('Metal (except steel)');
+    /* same */ MaterialCB12.push({'_text': 'Concrete, composite with steel section', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-composite-with-steel-sections--src' });;
+    /* same */ MaterialCB12.push({'_text': 'Steel', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/steel--s' });;
+    /* same */ MaterialCB12.push({'_text': 'Metal (except steel)', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal--except-steel--me' });;
     /* same */ MaterialCB12.push('Masonry, unknown reinforcement');
-    /* same */ MaterialCB12.push('Masonry, unreinforced');
-    /* same */ MaterialCB12.push('Masonry, confined');
-    /* same */ MaterialCB12.push('Masonry, reinforced');
+    /* same */ MaterialCB12.push({'_text': 'Masonry, unreinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-unreinforced--mur' });;
+    /* same */ MaterialCB12.push({'_text': 'Masonry, confined', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-confined--mcf' });;
+    /* same */ MaterialCB12.push({'_text': 'Masonry, reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry-reinforced--mr' });;
     /* same */ MaterialCB12.push('Earth, unknown reinforcement');
-    /* same */ MaterialCB12.push('Earth, unreinforced');
-    /* same */ MaterialCB12.push('Earth, reinforced');
-    /* same */ MaterialCB12.push('Wood');
-    /* same */ MaterialCB12.push('Other material');
+    /* same */ MaterialCB12.push({'_text': 'Earth, unreinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earth-unreinforced--eu' });;
+    /* same */ MaterialCB12.push({'_text': 'Earth, reinforced', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earth-reinforced--er' });;
+    /* same */ MaterialCB12.push({'_text': 'Wood', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood--w' });;
+    /* same */ MaterialCB12.push({'_text': 'Other material', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-material--mato' });;
     select_populate('MaterialCB12', MaterialCB12);
     gem$('#MaterialCB12').on('change', taxt_MaterialCB12Select);
     gem$('#MaterialCB22').on('change', taxt_MaterialCB22Select);
@@ -3533,9 +3533,9 @@ function taxt_Initiate() {
 
     var HeightCB1 = [];
     /* H99  */ HeightCB1.push('Unknown number of storeys');
-    /* HBET */ HeightCB1.push('Range of the number of storeys');
-    /* HEX  */ HeightCB1.push('Exact number of storeys');
-    /* HAPP */ HeightCB1.push('Approximate number of storeys');
+    /* HBET */ HeightCB1.push({'_text': 'Range of the number of storeys', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/range-of-number-of-storeys-above-ground--hbet' });;
+    /* HEX  */ HeightCB1.push({'_text': 'Exact number of storeys', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/exact-number-of-storeys-above-ground--hex' });;
+    /* HAPP */ HeightCB1.push({'_text': 'Approximate number of storeys', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/approximate-number-of-storeys-above-ground--happ' });;
     select_populate('HeightCB1', HeightCB1);
     gem$('#HeightCB1').val(0);
     gem$('#HeightCB1').on('change', taxt_HeightCB1Select);
@@ -3544,9 +3544,9 @@ function taxt_Initiate() {
 
     var HeightCB2 = [];
     /* HB99  */ HeightCB2.push('Unknown number of storeys');
-    /* HBBET */ HeightCB2.push('Range of the number of storeys');
-    /* HBEX  */ HeightCB2.push('Exact number of storeys');
-    /* HBAPP */ HeightCB2.push('Approximate number of storeys');
+    /* HBBET */ HeightCB2.push({'_text': 'Range of the number of storeys', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/range-of-number-of-storeys-below-ground--hbbet' });;
+    /* HBEX  */ HeightCB2.push({'_text': 'Exact number of storeys', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/exact-number-of-storeys-below-ground--hbex' });;
+    /* HBAPP */ HeightCB2.push({'_text': 'Approximate number of storeys', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/approximate-number-of-storeys-below-ground--hbapp' });;
     select_populate('HeightCB2', HeightCB2);
     gem$('#HeightCB2').val(0);
     gem$('#HeightCB2').on('change', taxt_HeightCB2Select);
@@ -3555,9 +3555,9 @@ function taxt_Initiate() {
 
     var HeightCB3 = [];
     /* HF99  */ HeightCB3.push('Height above grade unknown');
-    /* HFBET */ HeightCB3.push('Range of height above grade');
-    /* HFEX  */ HeightCB3.push('Exact height above grade');
-    /* HFAPP */ HeightCB3.push('Approximate height above grade');
+    /* HFBET */ HeightCB3.push({'_text': 'Range of height above grade', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/range-of-height-of-ground-floor-level-above-grade--hfbet' });;
+    /* HFEX  */ HeightCB3.push({'_text': 'Exact height above grade', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/exact-height-of-ground-floor-level-above-grade--hfex' });;
+    /* HFAPP */ HeightCB3.push({'_text': 'Approximate height above grade', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/approximate-height-of-ground-floor-level-above-grade--hfapp' });;
     select_populate('HeightCB3', HeightCB3);
     gem$('#HeightCB3').val(0);
     gem$('#HeightCB3').on('change', taxt_HeightCB3Select);
@@ -3566,7 +3566,7 @@ function taxt_Initiate() {
 
     var HeightCB4 = [];
     /* HD99  */ HeightCB4.push('Unknown slope');
-    /* HD    */ HeightCB4.push('Slope of the ground');
+    /* HD    */ HeightCB4.push({'_text': 'Slope of the ground', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/slope-of-the-ground--hd' });;
     select_populate('HeightCB4', HeightCB4);
     gem$('#HeightCB4').val(0);
     gem$('#HeightCB4').on('change', taxt_HeightCB4Select);
@@ -3574,10 +3574,10 @@ function taxt_Initiate() {
 
     var DateCB1 = [];
     /* Y99  */ DateCB1.push('Year unknown');
-    /* YEX  */ DateCB1.push('Exact date of construction or retrofit');
-    /* YBET */ DateCB1.push('Bounds for the date of construction or retrofit');
-    /* YPRE */ DateCB1.push('Latest possible date of construction or retrofit');
-    /* YAPP */ DateCB1.push('Approximate date of construction or retrofit');
+    /* YEX  */ DateCB1.push({'_text': 'Exact date of construction or retrofit', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/exact-date-of-construction-or-retrofit--yex' });;
+    /* YBET */ DateCB1.push({'_text': 'Bounds for the date of construction or retrofit', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/Upper-and-lower-bound-for-the-date-of-construction-or-retrofit--ybet' });;
+    /* YPRE */ DateCB1.push({'_text': 'Latest possible date of construction or retrofit', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/Latest-possible-date-of-construction-or-retrofit--ypre' });;
+    /* YAPP */ DateCB1.push({'_text': 'Approximate date of construction or retrofit', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/approximate-date-of-construction-or-retrofit--yapp' });;
     select_populate('DateCB1', DateCB1);
     gem$('#DateCB1').val(0);
     gem$('#DateCB1').on('change', taxt_DateCB1Select);
@@ -3586,15 +3586,15 @@ function taxt_Initiate() {
 
     var OccupancyCB1 = [];
     /* OC99  */ OccupancyCB1.push('Unknown occupancy type');
-    /* RES   */ OccupancyCB1.push('Residential');
-    /* COM   */ OccupancyCB1.push('Commercial and public');
-    /* MIX   */ OccupancyCB1.push('Mixed use');
-    /* IND   */ OccupancyCB1.push('Industrial');
-    /* AGR   */ OccupancyCB1.push('Agriculture');
-    /* ASS   */ OccupancyCB1.push('Assembly');
-    /* GOV   */ OccupancyCB1.push('Government');
-    /* EDU   */ OccupancyCB1.push('Education');
-    /* OCO   */ OccupancyCB1.push('Other occupancy type');
+    /* RES   */ OccupancyCB1.push({'_text': 'Residential', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/residential--res' });;
+    /* COM   */ OccupancyCB1.push({'_text': 'Commercial and public', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/commercial-and-public--com' });;
+    /* MIX   */ OccupancyCB1.push({'_text': 'Mixed use', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/mixed-use--mix' });;
+    /* IND   */ OccupancyCB1.push({'_text': 'Industrial', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/industrial--ind' });;
+    /* AGR   */ OccupancyCB1.push({'_text': 'Agriculture', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/agriculture--agr' });;
+    /* ASS   */ OccupancyCB1.push({'_text': 'Assembly', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/assembly--ass' });;
+    /* GOV   */ OccupancyCB1.push({'_text': 'Government', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/government--gov' });;
+    /* EDU   */ OccupancyCB1.push({'_text': 'Education', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/education--edu' });;
+    /* OCO   */ OccupancyCB1.push({'_text': 'Other occupancy type', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/other-occupancy-type--oco' });;
     select_populate('OccupancyCB1', OccupancyCB1);
     gem$('#OccupancyCB1').val(0);
     gem$('#OccupancyCB1').on('change', taxt_OccupancyCB1Select);
@@ -3602,7 +3602,7 @@ function taxt_Initiate() {
 
     var PositionCB = [];
     /* BP99 */ PositionCB.push('Unknown building position');
-    /* BPD  */ PositionCB.push('Detached building');
+    /* BPD  */ PositionCB.push({'_text': 'Detached building', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/detached-building--bpd' });;
     /* BP1  */ PositionCB.push('Adjoining building(s) on one side');
     /* BP2  */ PositionCB.push('Adjoining building(s) on two sides');
     /* BP3  */ PositionCB.push('Adjoining building(s) on three sides');
@@ -3612,33 +3612,33 @@ function taxt_Initiate() {
 
     var PlanShapeCB = [];
     /* PLF99  */ PlanShapeCB.push('Unknown plan shape');
-    /* PLFSQ  */ PlanShapeCB.push('Square, solid');
-    /* PLFSQO */ PlanShapeCB.push('Square, with an opening in plan');
-    /* PLFR   */ PlanShapeCB.push('Rectangular, solid');
-    /* PLFRO  */ PlanShapeCB.push('Rectangular, with an opening in plan');
-    /* PLFL   */ PlanShapeCB.push('L-shape');
-    /* PLFC   */ PlanShapeCB.push('Curved, solid (e.g. circular, eliptical, ovoid)');
-    /* PLFCO  */ PlanShapeCB.push('Curved, with an opening in plan');
-    /* PLFD   */ PlanShapeCB.push('Triangular, solid');
-    /* PLFDO  */ PlanShapeCB.push('Triangular, with an opening in plan');
-    /* PLFE   */ PlanShapeCB.push('E-shape');
-    /* PLFH   */ PlanShapeCB.push('H-shape');
-    /* PLFS   */ PlanShapeCB.push('S-shape');
-    /* PLFT   */ PlanShapeCB.push('T-shape');
-    /* PLFU   */ PlanShapeCB.push('U- or C-shape');
-    /* PLFX   */ PlanShapeCB.push('X-shape');
-    /* PLFY   */ PlanShapeCB.push('Y-shape');
-    /* PLFP   */ PlanShapeCB.push('Polygonal, solid');
-    /* PLFPO  */ PlanShapeCB.push('Polygonal, with an opening in plan');
-    /* PLFI   */ PlanShapeCB.push('Irregular plan shape');
+    /* PLFSQ  */ PlanShapeCB.push({'_text': 'Square, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/square-solid--plfsq' });;
+    /* PLFSQO */ PlanShapeCB.push({'_text': 'Square, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/square-with-an-interior-opening--plfsqo' });;
+    /* PLFR   */ PlanShapeCB.push({'_text': 'Rectangular, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/rectangular-solid--plfr' });;
+    /* PLFRO  */ PlanShapeCB.push({'_text': 'Rectangular, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/rectangular-with-an-opening--plfro' });;
+    /* PLFL   */ PlanShapeCB.push({'_text': 'L-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/l-shape--plfl' });;
+    /* PLFC   */ PlanShapeCB.push({'_text': 'Curved, solid (e.g. circular, eliptical, ovoid)', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/curved-solid--plfc' });;
+    /* PLFCO  */ PlanShapeCB.push({'_text': 'Curved, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/circular-with-an-opening--plfco' });;
+    /* PLFD   */ PlanShapeCB.push({'_text': 'Triangular, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/triangular-shape-solid--plfd' });;
+    /* PLFDO  */ PlanShapeCB.push({'_text': 'Triangular, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/triangular-shape-with-an-opening--plfdo' });;
+    /* PLFE   */ PlanShapeCB.push({'_text': 'E-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/e-shape--plfe' });;
+    /* PLFH   */ PlanShapeCB.push({'_text': 'H-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/h-shape--plfh' });;
+    /* PLFS   */ PlanShapeCB.push({'_text': 'S-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/s-shape--plfs' });;
+    /* PLFT   */ PlanShapeCB.push({'_text': 'T-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/t-shape--plft' });;
+    /* PLFU   */ PlanShapeCB.push({'_text': 'U- or C-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/u-shape--plfu' });;
+    /* PLFX   */ PlanShapeCB.push({'_text': 'X-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/x-shape--plfx' });;
+    /* PLFY   */ PlanShapeCB.push({'_text': 'Y-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/y-shape--plfy' });;
+    /* PLFP   */ PlanShapeCB.push({'_text': 'Polygonal, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/polygonal-solid-plfp' });;
+    /* PLFPO  */ PlanShapeCB.push({'_text': 'Polygonal, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/polygonal-with-an-opening-in-plan-plfpo' });;
+    /* PLFI   */ PlanShapeCB.push({'_text': 'Irregular plan shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/irregular-plan-shape--plfi' });;
     select_populate('PlanShapeCB', PlanShapeCB);
     gem$('#PlanShapeCB').val(0);
     gem$('#PlanShapeCB').on('change', taxt_PlanShapeCBSelect);
 
     var RegularityCB1 = [];
     /* IR99 */ RegularityCB1.push('Unknown structural irregularity');
-    /* IRRE */ RegularityCB1.push('Regular structure');
-    /* IRIR */ RegularityCB1.push('Irregular structure');
+    /* IRRE */ RegularityCB1.push({'_text': 'Regular structure', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/regular-structure--irre' });;
+    /* IRIR */ RegularityCB1.push({'_text': 'Irregular structure', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/irregular-structure--irir' });;
     select_populate('RegularityCB1', RegularityCB1);
     gem$('#RegularityCB1').on('change', taxt_RegularityCB1Select);
     gem$('#RegularityCB2').on('change', taxt_RegularityCB2Select);
@@ -3648,17 +3648,17 @@ function taxt_Initiate() {
 
     var WallsCB = [];
     /* EW99 */  WallsCB.push('Unknown material of exterior walls');
-    /* EWC  */  WallsCB.push('Concrete exterior walls');
-    /* EWG  */  WallsCB.push('Glass exterior walls');
-    /* EWE  */  WallsCB.push('Earthen exterior walls');
-    /* EWMA */  WallsCB.push('Masonry exterior walls');
-    /* EWME */  WallsCB.push('Metal exterior walls');
-    /* EWV  */  WallsCB.push('Vegetative exterior walls');
-    /* EWW  */  WallsCB.push('Wooden exterior walls');
-    /* EWSL */  WallsCB.push('Stucco finish on light framing for exterior walls');
-    /* EWPL */  WallsCB.push('Plastic/vinyl exterior walls, various');
-    /* EWCB */  WallsCB.push('Cement-based boards for exterior walls');
-    /* EWO  */  WallsCB.push('Material of exterior walls, other');
+    /* EWC  */  WallsCB.push({'_text': 'Concrete exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete--ewc' });;
+    /* EWG  */  WallsCB.push({'_text': 'Glass exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/glass--ewg' });;
+    /* EWE  */  WallsCB.push({'_text': 'Earthen exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earthen-exterior-walls--ewe' });;
+    /* EWMA */  WallsCB.push({'_text': 'Masonry exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry--ewma' });;
+    /* EWME */  WallsCB.push({'_text': 'Metal exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal-ewme--weme' });;
+    /* EWV  */  WallsCB.push({'_text': 'Vegetative exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vegetative--ewv' });;
+    /* EWW  */  WallsCB.push({'_text': 'Wooden exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood--eww' });;
+    /* EWSL */  WallsCB.push({'_text': 'Stucco finish on light framing for exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/stucco-finish-on-light-framing--ewsl' });;
+    /* EWPL */  WallsCB.push({'_text': 'Plastic/vinyl exterior walls, various', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plastic-vinyl-various--ewpl' });;
+    /* EWCB */  WallsCB.push({'_text': 'Cement-based boards for exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/cement-based-boards--ewcb' });;
+    /* EWO  */  WallsCB.push({'_text': 'Material of exterior walls, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-of-exterior-wall-other--ewo' });;
     select_populate('WallsCB', WallsCB);
     gem$('#WallsCB').val(0);
     gem$('#WallsCB').on('change', taxt_WallsCBSelect);
@@ -3674,14 +3674,14 @@ function taxt_Initiate() {
     /* RSH7   */ RoofCB1.push('Curved');
     /* RSH8   */ RoofCB1.push('Complex regular');
     /* RSH9   */ RoofCB1.push('Complex irregular');
-    /* RSHO   */ RoofCB1.push('Roof shape, other');
+    /* RSHO   */ RoofCB1.push({'_text': 'Roof shape, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-shape-other--rsho' });;
     select_populate('RoofCB1', RoofCB1);
     gem$('#RoofCB1').val(0);
     gem$('#RoofCB1').on('change', taxt_RoofCB1Select);
 
     var RoofCB2 = [];
     /* RMT99 */ RoofCB2.push('Unknown roof covering');
-    /* RMN   */ RoofCB2.push('Concrete roof, no covering');
+    /* RMN   */ RoofCB2.push({'_text': 'Concrete roof, no covering', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete-roof-without-additional-covering--rmn' });;
     /* RMT1  */ RoofCB2.push('Clay or concrete tile roof covering');
     /* RMT2  */ RoofCB2.push('Fibre cement or metal tile covering');
     /* RMT3  */ RoofCB2.push('Membrane roof covering');
@@ -3693,20 +3693,20 @@ function taxt_Initiate() {
     /* RMT9  */ RoofCB2.push('Earthen roof covering');
     /* RMT10 */ RoofCB2.push('Solar panelled roofs');
     /* RMT11 */ RoofCB2.push('Tensile membrane or fabric roof');
-    /* RMTO  */ RoofCB2.push('Roof covering, other');
+    /* RMTO  */ RoofCB2.push({'_text': 'Roof covering, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-covering-other--rmto' });;
     select_populate('RoofCB2', RoofCB2);
     gem$('#RoofCB2').val(0);
     gem$('#RoofCB2').on('change', taxt_RoofCB2Select);
 
     var RoofCB3 = [];
     /* R99 */ RoofCB3.push('Roof material, unknown');
-    /* RM  */ RoofCB3.push('Masonry roof');
-    /* RE  */ RoofCB3.push('Earthen roof');
-    /* RC  */ RoofCB3.push('Concrete roof');
-    /* RME */ RoofCB3.push('Metal roof');
-    /* RWO */ RoofCB3.push('Wooden roof');
-    /* RFA */ RoofCB3.push('Fabric roof');
-    /* RO  */ RoofCB3.push('Roof material,other');
+    /* RM  */ RoofCB3.push({'_text': 'Masonry roof', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry--rm' });;
+    /* RE  */ RoofCB3.push({'_text': 'Earthen roof', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earthen--re' });;
+    /* RC  */ RoofCB3.push({'_text': 'Concrete roof', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete--rc' });;
+    /* RME */ RoofCB3.push({'_text': 'Metal roof', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal--rme' });;
+    /* RWO */ RoofCB3.push({'_text': 'Wooden roof', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood--rwo' });;
+    /* RFA */ RoofCB3.push({'_text': 'Fabric roof', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/fabric--rfa' });;
+    /* RO  */ RoofCB3.push({'_text': 'Roof material,other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-material-other--ro' });;
     select_populate('RoofCB3', RoofCB3);
     gem$('#RoofCB3').val(0);
     gem$('#RoofCB3').on('change', taxt_RoofCB3Select);
@@ -3714,35 +3714,35 @@ function taxt_Initiate() {
 
     var RoofCB5 = [];
     /* RWC99 */ RoofCB5.push('Roof-wall diaphragm connection unknown');
-    /* RWCN  */ RoofCB5.push('Roof-wall diaphragm connection not provided');
-    /* RWCP  */ RoofCB5.push('Roof-wall diaphragm connection present');
+    /* RWCN  */ RoofCB5.push({'_text': 'Roof-wall diaphragm connection not provided', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-wall-diaphragm-connection-not-provided--rwcn' });;
+    /* RWCP  */ RoofCB5.push({'_text': 'Roof-wall diaphragm connection present', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-wall-diaphragm-connection-present--rwcp' });;
     /* RTD99 */ RoofCB5.push('Roof tie-down unknown');
-    /* RTDN  */ RoofCB5.push('Roof tie-down not provided');
-    /* RTDP  */ RoofCB5.push('Roof tie-down present');
+    /* RTDN  */ RoofCB5.push({'_text': 'Roof tie-down not provided', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-tie-down-not-provided--rtdn' });;
+    /* RTDP  */ RoofCB5.push({'_text': 'Roof tie-down present', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-tie-down-present--rtdp' });;
     select_populate('RoofCB5', RoofCB5);
     gem$('#RoofCB5').val(0);
     gem$('#RoofCB5').on('change', taxt_RoofCB5Select);
 
     var FoundationsCB = [];
     /* FOS99  */ FoundationsCB.push('Unknown foundation system');
-    /* FOSSL  */ FoundationsCB.push('Shallow foundation, with lateral capacity');
-    /* FOSN   */ FoundationsCB.push('Shallow foundation, with no lateral capacity');
-    /* FOSDL  */ FoundationsCB.push('Deep foundation, with lateral capacity');
-    /* FOSDN  */ FoundationsCB.push('Deep foundation, with no lateral capacity');
-    /* FOSO   */ FoundationsCB.push('Foundation, other');
+    /* FOSSL  */ FoundationsCB.push({'_text': 'Shallow foundation, with lateral capacity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/shallow-foundation-with-lateral-capacity--fossl' });;
+    /* FOSN   */ FoundationsCB.push({'_text': 'Shallow foundation, with no lateral capacity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/shallow-foundation-no-lateral-capacity--fosn' });;
+    /* FOSDL  */ FoundationsCB.push({'_text': 'Deep foundation, with lateral capacity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/deep-foundation-with-lateral-capacity--fosdl' });;
+    /* FOSDN  */ FoundationsCB.push({'_text': 'Deep foundation, with no lateral capacity', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/deep-foundation-no-lateral-capacity--fosdn' });;
+    /* FOSO   */ FoundationsCB.push({'_text': 'Foundation, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/foundation-other--foso' });;
     select_populate('FoundationsCB', FoundationsCB);
     gem$('#FoundationsCB').val(0);
     gem$('#FoundationsCB').on('change', taxt_FoundationsCBSelect);
 
     var FloorCB1 = [];
     /* F99 */ FloorCB1.push('Floor material, unknown');
-    /* FN  */ FloorCB1.push('No elevated or suspended floor material (single-storey)');
-    /* FM  */ FloorCB1.push('Masonry floor');
-    /* FE  */ FloorCB1.push('Earthen floor');
-    /* FC  */ FloorCB1.push('Concrete floor');
-    /* FME */ FloorCB1.push('Metal floor');
-    /* FW  */ FloorCB1.push('Wooden floor');
-    /* FO  */ FloorCB1.push('Floor material, other');
+    /* FN  */ FloorCB1.push({'_text': 'No elevated or suspended floor material (single-storey)', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/no-elevated-or-suspended-floor-material--fn' });;
+    /* FM  */ FloorCB1.push({'_text': 'Masonry floor', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/masonry--fm' });;
+    /* FE  */ FloorCB1.push({'_text': 'Earthen floor', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earthen--fe' });;
+    /* FC  */ FloorCB1.push({'_text': 'Concrete floor', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete--fc' });;
+    /* FME */ FloorCB1.push({'_text': 'Metal floor', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/metal--fme' });;
+    /* FW  */ FloorCB1.push({'_text': 'Wooden floor', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/wood--fw' });;
+    /* FO  */ FloorCB1.push({'_text': 'Floor material, other', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-material-other--fo' });;
     select_populate('FloorCB1', FloorCB1);
     gem$('#FloorCB1').val(0);
     gem$('#FloorCB1').on('change', taxt_FloorCB1Select);
@@ -3750,8 +3750,8 @@ function taxt_Initiate() {
 
     var FloorCB3 = [];
     /* FWC99 */ FloorCB3.push('Floor-wall diaphragm connection, unknown');
-    /* FWCN  */ FloorCB3.push('Floor-wall diaphragm connection not provided');
-    /* FWCP  */ FloorCB3.push('Floor-wall diaphragm connection present');
+    /* FWCN  */ FloorCB3.push({'_text': 'Floor-wall diaphragm connection not provided', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-wall-diaphragm-connection-not-provided--fwcn' });;
+    /* FWCP  */ FloorCB3.push({'_text': 'Floor-wall diaphragm connection present', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-wall-diaphragm-connection-present--fwcp' });;
     select_populate('FloorCB3', FloorCB3);
     gem$('#FloorCB3').val(0);
     gem$('#FloorCB3').on('change', taxt_FloorCB3Select);
