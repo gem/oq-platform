@@ -3706,7 +3706,7 @@ function taxt_Initiate() {
     /* RME */ RoofCB3.push('Metal roof');
     /* RWO */ RoofCB3.push('Wooden roof');
     /* RFA */ RoofCB3.push('Fabric roof');
-    /* RO  */RoofCB3.push('Roof material,other');
+    /* RO  */ RoofCB3.push('Roof material,other');
     select_populate('RoofCB3', RoofCB3);
     gem$('#RoofCB3').val(0);
     gem$('#RoofCB3').on('change', taxt_RoofCB3Select);
