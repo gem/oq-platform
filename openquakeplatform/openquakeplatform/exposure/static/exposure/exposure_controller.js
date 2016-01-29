@@ -164,7 +164,7 @@ app.controller('ExposureCountryList', function($scope, $filter, myService, ngTab
                 }
 
                 // Check the grid count
-                if ( $scope.selectedRegion[0].tot_grid_count < 300000) {
+                if ( $scope.selectedRegion[0].tot_grid_count < EXPOSURE_MAX_TOT_GRID_COUNT ) {
                     $('#exposure-building-form').show();
                     $('#nationalExposureBldgDownload').show();
                     $('#drawBoundingMsg').hide();
@@ -322,7 +322,7 @@ app.controller('ExposureRegionList', function($scope, $filter, myService, ngTabl
         }
 
         // check the grid count
-        if (study.tot_grid_count < 300000) {
+        if (study.tot_grid_count < EXPOSURE_MAX_TOT_GRID_COUNT) {
             $('#subNationalRegionTooLarge').hide();
             $('#drawBoundingMsg').hide();
             $('#sub-exposure-building-form-too-large').hide();
@@ -455,7 +455,7 @@ var onRectangleDraw = function(e) {
     var lonDiff = Math.abs(e.rect._latlngs[1].lng - e.rect._latlngs[2].lng);
     var LatLngBox = latDiff + lonDiff;
 
-    if (LatLngBox > 8) {
+    if (LatLngBox > EXPOSURE_MAX_EXPORT_AREA_SQ_DEG) {
         var msg = 'The selected area is to large.';
         showErrorDialog(msg);
     } else {
@@ -474,7 +474,8 @@ var onRectangleDraw = function(e) {
     }
 };
 
-$("#cover").css("display", "none");
+$("#cover").hide();
+$('#absoluteSpinner').hide();
 
 var exposureExport = function(url) {
     var host = window.location.host;

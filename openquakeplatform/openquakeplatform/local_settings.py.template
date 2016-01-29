@@ -281,9 +281,14 @@ INSTALLED_APPS = (
     'openquakeplatform.geodetic',
     'openquakeplatform.exposure',
     'openquakeplatform.faulted_earth',
-    'openquakeplatform.icebox',
+    # 'openquakeplatform.icebox',
     'openquakeplatform.vulnerability',
     'openquakeplatform.svir',
+    'openquakeplatform.grv',
+    'openquakeplatform.hazus',
+    'openquakeplatform.hrde',
+    'openquakeplatform.irv',
+    'openquakeplatform.ript',
 
     # gemecd
     'openquakeplatform.weblib',
@@ -371,7 +376,7 @@ AUTH_EXEMPT_URLS = ('/$',
                     '/vulnerability/resp_var_par_csc?.*',
                     '/vulnerability/resp_var_units_csc?.*',
                     '/taxtweb/',
-                    '/risk_input_preparation_toolkit/')
+                    '/ript/')
 
 # Uncomment to allow open registration.
 # FIXME: there's no admin validation on new accounts.
@@ -397,6 +402,13 @@ ICEBOX_MAX_SIZE_MB = 10
 # Send an email with an Icebox job report
 # WARNING: untested feature
 ICEBOX_SEND_EMAIL = False
+
+# These limits define the maximum data that can be retreived
+# from GEM in the Exposure app
+# Max area size in degrees (i.e. 2 * 2)
+EXPOSURE_MAX_EXPORT_AREA_SQ_DEG = 4
+# Max number of rows
+EXPOSURE_MAX_TOT_GRID_COUNT = 100000
 
 AVATAR_GRAVATAR_DEFAULT = 'http://ftp.openquake.org/oq-platform/oq-avatar-40.png'
 

@@ -1,0 +1,266 @@
+<!--
+Copyright (c) 2015, GEM Foundation.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} Risk Input Preparation Toolkit - {{ block.super }} {% endblock title %}
+
+{% block extra_head %}
+    {{block.super}}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/handsontable.full.min.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}ript/css/risk_input_model.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/jQuery-UI-Bootstrap-0.2.5.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
+{% endblock extra_head %}
+
+
+{% block body %}
+  <div class="span12">
+    <div class="hero-unit">
+      <div id="oq-context-ribbon">
+        {% block oq_context_ribbon %}
+        {% endblock oq_context_ribbon %}
+      </div>
+      <div id="oq-body-heading">
+        {% block oq_body_heading %}
+          <h1>{% trans "Risk Input Preparation Toolkit" %}</h1>
+          <br />
+        {% endblock oq_body_heading %}
+      </div>
+      <div id="oq-body-content">
+
+<div id="absoluteSpinner" class="loading">Loading&#8230;</div>
+
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Exposure</a></li>
+    <li><a href="#tabs-2">Fragility</a></li>
+    <li><a href="#tabs-3">Vulnerability</a></li>
+  </ul>
+  <!-- EXPOSURE -->
+  <div id="tabs-1">
+    <div class="alert alert-info" role="alert">1. Use this form to modify the table header.</div>
+    <div id="exposureForm">
+      <div id="cost" class="menuItems">
+        <label>Structural Costs:</label>
+        <select id="defineCostStruc">
+          <option value="none">None</option>
+          <option value="aggregated">Aggregated</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
+        </select><br>
+        <div id="retrofittingSelect">
+          <div id="retroDiv" >
+            <label>Retrofitting Cost</label>
+            <input id="retroChbx" type="checkbox" value="retrofitting">
+          </div>
+        </div>
+          <div id="limitDiv" >
+            <label>Limit:</label>
+            <select id="limitSelect">
+              <option value="none">None</option>
+              <option value="absolute">Absolute</option>
+              <option value="relative">Relative</option>
+            </select><br>
+          </div>
+          <div id="deductibleDiv">
+            <label>Deductible:</label>
+            <select id="deductibleSelect">
+              <option value="none">None</option>
+              <option value="absolute">Absolute</option>
+              <option value="relative">Relative</option>
+            </select><br>
+          </div>
+        <label>Nonstructural Costs:</label>
+        <select id="defineCostNonStruc">
+          <option value="none">None</option>
+          <option value="aggregated">Aggregated</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
+        </select><br>
+        <label>Contents Costs:</label>
+        <select id="defineCostContent">
+          <option value="none">None</option>
+          <option value="aggregated">Aggregated</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
+        </select><br>
+        <label>Business Interruption Costs:</label>
+        <select id="defineCostBusiness">
+          <option value="none">None</option>
+          <option value="aggregated">Aggregated</option>
+          <option value="per_asset">Per Building</option>
+          <option value="per_area">Per Area</option>
+        </select><br>
+        </div>
+        <div id="perArea" class="menuItems">
+          <label>Area:</label>
+          <select id="perAreaSelect">
+            <option value="per_asset">Per Building</option>
+            <option value="aggregated">Aggregated</option>
+          </select><br>
+        </div>
+        <div class="menuItems">
+          <label>Occupants:</label>
+          <div id="occupantsCheckBoxes">
+            <input type="checkbox" value="day"> Day
+            <br>
+            <input type="checkbox" value="night"> Night
+            <br>
+            <input type="checkbox" value="transit"> Transit
+          </div>
+        </div>
+        <br>
+      </div>
+    <div class="alert alert-info" role="alert">2. Copy and paste values from a spreadsheet into the table below. Optionally one can create new rows using Ctl + Shit + n.</div>
+    <div id="table"></div>
+    <br>
+    <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+    <br>
+    <button id="downloadBtn" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+    <br>
+    <div id="outputDiv">
+      <div class="alert alert-info" role="alert">3. Download the NRML file for use in the OpenQuake Engine.</div>
+      <button id="selectAll" type="button" class="btn btn-primary">Select</button>
+      <br>
+      <div id="outPut" style="width:500px;"></div>
+    </div>
+  </div>
+  <!-- FRAGILITY -->
+  <div id="tabs-2">
+    <div class="alert alert-info" role="alert">1. Use this form to initialize the fragility model.</div>
+    <div id="fragilityForm" class="menuItems">
+      <div>
+        <label>Fragility Model Id:</label>
+        <input id="functionId" type="text">
+      </div>
+      <div>
+        <label>Asset Category:</label>
+        <input id="assetCategory" type="text" placeholder="buildings">
+      </div>
+      <div>
+        <label>Loss Category:</label>
+        <select id="lossCategory">
+          <option value="structural">Structural</option>
+          <option value="nonstructural">Non-Structural</option>
+          <option value="contents">Contents</option>
+          <option value="business_interruption">Business Interruption</option>
+          <option value="occupants">Occupants</option>
+        </select>
+      </div>
+      <div>
+        <label>Description:</label>
+        <textarea id="functionDescription" rows="4" cols="10"></textarea>
+      </div>
+      <div>
+        <label>Damage States</label><br>
+        <label>(Comma Separated):</label>
+        <textarea id="limitStates" rows="4" cols="10">slight, moderate, collapse</textarea>
+      </div>
+    </div>
+    <br>
+    <div class="alert alert-info" role="alert">2. One can use the 'Add Discrete function' &amp; 'Add Continuous Function' buttons to generate as many discrete and continuous fragility functions sets (ffs) as needed.<br>
+    Generate a NRML file by click 'Convert to NRML' when done populating the tables.</div>
+    <button id="addFfsDiscrete" type="button" class="btn btn-lg">Add Discrete function</button>
+    <button id="addFfsContinuous" type="button" class="btn btn-lg">Add Continuous Function</button>
+    <br><br>
+    <div id="tables"></div>
+    <br>
+    <div>
+      <button id="saveBtnFF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+      <br>
+      <button id="downloadBtnFF" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+      <br>
+    </div>
+    <br>
+    <div id="outputFFDiv">
+      <div class="alert alert-info" role="alert">3. Download or copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <button id="selectAllFF" type="button" class="btn btn-primary">Select</button>
+      <br>
+      <div id="outPutFF" style="width:500px;"></div>
+    </div>
+  </div>
+  <!-- VULNERABILITY -->
+  <div id="tabs-3">
+    <div class="alert alert-info" role="alert">1. Use this form to initialize the vulnerability model.</div>
+    <div id="vulnerabilityForm" class="menuItems">
+      <div>
+        <label>Vulnerability Model Id:</label>
+        <input id="vFunctionId" type="text">
+      </div>
+      <div>
+        <label>Asset Category:</label>
+        <input id="vAssetCategory" type="text" placeholder="buildings">
+      </div>
+      <div>
+        <label>Loss Category:</label>
+        <select id="vlossCategory">
+          <option value="structural">Structural</option>
+          <option value="nonstructural">Non-Structural</option>
+          <option value="contents">Contents</option>
+          <option value="business_interruption">Business Interruption</option>
+          <option value="occupants">Occupants</option>
+        </select>
+      </div>
+      <div>
+        <label>Description:</label>
+        <textarea id="vFunctionDescription" rows="4" cols="10"></textarea>
+      </div>
+    </div>
+    <br>
+    <div class="alert alert-info" role="alert">2. Use the 'Add Probability Mass Function' &amp; 'Add Discrete Function' buttons to generate as many vulnerability function forms as needed. Next populate the table and form for each function.<br>
+    Generate a NRML file by click 'Convert to NRML' when done populating the tables<br>
+    Optionally one can create new rows in the discrete table using Ctl + Shift + n.
+    </div>
+    <button id="addVulnFunction" type="button" class="btn btn-lg">Add Function</button>
+    <br><br>
+    <div id="vTables"></div>
+    <br>
+    <div>
+      <button id="saveBtnVF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+      <br>
+      <button id="downloadBtnVF" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+      <br>
+    </div>
+    <br>
+    <div id="outputVFDiv">
+      <div class="alert alert-info" role="alert">3. Download or copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <button id="selectAllVF" type="button" class="btn btn-primary">Select</button>
+      <br>
+      <div id="outPutVF" style="width:500px;"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+    {% include 'search_scripts.html' %}
+    <script>
+        help=document.getElementById("help_url");
+        if(typeof help !== "undefined") { help.href+='/explore/'; }
+        $( "#tabs" ).tabs();
+    </script>
+    <script src="{{ STATIC_URL }}js/handsontable.full.min.js"></script>
+    <script src="{{ STATIC_URL }}ript/risk_input_model_exposure.js"></script>
+    <script src="{{ STATIC_URL }}ript/risk_input_model_fragility.js"></script>
+    <script src="{{ STATIC_URL }}ript/risk_input_model_vulnerability.js"></script>
+{% endblock extra_script %}
