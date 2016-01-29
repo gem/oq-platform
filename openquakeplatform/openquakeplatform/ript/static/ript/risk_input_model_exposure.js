@@ -18,6 +18,7 @@
 var exposureTable;
 var header;
 var showArea = false;
+var NRML;
 
 $( document ).ready(function() {
     updateTable();
@@ -35,6 +36,13 @@ $('#deductibleDiv').hide();
 $('#perArea').hide();
 
 $('#defineCostStruc').change(function() {
+    // There is a bug in the handsontable lib where one can not
+    // paste values into the table when the user has made a selection
+    // from a dropdown menu. The reason for this error is that the focus
+    // remains on the menu.
+    // The workaround for this is to un-focus the selection menu with blur()
+    // More info: https://github.com/handsontable/handsontable/issues/2973
+    $(this).blur();
     defineCost($(this).val());
     if ($(this).val() != 'none') {
         $('#retrofittingSelect').show();
@@ -53,14 +61,20 @@ $('#defineCostStruc').change(function() {
 });
 
 $('#defineCostNonStruc').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostContent').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     defineCost($(this).val());
 });
 
 $('#defineCostBusiness').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     defineCost($(this).val());
 });
 
@@ -106,6 +120,8 @@ function costTrackerManager () {
 // End the visibility of the perArea selection menu
 
 $('#exposureForm').change(function() {
+    // unfocus the selection menu, see the note at the defineCostStruc change event
+    $(this).blur();
     updateTable();
     $('#outputDiv').css('display', 'none');
 });
@@ -175,10 +191,14 @@ function updateTable() {
 
     $('#occupantsCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
+        // unfocus the selection menu, see the note at the exposure defineCostStruc change event
+        $(this).blur();
     });
 
     $('#retrofittingSelect input:checked').each(function() {
         header.push($(this).attr('value'));
+        // unfocus the selection menu, see the note at the exposure defineCostStruc change event
+        $(this).blur();
     });
 
     var headerLength = header.length;
@@ -211,10 +231,14 @@ function updateTable() {
     });
 
     $('#outPut').empty();
-    $('#saveBtn').css('display', 'block');
+    $('#saveBtn').show();
+
 }
 
 $('#saveBtn').click(function() {
+    // Expose the download button
+    $('#downloadBtn').show();
+
     // Get the values from the table
     var data = exposureTable.getData();
 
@@ -272,7 +296,7 @@ $('#saveBtn').click(function() {
 
     // Create the asset
     for (var i = 0; i < data.length; i++) {
-        var costTypes = '\t\t\t<costTypes> \n';
+        var costTypes = '\t\t\t<costTypes>\n';
         var costs ='\t\t\t\t<costs>\n';
         var occupancies = '\t\t\t\t<occupancies>\n';
 
@@ -311,7 +335,7 @@ $('#saveBtn').click(function() {
         var areaType = "";
         var areaTypeSelected = $('#perAreaSelect').val();
         if (showArea == true) {
-            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" /> \n';
+            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" />\n';
         }
 
         // Cost Type
@@ -350,7 +374,7 @@ $('#saveBtn').click(function() {
         // Retrofitted
         var retrofittingSelect = $('#retrofittingSelect input:checked').val();
         if (retrofittingSelect == 'retrofitting') {
-            retrofitting = 'retrofitted="'+data[i][retrofittingInx]+'"';
+            retrofitting = ' retrofitted="'+data[i][retrofittingInx]+'"';
         }
 
         // deductibleSelect
@@ -367,7 +391,7 @@ $('#saveBtn').click(function() {
         // Economic Cost
         if (structuralInx > -1 ) {
             costTypes += '\t\t\t\t<costType name="structural" type="per_asset" unit="USD" />\n';
-            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'" '+retrofitting+' '+deductibleValue+' '+limitValue+'"/>\n';
+            costs += '\t\t\t\t\t<cost type="structural" value="'+ data[i][structuralInx]+'"'+retrofitting+deductibleValue+limitValue+'/>\n';
         }
         if (non_structuralInx > -1 ) {
             costs += '\t\t\t\t\t<cost type="nonstructural" value="'+ data[i][non_structuralInx]+'"/>\n';
@@ -394,7 +418,7 @@ $('#saveBtn').click(function() {
         occupancies += '\t\t\t\t</occupancies>\n';
 
         asset +=
-            '\t\t\t<asset id="'+id+'" '+number+' '+area+' '+taxonomy+' > \n' +
+            '\t\t\t<asset id="'+id+'" '+number+' '+area+' '+taxonomy+' >\n' +
                 '\t\t\t\t<location '+longitude+' '+latitude+' />\n' +
                 costs +
                 occupancies +
@@ -402,23 +426,23 @@ $('#saveBtn').click(function() {
     }
 
     // Create a NRML element
-    var NRML =
-        '<?xml version="1.0" encoding="UTF-8"?> \n' +
-        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4"> \n' +
-            '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy"> \n' +
-                '\t\t<description>exposure model</description> \n' +
-                '\t\t<conversions> \n' +
+    NRML =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4">\n' +
+            '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy">\n' +
+                '\t\t<description>exposure model</description>\n' +
+                '\t\t<conversions>\n' +
                     areaType +
-                    '\t\t\t<costTypes> \n' +
+                    '\t\t\t<costTypes>\n' +
                     costType +
-                    '\t\t\t</costTypes> \n' +
+                    '\t\t\t</costTypes>\n' +
                     insuranceLimit +
                     deductible +
-                '\t\t</conversions> \n' +
-                '\t\t<assets> \n' +
+                '\t\t</conversions>\n' +
+                '\t\t<assets>\n' +
                     asset +
-                '\t\t</assets> \n' +
-            '\t</exposureModel> \n' +
+                '\t\t</assets>\n' +
+            '\t</exposureModel>\n' +
         '</nrml>';
 
     // Provide the user with the xml output
@@ -426,6 +450,20 @@ $('#saveBtn').click(function() {
     $('#outPut').append('<textarea id="textarea" style="width: 600px;  height: 700px;>'+NRML+'</textarea>');
     $('#outputDiv').css('display', 'block');
     selectAllText();
+});
+
+$('#downloadBtn').click(function() {
+    var textToSave = NRML;
+
+    var hiddenElement = document.createElement('a');
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+    hiddenElement.target = '_blank';
+
+    var exposureFileName = 'my_new_exposure_function';
+
+    hiddenElement.download = exposureFileName+'.xml';
+    hiddenElement.click();
 });
 
 $('#selectAll').click(function() {

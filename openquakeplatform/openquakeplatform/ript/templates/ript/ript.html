@@ -54,6 +54,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <li><a href="#tabs-2">Fragility</a></li>
     <li><a href="#tabs-3">Vulnerability</a></li>
   </ul>
+  <!-- EXPOSURE -->
   <div id="tabs-1">
     <div class="alert alert-info" role="alert">1. Use this form to modify the table header.</div>
     <div id="exposureForm">
@@ -133,13 +134,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <br>
     <button id="saveBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>
+    <button id="downloadBtn" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+    <br>
     <div id="outputDiv">
-      <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div class="alert alert-info" role="alert">3. Download the NRML file for use in the OpenQuake Engine.</div>
       <button id="selectAll" type="button" class="btn btn-primary">Select</button>
       <br>
       <div id="outPut" style="width:500px;"></div>
     </div>
   </div>
+  <!-- FRAGILITY -->
   <div id="tabs-2">
     <div class="alert alert-info" role="alert">1. Use this form to initialize the fragility model.</div>
     <div id="fragilityForm" class="menuItems">
@@ -181,15 +185,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <br>
     <div>
       <button id="saveBtnFF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+      <br>
+      <button id="downloadBtnFF" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+      <br>
     </div>
     <br>
     <div id="outputFFDiv">
-      <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div class="alert alert-info" role="alert">3. Download or copy and paste the NRML file for use in the OpenQuake Engine.</div>
       <button id="selectAllFF" type="button" class="btn btn-primary">Select</button>
       <br>
       <div id="outPutFF" style="width:500px;"></div>
     </div>
   </div>
+  <!-- VULNERABILITY -->
   <div id="tabs-3">
     <div class="alert alert-info" role="alert">1. Use this form to initialize the vulnerability model.</div>
     <div id="vulnerabilityForm" class="menuItems">
@@ -219,19 +227,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <br>
     <div class="alert alert-info" role="alert">2. Use the 'Add Probability Mass Function' &amp; 'Add Discrete Function' buttons to generate as many vulnerability function forms as needed. Next populate the table and form for each function.<br>
     Generate a NRML file by click 'Convert to NRML' when done populating the tables<br>
-    Optionally one can create new rows in the discrete table using the control key.
+    Optionally one can create new rows in the discrete table using Ctl + Shift + n.
     </div>
-    <button id="addVfsProbMass" type="button" class="btn btn-lg">Add Probability Mass Function</button>
-    <button id="addVfsDiscrete" type="button" class="btn btn-lg">Add Discrete Function</button>
+    <button id="addVulnFunction" type="button" class="btn btn-lg">Add Function</button>
     <br><br>
     <div id="vTables"></div>
     <br>
     <div>
       <button id="saveBtnVF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+      <br>
+      <button id="downloadBtnVF" type="button" style="display:none;" class="btn btn-primary">Download NRML</button>
+      <br>
     </div>
     <br>
     <div id="outputVFDiv">
-      <div class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div class="alert alert-info" role="alert">3. Download or copy and paste the NRML file for use in the OpenQuake Engine.</div>
       <button id="selectAllVF" type="button" class="btn btn-primary">Select</button>
       <br>
       <div id="outPutVF" style="width:500px;"></div>

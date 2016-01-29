@@ -35,7 +35,7 @@ label {
 }
 
 .vfsTable {
-	width: 65%;
+	width: 80%;
 	margin-left: 3px;
 }
 
@@ -54,7 +54,7 @@ label {
 }
 
 #tableOverflow {
-	height: 140px;
+	height: 100px;
     overflow: auto;
     margin-top: 20px;
 }
