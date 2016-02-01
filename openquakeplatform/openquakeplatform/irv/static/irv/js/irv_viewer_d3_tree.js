@@ -196,33 +196,13 @@
                     $('#saveState-spinner').hide();
                 } else {
                     projectDefUpdated.title = inputVal;
-
                     // Append projectDefUpdated to tempProjectDef
-                    // Check for existing object
-                    var duplicate = false;
-                    for (var i = 0; i < tempProjectDef.length; i++) {
-                        if (projectDefUpdated.title == tempProjectDef[i].title) {
-                            duplicate = true;
-                        }
-                    }
-
-                    if (duplicate === false) {
-                        tempProjectDef.push(projectDefUpdated);
-                    } else {
-                        $('#ajaxErrorDialog').empty();
-                        $('#ajaxErrorDialog').append(
-                            '<p>That name is already used to describe another project definition</p>'
-                        );
-                        $('#ajaxErrorDialog').dialog('open');
-                        $('#saveState-spinner').hide();
-                        return;
-                    }
 
                     var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
                         //avoid circularity in JSON by removing the parent key
                         if (key == "parent") {
                             return 'undefined';
-                          }
+                        }
                         return value;
                     });
 
@@ -239,6 +219,7 @@
                         },
                         function() {
                         }).done(function() {
+                            tempProjectDef.push(projectDefUpdated);
                             isSubmitting = false;
                             $('#saveStateDialog').dialog('close');
                             $('#saveState-spinner').hide();
@@ -249,14 +230,14 @@
                             var lastValue = $('#pdSelection option:last-child').val();
                             // select the newest element in the dropdown menu
                             $('#pdSelection').val(lastValue);
-                        }).fail(function() {
+                        }).fail(function(resp) {
                             isSubmitting = false;
                             $('#ajaxErrorDialog').empty();
-                            $('#ajaxErrorDialog').append(
-                                '<p>This application was not able to write the project definition to the database</p>'
-                            );
+                            var error_msg = "<p>This application was not able to write the project definition to the database:</p><p>" + resp.responseText + "</p>";
+                            $('#ajaxErrorDialog').append(error_msg);
                             $('#ajaxErrorDialog').dialog('open');
                             $('#submitPD').attr('disabled',true);
+                            $('#saveState-spinner').hide();
                     });
                 }
             });
