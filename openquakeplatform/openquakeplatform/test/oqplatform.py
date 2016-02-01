@@ -278,7 +278,7 @@ class Platform(object):
     def get(self, url):
         self.driver.get(self.basepath + url)
 
-    def xpath_finduniq(self, xpath_str, times=1, postfind=0.2):
+    def xpath_finduniq(self, xpath_str, times=50, postfind=0.1):
         for t in range(0, times):
             field = self.driver.find_elements(By.XPATH, xpath_str)
             if len(field) > 0:
