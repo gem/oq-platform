@@ -469,6 +469,7 @@ _prodtest_innervm_run () {
     ssh -t  $lxc_ip "export GEM_SET_DEBUG=$GEM_SET_DEBUG
 rem_sig_hand() {
     trap ERR
+    sleep 1000000 || true
     echo 'signal trapped'
 }
 trap rem_sig_hand ERR
