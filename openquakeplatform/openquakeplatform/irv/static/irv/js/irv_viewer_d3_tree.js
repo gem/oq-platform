@@ -39,38 +39,6 @@
         });
     });
 
-    // Post New Project Definition
-    function addProjectDefinition() {}
-
-    addProjectDefinition.send = function(selectedLayer, projectDefStg) {
-        // Hit the API endpoint and grab the very very latest version of the PD object
-        $.ajax({
-            method: "POST",
-            url: "../svir/add_project_definition",
-            data: [selectedLayer, projectDefStg]
-        }).done(function() {
-                isSubmitting = false;
-                $('#saveStateDialog').dialog('close');
-                $('#saveState-spinner').hide();
-                $('#saveBtn').prop('disabled', true);
-                // append the new element into the dropdown menu
-                $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
-                // access the last or newest element in the dropdown menu
-                var lastValue = $('#pdSelection option:last-child').val();
-                // select the newest element in the dropdown menu
-                $("#pdSelection").val(lastValue);
-            }).fail(function() {
-                isSubmitting = false;
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to write the project definition to the database</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-                $('#submitPD').attr('disabled',true);
-        });
-    };
-
-
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
@@ -126,8 +94,8 @@
                 }
                 // Check if all themes are computable
                 var areAllThemesComputable = true;
-                for (var i = 0; i < node.children.length; i++) {
-                    if (!isComputable(node.children[i])) {
+                for (var childIdx = 0; childIdx < node.children.length; childIdx++) {
+                    if (!isComputable(node.children[childIdx])) {
                         areAllThemesComputable = false;
                     }
                 }
@@ -621,7 +589,7 @@
                             return "-5em";
                         } else {
                             return "-2.7em";
-                        };
+                        }
                     } else{
                         return "-1em";
                     }
