@@ -120,6 +120,7 @@ copy_prod () {
 sig_hand () {
     trap ERR
     echo "signal trapped"
+    sleep 1000000 || true
     if [ "$lxc_name" != "" ]; then
         set +e
         ssh -t  $lxc_ip "cd ~/$GEM_GIT_PACKAGE; . platform-env/bin/activate ; cd openquakeplatform ; sleep 5 ; fab stop"
