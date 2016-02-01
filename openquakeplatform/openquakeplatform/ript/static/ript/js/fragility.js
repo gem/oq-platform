@@ -330,7 +330,8 @@ function downloadFileFF () {
         functionId = 'my_new_fragility_function';
     }
 
-   $('#downloadLinkFF').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="'+functionId+'">Download</a>');
+    $('#downloadLinkFF').empty();
+    $('#downloadLinkFF').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="'+functionId+'">Download</a>');
 }
 
 $('#selectAllFF').click(function() {
