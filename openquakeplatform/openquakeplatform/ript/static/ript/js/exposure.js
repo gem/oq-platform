@@ -296,7 +296,8 @@ $('#saveBtnEX').click(function() {
     for (var i = 0; i < data.length; i++) {
         var costTypes = '\t\t\t<costTypes>\n';
         var costs ='\t\t\t\t<costs>\n';
-        var occupancies = '\t\t\t\t<occupancies>\n';
+        var occupancies_header = '\t\t\t\t<occupancies>\n';
+        var occupancies = occupancies_header;
 
         if (numberInx > -1 ) {
             number = 'number="'+ data[i][numberInx]+'"';
@@ -413,7 +414,12 @@ $('#saveBtnEX').click(function() {
         }
 
         costs += '\t\t\t\t</costs>\n';
-        occupancies += '\t\t\t\t</occupancies>\n';
+        if (occupancies != occupancies_header) {
+            occupancies += '\t\t\t\t</occupancies>\n';
+        }
+        else {
+            occupancies = "";
+        }
 
         asset +=
             '\t\t\t<asset id="'+id+'" '+number+' '+area+' '+taxonomy+' >\n' +
@@ -458,7 +464,8 @@ function downloadFile () {
     var exposureFileName = 'my_new_exposure_function';
     hiddenElement.download = exposureFileName+'.xml';
 
-   $('#downloadLinkEX').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="my_new_exposure_function">Download</a>');
+    $('#downloadLinkEX').empty();
+    $('#downloadLinkEX').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="my_new_exposure_function">Download</a>');
 }
 
 $('#selectAllEX').click(function() {
