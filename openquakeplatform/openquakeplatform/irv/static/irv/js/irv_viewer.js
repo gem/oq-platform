@@ -1271,7 +1271,7 @@ function watchForPdSelection() {
 
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
-                // TODO this is required beasue watchForPdSelection is running before the
+                // TODO this is required because watchForPdSelection is running before the
                 // ajax call are able to get a reply, need to find a better solution
                 setTimeout(function() {
                     processIndicators(layerAttributes, sessionProjectDef);
