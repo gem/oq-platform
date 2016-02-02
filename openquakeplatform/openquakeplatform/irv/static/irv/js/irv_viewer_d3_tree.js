@@ -24,8 +24,8 @@
         'RI': 'Risk Index',
         'RISK_INDICATOR': 'Risk Indicator',
         'SVI': 'Social Vulnerability Index',
-        'SVI_THEME': 'Social Vulnerability Theme',
-        'SVI_INDICATOR': 'Social Vulnerability Indicator',
+        'SV_THEME': 'Social Vulnerability Theme',
+        'SV_INDICATOR': 'Social Vulnerability Indicator'
     };
 
     $(document).ready(function() {
@@ -96,8 +96,19 @@
             duration = 750,
             root;
 
+        var tooltipdiv = d3.select("#projectDefDialog").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         var tree = d3.layout.tree()
-            .size([height, width]);
+            .size([height, width])
+            .separation(function separation(a,b) {
+                // at least the sum of radius of two sibling nodes, plus the text for weight
+                return getRadius(a) + getRadius(b) + 8;
+            });
+
+
+        var nodeEnter;
 
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
@@ -126,8 +137,8 @@
                 }
                 // Check if all themes are computable
                 var areAllThemesComputable = true;
-                for (var i = 0; i < node.children.length; i++) {
-                    if (!isComputable(node.children[i])) {
+                for (var j = 0; j < node.children.length; j++) {
+                    if (!isComputable(node.children[j])) {
                         areAllThemesComputable = false;
                     }
                 }
@@ -137,7 +148,7 @@
                     return false;
                 }
             }
-            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI || node.type == NODE_TYPES.SVI_THEME) {
+            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI || node.type == NODE_TYPES.SV_THEME) {
                 if (typeof node.children === 'undefined' || (typeof node.children !== 'undefined' && node.children.length === 0)) {
                     return false;
                 } else {
@@ -294,7 +305,6 @@
             });
         });
 
-        var nodeEnter;
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
@@ -498,7 +508,25 @@
 
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
-                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; })
+                .on("mouseover", function(d) {
+                    var info;
+                    if (typeof d.field !== 'undefined') {
+                        info = d.field;
+                        tooltipdiv .transition()
+                            .duration(500)
+                            .style("opacity", 0.7);
+                        tooltipdiv .html(info)
+                            .style("left", (d3.event.pageX) + "px")
+                            // TODO: find a better way to place the tooltip instead of hardcoding 100
+                            .style("top", (d3.event.pageY - 100) + "px");
+                    }
+                })
+                .on("mouseout", function(d) {
+                    tooltipdiv .transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
 
             // tree indicator label
             nodeEnter.append("text")
@@ -506,62 +534,37 @@
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
                 .attr("x", function(d) { return -(getRadius(d) + 5); })
-                .attr("dy", function(d) {
-                    // NOTE are x and y swapped?
-                    // set te text above or below the node depending on the
-                    // parent position
-                    if (typeof d.parent != 'undefined' && d.x > d.parent.x){
-                        return "2em";
-                    }
-                    return "-1em";
-                })
-                .attr("text-anchor", function(d) { return "end"; })
-                // Convert long attribute names text into acronyms
-                .text(function(d) {
-                    if (d.name.length > 20) {
-                        var matches = d.name.match(/\b(\w)/g);
-                        var acronym = matches.join('').toUpperCase();
-                        if (d.isInverted) {
-                            return "- " + acronym;
-                        } else {
-                            return acronym;
-                        }
+
+                .attr("x", function(d) {
+                    if (d.type === NODE_TYPES.SV_INDICATOR || d.type === NODE_TYPES.RISK_INDICATOR) {
+                        return getRadius(d) + 5;
                     } else {
-                        if (d.isInverted) {
-                            return "- " + d.name;
-                        } else {
-                            return d.name;
-                        }
+                        return -(getRadius(d) + 5);
+                    }
+                })
+                .attr("dy", function(d) {
+                    // Place the label always at the same height of the node
+                    return "0.3em";
+                })
+                .attr("text-anchor", function(d) {
+                    if (d.type === NODE_TYPES.SV_INDICATOR || d.type === NODE_TYPES.RISK_INDICATOR) {
+                        return "start";
+                    } else {
+                        return "end";
+                    }
+                })
+                .text(function(d) {
+                    // Render a minus before the name of a variable which weight is negative
+                    if (d.isInverted) {
+                        return "- " + d.name;
+                    } else {
+                        return d.name;
                     }
                 })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "20px")
-                // Set the color of labels that can be hovered
-                .attr('fill', function(d) {
-                    if (d.name.length > 20) {
-                        return "#003399";
-                    }
-                })
-                // Provide mouse pointer for long attribute names
-                .attr("class", function(d) {
-                    if (d.name.length > 20) {
-                        return "pointer";
-                    }
-                })
-                // Tooltip for long attribute names
-                .style("fill-opacity", 1e-6)
-                    .on("mouseover", function(d) {
-                        if (d.name.length > 20) {
-                            d3.select("#tool-tip")
-                                .append("text")
-                                .text("Attribute: " + d.name);
-                        }
-                    })
-                    .on("mouseout", function() {
-                        d3.select("#tool-tip")
-                            .select("text")
-                            .remove();
-                    });
+                .style("fill-opacity", 1e-6);
+
             // tree operator label
             nodeEnter.append("text")
                 .text(function(d) {
@@ -583,7 +586,8 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return getRadius(d) + 15; });
+                .attr("x", function(d) { return getRadius(d) + 5; })
+                .attr("dy", function(d) { return '0.3em'; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -605,7 +609,7 @@
                         return color;
                     }
                 })
-                .attr("id", function(d) {return "operator-label-" + d.level;})
+                .attr("id", function(d) {return "ignore-weights-label-" + d.level;})
                 .attr("x", function(d) { return getRadius(d) + 15; })
                 .attr("transform", "translate(0, 12)");
 
@@ -621,7 +625,7 @@
                             return "-5em";
                         } else {
                             return "-2.7em";
-                        };
+                        }
                     } else{
                         return "-1em";
                     }
