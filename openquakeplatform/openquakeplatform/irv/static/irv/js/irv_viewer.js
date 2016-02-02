@@ -1568,7 +1568,7 @@ var startApp = function() {
     $('#themeTabs').css({
         'width': '700px',
         'height': '600px',
-        'overflow': 'auto',
+        'overflow': 'hidden',
         'position': 'fixed',
         'left': '10px',
         'top': '110px'
