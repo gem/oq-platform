@@ -230,7 +230,7 @@
                     },
                     function() {
                     }).done(function() {
-                        tempProjectDef.push(projectDefStg);
+                        tempProjectDef.push(JSON.parse(projectDefStg));
                         $('#saveStateDialog').dialog('close');
                         $('#saveState-spinner').hide();
                         $('#saveBtn').prop('disabled', true);
