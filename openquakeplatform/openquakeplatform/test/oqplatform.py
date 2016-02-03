@@ -42,11 +42,14 @@ class Platform(object):
         if not self.email:
             self.email = pla_email
 
+        time.sleep(5)
         self.driver.maximize_window()
         self.main_window = None
+        time.sleep(5)
         while not self.main_window:
             self.main_window = self.current_window_handle()
 
+        time.sleep(5)
         if self.homepage_login():
             self.is_logged = True
         time.sleep(3)
