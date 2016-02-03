@@ -402,7 +402,7 @@ function gem_help_cb(event)
                     <h4>Direction specification:</h4>
                     <table class="dir_spec"><tr>
                         <td><input type="radio" id="Direction1RB1" name="sub1_xdir" checked value="false" onclick="taxt_Direction1RB1Click(this);">Unspecified direction</td>
-                        <td><input type="radio" id="Direction1RB2" name="sub1_xdir" value="true"          onclick="taxt_Direction1RB2Click(this);">Parallel to street</td>
+                        <td><input type="radio" id="Direction1RB2" name="sub1_xdir" value="true"          onclick="taxt_Direction1RB2Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/parallel-to-street--pf">Parallel to street</span></td>
                     </tr></table>
                 </div>
 
@@ -437,7 +437,7 @@ function gem_help_cb(event)
                     <h4>Direction specification:</h4>
                     <table class="dir_spec"><tr>
                         <td><input type="radio" id="Direction2RB1" name="sub1_ydir" checked value="unspec" onclick="taxt_Direction2RB1Click(this);">Unspecified direction</td>
-                        <td><input type="radio" id="Direction2RB3" name="sub1_ydir" value="spec"           onclick="taxt_Direction2RB3Click(this);">Perpendicular to street</td>
+                        <td><input type="radio" id="Direction2RB3" name="sub1_ydir" value="spec"           onclick="taxt_Direction2RB3Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/perpendicular-to-street--of">Perpendicular to street</span></td>
                     </tr></table>
                 </div>
 
@@ -471,8 +471,8 @@ function gem_help_cb(event)
             <div class="data-group">
                 <h4>Height:</h4>
                 <table style="width: 95%;"><tr>
-                    <td style="width: 50%;"><div>Number of storey above ground:</div></td>
-                    <td style="width: 50%;"><div>Number of storey below ground:</div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/number-of-storeys-above-ground--h">Number of storeys above ground:</span></div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/number-of-storeys-below-ground--hb">Number of storeys below ground:</span></div></td>
                 </tr><tr>
                     <td><select id="HeightCB1"></select></td>
                     <td><select id="HeightCB2"></select></td>
@@ -480,7 +480,7 @@ function gem_help_cb(event)
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE11"><input style="display:none; width: 45%;" type="text" id="noStoreysE12"></div></td>
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE21"><input style="display:none; width: 45%;" type="text" id="noStoreysE22"></div></td>
                 </tr><tr>
-                    <td><div>Height of ground floor level above grade (m):</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/height-of-ground-floor-level-above-grade--hf">Height of ground floor level above grade (m):</span></div></td>
                     <td><div>Slope of the ground (degrees):</div></td>
                 </tr><tr>
                     <td><select id="HeightCB3"></select></td>
@@ -548,14 +548,14 @@ function gem_help_cb(event)
                     <td><select id="RegularityCB1"></select></td>
                     <td></td>
                </tr><tr>
-                    <td><div>Plan structural irregularity - primary:</div></td>
-                    <td><div>Plan structural irregularity - secondary:</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plan-irregularity-primary--irpp">Plan structural irregularity - primary:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plan-irregularity-secondary--irps">Plan structural irregularity - secondary:</span></div></td>
                 </tr><tr>
                     <td><select id="RegularityCB2"></select></td>
                     <td><select id="RegularityCB4"></select></td>
                </tr><tr>
-                    <td><div>Vertical structural irregularity - primary:</div></td>
-                    <td><div>Vertical structural irregularity - secondary:</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vertical-structural-irregularity-primary--irvp">Vertical structural irregularity - primary:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vertical-structural-irregularity-secondary--irvs">Vertical structural irregularity - secondary:</span></div></td>
                 </tr><tr>
                     <td><select id="RegularityCB3"></select></td>
                     <td><select id="RegularityCB5"></select></td>
