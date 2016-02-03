@@ -33,7 +33,6 @@ var thematicLayer;
 var leafletBoundingBox = [];
 var mapboxBoundingBox = [];
 var license;
-var projectDefUpdated;
 var webGl;
 var projectChange = false;
 var verticesCount = 0;
@@ -1258,27 +1257,21 @@ function thematicMapCreation() {
     $('#absoluteSpinner').hide();
 }
 
-function watchForPdSelection() {
+function whenProjDefSelected() {
+    $('#pdSelection').prop("disabled", true);
     $('#projectDef-spinner').show();
-    setTimeout(function() {
-        var pdSelection = $('#pdSelection').val();
-
-        for (var i = 0; i < tempProjectDef.length; i++) {
-            if (tempProjectDef[i].title === pdSelection) {
-                // Deep copy the temp project definition object
-                sessionProjectDef = jQuery.extend(true, {}, tempProjectDef[i]);
-                loadPD(sessionProjectDef);
-
-                $('#iri-spinner').hide();
-                $('#project-definition-svg').show();
-                // TODO this is required because watchForPdSelection is running before the
-                // ajax call are able to get a reply, need to find a better solution
-                setTimeout(function() {
-                    processIndicators(layerAttributes, sessionProjectDef);
-                }, 3000);
-            }
+    var pdSelection = $('#pdSelection').val();
+    for (var i = 0; i < tempProjectDef.length; i++) {
+        if (tempProjectDef[i].title === pdSelection) {
+            // Deep copy the temp project definition object
+            sessionProjectDef = jQuery.extend(true, {}, tempProjectDef[i]);
+            loadPD(sessionProjectDef);
+            $('#iri-spinner').hide();
+            $('#project-definition-svg').show();
+            processIndicators(layerAttributes, sessionProjectDef);
         }
-    }, 100);
+    }
+    $('#pdSelection').prop("disabled", false);
 }
 
 function getGeoServerLayers() {
@@ -1741,7 +1734,7 @@ function projDefJSONRequest(selectedLayer) {
             }
 
             // Create the pd selection menu
-            $('#project-def').prepend('<select id="pdSelection" onChange="watchForPdSelection();"><option value"" disabled selected>Select a Project Definition</option></select>');
+            $('#project-def').prepend('<select id="pdSelection" onChange="whenProjDefSelected();"><option value"" disabled selected>Select a Project Definition</option></select>');
             var pdTitles = [];
 
             // break the array into objects, present the user with a choice of PDs

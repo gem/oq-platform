@@ -27,6 +27,7 @@
         'SV_THEME': 'Social Vulnerability Theme',
         'SV_INDICATOR': 'Social Vulnerability Indicator'
     };
+    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -193,65 +194,6 @@
             });
         });
 
-        var isSubmitting = false;
-        $('#submitPD').click(function() {
-            $('#submitPD').attr('disabled',true);
-            $('#checkboxPD').attr('checked', false);
-            $('#saveState-spinner').show();
-            var inputNamePD = $('#giveNamePD').val();
-            if (inputNamePD === '' || inputNamePD === null) {
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>A valid name was not provided</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-                $('#saveState-spinner').hide();
-            } else {
-                projectDefUpdated.title = inputNamePD;
-
-                var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
-                    //avoid circularity in JSON by removing the parent key
-                    if (key == "parent") {
-                        return 'undefined';
-                    }
-                    return value;
-                });
-
-                // prevent multiple AJAX calls
-                if (isSubmitting) {
-                    return;
-                }
-                isSubmitting = true;
-
-                // Hit the API endpoint and grab the very very latest version of the PD object
-                $.post( "../svir/add_project_definition", {
-                    layer_name: selectedLayer,
-                    project_definition: projectDefStg
-                    },
-                    function() {
-                    }).done(function() {
-                        tempProjectDef.push(JSON.parse(projectDefStg));
-                        $('#saveStateDialog').dialog('close');
-                        $('#saveState-spinner').hide();
-                        $('#saveBtn').prop('disabled', true);
-                        // append the new element into the dropdown menu
-                        $('#pdSelection').append('<option value="'+ inputNamePD +'">'+ inputNamePD +'</option>');
-                        // access the last or newest element in the dropdown menu
-                        var lastValue = $('#pdSelection option:last-child').val();
-                        // select the newest element in the dropdown menu
-                        $('#pdSelection').val(lastValue);
-                        isSubmitting = false;
-                    }).fail(function(resp) {
-                        $('#ajaxErrorDialog').empty();
-                        var error_msg = "<p>This application was not able to write the project definition to the database:</p><p>" + resp.responseText + "</p>";
-                        $('#ajaxErrorDialog').append(error_msg);
-                        $('#ajaxErrorDialog').dialog('open');
-                        $('#submitPD').attr('disabled',true);
-                        $('#saveState-spinner').hide();
-                        isSubmitting = false;
-                });
-            }
-        });
 
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
@@ -696,4 +638,53 @@
         $('#projectDef-spinner').hide();
     } //end d3 tree
 
+    $('#submitPD').click(function () {
+        $('#submitPD').attr('disabled',true);
+        $('#checkboxPD').attr('checked', false);
+        $('#saveState-spinner').show();
+        var inputNamePD = $('#giveNamePD').val();
+        if (inputNamePD === '' || inputNamePD === null) {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                '<p>A valid name was not provided</p>'
+            );
+            $('#ajaxErrorDialog').dialog('open');
+            $('#saveState-spinner').hide();
+        } else {
+            projectDefUpdated.title = inputNamePD;
 
+            var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
+                //avoid circularity in JSON by removing the parent key
+                if (key == "parent") {
+                    return 'undefined';
+                }
+                return value;
+            });
+
+            // Hit the API endpoint and grab the very very latest version of the PD object
+            $.post( "../svir/add_project_definition", {
+                layer_name: selectedLayer,
+                project_definition: projectDefStg
+                },
+                function() {
+                }).done(function() {
+                    tempProjectDef.push(JSON.parse(projectDefStg));
+                    $('#saveStateDialog').dialog('close');
+                    $('#saveState-spinner').hide();
+                    $('#saveBtn').prop('disabled', true);
+                    // append the new element into the dropdown menu
+                    $('#pdSelection').append('<option value="'+ inputNamePD +'">'+ inputNamePD +'</option>');
+                    // access the last or newest element in the dropdown menu
+                    var lastValue = $('#pdSelection option:last-child').val();
+                    // select the newest element in the dropdown menu
+                    $('#pdSelection').val(lastValue);
+                }).fail(function(resp) {
+                    $('#ajaxErrorDialog').empty();
+                    var error_msg = "<p>This application was not able to write the project definition to the database:</p><p>" + resp.responseText + "</p>";
+                    $('#ajaxErrorDialog').append(error_msg);
+                    $('#ajaxErrorDialog').dialog('open');
+                    $('#submitPD').attr('disabled',true);
+                    $('#saveState-spinner').hide();
+            });
+        }
+    });
