@@ -759,7 +759,7 @@ function taxt_ValidateOccupancy() // Ok
         /* RES2D  */ OccupancyCB2.push({'_text': '10-19 Units', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/10-19-units--res2d' });
         /* RES2E  */ OccupancyCB2.push({'_text': '20-49 Units', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/20-49-units--res2e' });
         /* RES2F  */ OccupancyCB2.push({'_text': '50+ Units', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/50-units--res2f' });
-        /* RES3   */ OccupancyCB2.push({'_text': 'Temporary lodging', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/temporary-lodging' });
+        /* RES3   */ OccupancyCB2.push({'_text': 'Temporary lodging', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/temporary-lodging--res3' });
         /* RES4   */ OccupancyCB2.push({'_text': 'Institutional housing', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/institutional-housing--res4' });
         /* RES5   */ OccupancyCB2.push({'_text': 'Mobile home', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/mobile-home--res5' });
         /* RES6   */ OccupancyCB2.push({'_text': 'Informal housing', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/informal-housing--res6' });

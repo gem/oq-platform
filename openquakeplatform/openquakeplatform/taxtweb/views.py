@@ -66,12 +66,16 @@ def index(request, **kwargs):
                         (" tab_first" if i == 0 else ""), desc[i]))
 
     sub1desc = ['Direction X', 'Direction Y']
+    sub1help = ['http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/direction-x',
+                'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/direction-y',
+                ]
     sub1tab_content = ""
     for i in range(0, len(sub1desc)):
         sub1tab_content = (sub1tab_content +
-                            '<li id="sub1tab_id-%d" class="subtab%s%s" onclick="sub1tab_set(this);"><span>%s</span></li>' %
+                            '<li id="sub1tab_id-%d" class="subtab%s%s" onclick="sub1tab_set(this);" data-gem-help="%s"><span>%s</span></li>' %
                             (i+1, ("_selected" if i + 1 == subtab_id else ""),
-                             (" subtab_first" if i == 0 else ""), sub1desc[i]))
+                             (" subtab_first" if i == 0 else ""),
+                             sub1help[i], sub1desc[i]))
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
