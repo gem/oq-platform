@@ -75,7 +75,7 @@ def index(request, **kwargs):
 
     is_popup = (False if request.GET.get("is_popup", False) == False else True)
 
-    taxonomy = kwargs['taxonomy'][1:] if 'taxonomy' in kwargs else ""
+    taxonomy = kwargs['taxonomy'] if 'taxonomy' in kwargs else ""
 
     return render_to_response("taxtweb/index.html",
                               dict(taxonomy=taxonomy,
