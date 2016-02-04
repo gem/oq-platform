@@ -205,12 +205,18 @@ window.onload = function () {
     if (taxonomy != '') {
         ret = taxonomy_short2full(taxonomy);
 
-        if (ret && ret.err_s) {
-            alert(ret.err_s);
-            taxonomy = '';
+        if (ret) {
+            if (ret.err_s) {
+                alert(ret.err_s);
+                taxonomy = '';
+            }
+            else {
+                taxonomy = ret.result;
+            }
         }
         else {
-            taxonomy = ret.result;
+            alert("No response from server.");
+            taxonomy = '';
         }
     }
 
