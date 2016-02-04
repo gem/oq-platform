@@ -762,7 +762,7 @@ function taxt_ValidateOccupancy() // Ok
         /* RES3   */ OccupancyCB2.push({'_text': 'Temporary lodging', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/temporary-lodging' });
         /* RES4   */ OccupancyCB2.push({'_text': 'Institutional housing', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/institutional-housing--res4' });
         /* RES5   */ OccupancyCB2.push({'_text': 'Mobile home', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/mobile-home--res5' });
-        /* RES6   */ OccupancyCB2.push({'_text': 'Informal housing', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/informal-housing-res6' });
+        /* RES6   */ OccupancyCB2.push({'_text': 'Informal housing', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/informal-housing--res6' });
         select_populate('OccupancyCB2', OccupancyCB2);
         gem$('#OccupancyCB2').prop("disabled", false);
     }
@@ -3628,8 +3628,8 @@ function taxt_Initiate() {
     /* PLFU   */ PlanShapeCB.push({'_text': 'U- or C-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/u-shape--plfu' });
     /* PLFX   */ PlanShapeCB.push({'_text': 'X-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/x-shape--plfx' });
     /* PLFY   */ PlanShapeCB.push({'_text': 'Y-shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/y-shape--plfy' });
-    /* PLFP   */ PlanShapeCB.push({'_text': 'Polygonal, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/polygonal-solid-plfp' });
-    /* PLFPO  */ PlanShapeCB.push({'_text': 'Polygonal, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/polygonal-with-an-opening-in-plan-plfpo' });
+    /* PLFP   */ PlanShapeCB.push({'_text': 'Polygonal, solid', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/polygonal-solid--plfp' });
+    /* PLFPO  */ PlanShapeCB.push({'_text': 'Polygonal, with an opening in plan', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/polygonal-with-an-opening-in-plan--plfpo' });
     /* PLFI   */ PlanShapeCB.push({'_text': 'Irregular plan shape', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/irregular-plan-shape--plfi' });
     select_populate('PlanShapeCB', PlanShapeCB);
     gem$('#PlanShapeCB').val(0);
@@ -3647,7 +3647,7 @@ function taxt_Initiate() {
     gem$('#RegularityCB5').on('change', taxt_RegularityCB5Select);
 
     var WallsCB = [];
-    /* EW99 */  WallsCB.push({'_text': 'Unknown material of exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/unknown-material-ew99' });
+    /* EW99 */  WallsCB.push({'_text': 'Unknown material of exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/unknown-material--ew99' });
     /* EWC  */  WallsCB.push({'_text': 'Concrete exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/concrete--ewc' });
     /* EWG  */  WallsCB.push({'_text': 'Glass exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/glass--ewg' });
     /* EWE  */  WallsCB.push({'_text': 'Earthen exterior walls', 'dataGemHelp': 'http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/earthen-exterior-walls--ewe' });
