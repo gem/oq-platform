@@ -1258,7 +1258,6 @@ function thematicMapCreation() {
 }
 
 function whenProjDefSelected() {
-    $('#pdSelection').prop("disabled", true);
     $('#projectDef-spinner').show();
     var pdSelection = $('#pdSelection').val();
     for (var i = 0; i < tempProjectDef.length; i++) {
@@ -1271,7 +1270,6 @@ function whenProjDefSelected() {
             processIndicators(layerAttributes, sessionProjectDef);
         }
     }
-    $('#pdSelection').prop("disabled", false);
 }
 
 function getGeoServerLayers() {
