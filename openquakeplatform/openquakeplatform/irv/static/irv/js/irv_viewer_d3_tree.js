@@ -45,6 +45,7 @@
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
+        // Rebuild the d3 tree, based on the given project definition
 
         // default tab window size
         var winH = 600;
@@ -636,7 +637,7 @@
             $('#projectDefWeight-spinner').remove();
         }
         $('#projectDef-spinner').hide();
-    } //end d3 tree
+    } //end loadPD
 
     $('#submitPD').click(function () {
         $('#submitPD').attr('disabled',true);
@@ -661,6 +662,8 @@
                 return value;
             });
 
+            // Temporarily disable the project definition selector
+            $('#pdSelection').prop("disabled", true);
             // Hit the API endpoint and grab the very very latest version of the PD object
             $.post( "../svir/add_project_definition", {
                 layer_name: selectedLayer,
@@ -685,6 +688,8 @@
                     $('#ajaxErrorDialog').dialog('open');
                     $('#submitPD').attr('disabled',true);
                     $('#saveState-spinner').hide();
+                }).always(function() {
+                    $('#pdSelection').prop("disabled", false);
             });
         }
     });
