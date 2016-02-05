@@ -191,6 +191,17 @@ function populate_form()
     }
 }
 
+/*
+  select_populate fills a <select> item with <option>s
+      using the 'items' numerical index as 'value' attribute
+      if items[i] is a string use it as description of <option>
+          if items[i] is an object us '_text' attribute as description
+          and converts all other attributes using the convention:
+              html_attribute_name = camelcase_to_dash-separated-low-case_name(object_attribute_name)
+              html_attribute_value = object_attribute_value
+
+              { _text: 'the text', theAttribute: 'the value' } => <option the-attribute="the value">the text</option>
+*/
 function select_populate(id, items)
 {
     var preitem, item, text = null, attrs;

@@ -234,9 +234,18 @@ window.onload = function () {
 
     "Click and Help"::onclick => gem_help()
 
-    addEventListener("mousedown") => gem_help_cb &&  run gem_help_highlight()
+    highlight and addEventListener("mousedown", gem_help_cb) on all tags with 'data-gem-help' attribute
+
+    gem_help_cb(target) => if target IS NOT <select> open new tab with the related web page and cleanup all help stuff
+      if target IS <select> call gem_help_select()
+
+    gem_help_select(target) =>
+        open a new div with the same items of related <select> item and highlight all of
+        them have an associated help webpage
+        for each item call gem_help_highlight that highlight and addEventListener("mousedown", gem_help_cb)
 
 */
+
 var gem_help_old_body_class = "";
 
 function gem_help_highlight(rect, obj)
@@ -255,7 +264,6 @@ function gem_help_highlight(rect, obj)
 
     document.body.appendChild(div);
 }
-
 
 function gem_help()
 {
@@ -317,10 +325,10 @@ function gem_help_select(obj, event)
     div.style.left = event.clientX + "px";
 
     for (var i = 0 ; i < obj.length ; i++) {
-        var info = obj[i].getAttribute("data-gem-help");
+        var help_url = obj[i].getAttribute("data-gem-help");
 
-        if (info) {
-            div.innerHTML += '<span data-gem-help="' + obj[i].getAttribute("data-gem-help") + '">' +
+        if (help_url) {
+            div.innerHTML += '<span data-gem-help="' + help_url + '">' +
                             obj[i].innerHTML + '</span><br>';
         }
         else {
@@ -350,7 +358,6 @@ function gem_help_cleanup()
     }
 
     objs = $('.gem_help_highlight');
-    // objs = [];
     for (var i = 0 ; i < objs.length ; i++) {
         obj = objs[i];
         obj.parentNode.removeChild(obj);
@@ -358,7 +365,10 @@ function gem_help_cleanup()
     }
 }
 
-
+/*
+    gem_help_cb is fired when an hilighted native page element is clicked or
+        when an highlighted item of a new help div associated with an highlighted <select> is clicked
+*/
 function gem_help_cb(event)
 {
     event.preventDefault();
@@ -376,6 +386,7 @@ function gem_help_cb(event)
         }
     }
     gem_help_cleanup();
+    /* when fired from a help select div we close that div */
     gem_help_select_remove();
     if (document.removeEventListener) {
         document.removeEventListener("mousedown", gem_help_cb, true);
