@@ -3,9 +3,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta charset="utf-8">
-<title>TaxT</title>
-      <link href='{{ STATIC_URL }}taxtweb/font/lato_font.css' rel='stylesheet' type='text/css' />
+<title>taxtweb - GEM building taxonomy editor</title>
+<link href='{{ STATIC_URL }}taxtweb/font/lato_font.css' rel='stylesheet' type='text/css' />
 <style>
+
+h1,h2,h3,h4,h5,h6 {
+    display:inline-block;
+}
 
 .gem_field_alert {
     border-color: #ff0000;
@@ -160,6 +164,24 @@ table.dir_spec td {
     text-align: center;
     width: 50%;
 }
+
+.gem_help, .gem_help * { cursor: help !important; }
+
+div.info_overlay_hidden {
+    visibility: hidden;
+}
+
+div.gem_help_select {
+    border: 1px solid grey;
+    padding: 8px;
+    background: #f8f8f8;
+}
+
+div.gem_help_highlight {
+    background:rgba(255,255,0,0.5);
+    position: absolute;
+}
+
 </style>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -171,6 +193,7 @@ table.dir_spec td {
 var taxt_prefix = '{{ taxt_prefix }}';
 var gem$ = {{ jquery }};
 window.onload = function () {
+    var ret = null;
     var tab_cur = {{ tab_id }};
     var subtab_cur = {{ subtab_id }};
     tab_set(tab_cur, subtab_cur);
@@ -181,13 +204,20 @@ window.onload = function () {
 
     if (taxonomy != '') {
         ret = taxonomy_short2full(taxonomy);
-    }
-    if (ret.err_s) {
-        alert(ret.err_s);
-        taxonomy = '';
-    }
-    else {
-        taxonomy = ret.result;
+
+        if (ret) {
+            if (ret.err_s) {
+                alert(ret.err_s);
+                taxonomy = '';
+            }
+            else {
+                taxonomy = ret.result;
+            }
+        }
+        else {
+            alert("No response from server.");
+            taxonomy = '';
+        }
     }
 
     var ret_s = { s: "" };
@@ -198,6 +228,175 @@ window.onload = function () {
         }
     }
 }
+
+/*
+    WORKFLOW
+
+    "Click and Help"::onclick => gem_help()
+
+    highlight and addEventListener("mousedown", gem_help_cb) on all tags with 'data-gem-help' attribute
+
+    gem_help_cb(target) => if target IS NOT <select> open new tab with the related web page and cleanup all help stuff
+      if target IS <select> call gem_help_select()
+
+    gem_help_select(target) =>
+        open a new div with the same items of related <select> item and highlight all of
+        them have an associated help webpage
+        for each item call gem_help_highlight that highlight and addEventListener("mousedown", gem_help_cb)
+
+*/
+
+var gem_help_old_body_class = "";
+
+/* obj refers to jquery object with single DOM associated element */
+function gem_help_highlight(obj)
+{
+    var rect = [obj.offset().left, obj.offset().top, obj.width(), obj.height()];
+    var div = document.createElement('div');
+    var border = 0;
+
+    div.style.left = (rect[0] - border) + "px";
+    div.style.top =  (rect[1] - border) + "px";
+    div.style.width = (rect[2] + 2 + (border * 2)) + "px";
+    div.style.height = (rect[3] + 2 + (border * 2)) + "px";
+    div.className = "gem_help_highlight";
+
+    div.dataGemObj = obj[0];
+    obj[0].setAttribute('data-gem-helped', 'True');
+
+    document.body.appendChild(div);
+}
+
+function gem_help()
+{
+    if (document.body.className != "gem_help") {
+        gem_help_old_body_class = document.body.className;
+        document.body.className = "gem_help";
+    }
+
+    var helps = $("[data-gem-help]");
+    var target;
+    for (var i = 0 ; i < helps.length ; i++) {
+        if (helps[i].tagName == 'OPTION') {
+            target = $(helps[i].parentNode);
+        }
+        else {
+            target = $(helps[i]);
+        }
+
+        if (target.filter("[data-gem-helped]").length > 0) {
+            continue;
+        }
+
+        gem_help_highlight(target);
+    }
+
+    if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
+        document.addEventListener("mousedown", gem_help_cb, true);
+    } else if (document.attachEvent) {              // For IE 8 and earlier versions
+        document.attachEvent("onmousedown", gem_help_cb);
+    }
+}
+
+function gem_help_select_remove()
+{
+    var prev_help_sel = $('#gem_help_select')[0];
+    if (prev_help_sel) {
+        prev_help_sel.parentNode.removeChild(prev_help_sel);
+    }
+}
+
+
+function gem_help_show(target)
+{
+    window.open(target, '_blank');
+    gem_help_select_remove();
+}
+
+
+function gem_help_select(obj, event)
+{
+    gem_help_cleanup();
+
+    var div = document.createElement('div');
+    div.id = 'gem_help_select';
+    div.className = 'gem_help_select';
+    div.style.position = "absolute";
+    div.style.top = event.clientY + "px";
+    div.style.left = event.clientX + "px";
+
+    for (var i = 0 ; i < obj.length ; i++) {
+        var help_url = obj[i].getAttribute("data-gem-help");
+
+        if (help_url) {
+            div.innerHTML += '<span data-gem-help="' + help_url + '">' +
+                            obj[i].innerHTML + '</span><br>';
+        }
+        else {
+            div.innerHTML += '<span>' + obj[i].innerHTML + '</span><br>';
+        }
+    }
+    document.body.appendChild(div);
+
+    var helps = $(div).children("span[data-gem-help]");
+
+    var target;
+    for (var i = 0 ; i < helps.length ; i++) {
+        target = $(helps[i]);
+
+        gem_help_highlight(target);
+    }
+}
+
+function gem_help_cleanup()
+{
+    var obj, objs;
+    objs = $('[data-gem-helped]');
+    for (var i = 0 ; i < objs.length ; i++) {
+        obj = objs[i];
+        obj.removeAttribute('data-gem-helped');
+    }
+
+    objs = $('.gem_help_highlight');
+    for (var i = 0 ; i < objs.length ; i++) {
+        obj = objs[i];
+        obj.parentNode.removeChild(obj);
+        delete obj;
+    }
+}
+
+/*
+    gem_help_cb is fired when an hilighted native page element is clicked or
+        when an highlighted item of a new help div associated with an highlighted <select> is clicked
+*/
+function gem_help_cb(event)
+{
+    event.preventDefault();
+    event.stopPropagation();
+
+    var obj = event.target;
+
+    if ('dataGemObj' in obj) {
+        if (obj.dataGemObj.tagName == 'SELECT') {
+            gem_help_select(obj.dataGemObj, event);
+            return;
+        }
+        else {
+            gem_help_show(obj.dataGemObj.getAttribute("data-gem-help"));
+        }
+    }
+    gem_help_cleanup();
+    /* when fired from a help select div we close that div */
+    gem_help_select_remove();
+    if (document.removeEventListener) {
+        document.removeEventListener("mousedown", gem_help_cb, true);
+    }
+    else if (document.detachEvent) {
+        document.detachEvent("mousedown", gem_help_cb);
+    }
+    document.body.className = gem_help_old_body_class;
+}
+
 //-->
 </script>
 </head>
@@ -205,7 +404,8 @@ window.onload = function () {
 <body>
 <div class="grand_parent">
     <ul class="tab">
-        {{ tab_content|safe }}{% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
+        {{ tab_content|safe }}<li id="id_help_form" style="float: right; background-color: #f4f475; color: black;" class="tab" onclick="gem_help();"><span title="click here and than what you are interested in">Click And Help</span></li>
+        {% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
     </ul>
     <div id="main_content_parent" style="border-top-width: 0; border-color: #F8F8F8 #1B75A7 #1B75A7; position: relative; width: 800px; height: 600px; /* background-color: #ccccff; blue */">
         <div id="main_content-1" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; margin: 0px;/* background-color: #ffcccc; /*red */">
@@ -216,22 +416,22 @@ window.onload = function () {
 
             <div id="sub1_content-1" style="position: absolute; display: none; width: 798px; background-color: #f0f0f0; border: 1px solid; border-color: #f0f0f0 #f0f0f0 #1b75a7 #f0f0f0;">
                 <div class="data-group">
-                    <h4>Direction specification:</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/direction">Direction specification:</h4>
                     <table class="dir_spec"><tr>
-                        <td><input type="radio" id="Direction1RB1" name="sub1_xdir" checked value="false" onclick="taxt_Direction1RB1Click(this);">Unspecified direction</td>
-                        <td><input type="radio" id="Direction1RB2" name="sub1_xdir" value="true"          onclick="taxt_Direction1RB2Click(this);">Parallel to street</td>
+                        <td><input type="radio" id="Direction1RB1" name="sub1_xdir" checked value="false" onclick="taxt_Direction1RB1Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/unspecified-direction--d99">Unspecified direction</span></td>
+                        <td><input type="radio" id="Direction1RB2" name="sub1_xdir" value="true"          onclick="taxt_Direction1RB2Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/parallel-to-street--pf">Parallel to street</span></td>
                     </tr></table>
                 </div>
 
                 <div class="data-group">
-                    <h4>Material of lateral load-resisting system</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-of-the-lateral-load-resisting-system">Material of lateral load-resisting system</h4>
                     <table class="dir_spec"><tr>
-                        <td><div>Material type:<br>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-type">Material type:</span><br>
                                  <select id="MaterialCB11"></select></div></td>
-                        <td><div>Material technology:<br>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-technology">Material technology:</span><br>
                                  <select id="MaterialCB21"></select></div></td>
                       </tr><tr>
-                        <td><div>Material Properties:<br>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-properties">Material Properties:</span><br>
                                  <select id="MaterialCB31"></select></div></td>
                         <td><div>Material technology (additional):<br>
                                  <select  id="MaterialCB41"></select></div></td>
@@ -239,10 +439,12 @@ window.onload = function () {
                 </div>
 
                 <div class="data-group">
-                    <h4>Lateral load-resisting system</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lateral-load-resisting-system">Lateral load-resisting system</h4>
                     <table class="dir_spec"><tr>
-                        <td><div>Type lateral load-resisting system:<br><select id="SystemCB11"></select></div></td>
-                        <td><div>System ductility:<br><select id="SystemCB21"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/type-of-lateral-load-resisting-system">Type lateral load-resisting system:</span><br>
+                          <select id="SystemCB11"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/system-ductility">System ductility:</span><br>
+                          <select id="SystemCB21"></select></div></td>
                     </tr></table>
                 </div>
 
@@ -251,22 +453,22 @@ window.onload = function () {
 
 
                 <div class="data-group">
-                    <h4>Direction specification:</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/direction">Direction specification:</h4>
                     <table class="dir_spec"><tr>
-                        <td><input type="radio" id="Direction2RB1" name="sub1_ydir" checked value="unspec" onclick="taxt_Direction2RB1Click(this);">Unspecified direction</td>
-                        <td><input type="radio" id="Direction2RB3" name="sub1_ydir" value="spec"           onclick="taxt_Direction2RB3Click(this);">Perpendicular to street</td>
+                        <td><input type="radio" id="Direction2RB1" name="sub1_ydir" checked value="unspec" onclick="taxt_Direction2RB1Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/unspecified-direction--d99">Unspecified direction</span></td>
+                        <td><input type="radio" id="Direction2RB3" name="sub1_ydir" value="spec"           onclick="taxt_Direction2RB3Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/perpendicular-to-street--of">Perpendicular to street</span></td>
                     </tr></table>
                 </div>
 
                 <div class="data-group">
-                    <h4>Material of lateral load-resisting system</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-of-the-lateral-load-resisting-system">Material of lateral load-resisting system</h4>
                     <table class="dir_spec"><tr>
-                        <td><div>Material type:<br>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-type">Material type:</span><br>
                                  <select id="MaterialCB12"></select></div></td>
-                        <td><div>Material technology:<br>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-technology">Material technology:</span><br>
                                  <select id="MaterialCB22"></select></div></td>
                       </tr><tr>
-                        <td><div>Material Properties:<br>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-properties">Material Properties:</span><br>
                                  <select id="MaterialCB32"></select></div></td>
                         <td><div>Material technology (additional):<br>
                                  <select  id="MaterialCB42"></select></div></td>
@@ -274,10 +476,12 @@ window.onload = function () {
                 </div>
 
                 <div class="data-group">
-                    <h4>Lateral load-resisting system</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lateral-load-resisting-system">Lateral load-resisting system</h4>
                     <table class="dir_spec"><tr>
-                        <td><div>Type lateral load-resisting system:<br><select id="SystemCB12"></select></div></td>
-                        <td><div>System ductility:<br><select id="SystemCB22"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/type-of-lateral-load-resisting-system">Type lateral load-resisting system:</span><br>
+                          <select id="SystemCB12"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/system-ductility">System ductility:</span><br>
+                          <select id="SystemCB22"></select></div></td>
                     </tr></table>
                 </div>
 
@@ -286,10 +490,10 @@ window.onload = function () {
 
         <div id="main_content-2" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; background-color: #f8f8f8; /* green */">
             <div class="data-group">
-                <h4>Height:</h4>
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/height">Height:</h4>
                 <table style="width: 95%;"><tr>
-                    <td style="width: 50%;"><div>Number of storey above ground:</div></td>
-                    <td style="width: 50%;"><div>Number of storey below ground:</div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/number-of-storeys-above-ground--h">Number of storeys above ground:</span></div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/number-of-storeys-below-ground--hb">Number of storeys below ground:</span></div></td>
                 </tr><tr>
                     <td><select id="HeightCB1"></select></td>
                     <td><select id="HeightCB2"></select></td>
@@ -297,8 +501,8 @@ window.onload = function () {
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE11"><input style="display:none; width: 45%;" type="text" id="noStoreysE12"></div></td>
                     <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE21"><input style="display:none; width: 45%;" type="text" id="noStoreysE22"></div></td>
                 </tr><tr>
-                    <td><div>Height of ground floor level above grade (m):</div></td>
-                    <td><div>Slope of the ground (degrees):</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/height-of-ground-floor-level-above-grade--hf">Height of ground floor level above grade (m):</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/slope-of-the-ground-general">Slope of the ground (degrees):</span></div></td>
                 </tr><tr>
                     <td><select id="HeightCB3"></select></td>
                     <td><select id="HeightCB4"></select></td>
@@ -311,18 +515,18 @@ window.onload = function () {
             <div class="data-group">
                 <h4>Date:</h4>
                 <table style="width: 95%;"><tr>
-                    <td colspan=2><div>Date of construction or retrofit (yyyy):</div></td>
+                    <td colspan=2><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/date-of-construction">Date of construction or retrofit (yyyy):<span></div></td>
                 </tr><tr>
                     <td style="width: 50%;"><select id="DateCB1"></select></td>
                     <td style="width: 50%;"><div style="white-space:nowrap;"><input style="width: 90%; margin: auto;" type="text" id="DateE1"> <input style="display:none; width: 45%; margin: auto;" type="text" id="DateE2"></div></td>
                 </tr></table>
             </div>
             <div class="data-group">
-                <h4>Occupancy:</h4>
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/occupancy">Occupancy:</h4>
 
                 <table class="dir_spec"><tr>
-                    <td><div>Building occupancy type - general:</div></td>
-                    <td><div>Building occupancy type - detail:</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/building-occupancy-class-general">Building occupancy type - general:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/building-occupancy-class-detail">Building occupancy type - detail:</span></div></td>
                 </tr><tr>
                     <td><select id="OccupancyCB1"></select></td>
                     <td><select id="OccupancyCB2"></select></td>
@@ -334,7 +538,7 @@ window.onload = function () {
             <table class="doubletable">
             <tr><td style="width: 50%;">
                 <div class="data-group">
-                    <h4>Building position within a block:</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/building-position-within-a-block">Building position within a block:</h4>
                     <table><tr>
                         <td><div>Position:</div></td>
                         <td></td>
@@ -345,7 +549,7 @@ window.onload = function () {
                 </div>
             </td><td style="width: 50%;">
                 <div class="data-group">
-                    <h4>Shape of the building plan:</h4>
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/shape-of-the-building-plan">Shape of the building plan:</h4>
                     <table><tr>
                         <td><div>Plan shape:</div></td>
                         <td></td>
@@ -359,20 +563,20 @@ window.onload = function () {
                 <h4>Structural irregularity:</h4>
 
                 <table style="width: 95%;"><tr>
-                    <td style="width: 50%;"><div>Type of irregularity:</div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/type-of-irregularity">Type of irregularity:</span></div></td>
                     <td style="width: 50%;"></td>
                 </tr><tr>
                     <td><select id="RegularityCB1"></select></td>
                     <td></td>
                </tr><tr>
-                    <td><div>Plan structural irregularity - primary:</div></td>
-                    <td><div>Plan structural irregularity - secondary:</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plan-irregularity-primary--irpp">Plan structural irregularity - primary:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plan-irregularity-secondary--irps">Plan structural irregularity - secondary:</span></div></td>
                 </tr><tr>
                     <td><select id="RegularityCB2"></select></td>
                     <td><select id="RegularityCB4"></select></td>
                </tr><tr>
-                    <td><div>Vertical structural irregularity - primary:</div></td>
-                    <td><div>Vertical structural irregularity - secondary:</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vertical-structural-irregularity-primary--irvp">Vertical structural irregularity - primary:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vertical-structural-irregularity-secondary--irvs">Vertical structural irregularity - secondary:</span></div></td>
                 </tr><tr>
                     <td><select id="RegularityCB3"></select></td>
                     <td><select id="RegularityCB5"></select></td>
@@ -383,7 +587,7 @@ window.onload = function () {
             <div class="data-group">
                 <h4>Exterior walls:</h4>
                 <table style="width: 95%;"><tr>
-                    <td style="width: 50%;"><div>Material of exterior walls:</div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/exterior-walls">Material of exterior walls:</span></div></td>
                     <td style="width: 50%;"></td>
                 </tr><tr>
                     <td><select id="WallsCB"></select></td>
@@ -393,12 +597,12 @@ window.onload = function () {
         </div>
         <div id="main_content-4" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; background-color: #f8f8f8; /*violet*/">
             <div class="data-group">
-                <h4>Roof:</h4>
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof">Roof:</h4>
 
                 <table style="width: 95%;"><tr>
-                    <td style="width: 33%;"><div>Roof shape:</div></td>
-                    <td style="width: 33%;"><div>Roof covering:</div></td>
-                    <td style="width: 33%;"><div>Roof system material:</div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-shape">Roof shape:</span></div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-covering">Roof covering:</span></div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-system-material">Roof system material:</span></div></td>
                 </tr><tr>
                     <td><select id="RoofCB1"></select></td>
                     <td><select id="RoofCB2"></select></td>
@@ -406,8 +610,8 @@ window.onload = function () {
                </tr></table>
 
                 <table style="width: 95%;"><tr>
-                    <td style="width: 33%;"><div>Roof connections:</div></td>
-                    <td style="width: 33%;"><div>Roof system type:</div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-connections">Roof connections:</span></div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-system-type">Roof system type:</span></div></td>
                 </tr><tr>
                     <td><select id="RoofCB5"></select></td>
                     <td><select id="RoofCB4"></select></td>
@@ -417,17 +621,17 @@ window.onload = function () {
 
 
             <div class="data-group">
-                <h4>Floor:</h4>
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor">Floor:</h4>
 
                 <table style="width: 95%;"><tr>
-                    <td style="width: 50%;"><div>Floor system material:</div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-system-material">Floor system material:</div></td>
                     <td style="width: 50%;"></td>
                 </tr><tr>
                     <td><select id="FloorCB1"></select></td>
                     <td></td>
                </tr><tr>
-                    <td><div>Floor connections:</div></td>
-                    <td><div>Floor system type:</div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-connections">Floor connections:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-system-type">Floor system type:</span></div></td>
                 </tr><tr>
                     <td><select id="FloorCB2"></select></td>
                     <td><select id="FloorCB3"></select></td>
@@ -439,7 +643,7 @@ window.onload = function () {
                 <h4>Foundation:</h4>
 
                 <table style="width: 95%;"><tr>
-                    <td style="width: 50%;"><div>Floor system material:</div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/foundation-system">Foundation system:</span></div></td>
                     <td style="width: 50%;"></td>
                 </tr><tr>
                     <td><select id="FoundationsCB"></select></td>
