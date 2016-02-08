@@ -41,7 +41,7 @@ var VERTICES_THRESHOLD = 500000;
 
 var mappingLayerAttributes = {};
 
-// sessionProjectDef is the project definition as is was when uploaded from the QGIS tool.
+// sessionProjectDef is the project definition as it was when uploaded from the QGIS tool.
 // While projectDef includes modified weights and is no longer the version that was uploaded from the QGIS tool
 var projectLayerAttributes;
 var regions = [];
@@ -1272,7 +1272,7 @@ function watchForPdSelection() {
                 $('#iri-spinner').hide();
                 $('#project-definition-svg').show();
                 // TODO this is required beasue watchForPdSelection is running before the
-                // ajax call are able to get a repley, need to find a better solution
+                // ajax call are able to get a reply, need to find a better solution
                 setTimeout(function() {
                     processIndicators(layerAttributes, sessionProjectDef);
                 }, 3000);
@@ -1416,12 +1416,15 @@ var startApp = function() {
         minHeight: 220,
         minWidth: 220
     });
-    $('#themeTabs').draggable();
 
     $('#themeTabs').tabs({
         collapsible: false,
         selected: -1,
         active: false,
+    });
+
+    $( "#themeTabs" ).draggable({
+        cancel: "#project-def"
     });
 
     $('#cover').remove();
@@ -1565,7 +1568,7 @@ var startApp = function() {
     $('#themeTabs').css({
         'width': '700px',
         'height': '600px',
-        'overflow': 'auto',
+        'overflow': 'hidden',
         'position': 'fixed',
         'left': '10px',
         'top': '110px'

@@ -92,10 +92,8 @@ urlpatterns = patterns('',
         template_name="hazus/hazus.html"), name='hazus'),
     url(r'^hrde/$', TemplateView.as_view(
         template_name="hrde/hrde.html"), name='hrde'),
-    url(r'^ript/$', TemplateView.as_view(
-        template_name="ript/ript.html"), name='ript'),
-
-
+    url(r'^ript/', include('openquakeplatform.ript.urls')),
+ 
     (r'^world/', include('openquakeplatform.world.urls')),
     (r'^faulted_earth/', include('openquakeplatform.faulted_earth.urls')),
     (r'^exposure/', include('openquakeplatform.exposure.urls')),
