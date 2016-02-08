@@ -368,7 +368,7 @@
 
         d3.select(self.frameElement).style("height", "800px");
 
-        function onTreeElementClick(d) {
+        function onTreeWeightClick(d) {
             pdName = d.name;
             pdData = data;
             pdWeight = d.weight;
@@ -536,7 +536,7 @@
                     return (d.weight * 100).toFixed(1) + '%';
                 })
                 .on("click", function(d) {
-                    onTreeElementClick(d);
+                    onTreeWeightClick(d);
                 });
 
             // Transition nodes to their new position.
