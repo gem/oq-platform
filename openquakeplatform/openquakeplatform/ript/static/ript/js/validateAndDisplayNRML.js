@@ -22,7 +22,7 @@ function validateAndDisplayNRML(NRML, funcType){
 
     // Provide the user with the xml output
     $('#outputText' + funcType).empty();
-    $('#outputText' + funcType).append('<textarea id="textarea" style="width: 600px;  height: 700px;>' + NRML + '</textarea>');
+    $('#outputText' + funcType).append($('<textarea/>', {id: 'textarea', style: 'width: 600px; height: 700px;'}).val(NRML));
     $('#outputDiv' + funcType).css('display', 'block');
     var textBox = document.getElementById("textarea");
 
