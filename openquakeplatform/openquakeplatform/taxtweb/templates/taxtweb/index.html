@@ -248,8 +248,10 @@ window.onload = function () {
 
 var gem_help_old_body_class = "";
 
-function gem_help_highlight(rect, obj)
+/* obj refers to jquery object with single DOM associated element */
+function gem_help_highlight(obj)
 {
+    var rect = [obj.offset().left, obj.offset().top, obj.width(), obj.height()];
     var div = document.createElement('div');
     var border = 0;
 
@@ -259,8 +261,8 @@ function gem_help_highlight(rect, obj)
     div.style.height = (rect[3] + 2 + (border * 2)) + "px";
     div.className = "gem_help_highlight";
 
-    div.dataGemObj = obj;
-    obj.setAttribute('data-gem-helped', 'True');
+    div.dataGemObj = obj[0];
+    obj[0].setAttribute('data-gem-helped', 'True');
 
     document.body.appendChild(div);
 }
@@ -286,8 +288,7 @@ function gem_help()
             continue;
         }
 
-        var rect = [target.offset().left, target.offset().top,  target.width(), target.height()];
-        gem_help_highlight(rect, target[0]);
+        gem_help_highlight(target);
     }
 
     if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
@@ -343,8 +344,7 @@ function gem_help_select(obj, event)
     for (var i = 0 ; i < helps.length ; i++) {
         target = $(helps[i]);
 
-        var rect = [target.offset().left, target.offset().top,  target.width(), target.height()];
-        gem_help_highlight(rect, target[0]);
+        gem_help_highlight(target);
     }
 }
 
