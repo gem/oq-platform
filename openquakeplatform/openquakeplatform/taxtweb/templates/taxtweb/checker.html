@@ -24,13 +24,20 @@ function run_check()
 
     if (taxonomy != '') {
         ret = taxonomy_short2full(taxonomy);
-    }
-    if (ret.err_s) {
-        alert(ret.err_s);
-        taxonomy = '';
-    }
-    else {
-        taxonomy = ret.result;
+
+        if (ret) {
+            if (ret.err_s) {
+                alert(ret.err_s);
+                taxonomy = '';
+            }
+            else {
+                taxonomy = ret.result;
+            }
+        }
+        else {
+            alert("No response from server.");
+            taxonomy = '';
+        }
     }
 
     if (taxonomy != '') {
