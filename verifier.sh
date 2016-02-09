@@ -120,7 +120,7 @@ else
         ffox_pid=\$!
         st="none"
         for i in \$(seq 1 1000) ; do
-            ffox_wins="\$(wmctrl -l | grep -i "firefox")"
+            ffox_wins="\$(wmctrl -l | grep -i "firefox" || true)"
             if [ "\$st" = "none" ]; then
                 if echo "\$ffox_wins" | grep -qi 'update'; then
                     st="update"
@@ -134,7 +134,7 @@ else
             fi
             sleep 0.02
         done
-        kill \$ffox_pid
+        kill \$ffox_pid || true
         sleep 2
     fi
 fi
