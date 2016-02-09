@@ -104,7 +104,7 @@ EOF
 cat >.gem_ffox_init.sh <<EOF
 export GEM_FIREFOX_ON_HOLD=$GEM_FIREFOX_ON_HOLD
 if [ "\$GEM_FIREFOX_ON_HOLD" ]; then
-    apt-mark hold firefox firefox-locale-en
+    sudo apt-mark hold firefox firefox-locale-en
 else
     sudo apt-get update
     ffox_pol="\$(apt-cache policy firefox)"
