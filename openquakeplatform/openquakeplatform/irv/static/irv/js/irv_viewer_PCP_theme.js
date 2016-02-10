@@ -65,9 +65,9 @@ function Theme_PCP_Chart(themeData) {
         }
     }
 
-    for (var i = 0; i < eachElementInThemeData.length; i++) {
-        if (!isNaN(parseFloat(eachElementInThemeData[i])) && isFinite(eachElementInThemeData[i])) {
-            eachValueInThemeData.push(eachElementInThemeData[i]);
+    for (var j = 0; j < eachElementInThemeData.length; j++) {
+        if (!isNaN(parseFloat(eachElementInThemeData[j])) && isFinite(eachElementInThemeData[j])) {
+            eachValueInThemeData.push(eachElementInThemeData[j]);
         }
     }
 
