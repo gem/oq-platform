@@ -287,6 +287,12 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         sumMeanArray.push(sumMean);
 
+        var textTop = svg.append('text')
+            .attr("class", "text90")
+            .style('font-size','30px')
+            .style('font-style', 'bold')
+            .text('');
+
         // Plot the median line
         meanPath = svg.append("g")
             .attr("class", "PI-meanPath")
@@ -295,7 +301,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             .enter().append("path")
             .attr("d", path)
             .attr('id', function(d) { return d.region; })
-                .on('mouseover', function() {
+                .on('mouseover', function(d) {
+                    textTop.attr('x', d.x);
+                    textTop.attr('y', d.y);
+                    textTop.attr('dy', '.35em');
                     textTop.text('Median');
                 }).on('mouseout', function() {
                     textTop.text('');
