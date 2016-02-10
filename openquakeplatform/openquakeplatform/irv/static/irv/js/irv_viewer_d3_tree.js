@@ -45,14 +45,13 @@
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
-        // Rebuild the d3 tree, based on the given project definition
 
         // default tab window size
         var winH = 600;
         var winW = 700;
 
         // detect tab window resize
-        $('#themeTabs').resize(function(event) {
+        $('#project-def-widget').resize(function(event) {
             winH = event.clientY;
             winW = event.clientX;
         });

@@ -39,7 +39,8 @@ function Theme_PCP_Chart(themeData) {
 
     if (themeCount <= 2) {
         // Disable the theme tab.
-        $("#themeTabs").tabs("disable", 2);
+        // FIXME: disable the whole widget instead
+        $("#iri-chart-widget").tabs("disable", 2);
         // Stop the function from continuing.
         return;
     }

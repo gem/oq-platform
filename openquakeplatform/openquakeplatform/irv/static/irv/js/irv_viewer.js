@@ -53,6 +53,24 @@ $(document).ready(function() {
     $('.alert-unscaled-data').hide();
 });
 
+function setWidgetsToDefault(){
+    $('#pdSelection').empty();
+    // set tabs back default
+    $("#iri-chart-widget").tabs("enable", 2);
+    $("#cat-chart-widget").tabs("enable", 3);
+
+    $('#project-def-widget').tabs('option', 'active', 0);
+    $('#projectDef-spinner').text('Loading ...');
+    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
+    $('#projectDef-spinner').show();
+    $('#iri-spinner').show();
+    $('#regionSelectionDialog').empty();
+    $('#projectDef-tree').empty();
+    $('#iri-chart').empty();
+    $('#cat-chart').empty();
+    $('#primary-chart').empty();
+}
+
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
     // We are not scaling any of the IR indicators
@@ -765,7 +783,7 @@ function processIndicators(layerAttributes, projectDef) {
         iriPcpData.push(SVI);
     } else {
         // Disable the primary tab.
-        $("#themeTabs").tabs("disable", 3);
+        $("#cat-chart-widget").tabs("disable", 3);
     }
 
     if (riskIndicators !== undefined) {
@@ -793,9 +811,9 @@ function scale(IndicatorObj) {
         if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
-            $("#themeTabs").tabs("disable", 1);
-            $("#themeTabs").tabs("disable", 2);
-            $("#themeTabs").tabs("disable", 3);
+            $("#project-def-widget").tabs("disable", 1);
+            $("#iri-chart-widget").tabs("disable", 2);
+            $("#cat-chart-widget").tabs("disable", 3);
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
@@ -1258,6 +1276,7 @@ function thematicMapCreation() {
 }
 
 function whenProjDefSelected() {
+    $('#pdSelection').prop("disabled", true);
     $('#projectDef-spinner').show();
     var pdSelection = $('#pdSelection').val();
     for (var i = 0; i < tempProjectDef.length; i++) {
@@ -1270,6 +1289,7 @@ function whenProjDefSelected() {
             processIndicators(layerAttributes, sessionProjectDef);
         }
     }
+    $('#pdSelection').prop("disabled", false);
 }
 
 function getGeoServerLayers() {
@@ -1401,21 +1421,33 @@ var startApp = function() {
 
     webGl = webglDetect();
 
+    $.each(['#project-def-widget',
+            '#iri-chart-widget',
+            '#cat-chart-widget',
+            '#primary-tab-widget'], function(i, widget) {
+      // Theme tabs behavior
+      $(widget).resizable({
+          minHeight: 220,
+          minWidth: 220
+      });
 
-    // Theme tabs behavior
-    $('#themeTabs').resizable({
-        minHeight: 220,
-        minWidth: 220
-    });
+      $(widget).tabs({
+          collapsible: false,
+          selected: -1,
+          active: false,
+      });
 
-    $('#themeTabs').tabs({
-        collapsible: false,
-        selected: -1,
-        active: false,
-    });
-
-    $( "#themeTabs" ).draggable({
-        cancel: "#project-def"
+      $(widget).draggable({
+          cancel: "#project-def"
+      });
+      $(widget).css({
+          'width': '700px',
+          'height': '600px',
+          'overflow': 'auto',
+          'position': 'fixed',
+          'left': '10px',
+          'top': '110px'
+      });
     });
 
     $('#cover').remove();
@@ -1496,21 +1528,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
-        $('#pdSelection').empty();
-        // set tabs back default
-        $("#themeTabs").tabs("enable", 2);
-        $("#themeTabs").tabs("enable", 3);
-
-        $('#themeTabs').tabs('option', 'active', 0);
-        $('#projectDef-spinner').text('Loading ...');
-        $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
-        $('#projectDef-spinner').show();
-        $('#iri-spinner').show();
-        $('#regionSelectionDialog').empty();
-        $('#projectDef-tree').empty();
-        $('#iri-chart').empty();
-        $('#cat-chart').empty();
-        $('#primary-chart').empty();
+        setWidgetsToDefault();
 
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
@@ -1556,15 +1574,6 @@ var startApp = function() {
         'z-index': 6
     });
 
-    $('#themeTabs').css({
-        'width': '700px',
-        'height': '600px',
-        'overflow': 'hidden',
-        'position': 'fixed',
-        'left': '10px',
-        'top': '110px'
-    });
-
     $('#loadProjectdialogBtn').css({
         'position': 'fixed',
         'left': '50px'
@@ -1605,23 +1614,8 @@ var startApp = function() {
 };
 
 function loadProject() {
-    $('#pdSelection').empty();
-    // set tabs to back default
-    $("#themeTabs").tabs("enable", 2);
-    $("#themeTabs").tabs("enable", 3);
-
-    $('#themeTabs').tabs('option', 'active', 0);
+    setWidgetsToDefault();
     $('#thematic-map-selection').show();
-    $('#projectDef-spinner').text('Loading ...');
-    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
-    $('#projectDef-spinner').show();
-    $('#iri-spinner').show();
-    $('#regionSelectionDialog').empty();
-    $('#projectDef-tree').empty();
-    $('#iri-chart').empty();
-    $('#cat-chart').empty();
-    $('#primary-chart').empty();
-
     attributeInfoRequest(selectedLayer);
 }
 
