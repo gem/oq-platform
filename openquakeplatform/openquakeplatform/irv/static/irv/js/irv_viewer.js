@@ -56,6 +56,7 @@ $(document).ready(function() {
 function setWidgetsToDefault(){
     $('#pdSelection').empty();
     // set tabs back default
+    // FIXME: all widgets will have only 1 tab; handle things accordingly
     $("#iri-chart-widget").tabs("enable", 2);
     $("#cat-chart-widget").tabs("enable", 3);
 
@@ -1276,7 +1277,6 @@ function thematicMapCreation() {
 }
 
 function whenProjDefSelected() {
-    $('#pdSelection').prop("disabled", true);
     $('#projectDef-spinner').show();
     var pdSelection = $('#pdSelection').val();
     for (var i = 0; i < tempProjectDef.length; i++) {
@@ -1289,7 +1289,6 @@ function whenProjDefSelected() {
             processIndicators(layerAttributes, sessionProjectDef);
         }
     }
-    $('#pdSelection').prop("disabled", false);
 }
 
 function getGeoServerLayers() {
@@ -1438,9 +1437,12 @@ var startApp = function() {
       });
 
       $(widget).draggable({
+          stack: "div",  // put on top of the others when dragging
+          distance: 0,  // do it even if it's not actually moved
           cancel: "#project-def"
       });
       $(widget).css({
+          'display': 'none',
           'width': '700px',
           'height': '600px',
           'overflow': 'auto',
@@ -1475,6 +1477,19 @@ var startApp = function() {
     $('#map-tools').append(
         '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
+    $('#map-tools').append(
+        '<button id="toggleCompIndWidgetBtn" type="button" class="btn btn-blue">Show Composite Indicator Chart</button>'
+    );
+    $('#map-tools').append(
+        '<button id="toggleSviThemeWidgetBtn" type="button" class="btn btn-blue">Show SVI Theme Chart</button>'
+    );
+    $('#map-tools').append(
+        '<button id="toggleIriChartWidgetBtn" type="button" class="btn btn-blue">Show IRI Chart Widget</button>'
+    );
+    $('#map-tools').append(
+        '<button id="toggleProjDefWidgetBtn" type="button" class="btn btn-blue">Show Project Definition</button>'
+    );
+
 
     if (webGl === false) {
         $('#map-tools').append(
@@ -1513,6 +1528,36 @@ var startApp = function() {
     $('#loadProjectdialogBtn').click(function() {
         getGeoServerLayers();
         $('#loadProjectDialog').dialog('open');
+    });
+
+    function toggleWidget(widget, btn) {
+        // toggle widget and change text on the corresponding button
+        var widgetIsVisible = widget.is(':visible');
+        var btnText = btn.html();
+        if (btnText.indexOf('Hide ') >= 0) {  // Change Hide -> Show
+            btnText = 'Show ' + btnText.slice(5);
+        } else {  // Change Show -> Hide
+            btnText = 'Hide ' + btnText.slice(5);
+        }
+        if (widgetIsVisible) {
+            widget.hide();
+        } else {
+            widget.show();
+        }
+        btn.html(btnText);
+    }
+
+    $('#toggleProjDefWidgetBtn').click(function() {
+        toggleWidget($('#project-def-widget'), $('#toggleProjDefWidgetBtn'));
+    });
+    $('#toggleIriChartWidgetBtn').click(function() {
+        toggleWidget($('#iri-chart-widget'), $('#toggleIriChartWidgetBtn'));
+    });
+    $('#toggleSviThemeWidgetBtn').click(function() {
+        toggleWidget($('#cat-chart-widget'), $('#toggleSviThemeWidgetBtn'));
+    });
+    $('#toggleCompIndWidgetBtn').click(function() {
+        toggleWidget($('#primary-tab-widget'), $('#toggleCompIndWidgetBtn'));
     });
 
     // TODO check these are all needed
@@ -1577,6 +1622,17 @@ var startApp = function() {
     $('#loadProjectdialogBtn').css({
         'position': 'fixed',
         'left': '50px'
+    });
+
+    $.each(['#toggleProjDefWidgetBtn',
+            '#toggleIriChartWidgetBtn',
+            '#toggleSviThemeWidgetBtn',
+            '#toggleCompIndWidgetBtn'], function(i, widget) {
+        $(widget).css({
+            'position': 'relative',
+            'float': 'right',
+            'margin-left': '2px'
+        });
     });
 
     $('#base-map-menu').css({

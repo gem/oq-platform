@@ -45,6 +45,7 @@
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
+        // Rebuild the d3 tree, based on the given project definition
 
         // default tab window size
         var winH = 600;
