@@ -20,10 +20,6 @@ $(document).ready(function() {
     $('.alert-unscaled-data').hide();
     $('#absoluteSpinner').hide();
     $('#loadProjectBtn').show();
-    $('#toggleCompIndWidgetBtn').show();
-    $('#toggleSviThemeWidgetBtn').show();
-    $('#toggleIriChartWidgetBtn').show();
-    $('#toggleProjDefWidgetBtn').show();
 });
 
 var layerAttributes;
@@ -1477,16 +1473,16 @@ var startApp = function() {
         '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
     $('#map-tools').append(
-        '<button id="toggleCompIndWidgetBtn" type="button" class="btn btn-blue">Show Composite Indicator Chart</button>'
+        '<button id="toggleCompIndWidgetBtn" type="button" class="btn btn-blue" disabled>Show Composite Indicator Chart</button>'
     );
     $('#map-tools').append(
-        '<button id="toggleSviThemeWidgetBtn" type="button" class="btn btn-blue">Show SVI Theme Chart</button>'
+        '<button id="toggleSviThemeWidgetBtn" type="button" class="btn btn-blue" disabled>Show SVI Theme Chart</button>'
     );
     $('#map-tools').append(
-        '<button id="toggleIriChartWidgetBtn" type="button" class="btn btn-blue">Show IRI Chart Widget</button>'
+        '<button id="toggleIriChartWidgetBtn" type="button" class="btn btn-blue" disabled>Show IRI Chart Widget</button>'
     );
     $('#map-tools').append(
-        '<button id="toggleProjDefWidgetBtn" type="button" class="btn btn-blue">Show Project Definition</button>'
+        '<button id="toggleProjDefWidgetBtn" type="button" class="btn btn-blue" disabled>Show Project Definition</button>'
     );
 
 
@@ -1672,6 +1668,10 @@ function loadProject() {
     setWidgetsToDefault();
     $('#thematic-map-selection').show();
     attributeInfoRequest(selectedLayer);
+    $('#toggleProjDefWidgetBtn').prop('disabled', false);
+    $('#toggleIriChartWidgetBtn').prop('disabled', false);
+    $('#toggleSviThemeWidgetBtn').prop('disabled', false);
+    $('#toggleCompIndWidgetBtn').prop('disabled', false);
     if (!$('#project-def-widget').is(':visible')) {
         $('#toggleProjDefWidgetBtn').click();
     }
