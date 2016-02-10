@@ -1,4 +1,5 @@
   [Matteo Nastasi]
+  * Firefox update management to avoid selenium malfunctions
   * Taxtweb: add contextual help system
   * Use oq-risklib as library to check nrml validity
   * Add default group and 'staff' capability for new users
