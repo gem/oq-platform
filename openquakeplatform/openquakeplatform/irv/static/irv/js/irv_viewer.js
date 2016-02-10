@@ -20,6 +20,10 @@ $(document).ready(function() {
     $('.alert-unscaled-data').hide();
     $('#absoluteSpinner').hide();
     $('#loadProjectBtn').show();
+    $('#toggleCompIndWidgetBtn').show();
+    $('#toggleSviThemeWidgetBtn').show();
+    $('#toggleIriChartWidgetBtn').show();
+    $('#toggleProjDefWidgetBtn').show();
 });
 
 var layerAttributes;
@@ -47,11 +51,6 @@ var regions = [];
 var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png');
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
-
-$(document).ready(function() {
-    $('#cover').remove();
-    $('.alert-unscaled-data').hide();
-});
 
 function setWidgetsToDefault(){
     $('#pdSelection').empty();
