@@ -112,7 +112,7 @@ else
     ffox_can="\$(echo "\$ffox_pol" | grep '^  Candidate:' | sed 's/.*: //g')"
 
     if [ "\$ffox_cur" != "\$ffox_can" ]; then
-        echo "WARNING: firefox is upgraded, run it to accomplish update operations"
+        echo "WARNING: firefox has been upgraded, run it to accomplish update operations"
         sudo apt-get -y upgrade
         sudo apt-get -y install wmctrl
         export DISPLAY=:1
