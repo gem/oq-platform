@@ -1672,6 +1672,9 @@ function loadProject() {
     setWidgetsToDefault();
     $('#thematic-map-selection').show();
     attributeInfoRequest(selectedLayer);
+    if (!$('#project-def-widget').is(':visible')) {
+        $('#toggleProjDefWidgetBtn').click();
+    }
 }
 
 function attributeInfoRequest(selectedLayer) {
