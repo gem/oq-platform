@@ -1442,8 +1442,8 @@ var startApp = function() {
           'height': '600px',
           'overflow': 'auto',
           'position': 'fixed',
-          'left': '10px',
-          'top': '110px'
+          'left': (10 + i * 40) + 'px',
+          'top': (110 + i * 40) + 'px'
       });
     });
 
