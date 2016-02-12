@@ -90,6 +90,57 @@ NL="
 TB="	"
 
 #
+#  remote init files
+cat >.gem_init.sh <<EOF
+export GEM_SET_DEBUG=$GEM_SET_DEBUG
+set -e
+if [ -n "\$GEM_SET_DEBUG" -a "\$GEM_SET_DEBUG" != "false" ]; then
+    export PS4='+\${BASH_SOURCE}:\${LINENO}:\${FUNCNAME[0]}: '
+    set -x
+fi
+source .gem_ffox_init.sh
+EOF
+
+cat >.gem_ffox_init.sh <<EOF
+export GEM_FIREFOX_ON_HOLD=$GEM_FIREFOX_ON_HOLD
+if [ "\$GEM_FIREFOX_ON_HOLD" ]; then
+    sudo apt-mark hold firefox firefox-locale-en
+else
+    sudo apt-get update
+    ffox_pol="\$(apt-cache policy firefox)"
+    ffox_cur="\$(echo "\$ffox_pol" | grep '^  Installed:' | sed 's/.*: //g')"
+    ffox_can="\$(echo "\$ffox_pol" | grep '^  Candidate:' | sed 's/.*: //g')"
+
+    if [ "\$ffox_cur" != "\$ffox_can" ]; then
+        echo "WARNING: firefox has been upgraded, run it to accomplish update operations"
+        sudo apt-get -y upgrade
+        sudo apt-get -y install wmctrl
+        export DISPLAY=:1
+        firefox &
+        ffox_pid=\$!
+        st="none"
+        for i in \$(seq 1 1000) ; do
+            ffox_wins="\$(wmctrl -l | grep -i "firefox" || true)"
+            if [ "\$st" = "none" ]; then
+                if echo "\$ffox_wins" | grep -qi 'update'; then
+                    st="update"
+                elif echo "\$ffox_wins" | grep -qi 'mozilla'; then
+                    break
+                fi
+            elif [ "\$st" = "update" ]; then
+                if echo "\$ffox_wins" | grep -qvi 'update'; then
+                    break
+                fi
+            fi
+            sleep 0.02
+        done
+        kill \$ffox_pid || true
+        sleep 2
+    fi
+fi
+EOF
+
+#
 #  functions
 copy_common () {
     scp "${lxc_ip}:ssh.log" "out/${1}_ssh_history.log" || true
@@ -265,6 +316,12 @@ _devtest_innervm_run () {
     local i old_ifs pkgs_list dep branch_id="$1" lxc_ip="$2"
 
     trap 'local LASTERR="$?" ; trap ERR ; (exit $LASTERR) ; return' ERR
+
+    scp .gem_init.sh ${lxc_ip}:
+    scp .gem_ffox_init.sh ${lxc_ip}:
+
+    # build oq-hazardlib speedups and put in the right place
+    ssh -t  $lxc_ip "source .gem_init.sh"
 
     ssh -t  $lxc_ip "rm -f ssh.log"
 
@@ -445,6 +502,12 @@ _prodtest_innervm_run () {
     local i old_ifs pkgs_list dep branch_id="$1" lxc_ip="$2"
 
     trap 'local LASTERR="$?" ; trap ERR ; (exit $LASTERR) ; return' ERR
+
+    scp .gem_init.sh ${lxc_ip}:
+    scp .gem_ffox_init.sh ${lxc_ip}:
+
+    # build oq-hazardlib speedups and put in the right place
+    ssh -t  $lxc_ip "source .gem_init.sh"
 
     ssh -t  $lxc_ip "getent hosts oq-platform.localdomain"
     ssh -t  $lxc_ip "rm -f ssh.log"
