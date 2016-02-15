@@ -13,6 +13,7 @@
     the uniqueness of the project definition title
   * irv: let the d3 tree layout look like in the QGIS IRMT plugin
   * irv: handle case in which a zone with no available data is clicked on the map
+  * irv: when switching project definition, restyle the map accordingly
 
 python-oq-platform (1.3.1)
 
