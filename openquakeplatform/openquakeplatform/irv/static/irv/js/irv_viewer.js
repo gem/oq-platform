@@ -50,6 +50,7 @@ var mapboxBoundingBox = [];
 var license;
 var webGl;
 var projectChange = false;
+var projDefChange = false;
 var verticesCount = 0;
 var VERTICES_THRESHOLD = 500000;
 
@@ -919,7 +920,7 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     }
 
     // Execute the mapboxGlLayerCreation when there has been a weight change
-    if (weightChange > 0) {
+    if (weightChange > 0 || projDefChange) {
         mapboxGlLayerCreation(weightChange);
     }
 
@@ -987,6 +988,10 @@ function mapboxGlLayerCreation() {
     // Case 5:
     // A new color scheme has been selected
 
+    // Case 6:
+    // A different project definition for the current project
+    // has been selected, so we need to proceed as in Case 3
+
     var weightChange = 0;
 
     if (arguments[0]) {
@@ -1005,6 +1010,7 @@ function mapboxGlLayerCreation() {
         // 2) the thematic map menu has been changes
         // 3) a new project is loaded into the map (case: weightChange = 0)
         // 5) (partial reload) a new color scheme has been selected, only recreate the layers, NOT the data source
+        // 6) a different project definition has been selected. Different weights can cause changes to the data source values.
 
     // weightChange can be a interger value form 0 to 4, 0 being no change been made to the tree chart
     // weightChange 1 = IRI, 2 = SVI or RI, 3 = a theme, 4 = is a primary indicator.
@@ -1084,13 +1090,15 @@ function mapboxGlLayerCreation() {
     }
 
     // Case 4 destory the source
-    // Here we use a try catch to manage 2 cases:
+    // Here we use a try catch to manage 3 cases:
     // 1. When a project is loaded for the first time. In this case there is no existing map source or layer,
     // so we try to remove them, but as they do not exist, the app moves on and builds a new source and layer.
-    // 2 When a project is loaded for the 2nd, 3rd, nth time. In this case we find that there is a map source
+    // 2. When a project is loaded for the 2nd, 3rd, nth time. In this case we find that there is a map source
     // and layer that need to be removed, after being removed, the new map source and layers are created.
     // The same logic applies to removeing layers.
-    if (projectChange) {
+    // 3. For the current project, a different project definition has been selected. The different weights
+    // can cause changes in the values of the data source
+    if (projectChange || projDefChange) {
         try {
             map.removeSource('projectSource');
         } catch (e) {
@@ -1099,15 +1107,16 @@ function mapboxGlLayerCreation() {
     }
 
     // Case 1 and 4
-    // **TEMP** also case 3
+    // **TEMP** also case 3 and 6
     // Populate the mapbox source with GeoJson from Geoserver
     // Only create a new source when the project has been changed
-    if (map.style.sources.projectSource === undefined || projectChange || weightChange) {
+    if (map.style.sources.projectSource === undefined || projectChange || weightChange || projDefChange) {
         map.addSource('projectSource', {
             'type': 'geojson',
             'data': mappingLayerAttributes,
         });
         projectChange = false;
+        projDefChange = false;
     }
 
     $('#mapLegend').remove();
@@ -1122,7 +1131,7 @@ function mapboxGlLayerCreation() {
         '</div>'
     );
 
-    // Cases 1, 2, 3, 4, and 5
+    // Cases 1, 2, 3, 4, 5 and 6
     // Create a new mapbox layers
     for (var i = 0; i < 6; i++) {
         map.addLayer({
@@ -1153,8 +1162,12 @@ function mapboxGlLayerCreation() {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
-            for(var k in features[0].properties) {
-                $('#mapInfo').append(k+': '+features[0].properties[k]+'</br>');
+            if (typeof features[0] === 'undefined') {
+                $('#mapInfo').append('No data available');
+            } else {
+                for(var k in features[0].properties) {
+                    $('#mapInfo').append(k+': '+features[0].properties[k]+'</br>');
+                }
             }
         });
     });
@@ -1300,6 +1313,7 @@ function thematicMapCreation() {
 }
 
 function whenProjDefSelected() {
+    projDefChange = true;
     $('#projectDef-spinner').show();
     var pdSelection = $('#pdSelection').val();
     for (var i = 0; i < tempProjectDef.length; i++) {
