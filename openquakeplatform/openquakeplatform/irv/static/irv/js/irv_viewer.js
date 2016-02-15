@@ -1,4 +1,4 @@
-// TODO: let all widgets overlap the others when selected
+// TODO: Re-enable Show Composite Indicator Chart when a different project definition is selected
 /*
    Copyright (c) 2015, GEM Foundation.
 
@@ -1567,7 +1567,6 @@ var startApp = function() {
         $(widgetAndBtn.button).html(btnText);
     }
 
-    // FIXME: suspect inner definition of click
     $.each(widgetsAndButtons, function(key, widgetAndBtn) {
         $(widgetAndBtn.button).click(function() {
             toggleWidget(widgetAndBtn);
@@ -1624,6 +1623,11 @@ var startApp = function() {
         closeOnEscape: true
     });
 
+    $('#loadProjectDialog').draggable({
+        stack: "div",  // put on top of the others when dragging
+        distance: 0,   // do it even if it's not actually moved
+    });
+
     $('#map-tools').css({
         'padding': '6px',
         'position': 'absolute',
@@ -1638,7 +1642,6 @@ var startApp = function() {
         'left': '50px'
     });
 
-    // FIXME: for some reason, this is not styling the buttons
     $.each(widgetsAndButtons, function(key, widgetAndBtn) {
         $(widgetAndBtn.button).css({
             'position': 'relative',
