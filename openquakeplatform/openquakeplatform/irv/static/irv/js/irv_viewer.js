@@ -1,3 +1,4 @@
+// TODO: let all widgets overlap the others when selected
 /*
    Copyright (c) 2015, GEM Foundation.
 
@@ -67,11 +68,6 @@ var indicatorChildrenKey = [];
 function setWidgetsToDefault(){
     $('#pdSelection').empty();
     // set tabs back default
-    // FIXME: all widgets will have only 1 tab; handle things accordingly
-    $(widgetsAndButtons.iri.widget).tabs("enable", 2);
-    $(widgetsAndButtons.svi.widget).tabs("enable", 3);
-
-    $(widgetsAndButtons.projDef.widget).tabs('option', 'active', 0);
     $('#projectDef-spinner').text('Loading ...');
     $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
     $('#projectDef-spinner').show();
@@ -794,8 +790,8 @@ function processIndicators(layerAttributes, projectDef) {
         SVI.plotElement = "SVI"; // Label within the object
         iriPcpData.push(SVI);
     } else {
-        // Disable the primary tab.
-        $(widgetsAndButtons.svi.widget).tabs("disable", 3);
+        disableWidget(widgetsAndButtons.svi);
+        disableWidget(widgetsAndButtons.indicators);
     }
 
     if (riskIndicators !== undefined) {
@@ -832,10 +828,6 @@ function scale(IndicatorObj) {
         if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
-            // $("#project-def-widget").tabs("disable", 1);
-            // $("#iri-chart-widget").tabs("disable", 2);
-            // $("#cat-chart-widget").tabs("disable", 3);
-            // FIXME: check what actually needs to be disabled
             $.each(['indicators', 'svi', 'iri'], function(i, widgetName) {
                 disableWidget(widgetsAndButtons[widgetName]);
             });
