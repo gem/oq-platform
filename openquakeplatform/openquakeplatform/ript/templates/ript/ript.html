@@ -1,4 +1,3 @@
-
 <!--
 Copyright (c) 2015, GEM Foundation.
 
@@ -130,8 +129,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
         </div>
         <br>
       </div>
-    <div class="alert alert-info" role="alert">2. Copy and paste values from a spreadsheet into the table below. Optionally one can create new rows using Ctrl + Shift + n.</div>
+    <div class="alert alert-info" role="alert">2. Copy and paste values from a spreadsheet into the table below.</div>
     <div id="table"></div>
+    <button id="new_row_add" onclick="var rowIndex = $('.currentRow').parent().index(); exposureTable.alter('insert_row', rowIndex);">New row</button><br>
     <br>
     <button id="saveBtnEX" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>
@@ -228,8 +228,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     <br>
     <div class="alert alert-info" role="alert">2. Use the 'Add Probability Mass Function' &amp; 'Add Discrete Function' buttons to generate as many vulnerability function forms as needed. Next populate the table and form for each function.<br>
-    Generate a NRML file by click 'Convert to NRML' when done populating the tables<br>
-    Optionally one can create new rows in the discrete table using Ctrl + Shift + n.
+    Generate a NRML file by click 'Convert to NRML' when done populating the tables.
     </div>
     <button id="addVulnFunction" type="button" class="btn btn-lg">Add Function</button>
     <br><br>
