@@ -38,6 +38,9 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             // continue
         }
     }
+    if (themesWithChildren) {
+        $(widgetsAndButtons.indicators.button).prop('disabled', false);
+    }
 
     $('#primary_indicator').empty();
     $('#primary_indicator').append('<option value="">Select a Theme</option>');

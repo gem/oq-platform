@@ -1,4 +1,4 @@
-// TODO: Re-enable Show Composite Indicator Chart when a different project definition is selected
+// FIXME: Enable selecting a different theme in the Composite Indicator Chart
 /*
    Copyright (c) 2015, GEM Foundation.
 
