@@ -1,4 +1,3 @@
-// FIXME: Enable selecting a different theme in the Composite Indicator Chart
 /*
    Copyright (c) 2015, GEM Foundation.
 
@@ -1468,7 +1467,7 @@ var startApp = function() {
         widget.draggable({
             stack: "div",  // put on top of the others when dragging
             distance: 0,   // do it even if it's not actually moved
-            cancel: "#project-def"
+            cancel: "#project-def, #primary-tab, #cat-chart, #iri-chart"
         });
         widget.css({
             'display': 'none',
