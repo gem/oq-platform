@@ -43,7 +43,7 @@ function Theme_PCP_Chart(themeData) {
         // Stop the function from continuing.
         return;
     } else {
-        widgetsAndButtons.svi.button.prop('disabled', false);
+        $(widgetsAndButtons.svi.button).prop('disabled', false);
     }
 
     var data = themeData;

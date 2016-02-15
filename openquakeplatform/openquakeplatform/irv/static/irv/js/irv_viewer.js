@@ -15,17 +15,17 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 var widgetsAndButtons = {
-    'projDef':    {'widget':     $('#project-def-widget'),
-                   'button':     $('#toggleProjDefWidgetBtn'),
+    'projDef':    {'widget':     '#project-def-widget',
+                   'button':     '#toggleProjDefWidgetBtn',
                    'buttonText': 'Show Project Definition'},
-    'iri':        {'widget':     $('#iri-chart-widget'),
-                   'button':     $('#toggleIriChartWidgetBtn'),
+    'iri':        {'widget':     '#iri-chart-widget',
+                   'button':     '#toggleIriChartWidgetBtn',
                    'buttonText': 'Show IRI Chart Widget'},
-    'svi':        {'widget':     $('#cat-chart-widget'),
-                   'button':     $('#toggleSviThemeWidgetBtn'),
+    'svi':        {'widget':     '#cat-chart-widget',
+                   'button':     '#toggleSviThemeWidgetBtn',
                    'buttonText': 'Show SVI Theme Chart'},
-    'indicators': {'widget':     $('#primary-tab-widget'),
-                   'button':     $('#toggleCompIndWidgetBtn'),
+    'indicators': {'widget':     '#primary-tab-widget',
+                   'button':     '#toggleCompIndWidgetBtn',
                    'buttonText': 'Show Composite Indicator Chart'}
 };
 
@@ -67,10 +67,10 @@ function setWidgetsToDefault(){
     $('#pdSelection').empty();
     // set tabs back default
     // FIXME: all widgets will have only 1 tab; handle things accordingly
-    widgetsAndButtons.iri.widget.tabs("enable", 2);
-    widgetsAndButtons.svi.widget.tabs("enable", 3);
+    $(widgetsAndButtons.iri.widget).tabs("enable", 2);
+    $(widgetsAndButtons.svi.widget).tabs("enable", 3);
 
-    widgetsAndButtons.projDef.widget.tabs('option', 'active', 0);
+    $(widgetsAndButtons.projDef.widget).tabs('option', 'active', 0);
     $('#projectDef-spinner').text('Loading ...');
     $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
     $('#projectDef-spinner').show();
@@ -794,7 +794,7 @@ function processIndicators(layerAttributes, projectDef) {
         iriPcpData.push(SVI);
     } else {
         // Disable the primary tab.
-        widgetsAndButtons.svi.widget.tabs("disable", 3);
+        $(widgetsAndButtons.svi.widget).tabs("disable", 3);
     }
 
     if (riskIndicators !== undefined) {
@@ -809,11 +809,11 @@ function processIndicators(layerAttributes, projectDef) {
 
 function disableWidget(widgetAndBtn) {
     // if the widget is visible, click the button to toggle it
-    if (widgetAndBtn.widget.is(':visible')) {
-        widgetAndBtn.button.click();
+    if ($(widgetAndBtn.widget).is(':visible')) {
+        $(widgetAndBtn.button).click();
     }
     // in any case, disable the button that shows the widget
-    widgetAndBtn.button.prop('disabled', true);
+    $(widgetAndBtn.button).prop('disabled', true);
 }
 
 function scale(IndicatorObj) {
@@ -1446,7 +1446,7 @@ var startApp = function() {
     // using the list, otherwise we would lose the order
     $.each(['projDef', 'iri', 'svi', 'indicators'], function(i, widgetName) {
         // Theme tabs behavior
-        var widget = widgetsAndButtons[widgetName].widget;
+        var widget = $(widgetsAndButtons[widgetName].widget);
         widget.resizable({
             minHeight: 220,
             minWidth: 220
@@ -1502,7 +1502,7 @@ var startApp = function() {
     // Using the list in order to keep the order
     $.each(['indicators', 'svi', 'iri', 'projDef'], function(i, widgetName) {
         // slice(1) removes the heading # from the selector
-        var buttonId = widgetsAndButtons[widgetName].button.selector.slice(1);
+        var buttonId = widgetsAndButtons[widgetName].button.slice(1);
         var buttonText = widgetsAndButtons[widgetName].buttonText;
         $('#map-tools').append(
             '<button id="' + buttonId + '" type="button" class="btn btn-blue" disabled>' + buttonText + '</button>'
@@ -1550,19 +1550,19 @@ var startApp = function() {
 
     function toggleWidget(widgetAndBtn) {
         // toggle widget and change text on the corresponding button
-        var btnText = widgetAndBtn.button.html();
+        var btnText = $(widgetAndBtn.button).html();
         if (btnText.indexOf('Hide ') >= 0) {  // Change Hide -> Show
             btnText = 'Show ' + btnText.slice(5);
         } else {                              // Change Show -> Hide
             btnText = 'Hide ' + btnText.slice(5);
         }
-        widgetAndBtn.widget.toggle();
-        widgetAndBtn.button.html(btnText);
+        $(widgetAndBtn.widget).toggle();
+        $(widgetAndBtn.button).html(btnText);
     }
 
     // FIXME: suspect inner definition of click
     $.each(widgetsAndButtons, function(key, widgetAndBtn) {
-        widgetAndBtn.button.click(function() {
+        $(widgetAndBtn.button).click(function() {
             toggleWidget(widgetAndBtn);
         });
     });
@@ -1633,7 +1633,7 @@ var startApp = function() {
 
     // FIXME: for some reason, this is not styling the buttons
     $.each(widgetsAndButtons, function(key, widgetAndBtn) {
-        widgetAndBtn.button.css({
+        $(widgetAndBtn.button).css({
             'position': 'relative',
             'float': 'right',
             'margin-left': '2px'
@@ -1680,11 +1680,11 @@ function loadProject() {
     attributeInfoRequest(selectedLayer);
     $.each(widgetsAndButtons, function(key, widgetAndBtn) {
         // just enable buttons without opening widgets
-        widgetAndBtn.button.prop('disabled', false);
+        $(widgetAndBtn.button).prop('disabled', false);
     });
     // open the project definition widget if it's not already open
-    if (!widgetsAndButtons.projDef.widget.is(':visible')) {
-        widgetsAndButtons.projDef.button.click();
+    if (!$(widgetsAndButtons.projDef.widget).is(':visible')) {
+        $(widgetsAndButtons.projDef.button).click();
     }
 }
 
