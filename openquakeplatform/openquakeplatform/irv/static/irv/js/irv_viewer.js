@@ -1162,6 +1162,7 @@ function mapboxGlLayerCreation() {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
+            $('#mapInfo').css({'visibility': 'visible'});
             if (typeof features[0] === 'undefined') {
                 $('#mapInfo').append('No data available');
             } else {

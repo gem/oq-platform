@@ -7,10 +7,12 @@
 
 #mapInfo {
     position: fixed;
+    margin-top: 40px;
     right: 20px;
     padding: 10px 10px 15px;
     background-color: whitesmoke;
     border-radius: 15px;
+    visibility: hidden;
 }
 
 .my-legend .legend-title {
