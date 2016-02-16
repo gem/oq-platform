@@ -1557,13 +1557,16 @@ var startApp = function() {
     function toggleWidget(widgetAndBtn) {
         // toggle widget and change text on the corresponding button
         var btnText = $(widgetAndBtn.button).html();
+        // If the widget is visible, the button text is 'Hide Widgetname'
+        // Otherwise it is 'Show Widgetname'
+        // Let's change the button text before toggling the widget
         if (btnText.indexOf('Hide ') >= 0) {  // Change Hide -> Show
             btnText = 'Show ' + btnText.slice(5);
         } else {                              // Change Show -> Hide
             btnText = 'Hide ' + btnText.slice(5);
         }
-        $(widgetAndBtn.widget).toggle();
         $(widgetAndBtn.button).html(btnText);
+        $(widgetAndBtn.widget).toggle();
     }
 
     $.each(widgetsAndButtons, function(key, widgetAndBtn) {
