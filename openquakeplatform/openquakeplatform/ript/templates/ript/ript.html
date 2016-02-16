@@ -259,7 +259,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script>
         help=document.getElementById("help_url");
         if(typeof help !== "undefined") { help.href+='/explore/'; }
-        $( "#tabs" ).tabs();
+        var tab_id_s = "{{ request.GET.tab_id }}", tab_id;
+        tab_id = parseInt(tab_id_s) - 1;
+        if (tab_id < 0 || tab_id > 2) {
+            tab_id = 0;
+        }
+        $( "#tabs" ).tabs({active: tab_id });
         var VALIDATION_URL = 'valid';
     </script>
     <script src="{{ STATIC_URL }}js/handsontable.full.min.js"></script>
