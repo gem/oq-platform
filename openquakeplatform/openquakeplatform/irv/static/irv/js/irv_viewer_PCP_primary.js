@@ -99,6 +99,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             }
         }
 
+        $('#primary-tab').css({'height': '100%'});
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
 
@@ -144,10 +145,16 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             .scale(x);
 
         $("#primary-chart").empty();
+        $("#primary-chart").css({'height': '100%'});
 
         var svg = d3.select("#primary-chart").append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
             .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
             .attr("id", "primary-svg-element")
+            .call(d3.behavior.zoom().scaleExtent([0.1, 5]).on("zoom", function () {
+                svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+            }))
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
 

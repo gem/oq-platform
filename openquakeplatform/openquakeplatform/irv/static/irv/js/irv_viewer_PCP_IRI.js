@@ -69,10 +69,16 @@ function IRI_PCP_Chart(iriPcpData) {
         .scale(x);
 
     $("#iri-chart").empty();
+    $("#iri-chart").css({'height': '100%'});
 
     var svg = d3.select("#iri-chart").append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
         .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
         .attr("id", "IRI-svg-element")
+        .call(d3.behavior.zoom().scaleExtent([0.1, 5]).on("zoom", function () {
+            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+        }))
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + ",5)");
 

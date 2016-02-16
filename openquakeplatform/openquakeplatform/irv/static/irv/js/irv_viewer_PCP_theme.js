@@ -85,10 +85,16 @@ function Theme_PCP_Chart(themeData) {
         foreground;
 
     $('#cat-chart').empty();
+    $("#cat-chart").css({'height': '100%'});
 
     var svg = d3.select('#cat-chart').append('svg')
+        .attr("width", "100%")
+        .attr("height", "100%")
         .attr("viewBox", "100 20 " +(winW -400)+" " +winH)
         .attr("id", "CI-svg-element")
+        .call(d3.behavior.zoom().scaleExtent([0.1, 5]).on("zoom", function () {
+            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+        }))
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
