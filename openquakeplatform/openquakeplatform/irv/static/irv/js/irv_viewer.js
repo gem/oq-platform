@@ -1473,7 +1473,7 @@ var startApp = function() {
             'display': 'none',
             'width': '700px',
             'height': '600px',
-            'overflow': 'auto',
+            'overflow': 'hidden',
             'position': 'fixed',
             'left': (10 + i * 40) + 'px',
             'top': (110 + i * 40) + 'px'
