@@ -341,120 +341,48 @@ function processIndicators(layerAttributes, projectDef) {
             }
 
             for (var o = 0; o < la.length; o++) {
-                var tempValue = 0;
                 var region = la[o].properties[selectedRegion];
                 var theme = name;
                 var primaryInversionFactor;
 
-                // check the operator type and compute accordingly
-                if (operator == "Average (ignore weights)") {
-                    for (var p in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
-                            if (p == tempIndicatorChildrenKeys[r]) {
-                                if (tempChildren[r].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                // Sum the theme indicators
-                                tempValue = tempValue + (la[o].properties[p] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    // Grab the average
-                    var average = tempValue / tempIndicatorChildrenKeys.length;
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average});
-                } else if ( operator == "Simple sum (ignore weights)") {
-                    for (var p1 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
-                            if (p1 == tempIndicatorChildrenKeys[r1]) {
-                                if (tempChildren[r1].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                // Sum the theme indicators
-                                tempValue = tempValue + (la[o].properties[p1] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Weighted sum") {
-                    for (var p2 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++) {
-                            if (p2 == tempIndicatorChildrenKeys[r2]) {
-                                // Sum the theme indicators
-                                var weight = tempChildren[r2].weight;
-                                if (tempChildren[r2].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                tempValue = tempValue + ((la[o].properties[p2] * primaryInversionFactor) * weight);
-                                // Collect an array of all the values that pass through the loop
-                                laValuesArray.push(la[o].properties[p2]);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Simple multiplication (ignore weights)") {
+                var tempValue;
+                if (multiplies(operator)) {
                     tempValue = 1;
-                    for (var p3 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
-                            if (p3 == tempIndicatorChildrenKeys[r3]) {
-                                // Sum the theme indicators
-                                if (tempChildren[r3].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Weighted multiplication") {
-                    tempValue = 1;
-                    for (var p4 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
-                            if (p4 == tempIndicatorChildrenKeys[r4]) {
-                                if (tempChildren[r4].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                // Sum the theme indicators
-                                var weight = tempChildren[r4].weight;
-                                tempValue = tempValue * (la[o].properties[p4] * primaryInversionFactor * weight);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Geometric mean (ignore weights)") {
-                    tempValue = 1;
-                    var power = 1 / tempIndicatorChildrenKeys.length;
-                    for (var p5 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r5 = 0; r5 < tempIndicatorChildrenKeys.length; r5++) {
-                            if (p5 == tempIndicatorChildrenKeys[r5]) {
-                                // Sum the theme indicators
-                                if (tempChildren[r5].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                tempValue = tempValue * (la[o].properties[p5] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    tempValue = Math.pow(tempValue, power);
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                } else {
+                    tempValue = 0;
                 }
+                for (var prop in la[o].properties) {
+                    // iterate over the indicator child keys
+                    for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
+                        if (prop == tempIndicatorChildrenKeys[r]) {
+                            if (tempChildren[r].isInverted === true) {
+                                primaryInversionFactor = -1;
+                            } else {
+                                primaryInversionFactor = 1;
+                            }
+                            // Sum the theme indicators
+                            var weight = 1;
+                            if (!ignoresWeights(operator)) {
+                                weight = tempChildren[r].weight;
+                            }
+                            if (multiplies(operator)) {
+                                tempValue = tempValue * la[o].properties[prop] * primaryInversionFactor * weight;
+                            } else {
+                                tempValue = tempValue + la[o].properties[prop] * primaryInversionFactor * weight;
+                            }
+                            // NOTE: Ben had the following line only in case of weighted sum,
+                            //       but I guess it should be there in all cases
+                            // Collect an array of all the values that pass through the loop
+                            laValuesArray.push(la[o].properties[prop]);
+                        }
+                    }
+                }
+                if (operator == "Average (ignore weights)") {
+                    tempValue = tempValue / tempIndicatorChildrenKeys.length;
+                } else if (operator == "Geometric mean (ignore weights)") {
+                    tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                }
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
             }
         }
     }
