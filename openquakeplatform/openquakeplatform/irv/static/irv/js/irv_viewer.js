@@ -29,6 +29,29 @@ var widgetsAndButtons = {
                    'buttonText': 'Show Composite Indicator Chart'}
 };
 
+var operators = ['Simple sum (ignore weights)',
+                 'Weighted sum',
+                 'Average (ignore weights)',
+                 'Simple multiplication (ignore weights)',
+                 'Weighted multiplication',
+                 'Geometric mean (ignore weights)'];
+
+function ignoresWeights(operator) {
+    // return true if the operator ignores weights
+    if (operator.indexOf('ignore weights')) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function multiplies(operator) {
+    if (operator.indexOf('multiplication') || operator.indexOf('Geometric mean')) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 $(document).ready(function() {
     $('#cover').remove();
@@ -198,94 +221,37 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     var themeWeightVal;
 
     // compute the subIndex values based on operator
-    if (operator == 'Simple sum (ignore weights)') {
-        for (var v = 0; v < themeObj.length; v++) {
+    for (var idx=0; idx < themeObj.length; idx++) {
+        if (multiplies(operator)) {
+            tempElementValue = 1;
+        } else {
             tempElementValue = 0;
-            themeObjRegion = themeObj[v].region;
-            // compute the themes
-            for (var w = 0; w < themeKeys.length; w++) {
-                // Get inversion factor
-                themeInversionFactor = themeInversionObj[themeKeys[w]];
-                tempThemeName = themeKeys[w];
-                tempElementValue = tempElementValue + (themeObj[v][tempThemeName] * themeInversionFactor);
-            }
-            subIndex[themeObjRegion] = tempElementValue;
         }
-    } else if (operator == 'Weighted sum') {
-        for (var v1 = 0; v1 < themeObj.length; v1++) {
-            tempElementValue = 0;
-            themeObjRegion = themeObj[v1].region;
-            // compute the themes
-            for (var w1 = 0; w1 < themeKeys.length; w1++) {
-                // Get inversion factor
-                themeInversionFactor = themeInversionObj[themeKeys[w1]];
-                tempThemeName = themeKeys[w1];
+        themeObjRegion = themeObj[idx].region;
+        // compute the themes
+        for (var themeKey = 0; themeKey < themeKeys.length; themeKey++) {
+            // Get inversion factor
+            themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
+            tempThemeName = themeKeys[themeKey];
+            if (ignoresWeights(operator)) {
+                themeWeightVal = 1;
+            } else {
                 themeWeightVal = themeWeightObj[tempThemeName];
-                if (themeWeightVal > 0) {
-                    tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+            }
+            if (themeWeightVal > 0) {
+                if (multiplies(operator)) {
+                    tempElementValue = tempElementValue * themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                } else {
+                    tempElementValue = tempElementValue + themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
                 }
             }
-            subIndex[themeObjRegion] = tempElementValue;
         }
-    } else if (operator == 'Average (ignore weights)') {
-        for (var v2 = 0; v2 < themeObj.length; v2++) {
-            tempElementValue = 0;
-            themeObjRegion = themeObj[v2].region;
-            // compute the themes
-            for (var w2 = 0; w2 < themeKeys.length; w2++) {
-                // Get inversion factor
-                themeInversionFactor = themeInversionObj[themeKeys[w2]];
-                tempThemeName = themeKeys[w2];
-                tempElementValue = tempElementValue + (themeObj[v2][tempThemeName] * themeInversionFactor);
-            }
-            var themeAverage = tempElementValue / themeKeys.length;
-            subIndex[themeObjRegion] = themeAverage;
+        if (operator == 'Average (ignore weights)') {
+            tempElementValue = tempElementValue / themeKeys.length;
+        } else if (operator == 'Geometric mean (ignore weights)') {
+            tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
         }
-    } else if (operator == 'Simple multiplication (ignore weights)') {
-        for (var v3 = 0; v3 < themeObj.length; v3++) {
-            tempElementValue = 1;
-            themeObjRegion = themeObj[v3].region;
-            // compute the themes
-            for (var w3 = 0; w3 < themeKeys.length; w3++) {
-                // Get inversion factor
-                themeInversionFactor = themeInversionObj[themeKeys[w3]];
-                tempThemeName = themeKeys[w3];
-                tempElementValue = tempElementValue * (themeObj[v3][tempThemeName] * themeInversionFactor);
-            }
-            subIndex[themeObjRegion] = tempElementValue;
-        }
-    } else if (operator == 'Weighted multiplication') {
-        for (var v4 = 0; v4 < themeObj.length; v4++) {
-            tempElementValue = 1;
-            themeObjRegion = themeObj[v4].region;
-            // compute the themes
-
-            for (var w4 = 0; w4 < themeKeys.length; w4++) {
-                // Get inversion factor
-                themeInversionFactor = themeInversionObj[themeKeys[w4]];
-                tempThemeName = themeKeys[w4];
-                themeWeightVal = themeWeightObj[tempThemeName];
-                if (themeWeightVal > 0) {
-                    tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor);
-                }
-            }
-            subIndex[themeObjRegion] = tempElementValue;
-        }
-    } else if (operator == 'Geometric mean (ignore weights)') {
-        power = 1 / themeKeys.length;
-        for (var v5 = 0; v5 < themeObj.length; v5++) {
-            tempElementValue = 1;
-            themeObjRegion = themeObj[v5].region;
-            // compute the themes
-            for (var w5 = 0; w5 < themeKeys.length; w5++) {
-                // Get inversion factor
-                themeInversionFactor = themeInversionObj[themeKeys[w5]];
-                tempThemeName = themeKeys[w5];
-                tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
-            }
-            tempElementValue = Math.pow(tempElementValue, power);
-            subIndex[themeObjRegion] = tempElementValue;
-        }
+        subIndex[themeObjRegion] = tempElementValue;
     }
     return subIndex;
 }
