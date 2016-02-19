@@ -81,7 +81,7 @@ def index(request, **kwargs):
 
     taxonomy = kwargs['taxonomy'] if 'taxonomy' in kwargs else ""
 
-    return render_to_response("taxtweb/index.html",
+    return render_to_response(("taxtweb/index_popup.html" if is_popup else "taxtweb/index.html"),
                               dict(taxonomy=taxonomy,
                                    is_popup=is_popup,
                                    tab_id=tab_id,
