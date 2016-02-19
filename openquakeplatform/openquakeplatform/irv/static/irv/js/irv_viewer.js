@@ -497,10 +497,10 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the IRI index ////
     ///////////////////////////////
 
+    var IRI = {};
     if (svThemes === undefined || riskIndicators === undefined) {
         //return;
     } else {
-        var IRI = {};
         var sviWeight;
         var riWeight;
         var riInversionFactor;
