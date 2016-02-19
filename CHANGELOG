@@ -1,4 +1,5 @@
   [Matteo Nastasi]
+  * Taxtweb: add platform header and footer (with code rearrangement)
   * Firefox update management to avoid selenium malfunctions
   * Taxtweb: add contextual help system
   * Use oq-risklib as library to check nrml validity
