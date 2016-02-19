@@ -69,28 +69,40 @@ IRV - {{block.super}}
       <input type="button" id="loadProjectBtn" style="display:none" class="btn btn-blue" disabled="disabled" value="Load Selection">
   </div>
 
-  <!-- Theme tags-->
-  <div id="themeTabs">
+  <div id="project-def-widget">
     <ul>
-      <li id="1" ><a href="#project-def">Project Definition</a></li>
-      <li id="2"><a href="#iri-chart">IRI Chart</a></li>
-      <li id="3"><a href="#cat-chart">SVI Theme Chart</a></li>
-      <li id="4"><a href="#primary-tab">Composite Indicator Chart</a></li>
-
+      <li id="1"><a href="#project-def">Project Definition</a></li>
     </ul>
-
     <div id="project-def">
-      <button id="saveBtn" class="btn btn-blue">Save Project Definition</button>
-      <div id="tool-tip"></div>
-      <div id="projectDef-tree"></div>
-      <div id="projectDefDialog" title="Project Definition">
-        <div id="projectDef-spinner" ></div>
-      </div>
+        <button id="saveBtn" class="btn btn-blue">Save Project Definition</button>
+        <div id="tool-tip"></div>
+        <div id="projectDef-tree"></div>
+        <div id="projectDefDialog" title="Project Definition">
+          <div id="projectDef-spinner" ></div>
+        </div>
     </div>
+  </div>
+
+  <div id="iri-chart-widget">
+    <ul>
+      <li id="2"><a href="#iri-chart">IRI Chart</a></li>
+    </ul>
     <div id="iri-chart">
       <div id="iri-spinner" >Loading ...<img id="download-button-spinner" src="{{ STATIC_URL }}img/ajax-loader.gif" /></div>
     </div>
+  </div>
+
+  <div id="cat-chart-widget">
+    <ul>
+      <li id="3"><a href="#cat-chart">SVI Theme Chart</a></li>
+    </ul>
     <div id="cat-chart"></div>
+  </div>
+
+  <div id="primary-tab-widget">
+    <ul>
+      <li id="4"><a href="#primary-tab">Composite Indicator Chart</a></li>
+    </ul>
     <div id="primary-tab">
       <div id="mainContainer">
         <div class="alert-unscaled-data">
@@ -104,9 +116,8 @@ IRV - {{block.super}}
         </p>
       </div>
     </div>
-
-
   </div>
+
 </div>
 
 {% endblock middle %}

@@ -14,6 +14,21 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+var widgetsAndButtons = {
+    'projDef':    {'widget':     '#project-def-widget',
+                   'button':     '#toggleProjDefWidgetBtn',
+                   'buttonText': 'Show Project Definition'},
+    'iri':        {'widget':     '#iri-chart-widget',
+                   'button':     '#toggleIriChartWidgetBtn',
+                   'buttonText': 'Show IRI Chart Widget'},
+    'svi':        {'widget':     '#cat-chart-widget',
+                   'button':     '#toggleSviThemeWidgetBtn',
+                   'buttonText': 'Show SVI Theme Chart'},
+    'indicators': {'widget':     '#primary-tab-widget',
+                   'button':     '#toggleCompIndWidgetBtn',
+                   'buttonText': 'Show Composite Indicator Chart'}
+};
+
 
 $(document).ready(function() {
     $('#cover').remove();
@@ -49,10 +64,19 @@ var baseMapUrl = new L.TileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x
 var app = new OQLeaflet.OQLeafletApp(baseMapUrl);
 var indicatorChildrenKey = [];
 
-$(document).ready(function() {
-    $('#cover').remove();
-    $('.alert-unscaled-data').hide();
-});
+function setWidgetsToDefault(){
+    $('#pdSelection').empty();
+    // set tabs back default
+    $('#projectDef-spinner').text('Loading ...');
+    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
+    $('#projectDef-spinner').show();
+    $('#iri-spinner').show();
+    $('#regionSelectionDialog').empty();
+    $('#projectDef-tree').empty();
+    $('#iri-chart').empty();
+    $('#cat-chart').empty();
+    $('#primary-chart').empty();
+}
 
 function scaleTheData() {
     // Create a list of primary indicators that need to be scaled
@@ -765,8 +789,8 @@ function processIndicators(layerAttributes, projectDef) {
         SVI.plotElement = "SVI"; // Label within the object
         iriPcpData.push(SVI);
     } else {
-        // Disable the primary tab.
-        $("#themeTabs").tabs("disable", 3);
+        disableWidget(widgetsAndButtons.svi);
+        disableWidget(widgetsAndButtons.indicators);
     }
 
     if (riskIndicators !== undefined) {
@@ -778,6 +802,15 @@ function processIndicators(layerAttributes, projectDef) {
 
 
 } // End processIndicators
+
+function disableWidget(widgetAndBtn) {
+    // if the widget is visible, click the button to toggle it
+    if ($(widgetAndBtn.widget).is(':visible')) {
+        $(widgetAndBtn.button).click();
+    }
+    // in any case, disable the button that shows the widget
+    $(widgetAndBtn.button).prop('disabled', true);
+}
 
 function scale(IndicatorObj) {
     var ValueArray = [];
@@ -794,9 +827,9 @@ function scale(IndicatorObj) {
         if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
-            $("#themeTabs").tabs("disable", 1);
-            $("#themeTabs").tabs("disable", 2);
-            $("#themeTabs").tabs("disable", 3);
+            $.each(['indicators', 'svi', 'iri'], function(i, widgetName) {
+                disableWidget(widgetsAndButtons[widgetName]);
+            });
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
@@ -1120,6 +1153,7 @@ function mapboxGlLayerCreation() {
         map.featuresAt(e.point, { radius : 6}, function(err, features) {
             if (err) throw err;
             $('#mapInfo').empty();
+            $('#mapInfo').css({'visibility': 'visible'});
             if (typeof features[0] === 'undefined') {
                 $('#mapInfo').append('No data available');
             } else {
@@ -1415,21 +1449,35 @@ var startApp = function() {
 
     webGl = webglDetect();
 
+    // using the list, otherwise we would lose the order
+    $.each(['projDef', 'iri', 'svi', 'indicators'], function(i, widgetName) {
+        // Theme tabs behavior
+        var widget = $(widgetsAndButtons[widgetName].widget);
+        widget.resizable({
+            minHeight: 220,
+            minWidth: 220
+        });
 
-    // Theme tabs behavior
-    $('#themeTabs').resizable({
-        minHeight: 220,
-        minWidth: 220
-    });
+        widget.tabs({
+            collapsible: false,
+            selected: -1,
+            active: false,
+        });
 
-    $('#themeTabs').tabs({
-        collapsible: false,
-        selected: -1,
-        active: false,
-    });
-
-    $( "#themeTabs" ).draggable({
-        cancel: "#project-def"
+        widget.draggable({
+            stack: "div",  // put on top of the others when dragging
+            distance: 0,   // do it even if it's not actually moved
+            cancel: "#project-def, #primary-tab, #cat-chart, #iri-chart"
+        });
+        widget.css({
+            'display': 'none',
+            'width': '700px',
+            'height': '600px',
+            'overflow': 'hidden',
+            'position': 'fixed',
+            'left': (10 + i * 40) + 'px',
+            'top': (110 + i * 40) + 'px'
+        });
     });
 
     $('#cover').remove();
@@ -1457,6 +1505,15 @@ var startApp = function() {
     $('#map-tools').append(
         '<button id="loadProjectdialogBtn" type="button" class="btn btn-blue">Load Project</button>'
     );
+    // Using the list in order to keep the order
+    $.each(['indicators', 'svi', 'iri', 'projDef'], function(i, widgetName) {
+        // slice(1) removes the heading # from the selector
+        var buttonId = widgetsAndButtons[widgetName].button.slice(1);
+        var buttonText = widgetsAndButtons[widgetName].buttonText;
+        $('#map-tools').append(
+            '<button id="' + buttonId + '" type="button" class="btn btn-blue" disabled>' + buttonText + '</button>'
+        );
+    });
 
     if (webGl === false) {
         $('#map-tools').append(
@@ -1497,6 +1554,27 @@ var startApp = function() {
         $('#loadProjectDialog').dialog('open');
     });
 
+    function toggleWidget(widgetAndBtn) {
+        // toggle widget and change text on the corresponding button
+        var btnText = $(widgetAndBtn.button).html();
+        // If the widget is visible, the button text is 'Hide Widgetname'
+        // Otherwise it is 'Show Widgetname'
+        // Let's change the button text before toggling the widget
+        if (btnText.indexOf('Hide ') >= 0) {  // Change Hide -> Show
+            btnText = 'Show ' + btnText.slice(5);
+        } else {                              // Change Show -> Hide
+            btnText = 'Hide ' + btnText.slice(5);
+        }
+        $(widgetAndBtn.button).html(btnText);
+        $(widgetAndBtn.widget).toggle();
+    }
+
+    $.each(widgetsAndButtons, function(key, widgetAndBtn) {
+        $(widgetAndBtn.button).click(function() {
+            toggleWidget(widgetAndBtn);
+        });
+    });
+
     // TODO check these are all needed
     $('#region-selection-list').hide();
     $('#svir-project-list').hide();
@@ -1510,21 +1588,7 @@ var startApp = function() {
     });
 
     $('#loadProjectBtn').click(function() {
-        $('#pdSelection').empty();
-        // set tabs back default
-        $("#themeTabs").tabs("enable", 2);
-        $("#themeTabs").tabs("enable", 3);
-
-        $('#themeTabs').tabs('option', 'active', 0);
-        $('#projectDef-spinner').text('Loading ...');
-        $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
-        $('#projectDef-spinner').show();
-        $('#iri-spinner').show();
-        $('#regionSelectionDialog').empty();
-        $('#projectDef-tree').empty();
-        $('#iri-chart').empty();
-        $('#cat-chart').empty();
-        $('#primary-chart').empty();
+        setWidgetsToDefault();
 
         // FIXME This will not work if the title contains '(' or ')'
         // Get the selected layer
@@ -1561,6 +1625,11 @@ var startApp = function() {
         closeOnEscape: true
     });
 
+    $('#loadProjectDialog').draggable({
+        stack: "div",  // put on top of the others when dragging
+        distance: 0,   // do it even if it's not actually moved
+    });
+
     $('#map-tools').css({
         'padding': '6px',
         'position': 'absolute',
@@ -1570,18 +1639,17 @@ var startApp = function() {
         'z-index': 6
     });
 
-    $('#themeTabs').css({
-        'width': '700px',
-        'height': '600px',
-        'overflow': 'hidden',
-        'position': 'fixed',
-        'left': '10px',
-        'top': '110px'
-    });
-
     $('#loadProjectdialogBtn').css({
         'position': 'fixed',
         'left': '50px'
+    });
+
+    $.each(widgetsAndButtons, function(key, widgetAndBtn) {
+        $(widgetAndBtn.button).css({
+            'position': 'relative',
+            'float': 'right',
+            'margin-left': '2px'
+        });
     });
 
     $('#base-map-menu').css({
@@ -1619,24 +1687,17 @@ var startApp = function() {
 };
 
 function loadProject() {
-    $('#pdSelection').empty();
-    // set tabs to back default
-    $("#themeTabs").tabs("enable", 2);
-    $("#themeTabs").tabs("enable", 3);
-
-    $('#themeTabs').tabs('option', 'active', 0);
+    setWidgetsToDefault();
     $('#thematic-map-selection').show();
-    $('#projectDef-spinner').text('Loading ...');
-    $('#projectDef-spinner').append('<img id="download-button-spinner" src="/static/img/ajax-loader.gif" />');
-    $('#projectDef-spinner').show();
-    $('#iri-spinner').show();
-    $('#regionSelectionDialog').empty();
-    $('#projectDef-tree').empty();
-    $('#iri-chart').empty();
-    $('#cat-chart').empty();
-    $('#primary-chart').empty();
-
     attributeInfoRequest(selectedLayer);
+    $.each(widgetsAndButtons, function(key, widgetAndBtn) {
+        // just enable buttons without opening widgets
+        $(widgetAndBtn.button).prop('disabled', false);
+    });
+    // open the project definition widget if it's not already open
+    if (!$(widgetsAndButtons.projDef.widget).is(':visible')) {
+        $(widgetsAndButtons.projDef.button).click();
+    }
 }
 
 function attributeInfoRequest(selectedLayer) {

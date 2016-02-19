@@ -52,7 +52,7 @@
         var winW = 700;
 
         // detect tab window resize
-        $('#themeTabs').resize(function(event) {
+        $('#project-def-widget').resize(function(event) {
             winH = event.clientY;
             winW = event.clientX;
         });
