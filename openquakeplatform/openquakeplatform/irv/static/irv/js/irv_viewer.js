@@ -469,8 +469,9 @@ function processIndicators(layerAttributes, projectDef) {
 
     // Create the risk indicator only if it has children
     var RI = {};
+    var riskIndicator;
     if (riskIndicators !== undefined) {
-        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
+        riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
