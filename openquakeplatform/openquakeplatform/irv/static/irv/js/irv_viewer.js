@@ -37,7 +37,7 @@ var operators = ['Simple sum (ignore weights)',
                  'Geometric mean (ignore weights)'];
 
 function ignoresWeights(operator) {
-    // return true if the operator ignores weights
+    // returns true if the operator ignores weights
     if (operator.indexOf('ignore weights')) {
         return true;
     } else {
@@ -46,6 +46,8 @@ function ignoresWeights(operator) {
 }
 
 function multiplies(operator) {
+    // returns true if the operator is a multiplier
+    // (for instance, 'simple sum' sums items, 'simple multiplication' multiplies items)
     if (operator.indexOf('multiplication') || operator.indexOf('Geometric mean')) {
         return true;
     } else {
@@ -530,7 +532,7 @@ function processIndicators(layerAttributes, projectDef) {
         for (var regionName in SVI) {
             sviComponent = SVI[regionName] * sviWeight * sviInversionFactor;
             riComponent = RI[regionName] * riWeight * riInversionFactor;
-            if (multiplies(operator)) {
+            if (multiplies(iriOperator)) {
                 tempVal = sviComponent * riComponent;
             } else {
                 tempVal = sviComponent + riComponent;
@@ -553,43 +555,43 @@ function processIndicators(layerAttributes, projectDef) {
     // Pass indicators into a 'newProperties' element
     for (var ix = 0; ix < la.length; ix++) {
         la[ix].newProperties = {};
-        for (var key in IRI) {
-            if (key == la[ix].properties[selectedRegion]) {
-                tmpVal = (IRI[key]).toFixed(5);
+        for (var iriKey in IRI) {
+            if (iriKey == la[ix].properties[selectedRegion]) {
+                tmpVal = (IRI[iriKey]).toFixed(5);
                 la[ix].newProperties.IRI = parseFloat(tmpVal);
             }
         }
         if (svThemes) {
-            for (var key in SVI) {
-                if (key == la[ix].properties[selectedRegion]) {
-                    tmpVal = (SVI[key]).toFixed(5);
+            for (var sviKey in SVI) {
+                if (sviKey == la[ix].properties[selectedRegion]) {
+                    tmpVal = (SVI[sviKey]).toFixed(5);
                     la[ix].newProperties.SVI = parseFloat(tmpVal);
                 }
             }
         }
 
         if (riskIndicators !== undefined) {
-            for (var key in RI) {
-                if (key == la[ix].properties[selectedRegion]) {
-                    tmpVal = (RI[key]).toFixed(5);
+            for (var riKey in RI) {
+                if (riKey == la[ix].properties[selectedRegion]) {
+                    tmpVal = (RI[riKey]).toFixed(5);
                     la[ix].newProperties.RI = parseFloat(tmpVal);
                 }
             }
 
-            for (var key in riskIndicator[ix]) {
+            for (var riKeyIx in riskIndicator[ix]) {
                 if (riskIndicator[ix] != 'region') {
-                    var tempThemeName = riskIndicator[ix][key];
-                    la[ix].newProperties[key] = tempThemeName;
+                    tempThemeName = riskIndicator[ix][riKeyIx];
+                    la[ix].newProperties[riKeyIx] = tempThemeName;
                 }
             }
         }
 
-        for (var key in themeData[ix]) {
-            if (key != 'region') {
-                var tempThemeName = themeData[ix][key];
-                la[ix].newProperties[key] = tempThemeName;
-            } else if (key == 'region') {
-                la[ix].newProperties.region = themeData[ix][key];
+        for (var tdKey in themeData[ix]) {
+            if (tdKey != 'region') {
+                tempThemeName = themeData[ix][tdKey];
+                la[ix].newProperties[tdKey] = tempThemeName;
+            } else if (tdKey == 'region') {
+                la[ix].newProperties.region = themeData[ix][tdKey];
             }
         }
     }
@@ -598,11 +600,11 @@ function processIndicators(layerAttributes, projectDef) {
     if (svThemes) {
         for (var ib = 0; ib < svThemes.length; ib++) {
             var indicatorChildrenKey = [];
-            var tempChildren = svThemes[ib].children;
+            var tmpChildren = svThemes[ib].children;
             // Get the indicators children keys
-            if (tempChildren) {
-                for (var childIdx = 0; childIdx < tempChildren.length; childIdx++) {
-                    indicatorChildrenKey.push(tempChildren[childIdx].field);
+            if (tmpChildren) {
+                for (var childIdx = 0; childIdx < tmpChildren.length; childIdx++) {
+                    indicatorChildrenKey.push(tmpChildren[childIdx].field);
                 }
             }
 
@@ -637,17 +639,17 @@ function processIndicators(layerAttributes, projectDef) {
 
         mappingLayerAttributes = JSON.parse(JSON.stringify(layerAttributes));
 
-        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
-            delete mappingLayerAttributes.features[i].properties;
+        for (var idx1 = 0; idx1 < mappingLayerAttributes.features.length; idx1++) {
+            delete mappingLayerAttributes.features[idx1].properties;
         }
 
-        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
-            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[i].newProperties));
-            mappingLayerAttributes.features[i].properties = tempProperties;
+        for (var idx2 = 0; idx2 < mappingLayerAttributes.features.length; idx2++) {
+            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[idx2].newProperties));
+            mappingLayerAttributes.features[idx2].properties = tempProperties;
         }
 
-        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
-            delete mappingLayerAttributes.features[i].newProperties;
+        for (var idx3 = 0; idx3 < mappingLayerAttributes.features.length; idx3++) {
+            delete mappingLayerAttributes.features[idx3].newProperties;
         }
 
         // Emptry any existing interactivity
@@ -757,24 +759,24 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     // Add IR children themes to selection menu
     if (allRiskIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="RI Themes">');
-        for (var i = 0; i < allRiskIndicators.length; i++) {
-            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[i]+'</option>');
+        for (var idx4 = 0; idx4 < allRiskIndicators.length; idx4++) {
+            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[idx4]+'</option>');
         }
     }
 
     // Add SVI children themes to selection menu
     if (allSVIThemes.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="SVI Themes">');
-        for (var i = 0; i < allSVIThemes.length; i++) {
-            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[i]+'</option>');
+        for (var idx5 = 0; idx5 < allSVIThemes.length; idx5++) {
+            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[idx5]+'</option>');
         }
     }
 
     // Add primary indicators to selection menu
     if (allPrimaryIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="Primary Indicators">');
-        for (var i = 0; i < allPrimaryIndicators.length; i++) {
-            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[i]+'</option>');
+        for (var idx6 = 0; idx6 < allPrimaryIndicators.length; idx6++) {
+            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[idx6]+'</option>');
         }
     }
 
@@ -944,8 +946,8 @@ function mapboxGlLayerCreation() {
 
     // Case 2, and 4, try to remove any existing layers
     try {
-        for (var i = 0; i < 6; i++) {
-            map.removeLayer(i);
+        for (var idx7 = 0; idx7 < 6; idx7++) {
+            map.removeLayer(idx7);
         }
     } catch (exc) {
         // continue
@@ -1004,22 +1006,22 @@ function mapboxGlLayerCreation() {
 
     // Cases 1, 2, 3, 4, 5 and 6
     // Create a new mapbox layers
-    for (var i = 0; i < 6; i++) {
+    for (var idx8 = 0; idx8 < 6; idx8++) {
         map.addLayer({
-            'id': i,
+            'id': idx8,
             'type': 'fill',
             'source': 'projectSource',
             "source-layer": "eq-simple",
             'interactive': true,
             'paint': {
-                'fill-color': colorsPal[i],
+                'fill-color': colorsPal[idx8],
                 'fill-opacity': 0.8,
                 'fill-outline-color': '#000066'
             },
-            'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+            'filter': ['all',['>', selectedIndicator, breaks[idx8]], ['<=', selectedIndicator, breaks[idx8+1]]]
         });
         // Create legend elements
-        $('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
+        $('#legendLables').append('<li><span style="background:'+colorsPal[idx8]+';"></span>'+breaks[idx8].toFixed(2)+'</li>');
     }
 
     $('#absoluteSpinner').hide();
