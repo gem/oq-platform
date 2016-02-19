@@ -1,0 +1,217 @@
+<!-- incl_taxtweb_alljs.html -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxtweb_maps.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxtweb.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxonomy_map.js"></script>
+<script src="{{ STATIC_URL }}taxtweb/js/taxonomy.js"></script>
+<script type="text/javascript"><!--
+var taxt_prefix = '{{ taxt_prefix }}';
+var gem$ = {{ jquery }};
+function taxtweb_main() {
+    var ret = null;
+    var tab_cur = {{ tab_id }};
+    var subtab_cur = {{ subtab_id }};
+    tab_set(tab_cur, subtab_cur);
+    /*
+    var    demo = "DX+PF/MR+CBH+RCM+SPBA/LH+DNO/DY+OF/S+SR+RIV/LWAL+DUC/HBET:1,2+HBEX:3+HFBET:4,5+HD:6/YBET:1980,1985/MIX+MIX6/BP2/PLFPO/IRIR+IRPP:REC+IRPS:TOR+IRVP:SOS+IRVS:CHV/EWCB/RSH2+RMT1+RE+RE1+RWCP/FW+FW3+FWCN/FOSDN";
+    */
+    var taxonomy = '{{ taxonomy }}';
+
+    if (taxonomy != '') {
+        ret = taxonomy_short2full(taxonomy);
+
+        if (ret) {
+            if (ret.err_s) {
+                alert(ret.err_s);
+                taxonomy = '';
+            }
+            else {
+                taxonomy = ret.result;
+            }
+        }
+        else {
+            alert("No response from server.");
+            taxonomy = '';
+        }
+    }
+
+    var ret_s = { s: "" };
+
+    if (taxonomy != '') {
+        if (populate(taxonomy, ret_s) == false) {
+            alert("Load of taxonomy failed\n" + ret_s.s);
+        }
+    }
+}
+
+/*
+    WORKFLOW
+
+    "Click and Help"::onclick => gem_help()
+
+    highlight and addEventListener("mousedown", gem_help_cb) on all tags with 'data-gem-help' attribute
+
+    gem_help_cb(target) => if target IS NOT <select> open new tab with the related web page and cleanup all help stuff
+      if target IS <select> call gem_help_select()
+
+    gem_help_select(target) =>
+        open a new div with the same items of related <select> item and highlight all of
+        them have an associated help webpage
+        for each item call gem_help_highlight that highlight and addEventListener("mousedown", gem_help_cb)
+
+*/
+
+var gem_help_old_body_class = "";
+
+/* obj refers to jquery object with single DOM associated element */
+function gem_help_highlight(obj)
+{
+    var rect = [obj.offset().left, obj.offset().top, obj.width(), obj.height()];
+    var div = document.createElement('div');
+    var border = 0;
+
+    div.style.left = (rect[0] - border) + "px";
+    div.style.top =  (rect[1] - border) + "px";
+    div.style.width = (rect[2] + 2 + (border * 2)) + "px";
+    div.style.height = (rect[3] + 2 + (border * 2)) + "px";
+    div.className = "gem_help_highlight";
+
+    div.dataGemObj = obj[0];
+    obj[0].setAttribute('data-gem-helped', 'True');
+
+    document.body.appendChild(div);
+}
+
+function gem_help()
+{
+    if (document.body.className != "gem_help") {
+        gem_help_old_body_class = document.body.className;
+        document.body.className = "gem_help";
+    }
+
+    var helps = $("[data-gem-help]");
+    var target;
+    for (var i = 0 ; i < helps.length ; i++) {
+        if (helps[i].tagName == 'OPTION') {
+            target = $(helps[i].parentNode);
+        }
+        else {
+            target = $(helps[i]);
+        }
+
+        if (target.filter("[data-gem-helped]").length > 0) {
+            continue;
+        }
+
+        gem_help_highlight(target);
+    }
+
+    if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
+        document.addEventListener("mousedown", gem_help_cb, true);
+    } else if (document.attachEvent) {              // For IE 8 and earlier versions
+        document.attachEvent("onmousedown", gem_help_cb);
+    }
+}
+
+function gem_help_select_remove()
+{
+    var prev_help_sel = $('#gem_help_select')[0];
+    if (prev_help_sel) {
+        prev_help_sel.parentNode.removeChild(prev_help_sel);
+    }
+}
+
+
+function gem_help_show(target)
+{
+    window.open(target, '_blank');
+    gem_help_select_remove();
+}
+
+
+function gem_help_select(obj, event)
+{
+    gem_help_cleanup();
+
+    var div = document.createElement('div');
+    div.id = 'gem_help_select';
+    div.className = 'gem_help_select';
+    div.style.position = "absolute";
+    div.style.top = event.clientY + "px";
+    div.style.left = event.clientX + "px";
+
+    for (var i = 0 ; i < obj.length ; i++) {
+        var help_url = obj[i].getAttribute("data-gem-help");
+
+        if (help_url) {
+            div.innerHTML += '<span data-gem-help="' + help_url + '">' +
+                            obj[i].innerHTML + '</span><br>';
+        }
+        else {
+            div.innerHTML += '<span>' + obj[i].innerHTML + '</span><br>';
+        }
+    }
+    document.body.appendChild(div);
+
+    var helps = $(div).children("span[data-gem-help]");
+
+    var target;
+    for (var i = 0 ; i < helps.length ; i++) {
+        target = $(helps[i]);
+
+        gem_help_highlight(target);
+    }
+}
+
+function gem_help_cleanup()
+{
+    var obj, objs;
+    objs = $('[data-gem-helped]');
+    for (var i = 0 ; i < objs.length ; i++) {
+        obj = objs[i];
+        obj.removeAttribute('data-gem-helped');
+    }
+
+    objs = $('.gem_help_highlight');
+    for (var i = 0 ; i < objs.length ; i++) {
+        obj = objs[i];
+        obj.parentNode.removeChild(obj);
+        delete obj;
+    }
+}
+
+/*
+    gem_help_cb is fired when an hilighted native page element is clicked or
+        when an highlighted item of a new help div associated with an highlighted <select> is clicked
+*/
+function gem_help_cb(event)
+{
+    event.preventDefault();
+    event.stopPropagation();
+
+    var obj = event.target;
+
+    if ('dataGemObj' in obj) {
+        if (obj.dataGemObj.tagName == 'SELECT') {
+            gem_help_select(obj.dataGemObj, event);
+            return;
+        }
+        else {
+            gem_help_show(obj.dataGemObj.getAttribute("data-gem-help"));
+        }
+    }
+    gem_help_cleanup();
+    /* when fired from a help select div we close that div */
+    gem_help_select_remove();
+    if (document.removeEventListener) {
+        document.removeEventListener("mousedown", gem_help_cb, true);
+    }
+    else if (document.detachEvent) {
+        document.detachEvent("mousedown", gem_help_cb);
+    }
+    document.body.className = gem_help_old_body_class;
+}
+          
+window.onload = taxtweb_main;
+//-->
+</script>
