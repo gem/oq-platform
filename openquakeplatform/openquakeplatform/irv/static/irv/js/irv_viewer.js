@@ -710,9 +710,11 @@ function scale(IndicatorObj) {
         if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
-            $.each(['indicators', 'svi', 'iri'], function(i, widgetName) {
-                disableWidget(widgetsAndButtons[widgetName]);
-            });
+            // Not using $.each in this case, just to avoid a syntax warning
+            // about defining a function within a loop
+            disableWidget(widgetsAndButtons.indicators);
+            disableWidget(widgetsAndButtons.svi);
+            disableWidget(widgetsAndButtons.iri);
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
