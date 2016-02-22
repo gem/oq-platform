@@ -217,11 +217,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     }
 
     var tempElementValue;
-    var themeInversionFactor;
-    var themeObjRegion;
-    var tempThemeName;
-    var themeWeightVal;
-
+    // NOTE: themeObj: a list containing for each region the values for each item to combine
     // compute the subIndex values based on operator
     for (var idx=0; idx < themeObj.length; idx++) {
         if (multiplies(operator)) {
@@ -229,12 +225,14 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
         } else {
             tempElementValue = 0;
         }
-        themeObjRegion = themeObj[idx].region;
+        var themeObjRegion = themeObj[idx].region;
+        // NOTE: themeKeys contains the list of names of all items to combine
         // compute the themes
         for (var themeKey = 0; themeKey < themeKeys.length; themeKey++) {
             // Get inversion factor
-            themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
-            tempThemeName = themeKeys[themeKey];
+            var themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
+            var tempThemeName = themeKeys[themeKey];
+            var themeWeightVal;
             if (ignoresWeights(operator)) {
                 themeWeightVal = 1;
             } else {
