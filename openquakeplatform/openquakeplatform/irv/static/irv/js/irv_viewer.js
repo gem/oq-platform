@@ -38,7 +38,7 @@ var operators = ['Simple sum (ignore weights)',
 
 function ignoresWeights(operator) {
     // returns true if the operator ignores weights
-    if (operator.indexOf('ignore weights')) {
+    if (operator.indexOf('ignore weights') != -1) {
         return true;
     } else {
         return false;
@@ -48,7 +48,7 @@ function ignoresWeights(operator) {
 function multiplies(operator) {
     // returns true if the operator is a multiplier
     // (for instance, 'simple sum' sums items, 'simple multiplication' multiplies items)
-    if (operator.indexOf('multiplication') || operator.indexOf('Geometric mean')) {
+    if (operator.indexOf('multiplication') != -1 || operator.indexOf('Geometric mean') != -1) {
         return true;
     } else {
         return false;
