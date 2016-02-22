@@ -1,4 +1,6 @@
-
+#oq-body-content {
+width: 100%;
+ }
 
 .menuItems{
 	left: 0px;
@@ -21,9 +23,14 @@ label {
 
 .ffsForm, .vfsForm{
     float: left;
-    margin-top: 20px;
+    clear: left;
+    margin-top: 10px;
     width: 45%;
 }
+
+.ffsForm label {
+clear: left;
+ }
 
 .downloadbtn {
     color: white !important;
@@ -41,15 +48,6 @@ label {
 .vfsTable {
 	width: 80%;
 	margin-left: 3px;
-}
-
-.ffsTableDiv {
-	padding-right: 40px;
-	padding-bottom: 15%;
-}
-
-.vfsTableDiv {
-	padding-right: 40px;
 }
 
 .theTable {
@@ -72,9 +70,7 @@ textarea {
 }
 
 .destroyTable {
-	margin-left: 20px;
 	float: right;
-    margin-top: 10px;
 }
 
 .destroyVTable {
@@ -96,12 +92,9 @@ textarea {
 }
 
 .ffsTableDiv, .vfsTableDiv {
-    padding-right: 40px;
-    padding-bottom: 15%;
-    width: 90%;
+    width: 100%;
     float: left;
     border: 1px solid #eee;
     margin-bottom: 1em;
-    padding: 5%;
 }
 
