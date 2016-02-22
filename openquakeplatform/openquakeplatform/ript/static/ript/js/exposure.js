@@ -255,6 +255,8 @@ $('#saveBtnEX').click(function() {
         return header.indexOf(argument);
     }
 
+    var exposureDescription = $('#exposureDescription').val();
+
     var asset = '';
     var latitude = 'latitude';
     var longitude = 'longitude';
@@ -434,7 +436,7 @@ $('#saveBtnEX').click(function() {
         '<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4">\n' +
             '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy">\n' +
-                '\t\t<description>exposure model</description>\n' +
+                '\t\t<description>' + exposureDescription + '</description>\n' +
                 '\t\t<conversions>\n' +
                     areaType +
                     '\t\t\t<costTypes>\n' +
