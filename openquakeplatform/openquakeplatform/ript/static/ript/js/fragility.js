@@ -15,7 +15,6 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var fragilityTable;
 var header = [];
 var activeTablesObj = {};
 var limitStates;
@@ -38,6 +37,7 @@ $('#addFfsContinuous').click(function() {
 
 var count = 0;
 function updateFfsTable (fFormat) {
+    var fragilityTable;
 
     // Get info from the form and build the table header
     limitStates = $('#limitStates').val();
@@ -53,7 +53,6 @@ function updateFfsTable (fFormat) {
     var colWidth;
     // disable the fragility function form
     $('#limitStates').prop('disabled', true);
-
     // Setup the header
     if (fFormat == 'discrete') {
         header = limitStatesHeader;
@@ -84,7 +83,8 @@ function updateFfsTable (fFormat) {
     // Create the fragility function set (ffs)
     $('#tables').append(
         '<div id="table'+count+'" class="ffsTableDiv panel panel-default">' +
-        '<strong class="ffsTitle">'+fFormat.toUpperCase()+'</strong><button id="'+count+'" class="btn-danger btn destroyTable">Remove</button><br>' +
+        '<div style="float: left;"><strong class="ffsTitle">'+fFormat.toUpperCase()+'</strong><br></div>' +
+        '<button id="'+count+'" class="btn-danger btn destroyTable" style="float: right;">Remove</button><br>' +
             '<div class="ffsForm" >' +
                 '<label> Function Id: </label>' +
                 '<input id="'+count+'" class="ffsIds ffsTable" type="text"><br>' +
@@ -96,28 +96,28 @@ function updateFfsTable (fFormat) {
                 '<input id="'+count+'" type="hidden" class="fFormat ffsTable" value="'+fFormat+'" >' +
                 '<br>' +
             '</div>'+
-            '<div id="tableDiv'+count+'" class="theTable"></div><br><br>' +
-            '<br><br>' +
-        '</div>'
+            '<div style="width: 45%; float: right;">' +
+              '<div id="tableDiv'+count+'" class="theTable"></div><br>' +
+              '<button id="'+count+'" class="newRow btn btn-primary" style="clear: right; float: right; margin-top: 4px;">New Row</button><br>' +
+           '</div>' +
+         '</div>'
     );
 
     // force bootstrap style
     $('.btn-danger').css({'background-color': '#da4f49'});
 
-    var container = document.getElementById('tableDiv'+count);
-
 
     ////////////////////////////////
     /// fragility Table Settings ///
     ////////////////////////////////
-
-    fragilityTable = new Handsontable(container, {
+    $('#tableDiv'+count).handsontable( {
         colHeaders: header,
         startCols: headerLength,
         maxCols: headerLength,
         startRows: limitStateLength,
         colWidths: colWidth,
     });
+    fragilityTable = $('#tableDiv'+count).handsontable("getInstance");
 
     // Populate the table with limit states
     if (fFormat == 'continuous') {
@@ -136,8 +136,18 @@ function updateFfsTable (fFormat) {
         $('#table'+this.id).remove();
         var removedTable = this.id;
         delete activeTablesObj[removedTable];
+        if (Object.keys(activeTablesObj).length == 0) {
+            $('#limitStates').prop('disabled', false);
+        }
     });
 
+    // Logic to remove a table
+    $('#' + count + '.newRow').click(function() {
+        var fragilityTable;
+
+        fragilityTable = $('#tableDiv' + this.id).handsontable("getInstance");
+        fragilityTable.alter('insert_row', fragilityTable.countRows());
+    });
     // Increase the ffs panel when many limit states are defined
     if (limitStateLength > 5) {
         $('.ffsTableDiv').height(240 + (limitStateLength * 1.5));
