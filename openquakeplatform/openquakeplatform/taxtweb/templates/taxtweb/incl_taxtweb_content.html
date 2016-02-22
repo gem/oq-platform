@@ -1,7 +1,9 @@
 <div class="grand_parent">
     <ul class="tab">
-        {{ tab_content|safe }}<li id="id_help_form" style="float: right; color: black;" class="tab" onclick="gem_help();"><span title="click here and than what you are interested in">Click And Help</span></li>
+        {{ tab_content|safe }}
         {% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
+        <li id="id_help_form" style="float: right; color: black;" class="tab" onclick="gem_help();"><span title="click here and than what you are interested in">{% if is_popup %}Help{% else %}Click and Help{% endif %}</span></li>
+        <li id="id_intro_form" style="float: right; color: black;" class="tab" onclick="window.open('http://www.globalquakemodel.org/what/physical-integrated-risk/building-taxonomy/', '_blank');"><span title="an introduction to building taxonomy">Introduction</span></li>
     </ul>
     <div id="main_content_parent" style="border-top-width: 0; border-color: #F8F8F8 #1B75A7 #1B75A7; position: relative; width: 800px; height: 600px; /* background-color: #ccccff; blue */">
         <div id="main_content-1" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; margin: 0px;/* background-color: #ffcccc; /*red */">
