@@ -3,7 +3,7 @@ function validateAndDisplayNRML(NRML, funcType){
 
     function displayValidationError(textBox, error_msg){
         $('#validationErrorMsg' + funcType).text(
-            'Validation error: ' + error_msg);
+            'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-]*\.xml/, 'this NRML file') + '.');
         $('#validationErrorMsg' + funcType).css('display', 'block');
     }
 
