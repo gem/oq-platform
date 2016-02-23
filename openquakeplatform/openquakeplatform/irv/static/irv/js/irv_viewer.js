@@ -29,31 +29,41 @@ var widgetsAndButtons = {
                    'buttonText': 'Show Composite Indicator Chart'}
 };
 
-var operators = ['Simple sum (ignore weights)',
-                 'Weighted sum',
-                 'Average (ignore weights)',
-                 'Simple multiplication (ignore weights)',
-                 'Weighted multiplication',
-                 'Geometric mean (ignore weights)'];
-
-function ignoresWeights(operator) {
-    // returns true if the operator ignores weights
-    if (operator.indexOf('ignore weights') != -1) {
-        return true;
-    } else {
-        return false;
+var operators = {
+    'SUM_S': {
+        'ignoresWeights': true,
+        'multiplies': false
+    },
+    'SUM_W': {
+        'ignoresWeights': false,
+        'multiplies': false
+    },
+    'AVG': {
+        'ignoresWeights': true,
+        'multiplies': false
+    },
+    'MUL_S': {
+        'ignoresWeights': true,
+        'multiplies': true
+    },
+    'MUL_W': {
+        'ignoresWeights': false,
+        'multiplies': true
+    },
+    'GEOM_MEAN': {
+        'ignoresWeights': true,
+        'multiplies': true
     }
-}
+};
 
-function multiplies(operator) {
-    // returns true if the operator is a multiplier
-    // (for instance, 'simple sum' sums items, 'simple multiplication' multiplies items)
-    if (operator.indexOf('multiplication') != -1 || operator.indexOf('Geometric mean') != -1) {
-        return true;
-    } else {
-        return false;
-    }
-}
+var namesToOperators = {
+    'Simple sum (ignore weights)':            'SUM_S',
+    'Weighted sum':                           'SUM_W',
+    'Average (ignore weights)':               'AVG',
+    'Simple multiplication (ignore weights)': 'MUL_S',
+    'Weighted multiplication':                'MUL_W',
+    'Geometric mean (ignore weights)':        'GEOM_MEAN'
+};
 
 $(document).ready(function() {
     $('#cover').remove();
@@ -189,7 +199,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     // Get the theme operator
     for (var y = 0; y < projectDef.children.length; y++) {
         if (projectDef.children[y].name == nameLookUp) {
-            operator = projectDef.children[y].operator;
+            operator = operators[namesToOperators[projectDef.children[y].operator]];
         }
     }
 
@@ -220,7 +230,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     // NOTE: themeObj: a list containing for each region the values for each item to combine
     // compute the subIndex values based on operator
     for (var idx=0; idx < themeObj.length; idx++) {
-        if (multiplies(operator)) {
+        if (operator.multiplies) {
             tempElementValue = 1;
         } else {
             tempElementValue = 0;
@@ -233,22 +243,22 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
             var themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
             var tempThemeName = themeKeys[themeKey];
             var themeWeightVal;
-            if (ignoresWeights(operator)) {
+            if (operator.ignoresWeights) {
                 themeWeightVal = 1;
             } else {
                 themeWeightVal = themeWeightObj[tempThemeName];
             }
             if (themeWeightVal > 0) {
-                if (multiplies(operator)) {
+                if (operator.multiplies) {
                     tempElementValue = tempElementValue * themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
                 } else {
                     tempElementValue = tempElementValue + themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
                 }
             }
         }
-        if (operator == 'Average (ignore weights)') {
+        if (operator == operators.AVG) {
             tempElementValue = tempElementValue / themeKeys.length;
-        } else if (operator == 'Geometric mean (ignore weights)') {
+        } else if (operator == operators.GEOM_MEAN) {
             tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
         }
         subIndex[themeObjRegion] = tempElementValue;
@@ -326,7 +336,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Find the theme information
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
-            var operator = svThemes[m].operator;
+            var operator = operators[namesToOperators[svThemes[m].operator]];
             var name = svThemes[m].name;
             allSVIThemes.push(name);
             var tempChildren = svThemes[m].children;
@@ -345,7 +355,7 @@ function processIndicators(layerAttributes, projectDef) {
                 var primaryInversionFactor;
 
                 var tempValue;
-                if (multiplies(operator)) {
+                if (operator.multiplies) {
                     tempValue = 1;
                 } else {
                     tempValue = 0;
@@ -360,11 +370,13 @@ function processIndicators(layerAttributes, projectDef) {
                                 primaryInversionFactor = 1;
                             }
                             // Sum the theme indicators
-                            var weight = 1;
-                            if (!ignoresWeights(operator)) {
+                            var weight;
+                            if (operator.ignoresWeights) {
+                                weight = 1;
+                            } else {
                                 weight = tempChildren[r].weight;
                             }
-                            if (multiplies(operator)) {
+                            if (operator.multiplies) {
                                 tempValue = tempValue * la[o].properties[prop] * primaryInversionFactor * weight;
                             } else {
                                 tempValue = tempValue + la[o].properties[prop] * primaryInversionFactor * weight;
@@ -376,9 +388,9 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                if (operator == "Average (ignore weights)") {
+                if (operator == operators.AVG) {
                     tempValue = tempValue / tempIndicatorChildrenKeys.length;
-                } else if (operator == "Geometric mean (ignore weights)") {
+                } else if (operator == operators.GEOM_MEAN) {
                     tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
@@ -504,7 +516,7 @@ function processIndicators(layerAttributes, projectDef) {
         var riWeight;
         var riInversionFactor;
         var sviInversionFactor;
-        var iriOperator = projectDef.operator;
+        var iriOperator = operators[namesToOperators[projectDef.operator]];
 
         for (var ik = 0; ik < projectDef.children.length; ik++) {
             if (projectDef.children[ik].name == 'RI') {
@@ -524,21 +536,21 @@ function processIndicators(layerAttributes, projectDef) {
             }
         }
 
-        if (ignoresWeights(iriOperator)) {
+        if (iriOperator.ignoresWeights) {
             riWeight = 1;
             sviWeight = 1;
         }
         for (var regionName in SVI) {
             sviComponent = SVI[regionName] * sviWeight * sviInversionFactor;
             riComponent = RI[regionName] * riWeight * riInversionFactor;
-            if (multiplies(iriOperator)) {
+            if (iriOperator.multiplies) {
                 tempVal = sviComponent * riComponent;
             } else {
                 tempVal = sviComponent + riComponent;
             }
-            if (iriOperator == 'Average (ignore weights)') {
+            if (iriOperator == operators.AVG) {
                 tempVal = tempVal / 2;
-            } else if (iriOperator == 'Geometric mean (ignore weights)') {
+            } else if (iriOperator == operators.GEOM_MEAN) {
                 tempVal = Math.pow(tempVal, 0.5);
             }
             IRI[regionName] = tempVal;
