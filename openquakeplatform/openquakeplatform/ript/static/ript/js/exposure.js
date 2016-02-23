@@ -17,7 +17,6 @@
 
 var exposureTable;
 var header;
-var showArea = false;
 var NRML;
 
 $( document ).ready(function() {
@@ -45,7 +44,7 @@ $('#defineCostStruc').change(function() {
     // The workaround for this is to un-focus the selection menu with blur()
     // More info: https://github.com/handsontable/handsontable/issues/2973
     $(this).blur();
-    defineCost($(this).val());
+    defineCost($(this).val(), $(this).context.id);
     if ($(this).val() != 'none') {
         $('#retrofittingSelect').show();
         $('#limitDiv').show();
@@ -71,13 +70,13 @@ $('#defineCostNonStruc').change(function() {
 $('#defineCostContent').change(function() {
     // unfocus the selection menu, see the note at the defineCostStruc change event
     $(this).blur();
-    defineCost($(this).val());
+    defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostBusiness').change(function() {
     // unfocus the selection menu, see the note at the defineCostStruc change event
     $(this).blur();
-    defineCost($(this).val());
+    defineCost($(this).val(), $(this).context.id);
 });
 
 // costTrackerObj is used to keep track of any time perArea is selected
@@ -93,33 +92,26 @@ function defineCost(selectedValue, element) {
     if (selectedValue == 'per_area') {
         costTrackerObj[element] = true;
         $('#perArea').show();
-        showArea = true;
     }
-
-    // Manage all define cost elements that are using perArea continued
-    if (selectedValue != 'per_area') {
+    else {
+        var hide_it = true;
         costTrackerObj[element] = false;
 
         // If costTrackerManager returnes false then we can hide the area
         // option from the form
-        if (costTrackerManager()) {
-            return;
-        } else {
-            $('#perArea').hide();
-            showArea = false;
-        }
-    }
-}
 
-// Check the costTrackerObj for any accurances of true
-function costTrackerManager () {
-    for(var k in costTrackerObj) {
-        if (costTrackerObj[k] === true) {
-            return true;
+        for(var k in costTrackerObj) {
+            if (costTrackerObj[k] === true) {
+                hide_it = false;
+                break;
+            }
+        }
+
+        if (hide_it) {
+            $('#perArea').hide();
         }
     }
 }
-// End the visibility of the perArea selection menu
 
 $('#exposureForm').change(function() {
     // unfocus the selection menu, see the note at the defineCostStruc change event
@@ -337,7 +329,7 @@ $('#saveBtnEX').click(function() {
         // Pre area selection
         var areaType = "";
         var areaTypeSelected = $('#perAreaSelect').val();
-        if (showArea == true) {
+        if ($('#perArea').is(":visible")) {
             areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" />\n';
         }
 
