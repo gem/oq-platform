@@ -14,6 +14,9 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+
+// jshint shadow:true
+
 var widgetsAndButtons = {
     'projDef':    {'widget':     '#project-def-widget',
                    'button':     '#toggleProjDefWidgetBtn',
@@ -125,10 +128,10 @@ function scaleTheData() {
     }
 
     // Populate the list with values
-    for (var ind in indicatorsToBeScaled) {
-        for (var i2 = 0; i2 < layerAttributes.features.length; i2++) {
-            var tempRegion = layerAttributes.features[i2].properties[selectedRegion];
-            indicatorsToBeScaled[ind][tempRegion] = layerAttributes.features[i2].properties[ind];
+    for (var key in indicatorsToBeScaled) {
+        for (var i = 0; i < layerAttributes.features.length; i++) {
+            var tempRegion = layerAttributes.features[i].properties[selectedRegion];
+            indicatorsToBeScaled[key][tempRegion] = layerAttributes.features[i].properties[key];
         }
     }
 
@@ -137,13 +140,13 @@ function scaleTheData() {
     }
 
     // Put values back into the layerAttributes obj
-    for (var ind2 in indicatorsToBeScaled) {
-        for (var i3 = 0; i3 < layerAttributes.features.length; i3++) {
-            for (var layerAttributesKey in layerAttributes.features[i3].properties) {
-                if (ind2 === layerAttributesKey) {
-                    for(var indicatorKey in indicatorsToBeScaled[ind2]) {
-                        if (layerAttributes.features[i3].properties[selectedRegion] == indicatorKey) {
-                            layerAttributes.features[i3].properties[layerAttributesKey] = indicatorsToBeScaled[ind2][indicatorKey];
+    for (var key in indicatorsToBeScaled) {
+        for (var i = 0; i < layerAttributes.features.length; i++) {
+            for (var layerAttributesKey in layerAttributes.features[i].properties) {
+                if (key === layerAttributesKey) {
+                    for(var indicatorKey in indicatorsToBeScaled[key]) {
+                        if (layerAttributes.features[i].properties[selectedRegion] == indicatorKey) {
+                            layerAttributes.features[i].properties[layerAttributesKey] = indicatorsToBeScaled[key][indicatorKey];
                         }
                     }
                 }
@@ -566,52 +569,52 @@ function processIndicators(layerAttributes, projectDef) {
     // Pass indicators into a 'newProperties' element
     for (var ix = 0; ix < la.length; ix++) {
         la[ix].newProperties = {};
-        for (var iriKey in IRI) {
-            if (iriKey == la[ix].properties[selectedRegion]) {
-                tmpVal = (IRI[iriKey]).toFixed(5);
+        for (var key in IRI) {
+            if (key == la[ix].properties[selectedRegion]) {
+                tmpVal = (IRI[key]).toFixed(5);
                 la[ix].newProperties.IRI = parseFloat(tmpVal);
             }
         }
         if (svThemes) {
-            for (var sviKey in SVI) {
-                if (sviKey == la[ix].properties[selectedRegion]) {
-                    tmpVal = (SVI[sviKey]).toFixed(5);
+            for (var key in SVI) {
+                if (key == la[ix].properties[selectedRegion]) {
+                    tmpVal = (SVI[key]).toFixed(5);
                     la[ix].newProperties.SVI = parseFloat(tmpVal);
                 }
             }
         }
 
         if (riskIndicators !== undefined) {
-            for (var riKey in RI) {
-                if (riKey == la[ix].properties[selectedRegion]) {
-                    tmpVal = (RI[riKey]).toFixed(5);
+            for (var key in RI) {
+                if (key == la[ix].properties[selectedRegion]) {
+                    tmpVal = (RI[key]).toFixed(5);
                     la[ix].newProperties.RI = parseFloat(tmpVal);
                 }
             }
 
-            for (var riKeyIx in riskIndicator[ix]) {
+            for (var key in riskIndicator[ix]) {
                 if (riskIndicator[ix] != 'region') {
-                    tempThemeName = riskIndicator[ix][riKeyIx];
-                    la[ix].newProperties[riKeyIx] = tempThemeName;
+                    tempThemeName = riskIndicator[ix][key];
+                    la[ix].newProperties[key] = tempThemeName;
                 }
             }
         }
 
-        for (var tdKey in themeData[ix]) {
-            if (tdKey != 'region') {
-                tempThemeName = themeData[ix][tdKey];
-                la[ix].newProperties[tdKey] = tempThemeName;
-            } else if (tdKey == 'region') {
-                la[ix].newProperties.region = themeData[ix][tdKey];
+        for (var key in themeData[ix]) {
+            if (key != 'region') {
+                tempThemeName = themeData[ix][key];
+                la[ix].newProperties[key] = tempThemeName;
+            } else if (key == 'region') {
+                la[ix].newProperties.region = themeData[ix][key];
             }
         }
     }
 
     // Pass primary indicators into a 'newProperties' element
     if (svThemes) {
-        for (var ib = 0; ib < svThemes.length; ib++) {
+        for (var i = 0; i < svThemes.length; i++) {
             var indicatorChildrenKey = [];
-            var tmpChildren = svThemes[ib].children;
+            var tmpChildren = svThemes[i].children;
             // Get the indicators children keys
             if (tmpChildren) {
                 for (var childIdx = 0; childIdx < tmpChildren.length; childIdx++) {
@@ -619,12 +622,12 @@ function processIndicators(layerAttributes, projectDef) {
                 }
             }
 
-            for (var ic = 0; ic < la.length; ic++) {
-                for (var pp in la[ic].properties) {
+            for (var j = 0; j < la.length; j++) {
+                for (var pp in la[j].properties) {
                     for (var id = 0; id < indicatorChildrenKey.length; id++) {
                         if (pp == indicatorChildrenKey[id]) {
                             var tempName = pp;
-                            la[ic].newProperties[tempName] = la[ic].properties[pp];
+                            la[j].newProperties[tempName] = la[j].properties[pp];
                         }
                     }
                 }
@@ -650,17 +653,17 @@ function processIndicators(layerAttributes, projectDef) {
 
         mappingLayerAttributes = JSON.parse(JSON.stringify(layerAttributes));
 
-        for (var idx1 = 0; idx1 < mappingLayerAttributes.features.length; idx1++) {
-            delete mappingLayerAttributes.features[idx1].properties;
+        for (var idx = 0; idx < mappingLayerAttributes.features.length; idx++) {
+            delete mappingLayerAttributes.features[idx].properties;
         }
 
-        for (var idx2 = 0; idx2 < mappingLayerAttributes.features.length; idx2++) {
-            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[idx2].newProperties));
-            mappingLayerAttributes.features[idx2].properties = tempProperties;
+        for (var idx = 0; idx < mappingLayerAttributes.features.length; idx++) {
+            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[idx].newProperties));
+            mappingLayerAttributes.features[idx].properties = tempProperties;
         }
 
-        for (var idx3 = 0; idx3 < mappingLayerAttributes.features.length; idx3++) {
-            delete mappingLayerAttributes.features[idx3].newProperties;
+        for (var idx = 0; idx < mappingLayerAttributes.features.length; idx++) {
+            delete mappingLayerAttributes.features[idx].newProperties;
         }
 
         // Emptry any existing interactivity
@@ -732,8 +735,8 @@ function scale(IndicatorObj) {
 
     var tempKeys = Object.keys(IndicatorObj);
 
-    for (var ih = 0; ih < tempKeys.length; ih++) {
-        IndicatorObj[tempKeys[ih]] = scaledValues[ih];
+    for (var i = 0; i < tempKeys.length; i++) {
+        IndicatorObj[tempKeys[i]] = scaledValues[i];
     }
     return IndicatorObj;
 }
