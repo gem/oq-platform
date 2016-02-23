@@ -21,14 +21,16 @@ var showArea = false;
 var NRML;
 
 $( document ).ready(function() {
+    $('#retrofittingSelect').hide();
+    $('#limitDiv').hide();
+    $('#deductibleDiv').hide();
+    $('#exposure_structural_costs_units_div').hide();
+
     updateTable();
-    $('#outputDivEX').css('display', 'none');
+    $('#outputDivEX').hide();
     $('#absoluteSpinner').hide();
 });
 
-$('#retrofittingSelect').hide();
-$('#limitDiv').hide();
-$('#deductibleDiv').hide();
 
 /////////////////////////////////////////////////////////
 // Manage the visibility of the perArea selection menu //
