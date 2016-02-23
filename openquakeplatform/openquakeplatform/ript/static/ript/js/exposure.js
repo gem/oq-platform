@@ -46,10 +46,12 @@ $('#defineCostStruc').change(function() {
     $(this).blur();
     defineCost($(this).val(), $(this).context.id);
     if ($(this).val() != 'none') {
+        $('#exposure_structural_costs_units_div').show();
         $('#retrofittingSelect').show();
         $('#limitDiv').show();
         $('#deductibleDiv').show();
     } else {
+        $('#exposure_structural_costs_units_div').hide();
         $('#retrofittingSelect').hide();
         $('#limitDiv').hide();
         $('#deductibleDiv').hide();
@@ -337,7 +339,7 @@ $('#saveBtnEX').click(function() {
         var costType= '';
         var costTypeStruc = $('#defineCostStruc option:selected').val();
         if (costTypeStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="' + $('#exposure_structural_costs_units').val() + '"/>\n';
         }
 
         var costTypeNonStruc = $('#defineCostNonStruc option:selected').val();
