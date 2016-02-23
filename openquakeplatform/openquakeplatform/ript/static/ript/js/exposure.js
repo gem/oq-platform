@@ -24,6 +24,9 @@ $( document ).ready(function() {
     $('#limitDiv').hide();
     $('#deductibleDiv').hide();
     $('#exposure_structural_costs_units_div').hide();
+    $('#exposure_nonstructural_costs_units_div').hide();
+    $('#exposure_contents_costs_units_div').hide();
+    $('#exposure_busi_inter_costs_units_div').hide();
 
     updateTable();
     $('#outputDivEX').hide();
@@ -66,16 +69,36 @@ $('#defineCostStruc').change(function() {
 $('#defineCostNonStruc').change(function() {
     // unfocus the selection menu, see the note at the defineCostStruc change event
     $(this).blur();
+
+    if ($(this).val() != 'none') {
+        $('#exposure_nonstructural_costs_units_div').show();
+    }
+    else {
+        $('#exposure_nonstructural_costs_units_div').hide();
+    }
     defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostContent').change(function() {
+    if ($(this).val() != 'none') {
+        $('#exposure_contents_costs_units_div').show();
+    }
+    else {
+        $('#exposure_contents_costs_units_div').hide();
+    }
     // unfocus the selection menu, see the note at the defineCostStruc change event
     $(this).blur();
     defineCost($(this).val(), $(this).context.id);
 });
 
 $('#defineCostBusiness').change(function() {
+    if ($(this).val() != 'none') {
+        $('#exposure_busi_inter_costs_units_div').show();
+    }
+    else {
+        $('#exposure_busi_inter_costs_units_div').hide();
+    }
+
     // unfocus the selection menu, see the note at the defineCostStruc change event
     $(this).blur();
     defineCost($(this).val(), $(this).context.id);
@@ -344,17 +367,17 @@ $('#saveBtnEX').click(function() {
 
         var costTypeNonStruc = $('#defineCostNonStruc option:selected').val();
         if (costTypeNonStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="' + $('#exposure_nonstructural_costs_units').val() + '"/>\n';
         }
 
         var costTypeContent = $('#defineCostContent option:selected').val();
         if (costTypeContent !== 'none') {
-            costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="' + $('#exposure_contents_costs_units').val() + '"/>\n';
         }
 
         var costTypeBusiness = $('#defineCostBusiness option:selected').val();
         if (costTypeBusiness !== 'none') {
-            costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="EUR"/>\n';
+            costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="' + $('#exposure_busi_inter_costs_units').val() + '"/>\n';
         }
 
         // Insurance Limit

@@ -72,7 +72,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
         </select><br>
         <div id="exposure_structural_costs_units_div" class="menuSubItems" style="display: none;">
           <label>Structural Costs Units:</label>
-          <input id="exposure_structural_costs_units" type="text" value="EUR">
+          <input id="exposure_structural_costs_units" type="text" value="EUR" maxlength="3">
         </div>
         <div id="retrofittingSelect" class="menuSubItems">
           <div id="retroDiv" >
@@ -103,6 +103,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <option value="per_asset">Per Building</option>
           <option value="per_area">Per Area</option>
         </select><br>
+        <div id="exposure_nonstructural_costs_units_div" class="menuSubItems" style="display: none;">
+          <label>Nonstructural Costs Units:</label>
+          <input id="exposure_nonstructural_costs_units" type="text" value="EUR" maxlength="3">
+        </div>
         <label>Contents Costs:</label>
         <select id="defineCostContent">
           <option value="none">None</option>
@@ -110,6 +114,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <option value="per_asset">Per Building</option>
           <option value="per_area">Per Area</option>
         </select><br>
+        <div id="exposure_contents_costs_units_div" class="menuSubItems" style="display: none;">
+          <label>Contents Costs Units:</label>
+          <input id="exposure_contents_costs_units" type="text" value="EUR" maxlength="3">
+        </div>
         <label>Business Interruption Costs:</label>
         <select id="defineCostBusiness">
           <option value="none">None</option>
@@ -117,6 +125,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <option value="per_asset">Per Building</option>
           <option value="per_area">Per Area</option>
         </select><br>
+        <div id="exposure_busi_inter_costs_units_div" class="menuSubItems" style="display: none;">
+          <label>Business Interruption Costs Units:</label>
+          <input id="exposure_busi_inter_costs_units" type="text" value="EUR/month">
+        </div>
         <div id="perArea" class="menuSubItems">
           <label>Area:</label>
           <select id="perAreaSelect">
