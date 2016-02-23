@@ -70,28 +70,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <option value="per_asset">Per Building</option>
           <option value="per_area">Per Area</option>
         </select><br>
-        <div id="retrofittingSelect">
+        <div id="retrofittingSelect" class="menuSubItems">
           <div id="retroDiv" >
             <label>Retrofitting Cost</label>
             <input id="retroChbx" type="checkbox" value="retrofitting">
           </div>
         </div>
-          <div id="limitDiv" >
-            <label>Limit:</label>
-            <select id="limitSelect">
-              <option value="none">None</option>
-              <option value="absolute">Absolute</option>
-              <option value="relative">Relative</option>
-            </select><br>
-          </div>
-          <div id="deductibleDiv">
+        <div id="limitDiv" class="menuSubItems">
+          <label>Limit:</label>
+          <select id="limitSelect">
+            <option value="none">None</option>
+            <option value="absolute">Absolute</option>
+            <option value="relative">Relative</option>
+          </select><br>
+        </div>
+        <div id="deductibleDiv" class="menuSubItems">
             <label>Deductible:</label>
             <select id="deductibleSelect">
               <option value="none">None</option>
               <option value="absolute">Absolute</option>
               <option value="relative">Relative</option>
             </select><br>
-          </div>
+        </div>
         <label>Nonstructural Costs:</label>
         <select id="defineCostNonStruc">
           <option value="none">None</option>
@@ -113,15 +113,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <option value="per_asset">Per Building</option>
           <option value="per_area">Per Area</option>
         </select><br>
-        </div>
-        <div id="perArea" class="menuItems">
+        <div id="perArea" class="menuSubItems">
           <label>Area:</label>
           <select id="perAreaSelect">
             <option value="per_asset">Per Building</option>
             <option value="aggregated">Aggregated</option>
           </select><br>
         </div>
-        <div class="menuItems">
+        <div>
           <label>Occupants:</label>
           <div id="occupantsCheckBoxes">
             <input type="checkbox" value="day"> Day
