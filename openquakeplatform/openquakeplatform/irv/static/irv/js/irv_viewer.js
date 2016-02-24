@@ -161,7 +161,7 @@ function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
     for (var i = 0; i < la.length; i++) {
-        var region = la[ia].properties[selectedRegion];
+        var region = la[i].properties[selectedRegion];
         indicator.push({'region': region});
         regions.push(region);
     }
