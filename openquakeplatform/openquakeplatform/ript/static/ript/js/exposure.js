@@ -355,7 +355,7 @@ $('#saveBtnEX').click(function() {
         var areaType = "";
         var areaTypeSelected = $('#perAreaSelect').val();
         if ($('#perArea').is(":visible")) {
-            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="SQM" />\n';
+            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="' + $('#exposure_area_units').val() + '" />\n';
         }
 
         // Cost Type
