@@ -15,8 +15,6 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-// jshint shadow:true
-
 var widgetsAndButtons = {
     'projDef':    {'widget':     '#project-def-widget',
                    'button':     '#toggleProjDefWidgetBtn',
@@ -63,12 +61,12 @@ var operators = {
 };
 
 var namesToOperators = {
-    'Simple sum (ignore weights)':            'SUM_S',
-    'Weighted sum':                           'SUM_W',
-    'Average (ignore weights)':               'AVG',
-    'Simple multiplication (ignore weights)': 'MUL_S',
-    'Weighted multiplication':                'MUL_W',
-    'Geometric mean (ignore weights)':        'GEOM_MEAN'
+    'Simple sum (ignore weights)':            operators.SUM_S,
+    'Weighted sum':                           operators.SUM_W,
+    'Average (ignore weights)':               operators.AVG,
+    'Simple multiplication (ignore weights)': operators.MUL_S,
+    'Weighted multiplication':                operators.MUL_W,
+    'Geometric mean (ignore weights)':        operators.GEOM_MEAN
 };
 
 $(document).ready(function() {
@@ -205,7 +203,7 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     // Get the theme operator
     for (var i = 0; i < projectDef.children.length; i++) {
         if (projectDef.children[i].name == nameLookUp) {
-            operator = operators[namesToOperators[projectDef.children[i].operator]];
+            operator = namesToOperators[projectDef.children[i].operator];
         }
     }
 
@@ -342,7 +340,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Find the theme information
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
-            var operator = operators[namesToOperators[svThemes[m].operator]];
+            var operator = namesToOperators[svThemes[m].operator];
             var name = svThemes[m].name;
             allSVIThemes.push(name);
             var tempChildren = svThemes[m].children;
@@ -522,7 +520,7 @@ function processIndicators(layerAttributes, projectDef) {
         var riWeight;
         var riInversionFactor;
         var sviInversionFactor;
-        var iriOperator = operators[namesToOperators[projectDef.operator]];
+        var iriOperator = namesToOperators[projectDef.operator];
 
         for (var i = 0; i < projectDef.children.length; i++) {
             if (projectDef.children[i].name == 'RI') {
