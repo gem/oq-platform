@@ -32,6 +32,9 @@ var widgetsAndButtons = {
                    'buttonText': 'Show Composite Indicator Chart'}
 };
 
+// NOTE: In order to add a new operator, we have to add a new key to
+//       the 'operators' object and the corresponding lookup to the
+//       'namesToOperators' object
 var operators = {
     'SUM_S': {
         'ignoresWeights': true,
