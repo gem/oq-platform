@@ -775,24 +775,24 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     // Add IR children themes to selection menu
     if (allRiskIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="RI Themes">');
-        for (var idx4 = 0; idx4 < allRiskIndicators.length; idx4++) {
-            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[idx4]+'</option>');
+        for (var idx = 0; idx < allRiskIndicators.length; idx++) {
+            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[idx]+'</option>');
         }
     }
 
     // Add SVI children themes to selection menu
     if (allSVIThemes.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="SVI Themes">');
-        for (var idx5 = 0; idx5 < allSVIThemes.length; idx5++) {
-            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[idx5]+'</option>');
+        for (var idx = 0; idx < allSVIThemes.length; idx++) {
+            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[idx]+'</option>');
         }
     }
 
     // Add primary indicators to selection menu
     if (allPrimaryIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="Primary Indicators">');
-        for (var idx6 = 0; idx6 < allPrimaryIndicators.length; idx6++) {
-            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[idx6]+'</option>');
+        for (var idx = 0; idx < allPrimaryIndicators.length; idx++) {
+            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[idx]+'</option>');
         }
     }
 
@@ -962,8 +962,8 @@ function mapboxGlLayerCreation() {
 
     // Case 2, and 4, try to remove any existing layers
     try {
-        for (var idx7 = 0; idx7 < 6; idx7++) {
-            map.removeLayer(idx7);
+        for (var idx = 0; idx < 6; idx++) {
+            map.removeLayer(idx);
         }
     } catch (exc) {
         // continue
@@ -1022,22 +1022,22 @@ function mapboxGlLayerCreation() {
 
     // Cases 1, 2, 3, 4, 5 and 6
     // Create a new mapbox layers
-    for (var idx8 = 0; idx8 < 6; idx8++) {
+    for (var idx = 0; idx < 6; idx++) {
         map.addLayer({
-            'id': idx8,
+            'id': idx,
             'type': 'fill',
             'source': 'projectSource',
             "source-layer": "eq-simple",
             'interactive': true,
             'paint': {
-                'fill-color': colorsPal[idx8],
+                'fill-color': colorsPal[idx],
                 'fill-opacity': 0.8,
                 'fill-outline-color': '#000066'
             },
-            'filter': ['all',['>', selectedIndicator, breaks[idx8]], ['<=', selectedIndicator, breaks[idx8+1]]]
+            'filter': ['all',['>', selectedIndicator, breaks[idx]], ['<=', selectedIndicator, breaks[idx+1]]]
         });
         // Create legend elements
-        $('#legendLables').append('<li><span style="background:'+colorsPal[idx8]+';"></span>'+breaks[idx8].toFixed(2)+'</li>');
+        $('#legendLables').append('<li><span style="background:'+colorsPal[idx]+';"></span>'+breaks[idx].toFixed(2)+'</li>');
     }
 
     $('#absoluteSpinner').hide();
