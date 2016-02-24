@@ -253,6 +253,10 @@ function updateTable() {
     $('#saveBtnEX').show();
 }
 
+$('#downloadBtn').click(function() {
+    sendbackNRML(NRML, 'exposure');
+});
+
 $('#saveBtnEX').click(function() {
     // Expose the download button
     $('#downloadBtnEX').show();
@@ -471,23 +475,7 @@ $('#saveBtnEX').click(function() {
         '</nrml>';
 
     validateAndDisplayNRML(NRML, 'EX');
-    downloadFile();
 });
-
-function downloadFile () {
-    // Format the file to be downloaded
-    var textToSave = NRML;
-
-    var hiddenElement = document.createElement('a');
-
-    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
-    hiddenElement.target = '_blank';
-    var exposureFileName = 'my_new_exposure_function';
-    hiddenElement.download = exposureFileName+'.xml';
-
-    $('#downloadLinkEX').empty();
-    $('#downloadLinkEX').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="my_new_exposure_function">Download</a>');
-}
 
 $('#selectAllEX').click(function() {
     var textBox = document.getElementById("textarea");

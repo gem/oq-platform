@@ -159,8 +159,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <br>
     <div id="outputDivEX">
       <div id="infoMsgEX" class="alert alert-info" role="alert">3. Download the NRML file for use in the OpenQuake Engine.</div>
-      <div id="validationErrorMsgEX" class="alert alert-warning" role="alert">Error message</div>
-      <div id="downloadLinkEX"></div>
+      <div id="validationErrorMsgEX" class="alert alert-warning" role="alert" style="display: none;">Error message</div>
+      <div id="downloadLinkEX" style="display: none;"><button id="downloadBtn">Download</button><form id="downloadForm" method="post"></form></div>
       <div id="outputTextEX" style="width:500px;"></div>
     </div>
   </div>
@@ -286,6 +286,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
         }
         $( "#tabs" ).tabs({active: tab_id });
         var VALIDATION_URL = 'valid';
+        var SENDBACK_URL = 'sendback';
     </script>
     <script src="{{ STATIC_URL }}js/handsontable.full.min.js"></script>
     <script src="{{ STATIC_URL }}ript/js/exposure.js"></script>

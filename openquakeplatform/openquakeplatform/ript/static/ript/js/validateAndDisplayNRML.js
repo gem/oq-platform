@@ -1,3 +1,16 @@
+function sendbackNRML(NRML, funcType)
+{
+    $('#downloadForm').empty();
+    $('#downloadForm').attr({'action': SENDBACK_URL});
+    $new_input = $('<input/>');
+    $new_input.attr('type', 'hidden').attr({'name': 'xml_text', 'value': NRML });
+    $('#downloadForm').append($new_input);
+    $new_input = $('<input/>');
+    $new_input.attr('type', 'hidden').attr({'name': 'func_type', 'value': funcType });
+    $('#downloadForm').append($new_input);
+    $('#downloadForm').submit();
+}
+
 function validateAndDisplayNRML(NRML, funcType){
     // funcType can be 'EX', 'FF' or 'VF'
 

@@ -43,6 +43,12 @@ def _make_response(error_msg, error_line, valid):
 JSON = 'application/json'
 
 def validate_nrml(request):
+    return _validate_nrml_ex(request, False)
+
+def sendback_nrml(request):
+    return _validate_nrml_ex(request, True)
+
+def _validate_nrml_ex(request, is_sendback):
     """
     Leverage oq-risklib to check if a given XML text is a valid NRML
 
@@ -62,6 +68,7 @@ def validate_nrml(request):
     from openquake.commonlib import nrml
 
     xml_text = request.POST.get('xml_text')
+    func_type = request.POST.get('func_type')
     if not xml_text:
         return HttpResponseBadRequest(
             'Please provide the "xml_text" parameter')
@@ -69,9 +76,12 @@ def validate_nrml(request):
     try:
         nrml.read(xml_file)
     except etree.ParseError as exc:
-        return _make_response(error_msg=exc.message.message,
-                              error_line=exc.message.lineno,
-                              valid=False)
+        if is_sendback:
+            pass
+        else:
+            return _make_response(error_msg=exc.message.message,
+                                  error_line=exc.message.lineno,
+                                  valid=False)
     except Exception as exc:
         # get the exception message
         exc_msg = exc.args[0]
@@ -84,12 +94,29 @@ def validate_nrml(request):
             # to extract the error line from it
             # but we can attempt anyway to extract it
             error_line = _get_error_line(unicode(exc_msg))
-            return _make_response(
-                error_msg=unicode(exc_msg), error_line=error_line, valid=False)
+            if is_sendback:
+                pass
+            else:
+                return _make_response(
+                    error_msg=unicode(exc_msg), error_line=error_line,
+                    valid=False)
         error_msg = exc_msg
         error_line = _get_error_line(exc_msg)
-        return _make_response(
-            error_msg=error_msg, error_line=error_line, valid=False)
+        if is_sendback:
+            pass
+        else:
+            return _make_response(
+                error_msg=error_msg, error_line=error_line, valid=False)
     else:
-        return _make_response(error_msg=None, error_line=None, valid=True)
+        if is_sendback:
+            if func_type in [ 'exposure', 'fragility', 'vulnerability' ]:
+                filename = func_type + '_model.xml'
+            else:
+                filename = 'unknown_model.xml'
+
+            resp = HttpResponse(content=xml_text, content_type='application/xml')
+            resp['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+            return resp
+        else:
+            return _make_response(error_msg=None, error_line=None, valid=True)
 
