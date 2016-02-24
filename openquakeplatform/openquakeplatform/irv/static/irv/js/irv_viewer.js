@@ -160,7 +160,7 @@ function scaleTheData() {
 function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
-    for (var ia = 0; ia < la.length; ia++) {
+    for (var i = 0; i < la.length; i++) {
         var region = la[ia].properties[selectedRegion];
         indicator.push({'region': region});
         regions.push(region);
@@ -176,8 +176,8 @@ function createRiskIndicator(la, index, selectedRegion) {
         }
     }
     // Get the indicators children keys
-    for (var q = 0; q < index.length; q++) {
-        indicatorChildrenKey.push(index[q].field);
+    for (var i = 0; i < index.length; i++) {
+        indicatorChildrenKey.push(index[i].field);
     }
 
     return indicator;
@@ -200,15 +200,15 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     var operator;
 
     // Get the theme operator
-    for (var y = 0; y < projectDef.children.length; y++) {
-        if (projectDef.children[y].name == nameLookUp) {
-            operator = operators[namesToOperators[projectDef.children[y].operator]];
+    for (var i = 0; i < projectDef.children.length; i++) {
+        if (projectDef.children[i].name == nameLookUp) {
+            operator = operators[namesToOperators[projectDef.children[i].operator]];
         }
     }
 
     // first create an object with all of the district names
-    for (var t = 0; t < themeObj.length; t++) {
-        var tempRegion = themeObj[t].region;
+    for (var i = 0; i < themeObj.length; i++) {
+        var tempRegion = themeObj[i].region;
         subIndex[tempRegion] = 0;
     }
 
@@ -216,13 +216,13 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     var themeKeys = [];
     var themeInversionObj = {};
     var themeWeightObj = {};
-    for (var u = 0; u < JSONthemes.length; u++) {
-        var themeName = JSONthemes[u].name;
-        var themeWeight = JSONthemes[u].weight;
+    for (var i = 0; i < JSONthemes.length; i++) {
+        var themeName = JSONthemes[i].name;
+        var themeWeight = JSONthemes[i].weight;
         themeKeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
         // identify if the node has been inverted
-        if (JSONthemes[u].isInverted === true) {
+        if (JSONthemes[i].isInverted === true) {
             themeInversionObj[themeName] = -1;
         } else {
             themeInversionObj[themeName] = 1;
@@ -453,9 +453,9 @@ function processIndicators(layerAttributes, projectDef) {
         });
     }
 
-    for (var p6 = 0; p6 < indicatorInfo.length; p6++) {
+    for (var p = 0; p < indicatorInfo.length; p++) {
         // process the object for each record
-        var indicatorObj = indicatorInfo[p6];
+        var indicatorObj = indicatorInfo[p];
         indicatorObj.value = indicatorObj.value;
         generateThemeObject(indicatorObj);
     }
@@ -501,8 +501,8 @@ function processIndicators(layerAttributes, projectDef) {
     } else {
         // If RI does not have any children the simply compute the RI
         // setup the indicator with all the regions using the layer attributes
-        for (var ia = 0; ia < la.length; ia++) {
-            var selRegion = la[ia].properties[selectedRegion];
+        for (var i = 0; i < la.length; i++) {
+            var selRegion = la[i].properties[selectedRegion];
             RI[selRegion] = 1;
         }
     }
@@ -521,17 +521,17 @@ function processIndicators(layerAttributes, projectDef) {
         var sviInversionFactor;
         var iriOperator = operators[namesToOperators[projectDef.operator]];
 
-        for (var ik = 0; ik < projectDef.children.length; ik++) {
-            if (projectDef.children[ik].name == 'RI') {
-                riWeight = projectDef.children[ik].weight;
-                if (projectDef.children[ik].isInverted === true) {
+        for (var i = 0; i < projectDef.children.length; i++) {
+            if (projectDef.children[i].name == 'RI') {
+                riWeight = projectDef.children[i].weight;
+                if (projectDef.children[i].isInverted === true) {
                     riInversionFactor = -1;
                 } else {
                     riInversionFactor = 1;
                 }
-            } else if (projectDef.children[ik].name == 'SVI') {
-                sviWeight = projectDef.children[ik].weight;
-                if (projectDef.children[ik].isInverted === true) {
+            } else if (projectDef.children[i].name == 'SVI') {
+                sviWeight = projectDef.children[i].weight;
+                if (projectDef.children[i].isInverted === true) {
                     sviInversionFactor = -1;
                 } else {
                     sviInversionFactor = 1;
@@ -567,45 +567,45 @@ function processIndicators(layerAttributes, projectDef) {
     ////////////////////////////////////
     var tmpVal;
     // Pass indicators into a 'newProperties' element
-    for (var ix = 0; ix < la.length; ix++) {
-        la[ix].newProperties = {};
+    for (var i = 0; i < la.length; i++) {
+        la[i].newProperties = {};
         for (var key in IRI) {
-            if (key == la[ix].properties[selectedRegion]) {
+            if (key == la[i].properties[selectedRegion]) {
                 tmpVal = (IRI[key]).toFixed(5);
-                la[ix].newProperties.IRI = parseFloat(tmpVal);
+                la[i].newProperties.IRI = parseFloat(tmpVal);
             }
         }
         if (svThemes) {
             for (var key in SVI) {
-                if (key == la[ix].properties[selectedRegion]) {
+                if (key == la[i].properties[selectedRegion]) {
                     tmpVal = (SVI[key]).toFixed(5);
-                    la[ix].newProperties.SVI = parseFloat(tmpVal);
+                    la[i].newProperties.SVI = parseFloat(tmpVal);
                 }
             }
         }
 
         if (riskIndicators !== undefined) {
             for (var key in RI) {
-                if (key == la[ix].properties[selectedRegion]) {
+                if (key == la[i].properties[selectedRegion]) {
                     tmpVal = (RI[key]).toFixed(5);
-                    la[ix].newProperties.RI = parseFloat(tmpVal);
+                    la[i].newProperties.RI = parseFloat(tmpVal);
                 }
             }
 
-            for (var key in riskIndicator[ix]) {
-                if (riskIndicator[ix] != 'region') {
-                    tempThemeName = riskIndicator[ix][key];
-                    la[ix].newProperties[key] = tempThemeName;
+            for (var key in riskIndicator[i]) {
+                if (riskIndicator[i] != 'region') {
+                    tempThemeName = riskIndicator[i][key];
+                    la[i].newProperties[key] = tempThemeName;
                 }
             }
         }
 
-        for (var key in themeData[ix]) {
+        for (var key in themeData[i]) {
             if (key != 'region') {
-                tempThemeName = themeData[ix][key];
-                la[ix].newProperties[key] = tempThemeName;
+                tempThemeName = themeData[i][key];
+                la[i].newProperties[key] = tempThemeName;
             } else if (key == 'region') {
-                la[ix].newProperties.region = themeData[ix][key];
+                la[i].newProperties.region = themeData[i][key];
             }
         }
     }
@@ -623,11 +623,11 @@ function processIndicators(layerAttributes, projectDef) {
             }
 
             for (var j = 0; j < la.length; j++) {
-                for (var pp in la[j].properties) {
-                    for (var id = 0; id < indicatorChildrenKey.length; id++) {
-                        if (pp == indicatorChildrenKey[id]) {
-                            var tempName = pp;
-                            la[j].newProperties[tempName] = la[j].properties[pp];
+                for (var k in la[j].properties) {
+                    for (var l = 0; l < indicatorChildrenKey.length; l++) {
+                        if (k == indicatorChildrenKey[l]) {
+                            var tempName = k;
+                            la[j].newProperties[tempName] = la[j].properties[k];
                         }
                     }
                 }
@@ -1088,26 +1088,26 @@ function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators,
 
     // Add SVI themes to selection menu
     $('#leafletThematicSelection').append('<optgroup label="SVI Indicators">');
-    for (var id = 0; id < allSVIThemes.length; id++) {
-        $('#leafletThematicSelection').append('<option>'+allSVIThemes[id]+'</option>');
+    for (var i = 0; i < allSVIThemes.length; i++) {
+        $('#leafletThematicSelection').append('<option>'+allSVIThemes[i]+'</option>');
     }
 
     try {
         if (riskIndicators !== undefined) {
             // Add IR themes to selection menu
             $('#leafletThematicSelection').append('<optgroup label="IR Indicators">');
-            for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-                $('#leafletThematicSelection').append('<option>'+allRiskIndicators[ie]+'</option>');
+            for (var i = 0; i < allRiskIndicators.length; i++) {
+                $('#leafletThematicSelection').append('<option>'+allRiskIndicators[i]+'</option>');
             }
         }
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
 
     // Add all primary indicators to selection menu
     $('#leafletThematicSelection').append('<optgroup label="Composite Indicators">');
-    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
-        $('#leafletThematicSelection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
+    for (var i = 0; i < allPrimaryIndicators.length; i++) {
+        $('#leafletThematicSelection').append('<option>'+allPrimaryIndicators[i]+'</option>');
     }
 
     // set the map selection menu to IRI or previously selected indicator value
@@ -1160,12 +1160,12 @@ function thematicMapCreation() {
 
     try {
         map.removeLayer(thematicLayer);
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
     try {
         $('.leaflet-control-legend').empty();
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
 
@@ -1333,7 +1333,7 @@ var startApp = function() {
                         // Else, return just true
                         return true;
                     }
-                } catch(e) {}
+                } catch(exc) {}
             }
 
             // WebGL is supported, but disabled
@@ -1724,7 +1724,7 @@ function projDefJSONRequest(selectedLayer) {
             try {
                 var menuOption = $('#pdSelection');
                 menuOption[0].selectedIndex = 1;
-            } catch (e) {
+            } catch (exc) {
                 // continue
             }
 
