@@ -266,9 +266,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                 }
             }
         }
-        if (operator.code == 'AVG') {
+        if (operator.code === 'AVG') {
             tempElementValue = tempElementValue / themeKeys.length;
-        } else if (operator.code == 'GEOM_MEAN') {
+        } else if (operator.code === 'GEOM_MEAN') {
             tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
         }
         subIndex[themeObjRegion] = tempElementValue;
@@ -398,9 +398,9 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                if (operator.code == 'AVG') {
+                if (operator.code === 'AVG') {
                     tempValue = tempValue / tempIndicatorChildrenKeys.length;
-                } else if (operator.code == 'GEOM_MEAN') {
+                } else if (operator.code === 'GEOM_MEAN') {
                     tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
@@ -558,9 +558,9 @@ function processIndicators(layerAttributes, projectDef) {
             } else {
                 tempVal = sviComponent + riComponent;
             }
-            if (iriOperator.code == 'AVG') {
+            if (iriOperator.code === 'AVG') {
                 tempVal = tempVal / 2;
-            } else if (iriOperator.code == 'GEOM_MEAN') {
+            } else if (iriOperator.code === 'GEOM_MEAN') {
                 tempVal = Math.pow(tempVal, 0.5);
             }
             IRI[regionName] = tempVal;
