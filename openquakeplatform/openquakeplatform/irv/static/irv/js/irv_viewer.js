@@ -14,6 +14,7 @@
       You should have received a copy of the GNU Affero General Public License
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+
 var widgetsAndButtons = {
     'projDef':    {'widget':     '#project-def-widget',
                    'button':     '#toggleProjDefWidgetBtn',
@@ -29,6 +30,50 @@ var widgetsAndButtons = {
                    'buttonText': 'Show Composite Indicator Chart'}
 };
 
+// NOTE: In order to add a new operator, we have to add a new key to
+//       the 'operators' object and the corresponding lookup to the
+//       'namesToOperators' object
+var operators = {
+    'SUM_S': {
+        'code': 'SUM_S',
+        'ignoresWeights': true,
+        'multiplies': false
+    },
+    'SUM_W': {
+        'code': 'SUM_W',
+        'ignoresWeights': false,
+        'multiplies': false
+    },
+    'AVG': {
+        'code': 'AVG',
+        'ignoresWeights': true,
+        'multiplies': false
+    },
+    'MUL_S': {
+        'code': 'MUL_S',
+        'ignoresWeights': true,
+        'multiplies': true
+    },
+    'MUL_W': {
+        'code': 'MUL_W',
+        'ignoresWeights': false,
+        'multiplies': true
+    },
+    'GEOM_MEAN': {
+        'code': 'GEOM_MEAN',
+        'ignoresWeights': true,
+        'multiplies': true
+    }
+};
+
+var namesToOperators = {
+    'Simple sum (ignore weights)':            operators.SUM_S,
+    'Weighted sum':                           operators.SUM_W,
+    'Average (ignore weights)':               operators.AVG,
+    'Simple multiplication (ignore weights)': operators.MUL_S,
+    'Weighted multiplication':                operators.MUL_W,
+    'Geometric mean (ignore weights)':        operators.GEOM_MEAN
+};
 
 $(document).ready(function() {
     $('#cover').remove();
@@ -122,8 +167,8 @@ function scaleTheData() {
 function createRiskIndicator(la, index, selectedRegion) {
     var indicator = [];
     // setup the indicator with all the regions
-    for (var ia = 0; ia < la.length; ia++) {
-        var region = la[ia].properties[selectedRegion];
+    for (var i = 0; i < la.length; i++) {
+        var region = la[i].properties[selectedRegion];
         indicator.push({'region': region});
         regions.push(region);
     }
@@ -132,14 +177,14 @@ function createRiskIndicator(la, index, selectedRegion) {
         for (var j = 0; j < la.length; j++) {
             if (indicator[j].region == la[j].properties[selectedRegion]) {
                 var tempName = index[i].name;
-                var tempValue = la[j].properties[tempName];
-                indicator[j][tempName] = tempValue;
+                var tempVal = la[j].properties[tempName];
+                indicator[j][tempName] = tempVal;
             }
         }
     }
     // Get the indicators children keys
-    for (var q = 0; q < index.length; q++) {
-        indicatorChildrenKey.push(index[q].field);
+    for (var i = 0; i < index.length; i++) {
+        indicatorChildrenKey.push(index[i].field);
     }
 
     return indicator;
@@ -160,18 +205,17 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
 
     var subIndex = {};
     var operator;
-    var themeInversionFactor;
 
     // Get the theme operator
-    for (var y = 0; y < projectDef.children.length; y++) {
-        if (projectDef.children[y].name == nameLookUp) {
-            operator = projectDef.children[y].operator;
+    for (var i = 0; i < projectDef.children.length; i++) {
+        if (projectDef.children[i].name == nameLookUp) {
+            operator = namesToOperators[projectDef.children[i].operator];
         }
     }
 
     // first create an object with all of the district names
-    for (var t = 0; t < themeObj.length; t++) {
-        var tempRegion = themeObj[t].region;
+    for (var i = 0; i < themeObj.length; i++) {
+        var tempRegion = themeObj[i].region;
         subIndex[tempRegion] = 0;
     }
 
@@ -179,108 +223,55 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
     var themeKeys = [];
     var themeInversionObj = {};
     var themeWeightObj = {};
-    for (var u = 0; u < JSONthemes.length; u++) {
-        var themeName = JSONthemes[u].name;
-        var themeWeight = JSONthemes[u].weight;
+    for (var i = 0; i < JSONthemes.length; i++) {
+        var themeName = JSONthemes[i].name;
+        var themeWeight = JSONthemes[i].weight;
         themeKeys.push(themeName);
         themeWeightObj[themeName] = themeWeight;
         // identify if the node has been inverted
-        if (JSONthemes[u].isInverted === true) {
+        if (JSONthemes[i].isInverted === true) {
             themeInversionObj[themeName] = -1;
         } else {
             themeInversionObj[themeName] = 1;
         }
     }
 
+    var tempElementValue;
+    // NOTE: themeObj: a list containing for each region the values for each item to combine
     // compute the subIndex values based on operator
-    if (operator == 'Simple sum (ignore weights)') {
-        for (var v = 0; v < themeObj.length; v++) {
-            var tempElementValue = 0;
-            var themeObjRegion = themeObj[v].region;
-            // compute the themes
-            for (var w = 0; w < themeKeys.length; w++) {
-                // Get inversion factor
-                var themeInversionFactor = themeInversionObj[themeKeys[w]];
-                var tempThemeName = themeKeys[w];
-                tempElementValue = tempElementValue + (themeObj[v][tempThemeName] * themeInversionFactor);
-            }
-            subIndex[themeObjRegion] = tempElementValue;
+    for (var idx=0; idx < themeObj.length; idx++) {
+        if (operator.multiplies) {
+            tempElementValue = 1;
+        } else {
+            tempElementValue = 0;
         }
-    } else if (operator == 'Weighted sum') {
-        for (var v1 = 0; v1 < themeObj.length; v1++) {
-            var tempElementValue = 0;
-            var themeObjRegion = themeObj[v1].region;
-            // compute the themes
-            for (var w1 = 0; w1 < themeKeys.length; w1++) {
-                // Get inversion factor
-                var themeInversionFactor = themeInversionObj[themeKeys[w1]];
-                var tempThemeName = themeKeys[w1];
-                var themeWeightVal = themeWeightObj[tempThemeName];
-                if (themeWeightVal > 0) {
-                    tempElementValue = tempElementValue + (themeObj[v1][tempThemeName] * themeWeightVal * themeInversionFactor);
+        var themeObjRegion = themeObj[idx].region;
+        // NOTE: themeKeys contains the list of names of all items to combine
+        // compute the themes
+        for (var themeKey = 0; themeKey < themeKeys.length; themeKey++) {
+            // Get inversion factor
+            var themeInversionFactor = themeInversionObj[themeKeys[themeKey]];
+            var tempThemeName = themeKeys[themeKey];
+            var themeWeightVal;
+            if (operator.ignoresWeights) {
+                themeWeightVal = 1;
+            } else {
+                themeWeightVal = themeWeightObj[tempThemeName];
+            }
+            if (themeWeightVal > 0) {
+                if (operator.multiplies) {
+                    tempElementValue = tempElementValue * themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
+                } else {
+                    tempElementValue = tempElementValue + themeObj[idx][tempThemeName] * themeWeightVal * themeInversionFactor;
                 }
             }
-            subIndex[themeObjRegion] = tempElementValue;
         }
-    } else if (operator == 'Average (ignore weights)') {
-        for (var v2 = 0; v2 < themeObj.length; v2++) {
-            var tempElementValue = 0;
-            var themeObjRegion = themeObj[v2].region;
-            // compute the themes
-            for (var w2 = 0; w2 < themeKeys.length; w2++) {
-                // Get inversion factor
-                var themeInversionFactor = themeInversionObj[themeKeys[w2]];
-                var tempThemeName = themeKeys[w2];
-                tempElementValue = tempElementValue + (themeObj[v2][tempThemeName] * themeInversionFactor);
-            }
-            var themeAverage = tempElementValue / themeKeys.length;
-            subIndex[themeObjRegion] = themeAverage;
+        if (operator.code == 'AVG') {
+            tempElementValue = tempElementValue / themeKeys.length;
+        } else if (operator.code == 'GEOM_MEAN') {
+            tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
         }
-    } else if (operator == 'Simple multiplication (ignore weights)') {
-        for (var v3 = 0; v3 < themeObj.length; v3++) {
-            var tempElementValue = 1;
-            var themeObjRegion = themeObj[v3].region;
-            // compute the themes
-            for (var w3 = 0; w3 < themeKeys.length; w3++) {
-                // Get inversion factor
-                var themeInversionFactor = themeInversionObj[themeKeys[w3]];
-                var tempThemeName = themeKeys[w3];
-                tempElementValue = tempElementValue * (themeObj[v3][tempThemeName] * themeInversionFactor);
-            }
-            subIndex[themeObjRegion] = tempElementValue;
-        }
-    } else if (operator == 'Weighted multiplication') {
-        for (var v4 = 0; v4 < themeObj.length; v4++) {
-            var tempElementValue = 1;
-            var themeObjRegion = themeObj[v4].region;
-            // compute the themes
-
-            for (var w4 = 0; w4 < themeKeys.length; w4++) {
-                // Get inversion factor
-                var themeInversionFactor = themeInversionObj[themeKeys[w4]];
-                var tempThemeName = themeKeys[w4];
-                var themeWeightVal = themeWeightObj[tempThemeName];
-                if (themeWeightVal > 0) {
-                    tempElementValue = (tempElementValue * (themeObj[v4][tempThemeName] * themeWeightVal) * themeInversionFactor);
-                }
-            }
-            subIndex[themeObjRegion] = tempElementValue;
-        }
-    } else if (operator == 'Geometric mean (ignore weights)') {
-        power = 1 / themeKeys.length;
-        for (var v5 = 0; v5 < themeObj.length; v5++) {
-            var tempElementValue = 1;
-            var themeObjRegion = themeObj[v5].region;
-            // compute the themes
-            for (var w5 = 0; w5 < themeKeys.length; w5++) {
-                // Get inversion factor
-                var themeInversionFactor = themeInversionObj[themeKeys[w5]];
-                var tempThemeName = themeKeys[w5];
-                tempElementValue = tempElementValue * (themeObj[v5][tempThemeName] * themeInversionFactor);
-            }
-            tempElementValue = Math.pow(tempElementValue, power);
-            subIndex[themeObjRegion] = tempElementValue;
-        }
+        subIndex[themeObjRegion] = tempElementValue;
     }
     return subIndex;
 }
@@ -355,8 +346,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Find the theme information
     if (svThemes) {
         for (var m = 0; m < svThemes.length; m++) {
-            var operator = svThemes[m].operator;
-            var weight = svThemes[m].weight;
+            var operator = namesToOperators[svThemes[m].operator];
             var name = svThemes[m].name;
             allSVIThemes.push(name);
             var tempChildren = svThemes[m].children;
@@ -370,125 +360,50 @@ function processIndicators(layerAttributes, projectDef) {
             }
 
             for (var o = 0; o < la.length; o++) {
-                var tempValue = 0;
                 var region = la[o].properties[selectedRegion];
                 var theme = name;
+                var primaryInversionFactor;
 
-                // check the operator type and compute accordingly
-                if (operator == "Average (ignore weights)") {
-                    for (var p in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
-                            if (p == tempIndicatorChildrenKeys[r]) {
-                                var primaryInversionFactor;
-                                if (tempChildren[r].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                // Sum the theme indicators
-                                tempValue = tempValue + (la[o].properties[p] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    // Grab the average
-                    var average = tempValue / tempIndicatorChildrenKeys.length;
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':average});
-                } else if ( operator == "Simple sum (ignore weights)") {
-                    for (var p1 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r1 = 0; r1 < tempIndicatorChildrenKeys.length; r1++) {
-                            if (p1 == tempIndicatorChildrenKeys[r1]) {
-                                var primaryInversionFactor;
-                                if (tempChildren[r1].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                // Sum the theme indicators
-                                tempValue = tempValue + (la[o].properties[p1] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Weighted sum") {
-                    for (var p2 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r2 = 0; r2 < tempIndicatorChildrenKeys.length; r2++) {
-                            if (p2 == tempIndicatorChildrenKeys[r2]) {
-                                // Sum the theme indicators
-                                var weight = tempChildren[r2].weight;
-                                var primaryInversionFactor;
-                                if (tempChildren[r2].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                tempValue = tempValue + ((la[o].properties[p2] * primaryInversionFactor) * weight);
-                                // Collect an array of all the values that pass through the loop
-                                laValuesArray.push(la[o].properties[p2]);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Simple multiplication (ignore weights)") {
+                var tempValue;
+                if (operator.multiplies) {
                     tempValue = 1;
-                    for (var p3 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
-                            if (p3 == tempIndicatorChildrenKeys[r3]) {
-                                // Sum the theme indicators
-                                var primaryInversionFactor;
-                                if (tempChildren[r3].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Weighted multiplication") {
-                    tempValue = 1;
-                    for (var p4 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r4 = 0; r4 < tempIndicatorChildrenKeys.length; r4++) {
-                            if (p4 == tempIndicatorChildrenKeys[r4]) {
-                                var primaryInversionFactor;
-                                if (tempChildren[r4].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                // Sum the theme indicators
-                                var weight = tempChildren[r4].weight;
-                                tempValue = tempValue * (la[o].properties[p4] * primaryInversionFactor * weight);
-                            }
-                        }
-                    }
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
-                } else if ( operator == "Geometric mean (ignore weights)") {
-                    tempValue = 1;
-                    var power = 1 / tempIndicatorChildrenKeys.length;
-                    for (var p3 in la[o].properties) {
-                        // iterate over the indicator child keys
-                        for (var r3 = 0; r3 < tempIndicatorChildrenKeys.length; r3++) {
-                            if (p3 == tempIndicatorChildrenKeys[r3]) {
-                                // Sum the theme indicators
-                                var primaryInversionFactor;
-                                if (tempChildren[r3].isInverted === true) {
-                                    primaryInversionFactor = -1;
-                                } else {
-                                    primaryInversionFactor = 1;
-                                }
-                                tempValue = tempValue * (la[o].properties[p3] * primaryInversionFactor);
-                            }
-                        }
-                    }
-                    tempValue = Math.pow(tempValue, power);
-                    indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
+                } else {
+                    tempValue = 0;
                 }
+                for (var prop in la[o].properties) {
+                    // iterate over the indicator child keys
+                    for (var r = 0; r < tempIndicatorChildrenKeys.length; r++) {
+                        if (prop == tempIndicatorChildrenKeys[r]) {
+                            if (tempChildren[r].isInverted === true) {
+                                primaryInversionFactor = -1;
+                            } else {
+                                primaryInversionFactor = 1;
+                            }
+                            // Sum the theme indicators
+                            var weight;
+                            if (operator.ignoresWeights) {
+                                weight = 1;
+                            } else {
+                                weight = tempChildren[r].weight;
+                            }
+                            if (operator.multiplies) {
+                                tempValue = tempValue * la[o].properties[prop] * primaryInversionFactor * weight;
+                            } else {
+                                tempValue = tempValue + la[o].properties[prop] * primaryInversionFactor * weight;
+                            }
+                            // NOTE: Ben had the following line only in case of weighted sum,
+                            //       but I guess it should be there in all cases
+                            // Collect an array of all the values that pass through the loop
+                            laValuesArray.push(la[o].properties[prop]);
+                        }
+                    }
+                }
+                if (operator.code == 'AVG') {
+                    tempValue = tempValue / tempIndicatorChildrenKeys.length;
+                } else if (operator.code == 'GEOM_MEAN') {
+                    tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
+                }
+                indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
             }
         }
     }
@@ -500,7 +415,7 @@ function processIndicators(layerAttributes, projectDef) {
     // Try and remove the warning message on each iteration.
     try {
         $('.incompleteData').remove();
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
 
@@ -545,9 +460,9 @@ function processIndicators(layerAttributes, projectDef) {
         });
     }
 
-    for (var p5 = 0; p5 < indicatorInfo.length; p5++) {
+    for (var p = 0; p < indicatorInfo.length; p++) {
         // process the object for each record
-        var indicatorObj = indicatorInfo[p5];
+        var indicatorObj = indicatorInfo[p];
         indicatorObj.value = indicatorObj.value;
         generateThemeObject(indicatorObj);
     }
@@ -574,8 +489,9 @@ function processIndicators(layerAttributes, projectDef) {
 
     // Create the risk indicator only if it has children
     var RI = {};
+    var riskIndicator;
     if (riskIndicators !== undefined) {
-        var riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
+        riskIndicator = createRiskIndicator(la, riskIndicators, selectedRegion);
 
         // capture all risk indicators for selection menu
         for (var key in riskIndicator[0]) {
@@ -592,9 +508,9 @@ function processIndicators(layerAttributes, projectDef) {
     } else {
         // If RI does not have any children the simply compute the RI
         // setup the indicator with all the regions using the layer attributes
-        for (var ia = 0; ia < la.length; ia++) {
-            var region = la[ia].properties[selectedRegion];
-            RI[region] = 1;
+        for (var i = 0; i < la.length; i++) {
+            var selRegion = la[i].properties[selectedRegion];
+            RI[selRegion] = 1;
         }
     }
 
@@ -602,27 +518,27 @@ function processIndicators(layerAttributes, projectDef) {
     //// Compute the IRI index ////
     ///////////////////////////////
 
+    var IRI = {};
     if (svThemes === undefined || riskIndicators === undefined) {
         //return;
     } else {
-        var IRI = {};
         var sviWeight;
         var riWeight;
         var riInversionFactor;
         var sviInversionFactor;
-        var iriOperator = projectDef.operator;
+        var iriOperator = namesToOperators[projectDef.operator];
 
-        for (var ik = 0; ik < projectDef.children.length; ik++) {
-            if (projectDef.children[ik].name == 'RI') {
-                riWeight = projectDef.children[ik].weight;
-                if (projectDef.children[ik].isInverted === true) {
+        for (var i = 0; i < projectDef.children.length; i++) {
+            if (projectDef.children[i].name == 'RI') {
+                riWeight = projectDef.children[i].weight;
+                if (projectDef.children[i].isInverted === true) {
                     riInversionFactor = -1;
                 } else {
                     riInversionFactor = 1;
                 }
-            } else if (projectDef.children[ik].name == 'SVI') {
-                sviWeight = projectDef.children[ik].weight;
-                if (projectDef.children[ik].isInverted === true) {
+            } else if (projectDef.children[i].name == 'SVI') {
+                sviWeight = projectDef.children[i].weight;
+                if (projectDef.children[i].isInverted === true) {
                     sviInversionFactor = -1;
                 } else {
                     sviInversionFactor = 1;
@@ -630,37 +546,24 @@ function processIndicators(layerAttributes, projectDef) {
             }
         }
 
-        if (iriOperator == "Average (ignore weights)") {
-            for (var regionName in SVI) {
-                tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
-                var iriAverage = tempVal / 2;
-                IRI[regionName] = iriAverage;
+        if (iriOperator.ignoresWeights) {
+            riWeight = 1;
+            sviWeight = 1;
+        }
+        for (var regionName in SVI) {
+            sviComponent = SVI[regionName] * sviWeight * sviInversionFactor;
+            riComponent = RI[regionName] * riWeight * riInversionFactor;
+            if (iriOperator.multiplies) {
+                tempVal = sviComponent * riComponent;
+            } else {
+                tempVal = sviComponent + riComponent;
             }
-        } else if (iriOperator == "Simple sum (ignore weights)") {
-            for (var regionName in SVI) {
-                tempVal = (SVI[regionName] * sviInversionFactor) + (RI[regionName] * riInversionFactor);
-                IRI[regionName] = tempVal;
+            if (iriOperator.code == 'AVG') {
+                tempVal = tempVal / 2;
+            } else if (iriOperator.code == 'GEOM_MEAN') {
+                tempVal = Math.pow(tempVal, 0.5);
             }
-        } else if (iriOperator == "Weighted sum") {
-            for (var regionName in SVI) {
-                tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) + ((RI[regionName] * riWeight) * riInversionFactor);
-                IRI[regionName] = tempVal;
-            }
-        } else if (iriOperator == "Simple multiplication (ignore weights)") {
-            for (var regionName in SVI) {
-                tempVal = (SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor);
-                IRI[regionName] = tempVal;
-            }
-        } else if (iriOperator == "Weighted multiplication") {
-            for (var regionName in SVI) {
-                tempVal = ((SVI[regionName] * sviWeight) * sviInversionFactor) * ((RI[regionName] * riWeight) * riInversionFactor);
-                IRI[regionName] = tempVal;
-            }
-        } else if (iriOperator == "Geometric mean (ignore weights)") {
-            for (var regionName in SVI) {
-                tempVal = Math.pow(SVI[regionName] * sviInversionFactor) * (RI[regionName] * riInversionFactor, 0.5);
-                IRI[regionName] = tempVal;
-            }
+            IRI[regionName] = tempVal;
         }
         scale(IRI);
     }
@@ -669,69 +572,68 @@ function processIndicators(layerAttributes, projectDef) {
     ////////////////////////////////////
     //// Prep data for thematic map ////
     ////////////////////////////////////
-
+    var tmpVal;
     // Pass indicators into a 'newProperties' element
-    for (var ix = 0; ix < la.length; ix++) {
-        la[ix].newProperties = {};
+    for (var i = 0; i < la.length; i++) {
+        la[i].newProperties = {};
         for (var key in IRI) {
-            if (key == la[ix].properties[selectedRegion]) {
-                var tempValue = (IRI[key]).toFixed(5);
-                la[ix].newProperties.IRI = parseFloat(tempValue);
+            if (key == la[i].properties[selectedRegion]) {
+                tmpVal = (IRI[key]).toFixed(5);
+                la[i].newProperties.IRI = parseFloat(tmpVal);
             }
         }
         if (svThemes) {
             for (var key in SVI) {
-                if (key == la[ix].properties[selectedRegion]) {
-                    var tempValue = (SVI[key]).toFixed(5);
-                    la[ix].newProperties.SVI = parseFloat(tempValue);
+                if (key == la[i].properties[selectedRegion]) {
+                    tmpVal = (SVI[key]).toFixed(5);
+                    la[i].newProperties.SVI = parseFloat(tmpVal);
                 }
             }
         }
 
         if (riskIndicators !== undefined) {
             for (var key in RI) {
-                if (key == la[ix].properties[selectedRegion]) {
-                    var tempValue = (RI[key]).toFixed(5);
-                    la[ix].newProperties.RI = parseFloat(tempValue);
+                if (key == la[i].properties[selectedRegion]) {
+                    tmpVal = (RI[key]).toFixed(5);
+                    la[i].newProperties.RI = parseFloat(tmpVal);
                 }
             }
 
-            for (var key in riskIndicator[ix]) {
-                if (riskIndicator[ix] != 'region') {
-                    var tempThemeName = riskIndicator[ix][key];
-                    la[ix].newProperties[key] = tempThemeName;
+            for (var key in riskIndicator[i]) {
+                if (riskIndicator[i] != 'region') {
+                    tempThemeName = riskIndicator[i][key];
+                    la[i].newProperties[key] = tempThemeName;
                 }
             }
         }
 
-        for (var key in themeData[ix]) {
+        for (var key in themeData[i]) {
             if (key != 'region') {
-                var tempThemeName = themeData[ix][key];
-                la[ix].newProperties[key] = tempThemeName;
+                tempThemeName = themeData[i][key];
+                la[i].newProperties[key] = tempThemeName;
             } else if (key == 'region') {
-                la[ix].newProperties.region = themeData[ix][key];
+                la[i].newProperties.region = themeData[i][key];
             }
         }
     }
 
     // Pass primary indicators into a 'newProperties' element
     if (svThemes) {
-        for (var ia = 0; ia < svThemes.length; ia++) {
+        for (var i = 0; i < svThemes.length; i++) {
             var indicatorChildrenKey = [];
-            var tempChildren = svThemes[ia].children;
+            var tmpChildren = svThemes[i].children;
             // Get the indicators children keys
-            if (tempChildren) {
-                for (var q = 0; q < tempChildren.length; q++) {
-                    indicatorChildrenKey.push(tempChildren[q].field);
+            if (tmpChildren) {
+                for (var childIdx = 0; childIdx < tmpChildren.length; childIdx++) {
+                    indicatorChildrenKey.push(tmpChildren[childIdx].field);
                 }
             }
 
-            for (var ib = 0; ib < la.length; ib++) {
-                for (var p in la[ib].properties) {
-                    for (var id = 0; id < indicatorChildrenKey.length; id++) {
-                        if (p == indicatorChildrenKey[id]) {
-                            var tempName = p;
-                            la[ib].newProperties[tempName] = la[ib].properties[p];
+            for (var j = 0; j < la.length; j++) {
+                for (var k in la[j].properties) {
+                    for (var l = 0; l < indicatorChildrenKey.length; l++) {
+                        if (k == indicatorChildrenKey[l]) {
+                            la[j].newProperties[k] = la[j].properties[k];
                         }
                     }
                 }
@@ -755,19 +657,19 @@ function processIndicators(layerAttributes, projectDef) {
         // it is hard coded to use properties. In order to get around this issue, we need to
         // deep copy the layerAttributes, and replace "properties" with newProperties
 
-        mappingLayerAttributes = JSON.parse(JSON.stringify(layerAttributes))
+        mappingLayerAttributes = JSON.parse(JSON.stringify(layerAttributes));
 
-        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
-            delete mappingLayerAttributes.features[i].properties;
+        for (var idx = 0; idx < mappingLayerAttributes.features.length; idx++) {
+            delete mappingLayerAttributes.features[idx].properties;
         }
 
-        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
-            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[i].newProperties))
-            mappingLayerAttributes.features[i].properties = tempProperties;
+        for (var idx = 0; idx < mappingLayerAttributes.features.length; idx++) {
+            var tempProperties = JSON.parse(JSON.stringify(mappingLayerAttributes.features[idx].newProperties));
+            mappingLayerAttributes.features[idx].properties = tempProperties;
         }
 
-        for (var i = 0; i < mappingLayerAttributes.features.length; i++) {
-            delete mappingLayerAttributes.features[i].newProperties;
+        for (var idx = 0; idx < mappingLayerAttributes.features.length; idx++) {
+            delete mappingLayerAttributes.features[idx].newProperties;
         }
 
         // Emptry any existing interactivity
@@ -827,9 +729,11 @@ function scale(IndicatorObj) {
         if (tempMax == tempMin) {
             scaledValues = [1];
             // Disable the chart tabs
-            $.each(['indicators', 'svi', 'iri'], function(i, widgetName) {
-                disableWidget(widgetsAndButtons[widgetName]);
-            });
+            // Not using $.each in this case, just to avoid a syntax warning
+            // about defining a function within a loop
+            disableWidget(widgetsAndButtons.indicators);
+            disableWidget(widgetsAndButtons.svi);
+            disableWidget(widgetsAndButtons.iri);
         } else {
             scaledValues.push( (ValueArray[j] - tempMin) / (tempMax - tempMin) );
         }
@@ -837,8 +741,8 @@ function scale(IndicatorObj) {
 
     var tempKeys = Object.keys(IndicatorObj);
 
-    for (var ih = 0; ih < tempKeys.length; ih++) {
-        IndicatorObj[tempKeys[ih]] = scaledValues[ih];
+    for (var i = 0; i < tempKeys.length; i++) {
+        IndicatorObj[tempKeys[i]] = scaledValues[i];
     }
     return IndicatorObj;
 }
@@ -855,7 +759,7 @@ function setupMapboxGlMap() {
         style: 'mapbox://styles/mapbox/streets-v8',
         center: [0, 20],
         zoom: 2,
-    })
+    });
 }
 
 function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, allRiskIndicators, weightChange) {
@@ -877,24 +781,24 @@ function mapBoxThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators, 
     // Add IR children themes to selection menu
     if (allRiskIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="RI Themes">');
-        for (var i = 0; i < allRiskIndicators.length; i++) {
-            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[i]+'</option>');
+        for (var idx = 0; idx < allRiskIndicators.length; idx++) {
+            $('#webGlThematicSelection').append('<option class="1">'+allRiskIndicators[idx]+'</option>');
         }
     }
 
     // Add SVI children themes to selection menu
     if (allSVIThemes.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="SVI Themes">');
-        for (var i = 0; i < allSVIThemes.length; i++) {
-            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[i]+'</option>');
+        for (var idx = 0; idx < allSVIThemes.length; idx++) {
+            $('#webGlThematicSelection').append('<option class="3">'+allSVIThemes[idx]+'</option>');
         }
     }
 
     // Add primary indicators to selection menu
     if (allPrimaryIndicators.length > 0) {
         $('#webGlThematicSelection').append('<optgroup label="Primary Indicators">');
-        for (var i = 0; i < allPrimaryIndicators.length; i++) {
-            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[i]+'</option>');
+        for (var idx = 0; idx < allPrimaryIndicators.length; idx++) {
+            $('#webGlThematicSelection').append('<option class="4">'+allPrimaryIndicators[idx]+'</option>');
         }
     }
 
@@ -1025,7 +929,7 @@ function mapboxGlLayerCreation() {
             if (k == selectedIndicator) {
                 match = true;
                 minMaxArray.push(mappingLayerAttributes.features[i].properties[k]);
-                break
+                break;
             }
             else {
                 match = false;
@@ -1053,7 +957,7 @@ function mapboxGlLayerCreation() {
         var interval = (max - min) / 6;
         var tempStep = min;
         for (var i = 0; i < 5; i++) {
-            tempStep += interval
+            tempStep += interval;
             breaks.push(tempStep);
         }
         breaks.unshift(min);
@@ -1064,10 +968,10 @@ function mapboxGlLayerCreation() {
 
     // Case 2, and 4, try to remove any existing layers
     try {
-        for (var i = 0; i < 6; i++) {
-            map.removeLayer(i);
-        };
-    } catch (e) {
+        for (var idx = 0; idx < 6; idx++) {
+            map.removeLayer(idx);
+        }
+    } catch (exc) {
         // continue
     }
 
@@ -1092,7 +996,7 @@ function mapboxGlLayerCreation() {
     if (projectChange || projDefChange) {
         try {
             map.removeSource('projectSource');
-        } catch (e) {
+        } catch (exc) {
             // continue
         }
     }
@@ -1124,22 +1028,22 @@ function mapboxGlLayerCreation() {
 
     // Cases 1, 2, 3, 4, 5 and 6
     // Create a new mapbox layers
-    for (var i = 0; i < 6; i++) {
+    for (var idx = 0; idx < 6; idx++) {
         map.addLayer({
-            'id': i,
+            'id': idx,
             'type': 'fill',
             'source': 'projectSource',
             "source-layer": "eq-simple",
             'interactive': true,
             'paint': {
-                'fill-color': colorsPal[i],
+                'fill-color': colorsPal[idx],
                 'fill-opacity': 0.8,
                 'fill-outline-color': '#000066'
             },
-            'filter': ['all',['>', selectedIndicator, breaks[i]], ['<=', selectedIndicator, breaks[i+1]]]
+            'filter': ['all',['>', selectedIndicator, breaks[idx]], ['<=', selectedIndicator, breaks[idx+1]]]
         });
         // Create legend elements
-        $('#legendLables').append('<li><span style="background:'+colorsPal[i]+';"></span>'+breaks[i].toFixed(2)+'</li>');
+        $('#legendLables').append('<li><span style="background:'+colorsPal[idx]+';"></span>'+breaks[idx].toFixed(2)+'</li>');
     }
 
     $('#absoluteSpinner').hide();
@@ -1190,30 +1094,30 @@ function leafletThematicMap(layerAttributes, allSVIThemes, allPrimaryIndicators,
 
     // Add SVI themes to selection menu
     $('#leafletThematicSelection').append('<optgroup label="SVI Indicators">');
-    for (var id = 0; id < allSVIThemes.length; id++) {
-        $('#leafletThematicSelection').append('<option>'+allSVIThemes[id]+'</option>');
+    for (var i = 0; i < allSVIThemes.length; i++) {
+        $('#leafletThematicSelection').append('<option>'+allSVIThemes[i]+'</option>');
     }
 
     try {
         if (riskIndicators !== undefined) {
             // Add IR themes to selection menu
             $('#leafletThematicSelection').append('<optgroup label="IR Indicators">');
-            for (var ie = 0; ie < allRiskIndicators.length; ie++) {
-                $('#leafletThematicSelection').append('<option>'+allRiskIndicators[ie]+'</option>');
+            for (var i = 0; i < allRiskIndicators.length; i++) {
+                $('#leafletThematicSelection').append('<option>'+allRiskIndicators[i]+'</option>');
             }
         }
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
 
     // Add all primary indicators to selection menu
     $('#leafletThematicSelection').append('<optgroup label="Composite Indicators">');
-    for (var ic = 0; ic < allPrimaryIndicators.length; ic++) {
-        $('#leafletThematicSelection').append('<option>'+allPrimaryIndicators[ic]+'</option>');
+    for (var i = 0; i < allPrimaryIndicators.length; i++) {
+        $('#leafletThematicSelection').append('<option>'+allPrimaryIndicators[i]+'</option>');
     }
 
     // set the map selection menu to IRI or previously selected indicator value
-    if (selectedIndicator == undefined) {
+    if (typeof selectedIndicator === 'undefined') {
         // TODO fix this to use optgroup:first
         //$('#leafletThematicSelection').val('IRI');
         $('#leafletThematicSelection option').eq(3).attr("selected", "selected");
@@ -1262,12 +1166,12 @@ function thematicMapCreation() {
 
     try {
         map.removeLayer(thematicLayer);
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
     try {
         $('.leaflet-control-legend').empty();
-    } catch (e) {
+    } catch (exc) {
         // continue
     }
 
@@ -1393,7 +1297,7 @@ function versionCompare(a, b) {
 
     // Check for a match between major release numbers
     if (a[0] !== b[0]) {
-        return -1
+        return -1;
     }
     // Check for a match between minor release numbers
     else {
@@ -1409,7 +1313,7 @@ function versionCompare(a, b) {
 
         // eg. '1.7' vrs '1.7.1', '1.7' vrs '1.7.5', '1.7' vrs '1.7.9'
         if (a[1] == b[1]) {
-            return 1
+            return 1;
         }
     }
 }
@@ -1435,7 +1339,7 @@ var startApp = function() {
                         // Else, return just true
                         return true;
                     }
-                } catch(e) {}
+                } catch(exc) {}
             }
 
             // WebGL is supported, but disabled
@@ -1775,7 +1679,7 @@ function projDefJSONRequest(selectedLayer) {
                         'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
                     '</div>'
                 );
-                return
+                return;
             }
 
             var versionCheck = versionCompare(COMPATIBILITY_VERSION, thisVersion);
@@ -1788,7 +1692,7 @@ function projDefJSONRequest(selectedLayer) {
                         'The project you are trying to load was created with a version of the SVIR QGIS tool kit that is not compatible with this application' +
                     '</div>'
                 );
-                return
+                return;
             }
 
             // Populate global bounding box array
@@ -1826,7 +1730,7 @@ function projDefJSONRequest(selectedLayer) {
             try {
                 var menuOption = $('#pdSelection');
                 menuOption[0].selectedIndex = 1;
-            } catch (e) {
+            } catch (exc) {
                 // continue
             }
 

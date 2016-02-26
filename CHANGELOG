@@ -1,3 +1,5 @@
+  [Paolo Tormene]
+  * irv: less redundant calculations and better management of operators
 
 python-oq-platform (1.4.0)
 
