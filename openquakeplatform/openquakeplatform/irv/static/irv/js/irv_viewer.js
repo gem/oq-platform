@@ -633,8 +633,7 @@ function processIndicators(layerAttributes, projectDef) {
                 for (var k in la[j].properties) {
                     for (var l = 0; l < indicatorChildrenKey.length; l++) {
                         if (k == indicatorChildrenKey[l]) {
-                            var tempName = k;
-                            la[j].newProperties[tempName] = la[j].properties[k];
+                            la[j].newProperties[k] = la[j].properties[k];
                         }
                     }
                 }
