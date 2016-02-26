@@ -35,26 +35,32 @@ var widgetsAndButtons = {
 //       'namesToOperators' object
 var operators = {
     'SUM_S': {
+        'code': 'SUM_S',
         'ignoresWeights': true,
         'multiplies': false
     },
     'SUM_W': {
+        'code': 'SUM_W',
         'ignoresWeights': false,
         'multiplies': false
     },
     'AVG': {
+        'code': 'AVG',
         'ignoresWeights': true,
         'multiplies': false
     },
     'MUL_S': {
+        'code': 'MUL_S',
         'ignoresWeights': true,
         'multiplies': true
     },
     'MUL_W': {
+        'code': 'MUL_W',
         'ignoresWeights': false,
         'multiplies': true
     },
     'GEOM_MEAN': {
+        'code': 'GEOM_MEAN',
         'ignoresWeights': true,
         'multiplies': true
     }
@@ -260,9 +266,9 @@ function combineIndicators(nameLookUp, themeObj, JSONthemes) {
                 }
             }
         }
-        if (operator == operators.AVG) {
+        if (operator.code == 'AVG') {
             tempElementValue = tempElementValue / themeKeys.length;
-        } else if (operator == operators.GEOM_MEAN) {
+        } else if (operator.code == 'GEOM_MEAN') {
             tempElementValue = Math.pow(tempElementValue, 1 / themeKeys.length);
         }
         subIndex[themeObjRegion] = tempElementValue;
@@ -392,9 +398,9 @@ function processIndicators(layerAttributes, projectDef) {
                         }
                     }
                 }
-                if (operator == operators.AVG) {
+                if (operator.code == 'AVG') {
                     tempValue = tempValue / tempIndicatorChildrenKeys.length;
-                } else if (operator == operators.GEOM_MEAN) {
+                } else if (operator.code == 'GEOM_MEAN') {
                     tempValue = Math.pow(tempValue, 1 / tempIndicatorChildrenKeys.length);
                 }
                 indicatorInfo.push({'region':region, 'theme':theme, 'value':tempValue});
@@ -552,9 +558,9 @@ function processIndicators(layerAttributes, projectDef) {
             } else {
                 tempVal = sviComponent + riComponent;
             }
-            if (iriOperator == operators.AVG) {
+            if (iriOperator.code == 'AVG') {
                 tempVal = tempVal / 2;
-            } else if (iriOperator == operators.GEOM_MEAN) {
+            } else if (iriOperator.code == 'GEOM_MEAN') {
                 tempVal = Math.pow(tempVal, 0.5);
             }
             IRI[regionName] = tempVal;
