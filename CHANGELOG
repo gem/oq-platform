@@ -1,3 +1,5 @@
+python-oq-platform (1.4.0)
+
   [Matteo Nastasi]
   * Taxtweb: add platform header and footer (with code rearrangement)
   * Firefox update management to avoid selenium malfunctions
