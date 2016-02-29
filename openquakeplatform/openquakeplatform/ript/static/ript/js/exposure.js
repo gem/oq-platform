@@ -239,22 +239,12 @@ function updateTable() {
         startRows: 1
     });
 
-    // insert new row using keyboard input
-    $(document).keyup(function(e) {
-        // This will watch for keys Ctl + Shift + n
-        if (e.shiftKey && e.ctrlKey && e.keyCode == 78) {
-            var rowIndex = $('.currentRow').parent().index();
-
-            exposureTable.alter("insert_row", rowIndex);
-        }
-    });
-
     $('#outputTextEX').empty();
     $('#saveBtnEX').show();
 }
 
-$('#downloadBtn').click(function() {
-    sendbackNRML(NRML, 'exposure');
+$('#downloadBtnEX').click(function() {
+    sendbackNRML(NRML, 'EX');
 });
 
 $('#saveBtnEX').click(function() {
@@ -476,9 +466,3 @@ $('#saveBtnEX').click(function() {
 
     validateAndDisplayNRML(NRML, 'EX');
 });
-
-$('#selectAllEX').click(function() {
-    var textBox = document.getElementById("textarea");
-    textBox.select();
-});
-

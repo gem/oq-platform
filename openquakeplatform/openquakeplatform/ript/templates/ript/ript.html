@@ -153,14 +153,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     <div class="alert alert-info" role="alert">2. Copy and paste values from a spreadsheet into the table below.</div>
     <div id="table"></div>
-    <button id="new_row_add" onclick="var rowIndex = $('.currentRow').parent().index(); exposureTable.alter('insert_row', rowIndex);">New Row</button><br>
+    <button id="new_row_add" class="btn" onclick="exposureTable.alter('insert_row');">New Row</button><br>
     <br>
     <button id="saveBtnEX" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>
     <div id="outputDivEX">
       <div id="infoMsgEX" class="alert alert-info" role="alert">3. Download the NRML file for use in the OpenQuake Engine.</div>
       <div id="validationErrorMsgEX" class="alert alert-warning" role="alert" style="display: none;">Error message</div>
-      <div id="downloadLinkEX" style="display: none;"><button id="downloadBtn">Download</button><form id="downloadForm" method="post"></form></div>
+      <div id="downloadLinkEX" style="display: none;"><button id="downloadBtnEX">Download</button><form id="downloadFormEX" method="post"></form></div>
       <div id="outputTextEX" style="width:500px;"></div>
     </div>
   </div>
@@ -206,20 +206,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <br>
     <div>
       <button id="saveBtnFF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
-      <br>
-      <div id="downloadLinkFF"></div>
-      <br>
     </div>
     <br>
     <div id="outputDivFF">
-      <div id="infoMsgFF" class="alert alert-info" role="alert">3. Copy and paste the NRML file for use in the OpenQuake Engine.</div>
+      <div id="infoMsgFF" class="alert alert-info" role="alert">3. Download the NRML file for use in the OpenQuake Engine.</div>
       <div id="validationErrorMsgFF" class="alert alert-warning" role="alert">Error message</div>
-      <button id="selectAllFF" type="button" class="btn btn-primary">Select</button>
-      <br>
+      <div id="downloadLinkFF" style="display: none;"><button class="btn" id="downloadBtnFF">Download</button><form id="downloadFormFF" method="post"></form></div>
       <div id="outputTextFF" style="width:500px;"></div>
     </div>
   </div>
-  <!-- VULNERABILITY -->
+  <!-- VULNERABILITY 
   <div id="tabs-3">
     <div class="alert alert-info" role="alert">1. Use this form to initialize the vulnerability model.</div>
     <div id="vulnerabilityForm" class="menuItems">
@@ -250,7 +246,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <div class="alert alert-info" role="alert">2. Use the 'Add Probability Mass Function' &amp; 'Add Discrete Function' buttons to generate as many vulnerability function forms as needed. Next populate the table and form for each function.<br>
     Generate a NRML file by click 'Convert to NRML' when done populating the tables.
     </div>
-    <button id="addVulnFunction" type="button" class="btn btn-lg">Add Function</button>
+    <button id="addVulnProbMassFunc" type="button" class="btn btn-lg">Add Probability Mass Function</button>
+    <button id="addVulnDiscrFunc" type="button" class="btn btn-lg">Add Discrete Function</button>
     <br><br>
     <div id="vTables"></div>
     <br>
@@ -269,6 +266,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <div id="outputTextVF" style="width:500px;"></div>
     </div>
   </div>
+  -->
 </div>
 
 {% endblock body %}

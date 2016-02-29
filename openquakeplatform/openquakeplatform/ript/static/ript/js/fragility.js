@@ -98,7 +98,10 @@ function updateFfsTable (fFormat) {
             '</div>'+
             '<div style="width: 45%; float: right;">' +
               '<div id="tableDiv'+count+'" class="theTable"></div><br>' +
-              '<button id="'+count+'" class="newRow btn btn-primary" style="clear: right; float: right; margin-top: 4px;">New Row</button><br>' +
+            (fFormat == 'discrete' ?
+              '<button id="'+count+'" class="btn" style="clear: right; float: right; margin-top: 4px;" \
+onclick="$(\'#tableDiv' + count + '\').handsontable(\'getInstance\').alter(\'insert_row\');">New Row</button><br>' :
+             '') +
            '</div>' +
          '</div>'
     );
@@ -110,13 +113,31 @@ function updateFfsTable (fFormat) {
     ////////////////////////////////
     /// fragility Table Settings ///
     ////////////////////////////////
-    $('#tableDiv'+count).handsontable( {
+
+
+    var handson_params = {
         colHeaders: header,
         startCols: headerLength,
         maxCols: headerLength,
         startRows: limitStateLength,
-        colWidths: colWidth,
-    });
+        colWidths: colWidth
+    }
+
+    if (fFormat == 'discrete') {
+        handson_params.rowHeaders = true;
+        handson_params.contextMenu = true;
+        handson_params.manualColumnResize = true;
+        handson_params.manualRowResize = true;
+    }
+    else {
+        handson_params.rowHeaders = false;
+        handson_params.contextMenu = false;
+        handson_params.manualColumnResize = false;
+        handson_params.manualRowResize = false;
+        handson_params.maxRows = limitStates.length;
+    }
+
+    $('#tableDiv'+count).handsontable(handson_params);
     fragilityTable = $('#tableDiv'+count).handsontable("getInstance");
 
     // Populate the table with limit states
@@ -141,7 +162,7 @@ function updateFfsTable (fFormat) {
         }
     });
 
-    // Logic to remove a table
+    // Logic to manage newRow button
     $('#' + count + '.newRow').click(function() {
         var fragilityTable;
 
@@ -154,6 +175,11 @@ function updateFfsTable (fFormat) {
     }
 
 }
+
+$('#downloadBtnFF').click(function() {
+    console.log("click download");
+    sendbackNRML(NRML, 'FF');
+});
 
 $('#saveBtnFF').click(function() {
     // Expose the download button
@@ -322,30 +348,4 @@ $('#saveBtnFF').click(function() {
         '</nrml>';
 
     validateAndDisplayNRML(NRML, 'FF');
-    downloadFileFF();
 });
-
-function downloadFileFF () {
-    // Format the file to be downloaded
-    var textToSave = NRML;
-
-    var hiddenElement = document.createElement('a');
-
-    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
-    hiddenElement.target = '_blank';
-
-    // Check for user input function id
-    if (functionId === '' || functionId === undefined) {
-        // If no idea is provided, make one
-        functionId = 'my_new_fragility_function';
-    }
-
-    $('#downloadLinkFF').empty();
-    $('#downloadLinkFF').append('<a class="btn downloadbtn" href="data:attachment/text, '+encodeURI(textToSave)+'" download="'+functionId+'">Download</a>');
-}
-
-$('#selectAllFF').click(function() {
-    var textBox = document.getElementById("textarea");
-    textBox.select();
-});
-

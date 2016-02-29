@@ -100,12 +100,13 @@ textarea {
     float: left;
     border: 1px solid #eee;
     margin-bottom: 1em;
+    padding: 4px;
 }
 
 #outputDivEX {
     margin-top: 20px;
 }
 
-#outputTextEX {
+#outputTextEX, #outputTextFF, #outputTextVF {
     margin-top: 10px;
 }
