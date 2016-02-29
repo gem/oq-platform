@@ -1,3 +1,8 @@
+python-oq-platform (1.4.1)
+
+  [Matteo Nastasi]
+  * ript: fix Aggregated Structural Costs case syntax error
+
 python-oq-platform (1.4.0)
 
   [Matteo Nastasi]
