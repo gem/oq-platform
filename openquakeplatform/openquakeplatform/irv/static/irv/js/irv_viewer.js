@@ -1058,12 +1058,19 @@ function mapboxGlLayerCreation() {
             if (err) throw err;
             $('#mapInfo').empty();
             $('#mapInfo').css({'visibility': 'visible'});
-            if (typeof features[0] === 'undefined') {
-                $('#mapInfo').append('No data available');
-            } else {
-                for(var k in features[0].properties) {
-                    $('#mapInfo').append(k+': '+features[0].properties[k]+'</br>');
+            var isDataFromIrmt = false;
+            try {
+                var layerSource = features[0].layer.source;
+                isDataFromIrmt = (layerSource == 'projectSource');
+            } catch(exc) {
+                // isDataFromIrmt remains false
+            }
+            if (isDataFromIrmt) {
+                for(var i in features[0].properties) {
+                    $('#mapInfo').append(i+': '+features[0].properties[i]+'</br>');
                 }
+            } else {
+                $('#mapInfo').append('No data available');
             }
         });
     });
