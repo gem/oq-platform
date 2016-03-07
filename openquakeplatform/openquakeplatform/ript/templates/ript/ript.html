@@ -59,7 +59,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
   {% include "ript/tabs/exposure.html" %}
   </div>
   <!-- FRAGILITY -->
-  <div id="tabs-2" class="ff_gid">>
+  <div id="tabs-2" class="ff_gid">
   {% include "ript/tabs/fragility.html" %}
   </div>
   <!-- VULNERABILITY -->
@@ -92,4 +92,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}ript/js/selectTextareaLine.js"></script>
     <script src="{{ STATIC_URL }}ript/js/selectAllTextareaText.js"></script>
     <script src="{{ STATIC_URL }}ript/js/validateAndDisplayNRML.js"></script>
+{% if request.GET.example_id == "301" %}
+<script>
+$( document ).ready(function () {
+    vf_init();
+});
+</script>
+<script src="{{ STATIC_URL }}ript/js/example301.js"></script>
+{% endif %}
 {% endblock extra_script %}
