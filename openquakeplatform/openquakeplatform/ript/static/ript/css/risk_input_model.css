@@ -32,7 +32,7 @@ label {
     width: 45%;
 }
 
-.ffsForm label {
+.ffsForm label, .vfsForm label {
 clear: left;
  }
 
@@ -101,6 +101,19 @@ textarea {
     border: 1px solid #eee;
     margin-bottom: 1em;
     padding: 4px;
+}
+
+.theVTableWrapper {
+    float: right;
+    clear: right;
+    margin-top: 10px;
+    text-align: right;
+}
+.theVTable {
+    overflow: hidden;
+    width: 400px;
+    height: 150px;
+    display: inline-block;
 }
 
 #outputDivEX {

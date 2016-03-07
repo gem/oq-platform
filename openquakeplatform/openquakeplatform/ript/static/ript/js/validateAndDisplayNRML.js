@@ -1,18 +1,18 @@
 function sfx2name(sfx)
 {
-    var map = { 'EX': 'exposure', 'FF': 'fragility', 'VF': 'vulnerability' };
+    var map = { 'ex': 'exposure', 'ff': 'fragility', 'vf': 'vulnerability' };
 
     return map[sfx];
 }
 
-function sendbackNRML(NRML, sfx)
+function sendbackNRML(nrml, sfx)
 {
     var funcType = sfx2name(sfx);
-    var $form = $('#downloadForm' + sfx);
+    var $form = $('.' + sfx + '_gid #downloadForm');
     $form.empty();
     $form.attr({'action': SENDBACK_URL});
     $new_input = $('<input/>');
-    $new_input.attr('type', 'hidden').attr({'name': 'xml_text', 'value': NRML });
+    $new_input.attr('type', 'hidden').attr({'name': 'xml_text', 'value': nrml });
     $form.append($new_input);
     $new_input = $('<input/>');
     $new_input.attr('type', 'hidden').attr({'name': 'func_type', 'value': funcType });
@@ -20,38 +20,40 @@ function sendbackNRML(NRML, sfx)
     $form.submit();
 }
 
-function validateAndDisplayNRML(NRML, funcType){
-    // funcType can be 'EX', 'FF' or 'VF'
+function validateAndDisplayNRML(nrml, funcType, retobj){
+    // funcType can be 'ex', 'ff' or 'vf'
 
+    console.log("inside validate and display");
     function displayValidationError(textBox, error_msg){
-        $('#validationErrorMsg' + funcType).text(
+        $('.' + funcType + '_gid #validationErrorMsg').text(
             'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-]*\.xml/, 'this NRML file') + '.');
-        $('#validationErrorMsg' + funcType).css('display', 'block');
+        $('.' + funcType + '_gid #validationErrorMsg').css('display', 'block');
     }
 
     function hideValidationError(){
-        $('#validationErrorMsg' + funcType).css('display', 'none');
+        $('.' + funcType + '_gid #validationErrorMsg').css('display', 'none');
     }
 
     function displayInfoMessage(textBox){
-        $('#infoMsg' + funcType).css('display', 'block');
+        $('.' + funcType + '_gid #infoMsg').css('display', 'block');
         selectAllTextareaText(textBox);
     }
 
     function hideInfoMessage(){
-        $('#infoMsg' + funcType).css('display', 'none');
+        $('.' + funcType + '_gid #infoMsg').css('display', 'none');
     }
 
     // Provide the user with the xml output
-    $('#outputText' + funcType).empty();
+    $('.' + funcType + '_gid #outputText').empty();
     var $textarea = $('<textarea/>').attr({id: 'textarea' + funcType,
-                                      style: 'width: 600px; height: 700px;'}).val(NRML);
-    $('#outputText' + funcType).append($textarea);
+                                      style: 'width: 600px; height: 700px;'}).val(nrml);
+    $('.' + funcType + '_gid #outputText').append($textarea);
     var textarea = $textarea.get(0);
-    $('#outputDiv' + funcType).css('display', 'block');
+    $('.' + funcType + '_gid #outputDiv').css('display', 'block');
                   // var textBox = document.getElementById("textarea");
-    // Call the engine server api to check if the NRML is valid                                                                                                                                          
-    $.post(VALIDATION_URL, {xml_text: NRML})
+    // Call the engine server api to check if the NRML is valid
+    console.log('NRML: ' + nrml);
+    $.post(VALIDATION_URL, {xml_text: nrml})
         .done(function(resp){
             if (resp.error_msg) {
                 displayValidationError(textarea, resp.error_msg);
@@ -59,18 +61,19 @@ function validateAndDisplayNRML(NRML, funcType){
                     selectTextareaLine(textarea, resp.error_line);
                 }
                 hideInfoMessage();
-                $('#downloadLink' + funcType).hide();
+                $('.' + funcType + '_gid #downloadLink').hide();
             } else {
                 displayInfoMessage(textarea);
                 hideValidationError()
-                $('#downloadLink' + funcType).show();
+                retobj.nrml = nrml;
+                $('.' + funcType + '_gid #downloadLink').show();
             }
         })
         .fail(function(resp){
             var error_msg = "The call to the validation API failed, returning following error message: " + resp.statusText;
             displayValidationError(textarea, error_msg);
             displayInfoMessage(textarea);
-            $('#downloadLink' + funcType).hide();
+            $('.' + funcType + '_gid #downloadLink').hide();
         });
 
 }

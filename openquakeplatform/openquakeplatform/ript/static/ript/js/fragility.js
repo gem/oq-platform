@@ -19,7 +19,7 @@ var header = [];
 var activeTablesObj = {};
 var limitStates;
 var NRML;
-var functionId;
+var functionIdFF;
 
 $('#outputDivFF').hide();
 
@@ -38,6 +38,8 @@ $('#addFfsContinuous').click(function() {
 var count = 0;
 function updateFfsTable (fFormat) {
     var fragilityTable;
+
+    console.log("fFormat: " + fFormat);
 
     // Get info from the form and build the table header
     limitStates = $('#limitStates').val();
@@ -249,7 +251,7 @@ $('#saveBtnFF').click(function() {
         }
     }
 
-    functionId = $('#functionId').val();
+    functionIdFF = $('#functionIdFF').val();
     var assetCategory = $('#assetCategory').val();
     var lossCategory = $('#lossCategory').find(":selected").val();
     var functionDescription = $('#functionDescription').val();
@@ -340,7 +342,7 @@ $('#saveBtnFF').click(function() {
     NRML =
         '<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.5">\n' +
-            '\t<fragilityModel id="'+functionId+'" assetCategory="'+assetCategory+'" lossCategory="'+lossCategory+'">\n' +
+            '\t<fragilityModel id="'+functionIdFF+'" assetCategory="'+assetCategory+'" lossCategory="'+lossCategory+'">\n' +
                 '\t\t<description>'+functionDescription+'</description>\n' +
                 limitStatesXML +
                 fragilityFunction +
