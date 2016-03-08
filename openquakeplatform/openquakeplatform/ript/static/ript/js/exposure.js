@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2015, GEM Foundation.
+   Copyright (c) 2015-2016, GEM Foundation.
 
       This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU Affero General Public License as
@@ -15,31 +15,53 @@
       along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
 
-var exposureTable;
-var header;
-var NRML;
+var ex_obj = {
+    // perAreaRefCount is used to keep track of any time perArea is selected
+    perAreaRefCount: {
+        costStruc : false,
+        costNonStruc : false,
+        costContent : false,
+        costBusiness : false
+    },
 
-$( document ).ready(function() {
-    $('#retrofittingSelect').hide();
-    $('#limitDiv').hide();
-    $('#deductibleDiv').hide();
-    $('#exposure_structural_costs_units_div').hide();
-    $('#exposure_nonstructural_costs_units_div').hide();
-    $('#exposure_contents_costs_units_div').hide();
-    $('#exposure_busi_inter_costs_units_div').hide();
+    perAreaUpdate: function(selectedValue, element) {
+        // Manage all define cost elements that are using perArea
+        if (selectedValue == 'per_area') {
+            this.perAreaRefCount[element] = true;
+        }
+        else {
+            this.perAreaRefCount[element] = false;
+        }
+    },
 
-    updateTable();
-    $('#outputDivEX').hide();
-    $('#absoluteSpinner').hide();
-});
+    perAreaIsVisible: function() {
+        // If perAreaRefCountManager returnes false then we can hide the area
+        // option from the form
 
+        for(var k in this.perAreaRefCount) {
+            if (this.perAreaRefCount[k] === true) {
+                return true;
+            }
+        }
+        return false;
+    },
 
-/////////////////////////////////////////////////////////
-// Manage the visibility of the perArea selection menu //
-/////////////////////////////////////////////////////////
-$('#perArea').hide();
+    perAreaManager: function(selectedValue, element) {
+        // Manage all define cost elements that are using perArea
+        this.perAreaUpdate(selectedValue, element);
+        
+        if (this.perAreaIsVisible())
+            $('.ex_gid #perArea').show();
+        else
+            $('.ex_gid #perArea').hide();
+    },
+    
+    tbl: {},
+    tbl_idx: 0,
+    nrml: ""
+};
 
-$('#defineCostStruc').change(function() {
+$('.ex_gid #costStruc').change(function() {
     // There is a bug in the handsontable lib where one can not
     // paste values into the table when the user has made a selection
     // from a dropdown menu. The reason for this error is that the focus
@@ -47,102 +69,68 @@ $('#defineCostStruc').change(function() {
     // The workaround for this is to un-focus the selection menu with blur()
     // More info: https://github.com/handsontable/handsontable/issues/2973
     $(this).blur();
-    defineCost($(this).val(), $(this).context.id);
+    ex_obj.perAreaManager($(this).val(), $(this).context.id);
     if ($(this).val() != 'none') {
-        $('#exposure_structural_costs_units_div').show();
-        $('#retrofittingSelect').show();
-        $('#limitDiv').show();
-        $('#deductibleDiv').show();
+        $('.ex_gid #structural_costs_units_div').show();
+        $('.ex_gid #retrofittingSelect').show();
+        $('.ex_gid #limitDiv').show();
+        $('.ex_gid #deductibleDiv').show();
     } else {
-        $('#exposure_structural_costs_units_div').hide();
-        $('#retrofittingSelect').hide();
-        $('#limitDiv').hide();
-        $('#deductibleDiv').hide();
+        $('.ex_gid #structural_costs_units_div').hide();
+        $('.ex_gid #retrofittingSelect').hide();
+        $('.ex_gid #limitDiv').hide();
+        $('.ex_gid #deductibleDiv').hide();
         // Uncheck retrofitting
-        $('#retroChbx').attr('checked', false);
+        $('.ex_gid #retroChbx').attr('checked', false);
         // Unselect the limit & deductible
-        $("#limitSelect").val('0');
-        $("#deductibleSelect").val('0');
+        $(".ex_gid #limitSelect").val('0');
+        $(".ex_gid #deductibleSelect").val('0');
     }
 });
 
-$('#defineCostNonStruc').change(function() {
-    // unfocus the selection menu, see the note at the defineCostStruc change event
+$('.ex_gid #costNonStruc').change(function() {
+    // unfocus the selection menu, see the note at the costStruc change event
     $(this).blur();
 
     if ($(this).val() != 'none') {
-        $('#exposure_nonstructural_costs_units_div').show();
+        $('.ex_gid #nonstructural_costs_units_div').show();
     }
     else {
-        $('#exposure_nonstructural_costs_units_div').hide();
+        $('.ex_gid #nonstructural_costs_units_div').hide();
     }
-    defineCost($(this).val(), $(this).context.id);
+    ex_obj.perAreaManager($(this).val(), $(this).context.id);
 });
 
-$('#defineCostContent').change(function() {
+$('.ex_gid #costContent').change(function() {
     if ($(this).val() != 'none') {
-        $('#exposure_contents_costs_units_div').show();
+        $('.ex_gid #contents_costs_units_div').show();
     }
     else {
-        $('#exposure_contents_costs_units_div').hide();
+        $('.ex_gid #contents_costs_units_div').hide();
     }
-    // unfocus the selection menu, see the note at the defineCostStruc change event
+    // unfocus the selection menu, see the note at the costStruc change event
     $(this).blur();
-    defineCost($(this).val(), $(this).context.id);
+    ex_obj.perAreaManager($(this).val(), $(this).context.id);
 });
 
-$('#defineCostBusiness').change(function() {
+$('.ex_gid #costBusiness').change(function() {
     if ($(this).val() != 'none') {
-        $('#exposure_busi_inter_costs_units_div').show();
+        $('.ex_gid #busi_inter_costs_units_div').show();
     }
     else {
-        $('#exposure_busi_inter_costs_units_div').hide();
+        $('.ex_gid #busi_inter_costs_units_div').hide();
     }
 
-    // unfocus the selection menu, see the note at the defineCostStruc change event
+    // unfocus the selection menu, see the note at the costStruc change event
     $(this).blur();
-    defineCost($(this).val(), $(this).context.id);
+    ex_obj.perAreaManager($(this).val(), $(this).context.id);
 });
 
-// costTrackerObj is used to keep track of any time perArea is selected
-var costTrackerObj = {
-    defineCostStruc : 'false',
-    defineCostNonStruc : 'false',
-    defineCostContent : 'false',
-    defineCostBusiness : 'false'
-};
-
-function defineCost(selectedValue, element) {
-    // Manage all define cost elements that are using perArea
-    if (selectedValue == 'per_area') {
-        costTrackerObj[element] = true;
-        $('#perArea').show();
-    }
-    else {
-        var hide_it = true;
-        costTrackerObj[element] = false;
-
-        // If costTrackerManager returnes false then we can hide the area
-        // option from the form
-
-        for(var k in costTrackerObj) {
-            if (costTrackerObj[k] === true) {
-                hide_it = false;
-                break;
-            }
-        }
-
-        if (hide_it) {
-            $('#perArea').hide();
-        }
-    }
-}
-
-$('#exposureForm').change(function() {
-    // unfocus the selection menu, see the note at the defineCostStruc change event
+$('.ex_gid #form').change(function() {
+    // unfocus the selection menu, see the note at the costStruc change event
     $(this).blur();
-    updateTable();
-    $('#outputDivEX').css('display', 'none');
+    ex_updateTable();
+    $('.ex_gid #outputDiv').hide();
 });
 
 function checkForValueInHeader(header, argument) {
@@ -150,10 +138,10 @@ function checkForValueInHeader(header, argument) {
     return inx;
 }
 
-function updateTable() {
+function ex_updateTable() {
     // Remove any existing table
     try {
-        exposureTable.destroy();
+        ex_obj.tbl.destroy();
     } catch (e) {
         // continue
     }
@@ -179,44 +167,44 @@ function updateTable() {
     }
 
     // Get info from the expsure form and use it to build the table header
-    $('#defineCostStruc option:selected').each(function() {
+    $('.ex_gid #costStruc option:selected').each(function() {
         checkForValue($(this).attr('value'), 'structural');
     });
 
-    $('#defineCostNonStruc option:selected').each(function() {
+    $('.ex_gid #costNonStruc option:selected').each(function() {
         checkForValue($(this).attr('value'), 'non-structural');
     });
 
-    $('#defineCostContent option:selected').each(function() {
+    $('.ex_gid #costContent option:selected').each(function() {
         checkForValue($(this).attr('value'), 'contents');
     });
 
-    $('#defineCostBusiness option:selected').each(function() {
+    $('.ex_gid #costBusiness option:selected').each(function() {
         checkForValue($(this).attr('value'), 'business');
     });
 
-    $('#limitSelect option:selected').each(function() {
+    $('.ex_gid #limitSelect option:selected').each(function() {
         checkForValue($(this).attr('value'), 'limit');
     });
 
-    $('#deductibleSelect option:selected').each(function() {
+    $('.ex_gid #deductibleSelect option:selected').each(function() {
         checkForValue($(this).attr('value'), 'deductible');
     });
 
-    var perAreaVisible = $('#perArea:visible').length;
+    var perAreaVisible = $('.ex_gid #perArea:visible').length;
     if (perAreaVisible === 1) {
         header.push('area');
     }
 
-    $('#occupantsCheckBoxes input:checked').each(function() {
+    $('.ex_gid #occupantsCheckBoxes input:checked').each(function() {
         header.push($(this).attr('value'));
-        // unfocus the selection menu, see the note at the exposure defineCostStruc change event
+        // unfocus the selection menu, see the note at the exposure costStruc change event
         $(this).blur();
     });
 
-    $('#retrofittingSelect input:checked').each(function() {
+    $('.ex_gid #retrofittingSelect input:checked').each(function() {
         header.push($(this).attr('value'));
-        // unfocus the selection menu, see the note at the exposure defineCostStruc change event
+        // unfocus the selection menu, see the note at the exposure costStruc change event
         $(this).blur();
     });
 
@@ -230,7 +218,7 @@ function updateTable() {
     ///////////////////////////////
 
 
-    exposureTable = new Handsontable(container, {
+    ex_obj.tbl = new Handsontable(container, {
         colHeaders: header,
         rowHeaders: true,
         contextMenu: true,
@@ -239,19 +227,19 @@ function updateTable() {
         startRows: 1
     });
 
-    $('#outputTextEX').empty();
-    $('#saveBtnEX').show();
+    $('.ex_gid #outputText').empty();
+    $('.ex_gid #convertBtn').show();
 }
 
-$('#downloadBtnEX').click(function() {
-    sendbackNRML(NRML, 'EX');
+$('.ex_gid #downloadBtn').click(function() {
+    sendbackNRML(ex_obj.nrml, 'ex');
 });
 
-$('#saveBtnEX').click(function() {
+$('.ex_gid #convertBtn').click(function() {
     // Expose the download button
-    $('#downloadBtnEX').show();
+    $('.ex_gid #downloadBtn').show();
     // Get the values from the table
-    var data = exposureTable.getData();
+    var data = ex_obj.tbl.getData();
 
     // Check for null values
     for (var i = 0; i < data.length; i++) {
@@ -268,7 +256,7 @@ $('#saveBtnEX').click(function() {
         return header.indexOf(argument);
     }
 
-    var exposureDescription = $('#exposureDescription').val();
+    var description = $('.ex_gid #description').val();
 
     var asset = '';
     var latitude = 'latitude';
@@ -347,36 +335,36 @@ $('#saveBtnEX').click(function() {
 
         // Pre area selection
         var areaType = "";
-        var areaTypeSelected = $('#perAreaSelect').val();
-        if ($('#perArea').is(":visible")) {
-            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="' + $('#exposure_area_units').val() + '" />\n';
+        var areaTypeSelected = $('.ex_gid #perAreaSelect').val();
+        if ($('.ex_gid #perArea').is(":visible")) {
+            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="' + $('.ex_gid #area_units').val() + '" />\n';
         }
 
         // Cost Type
         var costType= '';
-        var costTypeStruc = $('#defineCostStruc option:selected').val();
+        var costTypeStruc = $('.ex_gid #costStruc option:selected').val();
         if (costTypeStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="' + $('#exposure_structural_costs_units').val() + '"/>\n';
+            costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="' + $('.ex_gid #structural_costs_units').val() + '"/>\n';
         }
 
-        var costTypeNonStruc = $('#defineCostNonStruc option:selected').val();
+        var costTypeNonStruc = $('.ex_gid #costNonStruc option:selected').val();
         if (costTypeNonStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="' + $('#exposure_nonstructural_costs_units').val() + '"/>\n';
+            costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="' + $('.ex_gid #nonstructural_costs_units').val() + '"/>\n';
         }
 
-        var costTypeContent = $('#defineCostContent option:selected').val();
+        var costTypeContent = $('.ex_gid #costContent option:selected').val();
         if (costTypeContent !== 'none') {
-            costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="' + $('#exposure_contents_costs_units').val() + '"/>\n';
+            costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="' + $('.ex_gid #contents_costs_units').val() + '"/>\n';
         }
 
-        var costTypeBusiness = $('#defineCostBusiness option:selected').val();
+        var costTypeBusiness = $('.ex_gid #costBusiness option:selected').val();
         if (costTypeBusiness !== 'none') {
-            costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="' + $('#exposure_busi_inter_costs_units').val() + '"/>\n';
+            costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="' + $('.ex_gid #busi_inter_costs_units').val() + '"/>\n';
         }
 
         // Insurance Limit
         var limitValue = '';
-        var limitState = $('#limitSelect option:selected').val();
+        var limitState = $('.ex_gid #limitSelect option:selected').val();
         if (limitState == 'absolute') {
             insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="true"/>\n';
             limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
@@ -386,14 +374,14 @@ $('#saveBtnEX').click(function() {
         }
 
         // Retrofitted
-        var retrofittingSelect = $('#retrofittingSelect input:checked').val();
+        var retrofittingSelect = $('.ex_gid #retrofittingSelect input:checked').val();
         if (retrofittingSelect == 'retrofitting') {
             retrofitting = ' retrofitted="'+data[i][retrofittingInx]+'"';
         }
 
         // deductibleSelect
         var deductibleValue = '';
-        var deductibleState = $('#deductibleSelect option:selected').val();
+        var deductibleState = $('.ex_gid #deductibleSelect option:selected').val();
         if (deductibleState == 'absolute') {
             deductible = '\t\t\t<deductible isAbsolute="true"/>\n';
             deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
@@ -445,11 +433,11 @@ $('#saveBtnEX').click(function() {
     }
 
     // Create a NRML element
-    NRML =
+    var nrml =
         '<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<nrml xmlns="http://openquake.org/xmlns/nrml/0.4">\n' +
             '\t<exposureModel id="ex1" category="buildings" taxonomySource="GEM taxonomy">\n' +
-                '\t\t<description>' + exposureDescription + '</description>\n' +
+                '\t\t<description>' + description + '</description>\n' +
                 '\t\t<conversions>\n' +
                     areaType +
                     '\t\t\t<costTypes>\n' +
@@ -464,5 +452,27 @@ $('#saveBtnEX').click(function() {
             '\t</exposureModel>\n' +
         '</nrml>';
 
-    validateAndDisplayNRML(NRML, 'EX');
+    validateAndDisplayNRML(nrml, 'ex', vf_obj);
+});
+
+// tab initialization
+$(document).ready(function () {
+    /////////////////////////////////////////////////////////
+    // Manage the visibility of the perArea selection menu //
+    /////////////////////////////////////////////////////////
+    $('.ex_gid #perArea').hide();
+
+    $('.ex_gid #retrofittingSelect').hide();
+    $('.ex_gid #limitDiv').hide();
+    $('.ex_gid #deductibleDiv').hide();
+    $('.ex_gid #structural_costs_units_div').hide();
+    $('.ex_gid #nonstructural_costs_units_div').hide();
+    $('.ex_gid #contents_costs_units_div').hide();
+    $('.ex_gid #busi_inter_costs_units_div').hide();
+    ex_updateTable();
+    $('.ex_gid #new_row_add').click(function() {
+        ex_obj.tbl.alter('insert_row');
+    });
+    $('.ex_gid #outputDiv').hide();
+    $('#absoluteSpinner').hide();
 });

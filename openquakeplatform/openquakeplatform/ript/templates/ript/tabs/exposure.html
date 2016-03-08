@@ -6,7 +6,7 @@
       </div>
       <div id="cost" class="menuItems">
         <label>Structural Costs:</label>
-        <select id="defineCostStruc">
+        <select id="costStruc">
           <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
           <option value="per_asset">Per Building</option>
@@ -39,7 +39,7 @@
             </select><br>
         </div>
         <label>Nonstructural Costs:</label>
-        <select id="defineCostNonStruc">
+        <select id="costNonStruc">
           <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
           <option value="per_asset">Per Building</option>
@@ -50,7 +50,7 @@
           <input id="nonstructural_costs_units" type="text" value="EUR" maxlength="3">
         </div>
         <label>Contents Costs:</label>
-        <select id="defineCostContent">
+        <select id="costContent">
           <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
           <option value="per_asset">Per Building</option>
@@ -61,7 +61,7 @@
           <input id="contents_costs_units" type="text" value="EUR" maxlength="3">
         </div>
         <label>Business Interruption Costs:</label>
-        <select id="defineCostBusiness">
+        <select id="costBusiness">
           <option value="none">None</option>
           <option value="aggregated">Aggregated</option>
           <option value="per_asset">Per Building</option>
@@ -95,7 +95,7 @@
     </div>
     <div class="alert alert-info" role="alert">2. Copy and paste values from a spreadsheet into the table below.</div>
     <div id="table"></div>
-    <button id="new_row_add" class="btn">New Row TODO</button><br>
+    <button id="new_row_add" class="btn">New Row</button><br>
     <br>
     <button id="convertBtn" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
     <br>

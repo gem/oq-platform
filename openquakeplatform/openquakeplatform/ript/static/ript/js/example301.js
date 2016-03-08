@@ -1,4 +1,4 @@
-$( document ).ready(function () {
+$(document).ready(function () {
     $('.vf_gid #functionId').val('111vv1');
     $('.vf_gid #assetCategory').val('buildings');
     $('.vf_gid #functionDescription').val('the description');
