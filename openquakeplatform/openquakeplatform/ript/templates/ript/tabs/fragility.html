@@ -1,0 +1,48 @@
+    <div class="alert alert-info" role="alert">1. Use this form to initialize the fragility model.</div>
+    <div id="fragilityForm" class="menuItems">
+      <div>
+        <label>Fragility Model Id:</label>
+        <input id="functionIdFF" type="text">
+      </div>
+      <div>
+        <label>Asset Category:</label>
+        <input id="assetCategory" type="text" placeholder="buildings">
+      </div>
+      <div>
+        <label>Loss Category:</label>
+        <select id="lossCategory">
+          <option value="structural">Structural</option>
+          <option value="nonstructural">Non-Structural</option>
+          <option value="contents">Contents</option>
+          <option value="business_interruption">Business Interruption</option>
+          <option value="occupants">Occupants</option>
+        </select>
+      </div>
+      <div>
+        <label>Description:</label>
+        <textarea id="functionDescription" rows="4" cols="10"></textarea>
+      </div>
+      <div>
+        <label>Damage States</label><br>
+        <label>(Comma Separated):</label>
+        <textarea id="limitStates" rows="4" cols="10">slight, moderate, collapse</textarea>
+      </div>
+    </div>
+    <br>
+    <div class="alert alert-info" role="alert">2. One can use the 'Add Discrete function' &amp; 'Add Continuous Function' buttons to generate as many discrete and continuous fragility functions sets (ffs) as needed.<br>
+    Generate a NRML file by click 'Convert to NRML' when done populating the tables.</div>
+    <button id="addFfsDiscrete" type="button" class="btn btn-lg">Add Discrete function</button>
+    <button id="addFfsContinuous" type="button" class="btn btn-lg">Add Continuous Function</button>
+    <br><br>
+    <div id="tables"></div>
+    <br>
+    <div>
+      <button id="saveBtnFF" type="button" style="display:none;" class="btn btn-primary">Convert to NRML</button>
+    </div>
+    <br>
+    <div id="outputDivFF">
+      <div id="infoMsg" class="alert alert-info" role="alert">3. Download the NRML file for use in the OpenQuake Engine.</div>
+      <div id="validationErrorMsgFF" class="alert alert-warning" role="alert">Error message</div>
+      <div id="downloadLinkFF" style="display: none;"><button class="btn" id="downloadBtnFF">Download</button><form id="downloadFormFF" method="post"></form></div>
+      <div id="outputTextFF" style="width:500px;"></div>
+    </div>
