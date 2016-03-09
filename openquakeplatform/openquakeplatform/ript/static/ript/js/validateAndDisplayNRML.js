@@ -5,6 +5,27 @@ function sfx2name(sfx)
     return map[sfx];
 }
 
+
+function row_split(row_in)
+{
+    var el = null, data_in = row_in.trim();
+    var divisor = ["	", ",", ";"];
+    for (var d in divisor) {
+        if (data_in.indexOf(divisor[d]) > -1) {
+            console.log("  found ["+d+"]");
+            el = data_in.split(divisor[d]);
+            for (var i = 0 ; i < el.length ; i++) {
+                el[i] = el[i].trim();
+            }
+            break;
+        }
+    }
+    if (el == null) {
+        el = data_in.split(' ');
+    }
+    return el;
+}
+
 function sendbackNRML(nrml, sfx)
 {
     var funcType = sfx2name(sfx);
