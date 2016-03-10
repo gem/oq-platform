@@ -139,12 +139,8 @@ function checkForValueInHeader(header, argument) {
 }
 
 function ex_updateTable() {
-    // Remove any existing table
-    try {
-        ex_obj.tbl.destroy();
-    } catch (e) {
-        // continue
-    }
+    // Remove any existing table, if already exists
+    $('.ex_gid #table').handsontable('destroy');
 
     // Default columns
     header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
@@ -216,16 +212,16 @@ function ex_updateTable() {
     ///////////////////////////////
     /// Exposure Table Settings ///
     ///////////////////////////////
-
-
-    ex_obj.tbl = new Handsontable(container, {
+    $('.ex_gid #table').handsontable({
         colHeaders: header,
         rowHeaders: true,
         contextMenu: true,
+        startRows: 3,
         startCols: headerLength,
         maxCols: headerLength,
-        startRows: 1
+        className: "htRight"
     });
+    ex_obj.tbl = $('.ex_gid #table').handsontable('getInstance');
 
     $('.ex_gid #outputText').empty();
     $('.ex_gid #convertBtn').show();
@@ -452,7 +448,7 @@ $('.ex_gid #convertBtn').click(function() {
             '\t</exposureModel>\n' +
         '</nrml>';
 
-    validateAndDisplayNRML(nrml, 'ex', vf_obj);
+    validateAndDisplayNRML(nrml, 'ex', ex_obj);
 });
 
 // tab initialization

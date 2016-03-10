@@ -31,7 +31,6 @@ $(document).ready(function () {
         $('.ex_gid #area_units').val('Km²');
         $('.ex_gid #area_units').trigger('change');
     }
-
     $('.ex_gid #costBusiness').val('aggregated');
     $('.ex_gid #costBusiness').trigger('change');
     {
@@ -42,11 +41,13 @@ $(document).ready(function () {
     $('.ex_gid #occupantsCheckBoxes [value="night"]').prop('checked', true);
     $('.ex_gid #occupantsCheckBoxes [value="night"]').trigger('change');
 
-    var data = [];
+    var data = [[]];
     for (var i = 0 ; i < 14 ; i++) {
-        data[i] = parseFloat(i) / 100.0;
+        data[0][i] = parseFloat(i) / 100.0;
     }
 
     var table = $('.ex_gid #table').handsontable('getInstance');
     table.loadData(data);
+
+    $('.ex_gid #convertBtn').trigger('click');
 });
