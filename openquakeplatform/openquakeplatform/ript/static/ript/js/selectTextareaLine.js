@@ -1,10 +1,10 @@
-function selectTextareaLine(tarea,lineNum) {
+function selectTextareaLine(textarea, lineNum) {
     // Taken from http://stackoverflow.com/questions/13650534/how-to-select-line-of-text-in-textarea
     lineNum--; // array starts at 0
-    var lines = tarea.value.split("\n");
+    var lines = textarea.value.split("\n");
 
     // calculate start/end
-    var startPos = 0, endPos = tarea.value.length;
+    var startPos = 0, endPos = textarea.value.length;
     for(var x = 0; x < lines.length; x++) {
         if(x == lineNum) {
             break;
@@ -18,17 +18,17 @@ function selectTextareaLine(tarea,lineNum) {
     // do selection
     // Chrome / Firefox
 
-    if(typeof(tarea.selectionStart) != "undefined") {
-        tarea.focus();
-        tarea.selectionStart = startPos;
-        tarea.selectionEnd = endPos;
+    if(typeof(textarea.selectionStart) != "undefined") {
+        textarea.focus();
+        textarea.selectionStart = startPos;
+        textarea.selectionEnd = endPos;
         return true;
     }
 
     // IE
     if (document.selection && document.selection.createRange) {
-        tarea.focus();
-        tarea.select();
+        textarea.focus();
+        textarea.select();
         var range = document.selection.createRange();
         range.collapse(true);
         range.moveEnd("character", endPos);
