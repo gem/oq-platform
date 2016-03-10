@@ -92,8 +92,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}ript/js/selectTextareaLine.js"></script>
     <script src="{{ STATIC_URL }}ript/js/selectAllTextareaText.js"></script>
     <script src="{{ STATIC_URL }}ript/js/validateAndDisplayNRML.js"></script>
-{% if request.GET.example_id == '101' or request.GET.example_id == '301' %}
-<script src="{{ STATIC_URL }}ript/js/examples/{{ request.GET.example_id }}.js"></script>
+{% if request.GET.example_id|add:"0" > 100 and request.GET.example_id|add:"0" < 10000  %}
+<script src="{{ STATIC_URL }}ript/js/examples/{{ request.GET.example_id|add:"0" }}.js"></script>
 {% else %}
     <!-- not example found -->
 {% endif %}

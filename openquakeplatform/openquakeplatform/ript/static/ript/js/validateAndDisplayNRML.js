@@ -73,7 +73,6 @@ function output_manager(funcType, error_msg, error_line, nrml)
                                                style: 'width: 600px; height: 700px;'}).val(nrml);
         $('.' + funcType + '_gid #outputText').append($textarea);
         textarea = $textarea.get(0);
-        $('.' + funcType + '_gid #outputDiv').css('display', 'block');
     }
 
     if (error_msg) {
@@ -83,6 +82,7 @@ function output_manager(funcType, error_msg, error_line, nrml)
         }
         $('.' + funcType + '_gid #infoMsg').hide();
         $('.' + funcType + '_gid #downloadLink').hide();
+        $('.' + funcType + '_gid #outputDiv').show();
         return false;
     }
     else {
@@ -90,8 +90,10 @@ function output_manager(funcType, error_msg, error_line, nrml)
             infoMessageShow(funcType, textarea);
         validationErrorHide(funcType);
         $('.' + funcType + '_gid #downloadLink').show();
+        $('.' + funcType + '_gid #outputDiv').show();
         return true;
     }
+
 }
 
 function validateAndDisplayNRML(nrml, funcType, retobj){
