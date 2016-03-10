@@ -12,7 +12,6 @@ function row_split(row_in)
     var divisor = ["	", ",", ";"];
     for (var d in divisor) {
         if (data_in.indexOf(divisor[d]) > -1) {
-            console.log("  found ["+d+"]");
             el = data_in.split(divisor[d]);
             for (var i = 0 ; i < el.length ; i++) {
                 el[i] = el[i].trim();
@@ -44,7 +43,6 @@ function sendbackNRML(nrml, sfx)
 function validateAndDisplayNRML(nrml, funcType, retobj){
     // funcType can be 'ex', 'ff' or 'vf'
 
-    console.log("inside validate and display");
     function displayValidationError(textBox, error_msg){
         $('.' + funcType + '_gid #validationErrorMsg').text(
             'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-]*\.xml/, 'this NRML file') + '.');
@@ -73,7 +71,6 @@ function validateAndDisplayNRML(nrml, funcType, retobj){
     $('.' + funcType + '_gid #outputDiv').css('display', 'block');
                   // var textBox = document.getElementById("textarea");
     // Call the engine server api to check if the NRML is valid
-    console.log('NRML: ' + nrml);
     $.post(VALIDATION_URL, {xml_text: nrml})
         .done(function(resp){
             if (resp.error_msg) {

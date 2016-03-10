@@ -2,7 +2,7 @@ $(document).ready(function () {
     $('.ex_gid #description').val('The description of exposure function');
     $('.ex_gid #costStruc').val('per_asset');
     $('.ex_gid #costStruc').trigger('change');
-    {
+    { // blocks are used to reflect DOM hierarchy
         $('.ex_gid #structural_costs_units').val('GBP');
         $('.ex_gid #structural_costs_units').trigger('change');
 
