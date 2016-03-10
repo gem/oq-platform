@@ -232,16 +232,15 @@ $('.ex_gid #downloadBtn').click(function() {
 });
 
 $('.ex_gid #convertBtn').click(function() {
-    // Expose the download button
-    $('.ex_gid #downloadBtn').show();
     // Get the values from the table
     var data = ex_obj.tbl.getData();
 
     // Check for null values
     for (var i = 0; i < data.length; i++) {
         for (var j = 0; j < data[i].length; j++) {
-            if (data[i][j] === null) {
-                alert("whoops, there seem to be some empty cells");
+            var s = data[i][j] + " ";
+            if (data[i][j] === null || data[i][j].toString().trim() == "") {
+                output_manager('ex', "empty cell at coords (" + (i+1) + ", " + (j+1) + ")", null, null);
                 return;
             }
         }

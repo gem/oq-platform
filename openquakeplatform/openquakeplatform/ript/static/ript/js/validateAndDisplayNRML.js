@@ -40,58 +40,75 @@ function sendbackNRML(nrml, sfx)
     $form.submit();
 }
 
-function validateAndDisplayNRML(nrml, funcType, retobj){
-    // funcType can be 'ex', 'ff' or 'vf'
 
-    function displayValidationError(textBox, error_msg){
-        $('.' + funcType + '_gid #validationErrorMsg').text(
-            'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-]*\.xml/, 'this NRML file') + '.');
-        $('.' + funcType + '_gid #validationErrorMsg').css('display', 'block');
-    }
+function validationErrorShow(funcType, error_msg){
+    $('.' + funcType + '_gid #validationErrorMsg').text(
+        'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-]*\.xml/, 'this NRML file') + '.');
+    $('.' + funcType + '_gid #validationErrorMsg').show();
+}
 
-    function hideValidationError(){
-        $('.' + funcType + '_gid #validationErrorMsg').css('display', 'none');
-    }
+function validationErrorHide(funcType){
+    $('.' + funcType + '_gid #validationErrorMsg').hide();
+}
 
-    function displayInfoMessage(textBox){
-        $('.' + funcType + '_gid #infoMsg').css('display', 'block');
-        selectAllTextareaText(textBox);
-    }
+function infoMessageShow(funcType, textBox){
+    $('.' + funcType + '_gid #infoMsg').show();
+    selectAllTextareaText(textBox);
+}
 
-    function hideInfoMessage(){
-        $('.' + funcType + '_gid #infoMsg').css('display', 'none');
-    }
+
+function infoMessageHide(funcType){
+    $('.' + funcType + '_gid #infoMsg').hide();
+}
+
+
+function output_manager(funcType, error_msg, error_line, nrml)
+{
+    var textarea = null;
 
     // Provide the user with the xml output
     $('.' + funcType + '_gid #outputText').empty();
-    var $textarea = $('<textarea/>').attr({id: 'textarea' + funcType,
-                                      style: 'width: 600px; height: 700px;'}).val(nrml);
-    $('.' + funcType + '_gid #outputText').append($textarea);
-    var textarea = $textarea.get(0);
-    $('.' + funcType + '_gid #outputDiv').css('display', 'block');
-                  // var textBox = document.getElementById("textarea");
+    if (nrml) {
+        var $textarea = $('<textarea/>').attr({id: 'textarea' + funcType,
+                                               style: 'width: 600px; height: 700px;'}).val(nrml);
+        $('.' + funcType + '_gid #outputText').append($textarea);
+        textarea = $textarea.get(0);
+        $('.' + funcType + '_gid #outputDiv').css('display', 'block');
+    }
+
+    if (error_msg) {
+        validationErrorShow(funcType, error_msg);
+        if (nrml && error_line) {
+            selectTextareaLine(textarea, error_line);
+        }
+        $('.' + funcType + '_gid #infoMsg').hide();
+        $('.' + funcType + '_gid #downloadLink').hide();
+        return false;
+    }
+    else {
+        if (textarea)
+            infoMessageShow(funcType, textarea);
+        validationErrorHide(funcType);
+        $('.' + funcType + '_gid #downloadLink').show();
+        return true;
+    }
+}
+
+function validateAndDisplayNRML(nrml, funcType, retobj){
+    // funcType can be 'ex', 'ff' or 'vf'
+
     // Call the engine server api to check if the NRML is valid
     $.post(VALIDATION_URL, {xml_text: nrml})
         .done(function(resp){
-            if (resp.error_msg) {
-                displayValidationError(textarea, resp.error_msg);
-                if (resp.error_line) {
-                    selectTextareaLine(textarea, resp.error_line);
-                }
-                hideInfoMessage();
-                $('.' + funcType + '_gid #downloadLink').hide();
-            } else {
-                displayInfoMessage(textarea);
-                hideValidationError()
+            output_manager(funcType, resp.error_msg, resp.error_line, nrml);
+            if (!resp.error_msg) {
                 retobj.nrml = nrml;
-                $('.' + funcType + '_gid #downloadLink').show();
             }
         })
         .fail(function(resp){
-            var error_msg = "The call to the validation API failed, returning following error message: " + resp.statusText;
-            displayValidationError(textarea, error_msg);
-            displayInfoMessage(textarea);
-            $('.' + funcType + '_gid #downloadLink').hide();
+            var error_msg = "The call to the validation API failed, returning following error message: " +
+                resp.statusText;
+            output_manager(funcType, error_msg, null, null);
         });
-
 }
+
