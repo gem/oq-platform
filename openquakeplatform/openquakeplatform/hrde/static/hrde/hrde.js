@@ -345,7 +345,7 @@ var startApp = function() {
 
                 }
                 if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-spectrum' ||  type == 'input-mfds' || type == 'map') {
-                    if (cat != undefined && cat != 'None') {
+                    if (typeof cat != 'undefined' && cat != 'None') {
                         AppVars.curveCategoryList.push(cat);
                     }
                 }
@@ -818,8 +818,8 @@ var startApp = function() {
                             // download only the values that are within the map bounds
                             var tempRecord = AppVars.utfGrid._cache[l].data[m];
                             var tmpLatLng = L.latLng(tempRecord.lat, tempRecord.lon);
-                            if (tmpLatLng == undefined) {
-                                alert("There is a problem with this hazard map, please alert the systems administration of this issue")
+                            if (typeof tmpLatLng == 'undefined') {
+                                alert("There is a problem with this hazard map, please alert the system administrators of this issue");
                             }
                             if (tempPolygon.getBounds().contains(tmpLatLng)) {
                                 hazardMapValues.push([tempRecord.iml, tempRecord.lon, tempRecord.lat]);
@@ -924,7 +924,7 @@ var startApp = function() {
             utfGrid.utfGridType = "curve";
             hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
 
-        } else if (curveType == undefined || curveType == 'map') {
+        } else if (typeof curveType == 'undefined' || curveType == 'map') {
 
             var scope = angular.element($("#layer-list")).scope();
             mapLayerId = scope.selected_map.name;
@@ -1010,7 +1010,7 @@ var startApp = function() {
 
         layerControlLayerSwitch();
         getControlLayerId();
-        if (curveType == undefined || curveType == 'map') {
+        if (typeof curveType == 'undefined' || curveType == 'map') {
             Opacity(tileLayer);
         }
 
@@ -1177,10 +1177,10 @@ var startApp = function() {
 
             try {
                 $('#chartDialog').empty();
-                if ($("#chartDialog").dialog("isOpen") == false) {
+                if ($("#chartDialog").dialog("isOpen") === false) {
                     $('#chartDialog').dialog('open');
                 }
-            } catch (e) {
+            } catch (exc) {
                 // continue
             }
 
@@ -1247,10 +1247,10 @@ var startApp = function() {
 
             try {
                 $('#chartDialog').empty();
-                if ($("#chartDialog").dialog("isOpen") == false) {
+                if ($("#chartDialog").dialog("isOpen") === false) {
                     $('#chartDialog').dialog('open');
                 }
-            } catch (e) {
+            } catch (exc) {
                 // continue
             }
 
@@ -1332,13 +1332,13 @@ var startApp = function() {
             // format the selected map and layer names
             try {
                 AppVars.selectedLayerValue = AppVars.selectedLayerValue.split(":").pop();
-            } catch (e) {
+            } catch (exc) {
                 // continue
             }
 
             try {
                 AppVars.selectedMappedValue = AppVars.selectedMappedValue.split(":").pop();
-            } catch (e) {
+            } catch (exc) {
                 // continue
             }
 
@@ -1347,13 +1347,13 @@ var startApp = function() {
                 var spotValue = "";
                 try {
                     spotValue = e.data.iml;
-                } catch (e) {
+                } catch (exc) {
                     // continue
                 }
 
                 try {
                     $('#chartDialog').empty();
-                    if ($("#chartDialog").dialog("isOpen") == false) {
+                    if ($("#chartDialog").dialog("isOpen") === false) {
                         $('#chartDialog').dialog('open');
                     }
 
@@ -1368,14 +1368,14 @@ var startApp = function() {
 
                     try {
                         prob = e.data.poe;
-                    } catch (e) {
+                    } catch (exc) {
                         // continue
                     }
 
-                    if (prob == undefined) {
+                    if (typeof prob == 'undefined') {
                         try {
                             prob = e.data.prob;
-                        } catch (e) {
+                        } catch (exc) {
                             // continue
                         }
                     }
@@ -1386,7 +1386,7 @@ var startApp = function() {
 
                     probArray = prob.split(',');
                     iml = e.data.iml;
-                    if (iml == undefined) {
+                    if (typeof iml == 'undefined') {
                         iml = AppVars.layerIml;
                     } else {
                         imlArray = iml.split(',');
@@ -1409,17 +1409,17 @@ var startApp = function() {
                     lat = e.data.lat;
                     lng = e.data.lon;
 
-                    if (e.data.YCOORD != undefined) {
+                    if (typeof e.data.YCOORD != 'undefined') {
                         lat = e.data.YCOORD;
                         lng = e.data.XCOORD;
                     }
-                    else if(e.data.latitude != undefined) {
+                    else if(typeof e.data.latitude != 'undefined') {
                         lat = e.data.latitude;
                         lng = e.data.longitude;
                     }
                     invest_time = e.data.invest_tim;
 
-                } catch (e) {
+                } catch (exc) {
                     // continue
                 }
 
@@ -1550,11 +1550,11 @@ var startApp = function() {
                 lat = e.data.lat;
                 lon = e.data.lon;
 
-                if (e.data.YCOORD != undefined) {
+                if (typeof e.data.YCOORD != 'undefined') {
                     lat = e.data.YCOORD;
                     lon = e.data.XCOORD;
                 }
-                else if(e.data.latitude != undefined) {
+                else if(typeof e.data.latitude != 'undefined') {
                     lat = e.data.latitude;
                     lon = e.data.longitude;
                 }
