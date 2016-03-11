@@ -19,6 +19,7 @@ var ex_obj = {
     tbl: {},
     tbl_idx: 0,
     nrml: "",
+    header: [],
 
     // perAreaRefCount is used to keep track of any time perArea is selected
     perAreaRefCount: {
@@ -134,7 +135,7 @@ $('.ex_gid #form').change(function() {
 });
 
 function checkForValueInHeader(header, argument) {
-    var inx = header.indexOf(argument);
+    var inx = ex_obj.header.indexOf(argument);
     return inx;
 }
 
@@ -143,21 +144,21 @@ function ex_updateTable() {
     $('.ex_gid #table').handsontable('destroy');
 
     // Default columns
-    var header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
+    ex_obj.header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
 
     function checkForValue (argument, valueArg) {
         // Modify the table header only when the menu is altered
         // This constraint will allow Limit, Deductible and Occupant elements to be
         // added to the header
         if (argument != 'none' && valueArg === undefined) {
-            if (checkForValueInHeader(header, argument) == -1) {
-                header.push(argument);
+            if (checkForValueInHeader(ex_obj.header, argument) == -1) {
+                ex_obj.header.push(argument);
             }
         // This constraint will allow structural, non-structural, contents and business
         // costs to be added to the header
         } else if (argument != 'none' && valueArg !== undefined) {
-            if (checkForValueInHeader(header, valueArg) == -1) {
-                header.push(valueArg);
+            if (checkForValueInHeader(ex_obj.header, valueArg) == -1) {
+                ex_obj.header.push(valueArg);
             }
         }
     }
@@ -189,22 +190,22 @@ function ex_updateTable() {
 
     var perAreaVisible = $('.ex_gid #perArea:visible').length;
     if (perAreaVisible === 1) {
-        header.push('area');
+        ex_obj.header.push('area');
     }
 
     $('.ex_gid #occupantsCheckBoxes input:checked').each(function() {
-        header.push($(this).attr('value'));
+        ex_obj.header.push($(this).attr('value'));
         // unfocus the selection menu, see the note at the exposure costStruc change event
         $(this).blur();
     });
 
     $('.ex_gid #retrofittingSelect input:checked').each(function() {
-        header.push($(this).attr('value'));
+        ex_obj.header.push($(this).attr('value'));
         // unfocus the selection menu, see the note at the exposure costStruc change event
         $(this).blur();
     });
 
-    var headerLength = header.length;
+    var headerLength = ex_obj.header.length;
 
     // Create the table
     var container = document.getElementById('table');
@@ -213,7 +214,7 @@ function ex_updateTable() {
     /// Exposure Table Settings ///
     ///////////////////////////////
     $('.ex_gid #table').handsontable({
-        colHeaders: header,
+        colHeaders: ex_obj.header,
         rowHeaders: true,
         contextMenu: true,
         startRows: 3,
@@ -248,7 +249,7 @@ $('.ex_gid #convertBtn').click(function() {
 
     // Check for header match
     function checkHeaderMatch (argument) {
-        return header.indexOf(argument);
+        return ex_obj.header.indexOf(argument);
     }
 
     var description = $('.ex_gid #description').val();
