@@ -16,6 +16,10 @@
 */
 
 var ex_obj = {
+    tbl: {},
+    tbl_idx: 0,
+    nrml: "",
+
     // perAreaRefCount is used to keep track of any time perArea is selected
     perAreaRefCount: {
         costStruc : false,
@@ -54,11 +58,7 @@ var ex_obj = {
             $('.ex_gid #perArea').show();
         else
             $('.ex_gid #perArea').hide();
-    },
-    
-    tbl: {},
-    tbl_idx: 0,
-    nrml: ""
+    }
 };
 
 $('.ex_gid #costStruc').change(function() {
@@ -143,7 +143,7 @@ function ex_updateTable() {
     $('.ex_gid #table').handsontable('destroy');
 
     // Default columns
-    header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
+    var header = ['id', 'longitude', 'latitude', 'taxonomy', 'number'];
 
     function checkForValue (argument, valueArg) {
         // Modify the table header only when the menu is altered
