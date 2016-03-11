@@ -192,13 +192,15 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
     var margin = {top: 55, right: 10, bottom: 60, left: 60};
     var width = 450 - margin.left - margin.right;
     var height = 380 - margin.top - margin.bottom;
+    var x_scale;
+    var y_scale;
 
     if (curveType == 'hc') {
-        var x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
-        var y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
+        x_scale = d3.scale.log().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        y_scale = d3.scale.log().range([0, height]).domain([max_value, min_value]);
     } else if (curveType == 'uhs') {
-        var x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
-        var y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
+        x_scale = d3.scale.linear().range([0, width]).domain([d3.min(yAxisVariable), d3.max(yAxisVariable)]);
+        y_scale = d3.scale.linear().range([0, height]).domain([max_value, min_value]);
     }
 
     var xAxis = [], xAxis_n = 1;
@@ -230,10 +232,11 @@ function buildMixedD3Chart(chartData, selectedCurves, curveType) {
         }
 
         if (i === 0) {
+            // FIXME: we have to check this
             xAxis[i].tickFormat(function (d) { return d; });
         }
         else {
-            xAxis[i].tickFormat(function (d) { return ''; });
+            xAxis[i].tickFormat('');
         }
     }
 

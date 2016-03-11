@@ -121,9 +121,7 @@ var startApp = function() {
         $('.leaflet-down').click(function() {
             // If there is a change in the layer order, find the 'top'
             // layer and assigne it's utfGrid
-            var topLayerId = $('.leaflet-control-layers-overlays')[0].firstChild.firstChild.firstChild.id;
-            topLayerId = topLayerId.split('.')[1];
-            checkForIdMatch(topLayerId);
+            getControlLayerId();
         });
 
         $('.leaflet-up').click(function() {
@@ -307,13 +305,16 @@ var startApp = function() {
 
     function checkForMissingData(name, cat, type, grids, application) {
         // Use only valid  data returned from the tilestream server in the application
-        return (
-            name !== undefined && name !== "" && name !== null &&
-            cat !== undefined && cat !== "" && cat !== null &&
-            type !== undefined && type !== "" && type !== null &&
-            grids !== undefined && grids !== "" && grids !== null &&
-            application == 'hazard-viewer'
-        );
+        var parameters = [name, cat, type, grids];
+        parameters.forEach(function(parameter) {
+            if (typeof parameter == 'undefined' || !parameter) {
+                return false;
+            }
+        });
+        if (application !== 'hazard-viewer') {
+            return false;
+        }
+        return true;
     }
 
     $.getJSON(TILESTREAM_API_URL, function(json) {
@@ -331,9 +332,9 @@ var startApp = function() {
             var wiki = json[i].wiki_link;
 
             if (checkForMissingData(name, cat, type, grids, application)) {
-                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-spectrum' || type == 'curve-loss' || type == 'input-mfds' || type == 'map') {
+                if ($.inArray(type, ['curve-hc', 'curve-uhs', 'curve-spectrum', 'curve-loss', 'input-mfds', 'map']) != -1) {
 
-                    if (wiki !== undefined ) {
+                    if (typeof wiki !== 'undefined' ) {
                         AppVars.wikiLinkList[cat] = wiki;
                     }
 
@@ -344,50 +345,44 @@ var startApp = function() {
                     AppVars.curveLayerGrids.push(gridName);
 
                 }
-                if (type == 'curve-hc' || type == 'curve-uhs' || type == 'curve-spectrum' ||  type == 'input-mfds' || type == 'map') {
+                if ($.inArray(type, ['curve-hc', 'curve-uhs', 'curve-spectrum', 'input-mfds', 'map']) != -1) {
                     if (typeof cat != 'undefined' && cat != 'None') {
                         AppVars.curveCategoryList.push(cat);
                     }
                 }
+                if (typeof grids !== 'undefined') {
+                    grid = grids.toString();
+                    gridName = grid.split('/')[4];
+                }
                 if (type == 'curve-uhs') {
                     AppVars.uhsLayersByCat[cat] = [];
                     AppVars.uhsLayerNames[name] = [];
-                    grid = grids.toString();
-                    gridName = grid.split('/')[4];
                     AppVars.uhsLayerGrids.push(gridName);
                 }
                 if (type == 'curve-spectrum') {
                     AppVars.spectrumLayersByCat[cat] = [];
                     AppVars.spectrumLayerNames[name] = [];
-                    grid = grids.toString();
-                    gridName = grid.split('/')[4];
                     AppVars.spectrumLayerGrids.push(gridName);
                 }
                 if (type == 'curve-loss') {
                     AppVars.lossCategoryList.push(cat);
                     AppVars.lossLayersByCat[cat] = [];
                     AppVars.lossLayerNames[name] = [];
-                    grid = grids.toString();
-                    gridName = grid.split('/')[4];
                     AppVars.lossLayerGrids.push(gridName);
                 }
                 if (type == 'input-mfds') {
                     AppVars.inputLayersByCat[cat] = [];
                     AppVars.inputLayerNames[name] = [];
-                    grid = grids.toString();
-                    gridName = grid.split('/')[4];
                     AppVars.inputLayerGrids.push(gridName);
                 }
                 if (type == 'map') {
                     AppVars.mapLayerNames[name] = [];
                     AppVars.mapLayersByCat[cat] = [];
-                    if (grids !== undefined) {
-                        grid = grids.toString();
-                        gridName = grid.split('/')[4];
+                    if (typeof gridName !== 'undefined') {
                         AppVars.mapLayerGrids.push(gridName);
                     }
                 }
-                if (grids !== undefined) {
+                if (typeof grids !== 'undefined') {
                     AppVars.mapLayerNames[grids] = [];
                 }
             }
@@ -411,82 +406,84 @@ var startApp = function() {
                 template = template.replace(/{{{/g, '').replace(/}}}/g, '');
                 template = template.substring(0, template.indexOf('{{'));
 
-                if (type == 'curve-hc') {
-                    var curveLayerId = json[j].id;
-                    var curveLayerTitle = json[j].mapped_value;
-                    AppVars.curveLayerNames[name].push(curveLayerId);
-                    AppVars.curveLayersByCat[cat].push(curveLayerTitle);
+                switch (type) {
+                    case 'curve-hc':
+                        var curveLayerId = json[j].id;
+                        var curveLayerTitle = json[j].mapped_value;
+                        AppVars.curveLayerNames[name].push(curveLayerId);
+                        AppVars.curveLayersByCat[cat].push(curveLayerTitle);
 
-                    if (chartType == 'single') {
-                        AppVars.curvesByInvestSingle[j] = name;
-                    }
-                    else if (chartType == 'mixed') {
-                        AppVars.curvesByInvestMixed[j] = name;
-                        AppVars.curvesAvailable[j] = template;
-                    }
-                }
+                        if (chartType == 'single') {
+                            AppVars.curvesByInvestSingle[j] = name;
+                        }
+                        else if (chartType == 'mixed') {
+                            AppVars.curvesByInvestMixed[j] = name;
+                            AppVars.curvesAvailable[j] = template;
+                        }
+                        break;
 
-                if (type == 'curve-uhs') {
-                    var uhsLayerId = json[j].id;
-                    var uhsLayerTitle = json[j].mapped_value;
-                    AppVars.uhsLayerNames[name].push(uhsLayerId);
-                    AppVars.uhsLayersByCat[cat].push(uhsLayerTitle);
+                    case 'curve-uhs':
+                        var uhsLayerId = json[j].id;
+                        var uhsLayerTitle = json[j].mapped_value;
+                        AppVars.uhsLayerNames[name].push(uhsLayerId);
+                        AppVars.uhsLayersByCat[cat].push(uhsLayerTitle);
 
-                    if (chartType == 'mixed') {
-                        AppVars.uhsByInvestMixed[j] = name;
-                        AppVars.uhsAvailable[j] = template;
-                    }
-                    else if (chartType == 'single') {
-                        AppVars.uhsByInvestSingle[j] = name;
-                    }
-                }
+                        if (chartType == 'single') {
+                            AppVars.uhsByInvestSingle[j] = name;
+                        }
+                        else if (chartType == 'mixed') {
+                            AppVars.uhsByInvestMixed[j] = name;
+                            AppVars.uhsAvailable[j] = template;
+                        }
+                        break;
 
-                if (type == 'curve-spectrum') {
-                    var spectrumLayerId = json[j].id;
-                    var spectrumLayerTitle = json[j].mapped_value;
-                    AppVars.spectrumLayerNames[name].push(spectrumLayerId);
-                    AppVars.spectrumLayersByCat[cat].push(spectrumLayerTitle);
+                    case 'curve-spectrum':
+                        var spectrumLayerId = json[j].id;
+                        var spectrumLayerTitle = json[j].mapped_value;
+                        AppVars.spectrumLayerNames[name].push(spectrumLayerId);
+                        AppVars.spectrumLayersByCat[cat].push(spectrumLayerTitle);
 
-                    if (chartType == 'mixed') {
-                        AppVars.spectrumByInvestMixed[j] = name;
-                        AppVars.spectrumAvailable[j] = template;
-                    }
-                    else if (chartType == 'single') {
-                        AppVars.spectrumByInvestSingle[j] = name;
-                    }
-                }
+                        if (chartType == 'single') {
+                            AppVars.spectrumByInvestSingle[j] = name;
+                        }
+                        else if (chartType == 'mixed') {
+                            AppVars.spectrumByInvestMixed[j] = name;
+                            AppVars.spectrumAvailable[j] = template;
+                        }
+                        break;
 
-                if (type == 'curve-loss') {
-                    AppVars.lossLayerId = json[j].id;
-                    AppVars.lossLayerTitle = json[j].mapped_value;
-                    AppVars.lossLayerNames[name].push(AppVars.lossLayerId);
-                    AppVars.lossLayersByCat[cat].push(AppVars.lossLayerTitle);
-                    AppVars.lossByInvestMixed[j] = name;
-                    AppVars.lossAvailable[j] = template;
-                    AppVars.lossByInvestSingle[j] = name;
-                }
+                    case 'curve-loss':
+                        AppVars.lossLayerId = json[j].id;
+                        AppVars.lossLayerTitle = json[j].mapped_value;
+                        AppVars.lossLayerNames[name].push(AppVars.lossLayerId);
+                        AppVars.lossLayersByCat[cat].push(AppVars.lossLayerTitle);
+                        AppVars.lossByInvestMixed[j] = name;
+                        AppVars.lossAvailable[j] = template;
+                        AppVars.lossByInvestSingle[j] = name;
+                        break;
 
-                if (type == 'input-mfds') {
-                    var inputLayerId = json[j].id;
-                    var inputLayerTitle = json[j].mapped_value;
-                    AppVars.inputLayerNames[name].push(inputLayerId);
-                    AppVars.inputLayersByCat[cat].push(inputLayerTitle);
+                    case 'input-mfds':
+                        var inputLayerId = json[j].id;
+                        var inputLayerTitle = json[j].mapped_value;
+                        AppVars.inputLayerNames[name].push(inputLayerId);
+                        AppVars.inputLayersByCat[cat].push(inputLayerTitle);
 
-                    if (chartType == 'mixed') {
-                        AppVars.InputByInvestMixed[j] = name;
-                        AppVars.inputAvailable[j] = template;
-                    }
-                    else if (chartType == 'single') {
-                        AppVars.inputByInvestSingle[j] = name;
-                    }
-                }
+                        if (chartType == 'single') {
+                            AppVars.inputByInvestSingle[j] = name;
+                        }
+                        else if (chartType == 'mixed') {
+                            AppVars.InputByInvestMixed[j] = name;
+                            AppVars.inputAvailable[j] = template;
+                        }
+                        break;
 
-                if (type == 'map') {
-                    mapLayerId = json[j].id;
-                    mapLayerTitle = json[j].mapped_value;
-                    chartType = json[j].chartType;
-                    AppVars.mapLayerNames[name].push(mapLayerId);
-                    AppVars.mapLayersByCat[cat].push(mapLayerTitle);
+                    case 'map':
+                        mapLayerId = json[j].id;
+                        mapLayerTitle = json[j].mapped_value;
+                        chartType = json[j].chartType;
+                        AppVars.mapLayerNames[name].push(mapLayerId);
+                        AppVars.mapLayersByCat[cat].push(mapLayerTitle);
+                        break;
                 }
             }
         }
@@ -548,7 +545,7 @@ var startApp = function() {
             }
         }
 
-        if (chartType === undefined) {
+        if (typeof chartType === 'undefined') {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
@@ -588,7 +585,7 @@ var startApp = function() {
             }
         }
 
-        if (chartType === undefined) {
+        if (typeof chartType === 'undefined') {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
@@ -619,7 +616,7 @@ var startApp = function() {
             }
         }
 
-        if (chartType === undefined) {
+        if (typeof chartType === 'undefined') {
             alert('Whoops, there is an issue with the curve you are trying to load,' +
                 ' One thing I can think of is some metadata that is required by this app is missing');
         }
@@ -638,7 +635,7 @@ var startApp = function() {
         var strUser = e.options[e.selectedIndex].value;
         // Add the wiki link to the dialog menu
         $('#wiki-link').empty();
-        if (AppVars.wikiLinkList[strUser] !== undefined) {
+        if (typeof AppVars.wikiLinkList[strUser] !== 'undefined') {
             $('#wiki-link').append('<a href="'+AppVars.wikiLinkList[strUser]+'" style="color: rgb(0,102,204)" target="_blank">Detailed Documentation</a>' );
         }
 
@@ -800,7 +797,7 @@ var startApp = function() {
     // Logic for downloading hazard map csv
     $('#HMDownload').button().click(function() {
 
-        if (AppVars.utfGrid !== undefined && AppVars.utfGrid.utfGridType == 'map') {
+        if (typeof AppVars.utfGrid !== 'undefined' && AppVars.utfGrid.utfGridType == 'map') {
             var zoomLevel = map.getZoom();
             var bounds = map.getBounds();
             var tempPolygon = L.polygon([
@@ -861,102 +858,94 @@ var startApp = function() {
         });
     }
 
+    function getMetadataAndSetUtfGrid(selectedLayer) {
+        getLayerMetadata(selectedLayer);
+
+        utfGrid = createUtfLayerGroups(selectedLayer);
+        utfGrid.utfGridType = "curve";
+        hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
+    }
+
     // Add single curve layers form tilestream list to map
     function addSingleCurveToMap(curveType) {
         var utfGrid = {};
-        if (curveType == 'hc') {
+        switch (curveType) {
+            case 'hc':
+                var scope = angular.element($("#curve-list")).scope();
+                var curveLayerId = scope.selected_curve.name;
 
-            var scope = angular.element($("#curve-list")).scope();
-            var curveLayerId = scope.selected_curve.name;
+                // Look up the layer id using the layer name
+                var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
+                var selectedLayer = curveLayerIdArray.toString();
 
-            // Look up the layer id using the layer name
-            var curveLayerIdArray = AppVars.curveLayerNames[curveLayerId];
-            var selectedLayer = curveLayerIdArray.toString();
+                getMetadataAndSetUtfGrid(selectedLayer);
+                break;
 
-            getLayerMetadata(selectedLayer);
+            case 'uhs':
+                var scope = angular.element($("#uhs-list")).scope();
+                var uhsLayerId = scope.selected_uhs.name;
 
-            utfGrid = createUtfLayerGroups(selectedLayer);
-            utfGrid.utfGridType = "curve";
-            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
+                // Look up the layer id using the layer name
+                var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
+                var selectedLayer = uhsLayerIdArray.toString();
 
-        } else if (curveType == 'uhs') {
+                getMetadataAndSetUtfGrid(selectedLayer);
+                break;
 
-            var scope = angular.element($("#uhs-list")).scope();
-            var uhsLayerId = scope.selected_uhs.name;
+            case 'spectrum':
+                var scope = angular.element($("#spectrum-list")).scope();
+                var spectrumLayerId = scope.selected_spectrum.name;
 
-            // Look up the layer id using the layer name
-            var uhsLayerIdArray = AppVars.uhsLayerNames[uhsLayerId];
-            var selectedLayer = uhsLayerIdArray.toString();
+                // Look up the layer id using the layer name
+                var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
+                var selectedLayer = spectrumLayerIdArray.toString();
 
-            getLayerMetadata(selectedLayer);
+                getMetadataAndSetUtfGrid(selectedLayer);
+                break;
 
-            utfGrid = createUtfLayerGroups(selectedLayer);
-            utfGrid.utfGridType = "curve";
-            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
+            case 'input':
+                var scope = angular.element($("#input-list")).scope();
+                var inputLayerId = scope.selected_input.name;
 
-        } else if (curveType == 'spectrum') {
+                // Look up the layer id using the layer name
+                var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
+                var selectedLayer = inputLayerIdArray.toString();
 
-            var scope = angular.element($("#spectrum-list")).scope();
-            var spectrumLayerId = scope.selected_spectrum.name;
+                getMetadataAndSetUtfGrid(selectedLayer);
+                break;
 
-            // Look up the layer id using the layer name
-            var spectrumLayerIdArray = AppVars.spectrumLayerNames[spectrumLayerId];
-            var selectedLayer = spectrumLayerIdArray.toString();
+            default:  // undefined or 'map'
+                var scope = angular.element($("#layer-list")).scope();
+                mapLayerId = scope.selected_map.name;
 
-            getLayerMetadata(selectedLayer);
+                // Look up the layer id using the layer name
+                var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
+                var selectedLayer = mapLayerIdArray.toString();
 
-            utfGrid = createUtfLayerGroups(selectedLayer);
-            utfGrid.utfGridType = "curve";
-            hazardSpectrumUtfGridClickEvent(curveType, utfGrid, selectedLayer);
+                // get more information about the selected layer
+                $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
+                    AppVars.selectedHazardMapName = json.name;
+                    AppVars.selectedMappedValue = json.mapped_value;
+                    var bounds = json.bounds;
+                    var htmlLegend = json.html_legend;
+                    $('#legendDialog').empty();
+                    $("#legendDialog").dialog({height:315});
+                    $('#legendDialog').dialog('open');
+                    $('#legendDialog').append(htmlLegend);
+                    map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
+                });
 
-        } else if (curveType == 'input') {
-
-            var scope = angular.element($("#input-list")).scope();
-            var inputLayerId = scope.selected_input.name;
-
-            // Look up the layer id using the layer name
-            var inputLayerIdArray = AppVars.inputLayerNames[inputLayerId];
-            var selectedLayer = inputLayerIdArray.toString();
-
-            getLayerMetadata(selectedLayer);
-
-            utfGrid = createUtfLayerGroups(selectedLayer);
-            utfGrid.utfGridType = "curve";
-            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
-
-        } else if (typeof curveType == 'undefined' || curveType == 'map') {
-
-            var scope = angular.element($("#layer-list")).scope();
-            mapLayerId = scope.selected_map.name;
-
-            // Look up the layer id using the layer name
-            var mapLayerIdArray = AppVars.mapLayerNames[mapLayerId];
-            var selectedLayer = mapLayerIdArray.toString();
-
-            // get more information about the selected layer
-            $.getJSON(TILESTREAM_API_URL + selectedLayer, function(json) {
-                AppVars.selectedHazardMapName = json.name;
-                AppVars.selectedMappedValue = json.mapped_value;
-                var bounds = json.bounds;
-                var htmlLegend = json.html_legend;
-                $('#legendDialog').empty();
-                $("#legendDialog").dialog({height:315});
-                $('#legendDialog').dialog('open');
-                $('#legendDialog').append(htmlLegend);
-                map.fitBounds(L.latLngBounds(L.latLng(bounds[1], bounds[0]), L.latLng(bounds[3], bounds[2])));
-            });
-
-            // prevent duplicate hazard maps to be loaded
-            for (var k in AppVars.layerControl._layers) {
-                var nameTemp = AppVars.layerControl._layers[k].name;
-                if (nameTemp == selectedLayer) {
-                    delete AppVars.layerControl._layers[k];
+                // prevent duplicate hazard maps to be loaded
+                for (var k in AppVars.layerControl._layers) {
+                    var nameTemp = AppVars.layerControl._layers[k].name;
+                    if (nameTemp == selectedLayer) {
+                        delete AppVars.layerControl._layers[k];
+                    }
                 }
-            }
 
-            utfGrid = createUtfLayerGroups(selectedLayer, curveType);
-            utfGrid.utfGridType = "map";
-            hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
+                utfGrid = createUtfLayerGroups(selectedLayer, curveType);
+                utfGrid.utfGridType = "map";
+                hazardCurveUtfGridClickEvent(curveType, utfGrid, selectedLayer);
         }
     }
 
@@ -1322,6 +1311,7 @@ var startApp = function() {
                 }
             }
 
+            // FIXME: vectorOfPeriods out of scope (it will get it for the last spectrum)
             AppVars.layerIml = vectorofPeriods;
             buildMixedSpectrumChart(spectrumCurves, lat, lng);
         });
@@ -1351,20 +1341,20 @@ var startApp = function() {
                     // continue
                 }
 
+                var prob;
+                var iml;
+                var probArray = [];
+                var imlArray = [];
+                var lat;
+                var lng;
+                var invest_time;
+                var imt;
+
                 try {
                     $('#chartDialog').empty();
                     if ($("#chartDialog").dialog("isOpen") === false) {
                         $('#chartDialog').dialog('open');
                     }
-
-                    var prob;
-                    var iml;
-                    var probArray = [];
-                    var imlArray = [];
-                    var lat;
-                    var lng;
-                    var invest_time;
-                    var imt;
 
                     try {
                         prob = e.data.poe;
@@ -1385,7 +1375,11 @@ var startApp = function() {
                     }
 
                     probArray = prob.split(',');
-                    iml = e.data.iml;
+                    try {
+                        iml = e.data.iml;
+                    } catch(exc) {
+                        // continue
+                    }
                     if (typeof iml == 'undefined') {
                         iml = AppVars.layerIml;
                     } else {
@@ -1421,6 +1415,7 @@ var startApp = function() {
 
                 } catch (exc) {
                     // continue
+                    // FIXME: Long try/catch that doesn't handle any error!
                 }
 
                 if (utfGrid.utfGridType == "map") {
