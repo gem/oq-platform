@@ -41,11 +41,12 @@ $(document).ready(function () {
     $('.ex_gid #occupantsCheckBoxes [value="night"]').prop('checked', true);
     $('.ex_gid #occupantsCheckBoxes [value="night"]').trigger('change');
 
-    var data = [[]];
-    for (var i = 0 ; i < 14 ; i++) {
-        data[0][i] = parseFloat(i) / 100.0;
+    var data = [[], []];
+    for (var e = 0 ; e < 2 ; e++) {
+        for (var i = 0 ; i < 14 ; i++) {
+            data[e][i] = parseFloat(e) + parseFloat(i) / 100.0;
+        }
     }
-
     var table = $('.ex_gid #table').handsontable('getInstance');
     table.loadData(data);
 
