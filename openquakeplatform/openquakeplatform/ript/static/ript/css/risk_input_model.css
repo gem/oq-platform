@@ -5,9 +5,10 @@ width: 100%;
 .menuItems{
 	left: 0px;
     top: 0px;
-    width: 420px;
+    width: 500px;
     text-align: right;
-    padding-left: 12%;
+    padding-left: 16px;
+    margin: auto;
 }
 
 .menuItems label {
@@ -44,13 +45,21 @@ clear: left;
 	float: right;
 }
 
+.vfsForm input {
+	float: right;
+}
+
+.vfsForm select {
+	float: right;
+}
+
 .ffsTable {
-	width: 50%;
+	width: 60%;
 	margin-left: 20px;
 }
 
 .vfsTable {
-	width: 80%;
+	width: 60%;
 	margin-left: 3px;
 }
 
