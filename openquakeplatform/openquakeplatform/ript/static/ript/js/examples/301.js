@@ -12,9 +12,13 @@ $(document).ready(function () {
         $('.vf_gid .table1_id [name="imls"]').val('0.2 0.3 0.4 0.5 0.7 0.8');
         $('.vf_gid .table1_id [name="imls"]').trigger('change');
 
-        var data = [ [] ];
-        for (var i = 0 ; i < table.countCols() ; i++) {
-            data[0][i] = parseFloat(i) / 10.0;
+        var data = table.getData(0,0, table.countRows() - 1, table.countCols() - 1);
+        console.log("probmass:: rows " + table.countRows() + " cols: " + table.countCols());
+
+        for (var e = 0 ; e < table.countRows() ; e++) {
+            for (var i = 0 ; i < table.countCols() ; i++) {
+                data[e][i] = (i / 100.0) + (e / 10.0);
+            }
         }
         table.loadData(data);
     }
@@ -28,9 +32,11 @@ $(document).ready(function () {
         $('.vf_gid .table2_id [name="imls"]').val('1.2 1.3 1.4 1.5 1.7 1.8');
         $('.vf_gid .table2_id [name="imls"]').trigger('change');
 
-        var data = [ [] ];
-        for (var i = 0 ; i < table.countCols() ; i++) {
-            data[0][i] = parseFloat(i) / 20.0;
+        var data = [ [], [], [] ];
+        for (var e = 0 ; e < table.countRows() ; e++) {
+            for (var i = 0 ; i < table.countCols() ; i++) {
+                data[e][i] = (i / 100.0) + (e / 10.0);
+            }
         }
         table.loadData(data);
     }
@@ -44,8 +50,16 @@ $(document).ready(function () {
         $('.vf_gid .table3_id [name="imls"]').val('2.2 2.3 2.4 2.5');
         $('.vf_gid .table3_id [name="imls"]').trigger('change');
 
-        var data = [ [ 0.1, 0.2 ], [ 0.3, 0.4 ], [ 0.5, 0.6 ], [ 0.7, 0.8 ] ];
+
+        // var data = [ [ 0, 0.1, 0.2 ], [ 0, 0.3, 0.4 ], [ 0, 0.5, 0.6 ], [ 0, 0.7, 0.8 ] ];
+        var data = table.getData(0,0, table.countRows() - 1, table.countCols() - 1);
+        for (var e = 0 ; e < table.countRows() ; e++) {
+            for (var i = 1 ; i < 3 ; i++) {
+                data[e][i] = i / 10.0 + e;
+            }
+        }
         table.loadData(data);
+
     }
 
     $('.vf_gid #convertBtn').trigger('click');

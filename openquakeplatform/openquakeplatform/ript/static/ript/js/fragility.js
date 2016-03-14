@@ -164,8 +164,6 @@ function ff_updateTable (funcType) {
         }
     }
 
-    if (0 == 1) { activeTablesObj[count] = table; }
-
     $('.ff_gid #outputText').empty();
     $('.ff_gid #convertBtn').show();
 
