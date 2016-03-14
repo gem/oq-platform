@@ -54,7 +54,7 @@ var ex_obj = {
     perAreaManager: function(selectedValue, element) {
         // Manage all define cost elements that are using perArea
         this.perAreaUpdate(selectedValue, element);
-        
+
         if (this.perAreaIsVisible())
             $('.ex_gid #perArea').show();
         else

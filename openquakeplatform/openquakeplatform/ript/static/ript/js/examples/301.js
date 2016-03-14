@@ -11,10 +11,9 @@ $(document).ready(function () {
         $('.vf_gid .table1_id [name="imt"]').val('PGA');
         $('.vf_gid .table1_id [name="imls"]').val('0.2 0.3 0.4 0.5 0.7 0.8');
         $('.vf_gid .table1_id [name="imls"]').trigger('change');
-        
-        var cells = $('.vf_gid .table1_id table.htCore td');
-        var data = [ [ 0.4 ] ];
-        for (var i = 1 ; i < cells.length ; i++) {
+
+        var data = [ [] ];
+        for (var i = 0 ; i < table.countCols() ; i++) {
             data[0][i] = parseFloat(i) / 10.0;
         }
         table.loadData(data);
@@ -28,11 +27,10 @@ $(document).ready(function () {
         $('.vf_gid .table2_id [name="imt"]').val('PGA');
         $('.vf_gid .table2_id [name="imls"]').val('1.2 1.3 1.4 1.5 1.7 1.8');
         $('.vf_gid .table2_id [name="imls"]').trigger('change');
-        
-        var cells = $('.vf_gid .table2_id table.htCore td');
-        var data = [ [ 0.4 ] ];
-        for (var i = 1 ; i < cells.length ; i++) {
-            data[0][i] = 3.0 + parseFloat(i) / 10.0;
+
+        var data = [ [] ];
+        for (var i = 0 ; i < table.countCols() ; i++) {
+            data[0][i] = parseFloat(i) / 20.0;
         }
         table.loadData(data);
     }
