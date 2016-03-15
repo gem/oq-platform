@@ -109,7 +109,7 @@ def _validate_nrml_ex(request, is_sendback):
                 error_msg=error_msg, error_line=error_line, valid=False)
     else:
         if is_sendback:
-            if func_type in [ 'exposure', 'fragility', 'vulnerability' ]:
+            if func_type in [ 'exposure', 'fragility', 'vulnerability', 'sites_conditions' ]:
                 filename = func_type + '_model.xml'
             else:
                 filename = 'unknown_model.xml'

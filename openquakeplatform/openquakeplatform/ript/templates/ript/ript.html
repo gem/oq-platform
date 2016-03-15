@@ -53,6 +53,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <li><a href="#tabs-1">Exposure</a></li>
     <li><a href="#tabs-2">Fragility</a></li>
     <li><a href="#tabs-3">Vulnerability</a></li>
+    <li><a href="#tabs-4">Sites Conditions</a></li>
   </ul>
   <!-- EXPOSURE -->
   <div id="tabs-1" class="ex_gid">
@@ -66,6 +67,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
   <div id="tabs-3" class="vf_gid">
   {% include "ript/tabs/vulnerability.html" %}
   </div>
+  <!-- SITES CONDITIONS -->
+  <div id="tabs-4" class="sc_gid">
+  {% include "ript/tabs/sites_conds.html" %}
+  </div>
 </div>
 
 {% endblock body %}
@@ -78,7 +83,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
         if(typeof help !== "undefined") { help.href+='/explore/'; }
         var tab_id_s = "{{ request.GET.tab_id }}", tab_id;
         tab_id = parseInt(tab_id_s) - 1;
-        if (tab_id < 0 || tab_id > 2) {
+        if (tab_id < 0 || tab_id > 3) {
             tab_id = 0;
         }
         $( "#tabs" ).tabs({active: tab_id });
@@ -89,10 +94,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <script src="{{ STATIC_URL }}ript/js/exposure.js"></script>
     <script src="{{ STATIC_URL }}ript/js/fragility.js"></script>
     <script src="{{ STATIC_URL }}ript/js/vulnerability.js"></script>
+    <script src="{{ STATIC_URL }}ript/js/sites_conds.js"></script>
     <script src="{{ STATIC_URL }}ript/js/selectTextareaLine.js"></script>
     <script src="{{ STATIC_URL }}ript/js/selectAllTextareaText.js"></script>
     <script src="{{ STATIC_URL }}ript/js/validateAndDisplayNRML.js"></script>
-{% if request.GET.example_id|add:"0" > 0 and request.GET.example_id|add:"0" < 100 and request.GET.tab_id|add:"0" > 0 and request.GET.tab_id|add:"0" < 4 %}
+{% if request.GET.example_id|add:"0" > 0 and request.GET.example_id|add:"0" < 100 and request.GET.tab_id|add:"0" > 0 and request.GET.tab_id|add:"0" < 5 %}
 <script src="{{ STATIC_URL }}ript/js/examples/{{ request.GET.tab_id|add:"0" }}{{ request.GET.example_id|add:"0"|stringformat:"02d" }}.js"></script>
 {% else %}
     <!-- not example found -->
