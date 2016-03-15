@@ -1,5 +1,6 @@
   [Paolo Tormene]
   * irv: less redundant calculations and better management of operators
+  * irv: remove color themes (feature that was not needed and that contained a bug)
 
 python-oq-platform (1.4.1)
 
