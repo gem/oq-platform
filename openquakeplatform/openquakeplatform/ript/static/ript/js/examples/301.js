@@ -13,7 +13,6 @@ $(document).ready(function () {
         $('.vf_gid .table1_id [name="imls"]').trigger('change');
 
         var data = table.getData(0,0, table.countRows() - 1, table.countCols() - 1);
-        console.log("probmass:: rows " + table.countRows() + " cols: " + table.countCols());
 
         for (var e = 0 ; e < table.countRows() ; e++) {
             for (var i = 0 ; i < table.countCols() ; i++) {

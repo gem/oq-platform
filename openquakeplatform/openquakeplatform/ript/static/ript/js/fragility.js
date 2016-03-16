@@ -44,8 +44,6 @@ function ff_updateTable (funcType) {
     var table;
     var format_name = ff_sh2long(funcType);
 
-    console.log("funcType: " + funcType);
-
     // Get info from the form and build the table header
     ff_obj.limitStates = $('.ff_gid #limitStates').val().split(',');
     var limitStatesHeader = [];
@@ -172,7 +170,6 @@ function ff_updateTable (funcType) {
 
     // Logic to remove a table
     $('.ff_gid .table' + tbl_idx + '_id [name="destroy_table"]').click(function() {
-        console.log('click here' + tbl_idx);
         $('.ff_gid #table' + tbl_idx).remove();
         delete ff_obj.tbl[tbl_idx];
         if (Object.keys(ff_obj.tbl).length == 0) {
@@ -185,12 +182,10 @@ function ff_updateTable (funcType) {
     // Logic to manage newRow button
     $('.ff_gid .table' + tbl_idx + '_id #new_row_add').click(function() {
         var table;
-        console.log($('.ff_gid [name="tableDiv'+ff_obj.tbl_idx+'"]'));
         table = $('.ff_gid [name="tableDiv'+ff_obj.tbl_idx+'"]').handsontable("getInstance");
         table.alter('insert_row', table.countRows());
     });
 
-    // TODO this
     // Increase the ffs panel when many limit states are defined
     if (limitStateLength > 5) {
         $('.ff_gid .ffsTableDiv').height(240 + (limitStateLength * 1.5));
@@ -199,7 +194,6 @@ function ff_updateTable (funcType) {
 }
 
 $('.ff_gid #downloadBtn').click(function() {
-    console.log("click download");
     sendbackNRML(ff_obj.nrml, 'ff');
 });
 
