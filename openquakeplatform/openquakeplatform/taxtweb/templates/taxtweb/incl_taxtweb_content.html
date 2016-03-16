@@ -1,0 +1,261 @@
+<div class="grand_parent">
+    <ul class="tab">
+        {{ tab_content|safe }}
+        {% if is_popup %}<li id="id_populate_form" style="float: right; background-color: white; color: red; font-weight: bold;" class="tab" onclick="populate_form();"><span>Populate Form</span></li>{% endif %}
+        <li id="id_help_form" style="float: right; color: black;" class="tab" onclick="gem_help();"><span title="click here and than what you are interested in">{% if is_popup %}Help{% else %}Click and Help{% endif %}</span></li>
+        <li id="id_intro_form" style="float: right; color: black;" class="tab" onclick="window.open('http://www.globalquakemodel.org/what/physical-integrated-risk/building-taxonomy/', '_blank');"><span title="an introduction to building taxonomy">Introduction</span></li>
+    </ul>
+    <div id="main_content_parent" style="border-top-width: 0; border-color: #F8F8F8 #1B75A7 #1B75A7; position: relative; width: 800px; height: 600px; /* background-color: #ccccff; blue */">
+        <div id="main_content-1" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; margin: 0px;/* background-color: #ffcccc; /*red */">
+            <ul class="subtab">
+                {{ sub1tab_content|safe }}
+                <li class="subtab"><span><input type="checkbox" id="DirectionCB">Use same parameters in both directions</span></li>
+            </ul>
+
+            <div id="sub1_content-1" style="position: absolute; display: none; width: 798px; background-color: #f0f0f0; border: 1px solid; border-color: #f0f0f0 #f0f0f0 #1b75a7 #f0f0f0;">
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/direction">Direction specification:</h4>
+                    <table class="dir_spec"><tr>
+                        <td><input type="radio" id="Direction1RB1" name="sub1_xdir" checked value="false" onclick="taxt_Direction1RB1Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/unspecified-direction--d99">Unspecified direction</span></td>
+                        <td><input type="radio" id="Direction1RB2" name="sub1_xdir" value="true"          onclick="taxt_Direction1RB2Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/parallel-to-street--pf">Parallel to street</span></td>
+                    </tr></table>
+                </div>
+
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-of-the-lateral-load-resisting-system">Material of lateral load-resisting system</h4>
+                    <table class="dir_spec"><tr>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-type">Material type:</span><br>
+                                 <select id="MaterialCB11"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-technology">Material technology:</span><br>
+                                 <select id="MaterialCB21"></select></div></td>
+                      </tr><tr>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-properties">Material Properties:</span><br>
+                                 <select id="MaterialCB31"></select></div></td>
+                        <td><div>Material technology (additional):<br>
+                                 <select  id="MaterialCB41"></select></div></td>
+                    </tr></table>
+                </div>
+
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lateral-load-resisting-system">Lateral load-resisting system</h4>
+                    <table class="dir_spec"><tr>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/type-of-lateral-load-resisting-system">Type lateral load-resisting system:</span><br>
+                          <select id="SystemCB11"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/system-ductility">System ductility:</span><br>
+                          <select id="SystemCB21"></select></div></td>
+                    </tr></table>
+                </div>
+
+            </div>
+            <div id="sub1_content-2" style="position: absolute; display: none; width: 798px; background-color: #f0f0f0; border: 1px solid; border-color: #f0f0f0 #f0f0f0 #1b75a7 #f0f0f0;">
+
+
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/direction">Direction specification:</h4>
+                    <table class="dir_spec"><tr>
+                        <td><input type="radio" id="Direction2RB1" name="sub1_ydir" checked value="unspec" onclick="taxt_Direction2RB1Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/unspecified-direction--d99">Unspecified direction</span></td>
+                        <td><input type="radio" id="Direction2RB3" name="sub1_ydir" value="spec"           onclick="taxt_Direction2RB3Click(this);"><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/perpendicular-to-street--of">Perpendicular to street</span></td>
+                    </tr></table>
+                </div>
+
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-of-the-lateral-load-resisting-system">Material of lateral load-resisting system</h4>
+                    <table class="dir_spec"><tr>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-type">Material type:</span><br>
+                                 <select id="MaterialCB12"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-technology">Material technology:</span><br>
+                                 <select id="MaterialCB22"></select></div></td>
+                      </tr><tr>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/material-properties">Material Properties:</span><br>
+                                 <select id="MaterialCB32"></select></div></td>
+                        <td><div>Material technology (additional):<br>
+                                 <select  id="MaterialCB42"></select></div></td>
+                    </tr></table>
+                </div>
+
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/lateral-load-resisting-system">Lateral load-resisting system</h4>
+                    <table class="dir_spec"><tr>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/type-of-lateral-load-resisting-system">Type lateral load-resisting system:</span><br>
+                          <select id="SystemCB12"></select></div></td>
+                        <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/system-ductility">System ductility:</span><br>
+                          <select id="SystemCB22"></select></div></td>
+                    </tr></table>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="main_content-2" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; background-color: #f8f8f8; /* green */">
+            <div class="data-group">
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/height">Height:</h4>
+                <table style="width: 95%;"><tr>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/number-of-storeys-above-ground--h">Number of storeys above ground:</span></div></td>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/number-of-storeys-below-ground--hb">Number of storeys below ground:</span></div></td>
+                </tr><tr>
+                    <td><select id="HeightCB1"></select></td>
+                    <td><select id="HeightCB2"></select></td>
+                </tr><tr>
+                    <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE11"><input style="display:none; width: 45%;" type="text" id="noStoreysE12"></div></td>
+                    <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE21"><input style="display:none; width: 45%;" type="text" id="noStoreysE22"></div></td>
+                </tr><tr>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/height-of-ground-floor-level-above-grade--hf">Height of ground floor level above grade (m):</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/slope-of-the-ground-general">Slope of the ground (degrees):</span></div></td>
+                </tr><tr>
+                    <td><select id="HeightCB3"></select></td>
+                    <td><select id="HeightCB4"></select></td>
+                </tr><tr>
+                    <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE31"><input style="display:none; width: 45%;" type="text" id="noStoreysE32"></div></td>
+
+                    <td><div style="white-space:nowrap;"><input style="width: 90%;" type="text" id="noStoreysE41"></div></td>
+               </tr></table>
+            </div>
+            <div class="data-group">
+                <h4>Date:</h4>
+                <table style="width: 95%;"><tr>
+                    <td colspan=2><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/date-of-construction">Date of construction or retrofit (yyyy):<span></div></td>
+                </tr><tr>
+                    <td style="width: 50%;"><select id="DateCB1"></select></td>
+                    <td style="width: 50%;"><div style="white-space:nowrap;"><input style="width: 90%; margin: auto;" type="text" id="DateE1"> <input style="display:none; width: 45%; margin: auto;" type="text" id="DateE2"></div></td>
+                </tr></table>
+            </div>
+            <div class="data-group">
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/occupancy">Occupancy:</h4>
+
+                <table class="dir_spec"><tr>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/building-occupancy-class-general">Building occupancy type - general:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/building-occupancy-class-detail">Building occupancy type - detail:</span></div></td>
+                </tr><tr>
+                    <td><select id="OccupancyCB1"></select></td>
+                    <td><select id="OccupancyCB2"></select></td>
+               </tr></table>
+
+            </div>
+        </div>
+        <div id="main_content-3" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; background-color: #f8f8f8; /* orange */">
+            <table class="doubletable">
+            <tr><td style="width: 50%;">
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/building-position-within-a-block">Building position within a block:</h4>
+                    <table><tr>
+                        <td><div>Position:</div></td>
+                        <td></td>
+                    </tr><tr>
+                        <td><select id="PositionCB"></select></td>
+                        <td></td>
+                   </tr><tr></table>
+                </div>
+            </td><td style="width: 50%;">
+                <div class="data-group">
+                    <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/shape-of-the-building-plan">Shape of the building plan:</h4>
+                    <table><tr>
+                        <td><div>Plan shape:</div></td>
+                        <td></td>
+                    </tr><tr>
+                        <td><select id="PlanShapeCB"></select></td>
+                        <td></td>
+                    </tr><tr></table>
+                </div>
+            </td></tr></table>
+            <div class="data-group">
+                <h4>Structural irregularity:</h4>
+
+                <table style="width: 95%;"><tr>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/type-of-irregularity">Type of irregularity:</span></div></td>
+                    <td style="width: 50%;"></td>
+                </tr><tr>
+                    <td><select id="RegularityCB1"></select></td>
+                    <td></td>
+               </tr><tr>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plan-irregularity-primary--irpp">Plan structural irregularity - primary:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/plan-irregularity-secondary--irps">Plan structural irregularity - secondary:</span></div></td>
+                </tr><tr>
+                    <td><select id="RegularityCB2"></select></td>
+                    <td><select id="RegularityCB4"></select></td>
+               </tr><tr>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vertical-structural-irregularity-primary--irvp">Vertical structural irregularity - primary:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/vertical-structural-irregularity-secondary--irvs">Vertical structural irregularity - secondary:</span></div></td>
+                </tr><tr>
+                    <td><select id="RegularityCB3"></select></td>
+                    <td><select id="RegularityCB5"></select></td>
+               </tr></table>
+
+            </div>
+
+            <div class="data-group">
+                <h4>Exterior walls:</h4>
+                <table style="width: 95%;"><tr>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/exterior-walls">Material of exterior walls:</span></div></td>
+                    <td style="width: 50%;"></td>
+                </tr><tr>
+                    <td><select id="WallsCB"></select></td>
+                    <td></td>
+               </tr></table>
+            </div>
+        </div>
+        <div id="main_content-4" class="main_content" style="position: absolute; display: none; top: 0px; width: 800px; background-color: #f8f8f8; /*violet*/">
+            <div class="data-group">
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof">Roof:</h4>
+
+                <table style="width: 95%;"><tr>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-shape">Roof shape:</span></div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-covering">Roof covering:</span></div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-system-material">Roof system material:</span></div></td>
+                </tr><tr>
+                    <td><select id="RoofCB1"></select></td>
+                    <td><select id="RoofCB2"></select></td>
+                    <td><select id="RoofCB3"></select></td>
+               </tr></table>
+
+                <table style="width: 95%;"><tr>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-connections">Roof connections:</span></div></td>
+                    <td style="width: 33%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/roof-system-type">Roof system type:</span></div></td>
+                </tr><tr>
+                    <td><select id="RoofCB5"></select></td>
+                    <td><select id="RoofCB4"></select></td>
+               </tr></table>
+
+            </div>
+
+
+            <div class="data-group">
+                <h4 data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor">Floor:</h4>
+
+                <table style="width: 95%;"><tr>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-system-material">Floor system material:</div></td>
+                    <td style="width: 50%;"></td>
+                </tr><tr>
+                    <td><select id="FloorCB1"></select></td>
+                    <td></td>
+               </tr><tr>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-connections">Floor connections:</span></div></td>
+                    <td><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/floor-system-type">Floor system type:</span></div></td>
+                </tr><tr>
+                    <td><select id="FloorCB2"></select></td>
+                    <td><select id="FloorCB3"></select></td>
+               </tr></table>
+
+            </div>
+
+            <div class="data-group">
+                <h4>Foundation:</h4>
+
+                <table style="width: 95%;"><tr>
+                    <td style="width: 50%;"><div><span data-gem-help="http://www.nexus.globalquakemodel.org/gem-building-taxonomy/overview/glossary/foundation-system">Foundation system:</span></div></td>
+                    <td style="width: 50%;"></td>
+                </tr><tr>
+                    <td><select id="FoundationsCB"></select></td>
+                    <td></td>
+               </tr></table>
+
+            </div>
+
+        </div>
+        <div style="position: absolute; bottom: 0px; margin-left: 2.5%; width: 95%;">
+            <p>Taxonomy string for this building typology: </p>
+            <p><input id="resultE" type="text" size="80" readonly="true" maxlength="120"></input></p>
+            <p>Type of taxonomy:&nbsp;&nbsp;&nbsp;&nbsp;<select id="OutTypeCB"></select>
+            &nbsp;&nbsp;&nbsp;&nbsp;<a id="permalink" target="_blank" href="">Permalink</a></p>
+        </div>
+    </div>
+</div>

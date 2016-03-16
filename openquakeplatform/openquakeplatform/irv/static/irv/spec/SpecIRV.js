@@ -11,8 +11,8 @@ describe("Get All Layers From GeoServer", function() {
     var SVIRPairs = [];
 
     var SVIRLayerNames = [];
-        // Extend the Jasmine default
-        window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
+    // Extend the Jasmine default
+    window.jasmine.DEFAULT_TIMEOUT_INTERVAL = 160000;
 
     var layerListAjaxCallBoolean = false;
     var attributesAjaxCallBoolean = false;

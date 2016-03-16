@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2015, GEM Foundation
+# Copyright (C) 2013-2016, GEM Foundation
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -15,5 +15,5 @@
 
 import version
 
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 __version__ += version.git_suffix(__file__)

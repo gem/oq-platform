@@ -1,0 +1,201 @@
+<!-- incl_taxtweb_inlinecss.html BEGIN -->
+<style>
+p, select, input {
+    margin-bottom: 8px;
+}
+
+input[type="text"] {
+    border: 1px solid rgb(204, 204, 204);
+    padding: 0 2px 0 2px;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    display:inline-block;
+}
+
+input[type="text"].gem_field_alert {
+    border-color: #ff0000;
+    background-color: #ffa0a0;
+}
+
+body {
+    font-family: 'Lato',sans-serif;
+    font-size: 13px;
+    color: #555555;
+    line-height: 18px;
+    margin: 0px;
+}
+
+div.grand_parent
+{
+    margin: auto;
+    width: 800px;
+    border: 1px solid #1B75A7;
+}
+
+h4 {
+    margin: 4px 8px 4px 8px;
+    color: #1B75A7;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+div.data-group {
+    border:1px solid gray;
+    margin: 8px;
+}
+
+table.doubletable {
+    border-collapse: collapse;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+}
+
+table.doubletable tr td {
+    padding: 0px; margin: 0px;
+}
+
+table.doubletable tr td div table {
+    border-collapse: collapse;
+    padding: 0px;
+    margin: 4px;
+}
+
+table.doubletable tr td div table tr td {
+    padding: 0px; margin: 0px;
+}
+
+ul.tab
+{
+    margin:0;
+    height: 30px;
+    padding-left: 20px;
+    list-style-type:none;
+    background-image: url('{{ STATIC_URL }}taxtweb/img/OQ_header_bg.png');
+    background-position: left bottom;
+    border-bottom: 1px solid #1b75a7;
+}
+
+li.tab {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    cursor: pointer;
+    color: #1B75A7;
+}
+
+li.tab_selected {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    color: black;
+    background-color: #f8f8f8;
+    border: 1px solid #1b75a7;
+    border-bottom: 1px solid #f8f8f8;
+}
+
+ul.tab li span {
+    white-space:nowrap;
+    border: 0px solid green;
+    height: 29px;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0px 8px 0px 8px;
+}
+
+
+/* SUBTAB */
+
+ul.subtab
+{
+    margin:0;
+    padding-left: 40px;
+    height: 30px;
+    list-style-type:none;
+    /* background-image: url('{{ STATIC_URL }}taxtweb/img/OQ_header_bg.png'); */
+    background-color: #f8f8f8;
+    background-position: left bottom;
+    border-bottom: 1px solid #1b75a7;
+}
+
+li.subtab {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    cursor: pointer;
+    color: #1B75A7;
+}
+
+li.subtab_selected {
+    margin: 0px;
+    display: inline-block;
+    height: 29px;
+    color: black;
+    background-color: #f0f0f0;
+    border: 1px solid #1b75a7;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+ul.subtab li span {
+    white-space:nowrap;
+    border: 0px solid green;
+    height: 29px;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0px 8px 0px 8px;
+}
+
+div.main_content {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1b75a7;
+}
+
+div.main_content div {
+    padding-bottom: 8px;
+}
+
+a.tab:hover {
+    text-decoration:underline;
+}
+
+table.dir_spec {
+    margin: auto;
+    width: 90%;
+}
+
+table.dir_spec td {
+    text-align: center;
+    width: 50%;
+}
+
+.gem_help, .gem_help * { cursor: help !important; }
+
+div.info_overlay_hidden {
+    visibility: hidden;
+}
+
+div.gem_help_select {
+    border: 1px solid grey;
+    padding: 8px;
+    background: #f8f8f8;
+}
+
+#id_help_form {
+    background-color: #c5e3f2;
+}
+
+#id_intro_form {
+    background-color: #c4f2d7;
+}
+
+div.gem_help_highlight {
+    background:rgba(176, 203, 217, 0.5);
+    position: absolute;
+}
+
+#resultE {
+    width: 95%;
+}
+</style>
+<!-- incl_taxtweb_inlinecss.html END -->

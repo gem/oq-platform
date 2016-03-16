@@ -38,6 +38,9 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             // continue
         }
     }
+    if (themesWithChildren) {
+        $(widgetsAndButtons.indicators.button).prop('disabled', false);
+    }
 
     $('#primary_indicator').empty();
     $('#primary_indicator').append('<option value="">Select a Theme</option>');
@@ -96,6 +99,7 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             }
         }
 
+        $('#primary-tab').css({'height': '100%'});
         $('#primary-tab').append('<div id="primary-chart"></div>');
 
 
@@ -141,10 +145,16 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             .scale(x);
 
         $("#primary-chart").empty();
+        $("#primary-chart").css({'height': '100%'});
 
         var svg = d3.select("#primary-chart").append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
             .attr("viewBox", "-30 -20 " +winW+" " + (winH +20))
             .attr("id", "primary-svg-element")
+            .call(d3.behavior.zoom().scaleExtent([0.1, 5]).on("zoom", function () {
+                svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+            }))
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + ",5)");
 
@@ -287,6 +297,12 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
 
         sumMeanArray.push(sumMean);
 
+        var textTop = svg.append('text')
+            .attr("class", "text90")
+            .style('font-size','30px')
+            .style('font-style', 'bold')
+            .text('');
+
         // Plot the median line
         meanPath = svg.append("g")
             .attr("class", "PI-meanPath")
@@ -295,7 +311,10 @@ function Primary_PCP_Chart(projectDef, layerAttributes, selectedRegion) {
             .enter().append("path")
             .attr("d", path)
             .attr('id', function(d) { return d.region; })
-                .on('mouseover', function() {
+                .on('mouseover', function(d) {
+                    textTop.attr('x', d.x);
+                    textTop.attr('y', d.y);
+                    textTop.attr('dy', '.35em');
                     textTop.text('Median');
                 }).on('mouseout', function() {
                     textTop.text('');

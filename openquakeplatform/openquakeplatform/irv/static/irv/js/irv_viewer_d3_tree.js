@@ -24,9 +24,10 @@
         'RI': 'Risk Index',
         'RISK_INDICATOR': 'Risk Indicator',
         'SVI': 'Social Vulnerability Index',
-        'SVI_THEME': 'Social Vulnerability Theme',
-        'SVI_INDICATOR': 'Social Vulnerability Indicator',
+        'SV_THEME': 'Social Vulnerability Theme',
+        'SV_INDICATOR': 'Social Vulnerability Indicator'
     };
+    var projectDefUpdated;
 
     $(document).ready(function() {
         //  Project definition weight dialog
@@ -39,50 +40,19 @@
         });
     });
 
-    // Post New Project Definition
-    function addProjectDefinition() {}
-
-    addProjectDefinition.send = function(selectedLayer, projectDefStg) {
-        // Hit the API endpoint and grab the very very latest version of the PD object
-        $.ajax({
-            method: "POST",
-            url: "../svir/add_project_definition",
-            data: [selectedLayer, projectDefStg]
-        }).done(function() {
-                isSubmitting = false;
-                $('#saveStateDialog').dialog('close');
-                $('#saveState-spinner').hide();
-                $('#saveBtn').prop('disabled', true);
-                // append the new element into the dropdown menu
-                $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
-                // access the last or newest element in the dropdown menu
-                var lastValue = $('#pdSelection option:last-child').val();
-                // select the newest element in the dropdown menu
-                $("#pdSelection").val(lastValue);
-            }).fail(function() {
-                isSubmitting = false;
-                $('#ajaxErrorDialog').empty();
-                $('#ajaxErrorDialog').append(
-                    '<p>This application was not able to write the project definition to the database</p>'
-                );
-                $('#ajaxErrorDialog').dialog('open');
-                $('#submitPD').attr('disabled',true);
-        });
-    };
-
-
     ////////////////////////////////////////////
     //// Project Definition Collapsible Tree ///
     ////////////////////////////////////////////
 
     function loadPD(selectedPDef) {
+        // Rebuild the d3 tree, based on the given project definition
 
         // default tab window size
         var winH = 600;
         var winW = 700;
 
         // detect tab window resize
-        $('#themeTabs').resize(function(event) {
+        $('#project-def-widget').resize(function(event) {
             winH = event.clientY;
             winW = event.clientX;
         });
@@ -96,8 +66,19 @@
             duration = 750,
             root;
 
+        var tooltipdiv = d3.select("#projectDefDialog").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         var tree = d3.layout.tree()
-            .size([height, width]);
+            .size([height, width])
+            .separation(function separation(a,b) {
+                // at least the sum of radius of two sibling nodes, plus the text for weight
+                return getRadius(a) + getRadius(b) + 8;
+            });
+
+
+        var nodeEnter;
 
         var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
@@ -126,8 +107,8 @@
                 }
                 // Check if all themes are computable
                 var areAllThemesComputable = true;
-                for (var i = 0; i < node.children.length; i++) {
-                    if (!isComputable(node.children[i])) {
+                for (var j = 0; j < node.children.length; j++) {
+                    if (!isComputable(node.children[j])) {
                         areAllThemesComputable = false;
                     }
                 }
@@ -137,7 +118,7 @@
                     return false;
                 }
             }
-            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI || node.type == NODE_TYPES.SVI_THEME) {
+            if (node.type === NODE_TYPES.RI || node.type === NODE_TYPES.SVI || node.type == NODE_TYPES.SV_THEME) {
                 if (typeof node.children === 'undefined' || (typeof node.children !== 'undefined' && node.children.length === 0)) {
                     return false;
                 } else {
@@ -187,7 +168,6 @@
 
         $('#submitPD').attr('disabled',true);
 
-        var isSubmitting = false;
         $('#saveBtn').click(function() {
             $('#checkboxPD').attr('checked', false);
             $('#saveState-spinner').hide();
@@ -213,88 +193,9 @@
                     $('#submitPD').attr('disabled', true);
                 }
             });
-
-            $('#submitPD').click(function() {
-                $('#submitPD').attr('disabled',true);
-                $('#checkboxPD').attr('checked', false);
-                $('#saveState-spinner').show();
-                var inputVal = $('#giveNamePD').val();
-                if (inputVal === '' || inputVal === null) {
-                    $('#ajaxErrorDialog').empty();
-                    $('#ajaxErrorDialog').append(
-                        '<p>A valid name was not provided</p>'
-                    );
-                    $('#ajaxErrorDialog').dialog('open');
-                    $('#saveState-spinner').hide();
-                } else {
-                    projectDefUpdated.title = inputVal;
-
-                    // Append projectDefUpdated to tempProjectDef
-                    // Check for existing object
-                    var duplicate = false;
-                    for (var i = 0; i < tempProjectDef.length; i++) {
-                        if (projectDefUpdated.title == tempProjectDef[i].title) {
-                            duplicate = true;
-                        }
-                    }
-
-                    if (duplicate === false) {
-                        tempProjectDef.push(projectDefUpdated);
-                    } else {
-                        $('#ajaxErrorDialog').empty();
-                        $('#ajaxErrorDialog').append(
-                            '<p>That name is already used to describe another project definition</p>'
-                        );
-                        $('#ajaxErrorDialog').dialog('open');
-                        $('#saveState-spinner').hide();
-                        return;
-                    }
-
-                    var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
-                        //avoid circularity in JSON by removing the parent key
-                        if (key == "parent") {
-                            return 'undefined';
-                          }
-                        return value;
-                    });
-
-                    // prevent multiple AJAX calls
-                    if (isSubmitting) {
-                        return;
-                    }
-                    isSubmitting = true;
-
-                    // Hit the API endpoint and grab the very very latest version of the PD object
-                    $.post( "../svir/add_project_definition", {
-                        layer_name: selectedLayer,
-                        project_definition: projectDefStg
-                        },
-                        function() {
-                        }).done(function() {
-                            isSubmitting = false;
-                            $('#saveStateDialog').dialog('close');
-                            $('#saveState-spinner').hide();
-                            $('#saveBtn').prop('disabled', true);
-                            // append the new element into the dropdown menu
-                            $('#pdSelection').append('<option value="'+ inputVal +'">'+ inputVal +'</option>');
-                            // access the last or newest element in the dropdown menu
-                            var lastValue = $('#pdSelection option:last-child').val();
-                            // select the newest element in the dropdown menu
-                            $('#pdSelection').val(lastValue);
-                        }).fail(function() {
-                            isSubmitting = false;
-                            $('#ajaxErrorDialog').empty();
-                            $('#ajaxErrorDialog').append(
-                                '<p>This application was not able to write the project definition to the database</p>'
-                            );
-                            $('#ajaxErrorDialog').dialog('open');
-                            $('#submitPD').attr('disabled',true);
-                    });
-                }
-            });
         });
 
-        var nodeEnter;
+
         function updateButton() {
             $('#projectDefWeightDialog').append('<br/><br/><button type="button" id="update-spinner-value" class="btn btn-blue">Update</button>');
             $('#update-spinner-value').click(function() {
@@ -467,7 +368,7 @@
 
         d3.select(self.frameElement).style("height", "800px");
 
-        function onTreeElementClick(d) {
+        function onTreeWeightClick(d) {
             pdName = d.name;
             pdData = data;
             pdWeight = d.weight;
@@ -498,7 +399,25 @@
 
             nodeEnter.append("circle")
                 .attr("r", 1e-6)
-                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; })
+                .on("mouseover", function(d) {
+                    var info;
+                    if (typeof d.field !== 'undefined') {
+                        info = d.field;
+                        tooltipdiv .transition()
+                            .duration(500)
+                            .style("opacity", 0.7);
+                        tooltipdiv .html(info)
+                            .style("left", (d3.event.pageX) + "px")
+                            // TODO: find a better way to place the tooltip instead of hardcoding 100
+                            .style("top", (d3.event.pageY - 100) + "px");
+                    }
+                })
+                .on("mouseout", function(d) {
+                    tooltipdiv .transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
 
             // tree indicator label
             nodeEnter.append("text")
@@ -506,62 +425,37 @@
                 .attr("id", "svg-text")
                 .attr("value", (function(d) { return d.weight; }))
                 .attr("x", function(d) { return -(getRadius(d) + 5); })
-                .attr("dy", function(d) {
-                    // NOTE are x and y swapped?
-                    // set te text above or below the node depending on the
-                    // parent position
-                    if (typeof d.parent != 'undefined' && d.x > d.parent.x){
-                        return "2em";
-                    }
-                    return "-1em";
-                })
-                .attr("text-anchor", function(d) { return "end"; })
-                // Convert long attribute names text into acronyms
-                .text(function(d) {
-                    if (d.name.length > 20) {
-                        var matches = d.name.match(/\b(\w)/g);
-                        var acronym = matches.join('').toUpperCase();
-                        if (d.isInverted) {
-                            return "- " + acronym;
-                        } else {
-                            return acronym;
-                        }
+
+                .attr("x", function(d) {
+                    if (d.type === NODE_TYPES.SV_INDICATOR || d.type === NODE_TYPES.RISK_INDICATOR) {
+                        return getRadius(d) + 5;
                     } else {
-                        if (d.isInverted) {
-                            return "- " + d.name;
-                        } else {
-                            return d.name;
-                        }
+                        return -(getRadius(d) + 5);
+                    }
+                })
+                .attr("dy", function(d) {
+                    // Place the label always at the same height of the node
+                    return "0.3em";
+                })
+                .attr("text-anchor", function(d) {
+                    if (d.type === NODE_TYPES.SV_INDICATOR || d.type === NODE_TYPES.RISK_INDICATOR) {
+                        return "start";
+                    } else {
+                        return "end";
+                    }
+                })
+                .text(function(d) {
+                    // Render a minus before the name of a variable which weight is negative
+                    if (d.isInverted) {
+                        return "- " + d.name;
+                    } else {
+                        return d.name;
                     }
                 })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "20px")
-                // Set the color of labels that can be hovered
-                .attr('fill', function(d) {
-                    if (d.name.length > 20) {
-                        return "#003399";
-                    }
-                })
-                // Provide mouse pointer for long attribute names
-                .attr("class", function(d) {
-                    if (d.name.length > 20) {
-                        return "pointer";
-                    }
-                })
-                // Tooltip for long attribute names
-                .style("fill-opacity", 1e-6)
-                    .on("mouseover", function(d) {
-                        if (d.name.length > 20) {
-                            d3.select("#tool-tip")
-                                .append("text")
-                                .text("Attribute: " + d.name);
-                        }
-                    })
-                    .on("mouseout", function() {
-                        d3.select("#tool-tip")
-                            .select("text")
-                            .remove();
-                    });
+                .style("fill-opacity", 1e-6);
+
             // tree operator label
             nodeEnter.append("text")
                 .text(function(d) {
@@ -583,7 +477,8 @@
                     }
                 })
                 .attr("id", function(d) {return "operator-label-" + d.level;})
-                .attr("x", function(d) { return getRadius(d) + 15; });
+                .attr("x", function(d) { return getRadius(d) + 5; })
+                .attr("dy", function(d) { return '0.3em'; });
 
 
             // Render 'ignore weights' into a new line when present
@@ -605,7 +500,7 @@
                         return color;
                     }
                 })
-                .attr("id", function(d) {return "operator-label-" + d.level;})
+                .attr("id", function(d) {return "ignore-weights-label-" + d.level;})
                 .attr("x", function(d) { return getRadius(d) + 15; })
                 .attr("transform", "translate(0, 12)");
 
@@ -621,7 +516,7 @@
                             return "-5em";
                         } else {
                             return "-2.7em";
-                        };
+                        }
                     } else{
                         return "-1em";
                     }
@@ -641,7 +536,7 @@
                     return (d.weight * 100).toFixed(1) + '%';
                 })
                 .on("click", function(d) {
-                    onTreeElementClick(d);
+                    onTreeWeightClick(d);
                 });
 
             // Transition nodes to their new position.
@@ -742,6 +637,59 @@
             $('#projectDefWeight-spinner').remove();
         }
         $('#projectDef-spinner').hide();
-    } //end d3 tree
+    } //end loadPD
 
+    $('#submitPD').click(function () {
+        $('#submitPD').attr('disabled',true);
+        $('#checkboxPD').attr('checked', false);
+        $('#saveState-spinner').show();
+        var inputNamePD = $('#giveNamePD').val();
+        if (inputNamePD === '' || inputNamePD === null) {
+            $('#ajaxErrorDialog').empty();
+            $('#ajaxErrorDialog').append(
+                '<p>A valid name was not provided</p>'
+            );
+            $('#ajaxErrorDialog').dialog('open');
+            $('#saveState-spinner').hide();
+        } else {
+            projectDefUpdated.title = inputNamePD;
 
+            var projectDefStg = JSON.stringify(projectDefUpdated, function(key, value) {
+                //avoid circularity in JSON by removing the parent key
+                if (key == "parent") {
+                    return 'undefined';
+                }
+                return value;
+            });
+
+            // Temporarily disable the project definition selector
+            $('#pdSelection').prop("disabled", true);
+            // Hit the API endpoint and grab the very very latest version of the PD object
+            $.post( "../svir/add_project_definition", {
+                layer_name: selectedLayer,
+                project_definition: projectDefStg
+                },
+                function() {
+                }).done(function() {
+                    tempProjectDef.push(JSON.parse(projectDefStg));
+                    $('#saveStateDialog').dialog('close');
+                    $('#saveState-spinner').hide();
+                    $('#saveBtn').prop('disabled', true);
+                    // append the new element into the dropdown menu
+                    $('#pdSelection').append('<option value="'+ inputNamePD +'">'+ inputNamePD +'</option>');
+                    // access the last or newest element in the dropdown menu
+                    var lastValue = $('#pdSelection option:last-child').val();
+                    // select the newest element in the dropdown menu
+                    $('#pdSelection').val(lastValue);
+                }).fail(function(resp) {
+                    $('#ajaxErrorDialog').empty();
+                    var error_msg = "<p>This application was not able to write the project definition to the database:</p><p>" + resp.responseText + "</p>";
+                    $('#ajaxErrorDialog').append(error_msg);
+                    $('#ajaxErrorDialog').dialog('open');
+                    $('#submitPD').attr('disabled',true);
+                    $('#saveState-spinner').hide();
+                }).always(function() {
+                    $('#pdSelection').prop("disabled", false);
+            });
+        }
+    });
