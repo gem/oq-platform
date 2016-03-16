@@ -10,7 +10,7 @@ $(document).ready(function () {
         $('.ff_gid .table1_id [name="id"]').val('111');
         $('.ff_gid .table1_id [name="imt"]').val('PGA');
         $('.ff_gid .table1_id [name="no-damage-limit"]').val('0.8');
-        
+
         var data = [ [ ], [ ] ];
         for (var e = 0 ; e < 2 ; e++) {
             for (var i = 0 ; i < table.countCols() ; i++) {

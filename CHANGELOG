@@ -1,5 +1,11 @@
   [Matteo Nastasi]
-  * Ript: add "<?xml..." header line to <textarea> item
+  * ript: add "Sites Conditions" tab
+  * ript: smarter split procedure
+  * ript: grand refactoring
+  * ript: add positive integer 'example_id' parameter to load examples and
+    at least 1 example for each tab
+  * ript: add positive integer 'tab_id' parameter to land on a specific tab
+  * ript: add "<?xml..." header line to <textarea> item
 
   [Paolo Tormene]
   * irv: less redundant calculations and better management of operators
