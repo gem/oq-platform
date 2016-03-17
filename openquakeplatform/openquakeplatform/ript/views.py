@@ -48,7 +48,7 @@ def _do_validate_nrml(xml_text):
     from openquake.commonlib import nrml
     xml_file = writetmp(xml_text, suffix='.xml')
     try:
-        nrml.read(xml_file)
+        nrml.parse(xml_file)
     except:
         raise
 
