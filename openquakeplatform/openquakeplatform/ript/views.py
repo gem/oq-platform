@@ -119,11 +119,6 @@ def sendback_nrml(request):
             'Please provide the "xml_text" parameter')
     known_func_types = [
         'exposure', 'fragility', 'vulnerability', 'sites_conditions']
-    # FIXME: decide if we want func_type to be mandatory or included in a
-    #        predefined set of known types
-    # if not func_type in known_func_types:
-    #     return HttpResponseBadRequest(
-    #         'Please provide the "func_type" parameter')
     try:
         _do_validate_nrml(xml_text)
     except:
