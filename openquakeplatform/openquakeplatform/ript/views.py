@@ -43,15 +43,17 @@ def _make_response(error_msg, error_line, valid):
 JSON = 'application/json'
 
 
+def _do_validate_nrml(xml_text):
+    from openquake.baselib.general import writetmp
+    from openquake.commonlib import nrml
+    xml_file = writetmp(xml_text, suffix='.xml')
+    try:
+        nrml.read(xml_file)
+    except:
+        raise
+
+
 def validate_nrml(request):
-    return _validate_nrml_ex(request, False)
-
-
-def sendback_nrml(request):
-    return _validate_nrml_ex(request, True)
-
-
-def _validate_nrml_ex(request, is_sendback):
     """
     Leverage oq-risklib to check if a given XML text is a valid NRML
 
@@ -67,24 +69,16 @@ def _validate_nrml_ex(request, is_sendback):
                         (None if no error was found or if it was not a
                         validation error)
     """
-    from openquake.baselib.general import writetmp
-    from openquake.commonlib import nrml
-
     xml_text = request.POST.get('xml_text')
-    func_type = request.POST.get('func_type')
     if not xml_text:
         return HttpResponseBadRequest(
             'Please provide the "xml_text" parameter')
-    xml_file = writetmp(xml_text, suffix='.xml')
     try:
-        nrml.read(xml_file)
+        _do_validate_nrml(xml_text)
     except etree.ParseError as exc:
-        if is_sendback:
-            pass
-        else:
-            return _make_response(error_msg=exc.message.message,
-                                  error_line=exc.message.lineno,
-                                  valid=False)
+        return _make_response(error_msg=exc.message.message,
+                              error_line=exc.message.lineno,
+                              valid=False)
     except Exception as exc:
         # get the exception message
         exc_msg = exc.args[0]
@@ -97,31 +91,54 @@ def _validate_nrml_ex(request, is_sendback):
             # to extract the error line from it
             # but we can attempt anyway to extract it
             error_line = _get_error_line(unicode(exc_msg))
-            if is_sendback:
-                pass
-            else:
-                return _make_response(
-                    error_msg=unicode(exc_msg), error_line=error_line,
-                    valid=False)
+            return _make_response(
+                error_msg=unicode(exc_msg), error_line=error_line,
+                valid=False)
         error_msg = exc_msg
         error_line = _get_error_line(exc_msg)
-        if is_sendback:
-            pass
-        else:
-            return _make_response(
-                error_msg=error_msg, error_line=error_line, valid=False)
+        return _make_response(
+            error_msg=error_msg, error_line=error_line, valid=False)
     else:
-        if is_sendback:
-            if func_type in ['exposure', 'fragility', 'vulnerability',
-                             'sites_conditions']:
-                filename = func_type + '_model.xml'
-            else:
-                filename = 'unknown_model.xml'
+        return _make_response(error_msg=None, error_line=None, valid=True)
 
-            resp = HttpResponse(content=xml_text,
-                                content_type='application/xml')
-            resp['Content-Disposition'] = ('attachment; filename="' +
-                                           filename + '"')
-            return resp
+
+def sendback_nrml(request):
+    """
+    Leverage oq-risklib to check if a given XML text is a valid NRML. If it is,
+    save it as a XML file.
+
+    :param request:
+        a `django.http.HttpRequest` object containing the mandatory
+        parameter 'xml_text': the text of the XML to be validated as NRML
+        and the optional parameter 'func_type': the function type (known types
+        are ['exposure', 'fragility', 'vulnerability', 'sites_conditions'])
+
+    :returns: an XML file, containing the given NRML text
+    """
+    xml_text = request.POST.get('xml_text')
+    func_type = request.POST.get('func_type')
+    if not xml_text:
+        return HttpResponseBadRequest(
+            'Please provide the "xml_text" parameter')
+    known_func_types = [
+        'exposure', 'fragility', 'vulnerability', 'sites_conditions']
+    # FIXME: decide if we want func_type to be mandatory or included in a
+    #        predefined set of known types
+    # if not func_type in known_func_types:
+    #     return HttpResponseBadRequest(
+    #         'Please provide the "func_type" parameter')
+    try:
+        _do_validate_nrml(xml_text)
+    except:
+        return HttpResponseBadRequest(
+            'Invalid NRML')
+    else:
+        if func_type in known_func_types:
+            filename = func_type + '_model.xml'
         else:
-            return _make_response(error_msg=None, error_line=None, valid=True)
+            filename = 'unknown_model.xml'
+        resp = HttpResponse(content=xml_text,
+                            content_type='application/xml')
+        resp['Content-Disposition'] = (
+            'attachment; filename="' + filename + '"')
+        return resp
