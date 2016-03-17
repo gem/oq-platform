@@ -43,7 +43,7 @@ function sendbackNRML(nrml, sfx)
 
 function validationErrorShow(funcType, error_msg){
     $('.' + funcType + '_gid #validationErrorMsg').text(
-        'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-]*\.xml/, 'this NRML file') + '.');
+        'Validation error: ' + error_msg.replace(/\/tmp\/[a-zA-Z0-9-_]*\.xml/, 'this NRML file') + '.');
     $('.' + funcType + '_gid #validationErrorMsg').show();
 }
 
