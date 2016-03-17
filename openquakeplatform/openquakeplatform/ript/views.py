@@ -19,9 +19,9 @@ import json
 from lxml import etree
 
 from django.http import (HttpResponse,
-                         HttpResponseNotFound,
                          HttpResponseBadRequest,
                          )
+
 
 def _get_error_line(exc_msg):
     # check if the exc_msg contains a line number indication
@@ -42,11 +42,14 @@ def _make_response(error_msg, error_line, valid):
 
 JSON = 'application/json'
 
+
 def validate_nrml(request):
     return _validate_nrml_ex(request, False)
 
+
 def sendback_nrml(request):
     return _validate_nrml_ex(request, True)
+
 
 def _validate_nrml_ex(request, is_sendback):
     """
@@ -109,14 +112,16 @@ def _validate_nrml_ex(request, is_sendback):
                 error_msg=error_msg, error_line=error_line, valid=False)
     else:
         if is_sendback:
-            if func_type in [ 'exposure', 'fragility', 'vulnerability', 'sites_conditions' ]:
+            if func_type in ['exposure', 'fragility', 'vulnerability',
+                             'sites_conditions']:
                 filename = func_type + '_model.xml'
             else:
                 filename = 'unknown_model.xml'
 
-            resp = HttpResponse(content=xml_text, content_type='application/xml')
-            resp['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+            resp = HttpResponse(content=xml_text,
+                                content_type='application/xml')
+            resp['Content-Disposition'] = ('attachment; filename="' +
+                                           filename + '"')
             return resp
         else:
             return _make_response(error_msg=None, error_line=None, valid=True)
-
