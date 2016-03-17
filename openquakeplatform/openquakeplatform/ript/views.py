@@ -47,10 +47,7 @@ def _do_validate_nrml(xml_text):
     from openquake.baselib.general import writetmp
     from openquake.commonlib import nrml
     xml_file = writetmp(xml_text, suffix='.xml')
-    try:
-        nrml.parse(xml_file)
-    except:
-        raise
+    nrml.parse(xml_file)
 
 
 def validate_nrml(request):
