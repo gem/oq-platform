@@ -77,7 +77,7 @@ def _validate_nrml_ex(request, is_sendback):
             'Please provide the "xml_text" parameter')
     xml_file = writetmp(xml_text, suffix='.xml')
     try:
-        nrml.read(xml_file)
+        nrml.parse(xml_file)
     except etree.ParseError as exc:
         if is_sendback:
             pass
