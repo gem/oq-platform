@@ -243,21 +243,6 @@ $('.sc_gid #convertBtn').click(function() {
              '" vs30Type="' + data[i][3] + '" z1pt0="' + data[i][4] + '" z2pt5="' + data[i][5] +'"/>\n';
     }
 
-// <?xml version="1.0" encoding="utf-8"?>
-// <nrml xmlns:gml="http://www.opengis.net/gml"
-//   xmlns="http://openquake.org/xmlns/nrml/0.4">
-//     <siteModel>
-//        <site lon="-9.9958" lat="35.004" vs30="590" vs30Type="inferred" z1pt0="19.36719673" z2pt5="0.588625072" />
-//        <site lon="-9.9623" lat="35.004" vs30="590" vs30Type="inferred" z1pt0="19.36719673" z2pt5="0.588625072" />
-//        <site lon="-9.9288" lat="35.004" vs30="590" vs30Type="inferred" z1pt0="19.36719673" z2pt5="0.588625072" />
-//        <site lon="-9.8953" lat="35.004" vs30="590" vs30Type="inferred" z1pt0="19.36719673" z2pt5="0.588625072" />
-//        <site lon="-9.8618" lat="35.004" vs30="590" vs30Type="inferred" z1pt0="19.36719673" z2pt5="0.588625072" />
-//     </siteModel>
-// </nrml>
-
-
-
-
     // Create a NRML element
     var nrml = '<?xml version="1.0" encoding="utf-8"?>\n' +
             '<nrml xmlns:gml="http://www.opengis.net/gml" xmlns="http://openquake.org/xmlns/nrml/0.4">\n' +
