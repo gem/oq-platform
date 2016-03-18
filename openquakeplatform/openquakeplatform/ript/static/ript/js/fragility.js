@@ -123,7 +123,7 @@ function ff_updateTable (funcType) {
         maxCols: headerLength,
         startRows: limitStateLength,
         colWidths: colWidth
-    }
+    };
 
     if (funcType == 'discr') {
         handson_params.rowHeaders = true;
@@ -142,7 +142,7 @@ function ff_updateTable (funcType) {
              className: "htLeft"},
             {className: "htRight"},
             {className: "htRight"}
-        ],
+        ];
 
         // this function is a callback called by handsontable during table creation
         // to retrieve cellProperties of each cell
@@ -150,7 +150,7 @@ function ff_updateTable (funcType) {
             var cellProperties = {};
             if (c===0) cellProperties.readOnly = true;
             return cellProperties;
-        }
+        };
     }
 
     $('.ff_gid [name="tableDiv'+ff_obj.tbl_idx+'"]').handsontable(handson_params);
