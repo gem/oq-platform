@@ -69,7 +69,7 @@ function output_manager(funcType, error_msg, error_line, nrml)
     // Provide the user with the xml output
     $('.' + funcType + '_gid #outputText').empty();
     if (nrml) {
-        var $textarea = $('<textarea/>').attr({id: 'textarea' + funcType,
+        var $textarea = $('<textarea/>').attr({id: 'textarea' + funcType, readonly: 'readonly',
                                                style: 'width: 600px; height: 700px;'}).val(nrml);
         $('.' + funcType + '_gid #outputText').append($textarea);
         textarea = $textarea.get(0);
