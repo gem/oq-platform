@@ -144,6 +144,8 @@ function ff_updateTable (funcType) {
             {className: "htRight"}
         ],
 
+        // this function is a callback called by handsontable during table creation
+        // to retrieve cellProperties of each cell
         handson_params.cells = function(r,c, prop) {
             var cellProperties = {};
             if (c===0) cellProperties.readOnly = true;
