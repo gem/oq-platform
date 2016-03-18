@@ -30,8 +30,7 @@ $(document).ready(function () {
         $('.ff_gid .table2_id [name="min-impls"]').val('0.2');
         $('.ff_gid .table2_id [name="max-impls"]').val('0.95');
 
-        // var data = [ [ 0, 0.1, 0.2 ], [ 0, 0.3, 0.4 ], [ 0, 0.5, 0.6 ], [ 0, 0.7, 0.8 ] ];
-        var data = table.getData(0,0, table.countRows() - 1, table.countCols() - 1);
+        var data = table.getData(0, 0, table.countRows() - 1, table.countCols() - 1);
         for (var e = 0 ; e < 3 ; e++) {
             for (var i = 1 ; i < 3 ; i++) {
                 data[e][i] = i / 10.0 + e;
