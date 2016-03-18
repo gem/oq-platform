@@ -46,33 +46,35 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </div>
       <div id="oq-body-content">
 
-<div id="absoluteSpinner" class="loading">Loading&#8230;</div>
+        <div id="absoluteSpinner" class="loading">Loading&#8230;</div>
 
-<div id="tabs">
-  <ul>
-    <li><a href="#tabs-1">Exposure</a></li>
-    <li><a href="#tabs-2">Fragility</a></li>
-    <li><a href="#tabs-3">Vulnerability</a></li>
-    <li><a href="#tabs-4">Site Conditions</a></li>
-  </ul>
-  <!-- EXPOSURE -->
-  <div id="tabs-1" class="ex_gid">
-  {% include "ript/tabs/exposure.html" %}
+        <div id="tabs">
+          <ul>
+            <li><a href="#tabs-1">Exposure</a></li>
+            <li><a href="#tabs-2">Fragility</a></li>
+            <li><a href="#tabs-3">Vulnerability</a></li>
+            <li><a href="#tabs-4">Site Conditions</a></li>
+          </ul>
+          <!-- EXPOSURE -->
+          <div id="tabs-1" class="ex_gid">
+          {% include "ript/tabs/exposure.html" %}
+          </div>
+          <!-- FRAGILITY -->
+          <div id="tabs-2" class="ff_gid">
+          {% include "ript/tabs/fragility.html" %}
+          </div>
+          <!-- VULNERABILITY -->
+          <div id="tabs-3" class="vf_gid">
+          {% include "ript/tabs/vulnerability.html" %}
+          </div>
+          <!-- SITE CONDITIONS -->
+          <div id="tabs-4" class="sc_gid">
+          {% include "ript/tabs/site_conds.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- FRAGILITY -->
-  <div id="tabs-2" class="ff_gid">
-  {% include "ript/tabs/fragility.html" %}
-  </div>
-  <!-- VULNERABILITY -->
-  <div id="tabs-3" class="vf_gid">
-  {% include "ript/tabs/vulnerability.html" %}
-  </div>
-  <!-- SITE CONDITIONS -->
-  <div id="tabs-4" class="sc_gid">
-  {% include "ript/tabs/site_conds.html" %}
-  </div>
-</div>
-
 {% endblock body %}
 
 {% block extra_script %}
