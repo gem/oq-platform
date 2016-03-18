@@ -340,8 +340,7 @@ $('.ex_gid #convertBtn').click(function() {
     for (var i = 0; i < data.length; i++) {
         var costTypes = '\t\t\t<costTypes>\n';
         var costs ='\t\t\t\t<costs>\n';
-        var occupancies_header = '\t\t\t\t<occupancies>\n';
-        var occupancies = occupancies_header;
+        var occupancies = "";
 
         if (numberInx > -1 ) {
             number = 'number="'+ data[i][numberInx]+'"';
@@ -422,11 +421,8 @@ $('.ex_gid #convertBtn').click(function() {
         }
 
         costs += '\t\t\t\t</costs>\n';
-        if (occupancies != occupancies_header) {
-            occupancies += '\t\t\t\t</occupancies>\n';
-        }
-        else {
-            occupancies = "";
+        if (occupancies != "") {
+            occupancies = '\t\t\t\t<occupancies>\n' + occupancies + '\t\t\t\t</occupancies>\n';
         }
 
         asset +=
