@@ -291,6 +291,51 @@ $('.ex_gid #convertBtn').click(function() {
     var deductibleInx = checkHeaderMatch('deductible');
     var assetIdInx = checkHeaderMatch(assetId);
 
+    // Pre area selection
+    var areaType = "";
+    var areaTypeSelected = $('.ex_gid #perAreaSelect').val();
+    if ($('.ex_gid #perArea').is(":visible")) {
+        areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="' + $('.ex_gid #area_units').val() + '" />\n';
+    }
+
+    // Cost Type
+    var costType= '';
+    var costTypeStruc = $('.ex_gid #costStruc option:selected').val();
+    if (costTypeStruc !== 'none') {
+        costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="' + $('.ex_gid #structural_costs_units').val() + '"/>\n';
+    }
+
+    var costTypeNonStruc = $('.ex_gid #costNonStruc option:selected').val();
+    if (costTypeNonStruc !== 'none') {
+        costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="' + $('.ex_gid #nonstructural_costs_units').val() + '"/>\n';
+    }
+
+    var costTypeContent = $('.ex_gid #costContent option:selected').val();
+    if (costTypeContent !== 'none') {
+        costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="' + $('.ex_gid #contents_costs_units').val() + '"/>\n';
+    }
+
+    var costTypeBusiness = $('.ex_gid #costBusiness option:selected').val();
+    if (costTypeBusiness !== 'none') {
+        costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="' + $('.ex_gid #busi_inter_costs_units').val() + '"/>\n';
+    }
+
+    var limitState = $('.ex_gid #limitSelect option:selected').val();
+    if (limitState == 'absolute') {
+        insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="true"/>\n';
+    } else if (limitState == 'relative') {
+        insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="false"/>\n';
+    }
+
+    var deductibleState = $('.ex_gid #deductibleSelect option:selected').val();
+    if (deductibleState == 'absolute') {
+        deductible = '\t\t\t<deductible isAbsolute="true"/>\n';
+    } else if (deductibleState == 'relative') {
+        deductible = '\t\t\t<deductible isAbsolute="false"/>\n';
+    }
+
+    var retrofittingSelect = $('.ex_gid #retrofittingSelect input:checked').val();
+
     // Create the asset
     for (var i = 0; i < data.length; i++) {
         var costTypes = '\t\t\t<costTypes>\n';
@@ -329,60 +374,24 @@ $('.ex_gid #convertBtn').click(function() {
             id = '';
         }
 
-        // Pre area selection
-        var areaType = "";
-        var areaTypeSelected = $('.ex_gid #perAreaSelect').val();
-        if ($('.ex_gid #perArea').is(":visible")) {
-            areaType += '\t\t\t<area type="'+areaTypeSelected+'" unit="' + $('.ex_gid #area_units').val() + '" />\n';
-        }
-
-        // Cost Type
-        var costType= '';
-        var costTypeStruc = $('.ex_gid #costStruc option:selected').val();
-        if (costTypeStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="structural" type="'+costTypeStruc+'" unit="' + $('.ex_gid #structural_costs_units').val() + '"/>\n';
-        }
-
-        var costTypeNonStruc = $('.ex_gid #costNonStruc option:selected').val();
-        if (costTypeNonStruc !== 'none') {
-            costType += '\t\t\t\t<costType name="nonstructural" type="'+costTypeNonStruc+'" unit="' + $('.ex_gid #nonstructural_costs_units').val() + '"/>\n';
-        }
-
-        var costTypeContent = $('.ex_gid #costContent option:selected').val();
-        if (costTypeContent !== 'none') {
-            costType += '\t\t\t\t<costType name="contents" type="'+costTypeContent+'" unit="' + $('.ex_gid #contents_costs_units').val() + '"/>\n';
-        }
-
-        var costTypeBusiness = $('.ex_gid #costBusiness option:selected').val();
-        if (costTypeBusiness !== 'none') {
-            costType += '\t\t\t\t<costType name="business_interruption" type="'+costTypeBusiness+'" unit="' + $('.ex_gid #busi_inter_costs_units').val() + '"/>\n';
-        }
-
         // Insurance Limit
         var limitValue = '';
-        var limitState = $('.ex_gid #limitSelect option:selected').val();
         if (limitState == 'absolute') {
-            insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="true"/>\n';
             limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
         } else if (limitState == 'relative') {
-            insuranceLimit = '\t\t\t<insuranceLimit isAbsolute="false"/>\n';
             limitValue = ' insuranceLimit="'+data[i][limitInx]+'"';
         }
 
         // Retrofitted
-        var retrofittingSelect = $('.ex_gid #retrofittingSelect input:checked').val();
         if (retrofittingSelect == 'retrofitting') {
             retrofitting = ' retrofitted="'+data[i][retrofittingInx]+'"';
         }
 
         // deductibleSelect
         var deductibleValue = '';
-        var deductibleState = $('.ex_gid #deductibleSelect option:selected').val();
         if (deductibleState == 'absolute') {
-            deductible = '\t\t\t<deductible isAbsolute="true"/>\n';
             deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
         } else if (deductibleState == 'relative') {
-            deductible = '\t\t\t<deductible isAbsolute="false"/>\n';
             deductibleValue = ' deductible="'+data[i][deductibleInx]+'"';
         }
 
