@@ -97,7 +97,7 @@ function output_manager(funcType, error_msg, error_line, nrml)
 }
 
 function validateAndDisplayNRML(nrml, funcType, retobj){
-    // funcType can be 'ex', 'ff' or 'vf'
+    // funcType can be 'ex', 'ff', 'vf' or 'sc'
 
     // Call the engine server api to check if the NRML is valid
     $.post(VALIDATION_URL, {xml_text: nrml})
