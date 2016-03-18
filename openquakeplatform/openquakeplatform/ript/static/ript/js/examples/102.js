@@ -42,8 +42,12 @@ $(document).ready(function () {
     $('.ex_gid #occupantsCheckBoxes [value="night"]').trigger('change');
 
     var data = [[]];
-    for (var i = 0 ; i < 14 ; i++) {
+    var table = $('.ex_gid #table').handsontable('getInstance');
+
+    // for each column add a calculated value
+    for (var i = 0 ; i < table.countCols() ; i++) {
         if (i == 5) {
+            // we want to show what happens when a cell is left empty
             data[0][i] = "";
         }
         else {
@@ -51,7 +55,6 @@ $(document).ready(function () {
         }
     }
 
-    var table = $('.ex_gid #table').handsontable('getInstance');
     table.loadData(data);
 
     $('.ex_gid #convertBtn').trigger('click');
