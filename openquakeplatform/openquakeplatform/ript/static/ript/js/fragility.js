@@ -172,7 +172,7 @@ function ff_updateTable (funcType) {
 
     // Logic to remove a table
     $('.ff_gid .table' + tbl_idx + '_id [name="destroy_table"]').click(function() {
-        if (confirm("Do you really want to remove this function ?") == false)
+        if (confirm("Do you really want to remove this function?") == false)
             return;
 
         $('.ff_gid #table' + tbl_idx).remove();
