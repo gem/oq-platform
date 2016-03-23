@@ -1,16 +1,23 @@
-
+#oq-body-content {
+width: 100%;
+ }
 
 .menuItems{
 	left: 0px;
     top: 0px;
-    width: 420px;
+    width: 500px;
     text-align: right;
-    padding-left: 12%;
+    padding-left: 16px;
+    margin: auto;
 }
 
 .menuItems label {
     float: left;
     margin: 1px;
+}
+
+.menuSubItems {
+    margin-left: 24px;
 }
 
 label {
@@ -21,31 +28,39 @@ label {
 
 .ffsForm, .vfsForm{
     float: left;
-    margin-top: 20px;
+    clear: left;
+    margin-top: 10px;
     width: 45%;
+}
+
+.ffsForm label, .vfsForm label {
+clear: left;
+ }
+
+.downloadbtn {
+    color: white !important;
 }
 
 .ffsForm input {
 	float: right;
 }
 
+.vfsForm input {
+	float: right;
+}
+
+.vfsForm select {
+	float: right;
+}
+
 .ffsTable {
-	width: 50%;
+	width: 60%;
 	margin-left: 20px;
 }
 
 .vfsTable {
-	width: 65%;
+	width: 60%;
 	margin-left: 3px;
-}
-
-.ffsTableDiv {
-	padding-right: 40px;
-	padding-bottom: 15%;
-}
-
-.vfsTableDiv {
-	padding-right: 40px;
 }
 
 .theTable {
@@ -54,7 +69,7 @@ label {
 }
 
 #tableOverflow {
-	height: 140px;
+	height: 100px;
     overflow: auto;
     margin-top: 20px;
 }
@@ -68,9 +83,7 @@ textarea {
 }
 
 .destroyTable {
-	margin-left: 20px;
 	float: right;
-    margin-top: 10px;
 }
 
 .destroyVTable {
@@ -92,12 +105,30 @@ textarea {
 }
 
 .ffsTableDiv, .vfsTableDiv {
-    padding-right: 40px;
-    padding-bottom: 15%;
-    width: 90%;
+    width: 100%;
     float: left;
     border: 1px solid #eee;
     margin-bottom: 1em;
-    padding: 5%;
+    padding: 4px;
 }
 
+.theVTableWrapper {
+    float: right;
+    clear: right;
+    margin-top: 10px;
+    text-align: right;
+}
+.theVTable {
+    overflow: hidden;
+    width: 400px;
+    height: 150px;
+    display: inline-block;
+}
+
+#outputDivEX {
+    margin-top: 20px;
+}
+
+#outputTextEX, #outputTextFF, #outputTextVF {
+    margin-top: 10px;
+}
