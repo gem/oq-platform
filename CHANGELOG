@@ -9,6 +9,8 @@
 
   [Paolo Tormene]
   * irv: less redundant calculations and better management of operators
+  * irv: when clicking on the map, display in the info box only information
+    related to the integrated risk project
   * irv: remove color themes (feature that was not needed and that contained a bug)
 
 python-oq-platform (1.4.1)
