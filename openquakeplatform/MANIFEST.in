@@ -1,4 +1,4 @@
-recursive-include openquakeplatform             admin/*/*  templates/*  templates/*/*  templatetags/*  fixtures/*  management/*  management/*/*  thumbs/*  sql/*
+recursive-include openquakeplatform             admin/*/*  templates/*  templates/*/*  templates/*/*/*  templatetags/*  fixtures/*  management/*  management/*/*  thumbs/*  sql/*
 recursive-include openquakeplatform/static      *
 recursive-include openquakeplatform/*/static    *
 recursive-include openquakeplatform             apache2/*       bin/*   local_settings.py.template
