@@ -234,13 +234,25 @@ $('.sc_gid #downloadBtn').click(function() {
 
 $('.sc_gid #convertBtn').click(function() {
     // Get the values from the table
-    var data = sc_obj.tbl.getData();
+    var tab_data = sc_obj.tbl.getData();
+
+    var pfx = '.sc_gid #table';
+
+    for (var i = 0; i < tab_data.length; i++) {
+        for (var j = 0; j < tab_data[i].length; j++) {
+            if (tab_data[i][j] === null || tab_data[i][j].toString().trim() == "") {
+                var error_msg = "empty cell detected at table coords (" + (i+1) + ", " + (j+1) + ")";
+                output_manager('sc', error_msg, null, null);
+                return;
+            }
+        }
+    }
 
     var sites = '';
     // Check for null values
-    for (var i = 0; i < data.length; i++) {
-        sites += '\t<site lon="' + data[i][0] + '" lat="' + data[i][1] + '" vs30="' + data[i][2] +
-             '" vs30Type="' + data[i][3] + '" z1pt0="' + data[i][4] + '" z2pt5="' + data[i][5] +'"/>\n';
+    for (var i = 0; i < tab_data.length; i++) {
+        sites += '\t<site lon="' + tab_data[i][0] + '" lat="' + tab_data[i][1] + '" vs30="' + tab_data[i][2] +
+             '" vs30Type="' + tab_data[i][3] + '" z1pt0="' + tab_data[i][4] + '" z2pt5="' + tab_data[i][5] +'"/>\n';
     }
 
     // Create a NRML element
